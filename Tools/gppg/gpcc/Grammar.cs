@@ -17,7 +17,8 @@ namespace gpcc
 		public string Namespace;
 		public string Visibility = "public";
 		public string Attributes = "";
-		public string ParserName = "Parser";
+        public string ValueTypeAttributes = "";
+        public string ParserName = "Parser";
 		public string TokenName = "Tokens";
 		public string ValueTypeName = "ValueType";
 		public string PositionType;

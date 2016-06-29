@@ -139,8 +139,20 @@ namespace gpcc
 					}
 					this.grammar.Attributes = stringBuilder.ToString();
 					continue;
-				}
-				case GrammarToken.ParserName:
+                        }
+                    case GrammarToken.ValueTypeAttributes:
+                        {
+                            this.Advance();
+                            StringBuilder stringBuilder = new StringBuilder(this.scanner.yylval);
+                            while (this.Advance() == GrammarToken.Symbol)
+                            {
+                                stringBuilder.Append(' ');
+                                stringBuilder.Append(this.scanner.yylval);
+                            }
+                            this.grammar.ValueTypeAttributes = stringBuilder.ToString();
+                            continue;
+                        }
+                    case GrammarToken.ParserName:
 					this.Advance();
 					this.grammar.ParserName = this.scanner.yylval;
 					this.Advance();

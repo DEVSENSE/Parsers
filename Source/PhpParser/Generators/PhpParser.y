@@ -1,17 +1,50 @@
+/*
 
+Copyright (c) 2016 Michal Brabec
+
+Parser was generated using The Gardens Point Parser Generator (GPPG) using PHP language grammar based on Flex and Bison files
+distributed with PHP7 interpreter.
+
+*/
+
+using System.Diagnostics;
+using System.Runtime.InteropServices;
+using PHP.Core;
+using PHP.Core.AST;
+using PHP.Core.Text;
+
+using FcnParam = System.Tuple<System.Collections.Generic.List<PHP.Core.AST.TypeRef>, System.Collections.Generic.List<PHP.Core.AST.ActualParam>, System.Collections.Generic.List<PHP.Core.AST.Expression>>;
 
 %%
 
-/*
-%pure_parser
-%expect 0
+%namespace PhpParser.Parser
+%valuetype SemanticValueType
+%positiontype Span
+%tokentype Tokens
+%visibility public
 
-%code requires {
+%valuetypeattributes StructLayout(LayoutKind.Explicit)
+
+%union
+{
+	// Integer and Offset are both used when generating code for string 
+	// with 'inline' variables. Other fields are not combined.
+	
+	[FieldOffset(0)]		
+	public int Integer;
+	[FieldOffset(4)]
+	public int Offset;
+
+	[FieldOffset(0)]
+	public double Double;
+	[FieldOffset(0)]
+	public long Long;
+
+	[FieldOffset(8)]
+	public object Object; 
 }
 
-%destructor { zend_ast_destroy($$); } <ast>
-%destructor { if ($$) zend_string_release($$); } <str>
-*/
+
 %left T_INCLUDE T_INCLUDE_ONCE T_EVAL T_REQUIRE T_REQUIRE_ONCE
 %left ','
 %left T_LOGICAL_OR
@@ -223,9 +256,15 @@
 %% /* Rules */
 
 start:
-	top_statement_list	{ CG(ast) = $1; }
 ;
 
+%%
+
+%%
+
+start:
+    top_statement_list	{ CG(ast) = $1; }
+;
 reserved_non_modifiers:
 	  T_INCLUDE | T_INCLUDE_ONCE | T_EVAL | T_REQUIRE | T_REQUIRE_ONCE | T_LOGICAL_OR | T_LOGICAL_XOR | T_LOGICAL_AND
 	| T_INSTANCEOF | T_NEW | T_CLONE | T_EXIT | T_IF | T_ELSEIF | T_ELSE | T_ENDIF | T_ECHO | T_DO | T_WHILE | T_ENDWHILE
