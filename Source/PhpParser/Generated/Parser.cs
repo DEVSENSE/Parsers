@@ -2,7 +2,7 @@ using System;
 using System.Text;
 using System.Collections.Generic;
 
-#line 1 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 1 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 
 
 
@@ -1514,15 +1514,15 @@ public  partial class Parser: ShiftReduceParser<int,>
     switch (action)
     {
       case 2: // start -> top_statement_list 
-#line 226 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 226 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ CG(ast) = value_stack.array[value_stack.top-1].yyval.ast; }
         return;
       case 77: // identifier -> T_STRING 
-#line 245 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 245 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = value_stack.array[value_stack.top-1].yyval.ast; }
         return;
       case 78: // identifier -> semi_reserved 
-#line 246 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 246 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{
 			zval zv;
 			zend_lex_tstring(&zv);
@@ -1530,882 +1530,882 @@ public  partial class Parser: ShiftReduceParser<int,>
 		}
         return;
       case 79: // top_statement_list -> top_statement_list top_statement 
-#line 254 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 254 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_list_add(value_stack.array[value_stack.top-2].yyval.ast, value_stack.array[value_stack.top-1].yyval.ast); }
         return;
       case 80: // top_statement_list -> 
-#line 255 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 255 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create_list(0, ZEND_AST_STMT_LIST); }
         return;
       case 81: // namespace_name -> T_STRING 
-#line 259 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 259 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = value_stack.array[value_stack.top-1].yyval.ast; }
         return;
       case 82: // namespace_name -> namespace_name T_NS_SEPARATOR T_STRING 
-#line 260 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 260 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_append_str(value_stack.array[value_stack.top-3].yyval.ast, value_stack.array[value_stack.top-1].yyval.ast); }
         return;
       case 83: // name -> namespace_name 
-#line 264 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 264 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = value_stack.array[value_stack.top-1].yyval.ast; yyval.ast->attr = ZEND_NAME_NOT_FQ; }
         return;
       case 84: // name -> T_NAMESPACE T_NS_SEPARATOR namespace_name 
-#line 265 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 265 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = value_stack.array[value_stack.top-1].yyval.ast; yyval.ast->attr = ZEND_NAME_RELATIVE; }
         return;
       case 85: // name -> T_NS_SEPARATOR namespace_name 
-#line 266 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 266 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = value_stack.array[value_stack.top-1].yyval.ast; yyval.ast->attr = ZEND_NAME_FQ; }
         return;
       case 86: // top_statement -> statement 
-#line 270 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 270 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = value_stack.array[value_stack.top-1].yyval.ast; }
         return;
       case 87: // top_statement -> function_declaration_statement 
-#line 271 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 271 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = value_stack.array[value_stack.top-1].yyval.ast; }
         return;
       case 88: // top_statement -> class_declaration_statement 
-#line 272 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 272 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = value_stack.array[value_stack.top-1].yyval.ast; }
         return;
       case 89: // top_statement -> trait_declaration_statement 
-#line 273 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 273 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = value_stack.array[value_stack.top-1].yyval.ast; }
         return;
       case 90: // top_statement -> interface_declaration_statement 
-#line 274 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 274 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = value_stack.array[value_stack.top-1].yyval.ast; }
         return;
       case 91: // top_statement -> T_HALT_COMPILER '(' ')' ';' 
-#line 276 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 276 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create(ZEND_AST_HALT_COMPILER,
 			      zend_ast_create_zval_from_long(zend_get_scanned_file_offset()));
 			  zend_stop_lexing(); }
         return;
       case 92: // top_statement -> T_NAMESPACE namespace_name ';' 
-#line 280 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 280 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create(ZEND_AST_NAMESPACE, value_stack.array[value_stack.top-2].yyval.ast, NULL);
 			  RESET_DOC_COMMENT(); }
         return;
       case 93: // @1 -> 
-#line 282 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 282 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ RESET_DOC_COMMENT(); }
         return;
       case 94: // top_statement -> T_NAMESPACE namespace_name @1 '{' top_statement_list '}' 
-#line 284 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 284 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create(ZEND_AST_NAMESPACE, value_stack.array[value_stack.top-5].yyval.ast, value_stack.array[value_stack.top-2].yyval.ast); }
         return;
       case 95: // @2 -> 
-#line 285 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 285 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ RESET_DOC_COMMENT(); }
         return;
       case 96: // top_statement -> T_NAMESPACE @2 '{' top_statement_list '}' 
-#line 287 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 287 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create(ZEND_AST_NAMESPACE, NULL, value_stack.array[value_stack.top-2].yyval.ast); }
         return;
       case 97: // top_statement -> T_USE mixed_group_use_declaration ';' 
-#line 288 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 288 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = value_stack.array[value_stack.top-2].yyval.ast; }
         return;
       case 98: // top_statement -> T_USE use_type group_use_declaration ';' 
-#line 289 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 289 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = value_stack.array[value_stack.top-2].yyval.ast; yyval.ast->attr = value_stack.array[value_stack.top-3].yyval.num; }
         return;
       case 99: // top_statement -> T_USE use_declarations ';' 
-#line 290 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 290 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = value_stack.array[value_stack.top-2].yyval.ast; yyval.ast->attr = T_CLASS; }
         return;
       case 100: // top_statement -> T_USE use_type use_declarations ';' 
-#line 291 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 291 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = value_stack.array[value_stack.top-2].yyval.ast; yyval.ast->attr = value_stack.array[value_stack.top-3].yyval.num; }
         return;
       case 101: // top_statement -> T_CONST const_list ';' 
-#line 292 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 292 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = value_stack.array[value_stack.top-2].yyval.ast; }
         return;
       case 102: // use_type -> T_FUNCTION 
-#line 296 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 296 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.num = T_FUNCTION; }
         return;
       case 103: // use_type -> T_CONST 
-#line 297 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 297 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.num = T_CONST; }
         return;
       case 104: // group_use_declaration -> namespace_name T_NS_SEPARATOR '{' unprefixed_use_declarations '}' 
-#line 302 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 302 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create(ZEND_AST_GROUP_USE, value_stack.array[value_stack.top-5].yyval.ast, value_stack.array[value_stack.top-2].yyval.ast); }
         return;
       case 105: // group_use_declaration -> T_NS_SEPARATOR namespace_name T_NS_SEPARATOR '{' unprefixed_use_declarations '}' 
-#line 304 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 304 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create(ZEND_AST_GROUP_USE, value_stack.array[value_stack.top-5].yyval.ast, value_stack.array[value_stack.top-2].yyval.ast); }
         return;
       case 106: // mixed_group_use_declaration -> namespace_name T_NS_SEPARATOR '{' inline_use_declarations '}' 
-#line 309 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 309 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create(ZEND_AST_GROUP_USE, value_stack.array[value_stack.top-5].yyval.ast, value_stack.array[value_stack.top-2].yyval.ast);}
         return;
       case 107: // mixed_group_use_declaration -> T_NS_SEPARATOR namespace_name T_NS_SEPARATOR '{' inline_use_declarations '}' 
-#line 311 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 311 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create(ZEND_AST_GROUP_USE, value_stack.array[value_stack.top-5].yyval.ast, value_stack.array[value_stack.top-2].yyval.ast); }
         return;
       case 108: // inline_use_declarations -> inline_use_declarations ',' inline_use_declaration 
-#line 316 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 316 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_list_add(value_stack.array[value_stack.top-3].yyval.ast, value_stack.array[value_stack.top-1].yyval.ast); }
         return;
       case 109: // inline_use_declarations -> inline_use_declaration 
-#line 318 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 318 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create_list(1, ZEND_AST_USE, value_stack.array[value_stack.top-1].yyval.ast); }
         return;
       case 110: // unprefixed_use_declarations -> unprefixed_use_declarations ',' unprefixed_use_declaration 
-#line 323 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 323 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_list_add(value_stack.array[value_stack.top-3].yyval.ast, value_stack.array[value_stack.top-1].yyval.ast); }
         return;
       case 111: // unprefixed_use_declarations -> unprefixed_use_declaration 
-#line 325 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 325 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create_list(1, ZEND_AST_USE, value_stack.array[value_stack.top-1].yyval.ast); }
         return;
       case 112: // use_declarations -> use_declarations ',' use_declaration 
-#line 330 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 330 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_list_add(value_stack.array[value_stack.top-3].yyval.ast, value_stack.array[value_stack.top-1].yyval.ast); }
         return;
       case 113: // use_declarations -> use_declaration 
-#line 332 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 332 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create_list(1, ZEND_AST_USE, value_stack.array[value_stack.top-1].yyval.ast); }
         return;
       case 114: // inline_use_declaration -> unprefixed_use_declaration 
-#line 336 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 336 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = value_stack.array[value_stack.top-1].yyval.ast; yyval.ast->attr = T_CLASS; }
         return;
       case 115: // inline_use_declaration -> use_type unprefixed_use_declaration 
-#line 337 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 337 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = value_stack.array[value_stack.top-1].yyval.ast; yyval.ast->attr = value_stack.array[value_stack.top-2].yyval.num; }
         return;
       case 116: // unprefixed_use_declaration -> namespace_name 
-#line 342 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 342 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create(ZEND_AST_USE_ELEM, value_stack.array[value_stack.top-1].yyval.ast, NULL); }
         return;
       case 117: // unprefixed_use_declaration -> namespace_name T_AS T_STRING 
-#line 344 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 344 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create(ZEND_AST_USE_ELEM, value_stack.array[value_stack.top-3].yyval.ast, value_stack.array[value_stack.top-1].yyval.ast); }
         return;
       case 118: // use_declaration -> unprefixed_use_declaration 
-#line 348 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 348 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = value_stack.array[value_stack.top-1].yyval.ast; }
         return;
       case 119: // use_declaration -> T_NS_SEPARATOR unprefixed_use_declaration 
-#line 349 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 349 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = value_stack.array[value_stack.top-1].yyval.ast; }
         return;
       case 120: // const_list -> const_list ',' const_decl 
-#line 353 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 353 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_list_add(value_stack.array[value_stack.top-3].yyval.ast, value_stack.array[value_stack.top-1].yyval.ast); }
         return;
       case 121: // const_list -> const_decl 
-#line 354 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 354 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create_list(1, ZEND_AST_CONST_DECL, value_stack.array[value_stack.top-1].yyval.ast); }
         return;
       case 122: // inner_statement_list -> inner_statement_list inner_statement 
-#line 359 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 359 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_list_add(value_stack.array[value_stack.top-2].yyval.ast, value_stack.array[value_stack.top-1].yyval.ast); }
         return;
       case 123: // inner_statement_list -> 
-#line 361 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 361 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create_list(0, ZEND_AST_STMT_LIST); }
         return;
       case 124: // inner_statement -> statement 
-#line 366 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 366 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = value_stack.array[value_stack.top-1].yyval.ast; }
         return;
       case 125: // inner_statement -> function_declaration_statement 
-#line 367 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 367 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = value_stack.array[value_stack.top-1].yyval.ast; }
         return;
       case 126: // inner_statement -> class_declaration_statement 
-#line 368 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 368 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = value_stack.array[value_stack.top-1].yyval.ast; }
         return;
       case 127: // inner_statement -> trait_declaration_statement 
-#line 369 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 369 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = value_stack.array[value_stack.top-1].yyval.ast; }
         return;
       case 128: // inner_statement -> interface_declaration_statement 
-#line 370 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 370 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = value_stack.array[value_stack.top-1].yyval.ast; }
         return;
       case 129: // inner_statement -> T_HALT_COMPILER '(' ')' ';' 
-#line 372 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 372 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = NULL; zend_error_noreturn(E_COMPILE_ERROR,
 			      "__HALT_COMPILER() can only be used from the outermost scope"); }
         return;
       case 130: // statement -> '{' inner_statement_list '}' 
-#line 378 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 378 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = value_stack.array[value_stack.top-2].yyval.ast; }
         return;
       case 131: // statement -> if_stmt 
-#line 379 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 379 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = value_stack.array[value_stack.top-1].yyval.ast; }
         return;
       case 132: // statement -> alt_if_stmt 
-#line 380 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 380 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = value_stack.array[value_stack.top-1].yyval.ast; }
         return;
       case 133: // statement -> T_WHILE '(' expr ')' while_statement 
-#line 382 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 382 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create(ZEND_AST_WHILE, value_stack.array[value_stack.top-3].yyval.ast, value_stack.array[value_stack.top-1].yyval.ast); }
         return;
       case 134: // statement -> T_DO statement T_WHILE '(' expr ')' ';' 
-#line 384 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 384 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create(ZEND_AST_DO_WHILE, value_stack.array[value_stack.top-6].yyval.ast, value_stack.array[value_stack.top-3].yyval.ast); }
         return;
       case 135: // statement -> T_FOR '(' for_exprs ';' for_exprs ';' for_exprs ')' for_statement 
-#line 386 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 386 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create(ZEND_AST_FOR, value_stack.array[value_stack.top-7].yyval.ast, value_stack.array[value_stack.top-5].yyval.ast, value_stack.array[value_stack.top-3].yyval.ast, value_stack.array[value_stack.top-1].yyval.ast); }
         return;
       case 136: // statement -> T_SWITCH '(' expr ')' switch_case_list 
-#line 388 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 388 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create(ZEND_AST_SWITCH, value_stack.array[value_stack.top-3].yyval.ast, value_stack.array[value_stack.top-1].yyval.ast); }
         return;
       case 137: // statement -> T_BREAK optional_expr ';' 
-#line 389 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 389 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create(ZEND_AST_BREAK, value_stack.array[value_stack.top-2].yyval.ast); }
         return;
       case 138: // statement -> T_CONTINUE optional_expr ';' 
-#line 390 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 390 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create(ZEND_AST_CONTINUE, value_stack.array[value_stack.top-2].yyval.ast); }
         return;
       case 139: // statement -> T_RETURN optional_expr ';' 
-#line 391 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 391 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create(ZEND_AST_RETURN, value_stack.array[value_stack.top-2].yyval.ast); }
         return;
       case 140: // statement -> T_GLOBAL global_var_list ';' 
-#line 392 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 392 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = value_stack.array[value_stack.top-2].yyval.ast; }
         return;
       case 141: // statement -> T_STATIC static_var_list ';' 
-#line 393 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 393 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = value_stack.array[value_stack.top-2].yyval.ast; }
         return;
       case 142: // statement -> T_ECHO echo_expr_list ';' 
-#line 394 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 394 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = value_stack.array[value_stack.top-2].yyval.ast; }
         return;
       case 143: // statement -> T_INLINE_HTML 
-#line 395 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 395 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create(ZEND_AST_ECHO, value_stack.array[value_stack.top-1].yyval.ast); }
         return;
       case 144: // statement -> expr ';' 
-#line 396 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 396 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = value_stack.array[value_stack.top-2].yyval.ast; }
         return;
       case 145: // statement -> T_UNSET '(' unset_variables ')' ';' 
-#line 397 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 397 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = value_stack.array[value_stack.top-3].yyval.ast; }
         return;
       case 146: // statement -> T_FOREACH '(' expr T_AS foreach_variable ')' foreach_statement 
-#line 399 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 399 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create(ZEND_AST_FOREACH, value_stack.array[value_stack.top-5].yyval.ast, value_stack.array[value_stack.top-3].yyval.ast, NULL, value_stack.array[value_stack.top-1].yyval.ast); }
         return;
       case 147: // statement -> T_FOREACH '(' expr T_AS foreach_variable T_DOUBLE_ARROW foreach_variable ')' foreach_statement 
-#line 402 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 402 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create(ZEND_AST_FOREACH, value_stack.array[value_stack.top-7].yyval.ast, value_stack.array[value_stack.top-3].yyval.ast, value_stack.array[value_stack.top-5].yyval.ast, value_stack.array[value_stack.top-1].yyval.ast); }
         return;
       case 148: // @3 -> 
-#line 404 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 404 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ zend_handle_encoding_declaration(value_stack.array[value_stack.top-2].yyval.ast); }
         return;
       case 149: // statement -> T_DECLARE '(' const_list ')' @3 declare_statement 
-#line 406 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 406 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create(ZEND_AST_DECLARE, value_stack.array[value_stack.top-4].yyval.ast, value_stack.array[value_stack.top-1].yyval.ast); }
         return;
       case 150: // statement -> ';' 
-#line 407 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 407 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = NULL; }
         return;
       case 151: // statement -> T_TRY '{' inner_statement_list '}' catch_list finally_statement 
-#line 409 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 409 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create(ZEND_AST_TRY, value_stack.array[value_stack.top-4].yyval.ast, value_stack.array[value_stack.top-2].yyval.ast, value_stack.array[value_stack.top-1].yyval.ast); }
         return;
       case 152: // statement -> T_THROW expr ';' 
-#line 410 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 410 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create(ZEND_AST_THROW, value_stack.array[value_stack.top-2].yyval.ast); }
         return;
       case 153: // statement -> T_GOTO T_STRING ';' 
-#line 411 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 411 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create(ZEND_AST_GOTO, value_stack.array[value_stack.top-2].yyval.ast); }
         return;
       case 154: // statement -> T_STRING ':' 
-#line 412 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 412 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create(ZEND_AST_LABEL, value_stack.array[value_stack.top-2].yyval.ast); }
         return;
       case 155: // catch_list -> 
-#line 417 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 417 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create_list(0, ZEND_AST_CATCH_LIST); }
         return;
       case 156: // catch_list -> catch_list T_CATCH '(' catch_name_list T_VARIABLE ')' '{' inner_statement_list '}' 
-#line 419 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 419 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_list_add(value_stack.array[value_stack.top-9].yyval.ast, zend_ast_create(ZEND_AST_CATCH, value_stack.array[value_stack.top-6].yyval.ast, value_stack.array[value_stack.top-5].yyval.ast, value_stack.array[value_stack.top-2].yyval.ast)); }
         return;
       case 157: // catch_name_list -> name 
-#line 423 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 423 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create_list(1, ZEND_AST_NAME_LIST, value_stack.array[value_stack.top-1].yyval.ast); }
         return;
       case 158: // catch_name_list -> catch_name_list '|' name 
-#line 424 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 424 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_list_add(value_stack.array[value_stack.top-3].yyval.ast, value_stack.array[value_stack.top-1].yyval.ast); }
         return;
       case 159: // finally_statement -> 
-#line 428 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 428 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = NULL; }
         return;
       case 160: // finally_statement -> T_FINALLY '{' inner_statement_list '}' 
-#line 429 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 429 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = value_stack.array[value_stack.top-2].yyval.ast; }
         return;
       case 161: // unset_variables -> unset_variable 
-#line 433 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 433 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create_list(1, ZEND_AST_STMT_LIST, value_stack.array[value_stack.top-1].yyval.ast); }
         return;
       case 162: // unset_variables -> unset_variables ',' unset_variable 
-#line 434 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 434 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_list_add(value_stack.array[value_stack.top-3].yyval.ast, value_stack.array[value_stack.top-1].yyval.ast); }
         return;
       case 163: // unset_variable -> variable 
-#line 438 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 438 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create(ZEND_AST_UNSET, value_stack.array[value_stack.top-1].yyval.ast); }
         return;
       case 164: // function_declaration_statement -> function returns_ref T_STRING backup_doc_comment '(' parameter_list ')' return_type backup_fn_flags '{' inner_statement_list '}' backup_fn_flags 
-#line 444 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 444 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create_decl(ZEND_AST_FUNC_DECL, value_stack.array[value_stack.top-12].yyval.num | value_stack.array[value_stack.top-1].yyval.num, value_stack.array[value_stack.top-13].yyval.num, value_stack.array[value_stack.top-10].yyval.str,
 		      zend_ast_get_str(value_stack.array[value_stack.top-11].yyval.ast), value_stack.array[value_stack.top-8].yyval.ast, NULL, value_stack.array[value_stack.top-3].yyval.ast, value_stack.array[value_stack.top-6].yyval.ast); CG(extra_fn_flags) = value_stack.array[value_stack.top-5].yyval.num; }
         return;
       case 165: // is_reference -> 
-#line 449 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 449 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.num = 0; }
         return;
       case 166: // is_reference -> '&' 
-#line 450 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 450 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.num = ZEND_PARAM_REF; }
         return;
       case 167: // is_variadic -> 
-#line 454 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 454 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.num = 0; }
         return;
       case 168: // is_variadic -> T_ELLIPSIS 
-#line 455 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 455 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.num = ZEND_PARAM_VARIADIC; }
         return;
       case 169: // @4 -> 
-#line 459 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 459 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.num = CG(zend_lineno); }
         return;
       case 170: // class_declaration_statement -> class_modifiers T_CLASS @4 T_STRING extends_from implements_list backup_doc_comment '{' class_statement_list '}' 
-#line 461 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 461 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create_decl(ZEND_AST_CLASS, value_stack.array[value_stack.top-10].yyval.num, value_stack.array[value_stack.top-8].yyval.num, value_stack.array[value_stack.top-4].yyval.str, zend_ast_get_str(value_stack.array[value_stack.top-7].yyval.ast), value_stack.array[value_stack.top-6].yyval.ast, value_stack.array[value_stack.top-5].yyval.ast, value_stack.array[value_stack.top-2].yyval.ast, NULL); }
         return;
       case 171: // @5 -> 
-#line 462 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 462 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.num = CG(zend_lineno); }
         return;
       case 172: // class_declaration_statement -> T_CLASS @5 T_STRING extends_from implements_list backup_doc_comment '{' class_statement_list '}' 
-#line 464 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 464 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create_decl(ZEND_AST_CLASS, 0, value_stack.array[value_stack.top-8].yyval.num, value_stack.array[value_stack.top-4].yyval.str, zend_ast_get_str(value_stack.array[value_stack.top-7].yyval.ast), value_stack.array[value_stack.top-6].yyval.ast, value_stack.array[value_stack.top-5].yyval.ast, value_stack.array[value_stack.top-2].yyval.ast, NULL); }
         return;
       case 173: // class_modifiers -> class_modifier 
-#line 468 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 468 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.num = value_stack.array[value_stack.top-1].yyval.num; }
         return;
       case 174: // class_modifiers -> class_modifiers class_modifier 
-#line 469 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 469 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.num = zend_add_class_modifier(value_stack.array[value_stack.top-2].yyval.num, value_stack.array[value_stack.top-1].yyval.num); }
         return;
       case 175: // class_modifier -> T_ABSTRACT 
-#line 473 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 473 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.num = ZEND_ACC_EXPLICIT_ABSTRACT_CLASS; }
         return;
       case 176: // class_modifier -> T_FINAL 
-#line 474 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 474 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.num = ZEND_ACC_FINAL; }
         return;
       case 177: // @6 -> 
-#line 478 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 478 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.num = CG(zend_lineno); }
         return;
       case 178: // trait_declaration_statement -> T_TRAIT @6 T_STRING backup_doc_comment '{' class_statement_list '}' 
-#line 480 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 480 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create_decl(ZEND_AST_CLASS, ZEND_ACC_TRAIT, value_stack.array[value_stack.top-6].yyval.num, value_stack.array[value_stack.top-4].yyval.str, zend_ast_get_str(value_stack.array[value_stack.top-5].yyval.ast), NULL, NULL, value_stack.array[value_stack.top-2].yyval.ast, NULL); }
         return;
       case 179: // @7 -> 
-#line 484 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 484 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.num = CG(zend_lineno); }
         return;
       case 180: // interface_declaration_statement -> T_INTERFACE @7 T_STRING interface_extends_list backup_doc_comment '{' class_statement_list '}' 
-#line 486 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 486 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create_decl(ZEND_AST_CLASS, ZEND_ACC_INTERFACE, value_stack.array[value_stack.top-7].yyval.num, value_stack.array[value_stack.top-4].yyval.str, zend_ast_get_str(value_stack.array[value_stack.top-6].yyval.ast), NULL, value_stack.array[value_stack.top-5].yyval.ast, value_stack.array[value_stack.top-2].yyval.ast, NULL); }
         return;
       case 181: // extends_from -> 
-#line 490 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 490 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = NULL; }
         return;
       case 182: // extends_from -> T_EXTENDS name 
-#line 491 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 491 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = value_stack.array[value_stack.top-1].yyval.ast; }
         return;
       case 183: // interface_extends_list -> 
-#line 495 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 495 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = NULL; }
         return;
       case 184: // interface_extends_list -> T_EXTENDS name_list 
-#line 496 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 496 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = value_stack.array[value_stack.top-1].yyval.ast; }
         return;
       case 185: // implements_list -> 
-#line 500 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 500 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = NULL; }
         return;
       case 186: // implements_list -> T_IMPLEMENTS name_list 
-#line 501 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 501 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = value_stack.array[value_stack.top-1].yyval.ast; }
         return;
       case 187: // foreach_variable -> variable 
-#line 505 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 505 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = value_stack.array[value_stack.top-1].yyval.ast; }
         return;
       case 188: // foreach_variable -> '&' variable 
-#line 506 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 506 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create(ZEND_AST_REF, value_stack.array[value_stack.top-1].yyval.ast); }
         return;
       case 189: // foreach_variable -> T_LIST '(' array_pair_list ')' 
-#line 507 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 507 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ value_stack.array[value_stack.top-2].yyval.ast->attr = 1; yyval.ast = value_stack.array[value_stack.top-2].yyval.ast; }
         return;
       case 190: // foreach_variable -> '[' array_pair_list ']' 
-#line 508 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 508 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = value_stack.array[value_stack.top-2].yyval.ast; }
         return;
       case 191: // for_statement -> statement 
-#line 512 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 512 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = value_stack.array[value_stack.top-1].yyval.ast; }
         return;
       case 192: // for_statement -> ':' inner_statement_list T_ENDFOR ';' 
-#line 513 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 513 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = value_stack.array[value_stack.top-3].yyval.ast; }
         return;
       case 193: // foreach_statement -> statement 
-#line 517 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 517 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = value_stack.array[value_stack.top-1].yyval.ast; }
         return;
       case 194: // foreach_statement -> ':' inner_statement_list T_ENDFOREACH ';' 
-#line 518 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 518 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = value_stack.array[value_stack.top-3].yyval.ast; }
         return;
       case 195: // declare_statement -> statement 
-#line 522 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 522 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = value_stack.array[value_stack.top-1].yyval.ast; }
         return;
       case 196: // declare_statement -> ':' inner_statement_list T_ENDDECLARE ';' 
-#line 523 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 523 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = value_stack.array[value_stack.top-3].yyval.ast; }
         return;
       case 197: // switch_case_list -> '{' case_list '}' 
-#line 527 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 527 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = value_stack.array[value_stack.top-2].yyval.ast; }
         return;
       case 198: // switch_case_list -> '{' ';' case_list '}' 
-#line 528 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 528 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = value_stack.array[value_stack.top-2].yyval.ast; }
         return;
       case 199: // switch_case_list -> ':' case_list T_ENDSWITCH ';' 
-#line 529 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 529 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = value_stack.array[value_stack.top-3].yyval.ast; }
         return;
       case 200: // switch_case_list -> ':' ';' case_list T_ENDSWITCH ';' 
-#line 530 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 530 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = value_stack.array[value_stack.top-3].yyval.ast; }
         return;
       case 201: // case_list -> 
-#line 534 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 534 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create_list(0, ZEND_AST_SWITCH_LIST); }
         return;
       case 202: // case_list -> case_list T_CASE expr case_separator inner_statement_list 
-#line 536 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 536 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_list_add(value_stack.array[value_stack.top-5].yyval.ast, zend_ast_create(ZEND_AST_SWITCH_CASE, value_stack.array[value_stack.top-3].yyval.ast, value_stack.array[value_stack.top-1].yyval.ast)); }
         return;
       case 203: // case_list -> case_list T_DEFAULT case_separator inner_statement_list 
-#line 538 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 538 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_list_add(value_stack.array[value_stack.top-4].yyval.ast, zend_ast_create(ZEND_AST_SWITCH_CASE, NULL, value_stack.array[value_stack.top-1].yyval.ast)); }
         return;
       case 206: // while_statement -> statement 
-#line 548 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 548 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = value_stack.array[value_stack.top-1].yyval.ast; }
         return;
       case 207: // while_statement -> ':' inner_statement_list T_ENDWHILE ';' 
-#line 549 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 549 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = value_stack.array[value_stack.top-3].yyval.ast; }
         return;
       case 208: // if_stmt_without_else -> T_IF '(' expr ')' statement 
-#line 555 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 555 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create_list(1, ZEND_AST_IF,
 			      zend_ast_create(ZEND_AST_IF_ELEM, value_stack.array[value_stack.top-3].yyval.ast, value_stack.array[value_stack.top-1].yyval.ast)); }
         return;
       case 209: // if_stmt_without_else -> if_stmt_without_else T_ELSEIF '(' expr ')' statement 
-#line 558 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 558 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_list_add(value_stack.array[value_stack.top-6].yyval.ast,
 			      zend_ast_create(ZEND_AST_IF_ELEM, value_stack.array[value_stack.top-3].yyval.ast, value_stack.array[value_stack.top-1].yyval.ast)); }
         return;
       case 210: // if_stmt -> if_stmt_without_else 
-#line 563 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 563 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = value_stack.array[value_stack.top-1].yyval.ast; }
         return;
       case 211: // if_stmt -> if_stmt_without_else T_ELSE statement 
-#line 565 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 565 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_list_add(value_stack.array[value_stack.top-3].yyval.ast, zend_ast_create(ZEND_AST_IF_ELEM, NULL, value_stack.array[value_stack.top-1].yyval.ast)); }
         return;
       case 212: // alt_if_stmt_without_else -> T_IF '(' expr ')' ':' inner_statement_list 
-#line 570 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 570 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create_list(1, ZEND_AST_IF,
 			      zend_ast_create(ZEND_AST_IF_ELEM, value_stack.array[value_stack.top-4].yyval.ast, value_stack.array[value_stack.top-1].yyval.ast)); }
         return;
       case 213: // alt_if_stmt_without_else -> alt_if_stmt_without_else T_ELSEIF '(' expr ')' ':' inner_statement_list 
-#line 573 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 573 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_list_add(value_stack.array[value_stack.top-7].yyval.ast,
 			      zend_ast_create(ZEND_AST_IF_ELEM, value_stack.array[value_stack.top-4].yyval.ast, value_stack.array[value_stack.top-1].yyval.ast)); }
         return;
       case 214: // alt_if_stmt -> alt_if_stmt_without_else T_ENDIF ';' 
-#line 578 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 578 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = value_stack.array[value_stack.top-3].yyval.ast; }
         return;
       case 215: // alt_if_stmt -> alt_if_stmt_without_else T_ELSE ':' inner_statement_list T_ENDIF ';' 
-#line 580 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 580 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_list_add(value_stack.array[value_stack.top-6].yyval.ast,
 			      zend_ast_create(ZEND_AST_IF_ELEM, NULL, value_stack.array[value_stack.top-3].yyval.ast)); }
         return;
       case 216: // parameter_list -> non_empty_parameter_list 
-#line 585 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 585 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = value_stack.array[value_stack.top-1].yyval.ast; }
         return;
       case 217: // parameter_list -> 
-#line 586 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 586 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create_list(0, ZEND_AST_PARAM_LIST); }
         return;
       case 218: // non_empty_parameter_list -> parameter 
-#line 592 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 592 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create_list(1, ZEND_AST_PARAM_LIST, value_stack.array[value_stack.top-1].yyval.ast); }
         return;
       case 219: // non_empty_parameter_list -> non_empty_parameter_list ',' parameter 
-#line 594 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 594 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_list_add(value_stack.array[value_stack.top-3].yyval.ast, value_stack.array[value_stack.top-1].yyval.ast); }
         return;
       case 220: // parameter -> optional_type is_reference is_variadic T_VARIABLE 
-#line 599 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 599 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create_ex(ZEND_AST_PARAM, value_stack.array[value_stack.top-3].yyval.num | value_stack.array[value_stack.top-2].yyval.num, value_stack.array[value_stack.top-4].yyval.ast, value_stack.array[value_stack.top-1].yyval.ast, NULL); }
         return;
       case 221: // parameter -> optional_type is_reference is_variadic T_VARIABLE '=' expr 
-#line 601 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 601 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create_ex(ZEND_AST_PARAM, value_stack.array[value_stack.top-5].yyval.num | value_stack.array[value_stack.top-4].yyval.num, value_stack.array[value_stack.top-6].yyval.ast, value_stack.array[value_stack.top-3].yyval.ast, value_stack.array[value_stack.top-1].yyval.ast); }
         return;
       case 222: // optional_type -> 
-#line 606 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 606 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = NULL; }
         return;
       case 223: // optional_type -> type_expr 
-#line 607 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 607 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = value_stack.array[value_stack.top-1].yyval.ast; }
         return;
       case 224: // type_expr -> type 
-#line 611 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 611 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = value_stack.array[value_stack.top-1].yyval.ast; }
         return;
       case 225: // type_expr -> '?' type 
-#line 612 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 612 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = value_stack.array[value_stack.top-1].yyval.ast; yyval.ast->attr |= ZEND_TYPE_NULLABLE; }
         return;
       case 226: // type -> T_ARRAY 
-#line 616 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 616 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create_ex(ZEND_AST_TYPE, IS_ARRAY); }
         return;
       case 227: // type -> T_CALLABLE 
-#line 617 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 617 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create_ex(ZEND_AST_TYPE, IS_CALLABLE); }
         return;
       case 228: // type -> name 
-#line 618 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 618 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = value_stack.array[value_stack.top-1].yyval.ast; }
         return;
       case 229: // return_type -> 
-#line 622 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 622 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = NULL; }
         return;
       case 230: // return_type -> ':' type_expr 
-#line 623 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 623 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = value_stack.array[value_stack.top-1].yyval.ast; }
         return;
       case 231: // argument_list -> '(' ')' 
-#line 627 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 627 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create_list(0, ZEND_AST_ARG_LIST); }
         return;
       case 232: // argument_list -> '(' non_empty_argument_list ')' 
-#line 628 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 628 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = value_stack.array[value_stack.top-2].yyval.ast; }
         return;
       case 233: // non_empty_argument_list -> argument 
-#line 633 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 633 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create_list(1, ZEND_AST_ARG_LIST, value_stack.array[value_stack.top-1].yyval.ast); }
         return;
       case 234: // non_empty_argument_list -> non_empty_argument_list ',' argument 
-#line 635 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 635 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_list_add(value_stack.array[value_stack.top-3].yyval.ast, value_stack.array[value_stack.top-1].yyval.ast); }
         return;
       case 235: // argument -> expr 
-#line 639 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 639 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = value_stack.array[value_stack.top-1].yyval.ast; }
         return;
       case 236: // argument -> T_ELLIPSIS expr 
-#line 640 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 640 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create(ZEND_AST_UNPACK, value_stack.array[value_stack.top-1].yyval.ast); }
         return;
       case 237: // global_var_list -> global_var_list ',' global_var 
-#line 644 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 644 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_list_add(value_stack.array[value_stack.top-3].yyval.ast, value_stack.array[value_stack.top-1].yyval.ast); }
         return;
       case 238: // global_var_list -> global_var 
-#line 645 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 645 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create_list(1, ZEND_AST_STMT_LIST, value_stack.array[value_stack.top-1].yyval.ast); }
         return;
       case 239: // global_var -> simple_variable 
-#line 650 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 650 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create(ZEND_AST_GLOBAL, zend_ast_create(ZEND_AST_VAR, value_stack.array[value_stack.top-1].yyval.ast)); }
         return;
       case 240: // static_var_list -> static_var_list ',' static_var 
-#line 655 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 655 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_list_add(value_stack.array[value_stack.top-3].yyval.ast, value_stack.array[value_stack.top-1].yyval.ast); }
         return;
       case 241: // static_var_list -> static_var 
-#line 656 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 656 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create_list(1, ZEND_AST_STMT_LIST, value_stack.array[value_stack.top-1].yyval.ast); }
         return;
       case 242: // static_var -> T_VARIABLE 
-#line 660 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 660 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create(ZEND_AST_STATIC, value_stack.array[value_stack.top-1].yyval.ast, NULL); }
         return;
       case 243: // static_var -> T_VARIABLE '=' expr 
-#line 661 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 661 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create(ZEND_AST_STATIC, value_stack.array[value_stack.top-3].yyval.ast, value_stack.array[value_stack.top-1].yyval.ast); }
         return;
       case 244: // class_statement_list -> class_statement_list class_statement 
-#line 667 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 667 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_list_add(value_stack.array[value_stack.top-2].yyval.ast, value_stack.array[value_stack.top-1].yyval.ast); }
         return;
       case 245: // class_statement_list -> 
-#line 669 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 669 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create_list(0, ZEND_AST_STMT_LIST); }
         return;
       case 246: // class_statement -> variable_modifiers property_list ';' 
-#line 675 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 675 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = value_stack.array[value_stack.top-2].yyval.ast; yyval.ast->attr = value_stack.array[value_stack.top-3].yyval.num; }
         return;
       case 247: // class_statement -> method_modifiers T_CONST class_const_list ';' 
-#line 677 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 677 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = value_stack.array[value_stack.top-2].yyval.ast; yyval.ast->attr = value_stack.array[value_stack.top-4].yyval.num; }
         return;
       case 248: // class_statement -> T_USE name_list trait_adaptations 
-#line 679 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 679 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create(ZEND_AST_USE_TRAIT, value_stack.array[value_stack.top-2].yyval.ast, value_stack.array[value_stack.top-1].yyval.ast); }
         return;
       case 249: // class_statement -> method_modifiers function returns_ref identifier backup_doc_comment '(' parameter_list ')' return_type backup_fn_flags method_body backup_fn_flags 
-#line 682 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 682 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create_decl(ZEND_AST_METHOD, value_stack.array[value_stack.top-10].yyval.num | value_stack.array[value_stack.top-12].yyval.num | value_stack.array[value_stack.top-1].yyval.num, value_stack.array[value_stack.top-11].yyval.num, value_stack.array[value_stack.top-8].yyval.str,
 				  zend_ast_get_str(value_stack.array[value_stack.top-9].yyval.ast), value_stack.array[value_stack.top-6].yyval.ast, NULL, value_stack.array[value_stack.top-2].yyval.ast, value_stack.array[value_stack.top-4].yyval.ast); CG(extra_fn_flags) = value_stack.array[value_stack.top-3].yyval.num; }
         return;
       case 250: // name_list -> name 
-#line 687 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 687 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create_list(1, ZEND_AST_NAME_LIST, value_stack.array[value_stack.top-1].yyval.ast); }
         return;
       case 251: // name_list -> name_list ',' name 
-#line 688 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 688 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_list_add(value_stack.array[value_stack.top-3].yyval.ast, value_stack.array[value_stack.top-1].yyval.ast); }
         return;
       case 252: // trait_adaptations -> ';' 
-#line 692 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 692 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = NULL; }
         return;
       case 253: // trait_adaptations -> '{' '}' 
-#line 693 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 693 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = NULL; }
         return;
       case 254: // trait_adaptations -> '{' trait_adaptation_list '}' 
-#line 694 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 694 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = value_stack.array[value_stack.top-2].yyval.ast; }
         return;
       case 255: // trait_adaptation_list -> trait_adaptation 
-#line 699 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 699 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create_list(1, ZEND_AST_TRAIT_ADAPTATIONS, value_stack.array[value_stack.top-1].yyval.ast); }
         return;
       case 256: // trait_adaptation_list -> trait_adaptation_list trait_adaptation 
-#line 701 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 701 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_list_add(value_stack.array[value_stack.top-2].yyval.ast, value_stack.array[value_stack.top-1].yyval.ast); }
         return;
       case 257: // trait_adaptation -> trait_precedence ';' 
-#line 705 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 705 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = value_stack.array[value_stack.top-2].yyval.ast; }
         return;
       case 258: // trait_adaptation -> trait_alias ';' 
-#line 706 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 706 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = value_stack.array[value_stack.top-2].yyval.ast; }
         return;
       case 259: // trait_precedence -> absolute_trait_method_reference T_INSTEADOF name_list 
-#line 711 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 711 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create(ZEND_AST_TRAIT_PRECEDENCE, value_stack.array[value_stack.top-3].yyval.ast, value_stack.array[value_stack.top-1].yyval.ast); }
         return;
       case 260: // trait_alias -> trait_method_reference T_AS T_STRING 
-#line 716 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 716 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create_ex(ZEND_AST_TRAIT_ALIAS, 0, value_stack.array[value_stack.top-3].yyval.ast, value_stack.array[value_stack.top-1].yyval.ast); }
         return;
       case 261: // trait_alias -> trait_method_reference T_AS reserved_non_modifiers 
-#line 718 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 718 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ zval zv; zend_lex_tstring(&zv); yyval.ast = zend_ast_create_ex(ZEND_AST_TRAIT_ALIAS, 0, value_stack.array[value_stack.top-3].yyval.ast, zend_ast_create_zval(&zv)); }
         return;
       case 262: // trait_alias -> trait_method_reference T_AS member_modifier identifier 
-#line 720 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 720 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create_ex(ZEND_AST_TRAIT_ALIAS, value_stack.array[value_stack.top-2].yyval.num, value_stack.array[value_stack.top-4].yyval.ast, value_stack.array[value_stack.top-1].yyval.ast); }
         return;
       case 263: // trait_alias -> trait_method_reference T_AS member_modifier 
-#line 722 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 722 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create_ex(ZEND_AST_TRAIT_ALIAS, value_stack.array[value_stack.top-1].yyval.num, value_stack.array[value_stack.top-3].yyval.ast, NULL); }
         return;
       case 264: // trait_method_reference -> identifier 
-#line 727 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 727 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create(ZEND_AST_METHOD_REFERENCE, NULL, value_stack.array[value_stack.top-1].yyval.ast); }
         return;
       case 265: // trait_method_reference -> absolute_trait_method_reference 
-#line 728 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 728 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = value_stack.array[value_stack.top-1].yyval.ast; }
         return;
       case 266: // absolute_trait_method_reference -> name T_PAAMAYIM_NEKUDOTAYIM identifier 
-#line 733 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 733 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create(ZEND_AST_METHOD_REFERENCE, value_stack.array[value_stack.top-3].yyval.ast, value_stack.array[value_stack.top-1].yyval.ast); }
         return;
       case 267: // method_body -> ';' 
-#line 737 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 737 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = NULL; }
         return;
       case 268: // method_body -> '{' inner_statement_list '}' 
-#line 738 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 738 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = value_stack.array[value_stack.top-2].yyval.ast; }
         return;
       case 269: // variable_modifiers -> non_empty_member_modifiers 
-#line 742 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 742 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.num = value_stack.array[value_stack.top-1].yyval.num; }
         return;
       case 270: // variable_modifiers -> T_VAR 
-#line 743 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 743 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.num = ZEND_ACC_PUBLIC; }
         return;
       case 271: // method_modifiers -> 
-#line 747 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 747 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.num = ZEND_ACC_PUBLIC; }
         return;
       case 272: // method_modifiers -> non_empty_member_modifiers 
-#line 749 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 749 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.num = value_stack.array[value_stack.top-1].yyval.num; if (!(yyval.num & ZEND_ACC_PPP_MASK)) { yyval.num |= ZEND_ACC_PUBLIC; } }
         return;
       case 273: // non_empty_member_modifiers -> member_modifier 
-#line 753 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 753 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.num = value_stack.array[value_stack.top-1].yyval.num; }
         return;
       case 274: // non_empty_member_modifiers -> non_empty_member_modifiers member_modifier 
-#line 755 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 755 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.num = zend_add_member_modifier(value_stack.array[value_stack.top-2].yyval.num, value_stack.array[value_stack.top-1].yyval.num); }
         return;
       case 275: // member_modifier -> T_PUBLIC 
-#line 759 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 759 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.num = ZEND_ACC_PUBLIC; }
         return;
       case 276: // member_modifier -> T_PROTECTED 
-#line 760 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 760 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.num = ZEND_ACC_PROTECTED; }
         return;
       case 277: // member_modifier -> T_PRIVATE 
-#line 761 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 761 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.num = ZEND_ACC_PRIVATE; }
         return;
       case 278: // member_modifier -> T_STATIC 
-#line 762 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 762 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.num = ZEND_ACC_STATIC; }
         return;
       case 279: // member_modifier -> T_ABSTRACT 
-#line 763 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 763 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.num = ZEND_ACC_ABSTRACT; }
         return;
       case 280: // member_modifier -> T_FINAL 
-#line 764 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 764 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.num = ZEND_ACC_FINAL; }
         return;
       case 281: // property_list -> property_list ',' property 
-#line 768 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 768 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_list_add(value_stack.array[value_stack.top-3].yyval.ast, value_stack.array[value_stack.top-1].yyval.ast); }
         return;
       case 282: // property_list -> property 
-#line 769 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 769 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create_list(1, ZEND_AST_PROP_DECL, value_stack.array[value_stack.top-1].yyval.ast); }
         return;
       case 283: // property -> T_VARIABLE backup_doc_comment 
-#line 774 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 774 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create(ZEND_AST_PROP_ELEM, value_stack.array[value_stack.top-2].yyval.ast, NULL, (value_stack.array[value_stack.top-1].yyval.str ? zend_ast_create_zval_from_str(value_stack.array[value_stack.top-1].yyval.str) : NULL)); }
         return;
       case 284: // property -> T_VARIABLE '=' expr backup_doc_comment 
-#line 776 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 776 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create(ZEND_AST_PROP_ELEM, value_stack.array[value_stack.top-4].yyval.ast, value_stack.array[value_stack.top-2].yyval.ast, (value_stack.array[value_stack.top-1].yyval.str ? zend_ast_create_zval_from_str(value_stack.array[value_stack.top-1].yyval.str) : NULL)); }
         return;
       case 285: // class_const_list -> class_const_list ',' class_const_decl 
-#line 780 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 780 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_list_add(value_stack.array[value_stack.top-3].yyval.ast, value_stack.array[value_stack.top-1].yyval.ast); }
         return;
       case 286: // class_const_list -> class_const_decl 
-#line 781 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 781 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create_list(1, ZEND_AST_CLASS_CONST_DECL, value_stack.array[value_stack.top-1].yyval.ast); }
         return;
       case 287: // class_const_decl -> identifier '=' expr backup_doc_comment 
-#line 785 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 785 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create(ZEND_AST_CONST_ELEM, value_stack.array[value_stack.top-4].yyval.ast, value_stack.array[value_stack.top-2].yyval.ast, (value_stack.array[value_stack.top-1].yyval.str ? zend_ast_create_zval_from_str(value_stack.array[value_stack.top-1].yyval.str) : NULL)); }
         return;
       case 288: // const_decl -> T_STRING '=' expr backup_doc_comment 
-#line 789 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 789 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create(ZEND_AST_CONST_ELEM, value_stack.array[value_stack.top-4].yyval.ast, value_stack.array[value_stack.top-2].yyval.ast, (value_stack.array[value_stack.top-1].yyval.str ? zend_ast_create_zval_from_str(value_stack.array[value_stack.top-1].yyval.str) : NULL)); }
         return;
       case 289: // echo_expr_list -> echo_expr_list ',' echo_expr 
-#line 793 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 793 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_list_add(value_stack.array[value_stack.top-3].yyval.ast, value_stack.array[value_stack.top-1].yyval.ast); }
         return;
       case 290: // echo_expr_list -> echo_expr 
-#line 794 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 794 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create_list(1, ZEND_AST_STMT_LIST, value_stack.array[value_stack.top-1].yyval.ast); }
         return;
       case 291: // echo_expr -> expr 
-#line 797 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 797 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create(ZEND_AST_ECHO, value_stack.array[value_stack.top-1].yyval.ast); }
         return;
       case 292: // for_exprs -> 
-#line 801 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 801 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = NULL; }
         return;
       case 293: // for_exprs -> non_empty_for_exprs 
-#line 802 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 802 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = value_stack.array[value_stack.top-1].yyval.ast; }
         return;
       case 294: // non_empty_for_exprs -> non_empty_for_exprs ',' expr 
-#line 806 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 806 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_list_add(value_stack.array[value_stack.top-3].yyval.ast, value_stack.array[value_stack.top-1].yyval.ast); }
         return;
       case 295: // non_empty_for_exprs -> expr 
-#line 807 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 807 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create_list(1, ZEND_AST_EXPR_LIST, value_stack.array[value_stack.top-1].yyval.ast); }
         return;
       case 296: // @8 -> 
-#line 811 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 811 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.num = CG(zend_lineno); }
         return;
       case 297: // anonymous_class -> T_CLASS @8 ctor_arguments extends_from implements_list backup_doc_comment '{' class_statement_list '}' 
-#line 812 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 812 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{
 			zend_ast *decl = zend_ast_create_decl(
 				ZEND_AST_CLASS, ZEND_ACC_ANON_CLASS, value_stack.array[value_stack.top-8].yyval.num, value_stack.array[value_stack.top-4].yyval.str, NULL,
@@ -2414,803 +2414,803 @@ public  partial class Parser: ShiftReduceParser<int,>
 		}
         return;
       case 298: // new_expr -> T_NEW class_name_reference ctor_arguments 
-#line 822 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 822 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create(ZEND_AST_NEW, value_stack.array[value_stack.top-2].yyval.ast, value_stack.array[value_stack.top-1].yyval.ast); }
         return;
       case 299: // new_expr -> T_NEW anonymous_class 
-#line 824 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 824 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = value_stack.array[value_stack.top-1].yyval.ast; }
         return;
       case 300: // expr_without_variable -> T_LIST '(' array_pair_list ')' '=' expr 
-#line 829 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 829 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ value_stack.array[value_stack.top-4].yyval.ast->attr = 1; yyval.ast = zend_ast_create(ZEND_AST_ASSIGN, value_stack.array[value_stack.top-4].yyval.ast, value_stack.array[value_stack.top-1].yyval.ast); }
         return;
       case 301: // expr_without_variable -> '[' array_pair_list ']' '=' expr 
-#line 831 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 831 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create(ZEND_AST_ASSIGN, value_stack.array[value_stack.top-4].yyval.ast, value_stack.array[value_stack.top-1].yyval.ast); }
         return;
       case 302: // expr_without_variable -> variable '=' expr 
-#line 833 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 833 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create(ZEND_AST_ASSIGN, value_stack.array[value_stack.top-3].yyval.ast, value_stack.array[value_stack.top-1].yyval.ast); }
         return;
       case 303: // expr_without_variable -> variable '=' '&' variable 
-#line 835 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 835 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create(ZEND_AST_ASSIGN_REF, value_stack.array[value_stack.top-4].yyval.ast, value_stack.array[value_stack.top-1].yyval.ast); }
         return;
       case 304: // expr_without_variable -> T_CLONE expr 
-#line 836 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 836 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create(ZEND_AST_CLONE, value_stack.array[value_stack.top-1].yyval.ast); }
         return;
       case 305: // expr_without_variable -> variable T_PLUS_EQUAL expr 
-#line 838 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 838 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create_assign_op(ZEND_ASSIGN_ADD, value_stack.array[value_stack.top-3].yyval.ast, value_stack.array[value_stack.top-1].yyval.ast); }
         return;
       case 306: // expr_without_variable -> variable T_MINUS_EQUAL expr 
-#line 840 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 840 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create_assign_op(ZEND_ASSIGN_SUB, value_stack.array[value_stack.top-3].yyval.ast, value_stack.array[value_stack.top-1].yyval.ast); }
         return;
       case 307: // expr_without_variable -> variable T_MUL_EQUAL expr 
-#line 842 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 842 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create_assign_op(ZEND_ASSIGN_MUL, value_stack.array[value_stack.top-3].yyval.ast, value_stack.array[value_stack.top-1].yyval.ast); }
         return;
       case 308: // expr_without_variable -> variable T_POW_EQUAL expr 
-#line 844 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 844 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create_assign_op(ZEND_ASSIGN_POW, value_stack.array[value_stack.top-3].yyval.ast, value_stack.array[value_stack.top-1].yyval.ast); }
         return;
       case 309: // expr_without_variable -> variable T_DIV_EQUAL expr 
-#line 846 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 846 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create_assign_op(ZEND_ASSIGN_DIV, value_stack.array[value_stack.top-3].yyval.ast, value_stack.array[value_stack.top-1].yyval.ast); }
         return;
       case 310: // expr_without_variable -> variable T_CONCAT_EQUAL expr 
-#line 848 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 848 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create_assign_op(ZEND_ASSIGN_CONCAT, value_stack.array[value_stack.top-3].yyval.ast, value_stack.array[value_stack.top-1].yyval.ast); }
         return;
       case 311: // expr_without_variable -> variable T_MOD_EQUAL expr 
-#line 850 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 850 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create_assign_op(ZEND_ASSIGN_MOD, value_stack.array[value_stack.top-3].yyval.ast, value_stack.array[value_stack.top-1].yyval.ast); }
         return;
       case 312: // expr_without_variable -> variable T_AND_EQUAL expr 
-#line 852 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 852 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create_assign_op(ZEND_ASSIGN_BW_AND, value_stack.array[value_stack.top-3].yyval.ast, value_stack.array[value_stack.top-1].yyval.ast); }
         return;
       case 313: // expr_without_variable -> variable T_OR_EQUAL expr 
-#line 854 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 854 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create_assign_op(ZEND_ASSIGN_BW_OR, value_stack.array[value_stack.top-3].yyval.ast, value_stack.array[value_stack.top-1].yyval.ast); }
         return;
       case 314: // expr_without_variable -> variable T_XOR_EQUAL expr 
-#line 856 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 856 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create_assign_op(ZEND_ASSIGN_BW_XOR, value_stack.array[value_stack.top-3].yyval.ast, value_stack.array[value_stack.top-1].yyval.ast); }
         return;
       case 315: // expr_without_variable -> variable T_SL_EQUAL expr 
-#line 858 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 858 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create_assign_op(ZEND_ASSIGN_SL, value_stack.array[value_stack.top-3].yyval.ast, value_stack.array[value_stack.top-1].yyval.ast); }
         return;
       case 316: // expr_without_variable -> variable T_SR_EQUAL expr 
-#line 860 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 860 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create_assign_op(ZEND_ASSIGN_SR, value_stack.array[value_stack.top-3].yyval.ast, value_stack.array[value_stack.top-1].yyval.ast); }
         return;
       case 317: // expr_without_variable -> variable T_INC 
-#line 861 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 861 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create(ZEND_AST_POST_INC, value_stack.array[value_stack.top-2].yyval.ast); }
         return;
       case 318: // expr_without_variable -> T_INC variable 
-#line 862 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 862 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create(ZEND_AST_PRE_INC, value_stack.array[value_stack.top-1].yyval.ast); }
         return;
       case 319: // expr_without_variable -> variable T_DEC 
-#line 863 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 863 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create(ZEND_AST_POST_DEC, value_stack.array[value_stack.top-2].yyval.ast); }
         return;
       case 320: // expr_without_variable -> T_DEC variable 
-#line 864 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 864 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create(ZEND_AST_PRE_DEC, value_stack.array[value_stack.top-1].yyval.ast); }
         return;
       case 321: // expr_without_variable -> expr T_BOOLEAN_OR expr 
-#line 866 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 866 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create(ZEND_AST_OR, value_stack.array[value_stack.top-3].yyval.ast, value_stack.array[value_stack.top-1].yyval.ast); }
         return;
       case 322: // expr_without_variable -> expr T_BOOLEAN_AND expr 
-#line 868 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 868 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create(ZEND_AST_AND, value_stack.array[value_stack.top-3].yyval.ast, value_stack.array[value_stack.top-1].yyval.ast); }
         return;
       case 323: // expr_without_variable -> expr T_LOGICAL_OR expr 
-#line 870 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 870 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create(ZEND_AST_OR, value_stack.array[value_stack.top-3].yyval.ast, value_stack.array[value_stack.top-1].yyval.ast); }
         return;
       case 324: // expr_without_variable -> expr T_LOGICAL_AND expr 
-#line 872 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 872 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create(ZEND_AST_AND, value_stack.array[value_stack.top-3].yyval.ast, value_stack.array[value_stack.top-1].yyval.ast); }
         return;
       case 325: // expr_without_variable -> expr T_LOGICAL_XOR expr 
-#line 874 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 874 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create_binary_op(ZEND_BOOL_XOR, value_stack.array[value_stack.top-3].yyval.ast, value_stack.array[value_stack.top-1].yyval.ast); }
         return;
       case 326: // expr_without_variable -> expr '|' expr 
-#line 875 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 875 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create_binary_op(ZEND_BW_OR, value_stack.array[value_stack.top-3].yyval.ast, value_stack.array[value_stack.top-1].yyval.ast); }
         return;
       case 327: // expr_without_variable -> expr '&' expr 
-#line 876 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 876 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create_binary_op(ZEND_BW_AND, value_stack.array[value_stack.top-3].yyval.ast, value_stack.array[value_stack.top-1].yyval.ast); }
         return;
       case 328: // expr_without_variable -> expr '^' expr 
-#line 877 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 877 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create_binary_op(ZEND_BW_XOR, value_stack.array[value_stack.top-3].yyval.ast, value_stack.array[value_stack.top-1].yyval.ast); }
         return;
       case 329: // expr_without_variable -> expr '.' expr 
-#line 878 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 878 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create_binary_op(ZEND_CONCAT, value_stack.array[value_stack.top-3].yyval.ast, value_stack.array[value_stack.top-1].yyval.ast); }
         return;
       case 330: // expr_without_variable -> expr '+' expr 
-#line 879 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 879 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create_binary_op(ZEND_ADD, value_stack.array[value_stack.top-3].yyval.ast, value_stack.array[value_stack.top-1].yyval.ast); }
         return;
       case 331: // expr_without_variable -> expr '-' expr 
-#line 880 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 880 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create_binary_op(ZEND_SUB, value_stack.array[value_stack.top-3].yyval.ast, value_stack.array[value_stack.top-1].yyval.ast); }
         return;
       case 332: // expr_without_variable -> expr '*' expr 
-#line 881 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 881 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create_binary_op(ZEND_MUL, value_stack.array[value_stack.top-3].yyval.ast, value_stack.array[value_stack.top-1].yyval.ast); }
         return;
       case 333: // expr_without_variable -> expr T_POW expr 
-#line 882 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 882 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create_binary_op(ZEND_POW, value_stack.array[value_stack.top-3].yyval.ast, value_stack.array[value_stack.top-1].yyval.ast); }
         return;
       case 334: // expr_without_variable -> expr '/' expr 
-#line 883 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 883 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create_binary_op(ZEND_DIV, value_stack.array[value_stack.top-3].yyval.ast, value_stack.array[value_stack.top-1].yyval.ast); }
         return;
       case 335: // expr_without_variable -> expr '%' expr 
-#line 884 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 884 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create_binary_op(ZEND_MOD, value_stack.array[value_stack.top-3].yyval.ast, value_stack.array[value_stack.top-1].yyval.ast); }
         return;
       case 336: // expr_without_variable -> expr T_SL expr 
-#line 885 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 885 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create_binary_op(ZEND_SL, value_stack.array[value_stack.top-3].yyval.ast, value_stack.array[value_stack.top-1].yyval.ast); }
         return;
       case 337: // expr_without_variable -> expr T_SR expr 
-#line 886 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 886 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create_binary_op(ZEND_SR, value_stack.array[value_stack.top-3].yyval.ast, value_stack.array[value_stack.top-1].yyval.ast); }
         return;
       case 338: // expr_without_variable -> '+' expr 
-#line 887 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 887 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create(ZEND_AST_UNARY_PLUS, value_stack.array[value_stack.top-1].yyval.ast); }
         return;
       case 339: // expr_without_variable -> '-' expr 
-#line 888 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 888 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create(ZEND_AST_UNARY_MINUS, value_stack.array[value_stack.top-1].yyval.ast); }
         return;
       case 340: // expr_without_variable -> '!' expr 
-#line 889 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 889 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create_ex(ZEND_AST_UNARY_OP, ZEND_BOOL_NOT, value_stack.array[value_stack.top-1].yyval.ast); }
         return;
       case 341: // expr_without_variable -> '~' expr 
-#line 890 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 890 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create_ex(ZEND_AST_UNARY_OP, ZEND_BW_NOT, value_stack.array[value_stack.top-1].yyval.ast); }
         return;
       case 342: // expr_without_variable -> expr T_IS_IDENTICAL expr 
-#line 892 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 892 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create_binary_op(ZEND_IS_IDENTICAL, value_stack.array[value_stack.top-3].yyval.ast, value_stack.array[value_stack.top-1].yyval.ast); }
         return;
       case 343: // expr_without_variable -> expr T_IS_NOT_IDENTICAL expr 
-#line 894 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 894 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create_binary_op(ZEND_IS_NOT_IDENTICAL, value_stack.array[value_stack.top-3].yyval.ast, value_stack.array[value_stack.top-1].yyval.ast); }
         return;
       case 344: // expr_without_variable -> expr T_IS_EQUAL expr 
-#line 896 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 896 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create_binary_op(ZEND_IS_EQUAL, value_stack.array[value_stack.top-3].yyval.ast, value_stack.array[value_stack.top-1].yyval.ast); }
         return;
       case 345: // expr_without_variable -> expr T_IS_NOT_EQUAL expr 
-#line 898 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 898 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create_binary_op(ZEND_IS_NOT_EQUAL, value_stack.array[value_stack.top-3].yyval.ast, value_stack.array[value_stack.top-1].yyval.ast); }
         return;
       case 346: // expr_without_variable -> expr '<' expr 
-#line 900 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 900 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create_binary_op(ZEND_IS_SMALLER, value_stack.array[value_stack.top-3].yyval.ast, value_stack.array[value_stack.top-1].yyval.ast); }
         return;
       case 347: // expr_without_variable -> expr T_IS_SMALLER_OR_EQUAL expr 
-#line 902 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 902 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create_binary_op(ZEND_IS_SMALLER_OR_EQUAL, value_stack.array[value_stack.top-3].yyval.ast, value_stack.array[value_stack.top-1].yyval.ast); }
         return;
       case 348: // expr_without_variable -> expr '>' expr 
-#line 904 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 904 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create(ZEND_AST_GREATER, value_stack.array[value_stack.top-3].yyval.ast, value_stack.array[value_stack.top-1].yyval.ast); }
         return;
       case 349: // expr_without_variable -> expr T_IS_GREATER_OR_EQUAL expr 
-#line 906 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 906 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create(ZEND_AST_GREATER_EQUAL, value_stack.array[value_stack.top-3].yyval.ast, value_stack.array[value_stack.top-1].yyval.ast); }
         return;
       case 350: // expr_without_variable -> expr T_SPACESHIP expr 
-#line 908 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 908 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create_binary_op(ZEND_SPACESHIP, value_stack.array[value_stack.top-3].yyval.ast, value_stack.array[value_stack.top-1].yyval.ast); }
         return;
       case 351: // expr_without_variable -> expr T_INSTANCEOF class_name_reference 
-#line 910 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 910 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create(ZEND_AST_INSTANCEOF, value_stack.array[value_stack.top-3].yyval.ast, value_stack.array[value_stack.top-1].yyval.ast); }
         return;
       case 352: // expr_without_variable -> '(' expr ')' 
-#line 911 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 911 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = value_stack.array[value_stack.top-2].yyval.ast; }
         return;
       case 353: // expr_without_variable -> new_expr 
-#line 912 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 912 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = value_stack.array[value_stack.top-1].yyval.ast; }
         return;
       case 354: // expr_without_variable -> expr '?' expr ':' expr 
-#line 914 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 914 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create(ZEND_AST_CONDITIONAL, value_stack.array[value_stack.top-5].yyval.ast, value_stack.array[value_stack.top-3].yyval.ast, value_stack.array[value_stack.top-1].yyval.ast); }
         return;
       case 355: // expr_without_variable -> expr '?' ':' expr 
-#line 916 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 916 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create(ZEND_AST_CONDITIONAL, value_stack.array[value_stack.top-4].yyval.ast, NULL, value_stack.array[value_stack.top-1].yyval.ast); }
         return;
       case 356: // expr_without_variable -> expr T_COALESCE expr 
-#line 918 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 918 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create(ZEND_AST_COALESCE, value_stack.array[value_stack.top-3].yyval.ast, value_stack.array[value_stack.top-1].yyval.ast); }
         return;
       case 357: // expr_without_variable -> internal_functions_in_yacc 
-#line 919 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 919 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = value_stack.array[value_stack.top-1].yyval.ast; }
         return;
       case 358: // expr_without_variable -> T_INT_CAST expr 
-#line 920 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 920 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create_cast(IS_LONG, value_stack.array[value_stack.top-1].yyval.ast); }
         return;
       case 359: // expr_without_variable -> T_DOUBLE_CAST expr 
-#line 921 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 921 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create_cast(IS_DOUBLE, value_stack.array[value_stack.top-1].yyval.ast); }
         return;
       case 360: // expr_without_variable -> T_STRING_CAST expr 
-#line 922 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 922 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create_cast(IS_STRING, value_stack.array[value_stack.top-1].yyval.ast); }
         return;
       case 361: // expr_without_variable -> T_ARRAY_CAST expr 
-#line 923 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 923 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create_cast(IS_ARRAY, value_stack.array[value_stack.top-1].yyval.ast); }
         return;
       case 362: // expr_without_variable -> T_OBJECT_CAST expr 
-#line 924 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 924 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create_cast(IS_OBJECT, value_stack.array[value_stack.top-1].yyval.ast); }
         return;
       case 363: // expr_without_variable -> T_BOOL_CAST expr 
-#line 925 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 925 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create_cast(_IS_BOOL, value_stack.array[value_stack.top-1].yyval.ast); }
         return;
       case 364: // expr_without_variable -> T_UNSET_CAST expr 
-#line 926 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 926 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create_cast(IS_NULL, value_stack.array[value_stack.top-1].yyval.ast); }
         return;
       case 365: // expr_without_variable -> T_EXIT exit_expr 
-#line 927 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 927 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create(ZEND_AST_EXIT, value_stack.array[value_stack.top-1].yyval.ast); }
         return;
       case 366: // expr_without_variable -> '@' expr 
-#line 928 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 928 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create(ZEND_AST_SILENCE, value_stack.array[value_stack.top-1].yyval.ast); }
         return;
       case 367: // expr_without_variable -> scalar 
-#line 929 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 929 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = value_stack.array[value_stack.top-1].yyval.ast; }
         return;
       case 368: // expr_without_variable -> '`' backticks_expr '`' 
-#line 930 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 930 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create(ZEND_AST_SHELL_EXEC, value_stack.array[value_stack.top-2].yyval.ast); }
         return;
       case 369: // expr_without_variable -> T_PRINT expr 
-#line 931 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 931 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create(ZEND_AST_PRINT, value_stack.array[value_stack.top-1].yyval.ast); }
         return;
       case 370: // expr_without_variable -> T_YIELD 
-#line 932 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 932 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create(ZEND_AST_YIELD, NULL, NULL); CG(extra_fn_flags) |= ZEND_ACC_GENERATOR; }
         return;
       case 371: // expr_without_variable -> T_YIELD expr 
-#line 933 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 933 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create(ZEND_AST_YIELD, value_stack.array[value_stack.top-1].yyval.ast, NULL); CG(extra_fn_flags) |= ZEND_ACC_GENERATOR; }
         return;
       case 372: // expr_without_variable -> T_YIELD expr T_DOUBLE_ARROW expr 
-#line 934 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 934 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create(ZEND_AST_YIELD, value_stack.array[value_stack.top-1].yyval.ast, value_stack.array[value_stack.top-3].yyval.ast); CG(extra_fn_flags) |= ZEND_ACC_GENERATOR; }
         return;
       case 373: // expr_without_variable -> T_YIELD_FROM expr 
-#line 935 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 935 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create(ZEND_AST_YIELD_FROM, value_stack.array[value_stack.top-1].yyval.ast); CG(extra_fn_flags) |= ZEND_ACC_GENERATOR; }
         return;
       case 374: // expr_without_variable -> function returns_ref backup_doc_comment '(' parameter_list ')' lexical_vars return_type backup_fn_flags '{' inner_statement_list '}' backup_fn_flags 
-#line 938 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 938 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create_decl(ZEND_AST_CLOSURE, value_stack.array[value_stack.top-12].yyval.num | value_stack.array[value_stack.top-1].yyval.num, value_stack.array[value_stack.top-13].yyval.num, value_stack.array[value_stack.top-11].yyval.str,
 				  zend_string_init("{closure}", sizeof("{closure}") - 1, 0),
 			      value_stack.array[value_stack.top-9].yyval.ast, value_stack.array[value_stack.top-7].yyval.ast, value_stack.array[value_stack.top-3].yyval.ast, value_stack.array[value_stack.top-6].yyval.ast); CG(extra_fn_flags) = value_stack.array[value_stack.top-5].yyval.num; }
         return;
       case 375: // expr_without_variable -> T_STATIC function returns_ref backup_doc_comment '(' parameter_list ')' lexical_vars return_type backup_fn_flags '{' inner_statement_list '}' backup_fn_flags 
-#line 943 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 943 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create_decl(ZEND_AST_CLOSURE, value_stack.array[value_stack.top-12].yyval.num | value_stack.array[value_stack.top-1].yyval.num | ZEND_ACC_STATIC, value_stack.array[value_stack.top-13].yyval.num, value_stack.array[value_stack.top-11].yyval.str,
 			      zend_string_init("{closure}", sizeof("{closure}") - 1, 0),
 			      value_stack.array[value_stack.top-9].yyval.ast, value_stack.array[value_stack.top-7].yyval.ast, value_stack.array[value_stack.top-3].yyval.ast, value_stack.array[value_stack.top-6].yyval.ast); CG(extra_fn_flags) = value_stack.array[value_stack.top-5].yyval.num; }
         return;
       case 376: // function -> T_FUNCTION 
-#line 949 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 949 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.num = CG(zend_lineno); }
         return;
       case 377: // backup_doc_comment -> 
-#line 953 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 953 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.str = CG(doc_comment); CG(doc_comment) = NULL; }
         return;
       case 378: // backup_fn_flags -> 
-#line 957 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 957 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.num = CG(extra_fn_flags); CG(extra_fn_flags) = 0; }
         return;
       case 379: // returns_ref -> 
-#line 961 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 961 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.num = 0; }
         return;
       case 380: // returns_ref -> '&' 
-#line 962 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 962 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.num = ZEND_ACC_RETURN_REFERENCE; }
         return;
       case 381: // lexical_vars -> 
-#line 966 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 966 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = NULL; }
         return;
       case 382: // lexical_vars -> T_USE '(' lexical_var_list ')' 
-#line 967 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 967 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = value_stack.array[value_stack.top-2].yyval.ast; }
         return;
       case 383: // lexical_var_list -> lexical_var_list ',' lexical_var 
-#line 971 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 971 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_list_add(value_stack.array[value_stack.top-3].yyval.ast, value_stack.array[value_stack.top-1].yyval.ast); }
         return;
       case 384: // lexical_var_list -> lexical_var 
-#line 972 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 972 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create_list(1, ZEND_AST_CLOSURE_USES, value_stack.array[value_stack.top-1].yyval.ast); }
         return;
       case 385: // lexical_var -> T_VARIABLE 
-#line 976 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 976 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = value_stack.array[value_stack.top-1].yyval.ast; }
         return;
       case 386: // lexical_var -> '&' T_VARIABLE 
-#line 977 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 977 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = value_stack.array[value_stack.top-1].yyval.ast; yyval.ast->attr = 1; }
         return;
       case 387: // function_call -> name argument_list 
-#line 982 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 982 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create(ZEND_AST_CALL, value_stack.array[value_stack.top-2].yyval.ast, value_stack.array[value_stack.top-1].yyval.ast); }
         return;
       case 388: // function_call -> class_name T_PAAMAYIM_NEKUDOTAYIM member_name argument_list 
-#line 984 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 984 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create(ZEND_AST_STATIC_CALL, value_stack.array[value_stack.top-4].yyval.ast, value_stack.array[value_stack.top-2].yyval.ast, value_stack.array[value_stack.top-1].yyval.ast); }
         return;
       case 389: // function_call -> variable_class_name T_PAAMAYIM_NEKUDOTAYIM member_name argument_list 
-#line 986 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 986 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create(ZEND_AST_STATIC_CALL, value_stack.array[value_stack.top-4].yyval.ast, value_stack.array[value_stack.top-2].yyval.ast, value_stack.array[value_stack.top-1].yyval.ast); }
         return;
       case 390: // function_call -> callable_expr argument_list 
-#line 988 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 988 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create(ZEND_AST_CALL, value_stack.array[value_stack.top-2].yyval.ast, value_stack.array[value_stack.top-1].yyval.ast); }
         return;
       case 391: // class_name -> T_STATIC 
-#line 993 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 993 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ zval zv; ZVAL_INTERNED_STR(&zv, CG(known_strings)[ZEND_STR_STATIC]);
 			  yyval.ast = zend_ast_create_zval_ex(&zv, ZEND_NAME_NOT_FQ); }
         return;
       case 392: // class_name -> name 
-#line 995 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 995 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = value_stack.array[value_stack.top-1].yyval.ast; }
         return;
       case 393: // class_name_reference -> class_name 
-#line 999 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 999 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = value_stack.array[value_stack.top-1].yyval.ast; }
         return;
       case 394: // class_name_reference -> new_variable 
-#line 1000 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 1000 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = value_stack.array[value_stack.top-1].yyval.ast; }
         return;
       case 395: // exit_expr -> 
-#line 1004 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 1004 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = NULL; }
         return;
       case 396: // exit_expr -> '(' optional_expr ')' 
-#line 1005 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 1005 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = value_stack.array[value_stack.top-2].yyval.ast; }
         return;
       case 397: // backticks_expr -> 
-#line 1010 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 1010 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create_zval_from_str(ZSTR_EMPTY_ALLOC()); }
         return;
       case 398: // backticks_expr -> T_ENCAPSED_AND_WHITESPACE 
-#line 1011 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 1011 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = value_stack.array[value_stack.top-1].yyval.ast; }
         return;
       case 399: // backticks_expr -> encaps_list 
-#line 1012 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 1012 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = value_stack.array[value_stack.top-1].yyval.ast; }
         return;
       case 400: // ctor_arguments -> 
-#line 1017 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 1017 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create_list(0, ZEND_AST_ARG_LIST); }
         return;
       case 401: // ctor_arguments -> argument_list 
-#line 1018 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 1018 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = value_stack.array[value_stack.top-1].yyval.ast; }
         return;
       case 402: // dereferencable_scalar -> T_ARRAY '(' array_pair_list ')' 
-#line 1023 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 1023 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = value_stack.array[value_stack.top-2].yyval.ast; }
         return;
       case 403: // dereferencable_scalar -> '[' array_pair_list ']' 
-#line 1024 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 1024 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = value_stack.array[value_stack.top-2].yyval.ast; }
         return;
       case 404: // dereferencable_scalar -> T_CONSTANT_ENCAPSED_STRING 
-#line 1025 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 1025 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = value_stack.array[value_stack.top-1].yyval.ast; }
         return;
       case 405: // scalar -> T_LNUMBER 
-#line 1029 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 1029 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = value_stack.array[value_stack.top-1].yyval.ast; }
         return;
       case 406: // scalar -> T_DNUMBER 
-#line 1030 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 1030 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = value_stack.array[value_stack.top-1].yyval.ast; }
         return;
       case 407: // scalar -> T_LINE 
-#line 1031 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 1031 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create_ex(ZEND_AST_MAGIC_CONST, T_LINE); }
         return;
       case 408: // scalar -> T_FILE 
-#line 1032 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 1032 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create_ex(ZEND_AST_MAGIC_CONST, T_FILE); }
         return;
       case 409: // scalar -> T_DIR 
-#line 1033 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 1033 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create_ex(ZEND_AST_MAGIC_CONST, T_DIR); }
         return;
       case 410: // scalar -> T_TRAIT_C 
-#line 1034 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 1034 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create_ex(ZEND_AST_MAGIC_CONST, T_TRAIT_C); }
         return;
       case 411: // scalar -> T_METHOD_C 
-#line 1035 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 1035 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create_ex(ZEND_AST_MAGIC_CONST, T_METHOD_C); }
         return;
       case 412: // scalar -> T_FUNC_C 
-#line 1036 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 1036 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create_ex(ZEND_AST_MAGIC_CONST, T_FUNC_C); }
         return;
       case 413: // scalar -> T_NS_C 
-#line 1037 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 1037 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create_ex(ZEND_AST_MAGIC_CONST, T_NS_C); }
         return;
       case 414: // scalar -> T_CLASS_C 
-#line 1038 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 1038 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create_ex(ZEND_AST_MAGIC_CONST, T_CLASS_C); }
         return;
       case 415: // scalar -> T_START_HEREDOC T_ENCAPSED_AND_WHITESPACE T_END_HEREDOC 
-#line 1039 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 1039 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = value_stack.array[value_stack.top-2].yyval.ast; }
         return;
       case 416: // scalar -> T_START_HEREDOC T_END_HEREDOC 
-#line 1041 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 1041 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create_zval_from_str(ZSTR_EMPTY_ALLOC()); }
         return;
       case 417: // scalar -> '"' encaps_list '"' 
-#line 1042 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 1042 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = value_stack.array[value_stack.top-2].yyval.ast; }
         return;
       case 418: // scalar -> T_START_HEREDOC encaps_list T_END_HEREDOC 
-#line 1043 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 1043 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = value_stack.array[value_stack.top-2].yyval.ast; }
         return;
       case 419: // scalar -> dereferencable_scalar 
-#line 1044 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 1044 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = value_stack.array[value_stack.top-1].yyval.ast; }
         return;
       case 420: // scalar -> constant 
-#line 1045 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 1045 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = value_stack.array[value_stack.top-1].yyval.ast; }
         return;
       case 421: // constant -> name 
-#line 1049 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 1049 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create(ZEND_AST_CONST, value_stack.array[value_stack.top-1].yyval.ast); }
         return;
       case 422: // constant -> class_name T_PAAMAYIM_NEKUDOTAYIM identifier 
-#line 1051 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 1051 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create(ZEND_AST_CLASS_CONST, value_stack.array[value_stack.top-3].yyval.ast, value_stack.array[value_stack.top-1].yyval.ast); }
         return;
       case 423: // constant -> variable_class_name T_PAAMAYIM_NEKUDOTAYIM identifier 
-#line 1053 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 1053 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create(ZEND_AST_CLASS_CONST, value_stack.array[value_stack.top-3].yyval.ast, value_stack.array[value_stack.top-1].yyval.ast); }
         return;
       case 424: // expr -> variable 
-#line 1057 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 1057 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = value_stack.array[value_stack.top-1].yyval.ast; }
         return;
       case 425: // expr -> expr_without_variable 
-#line 1058 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 1058 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = value_stack.array[value_stack.top-1].yyval.ast; }
         return;
       case 426: // optional_expr -> 
-#line 1062 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 1062 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = NULL; }
         return;
       case 427: // optional_expr -> expr 
-#line 1063 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 1063 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = value_stack.array[value_stack.top-1].yyval.ast; }
         return;
       case 428: // variable_class_name -> dereferencable 
-#line 1067 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 1067 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = value_stack.array[value_stack.top-1].yyval.ast; }
         return;
       case 429: // dereferencable -> variable 
-#line 1071 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 1071 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = value_stack.array[value_stack.top-1].yyval.ast; }
         return;
       case 430: // dereferencable -> '(' expr ')' 
-#line 1072 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 1072 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = value_stack.array[value_stack.top-2].yyval.ast; }
         return;
       case 431: // dereferencable -> dereferencable_scalar 
-#line 1073 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 1073 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = value_stack.array[value_stack.top-1].yyval.ast; }
         return;
       case 432: // callable_expr -> callable_variable 
-#line 1077 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 1077 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = value_stack.array[value_stack.top-1].yyval.ast; }
         return;
       case 433: // callable_expr -> '(' expr ')' 
-#line 1078 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 1078 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = value_stack.array[value_stack.top-2].yyval.ast; }
         return;
       case 434: // callable_expr -> dereferencable_scalar 
-#line 1079 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 1079 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = value_stack.array[value_stack.top-1].yyval.ast; }
         return;
       case 435: // callable_variable -> simple_variable 
-#line 1084 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 1084 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create(ZEND_AST_VAR, value_stack.array[value_stack.top-1].yyval.ast); }
         return;
       case 436: // callable_variable -> dereferencable '[' optional_expr ']' 
-#line 1086 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 1086 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create(ZEND_AST_DIM, value_stack.array[value_stack.top-4].yyval.ast, value_stack.array[value_stack.top-2].yyval.ast); }
         return;
       case 437: // callable_variable -> constant '[' optional_expr ']' 
-#line 1088 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 1088 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create(ZEND_AST_DIM, value_stack.array[value_stack.top-4].yyval.ast, value_stack.array[value_stack.top-2].yyval.ast); }
         return;
       case 438: // callable_variable -> dereferencable '{' expr '}' 
-#line 1090 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 1090 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create(ZEND_AST_DIM, value_stack.array[value_stack.top-4].yyval.ast, value_stack.array[value_stack.top-2].yyval.ast); }
         return;
       case 439: // callable_variable -> dereferencable T_OBJECT_OPERATOR property_name argument_list 
-#line 1092 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 1092 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create(ZEND_AST_METHOD_CALL, value_stack.array[value_stack.top-4].yyval.ast, value_stack.array[value_stack.top-2].yyval.ast, value_stack.array[value_stack.top-1].yyval.ast); }
         return;
       case 440: // callable_variable -> function_call 
-#line 1093 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 1093 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = value_stack.array[value_stack.top-1].yyval.ast; }
         return;
       case 441: // variable -> callable_variable 
-#line 1098 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 1098 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = value_stack.array[value_stack.top-1].yyval.ast; }
         return;
       case 442: // variable -> static_member 
-#line 1100 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 1100 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = value_stack.array[value_stack.top-1].yyval.ast; }
         return;
       case 443: // variable -> dereferencable T_OBJECT_OPERATOR property_name 
-#line 1102 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 1102 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create(ZEND_AST_PROP, value_stack.array[value_stack.top-3].yyval.ast, value_stack.array[value_stack.top-1].yyval.ast); }
         return;
       case 444: // simple_variable -> T_VARIABLE 
-#line 1106 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 1106 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = value_stack.array[value_stack.top-1].yyval.ast; }
         return;
       case 445: // simple_variable -> '$' '{' expr '}' 
-#line 1107 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 1107 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = value_stack.array[value_stack.top-2].yyval.ast; }
         return;
       case 446: // simple_variable -> '$' simple_variable 
-#line 1108 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 1108 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create(ZEND_AST_VAR, value_stack.array[value_stack.top-1].yyval.ast); }
         return;
       case 447: // static_member -> class_name T_PAAMAYIM_NEKUDOTAYIM simple_variable 
-#line 1113 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 1113 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create(ZEND_AST_STATIC_PROP, value_stack.array[value_stack.top-3].yyval.ast, value_stack.array[value_stack.top-1].yyval.ast); }
         return;
       case 448: // static_member -> variable_class_name T_PAAMAYIM_NEKUDOTAYIM simple_variable 
-#line 1115 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 1115 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create(ZEND_AST_STATIC_PROP, value_stack.array[value_stack.top-3].yyval.ast, value_stack.array[value_stack.top-1].yyval.ast); }
         return;
       case 449: // new_variable -> simple_variable 
-#line 1120 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 1120 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create(ZEND_AST_VAR, value_stack.array[value_stack.top-1].yyval.ast); }
         return;
       case 450: // new_variable -> new_variable '[' optional_expr ']' 
-#line 1122 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 1122 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create(ZEND_AST_DIM, value_stack.array[value_stack.top-4].yyval.ast, value_stack.array[value_stack.top-2].yyval.ast); }
         return;
       case 451: // new_variable -> new_variable '{' expr '}' 
-#line 1124 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 1124 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create(ZEND_AST_DIM, value_stack.array[value_stack.top-4].yyval.ast, value_stack.array[value_stack.top-2].yyval.ast); }
         return;
       case 452: // new_variable -> new_variable T_OBJECT_OPERATOR property_name 
-#line 1126 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 1126 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create(ZEND_AST_PROP, value_stack.array[value_stack.top-3].yyval.ast, value_stack.array[value_stack.top-1].yyval.ast); }
         return;
       case 453: // new_variable -> class_name T_PAAMAYIM_NEKUDOTAYIM simple_variable 
-#line 1128 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 1128 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create(ZEND_AST_STATIC_PROP, value_stack.array[value_stack.top-3].yyval.ast, value_stack.array[value_stack.top-1].yyval.ast); }
         return;
       case 454: // new_variable -> new_variable T_PAAMAYIM_NEKUDOTAYIM simple_variable 
-#line 1130 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 1130 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create(ZEND_AST_STATIC_PROP, value_stack.array[value_stack.top-3].yyval.ast, value_stack.array[value_stack.top-1].yyval.ast); }
         return;
       case 455: // member_name -> identifier 
-#line 1134 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 1134 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = value_stack.array[value_stack.top-1].yyval.ast; }
         return;
       case 456: // member_name -> '{' expr '}' 
-#line 1135 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 1135 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = value_stack.array[value_stack.top-2].yyval.ast; }
         return;
       case 457: // member_name -> simple_variable 
-#line 1136 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 1136 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create(ZEND_AST_VAR, value_stack.array[value_stack.top-1].yyval.ast); }
         return;
       case 458: // property_name -> T_STRING 
-#line 1140 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 1140 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = value_stack.array[value_stack.top-1].yyval.ast; }
         return;
       case 459: // property_name -> '{' expr '}' 
-#line 1141 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 1141 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = value_stack.array[value_stack.top-2].yyval.ast; }
         return;
       case 460: // property_name -> simple_variable 
-#line 1142 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 1142 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create(ZEND_AST_VAR, value_stack.array[value_stack.top-1].yyval.ast); }
         return;
       case 461: // array_pair_list -> non_empty_array_pair_list 
-#line 1147 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 1147 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ /* allow single trailing comma */ yyval.ast = zend_ast_list_rtrim(value_stack.array[value_stack.top-1].yyval.ast); }
         return;
       case 462: // possible_array_pair -> 
-#line 1151 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 1151 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = NULL; }
         return;
       case 463: // possible_array_pair -> array_pair 
-#line 1152 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 1152 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = value_stack.array[value_stack.top-1].yyval.ast; }
         return;
       case 464: // non_empty_array_pair_list -> non_empty_array_pair_list ',' possible_array_pair 
-#line 1157 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 1157 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_list_add(value_stack.array[value_stack.top-3].yyval.ast, value_stack.array[value_stack.top-1].yyval.ast); }
         return;
       case 465: // non_empty_array_pair_list -> possible_array_pair 
-#line 1159 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 1159 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create_list(1, ZEND_AST_ARRAY, value_stack.array[value_stack.top-1].yyval.ast); }
         return;
       case 466: // array_pair -> expr T_DOUBLE_ARROW expr 
-#line 1164 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 1164 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create(ZEND_AST_ARRAY_ELEM, value_stack.array[value_stack.top-1].yyval.ast, value_stack.array[value_stack.top-3].yyval.ast); }
         return;
       case 467: // array_pair -> expr 
-#line 1166 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 1166 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create(ZEND_AST_ARRAY_ELEM, value_stack.array[value_stack.top-1].yyval.ast, NULL); }
         return;
       case 468: // array_pair -> expr T_DOUBLE_ARROW '&' variable 
-#line 1168 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 1168 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create_ex(ZEND_AST_ARRAY_ELEM, 1, value_stack.array[value_stack.top-1].yyval.ast, value_stack.array[value_stack.top-4].yyval.ast); }
         return;
       case 469: // array_pair -> '&' variable 
-#line 1170 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 1170 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create_ex(ZEND_AST_ARRAY_ELEM, 1, value_stack.array[value_stack.top-1].yyval.ast, NULL); }
         return;
       case 470: // array_pair -> expr T_DOUBLE_ARROW T_LIST '(' array_pair_list ')' 
-#line 1172 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 1172 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ value_stack.array[value_stack.top-2].yyval.ast->attr = 1; yyval.ast = zend_ast_create(ZEND_AST_ARRAY_ELEM, value_stack.array[value_stack.top-2].yyval.ast, value_stack.array[value_stack.top-6].yyval.ast); }
         return;
       case 471: // array_pair -> T_LIST '(' array_pair_list ')' 
-#line 1174 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 1174 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ value_stack.array[value_stack.top-2].yyval.ast->attr = 1; yyval.ast = zend_ast_create(ZEND_AST_ARRAY_ELEM, value_stack.array[value_stack.top-2].yyval.ast, NULL); }
         return;
       case 472: // encaps_list -> encaps_list encaps_var 
-#line 1179 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 1179 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_list_add(value_stack.array[value_stack.top-2].yyval.ast, value_stack.array[value_stack.top-1].yyval.ast); }
         return;
       case 473: // encaps_list -> encaps_list T_ENCAPSED_AND_WHITESPACE 
-#line 1181 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 1181 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_list_add(value_stack.array[value_stack.top-2].yyval.ast, value_stack.array[value_stack.top-1].yyval.ast); }
         return;
       case 474: // encaps_list -> encaps_var 
-#line 1183 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 1183 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create_list(1, ZEND_AST_ENCAPS_LIST, value_stack.array[value_stack.top-1].yyval.ast); }
         return;
       case 475: // encaps_list -> T_ENCAPSED_AND_WHITESPACE encaps_var 
-#line 1185 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 1185 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create_list(2, ZEND_AST_ENCAPS_LIST, value_stack.array[value_stack.top-2].yyval.ast, value_stack.array[value_stack.top-1].yyval.ast); }
         return;
       case 476: // encaps_var -> T_VARIABLE 
-#line 1190 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 1190 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create(ZEND_AST_VAR, value_stack.array[value_stack.top-1].yyval.ast); }
         return;
       case 477: // encaps_var -> T_VARIABLE '[' encaps_var_offset ']' 
-#line 1192 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 1192 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create(ZEND_AST_DIM,
 			      zend_ast_create(ZEND_AST_VAR, value_stack.array[value_stack.top-4].yyval.ast), value_stack.array[value_stack.top-2].yyval.ast); }
         return;
       case 478: // encaps_var -> T_VARIABLE T_OBJECT_OPERATOR T_STRING 
-#line 1195 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 1195 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create(ZEND_AST_PROP,
 			      zend_ast_create(ZEND_AST_VAR, value_stack.array[value_stack.top-3].yyval.ast), value_stack.array[value_stack.top-1].yyval.ast); }
         return;
       case 479: // encaps_var -> T_DOLLAR_OPEN_CURLY_BRACES expr '}' 
-#line 1198 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 1198 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create(ZEND_AST_VAR, value_stack.array[value_stack.top-2].yyval.ast); }
         return;
       case 480: // encaps_var -> T_DOLLAR_OPEN_CURLY_BRACES T_STRING_VARNAME '}' 
-#line 1200 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 1200 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create(ZEND_AST_VAR, value_stack.array[value_stack.top-2].yyval.ast); }
         return;
       case 481: // encaps_var -> T_DOLLAR_OPEN_CURLY_BRACES T_STRING_VARNAME '[' expr ']' '}' 
-#line 1202 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 1202 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create(ZEND_AST_DIM,
 			      zend_ast_create(ZEND_AST_VAR, value_stack.array[value_stack.top-5].yyval.ast), value_stack.array[value_stack.top-3].yyval.ast); }
         return;
       case 482: // encaps_var -> T_CURLY_OPEN variable '}' 
-#line 1204 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 1204 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = value_stack.array[value_stack.top-2].yyval.ast; }
         return;
       case 483: // encaps_var_offset -> T_STRING 
-#line 1208 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 1208 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = value_stack.array[value_stack.top-1].yyval.ast; }
         return;
       case 484: // encaps_var_offset -> T_NUM_STRING 
-#line 1209 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 1209 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = value_stack.array[value_stack.top-1].yyval.ast; }
         return;
       case 485: // encaps_var_offset -> T_VARIABLE 
-#line 1210 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 1210 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create(ZEND_AST_VAR, value_stack.array[value_stack.top-1].yyval.ast); }
         return;
       case 486: // internal_functions_in_yacc -> T_ISSET '(' isset_variables ')' 
-#line 1215 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 1215 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = value_stack.array[value_stack.top-2].yyval.ast; }
         return;
       case 487: // internal_functions_in_yacc -> T_EMPTY '(' expr ')' 
-#line 1216 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 1216 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create(ZEND_AST_EMPTY, value_stack.array[value_stack.top-2].yyval.ast); }
         return;
       case 488: // internal_functions_in_yacc -> T_INCLUDE expr 
-#line 1218 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 1218 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create_ex(ZEND_AST_INCLUDE_OR_EVAL, ZEND_INCLUDE, value_stack.array[value_stack.top-1].yyval.ast); }
         return;
       case 489: // internal_functions_in_yacc -> T_INCLUDE_ONCE expr 
-#line 1220 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 1220 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create_ex(ZEND_AST_INCLUDE_OR_EVAL, ZEND_INCLUDE_ONCE, value_stack.array[value_stack.top-1].yyval.ast); }
         return;
       case 490: // internal_functions_in_yacc -> T_EVAL '(' expr ')' 
-#line 1222 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 1222 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create_ex(ZEND_AST_INCLUDE_OR_EVAL, ZEND_EVAL, value_stack.array[value_stack.top-2].yyval.ast); }
         return;
       case 491: // internal_functions_in_yacc -> T_REQUIRE expr 
-#line 1224 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 1224 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create_ex(ZEND_AST_INCLUDE_OR_EVAL, ZEND_REQUIRE, value_stack.array[value_stack.top-1].yyval.ast); }
         return;
       case 492: // internal_functions_in_yacc -> T_REQUIRE_ONCE expr 
-#line 1226 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 1226 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create_ex(ZEND_AST_INCLUDE_OR_EVAL, ZEND_REQUIRE_ONCE, value_stack.array[value_stack.top-1].yyval.ast); }
         return;
       case 493: // isset_variables -> isset_variable 
-#line 1230 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 1230 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = value_stack.array[value_stack.top-1].yyval.ast; }
         return;
       case 494: // isset_variables -> isset_variables ',' isset_variable 
-#line 1232 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 1232 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create(ZEND_AST_AND, value_stack.array[value_stack.top-3].yyval.ast, value_stack.array[value_stack.top-1].yyval.ast); }
         return;
       case 495: // isset_variable -> expr 
-#line 1236 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 1236 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 			{ yyval.ast = zend_ast_create(ZEND_AST_ISSET, value_stack.array[value_stack.top-1].yyval.ast); }
         return;
     }
@@ -3224,6 +3224,6 @@ public  partial class Parser: ShiftReduceParser<int,>
       return CharToString((char)terminal);
   }
 
-#line 1239 "..\..\..\..\Source\PhpParser\Generators\PhpParser.y"
+#line 1239 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 
 }
