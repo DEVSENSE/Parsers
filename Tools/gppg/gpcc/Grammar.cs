@@ -24,8 +24,8 @@ namespace gpcc
 		public string PositionType;
 		public Grammar()
 		{
-			this.LookupTerminal(GrammarToken.Symbol, "ERROR");
-			this.LookupTerminal(GrammarToken.Symbol, "EOF");
+			//this.LookupTerminal(GrammarToken.Symbol, "ERROR");
+			//this.LookupTerminal(GrammarToken.Symbol, "EOF");
 		}
 		public Terminal LookupTerminal(GrammarToken token, string name)
 		{
@@ -35,7 +35,15 @@ namespace gpcc
 			}
 			return this.terminals[name];
 		}
-		public NonTerminal LookupNonTerminal(string name)
+        public void AssignTerminalValue(string name, int value)
+        {
+            if (this.terminals.ContainsKey(name))
+            {
+                this.terminals[name].SetValue(value);
+            }
+            else throw new Exception("Terminal not found!");
+        }
+        public NonTerminal LookupNonTerminal(string name)
 		{
 			if (!this.nonTerminals.ContainsKey(name))
 			{

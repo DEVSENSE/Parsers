@@ -59,9 +59,21 @@ namespace gpcc
 					}
 					while (this.token == GrammarToken.Symbol)
 					{
-						Terminal terminal = this.grammar.LookupTerminal(this.token, this.scanner.yylval);
+                        string name = this.scanner.yylval;
+                        Terminal terminal = this.grammar.LookupTerminal(this.token, name);
 						terminal.kind = kind2;
 						this.Advance();
+                        if(this.token == GrammarToken.Number)
+                        {
+                            int value = 0;
+                            if(!int.TryParse(this.scanner.yylval, out value))
+                                this.scanner.ReportError("Incorrect token {0} value {1}", new object[]
+                                {
+                                    this.token, this.scanner.yylval
+                                });
+                            this.grammar.AssignTerminalValue(name, value);
+                            this.Advance();
+                        }
 					}
 					continue;
 				}

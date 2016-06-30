@@ -20,8 +20,8 @@ using System.Collections.Generic;
 %namespace PhpParser.Parser
 %type Tokens
 %class Lexer
-%eofval Tokens.EOF
-%errorval Tokens.ERROR
+%eofval Tokens.END
+%errorval Tokens.T_ERROR
 %attributes public partial
 %function GetNextToken
 %ignorecase
@@ -40,6 +40,9 @@ using System.Collections.Generic;
 %x ST_DOC_COMMENT
 %x ST_COMMENT
 %x ST_ONE_LINE_COMMENT
+%x ST_VAR_OFFSET
+%x ST_END_HEREDOC
+%x ST_NOWDOC
 
 re2c:yyfill:check = 0;
 LNUM	[0-9]+
@@ -221,7 +224,7 @@ NEWLINE ("\r"|"\n"|"\r\n")
 }
 
 <ST_IN_SCRIPTING>"->" {
-	yy_push_state(ST_LOOKING_FOR_PROPERTY);
+	yy_push_state(LexicalStates.ST_LOOKING_FOR_PROPERTY);
 	return (Tokens.T_OBJECT_OPERATOR);
 }
 
@@ -516,8 +519,8 @@ NEWLINE ("\r"|"\n"|"\r\n")
 
 
 <ST_IN_SCRIPTING>"{" {
-	yy_push_state(ST_IN_SCRIPTING);
-	return (Tokens.'{');
+	yy_push_state(LexicalStates.ST_IN_SCRIPTING); 
+	return Tokens.T_LBRACE;
 }
 
 
@@ -529,10 +532,9 @@ NEWLINE ("\r"|"\n"|"\r\n")
 
 <ST_IN_SCRIPTING>"}" {
 	RESET_DOC_COMMENT();
-	if (!zend_stack_is_empty(&SCNG(state_stack))) {
-		yy_pop_state();
-	}
-	return (Tokens.'}');
+	if (!yy_pop_state()) 
+		return Tokens.T_ERROR; 
+	return Tokens.T_RBRACE;
 }
 
 
@@ -540,7 +542,7 @@ NEWLINE ("\r"|"\n"|"\r\n")
 	yyless(yyleng - 1);
 	zend_copy_value(zendlval, yytext, yyleng);
 	yy_pop_state();
-	yy_push_state(ST_IN_SCRIPTING);
+	yy_push_state(LexicalStates.ST_IN_SCRIPTING);
 	return (Tokens.T_STRING_VARNAME);
 }
 
@@ -548,109 +550,20 @@ NEWLINE ("\r"|"\n"|"\r\n")
 <ST_LOOKING_FOR_VARNAME>{ANY_CHAR} {
 	yyless(0);
 	yy_pop_state();
-	yy_push_state(ST_IN_SCRIPTING);
+	yy_push_state(LexicalStates.ST_IN_SCRIPTING);
 	goto restart;
 }
 
 <ST_IN_SCRIPTING>{BNUM} {
-	char *bin = yytext + 2; /* Skip "0b" */
-	int len = yyleng - 2;
-	char *end;
-
-	/* Skip any leading 0s */
-	while (*bin == '0') {
-		++bin;
-		--len;
-	}
-
-	if (len < SIZEOF_ZEND_LONG * 8) {
-		if (len == 0) {
-			ZVAL_LONG(zendlval, 0);
-		} else {
-			errno = 0;
-			ZVAL_LONG(zendlval, ZEND_STRTOL(bin, &end, 2));
-			ZEND_ASSERT(!errno && end == yytext + yyleng);
-		}
-		return (Tokens.T_LNUMBER);
-	} else {
-		ZVAL_DOUBLE(zendlval, zend_bin_strtod(bin, (const char **)&end));
-		/* errno isn't checked since we allow HUGE_VAL/INF overflow */
-		ZEND_ASSERT(end == yytext + yyleng);
-		return (Tokens.T_DNUMBER);
-	}
+	return ProcessBinaryNumber();
 }
 
 <ST_IN_SCRIPTING>{LNUM} {
-	char *end;
-	if (yyleng < MAX_LENGTH_OF_LONG - 1) { /* Won't overflow */
-		errno = 0;
-		ZVAL_LONG(zendlval, ZEND_STRTOL(yytext, &end, 0));
-		/* This isn't an assert, we need to ensure 019 isn't valid octal
-		 * Because the lexing itself doesn't do that for us
-		 */
-		if (end != yytext + yyleng) {
-			zend_throw_exception(zend_ce_parse_error, "Invalid numeric literal", 0);
-			ZVAL_UNDEF(zendlval);
-			return (Tokens.T_LNUMBER);
-		}
-	} else {
-		errno = 0;
-		ZVAL_LONG(zendlval, ZEND_STRTOL(yytext, &end, 0));
-		if (errno == ERANGE) { /* Overflow */
-			errno = 0;
-			if (yytext[0] == '0') { /* octal overflow */
-				errno = 0;
-				ZVAL_DOUBLE(zendlval, zend_oct_strtod(yytext, (const char **)&end));
-			} else {
-				ZVAL_DOUBLE(zendlval, zend_strtod(yytext, (const char **)&end));
-			}
-			/* Also not an assert for the same reason */
-			if (end != yytext + yyleng) {
-				zend_throw_exception(zend_ce_parse_error,
-					"Invalid numeric literal", 0);
-				ZVAL_UNDEF(zendlval);
-				return (Tokens.T_DNUMBER);
-			}
-			ZEND_ASSERT(!errno);
-			return (Tokens.T_DNUMBER);
-		}
-		/* Also not an assert for the same reason */
-		if (end != yytext + yyleng) {
-			zend_throw_exception(zend_ce_parse_error, "Invalid numeric literal", 0);
-			ZVAL_UNDEF(zendlval);
-			return (Tokens.T_DNUMBER);
-		}
-	}
-	ZEND_ASSERT(!errno);
-	return (Tokens.T_LNUMBER);
+	return ProcessDecimalNumber();
 }
 
 <ST_IN_SCRIPTING>{HNUM} {
-	char *hex = yytext + 2; /* Skip "0x" */
-	int len = yyleng - 2;
-	char *end;
-
-	/* Skip any leading 0s */
-	while (*hex == '0') {
-		hex++;
-		len--;
-	}
-
-	if (len < SIZEOF_ZEND_LONG * 2 || (len == SIZEOF_ZEND_LONG * 2 && *hex <= '7')) {
-		if (len == 0) {
-			ZVAL_LONG(zendlval, 0);
-		} else {
-			errno = 0;
-			ZVAL_LONG(zendlval, ZEND_STRTOL(hex, &end, 16));
-			ZEND_ASSERT(!errno && end == hex + len);
-		}
-		return (Tokens.T_LNUMBER);
-	} else {
-		ZVAL_DOUBLE(zendlval, zend_hex_strtod(hex, (const char **)&end));
-		/* errno isn't checked since we allow HUGE_VAL/INF overflow */
-		ZEND_ASSERT(end == hex + len);
-		return (Tokens.T_DNUMBER);
-	}
+	return ProcessHexadecimalNumber();
 }
 
 <ST_VAR_OFFSET>[0]|([1-9][0-9]*) { /* Offset could be treated as a long */
@@ -675,12 +588,7 @@ string:
 }
 
 <ST_IN_SCRIPTING>{DNUM}|{EXPONENT_DNUM} {
-	const char *end;
-
-	ZVAL_DOUBLE(zendlval, zend_strtod(yytext, &end));
-	/* errno isn't checked since we allow HUGE_VAL/INF overflow */
-	ZEND_ASSERT(end == yytext + yyleng);
-	return (Tokens.T_DNUMBER);
+	return ProcessRealNumber();
 }
 
 <ST_IN_SCRIPTING>"__CLASS__" {
@@ -717,21 +625,21 @@ string:
 
 
 <INITIAL>"<?=" {
-	BEGIN(ST_IN_SCRIPTING);
+	BEGIN(LexicalStates.ST_IN_SCRIPTING);
 	return (Tokens.T_OPEN_TAG_WITH_ECHO);
 }
 
 
 <INITIAL>"<?php"([ \t]|{NEWLINE}) {
 	HANDLE_NEWLINE(yytext[yyleng-1]);
-	BEGIN(ST_IN_SCRIPTING);
+	BEGIN(LexicalStates.ST_IN_SCRIPTING);
 	return (Tokens.T_OPEN_TAG);
 }
 
 
 <INITIAL>"<?" {
 	if (CG(short_tags)) {
-		BEGIN(ST_IN_SCRIPTING);
+		BEGIN(LexicalStates.ST_IN_SCRIPTING);
 		return (Tokens.T_OPEN_TAG);
 	} else {
 		goto inline_char_handler;
@@ -739,63 +647,16 @@ string:
 }
 
 <INITIAL>{ANY_CHAR} {
-	if (YYCURSOR > YYLIMIT) {
-		return (Tokens.END);
-	}
-
-inline_char_handler:
-
-	while (1) {
-		YYCTYPE *ptr = memchr(YYCURSOR, '<', YYLIMIT - YYCURSOR);
-
-		YYCURSOR = ptr ? ptr + 1 : YYLIMIT;
-
-		if (YYCURSOR >= YYLIMIT) {
-			break;
-		}
-
-		if (*YYCURSOR == '?') {
-			if (CG(short_tags) || !strncasecmp((char*)YYCURSOR + 1, "php", 3) || (*(YYCURSOR + 1) == '=')) { /* Assume [ \t\n\r] follows "php" */
-
-				YYCURSOR--;
-				break;
-			}
-		}
-	}
-
-	yyleng = YYCURSOR - SCNG(yy_text);
-
-	if (SCNG(output_filter)) {
-		size_t readsize;
-		char *s = NULL;
-		size_t sz = 0;
-		// TODO: avoid reallocation ???
-		readsize = SCNG(output_filter)((unsigned char **)&s, &sz, (unsigned char *)yytext, (size_t)yyleng);
-		ZVAL_STRINGL(zendlval, s, sz);
-		efree(s);
-		if (readsize < yyleng) {
-			yyless(readsize);
-		}
-	} else {
-	  ZVAL_STRINGL(zendlval, yytext, yyleng);
-	}
-	HANDLE_NEWLINES(yytext, yyleng);
-	return (Tokens.T_INLINE_HTML);
+	return Tokens.ERROR;
 }
 
-
-/* Make sure a label character follows "->", otherwise there is no property
- * and "->" will be taken literally
- */
 <ST_DOUBLE_QUOTES,ST_HEREDOC,ST_BACKQUOTE>"$"{LABEL}"->"[a-zA-Z_\x80-\xff] {
 	yyless(yyleng - 3);
-	yy_push_state(ST_LOOKING_FOR_PROPERTY);
+	yy_push_state(LexicalStates.ST_LOOKING_FOR_PROPERTY);
 	zend_copy_value(zendlval, (yytext+1), (yyleng-1));
 	return (Tokens.T_VARIABLE);
 }
 
-/* A [ always designates a variable offset, regardless of what follows
- */
 <ST_DOUBLE_QUOTES,ST_HEREDOC,ST_BACKQUOTE>"$"{LABEL}"[" {
 	yyless(yyleng - 1);
 	yy_push_state(ST_VAR_OFFSET);
@@ -810,7 +671,7 @@ inline_char_handler:
 
 <ST_VAR_OFFSET>"]" {
 	yy_pop_state();
-	return (Tokens.']');
+	return (Tokens.T_RBRACKET);
 }
 
 <ST_VAR_OFFSET>{TOKENS}|[{}"`] {
@@ -895,7 +756,7 @@ inline_char_handler:
 }
 
 <ST_IN_SCRIPTING>"?>"{NEWLINE}? {
-	BEGIN(INITIAL);
+	BEGIN(LexicalStates.INITIAL);
 	return (Tokens.T_CLOSE_TAG);  /* implicit ';' at php-end tag */
 }
 
@@ -918,9 +779,6 @@ inline_char_handler:
 		} else {
 			yyleng = YYLIMIT - SCNG(yy_text);
 
-			/* Unclosed single quotes; treat similar to double quotes, but without a separate token
-			 * for ' (unrecognized by parser), instead of old flex fallback to "Unexpected character..."
-			 * rule, which continued in ST_IN_SCRIPTING state after the quote */
 			ZVAL_NULL(zendlval);
 			return (Tokens.T_ENCAPSED_AND_WHITESPACE);
 		}
@@ -1007,7 +865,7 @@ inline_char_handler:
 	YYCURSOR = SCNG(yy_text) + yyleng;
 
 	BEGIN(ST_DOUBLE_QUOTES);
-	return (Tokens.'"');
+	return (Tokens.T_DOUBLE_QUOTES);
 }
 
 
@@ -1060,8 +918,8 @@ inline_char_handler:
 
 
 <ST_IN_SCRIPTING>[`] {
-	BEGIN(ST_BACKQUOTE);
-	return (Tokens.'`');
+	BEGIN(LexicalStates.ST_BACKQUOTE); 
+	return Tokens.T_BACKQUOTE; 
 }
 
 
@@ -1074,27 +932,27 @@ inline_char_handler:
 	heredoc_label_dtor(heredoc_label);
 	efree(heredoc_label);
 
-	BEGIN(ST_IN_SCRIPTING);
+	BEGIN(LexicalStates.ST_IN_SCRIPTING);
 	return (Tokens.T_END_HEREDOC);
 }
 
 
 <ST_DOUBLE_QUOTES,ST_BACKQUOTE,ST_HEREDOC>"{$" {
 	Z_LVAL_P(zendlval) = (zend_long) '{';
-	yy_push_state(ST_IN_SCRIPTING);
+	yy_push_state(LexicalStates.ST_IN_SCRIPTING);
 	yyless(1);
 	return (Tokens.T_CURLY_OPEN);
 }
 
 
 <ST_DOUBLE_QUOTES>["] {
-	BEGIN(ST_IN_SCRIPTING);
-	return (Tokens.'"');
+	BEGIN(LexicalStates.ST_IN_SCRIPTING);
+	return (Tokens.T_DOUBLE_QUOTES);
 }
 
 <ST_BACKQUOTE>[`] {
-	BEGIN(ST_IN_SCRIPTING);
-	return (Tokens.'`');
+	BEGIN(LexicalStates.ST_IN_SCRIPTING);
+	return (Tokens.T_BACKQUOTE);
 }
 
 
@@ -1328,7 +1186,4 @@ nowdoc_scan_done:
 
 	zend_error(E_COMPILE_WARNING,"Unexpected character in input:  '%c' (ASCII=%d) state=%d", yytext[0], yytext[0], YYSTATE);
 	goto restart;
-}
-
-*/
 }

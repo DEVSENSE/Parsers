@@ -33,6 +33,7 @@ namespace gpcc
 		GenerateTokens,
 		TokenName,
 		ValueTypeName,
-		PositionType
-	}
+		PositionType,
+        Number
+    }
 }

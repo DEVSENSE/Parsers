@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using System.IO;
 
 using PHP.Core;
 using PHP.Core.Text;
-using System.IO;
+using PhpParser.Parser;
 
 namespace PHP.Syntax
 {
@@ -282,7 +283,7 @@ namespace PHP.Syntax
         public static SourceUnit/*!*/ParseCode(string code, string filePath,
             ErrorSink/*!*/ errors,
             IReductionsSink/*!*/ reductionsSink = null,
-            LanguageFeatures features = LanguageFeatures.Php5,
+            LanguageFeatures features = LanguageFeatures.Basic,
             Lexer.LexicalStates initialState = Lexer.LexicalStates.INITIAL)
         {
             var/*!*/unit = new CodeSourceUnit(code, filePath, Encoding.UTF8, initialState);

@@ -278,10 +278,17 @@ namespace PhpParser.Parser
 
     #endregion
 
-    public partial class Lexer
+    public partial class Lexer//: ITokenProvider<SemanticValueType, Span>
     {
         protected bool AllowAspTags = true;
         protected bool AllowShortTags = true;
+
+        // token processing
+        Tokens token;
+        SemanticValueType tokenSemantics;
+        private Span tokenPosition;
+        private readonly SourceUnit/*!*/ sourceUnit;
+        private readonly ErrorSink/*!*/ errors;
 
         /// <summary>
         /// Whether tokens T_STRING, T_VARIABLE, '[', ']', '{', '}', '$', "->" are encapsulated in a string.
@@ -848,5 +855,90 @@ namespace PhpParser.Parser
 				#endif
 				#endregion
 		*/
+
+        public SemanticValueType TokenValue
+        {
+            get
+            {
+                return tokenSemantics;
+            }
+        }
+
+        public Span TokenPosition
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        Tokens ProcessBinaryNumber()
+        {
+            // parse binary number value
+            token = GetTokenAsDecimalNumber(2, 2, ref tokenSemantics);
+
+            if (token == Tokens.T_DNUMBER)
+            {
+                // conversion to double causes data loss
+                errors.Add(Warnings.TooBigIntegerConversion, sourceUnit, tokenPosition, GetTokenString());
+            }
+            return token;
+        }
+
+        Tokens ProcessDecimalNumber()
+        {
+            // [0-9]* - value is either in octal or in decimal
+            if (GetTokenChar(0) == '0')
+                token = GetTokenAsDecimalNumber(1, 8, ref tokenSemantics);
+            else
+                token = GetTokenAsDecimalNumber(0, 10, ref tokenSemantics);
+
+            if (token == Tokens.T_DNUMBER)
+            {
+                // conversion to double causes data loss
+                errors.Add(Warnings.TooBigIntegerConversion, sourceUnit, tokenPosition, GetTokenString());
+            }
+            return token;
+        }
+
+        Tokens ProcessHexadecimalNumber()
+        {
+            // parse hexadecimal value
+            token = GetTokenAsDecimalNumber(2, 16, ref tokenSemantics);
+
+            if (token == Tokens.T_DNUMBER)
+            {
+                // conversion to double causes data loss
+                errors.Add(Warnings.TooBigIntegerConversion, sourceUnit, tokenPosition, GetTokenString());
+            }
+            return token;
+        }
+
+        Tokens ProcessRealNumber()
+        {
+            tokenSemantics.Double = GetTokenAsDouble(0);
+            return Tokens.T_DNUMBER;
+        }
+
+
+        void RESET_DOC_COMMENT()
+        {
+            //if (CG(doc_comment))
+            //{
+            //    zend_string_release(CG(doc_comment));
+
+            //    CG(doc_comment) = NULL;
+            //}
+        }
+
+        /* Compiler */
+        //# ifdef ZTS
+        //#define CG(v) ZEND_TSRMG(compiler_globals_id, zend_compiler_globals *, v)
+        //#else
+        //#define CG(v) (compiler_globals.v)
+        //        extern ZEND_API struct _zend_compiler_globals compiler_globals;
+        //#endif
+        //ZEND_API int zendparse(void);
+
     }
 }

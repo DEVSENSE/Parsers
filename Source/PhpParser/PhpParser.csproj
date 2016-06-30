@@ -87,10 +87,12 @@
     <Compile Include="Core\SourceUnit.cs" />
     <Compile Include="Core\TreeVisitor.cs" />
     <Compile Include="Core\Utils.cs" />
+    <Compile Include="Generated\Lexer.cs" />
     <Compile Include="Parser\Convert.cs" />
     <Compile Include="Parser\GPPG.cs" />
     <Compile Include="Parser\Lexer.cs" />
     <Compile Include="Parser\Parser.cs" />
+    <None Include="Parser\Scanner.cs" />
     <Compile Include="PhpParser.cs" />
     <Compile Include="Core\Text\ILineBreaks.cs" />
     <Compile Include="Core\Text\Span.cs" />
@@ -103,16 +105,17 @@
       <DependentUpon>Strings.resx</DependentUpon>
     </Compile>
     <Compile Include="Generated\Parser.cs" />
-    <Compile Include="Generated\Scaner.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Generators\OldLexer.lex" />
+    <None Include="Generators\OldParser.y" />
     <None Include="Generators\PhpLexer.lex" />
     <None Include="Generators\PhpParser.y" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
   <PropertyGroup>
-    <PreBuildEvent>"$(ProjectDir)Generators\CsLex.exe" $(ProjectDir)Generators\PhpLexer.lex $(ProjectDir)Generated\Scaner.cs
+    <PreBuildEvent>"$(ProjectDir)Generators\CsLex.exe" $(ProjectDir)Generators\PhpLexer.lex $(ProjectDir)Generated\Lexer.cs /version:2
 "$(ProjectDir)Generators\gppg.exe" $(ProjectDir)Generators\PhpParser.y $(ProjectDir)Generated\Parser.cs</PreBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

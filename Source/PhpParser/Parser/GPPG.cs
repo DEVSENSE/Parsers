@@ -98,7 +98,7 @@ namespace PhpParser.Parser
 	#region ITokenProvider
 
 	public interface ITokenProvider<ValueType, PositionType>
-	{
+    {
 		ValueType TokenValue { get; }
 
 		PositionType TokenPosition { get; }

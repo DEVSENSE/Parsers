@@ -89,7 +89,37 @@ using FcnParam = System.Tuple<System.Collections.Generic.List<PHP.Core.AST.TypeR
 %token <ast> T_STRING_VARNAME //"variable name (T_STRING_VARNAME)"
 %token <ast> T_NUM_STRING //"number (T_NUM_STRING)"
 
-%token END //0 //"end of file"
+/* Character tokens */
+%token T_EXCLAM 33 // = (int)'!',
+%token T_DOUBLE_QUOTES 34 // = (int)'"',
+%token T_DOLLAR 36 // = (int)'$',
+%token T_PERCENT 37 // = (int)'%',
+%token T_AMP 38 // = (int)'&',
+%token T_LPAREN 40 // = (int)'(',
+%token T_RPAREN 41 // = (int)')',
+%token T_MUL 42 // = (int)'*',
+%token T_PLUS 43 // = (int)'+',
+%token T_COMMA 44 // = (int)',',
+%token T_MINUS 45 // = (int)'-',
+%token T_DOT 46 // = (int)'.',
+%token T_SLASH 47 // = (int)'/',
+%token T_COLON 58 // = (int)':',
+%token T_SEMI 59 // = (int)';',
+%token T_LT 60 // = (int)'<',
+%token T_EQ 61 // = (int)'=',
+%token T_GT 62 // = (int)'>',
+%token T_QUESTION 63 // = (int)'?',
+%token T_AT 64 // = (int)'@',
+%token T_LBRACKET 91 // = (int)'[',
+%token T_RBRACKET 93 // = (int)']',
+%token T_CARET 94 // = (int)'^',
+%token T_BACKQUOTE 96 // = (int)'`',
+%token T_LBRACE 123 // = (int)'{',
+%token T_PIPE 124 // = (int)'|',
+%token T_RBRACE 125 // = (int)'}',
+%token T_TILDE 126 // = (int)'~',
+
+%token END 0 //"end of file"
 %token T_INCLUDE      //"include (T_INCLUDE)"
 %token T_INCLUDE_ONCE //"include_once (T_INCLUDE_ONCE)"
 %token T_EVAL         //"eval (T_EVAL)"
@@ -260,7 +290,7 @@ start:
 
 %%
 
-%%
+#if false
 
 start:
     top_statement_list	{ CG(ast) = $1; }
@@ -1276,3 +1306,5 @@ isset_variable:
 ;
 
 %%
+
+#endif

@@ -326,9 +326,21 @@ namespace gpcc
                 this.yylval = this.builder.ToString();
                 return GrammarToken.Symbol;
             }
+            if (char.IsNumber(this.next))
+            {
+                this.builder.Length = 0;
+                while (char.IsDigit(this.next))
+                {
+                    this.builder.Append(this.next);
+                    this.Advance();
+                }
+                this.yylval = this.builder.ToString();
+
+                return GrammarToken.Number;
+            }
             this.ReportError("Unexpected character '{0}'", new object[]
             {
-                this.next
+                    this.next
             });
             this.Advance();
             return this.Next();

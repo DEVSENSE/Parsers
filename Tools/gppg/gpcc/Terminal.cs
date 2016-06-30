@@ -8,11 +8,16 @@ namespace gpcc
 		public Precedence prec;
 		private int n;
 		public bool symbolic;
+        private bool custom = false;
 		public override int num
 		{
 			get
 			{
-				if (this.symbolic)
+                if(custom)
+                {
+                    return this.n;
+                }
+                if (this.symbolic)
 				{
 					return Terminal.max + this.n;
 				}
@@ -33,6 +38,11 @@ namespace gpcc
 				Terminal.max = this.n;
 			}
 		}
+        public void SetValue(int value)
+        {
+            this.custom = true;
+            this.n = value;
+        }
 		public override bool IsNullable()
 		{
 			return false;
