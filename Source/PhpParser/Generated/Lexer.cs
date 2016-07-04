@@ -129,7 +129,7 @@ using System.Collections.Generic;
 				case 1:
 					// #line 649
 					{
-						return Tokens.ERROR;
+						return Tokens.T_ERROR;
 					}
 					break;
 					

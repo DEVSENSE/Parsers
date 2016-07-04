@@ -647,7 +647,7 @@ string:
 }
 
 <INITIAL>{ANY_CHAR} {
-	return Tokens.ERROR;
+	return Tokens.T_ERROR;
 }
 
 <ST_DOUBLE_QUOTES,ST_HEREDOC,ST_BACKQUOTE>"$"{LABEL}"->"[a-zA-Z_\x80-\xff] {

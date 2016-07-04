@@ -290,6 +290,9 @@ namespace PhpParser.Parser
         private readonly SourceUnit/*!*/ sourceUnit;
         private readonly ErrorSink/*!*/ errors;
 
+        // token postition
+        int charOffset = 0;
+
         /// <summary>
         /// Whether tokens T_STRING, T_VARIABLE, '[', ']', '{', '}', '$', "->" are encapsulated in a string.
         /// </summary>
@@ -305,6 +308,18 @@ namespace PhpParser.Parser
 
         protected string hereDocLabel = null;
         protected Stack<LexicalStates> StateStack { get { return stateStack; } set { stateStack = value; } }
+
+        /// <summary>
+        /// Updates <see cref="charOffset"/> and <see cref="tokenPosition"/>.
+        /// </summary>
+        private void UpdateTokenPosition()
+        {
+            int tokenLength = this.TokenLength;
+
+            // update token position info:
+            tokenPosition = new Span(charOffset, tokenLength);
+            charOffset += tokenLength;
+        }
 
         protected void _yymore() { yymore(); }
 
