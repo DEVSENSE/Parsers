@@ -303,6 +303,9 @@ namespace PhpParser.Parser
         /// </summary>
         protected bool isCode;
 
+        private PHPDocBlock _docBlock = null;
+        private Stack<string> _docLabelStack = new Stack<string>();
+
         public bool InUnicodeString { get { return inUnicodeString; } set { inUnicodeString = true; } }
         private bool inUnicodeString = false;
 
@@ -676,6 +679,116 @@ namespace PhpParser.Parser
             return result.Result;
         }
 
+        protected object ProcessEscapedString(int startIndex, int length, Encoding/*!*/ encoding, bool forceBinaryString)
+        {
+            PhpStringBuilder result = new PhpStringBuilder(encoding, forceBinaryString, TokenLength);
+
+            int buffer_pos = token_start + startIndex + 1;
+
+            //StringBuilder result = new StringBuilder(TokenLength);
+
+            char c;
+            while (buffer_pos < length)
+            {
+                c = buffer[buffer_pos++];
+                if (c == '\\')
+                {
+                    switch (c = buffer[buffer_pos++])
+                    {
+                        case 'n':
+                            result.Append('\n');
+                            break;
+
+                        case 'r':
+                            result.Append('\r');
+                            break;
+
+                        case 't':
+                            result.Append('\t');
+                            break;
+
+                        case '\\':
+                        case '$':
+                        case '"':
+                            result.Append(c);
+                            break;
+
+                        case 'C':
+                            if (!inUnicodeString) goto default;
+                            result.Append(ParseCodePointName(ref buffer_pos));
+                            break;
+
+                        case 'u':
+                        case 'U':
+                            if (!inUnicodeString) goto default;
+                            result.Append(ParseCodePoint(c == 'u' ? 4 : 6, ref buffer_pos));
+                            break;
+
+                        case 'x':
+                            {
+                                int digit;
+                                if ((digit = Convert.AlphaNumericToDigit(buffer[buffer_pos])) < 16)
+                                {
+                                    int hex_code = digit;
+                                    buffer_pos++;
+                                    if ((digit = Convert.AlphaNumericToDigit(buffer[buffer_pos])) < 16)
+                                    {
+                                        buffer_pos++;
+                                        hex_code = (hex_code << 4) + digit;
+                                    }
+
+                                    //encodeBytes[0] = (byte)hex_code;
+                                    //result.Append(encodeChars, 0, encoding.GetChars(encodeBytes, 0, 1, encodeChars, 0));
+                                    result.Append((byte)hex_code);
+                                }
+                                else
+                                {
+                                    result.Append('\\');
+                                    result.Append('x');
+                                }
+                                break;
+                            }
+
+                        default:
+                            {
+                                int digit;
+                                if ((digit = Convert.NumericToDigit(c)) < 8)
+                                {
+                                    int octal_code = digit;
+
+                                    if ((digit = Convert.NumericToDigit(buffer[buffer_pos])) < 8)
+                                    {
+                                        octal_code = (octal_code << 3) + digit;
+                                        buffer_pos++;
+
+                                        if ((digit = Convert.NumericToDigit(buffer[buffer_pos])) < 8)
+                                        {
+                                            buffer_pos++;
+                                            octal_code = (octal_code << 3) + digit;
+                                        }
+                                    }
+                                    //encodeBytes[0] = (byte)octal_code;
+                                    //result.Append(encodeChars, 0, encoding.GetChars(encodeBytes, 0, 1, encodeChars, 0));
+                                    result.Append((byte)octal_code);
+                                }
+                                else
+                                {
+                                    result.Append('\\');
+                                    result.Append(c);
+                                }
+                                break;
+                            }
+                    }
+                }
+                else
+                {
+                    result.Append(c);
+                }
+            }
+
+            return result.Result;
+        }
+
         protected object GetTokenAsSinglyQuotedString(int startIndex, Encoding/*!*/ encoding, bool forceBinaryString)
         {
             PhpStringBuilder result = new PhpStringBuilder(encoding, forceBinaryString, TokenLength);
@@ -935,6 +1048,51 @@ namespace PhpParser.Parser
             return Tokens.T_DNUMBER;
         }
 
+        Tokens ProcessSingleQuotedString()
+        {
+            bool forceBinaryString = GetTokenChar(0) == 'b';
+
+            tokenSemantics.Object = GetTokenAsSinglyQuotedString(forceBinaryString ? 1 : 0, this.sourceUnit.Encoding, forceBinaryString);
+            return Tokens.T_CONSTANT_ENCAPSED_STRING;
+        }
+
+        Tokens ProcessDoubleQuotedString()
+        {
+            bool forceBinaryString = GetTokenChar(0) == 'b';
+
+            tokenSemantics.Object = GetTokenAsDoublyQuotedString(forceBinaryString ? 1 : 0, this.sourceUnit.Encoding, forceBinaryString);
+            return Tokens.T_CONSTANT_ENCAPSED_STRING;
+        }
+
+        Tokens ProcessLabel()
+        {
+            tokenSemantics.Object = GetTokenString();
+            return Tokens.T_STRING;
+        }
+
+        Tokens ProcessVariable()
+        {
+            tokenSemantics.Object = GetTokenSubstring(1);
+            return Tokens.T_VARIABLE;
+        }
+
+        Tokens ProcessVariableOffsetNumber()
+        {
+            Tokens token = GetTokenAsDecimalNumber(0, 10, ref tokenSemantics);
+            if (token == Tokens.T_DNUMBER)
+            {
+                tokenSemantics.Double = 0;
+                tokenSemantics.Object = GetTokenString();
+            }
+            return (Tokens.T_NUM_STRING);
+        }
+
+        Tokens ProcessVariableOffsetString()
+        {
+            tokenSemantics.Object = GetTokenString();
+            return (Tokens.T_NUM_STRING);
+        }
+
 
         void RESET_DOC_COMMENT()
         {
@@ -946,6 +1104,11 @@ namespace PhpParser.Parser
             //}
         }
 
+        bool IS_LABEL_START(char c)
+        {
+            return (((c) >= 'a' && (c) <= 'z') || ((c) >= 'A' && (c) <= 'Z') || (c) == '_' || (c) >= 0x80);
+        }
+
         /* Compiler */
         //# ifdef ZTS
         //#define CG(v) ZEND_TSRMG(compiler_globals_id, zend_compiler_globals *, v)
@@ -954,6 +1117,27 @@ namespace PhpParser.Parser
         //        extern ZEND_API struct _zend_compiler_globals compiler_globals;
         //#endif
         //ZEND_API int zendparse(void);
+
+        //#define HANDLE_NEWLINES(s, l)													\
+        //do {																			\
+        // char* p = (s), *boundary = p+(l);											\
+        //												        \
+        // while (p<boundary) {														\
+        //  if (*p == '\n' || (*p == '\r' && (*(p+1) != '\n'))) {					\
+
+        //            CG(zend_lineno)++;													\
+        //  }																		\
+        //  p++;																	\
+        // }																			\
+        //} while (0)
+
+        //#define HANDLE_NEWLINE(c) \
+        //{ \
+        // if (c == '\n' || c == '\r') { \
+
+        //        CG(zend_lineno)++; \
+        // } \
+        //}
 
     }
 }

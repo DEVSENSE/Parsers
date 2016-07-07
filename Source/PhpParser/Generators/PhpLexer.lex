@@ -12,6 +12,8 @@
 
 using System;
 using PHP.Core;
+using PHP.Syntax;
+using PHP.Core.Text;
 
 using System.Collections.Generic;
 
@@ -55,7 +57,7 @@ WHITESPACE [ \n\r\t]+
 TABS_AND_SPACES [ \t]*
 TOKENS [;:,.\[\]()|^&+-/*=%!~$<>?@]
 ANY_CHAR [^]
-NEWLINE ("\r"|"\n"|"\r\n")
+NEWLINE ("\r"|"\n"|"\r\n") // TODO unicode line breaks
 
 /* compute yyleng before each rule */
 <!*> := yyleng = YYCURSOR - SCNG(yy_text);
@@ -83,7 +85,7 @@ NEWLINE ("\r"|"\n"|"\r\n")
 }
 
 <ST_IN_SCRIPTING>"yield"{WHITESPACE}"from" {
-	HANDLE_NEWLINES(yytext, yyleng);
+	//HANDLE_NEWLINES(yytext, yyleng);
 	return (Tokens.T_YIELD_FROM);
 }
 
@@ -229,7 +231,7 @@ NEWLINE ("\r"|"\n"|"\r\n")
 }
 
 <ST_IN_SCRIPTING,ST_LOOKING_FOR_PROPERTY>{WHITESPACE}+ {
-	HANDLE_NEWLINES(yytext, yyleng);
+	//HANDLE_NEWLINES(yytext, yyleng);
 	return (Tokens.T_WHITESPACE);
 }
 
@@ -239,14 +241,13 @@ NEWLINE ("\r"|"\n"|"\r\n")
 
 <ST_LOOKING_FOR_PROPERTY>{LABEL} {
 	yy_pop_state();
-	zend_copy_value(zendlval, yytext, yyleng);
-	return (Tokens.T_STRING);
+	return ProcessLabel();
 }
 
 <ST_LOOKING_FOR_PROPERTY>{ANY_CHAR} {
 	yyless(0);
-	yy_pop_state();
-	goto restart;
+	if (!yy_pop_state()) return Tokens.T_ERROR;
+	break;
 }
 
 <ST_IN_SCRIPTING>"::" {
@@ -514,7 +515,7 @@ NEWLINE ("\r"|"\n"|"\r\n")
 }
 
 <ST_IN_SCRIPTING>{TOKENS} {
-	return (Tokens.yytext[0]);
+	return (Tokens)GetTokenChar(0);
 }
 
 
@@ -525,7 +526,7 @@ NEWLINE ("\r"|"\n"|"\r\n")
 
 
 <ST_DOUBLE_QUOTES,ST_BACKQUOTE,ST_HEREDOC>"${" {
-	yy_push_state(ST_LOOKING_FOR_VARNAME);
+	yy_push_state(LexicalStates.ST_LOOKING_FOR_VARNAME);
 	return (Tokens.T_DOLLAR_OPEN_CURLY_BRACES);
 }
 
@@ -539,8 +540,8 @@ NEWLINE ("\r"|"\n"|"\r\n")
 
 
 <ST_LOOKING_FOR_VARNAME>{LABEL}[[}] {
-	yyless(yyleng - 1);
-	zend_copy_value(zendlval, yytext, yyleng);
+	yyless(TokenLength - 1);
+	tokenSemantics.Object = GetTokenString();
 	yy_pop_state();
 	yy_push_state(LexicalStates.ST_IN_SCRIPTING);
 	return (Tokens.T_STRING_VARNAME);
@@ -549,9 +550,9 @@ NEWLINE ("\r"|"\n"|"\r\n")
 
 <ST_LOOKING_FOR_VARNAME>{ANY_CHAR} {
 	yyless(0);
-	yy_pop_state();
+	if (!yy_pop_state()) return Tokens.T_ERROR;
 	yy_push_state(LexicalStates.ST_IN_SCRIPTING);
-	goto restart;
+	break;
 }
 
 <ST_IN_SCRIPTING>{BNUM} {
@@ -567,19 +568,7 @@ NEWLINE ("\r"|"\n"|"\r\n")
 }
 
 <ST_VAR_OFFSET>[0]|([1-9][0-9]*) { /* Offset could be treated as a long */
-	if (yyleng < MAX_LENGTH_OF_LONG - 1 || (yyleng == MAX_LENGTH_OF_LONG - 1 && strcmp(yytext, long_min_digits) < 0)) {
-		char *end;
-		errno = 0;
-		ZVAL_LONG(zendlval, ZEND_STRTOL(yytext, &end, 10));
-		if (errno == ERANGE) {
-			goto string;
-		}
-		ZEND_ASSERT(end == yytext + yyleng);
-	} else {
-string:
-		ZVAL_STRINGL(zendlval, yytext, yyleng);
-	}
-	return (Tokens.T_NUM_STRING);
+	return ProcessVariableOffset();
 }
 
 <ST_VAR_OFFSET>{LNUM}|{HNUM}|{BNUM} { /* Offset must be treated as a string */
@@ -631,18 +620,18 @@ string:
 
 
 <INITIAL>"<?php"([ \t]|{NEWLINE}) {
-	HANDLE_NEWLINE(yytext[yyleng-1]);
+	//HANDLE_NEWLINE(yytext[yyleng-1]);
 	BEGIN(LexicalStates.ST_IN_SCRIPTING);
 	return (Tokens.T_OPEN_TAG);
 }
 
 
 <INITIAL>"<?" {
-	if (CG(short_tags)) {
+	if (AllowShortTags) {
 		BEGIN(LexicalStates.ST_IN_SCRIPTING);
 		return (Tokens.T_OPEN_TAG);
 	} else {
-		goto inline_char_handler;
+		return Tokens.T_INLINE_HTML;
 	}
 }
 
@@ -651,22 +640,19 @@ string:
 }
 
 <ST_DOUBLE_QUOTES,ST_HEREDOC,ST_BACKQUOTE>"$"{LABEL}"->"[a-zA-Z_\x80-\xff] {
-	yyless(yyleng - 3);
+	yyless(TokenLength - 3);
 	yy_push_state(LexicalStates.ST_LOOKING_FOR_PROPERTY);
-	zend_copy_value(zendlval, (yytext+1), (yyleng-1));
-	return (Tokens.T_VARIABLE);
+	return ProcessVariable();
 }
 
 <ST_DOUBLE_QUOTES,ST_HEREDOC,ST_BACKQUOTE>"$"{LABEL}"[" {
-	yyless(yyleng - 1);
-	yy_push_state(ST_VAR_OFFSET);
-	zend_copy_value(zendlval, (yytext+1), (yyleng-1));
-	return (Tokens.T_VARIABLE);
+	yyless(TokenLength - 1);
+	yy_push_state(LexicalStates.ST_VAR_OFFSET);
+	return ProcessVariable();
 }
 
 <ST_IN_SCRIPTING,ST_DOUBLE_QUOTES,ST_HEREDOC,ST_BACKQUOTE,ST_VAR_OFFSET>"$"{LABEL} {
-	zend_copy_value(zendlval, (yytext+1), (yyleng-1));
-	return (Tokens.T_VARIABLE);
+	return ProcessVariable();
 }
 
 <ST_VAR_OFFSET>"]" {
@@ -676,82 +662,50 @@ string:
 
 <ST_VAR_OFFSET>{TOKENS}|[{}"`] {
 	/* Only '[' can be valid, but returning other tokens will allow a more explicit parse error */
-	return (Tokens.yytext[0]);
+	return (Tokens)GetTokenChar(0);
 }
 
 <ST_VAR_OFFSET>[ \n\r\t\\'#] {
 	/* Invalid rule to return a more explicit parse error with proper line number */
 	yyless(0);
 	yy_pop_state();
-	ZVAL_NULL(zendlval);
 	return (Tokens.T_ENCAPSED_AND_WHITESPACE);
 }
 
 <ST_IN_SCRIPTING,ST_VAR_OFFSET>{LABEL} {
-	zend_copy_value(zendlval, yytext, yyleng);
-	return (Tokens.T_STRING);
+	return ProcessLabel();
 }
 
 
 <ST_IN_SCRIPTING>"#"|"//" {
-	while (YYCURSOR < YYLIMIT) {
-		switch (*YYCURSOR++) {
-			case '\r':
-				if (*YYCURSOR == '\n') {
-					YYCURSOR++;
-				}
-				/* fall through */
-			case '\n':
-				CG(zend_lineno)++;
-				break;
-			case '?':
-				if (*YYCURSOR == '>') {
-					YYCURSOR--;
-					break;
-				}
-				/* fall through */
-			default:
-				continue;
-		}
-
-		break;
-	}
-
-	yyleng = YYCURSOR - SCNG(yy_text);
-
-	return (Tokens.T_COMMENT);
+	BEGIN(LexicalStates.ST_ONE_LINE_COMMENT); 
+	yymore(); 
+	break;
 }
 
 <ST_IN_SCRIPTING>"/*"|"/**"{WHITESPACE} {
-	int doc_com;
-
-	if (yyleng > 2) {
-		doc_com = 1;
+    bool doc_com = false;
+	if (TokenLength > 2) {
+		doc_com = true;
 		RESET_DOC_COMMENT();
-	} else {
-		doc_com = 0;
 	}
-
-	while (YYCURSOR < YYLIMIT) {
-		if (*YYCURSOR++ == '*' && *YYCURSOR == '/') {
+	while (lookahead_index < chars_read) {
+		if (buffer[lookahead_index++] == '*' && buffer[lookahead_index] == '/') {
 			break;
 		}
 	}
-
-	if (YYCURSOR < YYLIMIT) {
-		YYCURSOR++;
+	if (lookahead_index < chars_read) {
+        lookahead_index++;
 	} else {
-		zend_error(E_COMPILE_WARNING, "Unterminated comment starting line %d", CG(zend_lineno));
+		//zend_error(E_COMPILE_WARNING, "Unterminated comment starting line %d", CG(zend_lineno));
 	}
+    MarkTokenEnd();
+    //HANDLE_NEWLINES(yytext, yyleng);
+    if (doc_com) {
+        _docBlock = new PHPDocBlock(GetTokenString(), new Span(charOffset, TokenLength));
 
-	yyleng = YYCURSOR - SCNG(yy_text);
-	HANDLE_NEWLINES(yytext, yyleng);
-
-	if (doc_com) {
-		CG(doc_comment) = zend_string_init(yytext, yyleng, 0);
-		return (Tokens.T_DOC_COMMENT);
+        return (Tokens.T_DOC_COMMENT);
 	}
-
 	return (Tokens.T_COMMENT);
 }
 
@@ -760,160 +714,61 @@ string:
 	return (Tokens.T_CLOSE_TAG);  /* implicit ';' at php-end tag */
 }
 
-
-<ST_IN_SCRIPTING>b?['] {
-	register char *s, *t;
-	char *end;
-	int bprefix = (yytext[0] != '\'') ? 1 : 0;
-
-	while (1) {
-		if (YYCURSOR < YYLIMIT) {
-			if (*YYCURSOR == '\'') {
-				YYCURSOR++;
-				yyleng = YYCURSOR - SCNG(yy_text);
-
-				break;
-			} else if (*YYCURSOR++ == '\\' && YYCURSOR < YYLIMIT) {
-				YYCURSOR++;
-			}
-		} else {
-			yyleng = YYLIMIT - SCNG(yy_text);
-
-			ZVAL_NULL(zendlval);
-			return (Tokens.T_ENCAPSED_AND_WHITESPACE);
-		}
-	}
-
-	ZVAL_STRINGL(zendlval, yytext+bprefix+1, yyleng-bprefix-2);
-
-	/* convert escape sequences */
-	s = t = Z_STRVAL_P(zendlval);
-	end = s+Z_STRLEN_P(zendlval);
-	while (s<end) {
-		if (*s=='\\') {
-			s++;
-
-			switch(*s) {
-				case '\\':
-				case '\'':
-					*t++ = *s;
-					Z_STRLEN_P(zendlval)--;
-					break;
-				default:
-					*t++ = '\\';
-					*t++ = *s;
-					break;
-			}
-		} else {
-			*t++ = *s;
-		}
-
-		if (*s == '\n' || (*s == '\r' && (*(s+1) != '\n'))) {
-			CG(zend_lineno)++;
-		}
-		s++;
-	}
-	*t = 0;
-
-	if (SCNG(output_filter)) {
-		size_t sz = 0;
-		char *str = NULL;
-		s = Z_STRVAL_P(zendlval);
-		// TODO: avoid reallocation ???
-		SCNG(output_filter)((unsigned char **)&str, &sz, (unsigned char *)s, (size_t)Z_STRLEN_P(zendlval));
-		ZVAL_STRINGL(zendlval, str, sz);
-	}
-	return (Tokens.T_CONSTANT_ENCAPSED_STRING);
+<ST_IN_SCRIPTING>(b?[']([^'\\]|("\\".)|("\\"{NEWLINE}))*['])  { return ProcessSingleQuotedString(); }
+<ST_IN_SCRIPTING>b?['] 
+{ 
+	// Gets here only in the case of unterminated singly-quoted string. That leads usually to an error token,
+	// however when the source code is parsed per-line (as in Visual Studio colorizer) it is important to remember
+	// that we are in the singly-quoted string at the end of the line.
+	BEGIN(LexicalStates.ST_SINGLE_QUOTES); 
+	yymore(); 
+	break; 
 }
+<ST_SINGLE_QUOTES>([^'\\]|("\\".)|("\\"{NEWLINE}))+ { yymore(); break; }
+<ST_SINGLE_QUOTES>"'"                               { BEGIN(LexicalStates.ST_IN_SCRIPTING); return ProcessSingleQuotedString(); }
 
 
 <ST_IN_SCRIPTING>b?["] {
-	int bprefix = (yytext[0] != '"') ? 1 : 0;
-
-	while (YYCURSOR < YYLIMIT) {
-		switch (*YYCURSOR++) {
-			case '"':
-				yyleng = YYCURSOR - SCNG(yy_text);
-				zend_scan_escape_string(zendlval, yytext+bprefix+1, yyleng-bprefix-2, '"');
-				return (Tokens.T_CONSTANT_ENCAPSED_STRING);
-			case '$':
-				if (IS_LABEL_START(*YYCURSOR) || *YYCURSOR == '{') {
-					break;
-				}
-				continue;
-			case '{':
-				if (*YYCURSOR == '$') {
-					break;
-				}
-				continue;
-			case '\\':
-				if (YYCURSOR < YYLIMIT) {
-					YYCURSOR++;
-				}
-				/* fall through */
-			default:
-				continue;
-		}
-
-		YYCURSOR--;
-		break;
-	}
-
-	/* Remember how much was scanned to save rescanning */
-	SET_DOUBLE_QUOTES_SCANNED_LENGTH(YYCURSOR - SCNG(yy_text) - yyleng);
-
-	YYCURSOR = SCNG(yy_text) + yyleng;
-
-	BEGIN(ST_DOUBLE_QUOTES);
+	BEGIN(LexicalStates.ST_DOUBLE_QUOTES);
 	return (Tokens.T_DOUBLE_QUOTES);
 }
 
 
 <ST_IN_SCRIPTING>b?"<<<"{TABS_AND_SPACES}({LABEL}|([']{LABEL}['])|(["]{LABEL}["])){NEWLINE} {
-	char *s;
-	int bprefix = (yytext[0] != '<') ? 1 : 0;
-	zend_heredoc_label *heredoc_label = emalloc(sizeof(zend_heredoc_label));
-
-	CG(zend_lineno)++;
-	heredoc_label->length = yyleng-bprefix-3-1-(yytext[yyleng-2]=='\r'?1:0);
-	s = yytext+bprefix+3;
-	while ((*s == ' ') || (*s == '\t')) {
+	int bprefix = (GetTokenChar(0) != '<') ? 1 : 0;
+	int s = bprefix + 3;
+    int length = TokenLength - bprefix - 3 - 1 - (GetTokenChar(TokenLength-2) == '\r' ? 1 : 0);
+    string tokenString = GetTokenString();
+    while ((tokenString[s] == ' ') || (tokenString[s] == '\t')) {
 		s++;
-		heredoc_label->length--;
-	}
+        length--;
 
-	if (*s == '\'') {
+    }
+	if (tokenString[s] == '\'') {
 		s++;
-		heredoc_label->length -= 2;
+        length -= 2;
 
-		BEGIN(ST_NOWDOC);
+        BEGIN(LexicalStates.ST_NOWDOC);
 	} else {
-		if (*s == '"') {
+		if (tokenString[s] == '"') {
 			s++;
-			heredoc_label->length -= 2;
-		}
-
-		BEGIN(ST_HEREDOC);
+            length -= 2;
+        }
+		BEGIN(LexicalStates.ST_HEREDOC);
 	}
-
-	heredoc_label->label = estrndup(s, heredoc_label->length);
-
-	/* Check for ending label on the next line */
-	if (heredoc_label->length < YYLIMIT - YYCURSOR && !memcmp(YYCURSOR, s, heredoc_label->length)) {
-		YYCTYPE *end = YYCURSOR + heredoc_label->length;
-
-		if (*end == ';') {
-			end++;
-		}
-
-		if (*end == '\n' || *end == '\r') {
-			BEGIN(ST_END_HEREDOC);
-		}
-	}
-
-	zend_ptr_stack_push(&SCNG(heredoc_label_stack), (void *) heredoc_label);
-
-	return (Tokens.T_START_HEREDOC);
+    string label = GetTokenSubstring(s, length);
+    /* Check for ending label on the next line */
+    //if (heredoc_label->length < YYLIMIT - YYCURSOR && !memcmp(YYCURSOR, s, heredoc_label->length)) {
+    //	YYCTYPE *end = YYCURSOR + heredoc_label->length;
+    //	if (*end == ';') {
+    //		end++;
+    //	}
+    //	if (*end == '\n' || *end == '\r') {
+    //		BEGIN(ST_END_HEREDOC);
+    //	}
+    //}
+    _docLabelStack.Push(label);
+    return (Tokens.T_START_HEREDOC);
 }
 
 
@@ -938,7 +793,7 @@ string:
 
 
 <ST_DOUBLE_QUOTES,ST_BACKQUOTE,ST_HEREDOC>"{$" {
-	Z_LVAL_P(zendlval) = (zend_long) '{';
+	//Z_LVAL_P(zendlval) = (zend_long) '{';
 	yy_push_state(LexicalStates.ST_IN_SCRIPTING);
 	yyless(1);
 	return (Tokens.T_CURLY_OPEN);
@@ -957,93 +812,77 @@ string:
 
 
 <ST_DOUBLE_QUOTES>{ANY_CHAR} {
-	if (GET_DOUBLE_QUOTES_SCANNED_LENGTH()) {
-		YYCURSOR += GET_DOUBLE_QUOTES_SCANNED_LENGTH() - 1;
-		SET_DOUBLE_QUOTES_SCANNED_LENGTH(0);
-
-		goto double_quotes_scan_done;
-	}
-
-	if (YYCURSOR > YYLIMIT) {
+	if (lookahead_index > chars_read) {
 		return (Tokens.END);
 	}
-	if (yytext[0] == '\\' && YYCURSOR < YYLIMIT) {
-		YYCURSOR++;
+	if (GetTokenChar(0) == '\\' && lookahead_index < chars_read) {
+        lookahead_index++;
 	}
-
-	while (YYCURSOR < YYLIMIT) {
-		switch (*YYCURSOR++) {
+	while (lookahead_index < chars_read) {
+		switch (buffer[lookahead_index++]) {
 			case '"':
 				break;
 			case '$':
-				if (IS_LABEL_START(*YYCURSOR) || *YYCURSOR == '{') {
+				if (IS_LABEL_START(buffer[lookahead_index]) || buffer[lookahead_index] == '{') {
 					break;
 				}
 				continue;
 			case '{':
-				if (*YYCURSOR == '$') {
+				if (buffer[lookahead_index] == '$') {
 					break;
 				}
 				continue;
 			case '\\':
-				if (YYCURSOR < YYLIMIT) {
-					YYCURSOR++;
-				}
-				/* fall through */
-			default:
+				if (lookahead_index < chars_read) {
+                    lookahead_index++;
+                }
+                continue;
+            default:
 				continue;
 		}
-
-		YYCURSOR--;
+        lookahead_index--;
 		break;
 	}
-
-double_quotes_scan_done:
-	yyleng = YYCURSOR - SCNG(yy_text);
-
-	zend_scan_escape_string(zendlval, yytext, yyleng, '"');
-	return (Tokens.T_ENCAPSED_AND_WHITESPACE);
+    MarkTokenEnd();
+    tokenSemantics.Object = ProcessEscapedString(0, TokenLength, this.sourceUnit.Encoding, false);
+    return (Tokens.T_ENCAPSED_AND_WHITESPACE);
 }
 
 
 <ST_BACKQUOTE>{ANY_CHAR} {
-	if (YYCURSOR > YYLIMIT) {
+	if (lookahead_index > chars_read) {
 		return (Tokens.END);
 	}
-	if (yytext[0] == '\\' && YYCURSOR < YYLIMIT) {
-		YYCURSOR++;
+	if (GetTokenChar(0) == '\\' && lookahead_index < chars_read) {
+		lookahead_index++;
 	}
-
-	while (YYCURSOR < YYLIMIT) {
-		switch (*YYCURSOR++) {
-			case '`':
+	while (lookahead_index < chars_read) {
+		switch (buffer[lookahead_index++]) {
+			case '"':
 				break;
 			case '$':
-				if (IS_LABEL_START(*YYCURSOR) || *YYCURSOR == '{') {
+				if (IS_LABEL_START(buffer[lookahead_index]) || buffer[lookahead_index] == '{') {
 					break;
 				}
 				continue;
 			case '{':
-				if (*YYCURSOR == '$') {
+				if (buffer[lookahead_index] == '$') {
 					break;
 				}
 				continue;
 			case '\\':
-				if (YYCURSOR < YYLIMIT) {
-					YYCURSOR++;
+				if (lookahead_index < chars_read) {
+					lookahead_index++;
 				}
-				/* fall through */
+				continue;
 			default:
 				continue;
 		}
-
-		YYCURSOR--;
+		lookahead_index--;
 		break;
 	}
-
-	yyleng = YYCURSOR - SCNG(yy_text);
-
-	zend_scan_escape_string(zendlval, yytext, yyleng, '`');
+	MarkTokenEnd();
+	tokenSemantics.Object = ProcessEscapedString(0, TokenLength, this.sourceUnit.Encoding, false);
 	return (Tokens.T_ENCAPSED_AND_WHITESPACE);
 }
 
@@ -1174,16 +1013,31 @@ nowdoc_scan_done:
 	yyleng = YYCURSOR - SCNG(yy_text);
 
 	zend_copy_value(zendlval, yytext, yyleng - newline);
-	HANDLE_NEWLINES(yytext, yyleng - newline);
+	//HANDLE_NEWLINES(yytext, yyleng - newline);
 	return (Tokens.T_ENCAPSED_AND_WHITESPACE);
 }
 
 
 <ST_IN_SCRIPTING,ST_VAR_OFFSET>{ANY_CHAR} {
-	if (YYCURSOR > YYLIMIT) {
-		return (Tokens.END);
-	}
+	//zend_error(E_COMPILE_WARNING,"Unexpected character in input:  '%c' (ASCII=%d) state=%d", yytext[0], yytext[0], YYSTATE);
+	return Tokens.T_ERROR;
+}
 
-	zend_error(E_COMPILE_WARNING,"Unexpected character in input:  '%c' (ASCII=%d) state=%d", yytext[0], yytext[0], YYSTATE);
-	goto restart;
+
+<ST_ONE_LINE_COMMENT>"?"|"%"|">" { yymore(); break; }
+<ST_ONE_LINE_COMMENT>[^\n\r?%>]+ { yymore(); break; }
+<ST_ONE_LINE_COMMENT>{NEWLINE}   { BEGIN(LexicalStates.ST_IN_SCRIPTING); return Tokens.T_COMMENT; }
+
+<ST_ONE_LINE_COMMENT>"?>"|"%>"   { 
+  if (AllowAspTags || GetTokenChar(TokenLength - 2) != '%') 
+  { 
+		yyless(0);
+		BEGIN(LexicalStates.ST_IN_SCRIPTING);
+		return Tokens.T_COMMENT;
+	} 
+	else 
+	{
+		yymore();
+		break;
+	}
 }
