@@ -2,7 +2,6 @@ using System;
 using System.Diagnostics;
 
 using PHP.Syntax;
-using PHP.Syntax;
 
 namespace PHP.Core.AST
 {

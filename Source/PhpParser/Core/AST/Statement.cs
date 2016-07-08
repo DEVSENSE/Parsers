@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Reflection.Emit;
 using System.Diagnostics;
 using PHP.Syntax;
-using PHP.Syntax;
 
 namespace PHP.Core.AST
 {

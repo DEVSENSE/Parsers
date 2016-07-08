@@ -516,3 +516,205 @@ NonVariableStart        [^a-zA-Z_{]
 <ST_BACKQUOTE>{ANY_CHAR}                   { return Tokens.T_CHARACTER; }
 
 
+
+
+
+
+
+
+// TODO remove backup
+
+<ST_BACKQUOTE>{ANY_CHAR} {
+	if (lookahead_index > chars_read) {
+		return (Tokens.END);
+	}
+	if (GetTokenChar(0) == '\\' && lookahead_index < chars_read) {
+		lookahead_index++;
+	}
+	while (lookahead_index < chars_read) {
+		switch (buffer[lookahead_index++]) {
+			case '"':
+				break;
+			case '$':
+				if (IS_LABEL_START(buffer[lookahead_index]) || buffer[lookahead_index] == '{') {
+					break;
+				}
+				continue;
+			case '{':
+				if (buffer[lookahead_index] == '$') {
+					break;
+				}
+				continue;
+			case '\\':
+				if (lookahead_index < chars_read) {
+					lookahead_index++;
+				}
+				continue;
+			default:
+				continue;
+		}
+		lookahead_index--;
+		break;
+	}
+	MarkTokenEnd();
+	tokenSemantics.Object = ProcessEscapedString(0, TokenLength, this.sourceUnit.Encoding, false);
+	return (Tokens.T_ENCAPSED_AND_WHITESPACE);
+}
+
+<ST_IN_SCRIPTING>"/*"|"/**"{WHITESPACE} {
+    bool doc_com = false;
+	if (TokenLength > 2) {
+		doc_com = true;
+		RESET_DOC_COMMENT();
+	}
+	while (lookahead_index < chars_read) {
+		if (buffer[lookahead_index++] == '*' && buffer[lookahead_index] == '/') {
+			break;
+		}
+	}
+	if (lookahead_index < chars_read) {
+        lookahead_index++;
+	} else {
+		//zend_error(E_COMPILE_WARNING, "Unterminated comment starting line %d", CG(zend_lineno));
+	}
+    MarkTokenEnd();
+    //HANDLE_NEWLINES(yytext, yyleng);
+    if (doc_com) {
+        _docBlock = new PHPDocBlock(GetTokenString(), new Span(charOffset, TokenLength));
+
+        return (Tokens.T_DOC_COMMENT);
+	}
+	return (Tokens.T_COMMENT);
+}
+
+
+<ST_NOWDOC>{ANY_CHAR} {
+	int newline = 0;
+
+	zend_heredoc_label *heredoc_label = zend_ptr_stack_top(&SCNG(heredoc_label_stack));
+
+	if (YYCURSOR > YYLIMIT) {
+		return (Tokens.END);
+	}
+
+	YYCURSOR--;
+
+	while (YYCURSOR < YYLIMIT) {
+		switch (*YYCURSOR++) {
+			case '\r':
+				if (*YYCURSOR == '\n') {
+					YYCURSOR++;
+				}
+				/* fall through */
+			case '\n':
+				/* Check for ending label on the next line */
+				if (IS_LABEL_START(*YYCURSOR) && heredoc_label->length < YYLIMIT - YYCURSOR && !memcmp(YYCURSOR, heredoc_label->label, heredoc_label->length)) {
+					YYCTYPE *end = YYCURSOR + heredoc_label->length;
+
+					if (*end == ';') {
+						end++;
+					}
+
+					if (*end == '\n' || *end == '\r') {
+						/* newline before label will be subtracted from returned text, but
+						 * yyleng/yytext will include it, for zend_highlight/strip, tokenizer, etc. */
+						if (YYCURSOR[-2] == '\r' && YYCURSOR[-1] == '\n') {
+							newline = 2; /* Windows newline */
+						} else {
+							newline = 1;
+						}
+
+						CG(increment_lineno) = 1; /* For newline before label */
+						BEGIN(ST_END_HEREDOC);
+
+						goto nowdoc_scan_done;
+					}
+				}
+				/* fall through */
+			default:
+				continue;
+		}
+	}
+
+nowdoc_scan_done:
+	yyleng = YYCURSOR - SCNG(yy_text);
+
+	zend_copy_value(zendlval, yytext, yyleng - newline);
+	//HANDLE_NEWLINES(yytext, yyleng - newline);
+	return (Tokens.T_ENCAPSED_AND_WHITESPACE);
+}
+
+
+
+<ST_HEREDOC>{ANY_CHAR} {
+	int newline = 0;
+
+	zend_heredoc_label *heredoc_label = zend_ptr_stack_top(&SCNG(heredoc_label_stack));
+
+	if (YYCURSOR > YYLIMIT) {
+		return (Tokens.END);
+	}
+
+	YYCURSOR--;
+
+	while (YYCURSOR < YYLIMIT) {
+		switch (*YYCURSOR++) {
+			case '\r':
+				if (*YYCURSOR == '\n') {
+					YYCURSOR++;
+				}
+				/* fall through */
+			case '\n':
+				/* Check for ending label on the next line */
+				if (IS_LABEL_START(*YYCURSOR) && heredoc_label->length < YYLIMIT - YYCURSOR && !memcmp(YYCURSOR, heredoc_label->label, heredoc_label->length)) {
+					YYCTYPE *end = YYCURSOR + heredoc_label->length;
+
+					if (*end == ';') {
+						end++;
+					}
+
+					if (*end == '\n' || *end == '\r') {
+						/* newline before label will be subtracted from returned text, but
+						 * yyleng/yytext will include it, for zend_highlight/strip, tokenizer, etc. */
+						if (YYCURSOR[-2] == '\r' && YYCURSOR[-1] == '\n') {
+							newline = 2; /* Windows newline */
+						} else {
+							newline = 1;
+						}
+
+						CG(increment_lineno) = 1; /* For newline before label */
+						BEGIN(ST_END_HEREDOC);
+
+						goto heredoc_scan_done;
+					}
+				}
+				continue;
+			case '$':
+				if (IS_LABEL_START(*YYCURSOR) || *YYCURSOR == '{') {
+					break;
+				}
+				continue;
+			case '{':
+				if (*YYCURSOR == '$') {
+					break;
+				}
+				continue;
+			case '\\':
+				if (YYCURSOR < YYLIMIT && *YYCURSOR != '\n' && *YYCURSOR != '\r') {
+					YYCURSOR++;
+				}
+				/* fall through */
+			default:
+				continue;
+		}
+
+		YYCURSOR--;
+		break;
+	}
+
+heredoc_scan_done:
+	yyleng = YYCURSOR - SCNG(yy_text);
+
+	zend_scan_escape_string(zendlval, yytext, yyleng - newline, 0);
+	return (Tokens.T_ENCAPSED_AND_WHITESPACE);
+}

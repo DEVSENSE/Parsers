@@ -303,8 +303,10 @@ namespace PhpParser.Parser
         /// </summary>
         protected bool isCode;
 
+        /// <summary>
+        /// Last encountered documentation comment block
+        /// </summary>
         private PHPDocBlock _docBlock = null;
-        private Stack<string> _docLabelStack = new Stack<string>();
 
         public bool InUnicodeString { get { return inUnicodeString; } set { inUnicodeString = true; } }
         private bool inUnicodeString = false;
@@ -679,21 +681,21 @@ namespace PhpParser.Parser
             return result.Result;
         }
 
-        protected object ProcessEscapedString(int startIndex, int length, Encoding/*!*/ encoding, bool forceBinaryString)
+        protected object ProcessEscapedString(string text, Encoding/*!*/ encoding, bool forceBinaryString)
         {
-            PhpStringBuilder result = new PhpStringBuilder(encoding, forceBinaryString, TokenLength);
+            PhpStringBuilder result = new PhpStringBuilder(encoding, forceBinaryString, text.Length);
 
-            int buffer_pos = token_start + startIndex + 1;
+            int pos = 0;
 
             //StringBuilder result = new StringBuilder(TokenLength);
 
             char c;
-            while (buffer_pos < length)
+            while (pos < text.Length)
             {
-                c = buffer[buffer_pos++];
+                c = text[pos++];
                 if (c == '\\')
                 {
-                    switch (c = buffer[buffer_pos++])
+                    switch (c = text[pos++])
                     {
                         case 'n':
                             result.Append('\n');
@@ -714,26 +716,26 @@ namespace PhpParser.Parser
                             break;
 
                         case 'C':
-                            if (!inUnicodeString) goto default;
-                            result.Append(ParseCodePointName(ref buffer_pos));
+                            //if (!inUnicodeString) goto default;
+                            result.Append(ParseCodePointName(ref pos));
                             break;
 
                         case 'u':
                         case 'U':
-                            if (!inUnicodeString) goto default;
-                            result.Append(ParseCodePoint(c == 'u' ? 4 : 6, ref buffer_pos));
+                            //if (!inUnicodeString) goto default;
+                            result.Append(ParseCodePoint(c == 'u' ? 4 : 6, ref pos));
                             break;
 
                         case 'x':
                             {
                                 int digit;
-                                if ((digit = Convert.AlphaNumericToDigit(buffer[buffer_pos])) < 16)
+                                if ((digit = Convert.AlphaNumericToDigit(text[pos])) < 16)
                                 {
                                     int hex_code = digit;
-                                    buffer_pos++;
-                                    if ((digit = Convert.AlphaNumericToDigit(buffer[buffer_pos])) < 16)
+                                    pos++;
+                                    if ((digit = Convert.AlphaNumericToDigit(text[pos])) < 16)
                                     {
-                                        buffer_pos++;
+                                        pos++;
                                         hex_code = (hex_code << 4) + digit;
                                     }
 
@@ -756,14 +758,14 @@ namespace PhpParser.Parser
                                 {
                                     int octal_code = digit;
 
-                                    if ((digit = Convert.NumericToDigit(buffer[buffer_pos])) < 8)
+                                    if ((digit = Convert.NumericToDigit(text[pos])) < 8)
                                     {
                                         octal_code = (octal_code << 3) + digit;
-                                        buffer_pos++;
+                                        pos++;
 
-                                        if ((digit = Convert.NumericToDigit(buffer[buffer_pos])) < 8)
+                                        if ((digit = Convert.NumericToDigit(text[pos])) < 8)
                                         {
-                                            buffer_pos++;
+                                            pos++;
                                             octal_code = (octal_code << 3) + digit;
                                         }
                                     }
@@ -1096,12 +1098,13 @@ namespace PhpParser.Parser
 
         void RESET_DOC_COMMENT()
         {
-            //if (CG(doc_comment))
-            //{
-            //    zend_string_release(CG(doc_comment));
+            _docBlock = null;
+        }
 
-            //    CG(doc_comment) = NULL;
-            //}
+
+        void SET_DOC_COMMENT()
+        {
+            _docBlock = new PHPDocBlock(GetTokenString(), new Span(charOffset, TokenLength));
         }
 
         bool IS_LABEL_START(char c)

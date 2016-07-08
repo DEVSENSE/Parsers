@@ -242,7 +242,7 @@ namespace PHP.Syntax
 
             using (StringReader source_reader = new StringReader(code))
             {
-                ast = parser.Parse(this, source_reader, errors, reductionsSink, initialState, features);
+                //ast = parser.Parse(this, source_reader, errors, reductionsSink, initialState, features); // TODO uncomment and implement Parse
             }
         }
 
