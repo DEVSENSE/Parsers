@@ -224,6 +224,8 @@ namespace PHP.Syntax
         /// </summary>
         private readonly Lexer.LexicalStates initialState;
 
+        public Lexer.LexicalStates/*!*/ InitialState { get { return initialState; } }
+
         #endregion
 
         #region SourceUnit

@@ -25,7 +25,7 @@ using System.Collections.Generic;
 %eofval Tokens.END
 %errorval Tokens.T_ERROR
 %attributes public partial
-%function GetNextToken
+%function NextToken
 %ignorecase
 %charmap Map
 %char
@@ -613,6 +613,9 @@ NonVariableStart        [^a-zA-Z_{]
 	return (Tokens.T_NS_C);
 }
 
+<INITIAL>(([^<]|<[^?<])+)|< { 
+	return Tokens.T_INLINE_HTML; 
+}
 
 <INITIAL>"<?=" {
 	BEGIN(LexicalStates.ST_IN_SCRIPTING);
@@ -637,6 +640,7 @@ NonVariableStart        [^a-zA-Z_{]
 }
 
 <INITIAL>{ANY_CHAR} {
+	
 	return Tokens.T_ERROR;
 }
 
@@ -785,7 +789,7 @@ NonVariableStart        [^a-zA-Z_{]
 
 <ST_NOWDOC>{ANY_CHAR}         { yymore(); break; }
 
-<ST_DOUBLE_QUOTES, ST_BACKQUOTE, ST_HEREDOC>([^"\{$\\]*(\\.|\{[^$])?)* {
+<ST_DOUBLE_QUOTES>([^"\{$\\]*(\\.|\{[^$])?)* {
     tokenSemantics.Object = ProcessEscapedString(GetTokenString(), this.sourceUnit.Encoding, false);
     return (Tokens.T_ENCAPSED_AND_WHITESPACE);
 }

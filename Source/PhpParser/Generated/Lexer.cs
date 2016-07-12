@@ -129,14 +129,14 @@ using System.Collections.Generic;
 			switch(state)
 			{
 				case 1:
-					// #line 639
-					{
-						return Tokens.T_ERROR;
+					// #line 616
+					{ 
+						return Tokens.T_INLINE_HTML; 
 					}
 					break;
 					
 				case 3:
-					// #line 630
+					// #line 633
 					{
 						if (AllowShortTags) {
 							BEGIN(LexicalStates.ST_IN_SCRIPTING);
@@ -148,7 +148,7 @@ using System.Collections.Generic;
 					break;
 					
 				case 4:
-					// #line 617
+					// #line 620
 					{
 						BEGIN(LexicalStates.ST_IN_SCRIPTING);
 						return (Tokens.T_OPEN_TAG_WITH_ECHO);
@@ -156,7 +156,7 @@ using System.Collections.Generic;
 					break;
 					
 				case 5:
-					// #line 623
+					// #line 626
 					{
 						//HANDLE_NEWLINE(yytext[yyleng-1]);
 						BEGIN(LexicalStates.ST_IN_SCRIPTING);
@@ -165,7 +165,7 @@ using System.Collections.Generic;
 					break;
 					
 				case 6:
-					// #line 804
+					// #line 808
 					{
 						//zend_error(E_COMPILE_WARNING,"Unexpected character in input:  '%c' (ASCII=%d) state=%d", yytext[0], yytext[0], YYSTATE);
 						return Tokens.T_ERROR;
@@ -173,7 +173,7 @@ using System.Collections.Generic;
 					break;
 					
 				case 7:
-					// #line 676
+					// #line 680
 					{
 						return ProcessLabel();
 					}
@@ -227,7 +227,7 @@ using System.Collections.Generic;
 					break;
 					
 				case 14:
-					// #line 749
+					// #line 753
 					{
 						BEGIN(LexicalStates.ST_BACKQUOTE); 
 						return Tokens.T_BACKQUOTE; 
@@ -235,7 +235,7 @@ using System.Collections.Generic;
 					break;
 					
 				case 15:
-					// #line 704
+					// #line 708
 					{ 
 						// Gets here only in the case of unterminated singly-quoted string. That leads usually to an error token,
 						// however when the source code is parsed per-line (as in Visual Studio colorizer) it is important to remember
@@ -247,7 +247,7 @@ using System.Collections.Generic;
 					break;
 					
 				case 16:
-					// #line 681
+					// #line 685
 					{
 						BEGIN(LexicalStates.ST_ONE_LINE_COMMENT); 
 						yymore(); 
@@ -256,7 +256,7 @@ using System.Collections.Generic;
 					break;
 					
 				case 17:
-					// #line 716
+					// #line 720
 					{
 						BEGIN(LexicalStates.ST_DOUBLE_QUOTES);
 						return (Tokens.T_DOUBLE_QUOTES);
@@ -349,7 +349,7 @@ using System.Collections.Generic;
 					break;
 					
 				case 30:
-					// #line 697
+					// #line 701
 					{
 						BEGIN(LexicalStates.INITIAL);
 						return (Tokens.T_CLOSE_TAG);  /* implicit ';' at php-end tag */
@@ -434,7 +434,7 @@ using System.Collections.Generic;
 					break;
 					
 				case 42:
-					// #line 687
+					// #line 691
 					{ BEGIN(LexicalStates.ST_COMMENT); yymore(); break; }
 					break;
 					
@@ -481,14 +481,14 @@ using System.Collections.Generic;
 					break;
 					
 				case 49:
-					// #line 655
+					// #line 659
 					{
 						return ProcessVariable();
 					}
 					break;
 					
 				case 50:
-					// #line 702
+					// #line 706
 					{ return ProcessSingleQuotedString(); }
 					break;
 					
@@ -661,7 +661,7 @@ using System.Collections.Generic;
 					break;
 					
 				case 75:
-					// #line 692
+					// #line 696
 					{ BEGIN(LexicalStates.ST_DOC_COMMENT); yymore(); RESET_DOC_COMMENT(); break; }
 					break;
 					
@@ -785,7 +785,7 @@ using System.Collections.Generic;
 					break;
 					
 				case 93:
-					// #line 722
+					// #line 726
 					{
 						int bprefix = (GetTokenChar(0) != '<') ? 1 : 0;
 						int s = bprefix + 3;
@@ -1142,7 +1142,7 @@ using System.Collections.Generic;
 					break;
 					
 				case 141:
-					// #line 788
+					// #line 792
 					{
 					    tokenSemantics.Object = ProcessEscapedString(GetTokenString(), this.sourceUnit.Encoding, false);
 					    return (Tokens.T_ENCAPSED_AND_WHITESPACE);
@@ -1150,7 +1150,7 @@ using System.Collections.Generic;
 					break;
 					
 				case 142:
-					// #line 770
+					// #line 774
 					{
 						BEGIN(LexicalStates.ST_IN_SCRIPTING);
 						return (Tokens.T_DOUBLE_QUOTES);
@@ -1158,7 +1158,7 @@ using System.Collections.Generic;
 					break;
 					
 				case 143:
-					// #line 761
+					// #line 765
 					{
 						//Z_LVAL_P(zendlval) = (zend_long) '{';
 						yy_push_state(LexicalStates.ST_IN_SCRIPTING);
@@ -1176,7 +1176,7 @@ using System.Collections.Generic;
 					break;
 					
 				case 145:
-					// #line 649
+					// #line 653
 					{
 						yyless(TokenLength - 1);
 						yy_push_state(LexicalStates.ST_VAR_OFFSET);
@@ -1185,7 +1185,7 @@ using System.Collections.Generic;
 					break;
 					
 				case 146:
-					// #line 643
+					// #line 647
 					{
 						yyless(TokenLength - 3);
 						yy_push_state(LexicalStates.ST_LOOKING_FOR_PROPERTY);
@@ -1194,33 +1194,33 @@ using System.Collections.Generic;
 					break;
 					
 				case 147:
-					// #line 712
+					// #line 716
 					{ yymore(); break; }
 					break;
 					
 				case 148:
-					// #line 713
+					// #line 717
 					{ BEGIN(LexicalStates.ST_IN_SCRIPTING); return ProcessSingleQuotedString(); }
 					break;
 					
 				case 149:
-					// #line 775
-					{
-						BEGIN(LexicalStates.ST_IN_SCRIPTING);
-						return (Tokens.T_BACKQUOTE);
-					}
-					break;
-					
-				case 150:
-					// #line 793
+					// #line 797
 					{
 					    tokenSemantics.Object = ProcessEscapedString(GetTokenString(), this.sourceUnit.Encoding, false);
 					    return (Tokens.T_ENCAPSED_AND_WHITESPACE);
 					}
 					break;
 					
+				case 150:
+					// #line 779
+					{
+						BEGIN(LexicalStates.ST_IN_SCRIPTING);
+						return (Tokens.T_BACKQUOTE);
+					}
+					break;
+					
 				case 151:
-					// #line 798
+					// #line 802
 					{
 					    tokenSemantics.Object = ProcessEscapedString(GetTokenString(), this.sourceUnit.Encoding, false);
 					    return (Tokens.T_ENCAPSED_AND_WHITESPACE);
@@ -1228,7 +1228,7 @@ using System.Collections.Generic;
 					break;
 					
 				case 152:
-					// #line 780
+					// #line 784
 					{
 						BEGIN(LexicalStates.ST_END_HEREDOC);
 						tokenSemantics.Object = GetTokenString();
@@ -1282,52 +1282,52 @@ using System.Collections.Generic;
 					break;
 					
 				case 158:
-					// #line 693
+					// #line 697
 					{ yymore(); break; }
 					break;
 					
 				case 159:
-					// #line 695
+					// #line 699
 					{ yymore(); break; }
 					break;
 					
 				case 160:
-					// #line 694
+					// #line 698
 					{ BEGIN(LexicalStates.ST_IN_SCRIPTING); SET_DOC_COMMENT(); return Tokens.T_DOC_COMMENT; }
 					break;
 					
 				case 161:
-					// #line 688
+					// #line 692
 					{ yymore(); break; }
 					break;
 					
 				case 162:
-					// #line 690
+					// #line 694
 					{ yymore(); break; }
 					break;
 					
 				case 163:
-					// #line 689
+					// #line 693
 					{ BEGIN(LexicalStates.ST_IN_SCRIPTING); return Tokens.T_COMMENT; }
 					break;
 					
 				case 164:
-					// #line 811
+					// #line 815
 					{ yymore(); break; }
 					break;
 					
 				case 165:
-					// #line 812
+					// #line 816
 					{ BEGIN(LexicalStates.ST_IN_SCRIPTING); return Tokens.T_COMMENT; }
 					break;
 					
 				case 166:
-					// #line 810
+					// #line 814
 					{ yymore(); break; }
 					break;
 					
 				case 167:
-					// #line 814
+					// #line 818
 					{ 
 					  if (AllowAspTags || GetTokenChar(TokenLength - 2) != '%') 
 					  { 
@@ -1344,7 +1344,7 @@ using System.Collections.Generic;
 					break;
 					
 				case 168:
-					// #line 669
+					// #line 673
 					{
 						/* Invalid rule to return a more explicit parse error with proper line number */
 						yyless(0);
@@ -1354,7 +1354,7 @@ using System.Collections.Generic;
 					break;
 					
 				case 169:
-					// #line 664
+					// #line 668
 					{
 						/* Only '[' can be valid, but returning other tokens will allow a more explicit parse error */
 						return (Tokens)GetTokenChar(0);
@@ -1369,7 +1369,7 @@ using System.Collections.Generic;
 					break;
 					
 				case 171:
-					// #line 659
+					// #line 663
 					{
 						yy_pop_state();
 						return (Tokens.T_RBRACKET);
@@ -1384,7 +1384,7 @@ using System.Collections.Generic;
 					break;
 					
 				case 173:
-					// #line 755
+					// #line 759
 					{
 						BEGIN(LexicalStates.ST_IN_SCRIPTING);
 						return (Tokens.T_END_HEREDOC);
@@ -1392,7 +1392,7 @@ using System.Collections.Generic;
 					break;
 					
 				case 174:
-					// #line 786
+					// #line 790
 					{ yymore(); break; }
 					break;
 					
@@ -1407,52 +1407,51 @@ using System.Collections.Generic;
 				case 185: goto case 49;
 				case 186: goto case 93;
 				case 187: goto case 141;
-				case 188: goto case 152;
-				case 189: goto case 153;
-				case 190: goto case 156;
-				case 191: goto case 165;
-				case 192: goto case 166;
-				case 193: goto case 169;
-				case 194: goto case 170;
-				case 195: goto case 172;
-				case 198: goto case 7;
-				case 199: goto case 9;
-				case 200: goto case 30;
-				case 201: goto case 141;
-				case 202: goto case 172;
-				case 204: goto case 7;
-				case 205: goto case 9;
-				case 206: goto case 141;
+				case 188: goto case 149;
+				case 189: goto case 151;
+				case 190: goto case 152;
+				case 191: goto case 153;
+				case 192: goto case 156;
+				case 193: goto case 165;
+				case 194: goto case 166;
+				case 195: goto case 169;
+				case 196: goto case 170;
+				case 197: goto case 172;
+				case 200: goto case 7;
+				case 201: goto case 9;
+				case 202: goto case 30;
+				case 203: goto case 172;
+				case 205: goto case 7;
+				case 206: goto case 9;
 				case 208: goto case 7;
 				case 209: goto case 9;
-				case 210: goto case 141;
-				case 212: goto case 7;
-				case 213: goto case 9;
-				case 214: goto case 141;
-				case 216: goto case 7;
-				case 217: goto case 9;
-				case 219: goto case 7;
-				case 220: goto case 9;
-				case 222: goto case 7;
-				case 223: goto case 9;
-				case 225: goto case 7;
-				case 226: goto case 9;
-				case 228: goto case 7;
-				case 229: goto case 9;
-				case 231: goto case 7;
-				case 232: goto case 9;
-				case 234: goto case 7;
-				case 235: goto case 9;
-				case 237: goto case 7;
-				case 238: goto case 9;
-				case 240: goto case 7;
-				case 241: goto case 9;
-				case 243: goto case 7;
-				case 244: goto case 9;
-				case 246: goto case 7;
-				case 247: goto case 9;
-				case 249: goto case 7;
-				case 250: goto case 9;
+				case 211: goto case 7;
+				case 212: goto case 9;
+				case 214: goto case 7;
+				case 215: goto case 9;
+				case 217: goto case 7;
+				case 218: goto case 9;
+				case 220: goto case 7;
+				case 221: goto case 9;
+				case 223: goto case 7;
+				case 224: goto case 9;
+				case 226: goto case 7;
+				case 227: goto case 9;
+				case 229: goto case 7;
+				case 230: goto case 9;
+				case 232: goto case 7;
+				case 233: goto case 9;
+				case 235: goto case 7;
+				case 236: goto case 9;
+				case 238: goto case 7;
+				case 239: goto case 9;
+				case 241: goto case 7;
+				case 242: goto case 9;
+				case 244: goto case 7;
+				case 245: goto case 9;
+				case 247: goto case 7;
+				case 248: goto case 9;
+				case 250: goto case 7;
 				case 252: goto case 7;
 				case 254: goto case 7;
 				case 256: goto case 7;
@@ -1511,12 +1510,16 @@ using System.Collections.Generic;
 				case 362: goto case 7;
 				case 364: goto case 7;
 				case 366: goto case 7;
-				case 368: goto case 7;
-				case 389: goto case 7;
+				case 384: goto case 7;
+				case 395: goto case 7;
+				case 398: goto case 7;
 				case 400: goto case 7;
-				case 403: goto case 7;
+				case 402: goto case 7;
+				case 404: goto case 7;
 				case 405: goto case 7;
+				case 406: goto case 7;
 				case 407: goto case 7;
+				case 408: goto case 7;
 				case 409: goto case 7;
 				case 410: goto case 7;
 				case 411: goto case 7;
@@ -1720,11 +1723,6 @@ using System.Collections.Generic;
 				case 609: goto case 7;
 				case 610: goto case 7;
 				case 611: goto case 7;
-				case 612: goto case 7;
-				case 613: goto case 7;
-				case 614: goto case 7;
-				case 615: goto case 7;
-				case 616: goto case 7;
 			}
 			accepted = false;
 			return yyreturn;
@@ -2050,68 +2048,68 @@ using System.Collections.Generic;
 			AcceptConditions.Accept, // 185
 			AcceptConditions.Accept, // 186
 			AcceptConditions.Accept, // 187
-			AcceptConditions.AcceptOnStart, // 188
+			AcceptConditions.Accept, // 188
 			AcceptConditions.Accept, // 189
-			AcceptConditions.Accept, // 190
+			AcceptConditions.AcceptOnStart, // 190
 			AcceptConditions.Accept, // 191
 			AcceptConditions.Accept, // 192
 			AcceptConditions.Accept, // 193
 			AcceptConditions.Accept, // 194
 			AcceptConditions.Accept, // 195
-			AcceptConditions.NotAccept, // 196
+			AcceptConditions.Accept, // 196
 			AcceptConditions.Accept, // 197
-			AcceptConditions.Accept, // 198
+			AcceptConditions.NotAccept, // 198
 			AcceptConditions.Accept, // 199
 			AcceptConditions.Accept, // 200
 			AcceptConditions.Accept, // 201
 			AcceptConditions.Accept, // 202
-			AcceptConditions.NotAccept, // 203
-			AcceptConditions.Accept, // 204
+			AcceptConditions.Accept, // 203
+			AcceptConditions.NotAccept, // 204
 			AcceptConditions.Accept, // 205
 			AcceptConditions.Accept, // 206
 			AcceptConditions.NotAccept, // 207
 			AcceptConditions.Accept, // 208
 			AcceptConditions.Accept, // 209
-			AcceptConditions.Accept, // 210
-			AcceptConditions.NotAccept, // 211
+			AcceptConditions.NotAccept, // 210
+			AcceptConditions.Accept, // 211
 			AcceptConditions.Accept, // 212
-			AcceptConditions.Accept, // 213
+			AcceptConditions.NotAccept, // 213
 			AcceptConditions.Accept, // 214
-			AcceptConditions.NotAccept, // 215
-			AcceptConditions.Accept, // 216
+			AcceptConditions.Accept, // 215
+			AcceptConditions.NotAccept, // 216
 			AcceptConditions.Accept, // 217
-			AcceptConditions.NotAccept, // 218
-			AcceptConditions.Accept, // 219
+			AcceptConditions.Accept, // 218
+			AcceptConditions.NotAccept, // 219
 			AcceptConditions.Accept, // 220
-			AcceptConditions.NotAccept, // 221
-			AcceptConditions.Accept, // 222
+			AcceptConditions.Accept, // 221
+			AcceptConditions.NotAccept, // 222
 			AcceptConditions.Accept, // 223
-			AcceptConditions.NotAccept, // 224
-			AcceptConditions.Accept, // 225
+			AcceptConditions.Accept, // 224
+			AcceptConditions.NotAccept, // 225
 			AcceptConditions.Accept, // 226
-			AcceptConditions.NotAccept, // 227
-			AcceptConditions.Accept, // 228
+			AcceptConditions.Accept, // 227
+			AcceptConditions.NotAccept, // 228
 			AcceptConditions.Accept, // 229
-			AcceptConditions.NotAccept, // 230
-			AcceptConditions.Accept, // 231
+			AcceptConditions.Accept, // 230
+			AcceptConditions.NotAccept, // 231
 			AcceptConditions.Accept, // 232
-			AcceptConditions.NotAccept, // 233
-			AcceptConditions.Accept, // 234
+			AcceptConditions.Accept, // 233
+			AcceptConditions.NotAccept, // 234
 			AcceptConditions.Accept, // 235
-			AcceptConditions.NotAccept, // 236
-			AcceptConditions.Accept, // 237
+			AcceptConditions.Accept, // 236
+			AcceptConditions.NotAccept, // 237
 			AcceptConditions.Accept, // 238
-			AcceptConditions.NotAccept, // 239
-			AcceptConditions.Accept, // 240
+			AcceptConditions.Accept, // 239
+			AcceptConditions.NotAccept, // 240
 			AcceptConditions.Accept, // 241
-			AcceptConditions.NotAccept, // 242
-			AcceptConditions.Accept, // 243
+			AcceptConditions.Accept, // 242
+			AcceptConditions.NotAccept, // 243
 			AcceptConditions.Accept, // 244
-			AcceptConditions.NotAccept, // 245
-			AcceptConditions.Accept, // 246
+			AcceptConditions.Accept, // 245
+			AcceptConditions.NotAccept, // 246
 			AcceptConditions.Accept, // 247
-			AcceptConditions.NotAccept, // 248
-			AcceptConditions.Accept, // 249
+			AcceptConditions.Accept, // 248
+			AcceptConditions.NotAccept, // 249
 			AcceptConditions.Accept, // 250
 			AcceptConditions.NotAccept, // 251
 			AcceptConditions.Accept, // 252
@@ -2230,7 +2228,7 @@ using System.Collections.Generic;
 			AcceptConditions.NotAccept, // 365
 			AcceptConditions.Accept, // 366
 			AcceptConditions.NotAccept, // 367
-			AcceptConditions.Accept, // 368
+			AcceptConditions.NotAccept, // 368
 			AcceptConditions.NotAccept, // 369
 			AcceptConditions.NotAccept, // 370
 			AcceptConditions.NotAccept, // 371
@@ -2246,31 +2244,31 @@ using System.Collections.Generic;
 			AcceptConditions.NotAccept, // 381
 			AcceptConditions.NotAccept, // 382
 			AcceptConditions.NotAccept, // 383
-			AcceptConditions.NotAccept, // 384
+			AcceptConditions.Accept, // 384
 			AcceptConditions.NotAccept, // 385
 			AcceptConditions.NotAccept, // 386
 			AcceptConditions.NotAccept, // 387
 			AcceptConditions.NotAccept, // 388
-			AcceptConditions.Accept, // 389
+			AcceptConditions.NotAccept, // 389
 			AcceptConditions.NotAccept, // 390
 			AcceptConditions.NotAccept, // 391
 			AcceptConditions.NotAccept, // 392
 			AcceptConditions.NotAccept, // 393
 			AcceptConditions.NotAccept, // 394
-			AcceptConditions.NotAccept, // 395
+			AcceptConditions.Accept, // 395
 			AcceptConditions.NotAccept, // 396
 			AcceptConditions.NotAccept, // 397
-			AcceptConditions.NotAccept, // 398
+			AcceptConditions.Accept, // 398
 			AcceptConditions.NotAccept, // 399
 			AcceptConditions.Accept, // 400
 			AcceptConditions.NotAccept, // 401
-			AcceptConditions.NotAccept, // 402
-			AcceptConditions.Accept, // 403
-			AcceptConditions.NotAccept, // 404
+			AcceptConditions.Accept, // 402
+			AcceptConditions.NotAccept, // 403
+			AcceptConditions.Accept, // 404
 			AcceptConditions.Accept, // 405
-			AcceptConditions.NotAccept, // 406
+			AcceptConditions.Accept, // 406
 			AcceptConditions.Accept, // 407
-			AcceptConditions.NotAccept, // 408
+			AcceptConditions.Accept, // 408
 			AcceptConditions.Accept, // 409
 			AcceptConditions.Accept, // 410
 			AcceptConditions.Accept, // 411
@@ -2474,11 +2472,6 @@ using System.Collections.Generic;
 			AcceptConditions.Accept, // 609
 			AcceptConditions.Accept, // 610
 			AcceptConditions.Accept, // 611
-			AcceptConditions.Accept, // 612
-			AcceptConditions.Accept, // 613
-			AcceptConditions.Accept, // 614
-			AcceptConditions.Accept, // 615
-			AcceptConditions.Accept, // 616
 		};
 		
 		private static int[] colMap = new int[]
@@ -2496,61 +2489,62 @@ using System.Collections.Generic;
 		
 		private static int[] rowMap = new int[]
 		{
-			0, 1, 1, 2, 1, 1, 1, 3, 4, 5, 6, 1, 1, 1, 1, 7, 
-			1, 1, 8, 8, 8, 8, 1, 1, 1, 9, 1, 10, 1, 1, 11, 1, 
-			1, 12, 1, 1, 13, 14, 15, 1, 16, 1, 17, 1, 1, 1, 1, 1, 
-			1, 18, 1, 8, 8, 8, 19, 8, 8, 8, 1, 1, 8, 1, 1, 1, 
-			1, 1, 20, 21, 8, 8, 22, 8, 8, 8, 8, 23, 8, 8, 8, 8, 
-			8, 24, 8, 8, 8, 8, 8, 25, 8, 8, 8, 8, 1, 1, 26, 8, 
-			8, 8, 8, 8, 8, 1, 1, 8, 27, 8, 8, 8, 8, 28, 8, 1, 
-			1, 8, 8, 8, 8, 8, 8, 1, 1, 8, 8, 8, 8, 8, 8, 8, 
-			8, 8, 8, 8, 8, 8, 1, 8, 8, 8, 8, 8, 8, 29, 1, 1, 
-			1, 1, 1, 30, 1, 31, 32, 33, 1, 1, 34, 1, 1, 1, 35, 36, 
-			1, 37, 38, 1, 39, 1, 1, 1, 1, 1, 40, 1, 41, 1, 1, 42, 
-			43, 44, 45, 46, 47, 48, 49, 1, 1, 50, 51, 31, 52, 53, 54, 55, 
-			56, 57, 58, 59, 60, 54, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 
-			71, 72, 73, 74, 75, 76, 77, 78, 79, 1, 80, 81, 82, 83, 84, 85, 
-			86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 
-			102, 103, 104, 105, 106, 76, 107, 108, 20, 109, 57, 21, 110, 7, 111, 112, 
-			113, 49, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 
-			128, 23, 129, 130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 140, 141, 142, 
-			143, 144, 145, 146, 147, 148, 149, 150, 151, 152, 153, 154, 155, 156, 157, 158, 
-			159, 160, 161, 162, 163, 164, 165, 166, 167, 168, 169, 170, 171, 172, 173, 174, 
-			175, 176, 177, 178, 179, 180, 181, 182, 183, 184, 185, 186, 187, 188, 189, 190, 
-			191, 192, 193, 194, 195, 196, 197, 198, 199, 200, 201, 202, 203, 204, 205, 206, 
-			207, 208, 209, 210, 211, 212, 213, 214, 215, 216, 217, 218, 219, 220, 221, 222, 
-			223, 224, 225, 226, 227, 228, 229, 230, 231, 232, 233, 234, 54, 235, 236, 237, 
-			238, 59, 65, 239, 240, 241, 242, 243, 244, 245, 246, 247, 248, 249, 250, 251, 
-			252, 253, 254, 255, 256, 257, 258, 259, 260, 261, 262, 263, 264, 265, 266, 267, 
-			268, 269, 270, 271, 272, 273, 274, 275, 276, 277, 278, 279, 280, 281, 282, 283, 
-			284, 285, 286, 287, 288, 289, 290, 291, 292, 293, 294, 295, 296, 297, 298, 299, 
-			300, 301, 302, 303, 304, 305, 306, 307, 308, 309, 310, 311, 312, 313, 314, 315, 
-			316, 317, 318, 319, 320, 321, 322, 323, 324, 325, 326, 327, 328, 329, 330, 331, 
-			332, 333, 334, 335, 336, 337, 338, 339, 340, 341, 342, 343, 344, 345, 346, 347, 
-			348, 349, 350, 351, 352, 353, 354, 355, 356, 357, 358, 359, 360, 361, 362, 363, 
-			364, 365, 366, 367, 368, 369, 370, 371, 372, 373, 374, 375, 376, 377, 378, 379, 
-			380, 381, 382, 383, 384, 385, 386, 387, 388, 389, 390, 391, 392, 393, 394, 395, 
-			396, 397, 398, 399, 400, 401, 402, 403, 404, 405, 406, 407, 408, 409, 410, 411, 
-			412, 413, 414, 415, 416, 417, 418, 419, 420, 421, 422, 423, 424, 425, 426, 427, 
-			428, 429, 430, 431, 432, 433, 434, 435, 436, 437, 438, 439, 440, 441, 442, 443, 
-			444, 445, 446, 447, 448, 449, 450, 451, 452, 453, 454, 455, 456, 8, 457, 458, 
-			459, 460, 461, 462, 463, 464, 465, 466, 467
+			0, 1, 2, 3, 2, 2, 2, 4, 5, 6, 7, 2, 2, 2, 2, 8, 
+			2, 2, 9, 9, 9, 9, 2, 2, 2, 10, 2, 11, 2, 2, 12, 2, 
+			2, 13, 2, 2, 14, 15, 16, 2, 17, 2, 18, 2, 2, 2, 2, 2, 
+			2, 19, 2, 9, 9, 9, 20, 9, 9, 9, 2, 2, 9, 2, 2, 2, 
+			2, 2, 21, 22, 9, 9, 23, 9, 9, 9, 9, 24, 9, 9, 9, 9, 
+			9, 25, 9, 9, 9, 9, 9, 26, 9, 9, 9, 9, 2, 2, 27, 9, 
+			9, 9, 9, 9, 9, 2, 2, 9, 28, 9, 9, 9, 9, 29, 9, 2, 
+			2, 9, 9, 9, 9, 9, 9, 2, 2, 9, 9, 9, 9, 9, 9, 9, 
+			9, 9, 9, 9, 9, 9, 2, 9, 9, 9, 9, 9, 9, 30, 2, 2, 
+			2, 2, 2, 31, 2, 32, 2, 33, 2, 2, 34, 2, 2, 2, 35, 36, 
+			2, 37, 38, 2, 39, 2, 2, 2, 2, 2, 40, 2, 41, 2, 2, 42, 
+			43, 44, 45, 46, 47, 48, 49, 2, 2, 50, 51, 52, 53, 54, 55, 56, 
+			57, 58, 59, 60, 61, 62, 63, 57, 64, 65, 66, 67, 68, 69, 70, 71, 
+			72, 73, 74, 75, 76, 77, 78, 2, 79, 80, 81, 82, 83, 84, 85, 86, 
+			87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 
+			103, 104, 105, 106, 107, 108, 76, 109, 60, 21, 110, 22, 111, 8, 112, 113, 
+			114, 49, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128, 
+			129, 24, 130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 140, 141, 142, 143, 
+			144, 145, 146, 147, 148, 149, 150, 151, 152, 153, 154, 155, 156, 157, 158, 159, 
+			160, 161, 162, 163, 164, 165, 166, 167, 168, 169, 170, 171, 172, 173, 174, 175, 
+			176, 177, 178, 179, 180, 181, 182, 183, 184, 185, 186, 187, 188, 189, 190, 191, 
+			192, 193, 194, 195, 196, 197, 198, 199, 200, 201, 202, 203, 204, 205, 206, 207, 
+			208, 209, 210, 211, 212, 213, 214, 215, 216, 217, 218, 219, 220, 221, 222, 223, 
+			224, 225, 226, 227, 228, 229, 230, 57, 231, 232, 233, 234, 62, 67, 235, 236, 
+			237, 238, 239, 240, 241, 242, 243, 244, 245, 246, 247, 248, 249, 250, 251, 252, 
+			253, 254, 255, 256, 257, 258, 259, 260, 261, 262, 263, 264, 265, 266, 267, 268, 
+			269, 270, 271, 272, 273, 274, 275, 276, 277, 278, 279, 280, 281, 282, 283, 284, 
+			285, 286, 287, 288, 289, 290, 291, 292, 293, 294, 295, 296, 297, 298, 299, 300, 
+			301, 302, 303, 304, 305, 306, 307, 308, 309, 310, 311, 312, 313, 314, 315, 316, 
+			317, 318, 319, 320, 321, 322, 323, 324, 325, 326, 327, 328, 329, 330, 331, 332, 
+			333, 334, 335, 336, 337, 338, 339, 340, 341, 342, 343, 344, 345, 346, 347, 348, 
+			349, 350, 351, 352, 353, 354, 355, 356, 357, 358, 359, 360, 361, 362, 363, 364, 
+			365, 366, 367, 368, 369, 370, 371, 372, 373, 374, 375, 376, 377, 378, 379, 380, 
+			381, 382, 383, 384, 385, 386, 387, 388, 389, 390, 391, 392, 393, 394, 395, 396, 
+			397, 398, 399, 400, 401, 402, 403, 404, 405, 406, 407, 408, 409, 410, 411, 412, 
+			413, 414, 415, 416, 417, 418, 419, 420, 421, 422, 423, 424, 425, 426, 427, 428, 
+			429, 430, 431, 432, 433, 434, 435, 436, 437, 438, 439, 440, 441, 442, 443, 444, 
+			445, 446, 447, 448, 449, 450, 451, 452, 9, 453, 454, 455, 456, 457, 458, 459, 
+			460, 461, 462, 463
 		};
 		
 		private static int[,] nextState = new int[,]
 		{
 			{ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 176, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2 },
+			{ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, -1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 175, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, -1 },
 			{ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },
-			{ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 175, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 4, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },
-			{ -1, 605, 410, 605, 605, 605, 605, 605, 411, 412, 605, 605, 605, 605, 413, -1, 414, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 415, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
+			{ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 198, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 4, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },
+			{ -1, 600, 405, 600, 600, 600, 600, 600, 406, 407, 600, 600, 600, 600, 408, -1, 409, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 410, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
 			{ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 8, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 8, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 8, -1, -1, -1, -1, -1, -1, -1 },
 			{ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 22, 23, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 24, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },
-			{ -1, 215, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 10, -1, -1, -1, 27, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 10, 10, -1, -1, -1, -1, -1, -1, -1, -1 },
+			{ -1, 216, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 10, -1, -1, -1, 27, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 10, 10, -1, -1, -1, -1, -1, -1, -1, -1 },
 			{ 253, 253, 253, 253, 253, 253, 253, 253, 253, 253, 253, 253, 253, 253, 253, 253, 253, 253, 253, 253, 253, 253, 253, 253, 253, 253, -1, 253, 253, 253, 255, 253, 253, 253, 253, 253, 253, 253, 253, 253, 253, 253, 253, 253, 253, 253, 253, 253, 253, 253, 253, 253, 253, 253, 253, 253, 253, 253, 253, 253, 50, 253, 253, 253, -1 },
-			{ -1, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
+			{ -1, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
 			{ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 58, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },
-			{ -1, 215, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 27, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 27, 27, -1, -1, -1, -1, -1, -1, -1, -1 },
-			{ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 183, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 200, -1, -1, -1, -1, -1, -1, -1 },
+			{ -1, 216, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 27, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 27, 27, -1, -1, -1, -1, -1, -1, -1, -1 },
+			{ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 183, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 202, -1, -1, -1, -1, -1, -1, -1 },
 			{ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 61, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },
 			{ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 62, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },
 			{ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 63, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },
@@ -2558,21 +2552,20 @@ using System.Collections.Generic;
 			{ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 65, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },
 			{ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 273, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },
 			{ -1, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, -1, 49, 49, 49, 49, 49, 49, 49, 49, -1, -1, 49, 49, 49, -1, -1, -1, -1, 49, -1, -1, -1, 49, 49, 49, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 49, 49, -1, -1, -1, -1, -1, -1, -1, 49 },
-			{ -1, 592, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
+			{ -1, 587, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
 			{ -1, 66, -1, -1, -1, 66, 66, -1, -1, 66, -1, -1, -1, -1, -1, -1, -1, 66, -1, -1, 66, -1, -1, -1, -1, -1, -1, 66, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 66, 66, -1, -1, -1, -1, -1, -1, -1, -1 },
 			{ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 67, 67, -1, -1, -1, -1, -1, -1, -1, -1 },
-			{ -1, 605, 605, 292, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
+			{ -1, 600, 600, 290, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
 			{ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 75, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 75, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 75, -1, -1, -1, -1, -1, -1, -1 },
-			{ -1, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 312, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 313, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, 313, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, 313, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 596, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 521, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 613, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
+			{ -1, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 310, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 313, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, 313, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, 313, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 591, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 516, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 608, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
 			{ 187, 187, 187, 187, 187, 187, 187, 187, 187, 187, 187, 187, 187, 187, 187, 187, 187, 187, 187, 187, 187, 187, 187, 187, 187, 187, 2, 187, 187, 187, 345, 187, 187, 187, 187, 187, 187, 187, 187, 187, 187, 187, 187, 187, 187, 187, 187, 187, 187, 187, 187, 347, 349, 187, 187, 187, 187, 187, 187, 187, 187, 187, 142, 187, 2 },
 			{ 147, 147, 147, 147, 147, 147, 147, 147, 147, 147, 147, 147, 147, 147, 147, 147, 147, 147, 147, 147, 147, 147, 147, 147, 147, 147, -1, 147, 147, 147, 359, 147, 147, 147, 147, 147, 147, 147, 147, 147, 147, 147, 147, 147, 147, 147, 147, 147, 147, 147, 147, 147, 147, 147, 147, 147, 147, 147, 147, 147, -1, 147, 147, 147, -1 },
-			{ 187, 187, 187, 187, 187, 187, 187, 187, 187, 187, 187, 187, 187, 187, 187, 187, 187, 187, 187, 187, 187, 187, 187, 187, 187, 187, -1, 187, 187, 187, 345, 187, 187, 187, 187, 187, 187, 187, 187, 187, 187, 187, 187, 187, 187, 187, 187, 187, 187, 187, 187, 351, -1, 187, 187, 187, 187, 187, 187, 187, 187, 187, -1, 187, -1 },
-			{ 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, -1, 150, 150, 150, 367, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 369, -1, 150, 150, 150, 150, 150, 150, -1, 150, 150, 150, 150, -1 },
-			{ 151, 151, 151, 151, 151, 151, 151, 151, 151, 151, 151, 151, 151, 151, 151, 151, 151, 151, 151, 151, 151, 151, 151, 151, 151, 151, -1, 151, 151, 151, 373, 151, 151, 151, 151, 151, 151, 151, 151, 151, 151, 151, 151, 151, 151, 151, 151, 151, 151, 151, 151, 374, -1, 151, 151, 151, 151, 151, 151, 151, 151, 151, 151, 151, -1 },
+			{ 188, 188, 188, 188, 188, 188, 188, 188, 188, 188, 188, 188, 188, 188, 188, 188, 188, 188, 188, 188, 188, 188, 188, 188, 188, 188, 2, 188, 188, 188, 361, 188, 188, 188, 188, 188, 188, 188, 188, 188, 188, 188, 188, 188, 188, 188, 188, 188, 188, 188, 188, 363, 349, 188, 188, 188, 188, 188, 188, 150, 188, 188, 188, 188, 2 },
+			{ 189, 189, 189, 189, 189, 189, 189, 189, 189, 189, 189, 189, 189, 189, 189, 189, 189, 189, 189, 189, 189, 189, 189, 189, 189, 189, 2, 189, 189, 189, 367, 189, 189, 189, 189, 189, 189, 189, 189, 189, 189, 189, 189, 189, 189, 189, 189, 189, 189, 189, 189, 368, 349, 189, 189, 189, 189, 189, 189, 189, 189, 189, 189, 189, 177 },
 			{ -1, 154, 154, 154, 154, 154, 154, 154, 154, 154, 154, 154, 154, 154, 154, -1, 154, 154, 154, 154, 154, 154, 154, 154, -1, -1, 154, 154, 154, -1, -1, -1, -1, 154, -1, -1, -1, 154, 154, 154, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 154, 154, -1, -1, -1, -1, -1, -1, -1, 154 },
 			{ 158, 158, 158, 158, 158, 158, 158, 158, 158, 158, 158, 158, 158, 158, 158, 158, 158, 158, 158, 158, 158, 158, 158, 158, 158, 158, -1, 158, 158, 158, 158, 158, 158, 158, 158, 158, 158, 158, 158, 158, 158, 158, 158, 158, -1, 158, 158, 158, 158, 158, 158, 158, 158, 158, 158, 158, 158, 158, 158, 158, 158, 158, 158, 158, -1 },
 			{ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 160, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },
@@ -2581,457 +2574,453 @@ using System.Collections.Generic;
 			{ 164, 164, 164, 164, 164, 164, 164, 164, 164, 164, 164, 164, 164, 164, 164, -1, 164, 164, 164, 164, 164, 164, 164, 164, 164, -1, -1, 164, 164, 164, 164, 164, -1, 164, 164, 164, 164, 164, 164, 164, 164, 164, 164, 164, 164, 164, -1, 164, 164, 164, 164, 164, 164, 164, 164, 164, 164, -1, 164, 164, 164, 164, 164, 164, -1 },
 			{ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 170, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 170, 170, -1, -1, -1, -1, -1, -1, -1, -1 },
 			{ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 172, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 172, 172, -1, -1, -1, -1, -1, -1, -1, -1 },
-			{ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 196, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },
-			{ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 3, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },
-			{ -1, 375, 375, 375, 375, 375, 375, 375, 375, 375, 375, 375, 375, 375, 375, -1, 375, 375, 375, 375, 375, 375, 375, 375, -1, -1, 375, -1, 375, -1, -1, -1, -1, 375, -1, -1, -1, 375, 375, 375, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 375 },
+			{ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, -1, 1, 1, 1, 1, 1, -1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, -1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, -1 },
+			{ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, -1, 1, 1, 1, 1, 1, 3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, -1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, -1 },
+			{ -1, 370, 370, 370, 370, 370, 370, 370, 370, 370, 370, 370, 370, 370, 370, -1, 370, 370, 370, 370, 370, 370, 370, 370, -1, -1, 370, -1, 370, -1, -1, -1, -1, 370, -1, -1, -1, 370, 370, 370, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 370 },
 			{ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 5, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },
-			{ -1, 605, 605, 605, 605, 605, 18, 605, 416, 605, 605, 417, 605, 605, 605, -1, 539, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
+			{ -1, 600, 600, 600, 600, 600, 18, 600, 411, 600, 600, 412, 600, 600, 600, -1, 534, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
 			{ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 25, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 26, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },
-			{ -1, 215, 248, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 251, -1, -1, -1, -1, -1, -1, 10, -1, -1, -1, 27, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 10, 10, -1, -1, -1, -1, -1, -1, -1, -1 },
+			{ -1, 216, 249, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 251, -1, -1, -1, -1, -1, -1, 10, -1, -1, -1, 27, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 10, 10, -1, -1, -1, -1, -1, -1, -1, -1 },
 			{ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 182, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 182, 182, -1, -1, -1, -1, -1, -1, -1, -1 },
 			{ -1, 185, 185, 185, 185, 185, 185, 185, 185, 185, 185, 185, 185, 185, 185, -1, 185, 185, 185, 185, 185, 185, 185, 185, 353, -1, 185, 185, 185, -1, -1, -1, -1, 185, -1, -1, -1, 185, 185, 185, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 145, 185, 185, -1, -1, -1, -1, -1, -1, -1, 185 },
 			{ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 93, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },
+			{ 187, 187, 187, 187, 187, 187, 187, 187, 187, 187, 187, 187, 187, 187, 187, 187, 187, 187, 187, 187, 187, 187, 187, 187, 187, 187, -1, 187, 187, 187, 345, 187, 187, 187, 187, 187, 187, 187, 187, 187, 187, 187, 187, 187, 187, 187, 187, 187, 187, 187, 187, 351, -1, 187, 187, 187, 187, 187, 187, 187, 187, 187, -1, 187, -1 },
+			{ 188, 188, 188, 188, 188, 188, 188, 188, 188, 188, 188, 188, 188, 188, 188, 188, 188, 188, 188, 188, 188, 188, 188, 188, 188, 188, -1, 188, 188, 188, 361, 188, 188, 188, 188, 188, 188, 188, 188, 188, 188, 188, 188, 188, 188, 188, 188, 188, 188, 188, 188, 365, -1, 188, 188, 188, 188, 188, 188, -1, 188, 188, 188, 188, -1 },
+			{ 189, 189, 189, 189, 189, 189, 189, 189, 189, 189, 189, 189, 189, 189, 189, 189, 189, 189, 189, 189, 189, 189, 189, 189, 189, 189, -1, 189, 189, 189, 367, 189, 189, 189, 189, 189, 189, 189, 189, 189, 189, 189, 189, 189, 189, 189, 189, 189, 189, 189, 189, 369, -1, 189, 189, 189, 189, 189, 189, 189, 189, 189, 189, 189, -1 },
 			{ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 152, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },
 			{ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 155, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },
-			{ -1, 380, 380, 380, 380, 380, 380, 380, 380, 380, 380, 380, 380, 380, 380, -1, 380, 380, 380, 380, 380, 380, 380, 380, -1, -1, 380, 380, 380, -1, -1, -1, -1, 380, -1, -1, -1, 380, 380, 380, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 157, 157, 380, 380, -1, -1, -1, -1, -1, -1, -1, 380 },
+			{ -1, 375, 375, 375, 375, 375, 375, 375, 375, 375, 375, 375, 375, 375, 375, -1, 375, 375, 375, 375, 375, 375, 375, 375, -1, -1, 375, 375, 375, -1, -1, -1, -1, 375, -1, -1, -1, 375, 375, 375, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 157, 157, 375, 375, -1, -1, -1, -1, -1, -1, -1, 375 },
 			{ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 165, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },
 			{ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 167, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },
 			{ -1, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, -1, 49, 49, 49, 49, 49, 49, 49, 49, -1, -1, 49, -1, 49, -1, -1, -1, -1, 49, -1, -1, -1, 49, 49, 49, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 49 },
-			{ -1, -1, 385, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 386, -1, -1, -1, -1, -1, -1, 172, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 172, 172, -1, -1, -1, -1, -1, -1, -1, -1 },
-			{ -1, 195, -1, -1, -1, 195, 195, -1, -1, 195, -1, -1, -1, -1, -1, -1, -1, 195, -1, -1, 195, -1, -1, -1, -1, -1, -1, 195, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 195, 195, -1, -1, -1, -1, -1, -1, -1, -1 },
-			{ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 203, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },
-			{ -1, 419, 605, 222, 605, 605, 605, 605, 605, 605, 19, 605, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
+			{ -1, -1, 380, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 381, -1, -1, -1, -1, -1, -1, 172, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 172, 172, -1, -1, -1, -1, -1, -1, -1, -1 },
+			{ -1, 197, -1, -1, -1, 197, 197, -1, -1, 197, -1, -1, -1, -1, -1, -1, -1, 197, -1, -1, 197, -1, -1, -1, -1, -1, -1, 197, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 197, 197, -1, -1, -1, -1, -1, -1, -1, -1 },
+			{ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 204, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },
+			{ -1, 414, 600, 220, 600, 600, 600, 600, 600, 600, 19, 600, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
 			{ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 28, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },
 			{ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 183, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },
-			{ 206, 206, 206, 206, 206, 206, 206, 206, 206, 206, 206, 206, 206, 206, 206, 206, 206, 206, 206, 206, 206, 206, 206, 206, 206, 206, 2, 206, 206, 206, 361, 206, 206, 206, 206, 206, 206, 206, 206, 206, 206, 206, 206, 206, 206, 206, 206, 206, 206, 206, 206, 363, 349, 206, 206, 206, 206, 206, 206, 149, 206, 206, 150, 206, 2 },
-			{ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 202, 202, -1, -1, -1, -1, -1, -1, -1, -1 },
+			{ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 203, 203, -1, -1, -1, -1, -1, -1, -1, -1 },
+			{ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 207, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },
+			{ -1, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 20, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 27, -1, -1, -1, 219, -1, -1, -1, -1, -1, -1, -1, -1, 29, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 27, 27, -1, -1, -1, -1, -1, -1, -1, -1 },
 			{ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 5, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 5, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 178, -1, -1, -1, -1, -1, -1, -1 },
-			{ -1, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 20, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 27, -1, -1, -1, 218, -1, -1, -1, -1, -1, -1, -1, -1, 29, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 27, 27, -1, -1, -1, -1, -1, -1, -1, -1 },
-			{ 206, 206, 206, 206, 206, 206, 206, 206, 206, 206, 206, 206, 206, 206, 206, 206, 206, 206, 206, 206, 206, 206, 206, 206, 206, 206, -1, 206, 206, 206, 361, 206, 206, 206, 206, 206, 206, 206, 206, 206, 206, 206, 206, 206, 206, 206, 206, 206, 206, 206, 206, 365, -1, 206, 206, 206, 206, 206, 206, 187, 206, 206, 150, 206, -1 },
-			{ 6, 7, 389, 179, 400, 198, 403, 405, 407, 538, 204, 567, 586, 597, 603, 8, 605, 208, 605, 607, 212, 605, 608, 609, 9, 180, 605, 10, 605, 199, 11, 205, 209, 409, 213, 8, 217, 605, 610, 605, 220, 223, 226, 229, 232, 235, 238, 241, 244, 247, 217, 12, 250, 13, 217, 181, 10, 8, 217, 14, 15, 16, 17, 217, 605 },
-			{ -1, 605, 605, 605, 605, 605, 605, 605, 234, 605, 605, 21, 541, 605, 605, -1, 605, 605, 605, 605, 568, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
+			{ -1, 600, 600, 600, 600, 600, 600, 600, 232, 600, 600, 21, 536, 600, 600, -1, 600, 600, 600, 600, 563, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
 			{ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 30, -1, -1, -1, -1, -1, -1, 31, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },
-			{ 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 2, 214, 214, 214, 370, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 371, 349, 214, 214, 214, 214, 214, 214, 214, 214, 214, 151, 214, 177 },
-			{ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 390, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },
-			{ -1, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 545, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, 211, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, 15, -1, 17, -1, 605 },
-			{ -1, -1, -1, 221, -1, 224, 227, 391, -1, -1, 230, 233, 236, -1, -1, -1, -1, 239, -1, -1, 242, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 245, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },
-			{ 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, -1, 214, 214, 214, 370, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 372, -1, 214, 214, 214, 214, 214, 214, 214, 214, 214, 151, 214, -1 },
+			{ 6, 7, 384, 179, 395, 200, 398, 400, 402, 533, 205, 562, 581, 592, 598, 8, 600, 208, 600, 602, 211, 600, 603, 604, 9, 180, 600, 10, 600, 201, 11, 206, 209, 404, 212, 8, 215, 600, 605, 600, 218, 221, 224, 227, 230, 233, 236, 239, 242, 245, 215, 12, 248, 13, 215, 181, 10, 8, 215, 14, 15, 16, 17, 215, 600 },
+			{ -1, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 540, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, 213, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, 15, -1, 17, -1, 600 },
+			{ -1, -1, -1, 222, -1, 225, 228, 386, -1, -1, 231, 234, 237, -1, -1, -1, -1, 240, -1, -1, 243, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 246, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },
+			{ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 385, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },
+			{ -1, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 51, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
 			{ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 257, -1, -1, 182, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 257, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 182, 182, -1, -1, -1, -1, -1, -1, -1, -1 },
-			{ -1, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 51, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 59, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },
-			{ -1, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 52, 605, -1, 605, 439, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
+			{ -1, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 52, 600, -1, 600, 434, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
 			{ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 32, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 33, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },
-			{ -1, -1, -1, -1, -1, -1, -1, -1, 392, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },
-			{ -1, 53, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
+			{ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 59, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },
+			{ -1, 53, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
 			{ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 34, 35, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },
-			{ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 259, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },
-			{ -1, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 54, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
+			{ -1, -1, -1, -1, -1, -1, -1, -1, 387, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },
+			{ -1, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 54, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
 			{ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 36, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },
-			{ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 261, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },
-			{ -1, 55, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
+			{ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 259, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },
+			{ -1, 55, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
 			{ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 184, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 37, -1, -1, 38, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },
-			{ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 265, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },
-			{ -1, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, -1, 605, 605, 605, 56, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
+			{ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 261, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },
+			{ -1, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, -1, 600, 600, 600, 56, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
 			{ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 39, -1, -1, -1, 40, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },
-			{ -1, -1, -1, -1, 393, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },
-			{ -1, 605, 605, 605, 605, 57, 605, 605, 605, 605, 605, 605, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
+			{ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 265, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },
+			{ -1, 600, 600, 600, 600, 57, 600, 600, 600, 600, 600, 600, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
 			{ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 41, -1, -1, -1, 42, 16, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },
-			{ -1, 267, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },
-			{ -1, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 60, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
+			{ -1, -1, -1, -1, 388, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },
+			{ -1, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 60, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
 			{ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 43, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },
-			{ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 401, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },
-			{ -1, 605, 605, 605, 68, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
+			{ -1, 267, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },
+			{ -1, 600, 600, 600, 68, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
 			{ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 44, -1, -1, -1, -1, -1, -1, 45, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },
-			{ -1, -1, -1, 269, -1, -1, -1, -1, -1, -1, 394, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },
-			{ -1, 605, 605, 605, 605, 605, 605, 605, 605, 605, 69, 605, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
+			{ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 396, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },
+			{ -1, 600, 600, 600, 600, 600, 600, 600, 600, 600, 69, 600, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
 			{ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 46, -1, -1, -1, -1, -1, -1, -1, 47, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },
-			{ -1, 70, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
+			{ -1, -1, -1, 269, -1, -1, -1, -1, -1, -1, 389, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },
+			{ -1, 70, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
 			{ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 48, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },
-			{ -1, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 71, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 72, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 605, 73, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
+			{ -1, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 71, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 72, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 600, 73, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 600, 600, 600, 600, 600, 600, 600, 74, 600, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
 			{ 253, 253, 253, 253, 253, 253, 253, 253, 253, 253, 253, 253, 253, 253, 253, 253, 253, 253, 253, 253, 253, 253, 253, 253, 253, 253, -1, 253, 253, 253, 253, 253, 253, 253, 253, 253, 253, 253, 253, 253, 253, 253, 253, 253, 253, 253, 253, 253, 253, 253, 253, 253, 253, 253, 253, 253, 253, 253, 253, 253, 253, 253, 253, 253, -1 },
-			{ -1, 605, 605, 605, 605, 605, 605, 605, 605, 605, 74, 605, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 605, 605, 605, 76, 605, 605, 605, 605, 605, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
+			{ -1, 600, 600, 600, 600, 600, 76, 600, 600, 600, 600, 600, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 77, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
 			{ -1, -1, -1, -1, -1, -1, -1, 277, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },
-			{ -1, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 77, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 395, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },
-			{ -1, 605, 605, 605, 78, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
+			{ -1, 600, 600, 600, 78, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 390, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },
+			{ -1, 600, 600, 600, 79, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
 			{ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 279, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },
-			{ -1, 605, 605, 605, 79, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 396, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },
-			{ -1, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, -1, 605, 605, 605, 80, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
+			{ -1, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, -1, 600, 600, 600, 80, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 391, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },
+			{ -1, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 81, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
 			{ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 283, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },
-			{ -1, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 81, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
+			{ -1, 600, 600, 600, 82, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
 			{ -1, -1, -1, -1, -1, -1, -1, -1, 287, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },
-			{ -1, 605, 605, 605, 82, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 289, 289, 289, 289, 289, 289, 289, 289, 289, 289, 289, 289, 289, 289, -1, 289, 289, 289, 289, 289, 289, 289, 289, -1, -1, 289, -1, 289, -1, -1, -1, -1, 289, -1, 271, -1, 289, 289, 289, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 291, -1, 398, -1, 289 },
-			{ -1, 605, 605, 605, 83, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 84, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
+			{ -1, 600, 600, 600, 83, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 289, 289, 289, 289, 289, 289, 289, 289, 289, 289, 289, 289, 289, 289, -1, 289, 289, 289, 289, 289, 289, 289, 289, -1, -1, 289, -1, 289, -1, -1, -1, -1, 289, -1, 271, -1, 289, 289, 289, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 291, -1, 393, -1, 289 },
+			{ -1, 84, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 85, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
 			{ -1, 293, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 295, 92, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },
-			{ -1, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 85, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 402, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },
-			{ -1, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, -1, 605, 605, 86, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 399, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },
-			{ -1, 605, 605, 605, 605, 87, 605, 605, 605, 605, 605, 605, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
+			{ -1, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, -1, 600, 600, 86, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 397, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },
+			{ -1, 600, 600, 600, 600, 87, 600, 600, 600, 600, 600, 600, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 394, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },
+			{ -1, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 88, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
 			{ -1, -1, -1, 301, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },
-			{ -1, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 88, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
+			{ -1, 89, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
 			{ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 303, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },
-			{ -1, 89, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
+			{ -1, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, -1, 600, 600, 600, 600, 600, 90, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
 			{ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 305, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },
-			{ -1, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, -1, 605, 605, 605, 605, 605, 90, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 404, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },
-			{ -1, 605, 605, 605, 91, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
+			{ -1, 600, 600, 600, 91, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 399, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },
+			{ -1, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 94, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
 			{ -1, 289, 289, 289, 289, 289, 289, 289, 289, 289, 289, 289, 289, 289, 289, 93, 289, 289, 289, 289, 289, 289, 289, 289, -1, -1, 289, 289, 289, -1, -1, -1, -1, 289, -1, -1, -1, 289, 289, 289, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 289, 289, 186, -1, -1, -1, -1, -1, -1, 289 },
-			{ -1, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 94, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
+			{ -1, 600, 600, 600, 600, 600, 95, 600, 600, 600, 600, 600, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
 			{ -1, 309, 309, 309, 309, 309, 309, 309, 309, 309, 309, 309, 309, 309, 309, -1, 309, 309, 309, 309, 309, 309, 309, 309, -1, -1, 309, -1, 309, -1, -1, -1, -1, 309, -1, -1, -1, 309, 309, 309, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 309 },
-			{ -1, 605, 605, 605, 605, 605, 95, 605, 605, 605, 605, 605, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
+			{ -1, 600, 600, 600, 600, 600, 600, 600, 600, 96, 600, 600, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
 			{ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 315, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },
-			{ -1, 605, 605, 605, 605, 605, 605, 605, 605, 96, 605, 605, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
+			{ -1, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, -1, 600, 600, 97, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
 			{ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 295, 92, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },
-			{ -1, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, -1, 605, 605, 97, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
+			{ -1, 600, 600, 600, 600, 600, 600, 600, 98, 600, 600, 600, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
 			{ -1, -1, -1, -1, 303, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },
-			{ -1, 605, 605, 605, 605, 605, 605, 605, 98, 605, 605, 605, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
+			{ -1, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 99, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
 			{ -1, -1, -1, -1, -1, -1, -1, -1, -1, 321, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },
-			{ -1, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 99, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
+			{ -1, 600, 600, 600, 600, 600, 600, 600, 600, 100, 600, 600, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
 			{ -1, -1, -1, -1, -1, -1, -1, -1, 323, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },
-			{ -1, 605, 605, 605, 605, 605, 605, 605, 605, 100, 605, 605, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
+			{ -1, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 103, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
 			{ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 303, 101, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },
-			{ -1, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 103, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
+			{ -1, 104, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
 			{ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 325, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },
-			{ -1, 104, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
+			{ -1, 600, 600, 600, 105, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
 			{ -1, 329, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 331, 102, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },
-			{ -1, 605, 605, 605, 105, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
+			{ -1, 106, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
 			{ -1, 309, 309, 309, 309, 309, 309, 309, 309, 309, 309, 309, 309, 309, 309, -1, 309, 309, 309, 309, 309, 309, 309, 309, -1, -1, 309, 309, 309, -1, -1, -1, -1, 309, -1, -1, -1, 309, 309, 309, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 309, 309, -1, -1, -1, 333, -1, -1, -1, 309 },
-			{ -1, 106, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
+			{ -1, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 107, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
 			{ -1, 311, 311, 311, 311, 311, 311, 311, 311, 311, 311, 311, 311, 311, 311, -1, 311, 311, 311, 311, 311, 311, 311, 311, -1, -1, 311, 311, 311, -1, -1, -1, -1, 311, -1, -1, -1, 311, 311, 311, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 311, 311, -1, -1, -1, -1, -1, 333, -1, 311 },
-			{ -1, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 107, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, -1, -1, -1, -1, -1, 406, -1, -1, -1, -1, -1, -1, -1, -1, 313, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 313, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 313, -1, -1, -1, -1, -1, -1, -1 },
-			{ -1, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, -1, 605, 605, 108, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 408, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },
-			{ -1, 109, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
+			{ -1, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, -1, 600, 600, 108, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, -1, -1, -1, -1, -1, 401, -1, -1, -1, -1, -1, -1, -1, -1, 313, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 313, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 313, -1, -1, -1, -1, -1, -1, -1 },
+			{ -1, 109, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 403, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },
+			{ -1, 110, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
 			{ -1, 303, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },
-			{ -1, 110, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
+			{ -1, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 113, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
 			{ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 319, 111, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },
-			{ -1, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 113, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
+			{ -1, 114, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
 			{ -1, -1, -1, -1, 335, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },
-			{ -1, 114, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
+			{ -1, 600, 600, 600, 600, 600, 600, 600, 115, 600, 600, 600, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
 			{ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 337, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },
-			{ -1, 605, 605, 605, 605, 605, 605, 605, 115, 605, 605, 605, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
+			{ -1, 116, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
 			{ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 325, 112, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },
-			{ -1, 116, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
+			{ -1, 117, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
 			{ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 337, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },
-			{ -1, 117, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
+			{ -1, 600, 600, 600, 118, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
 			{ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 339, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },
-			{ -1, 605, 605, 605, 118, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
+			{ -1, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 121, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
 			{ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 331, 102, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },
-			{ -1, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 121, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
+			{ -1, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 122, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
 			{ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 93, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 186, -1, -1, -1, -1, -1, -1, -1 },
-			{ -1, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 122, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
+			{ -1, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, -1, 600, 600, 123, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
 			{ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 335, 119, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },
-			{ -1, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, -1, 605, 605, 123, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
+			{ -1, 124, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
 			{ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 337, 120, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },
-			{ -1, 124, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
+			{ -1, 600, 600, 600, 600, 600, 125, 600, 600, 600, 600, 600, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
 			{ -1, -1, -1, -1, -1, -1, -1, -1, 331, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },
-			{ -1, 605, 605, 605, 605, 605, 125, 605, 605, 605, 605, 605, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
+			{ -1, 126, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
 			{ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 343, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },
-			{ -1, 126, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
+			{ -1, 600, 600, 600, 600, 127, 600, 600, 600, 600, 600, 600, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
 			{ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 134, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },
-			{ -1, 605, 605, 605, 605, 127, 605, 605, 605, 605, 605, 605, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
+			{ -1, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 128, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
 			{ 187, 187, 187, 187, 187, 187, 187, 187, 187, 187, 187, 187, 187, 187, 187, -1, 187, 187, 187, 187, 187, 187, 187, 187, 187, 187, -1, 187, 187, 187, 187, 187, 187, 187, 187, 187, 187, 187, 187, 187, 187, 187, 187, 187, 187, 187, 187, 187, 187, 187, 187, 187, 187, 187, 187, 187, 187, -1, 187, 187, 187, 187, 187, 187, -1 },
-			{ -1, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 128, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
+			{ -1, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 129, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
 			{ 187, 187, 187, 187, 187, 187, 187, 187, 187, 187, 187, 187, 187, 187, 187, 187, 187, 187, 187, 187, 187, 187, 187, 187, 187, 187, -1, 187, 187, 187, 187, 187, 187, 187, 187, 187, 187, 187, 187, 187, 187, 187, 187, 187, 187, 187, 187, 187, 187, 187, 187, 187, 143, 187, 187, 187, 187, 187, 187, 187, 187, 187, 187, 187, -1 },
-			{ -1, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 129, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
+			{ -1, 130, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
 			{ -1, 185, 185, 185, 185, 185, 185, 185, 185, 185, 185, 185, 185, 185, 185, -1, 185, 185, 185, 185, 185, 185, 185, 185, -1, -1, 185, -1, 185, -1, -1, -1, -1, 185, -1, -1, -1, 185, 185, 185, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 144, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 185 },
-			{ -1, 130, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
+			{ -1, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, -1, 600, 600, 131, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
 			{ 187, 187, 187, 187, 187, 187, 187, 187, 187, 187, 187, 187, 187, 187, 187, 187, 187, 187, 187, 187, 187, 187, 187, 187, 187, 187, -1, 187, 187, 187, 187, 187, 187, 187, 187, 187, 187, 187, 187, 187, 187, 187, 187, 187, 187, 187, 187, 187, 187, 187, 187, 187, -1, 187, 187, 187, 187, 187, 187, 187, 187, 187, 187, 187, -1 },
-			{ -1, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, -1, 605, 605, 131, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
+			{ -1, 600, 600, 600, 600, 600, 132, 600, 600, 600, 600, 600, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
 			{ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 355, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },
-			{ -1, 605, 605, 605, 605, 605, 132, 605, 605, 605, 605, 605, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
+			{ -1, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 133, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
 			{ -1, 146, 146, 146, 146, 146, 146, 146, 146, 146, 146, 146, 146, 146, 146, -1, 146, 146, 146, 146, 146, 146, 146, 146, -1, -1, 146, -1, 146, -1, -1, -1, -1, 146, -1, -1, -1, 146, 146, 146, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 146 },
-			{ -1, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 133, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
+			{ -1, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 135, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
 			{ 147, 147, 147, 147, 147, 147, 147, 147, 147, 147, 147, 147, 147, 147, 147, 147, 147, 147, 147, 147, 147, 147, 147, 147, 147, 147, 2, 147, 147, 147, 359, 147, 147, 147, 147, 147, 147, 147, 147, 147, 147, 147, 147, 147, 147, 147, 147, 147, 147, 147, 147, 147, 147, 147, 147, 147, 147, 147, 147, 147, 148, 147, 147, 147, 2 },
-			{ -1, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 135, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
+			{ -1, 136, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
 			{ 147, 147, 147, 147, 147, 147, 147, 147, 147, 147, 147, 147, 147, 147, 147, 147, 147, 147, 147, 147, 147, 147, 147, 147, 147, 147, -1, 147, 147, 147, 147, 147, 147, 147, 147, 147, 147, 147, 147, 147, 147, 147, 147, 147, 147, 147, 147, 147, 147, 147, 147, 147, 147, 147, 147, 147, 147, 147, 147, 147, 147, 147, 147, 147, -1 },
-			{ -1, 136, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ 206, 206, 206, 206, 206, 206, 206, 206, 206, 206, 206, 206, 206, 206, 206, -1, 206, 206, 206, 206, 206, 206, 206, 206, 206, 206, -1, 206, 206, 206, 206, 206, 206, 206, 206, 206, 206, 206, 206, 206, 206, 206, 206, 206, 206, 206, 206, 206, 206, 206, 206, 206, 206, 206, 206, 206, 206, -1, 206, 206, 206, 206, 206, 206, -1 },
-			{ -1, 137, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ 206, 206, 206, 206, 206, 206, 206, 206, 206, 206, 206, 206, 206, 206, 206, 206, 206, 206, 206, 206, 206, 206, 206, 206, 206, 206, -1, 206, 206, 206, 206, 206, 206, 206, 206, 206, 206, 206, 206, 206, 206, 206, 206, 206, 206, 206, 206, 206, 206, 206, 206, 206, 143, 206, 206, 206, 206, 206, 206, 206, 206, 206, 206, 206, -1 },
-			{ -1, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 138, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ 206, 206, 206, 206, 206, 206, 206, 206, 206, 206, 206, 206, 206, 206, 206, 206, 206, 206, 206, 206, 206, 206, 206, 206, 206, 206, -1, 206, 206, 206, 206, 206, 206, 206, 206, 206, 206, 206, 206, 206, 206, 206, 206, 206, 206, 206, 206, 206, 206, 206, 206, 206, -1, 206, 206, 206, 206, 206, 206, 206, 206, 206, 206, 206, -1 },
-			{ -1, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 139, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, -1, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, -1, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, -1, 150, 150, 150, 150, 150, 150, -1 },
-			{ -1, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 140, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, -1, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, -1, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, -1 },
-			{ 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, -1, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, -1, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, -1, 214, 214, 214, 214, 214, 214, -1 },
-			{ 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, -1, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 143, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, -1 },
-			{ 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, -1, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, -1, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, -1 },
-			{ 151, 151, 151, 151, 151, 151, 151, 151, 151, 151, 151, 151, 151, 151, 151, -1, 151, 151, 151, 151, 151, 151, 151, 151, 151, 151, -1, 151, 151, 151, 151, 151, 151, 151, 151, 151, 151, 151, 151, 151, 151, 151, 151, 151, 151, 151, 151, 151, 151, 151, 151, 151, 151, 151, 151, 151, 151, -1, 151, 151, 151, 151, 151, 151, -1 },
-			{ 151, 151, 151, 151, 151, 151, 151, 151, 151, 151, 151, 151, 151, 151, 151, 151, 151, 151, 151, 151, 151, 151, 151, 151, 151, 151, -1, 151, 151, 151, 151, 151, 151, 151, 151, 151, 151, 151, 151, 151, 151, 151, 151, 151, 151, 151, 151, 151, 151, 151, 151, 151, -1, 151, 151, 151, 151, 151, 151, 151, 151, 151, 151, 151, -1 },
-			{ -1, 375, 375, 375, 375, 375, 375, 375, 375, 375, 375, 375, 375, 375, 375, 152, 375, 375, 375, 375, 375, 375, 375, 375, -1, -1, 375, 375, 375, -1, -1, -1, -1, 375, -1, -1, -1, 375, 375, 375, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 375, 375, 188, -1, -1, -1, -1, -1, 376, 375 },
-			{ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 152, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 188, -1, -1, -1, -1, -1, -1, -1 },
+			{ -1, 137, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ 188, 188, 188, 188, 188, 188, 188, 188, 188, 188, 188, 188, 188, 188, 188, -1, 188, 188, 188, 188, 188, 188, 188, 188, 188, 188, -1, 188, 188, 188, 188, 188, 188, 188, 188, 188, 188, 188, 188, 188, 188, 188, 188, 188, 188, 188, 188, 188, 188, 188, 188, 188, 188, 188, 188, 188, 188, -1, 188, 188, 188, 188, 188, 188, -1 },
+			{ -1, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 138, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ 188, 188, 188, 188, 188, 188, 188, 188, 188, 188, 188, 188, 188, 188, 188, 188, 188, 188, 188, 188, 188, 188, 188, 188, 188, 188, -1, 188, 188, 188, 188, 188, 188, 188, 188, 188, 188, 188, 188, 188, 188, 188, 188, 188, 188, 188, 188, 188, 188, 188, 188, 188, 143, 188, 188, 188, 188, 188, 188, 188, 188, 188, 188, 188, -1 },
+			{ -1, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 139, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ 188, 188, 188, 188, 188, 188, 188, 188, 188, 188, 188, 188, 188, 188, 188, 188, 188, 188, 188, 188, 188, 188, 188, 188, 188, 188, -1, 188, 188, 188, 188, 188, 188, 188, 188, 188, 188, 188, 188, 188, 188, 188, 188, 188, 188, 188, 188, 188, 188, 188, 188, 188, -1, 188, 188, 188, 188, 188, 188, 188, 188, 188, 188, 188, -1 },
+			{ -1, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 140, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ 189, 189, 189, 189, 189, 189, 189, 189, 189, 189, 189, 189, 189, 189, 189, -1, 189, 189, 189, 189, 189, 189, 189, 189, 189, 189, -1, 189, 189, 189, 189, 189, 189, 189, 189, 189, 189, 189, 189, 189, 189, 189, 189, 189, 189, 189, 189, 189, 189, 189, 189, 189, 189, 189, 189, 189, 189, -1, 189, 189, 189, 189, 189, 189, -1 },
+			{ 189, 189, 189, 189, 189, 189, 189, 189, 189, 189, 189, 189, 189, 189, 189, 189, 189, 189, 189, 189, 189, 189, 189, 189, 189, 189, -1, 189, 189, 189, 189, 189, 189, 189, 189, 189, 189, 189, 189, 189, 189, 189, 189, 189, 189, 189, 189, 189, 189, 189, 189, 189, 143, 189, 189, 189, 189, 189, 189, 189, 189, 189, 189, 189, -1 },
+			{ 189, 189, 189, 189, 189, 189, 189, 189, 189, 189, 189, 189, 189, 189, 189, 189, 189, 189, 189, 189, 189, 189, 189, 189, 189, 189, -1, 189, 189, 189, 189, 189, 189, 189, 189, 189, 189, 189, 189, 189, 189, 189, 189, 189, 189, 189, 189, 189, 189, 189, 189, 189, -1, 189, 189, 189, 189, 189, 189, 189, 189, 189, 189, 189, -1 },
+			{ -1, 370, 370, 370, 370, 370, 370, 370, 370, 370, 370, 370, 370, 370, 370, 152, 370, 370, 370, 370, 370, 370, 370, 370, -1, -1, 370, 370, 370, -1, -1, -1, -1, 370, -1, -1, -1, 370, 370, 370, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 370, 370, 190, -1, -1, -1, -1, -1, 371, 370 },
+			{ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 152, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 190, -1, -1, -1, -1, -1, -1, -1 },
 			{ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 2, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 2 },
-			{ 153, 154, 154, 154, 154, 154, 154, 154, 154, 154, 154, 154, 154, 154, 154, 8, 154, 154, 154, 154, 154, 154, 154, 154, 189, 153, 154, 153, 154, 153, 153, 153, 153, 154, 153, 8, 153, 154, 154, 154, 153, 153, 153, 153, 153, 153, 153, 153, 153, 153, 153, 153, 153, 153, 153, 153, 153, 8, 153, 153, 153, 153, 153, 153, 154 },
-			{ 156, 190, 190, 190, 190, 190, 190, 190, 190, 190, 190, 190, 190, 190, 190, 156, 190, 190, 190, 190, 190, 190, 190, 190, 156, 156, 197, 156, 190, 156, 156, 156, 156, 190, 156, 156, 156, 190, 190, 190, 156, 156, 156, 156, 156, 156, 156, 156, 156, 156, 156, 156, 156, 156, 156, 156, 156, 156, 156, 156, 156, 156, 156, 156, 197 },
+			{ 153, 154, 154, 154, 154, 154, 154, 154, 154, 154, 154, 154, 154, 154, 154, 8, 154, 154, 154, 154, 154, 154, 154, 154, 191, 153, 154, 153, 154, 153, 153, 153, 153, 154, 153, 8, 153, 154, 154, 154, 153, 153, 153, 153, 153, 153, 153, 153, 153, 153, 153, 153, 153, 153, 153, 153, 153, 8, 153, 153, 153, 153, 153, 153, 154 },
+			{ 156, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 156, 192, 192, 192, 192, 192, 192, 192, 192, 156, 156, 199, 156, 192, 156, 156, 156, 156, 192, 156, 156, 156, 192, 192, 192, 156, 156, 156, 156, 156, 156, 156, 156, 156, 156, 156, 156, 156, 156, 156, 156, 156, 156, 156, 156, 156, 156, 156, 156, 199 },
 			{ 158, 158, 158, 158, 158, 158, 158, 158, 158, 158, 158, 158, 158, 158, 158, 158, 158, 158, 158, 158, 158, 158, 158, 158, 158, 158, 2, 158, 158, 158, 158, 158, 158, 158, 158, 158, 158, 158, 158, 158, 158, 158, 158, 158, 159, 158, 158, 158, 158, 158, 158, 158, 158, 158, 158, 158, 158, 158, 158, 158, 158, 158, 158, 158, 2 },
 			{ 161, 161, 161, 161, 161, 161, 161, 161, 161, 161, 161, 161, 161, 161, 161, 161, 161, 161, 161, 161, 161, 161, 161, 161, 161, 161, 2, 161, 161, 161, 161, 161, 161, 161, 161, 161, 161, 161, 161, 161, 161, 161, 161, 161, 162, 161, 161, 161, 161, 161, 161, 161, 161, 161, 161, 161, 161, 161, 161, 161, 161, 161, 161, 161, 2 },
-			{ 164, 164, 164, 164, 164, 164, 164, 164, 164, 164, 164, 164, 164, 164, 164, 165, 164, 164, 164, 164, 164, 164, 164, 164, 164, 166, 2, 164, 164, 164, 164, 164, 192, 164, 164, 164, 164, 164, 164, 164, 164, 164, 164, 164, 164, 164, 192, 164, 164, 164, 164, 164, 164, 164, 164, 164, 164, 191, 164, 164, 164, 164, 164, 164, 2 },
-			{ 6, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 168, 605, 605, 605, 605, 605, 605, 605, 605, 169, 169, 605, 170, 605, 169, 168, 169, 169, 605, 169, 168, 169, 605, 605, 605, 169, 169, 169, 169, 169, 169, 169, 169, 169, 169, 169, 169, 193, 169, 169, 194, 170, 168, 171, 169, 168, 168, 169, 169, 605 },
+			{ 164, 164, 164, 164, 164, 164, 164, 164, 164, 164, 164, 164, 164, 164, 164, 165, 164, 164, 164, 164, 164, 164, 164, 164, 164, 166, 2, 164, 164, 164, 164, 164, 194, 164, 164, 164, 164, 164, 164, 164, 164, 164, 164, 164, 164, 164, 194, 164, 164, 164, 164, 164, 164, 164, 164, 164, 164, 193, 164, 164, 164, 164, 164, 164, 2 },
+			{ 6, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 168, 600, 600, 600, 600, 600, 600, 600, 600, 169, 169, 600, 170, 600, 169, 168, 169, 169, 600, 169, 168, 169, 600, 600, 600, 169, 169, 169, 169, 169, 169, 169, 169, 169, 169, 169, 169, 195, 169, 169, 196, 170, 168, 171, 169, 168, 168, 169, 169, 600 },
 			{ 173, 173, 173, 173, 173, 173, 173, 173, 173, 173, 173, 173, 173, 173, 173, 173, 173, 173, 173, 173, 173, 173, 173, 173, 173, 173, 2, 173, 173, 173, 173, 173, 173, 173, 173, 173, 173, 173, 173, 173, 173, 173, 173, 173, 173, 173, 173, 173, 173, 173, 173, 173, 173, 173, 173, 173, 173, 173, 173, 173, 173, 173, 173, 173, 2 },
 			{ 174, 174, 174, 174, 174, 174, 174, 174, 174, 174, 174, 174, 174, 174, 174, 174, 174, 174, 174, 174, 174, 174, 174, 174, 174, 174, 2, 174, 174, 174, 174, 174, 174, 174, 174, 174, 174, 174, 174, 174, 174, 174, 174, 174, 174, 174, 174, 174, 174, 174, 174, 174, 174, 174, 174, 174, 174, 174, 174, 174, 174, 174, 174, 174, 177 },
-			{ -1, 605, 605, 605, 605, 605, 605, 605, 605, 605, 216, 605, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
+			{ -1, 600, 600, 600, 600, 600, 600, 600, 600, 600, 214, 600, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
 			{ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 271, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },
 			{ -1, -1, -1, -1, -1, -1, -1, -1, 263, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },
 			{ -1, -1, -1, -1, 275, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },
 			{ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 281, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },
-			{ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 397, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },
+			{ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 392, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },
 			{ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 297, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },
 			{ -1, 299, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },
 			{ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 307, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },
 			{ -1, 311, 311, 311, 311, 311, 311, 311, 311, 311, 311, 311, 311, 311, 311, -1, 311, 311, 311, 311, 311, 311, 311, 311, -1, -1, 311, -1, 311, -1, -1, -1, -1, 311, -1, -1, -1, 311, 311, 311, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 311 },
 			{ -1, -1, -1, -1, 319, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },
-			{ -1, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 219, 605, 605, -1, 605, 605, 418, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
+			{ -1, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 217, 600, 600, -1, 600, 600, 413, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
 			{ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 285, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },
 			{ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 317, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },
-			{ -1, 605, 605, 420, 605, 605, 605, 542, 605, 605, 225, 605, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
+			{ -1, 600, 600, 415, 600, 600, 600, 537, 600, 600, 223, 600, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
 			{ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 327, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },
-			{ -1, 605, 605, 605, 605, 605, 605, 605, 540, 605, 605, 228, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
+			{ -1, 600, 600, 600, 600, 600, 600, 600, 535, 600, 600, 226, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
 			{ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 341, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },
-			{ -1, 231, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, -1, 605, 421, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
+			{ -1, 229, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, -1, 600, 416, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
 			{ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 295, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },
-			{ -1, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, -1, 605, 237, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 240, 570, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 605, 605, 434, 605, 605, 605, 605, 605, 605, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, -1, 605, 605, 243, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 246, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 435, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, -1, 605, 249, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 605, 587, 605, 605, 605, 605, 436, 605, 437, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 438, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 440, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 605, 605, 605, 543, 605, 605, 571, 605, 605, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 605, 605, 605, 605, 605, 441, 605, 605, 605, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, -1, 598, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 605, 605, 605, 605, 605, 605, 605, 445, 605, 605, 605, 605, -1, 605, 446, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 605, 447, 605, 605, 605, 605, 605, 605, 252, 605, 605, 615, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, -1, 605, 548, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 572, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 605, 448, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 549, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 449, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 254, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 605, 256, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 605, 605, 605, 605, 605, 605, 605, 546, 605, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, -1, 605, 605, 605, 605, 588, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 453, 605, 605, 605, 605, 605, 605, 600, 605, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 605, 454, 455, 456, 605, 457, 599, 605, 605, 605, 605, 551, -1, 458, 605, 552, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 258, 605, 553, 460, 605, 605, 605, 605, 461, 605, 605, 605, -1, 605, 605, 605, 462, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 605, 260, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 573, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 605, 463, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 262, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 264, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 605, 605, 605, 605, 605, 605, 605, 266, 605, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, -1, 605, 268, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 605, 605, 605, 605, 605, 605, 464, 605, 605, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 270, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 605, 575, 605, 605, 605, 605, 605, 605, 272, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 605, 605, 605, 605, 605, 274, 605, 605, 605, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 276, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 605, 605, 605, 605, 605, 605, 278, 605, 605, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 605, 605, 605, 605, 468, 605, 605, 605, 605, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 280, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, -1, 605, 282, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 284, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, -1, 605, 286, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 605, 605, 605, 605, 605, 288, 605, 605, 605, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 604, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 606, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 471, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 472, 605, 605, 605, 554, 605, 605, 605, 605, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, -1, 605, 473, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 555, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 605, 605, 605, 605, 605, 475, 605, 605, 605, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 605, 605, 605, 605, 605, 605, 605, 290, 605, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, -1, 605, 605, 605, 477, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, -1, 605, 605, 559, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 557, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, -1, 605, 480, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 605, 580, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 484, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 294, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 605, 605, 605, 605, 605, 605, 296, 605, 605, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 298, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, -1, 605, 300, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 302, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 488, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 489, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, -1, 561, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, -1, 605, 490, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 605, 605, 304, 605, 605, 605, 605, 605, 605, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 605, 605, 605, 605, 605, 605, 493, 605, 605, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 563, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 605, 605, 605, 495, 605, 605, 605, 605, 605, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 605, 605, 306, 605, 605, 605, 605, 605, 605, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 605, 605, 605, 605, 605, 497, 605, 605, 605, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 308, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 310, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 605, 605, 605, 605, 605, 605, 314, 605, 605, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 564, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, -1, 605, 605, 605, 605, 500, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 316, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 605, 318, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 320, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 502, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 582, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, -1, 605, 605, 504, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 605, 505, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 584, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 322, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, -1, 605, 507, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 605, 605, 508, 605, 605, 605, 605, 605, 605, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 605, 605, 605, 605, 605, 605, 509, 605, 605, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 605, 605, 605, 605, 605, 605, 605, 324, 605, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 605, 605, 605, 605, 326, 605, 605, 605, 605, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 328, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 605, 605, 605, 605, 605, 605, 330, 605, 605, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 332, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 334, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 605, 605, 605, 605, 605, 605, 605, 517, 605, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 518, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 605, 605, 605, 605, 605, 605, 336, 605, 605, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 605, 605, 605, 605, 605, 605, 338, 605, 605, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 605, 605, 605, 605, 605, 605, 605, 340, 605, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 522, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 605, 605, 605, 605, 605, 523, 605, 605, 605, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 605, 605, 605, 605, 605, 605, 342, 605, 605, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 344, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 346, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 616, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 524, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 348, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 605, 605, 525, 605, 605, 605, 605, 605, 605, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 605, 605, 605, 605, 605, 605, 565, 605, 605, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 350, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 605, 605, 605, 605, 605, 605, 352, 605, 605, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 605, 605, 605, 605, 605, 605, 605, 526, 605, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 605, 605, 605, 605, 605, 605, 605, 354, 605, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 605, 356, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, -1, 605, 527, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 358, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 605, 605, 605, 605, 605, 529, 605, 605, 605, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 605, 605, 605, 605, 605, 605, 532, 605, 605, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, -1, 533, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 605, 605, 605, 605, 605, 605, 360, 605, 605, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 605, 605, 605, 605, 605, 605, 362, 605, 605, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 364, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 534, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 535, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 366, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 536, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 537, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 368, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 605, 605, 605, 605, 605, 605, 605, 569, 605, 605, 605, 422, -1, 605, 423, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 547, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 443, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 450, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 605, 605, 605, 605, 605, 442, 605, 605, 605, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, -1, 605, 590, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 451, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 452, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, -1, 605, 605, 605, 605, 469, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 577, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 605, 466, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 605, 605, 605, 605, 591, 605, 605, 605, 605, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 478, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 578, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, -1, 605, 556, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 476, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 605, 605, 605, 605, 605, 614, 605, 605, 605, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 605, 491, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 492, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, -1, 605, 496, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 605, 605, 605, 605, 605, 605, 583, 605, 605, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 494, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 605, 605, 605, 605, 605, 499, 605, 605, 605, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 562, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 515, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 605, 506, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, -1, 605, 511, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 605, 605, 605, 605, 605, 605, 605, 528, 605, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 605, 605, 605, 605, 605, 530, 605, 605, 605, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 605, 424, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, -1, 605, 605, 605, 425, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 589, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 605, 605, 605, 605, 605, 444, 605, 605, 605, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 459, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 576, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 605, 467, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 605, 605, 605, 605, 479, 605, 605, 605, 605, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 579, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 560, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, -1, 605, 482, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 611, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 605, 605, 605, 605, 605, 581, 605, 605, 605, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, -1, 605, 501, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 498, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 503, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 516, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 605, 512, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, -1, 605, 519, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 605, 605, 605, 605, 605, 531, 605, 605, 605, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 426, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 550, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 470, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 605, 574, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 605, 605, 605, 605, 481, 605, 605, 605, 605, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 486, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, -1, 605, 483, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 558, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 510, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 605, 513, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, -1, 605, 520, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 427, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 465, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 474, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 605, 593, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, -1, 605, 485, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 605, 514, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 428, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, -1, 605, 487, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, -1, 605, 612, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, -1, 605, 605, 544, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 605, 605, 605, 605, 605, 605, 605, 429, 605, 605, 605, 430, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 605, 605, 605, 605, 431, 605, 605, 605, 605, 432, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 433, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, -1, 594, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 595, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 605, 605, 605, 605, 605, 605, 605, 566, 605, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 605, 605, 605, 605, 605, 605, 602, 605, 605, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 605, 601, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 },
-			{ -1, 605, 605, 605, 605, 605, 605, 605, 605, 605, 585, 605, 605, 605, 605, -1, 605, 605, 605, 605, 605, 605, 605, 605, -1, -1, 605, 605, 605, -1, -1, -1, -1, 605, -1, -1, -1, 605, 605, 605, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 605, 605, -1, -1, -1, -1, -1, -1, -1, 605 }
+			{ -1, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, -1, 600, 235, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 238, 565, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 600, 600, 429, 600, 600, 600, 600, 600, 600, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, -1, 600, 600, 241, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 244, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 430, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, -1, 600, 247, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 600, 582, 600, 600, 600, 600, 431, 600, 432, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 433, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 435, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 600, 600, 600, 538, 600, 600, 566, 600, 600, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 600, 600, 600, 600, 600, 436, 600, 600, 600, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, -1, 593, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 600, 600, 600, 600, 600, 600, 600, 440, 600, 600, 600, 600, -1, 600, 441, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 600, 442, 600, 600, 600, 600, 600, 600, 250, 600, 600, 610, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, -1, 600, 543, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 567, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 600, 443, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 544, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 444, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 252, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 600, 254, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 600, 600, 600, 600, 600, 600, 600, 541, 600, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, -1, 600, 600, 600, 600, 583, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 448, 600, 600, 600, 600, 600, 600, 595, 600, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 600, 449, 450, 451, 600, 452, 594, 600, 600, 600, 600, 546, -1, 453, 600, 547, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 256, 600, 548, 455, 600, 600, 600, 600, 456, 600, 600, 600, -1, 600, 600, 600, 457, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 600, 258, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 568, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 600, 458, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 260, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 262, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 600, 600, 600, 600, 600, 600, 600, 264, 600, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, -1, 600, 266, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 600, 600, 600, 600, 600, 600, 459, 600, 600, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 268, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 600, 570, 600, 600, 600, 600, 600, 600, 270, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 600, 600, 600, 600, 600, 272, 600, 600, 600, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 274, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 600, 600, 600, 600, 600, 600, 276, 600, 600, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 600, 600, 600, 600, 463, 600, 600, 600, 600, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 278, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, -1, 600, 280, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 282, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, -1, 600, 284, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 600, 600, 600, 600, 600, 286, 600, 600, 600, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 599, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 601, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 466, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 467, 600, 600, 600, 549, 600, 600, 600, 600, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, -1, 600, 468, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 550, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 600, 600, 600, 600, 600, 470, 600, 600, 600, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 600, 600, 600, 600, 600, 600, 600, 288, 600, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, -1, 600, 600, 600, 472, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, -1, 600, 600, 554, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 552, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, -1, 600, 475, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 600, 575, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 479, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 292, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 600, 600, 600, 600, 600, 600, 294, 600, 600, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 296, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, -1, 600, 298, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 300, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 483, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 484, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, -1, 556, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, -1, 600, 485, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 600, 600, 302, 600, 600, 600, 600, 600, 600, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 600, 600, 600, 600, 600, 600, 488, 600, 600, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 558, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 600, 600, 600, 490, 600, 600, 600, 600, 600, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 600, 600, 304, 600, 600, 600, 600, 600, 600, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 600, 600, 600, 600, 600, 492, 600, 600, 600, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 306, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 308, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 600, 600, 600, 600, 600, 600, 312, 600, 600, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 559, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, -1, 600, 600, 600, 600, 495, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 314, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 600, 316, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 318, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 497, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 577, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, -1, 600, 600, 499, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 600, 500, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 579, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 320, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, -1, 600, 502, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 600, 600, 503, 600, 600, 600, 600, 600, 600, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 600, 600, 600, 600, 600, 600, 504, 600, 600, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 600, 600, 600, 600, 600, 600, 600, 322, 600, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 600, 600, 600, 600, 324, 600, 600, 600, 600, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 326, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 600, 600, 600, 600, 600, 600, 328, 600, 600, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 330, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 332, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 600, 600, 600, 600, 600, 600, 600, 512, 600, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 513, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 600, 600, 600, 600, 600, 600, 334, 600, 600, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 600, 600, 600, 600, 600, 600, 336, 600, 600, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 600, 600, 600, 600, 600, 600, 600, 338, 600, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 517, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 600, 600, 600, 600, 600, 518, 600, 600, 600, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 600, 600, 600, 600, 600, 600, 340, 600, 600, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 342, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 344, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 611, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 519, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 346, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 600, 600, 520, 600, 600, 600, 600, 600, 600, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 600, 600, 600, 600, 600, 600, 560, 600, 600, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 348, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 600, 600, 600, 600, 600, 600, 350, 600, 600, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 600, 600, 600, 600, 600, 600, 600, 521, 600, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 600, 600, 600, 600, 600, 600, 600, 352, 600, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 600, 354, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, -1, 600, 522, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 356, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 600, 600, 600, 600, 600, 524, 600, 600, 600, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 600, 600, 600, 600, 600, 600, 527, 600, 600, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, -1, 528, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 600, 600, 600, 600, 600, 600, 358, 600, 600, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 600, 600, 600, 600, 600, 600, 360, 600, 600, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 362, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 529, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 530, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 364, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 531, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 532, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 366, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 600, 600, 600, 600, 600, 600, 600, 564, 600, 600, 600, 417, -1, 600, 418, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 542, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 438, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 445, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 600, 600, 600, 600, 600, 437, 600, 600, 600, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, -1, 600, 585, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 446, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 447, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, -1, 600, 600, 600, 600, 464, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 572, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 600, 461, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 600, 600, 600, 600, 586, 600, 600, 600, 600, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 473, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 573, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, -1, 600, 551, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 471, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 600, 600, 600, 600, 600, 609, 600, 600, 600, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 600, 486, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 487, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, -1, 600, 491, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 600, 600, 600, 600, 600, 600, 578, 600, 600, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 489, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 600, 600, 600, 600, 600, 494, 600, 600, 600, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 557, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 510, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 600, 501, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, -1, 600, 506, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 600, 600, 600, 600, 600, 600, 600, 523, 600, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 600, 600, 600, 600, 600, 525, 600, 600, 600, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 600, 419, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, -1, 600, 600, 600, 420, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 584, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 600, 600, 600, 600, 600, 439, 600, 600, 600, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 454, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 571, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 600, 462, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 600, 600, 600, 600, 474, 600, 600, 600, 600, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 574, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 555, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, -1, 600, 477, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 606, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 600, 600, 600, 600, 600, 576, 600, 600, 600, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, -1, 600, 496, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 493, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 498, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 511, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 600, 507, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, -1, 600, 514, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 600, 600, 600, 600, 600, 526, 600, 600, 600, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 421, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 545, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 465, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 600, 569, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 600, 600, 600, 600, 476, 600, 600, 600, 600, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 481, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, -1, 600, 478, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 553, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 505, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 600, 508, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, -1, 600, 515, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 422, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 460, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 469, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 600, 588, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, -1, 600, 480, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 600, 509, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 423, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, -1, 600, 482, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, -1, 600, 607, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, -1, 600, 600, 539, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 600, 600, 600, 600, 600, 600, 600, 424, 600, 600, 600, 425, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 600, 600, 600, 600, 426, 600, 600, 600, 600, 427, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 428, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, -1, 589, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 590, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 600, 600, 600, 600, 600, 600, 600, 561, 600, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 600, 600, 600, 600, 600, 600, 597, 600, 600, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 596, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 },
+			{ -1, 600, 600, 600, 600, 600, 600, 600, 600, 600, 580, 600, 600, 600, 600, -1, 600, 600, 600, 600, 600, 600, 600, 600, -1, -1, 600, 600, 600, -1, -1, -1, -1, 600, -1, -1, -1, 600, 600, 600, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 600, 600, -1, -1, -1, -1, -1, -1, -1, 600 }
 		};
 		
 		
 		private static int[] yy_state_dtrans = new int[]
 		{
 			  0,
-			  207,
+			  210,
 			  141,
 			  357,
-			  201,
-			  210,
+			  149,
+			  151,
+			  372,
+			  373,
+			  374,
+			  376,
 			  377,
 			  378,
 			  379,
-			  381,
 			  382,
-			  383,
-			  384,
-			  387,
-			  388
+			  383
 		};
 		
 		#endregion
 		
-		public Tokens GetNextToken()
+		public Tokens NextToken()
 		{
 			int current_state = yy_state_dtrans[(int)current_lexical_state];
 			int last_accept_state = NoState;
@@ -3085,7 +3074,7 @@ using System.Collections.Generic;
 						
 						if (last_accept_state < 0)
 						{
-							System.Diagnostics.Debug.Assert(last_accept_state >= 617);
+							System.Diagnostics.Debug.Assert(last_accept_state >= 612);
 						}
 						else
 						{
@@ -3111,7 +3100,7 @@ using System.Collections.Generic;
 					}
 				}
 			}
-		} // end of GetNextToken
+		} // end of NextToken
 	}
 }
 

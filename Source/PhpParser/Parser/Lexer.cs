@@ -278,7 +278,7 @@ namespace PhpParser.Parser
 
     #endregion
 
-    public partial class Lexer//: ITokenProvider<SemanticValueType, Span>
+    public partial class Lexer : ITokenProvider<SemanticValueType, Span>
     {
         protected bool AllowAspTags = true;
         protected bool AllowShortTags = true;
@@ -314,6 +314,12 @@ namespace PhpParser.Parser
         protected string hereDocLabel = null;
         protected Stack<LexicalStates> StateStack { get { return stateStack; } set { stateStack = value; } }
 
+        public Lexer(System.IO.TextReader reader, SourceUnit sourceUnit)
+        {
+            this.sourceUnit = sourceUnit;
+            Initialize(reader, LexicalStates.INITIAL);
+        }
+
         /// <summary>
         /// Updates <see cref="charOffset"/> and <see cref="tokenPosition"/>.
         /// </summary>
@@ -324,6 +330,21 @@ namespace PhpParser.Parser
             // update token position info:
             tokenPosition = new Span(charOffset, tokenLength);
             charOffset += tokenLength;
+        }
+
+        void ITokenProvider<SemanticValueType, Span>.ReportError(string[] expectedTerminals)
+        {
+            // TODO (expected tokens....)
+            errors.Add(FatalErrors.SyntaxError, sourceUnit, tokenPosition,
+                CoreResources.GetString("unexpected_token", GetTokenString()));
+
+            //throw new CompilerException();	
+        }
+        public int GetNextToken()
+        {
+            Tokens token = NextToken();
+            UpdateTokenPosition();
+            return (int)token;
         }
 
         protected void _yymore() { yymore(); }
