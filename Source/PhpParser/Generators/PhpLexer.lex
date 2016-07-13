@@ -52,12 +52,12 @@ DNUM	([0-9]*"."[0-9]+)|([0-9]+"."[0-9]*)
 EXPONENT_DNUM	(({LNUM}|{DNUM})[eE][+-]?{LNUM})
 HNUM	"0x"[0-9a-fA-F]+
 BNUM	"0b"[01]+
-LABEL	[a-zA-Z_\x80-\xff][a-zA-Z0-9_\x80-\xff]*
+LABEL	[a-zA-Z_][a-zA-Z0-9_]* //[a-zA-Z_\x80-\xff][a-zA-Z0-9_\x80-\xff]* // support of unicode
 WHITESPACE [ \n\r\t]+
 TABS_AND_SPACES [ \t]*
 TOKENS [;:,.\[\]()|^&+-/*=%!~$<>?@]
 ANY_CHAR [^]
-NEWLINE ("\r"|"\n"|"\r\n") // TODO unicode line breaks
+NEWLINE ("\r"|"\n"|"\r\n"|\x2028|\x2029)
 
 NonVariableStart        [^a-zA-Z_{]
 
@@ -253,7 +253,7 @@ NonVariableStart        [^a-zA-Z_{]
 }
 
 <ST_IN_SCRIPTING>"::" {
-	return (Tokens.T_PAAMAYIM_NEKUDOTAYIM);
+	return (Tokens.T_DOUBLE_COLON);
 }
 
 <ST_IN_SCRIPTING>"\\" {
@@ -523,7 +523,7 @@ NonVariableStart        [^a-zA-Z_{]
 
 <ST_IN_SCRIPTING>"{" {
 	yy_push_state(LexicalStates.ST_IN_SCRIPTING); 
-	return Tokens.T_LBRACE;
+	return (Tokens)'{';
 }
 
 
@@ -537,7 +537,7 @@ NonVariableStart        [^a-zA-Z_{]
 	RESET_DOC_COMMENT();
 	if (!yy_pop_state()) 
 		return Tokens.T_ERROR; 
-	return Tokens.T_RBRACE;
+	return (Tokens)'}';
 }
 
 
@@ -662,7 +662,7 @@ NonVariableStart        [^a-zA-Z_{]
 
 <ST_VAR_OFFSET>"]" {
 	yy_pop_state();
-	return (Tokens.T_RBRACKET);
+	return (Tokens)']';
 }
 
 <ST_VAR_OFFSET>{TOKENS}|[{}"`] {
@@ -716,10 +716,13 @@ NonVariableStart        [^a-zA-Z_{]
 <ST_SINGLE_QUOTES>([^'\\]|("\\".)|("\\"{NEWLINE}))+ { yymore(); break; }
 <ST_SINGLE_QUOTES>"'"                               { BEGIN(LexicalStates.ST_IN_SCRIPTING); return ProcessSingleQuotedString(); }
 
+<ST_IN_SCRIPTING>b?["]([^"\{$\\]*(\\.|\{[^$])?)*["] {
+	return ProcessDoubleQuotedString();
+}
 
 <ST_IN_SCRIPTING>b?["] {
 	BEGIN(LexicalStates.ST_DOUBLE_QUOTES);
-	return (Tokens.T_DOUBLE_QUOTES);
+	return (Tokens)'"';
 }
 
 
@@ -752,12 +755,13 @@ NonVariableStart        [^a-zA-Z_{]
 
 <ST_IN_SCRIPTING>[`] {
 	BEGIN(LexicalStates.ST_BACKQUOTE); 
-	return Tokens.T_BACKQUOTE; 
+	return (Tokens)'`';
 }
 
 
 <ST_END_HEREDOC>{ANY_CHAR} {
 	BEGIN(LexicalStates.ST_IN_SCRIPTING);
+	tokenSemantics.Object = hereDocLabel.Length;
 	return (Tokens.T_END_HEREDOC);
 }
 
@@ -773,18 +777,20 @@ NonVariableStart        [^a-zA-Z_{]
 
 <ST_DOUBLE_QUOTES>["] {
 	BEGIN(LexicalStates.ST_IN_SCRIPTING);
-	return (Tokens.T_DOUBLE_QUOTES);
+	return (Tokens)'"';
 }
 
 <ST_BACKQUOTE>[`] {
 	BEGIN(LexicalStates.ST_IN_SCRIPTING);
-	return (Tokens.T_BACKQUOTE);
+	return (Tokens)'`';
 }
 
-<ST_HEREDOC,ST_NOWDOC>^{LABEL}(";")?{NEWLINE} {
-	BEGIN(LexicalStates.ST_END_HEREDOC);
-	tokenSemantics.Object = GetTokenString();
-	return (Tokens.T_ENCAPSED_AND_WHITESPACE);
+<ST_NOWDOC>^{LABEL}(";")?{NEWLINE} {
+	return ProcessEndNowDoc(s => s);
+}
+
+<ST_HEREDOC>^{LABEL}(";")?{NEWLINE} {
+	return ProcessEndNowDoc(s => (string)ProcessEscapedString(s, this.sourceUnit.Encoding, false));
 }
 
 <ST_NOWDOC>{ANY_CHAR}         { yymore(); break; }
@@ -799,7 +805,9 @@ NonVariableStart        [^a-zA-Z_{]
     return (Tokens.T_ENCAPSED_AND_WHITESPACE);
 }
 
-<ST_HEREDOC>([^\{$\\]*(\\.|\{[^$])?)* {
+<ST_HEREDOC>([^\n\r\x2028\x2029\{$\\]*(\\.|\{[^$])?)*{NEWLINE} { yymore(); break; }
+
+<ST_HEREDOC>([^\n\r\x2028\x2029\{$\\]*(\\.|\{[^$])?)* {
     tokenSemantics.Object = ProcessEscapedString(GetTokenString(), this.sourceUnit.Encoding, false);
     return (Tokens.T_ENCAPSED_AND_WHITESPACE);
 }

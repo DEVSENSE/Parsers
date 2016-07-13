@@ -317,6 +317,7 @@ namespace PhpParser.Parser
         public Lexer(System.IO.TextReader reader, SourceUnit sourceUnit)
         {
             this.sourceUnit = sourceUnit;
+            this.errors = null;
             Initialize(reader, LexicalStates.INITIAL);
         }
 
@@ -432,12 +433,6 @@ namespace PhpParser.Parser
             }
             else
             {
-                // decimal
-                if (number_length < 19)
-                    return Tokens.T_LNUMBER;
-                else
-                    return Tokens.T_DNUMBER;
-
                 // can't easily check for numbers of different length
                 SemanticValueType val = default(SemanticValueType);
                 return GetTokenAsDecimalNumber(startIndex, 10, ref val);
@@ -1114,6 +1109,17 @@ namespace PhpParser.Parser
         {
             tokenSemantics.Object = GetTokenString();
             return (Tokens.T_NUM_STRING);
+        }
+
+        Tokens ProcessEndNowDoc(Func<string, string> f)
+        {
+            BEGIN(LexicalStates.ST_END_HEREDOC);
+            string label = GetTokenString();
+            label = label.TrimEnd(new char[] { '\r', '\n', ';' });
+            lookahead_index = token_end = lookahead_index - (TokenLength - label.Length);
+            //yyless(TokenLength - label.Length);
+            tokenSemantics.Object = f(label.Substring(0, label.Length - hereDocLabel.Length));
+            return (Tokens.T_ENCAPSED_AND_WHITESPACE);
         }
 
 

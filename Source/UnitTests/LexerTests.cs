@@ -7,6 +7,7 @@ using PHP.Syntax;
 using System.Diagnostics;
 using System.Text;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace UnitTests
 {
@@ -22,15 +23,20 @@ namespace UnitTests
         private string ParseByPhp(string path)
         {
             Process process = new Process();
+            StringBuilder output = new StringBuilder();
             // Configure the process using the StartInfo properties.
             process.StartInfo.FileName = @"..\..\..\..\Tools\PHP v7.0\php.exe";
             process.StartInfo.Arguments = "-f tokens.php " + path;
-            process.StartInfo.WindowStyle = ProcessWindowStyle.Maximized;
             process.StartInfo.RedirectStandardOutput = true;
             process.StartInfo.UseShellExecute = false;
+            process.StartInfo.CreateNoWindow = true;
             process.Start();
+            while (!process.HasExited)
+            {
+                output.Append(process.StandardOutput.ReadToEnd());
+            }
             process.WaitForExit();// Waits here for the process to exit.
-            return process.StandardOutput.ReadToEnd();
+            return output.ToString();
         }
 
         [TestMethod]
@@ -48,24 +54,35 @@ namespace UnitTests
         public void LexerGetNextTokenTest()
         {
             string path = (string)TestContext.DataRow["files"];
+
             SourceUnit sourceUnit = new CodeSourceUnit(File.ReadAllText(path), path, new System.Text.ASCIIEncoding(), Lexer.LexicalStates.INITIAL);
             PhpParser.Parser.ITokenProvider<SemanticValueType, Span> lexer = new Lexer(new StreamReader(path), sourceUnit);
 
             string parsed = ParseByPhp(path);
-            string[] expectedTokens = parsed.Split(new string[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries);
+            parsed = parsed.Substring(0, parsed.LastIndexOf('-'));
+            int i = 0;
+            string[][] expectedTokens = (
+                from s in parsed.Replace("\r", "").Replace("\n", "").Split('-')
+                let num = i++
+                group s by num / 3 into g
+                select g.ToArray()
+                ).ToArray();
 
-            List<Tokens> l = new List<Tokens>();
-            Tokens t = Tokens.END;
-            while ((t = (Tokens)lexer.GetNextToken()) != Tokens.END)
-            {
-                l.Add(t);
-            }
+            //List<KeyValuePair<Tokens, SemanticValueType>> l = new List<KeyValuePair<Tokens, SemanticValueType>>();
+            //Tokens t = Tokens.END;
+            //while ((t = (Tokens)lexer.GetNextToken()) != Tokens.END)
+            //{
+            //    l.Add(new KeyValuePair<Tokens, SemanticValueType>(t, lexer.TokenValue));
+            //}
 
             foreach (var expectedToken in expectedTokens)
             {
-                string[] expected = expectedToken.Split('-');
                 Tokens token = (Tokens)lexer.GetNextToken();
-                Assert.AreEqual(expected[1], token.ToString());
+                Assert.AreEqual(int.Parse(expectedToken[0]), (int)token);
+                if (token == Tokens.T_VARIABLE || token == Tokens.T_STRING || token == Tokens.T_ENCAPSED_AND_WHITESPACE || token == Tokens.T_CONSTANT_ENCAPSED_STRING)
+                {
+                    //Assert.AreEqual(expectedToken[2].TrimStart('$').Trim(new char[] { '\'', '"' }).Replace("\\n", "\n").Replace("\\r", "\r").Replace("\\t", "\t"), lexer.TokenValue.Object.ToString());
+                }
             }
         }
     }

@@ -79,17 +79,17 @@ using FcnParam = System.Tuple<System.Collections.Generic.List<PHP.Core.AST.TypeR
 %left T_ENDIF
 %right T_STATIC T_ABSTRACT T_FINAL T_PRIVATE T_PROTECTED T_PUBLIC
 
-%token <ast> T_LNUMBER   //"integer number (T_LNUMBER)"
-%token <ast> T_DNUMBER   //"floating-point number (T_DNUMBER)"
-%token <ast> T_STRING    //"identifier (T_STRING)"
-%token <ast> T_VARIABLE  //"variable (T_VARIABLE)"
-%token <ast> T_INLINE_HTML
-%token <ast> T_ENCAPSED_AND_WHITESPACE  //"quoted-string and whitespace (T_ENCAPSED_AND_WHITESPACE)"
-%token <ast> T_CONSTANT_ENCAPSED_STRING //"quoted-string (T_CONSTANT_ENCAPSED_STRING)"
-%token <ast> T_STRING_VARNAME //"variable name (T_STRING_VARNAME)"
-%token <ast> T_NUM_STRING //"number (T_NUM_STRING)"
+%token <ast> T_LNUMBER 317   //"integer number (T_LNUMBER)"
+%token <ast> T_DNUMBER 318   //"floating-point number (T_DNUMBER)"
+%token <ast> T_STRING 319   //"identifier (T_STRING)"
+%token <ast> T_VARIABLE 320 //"variable (T_VARIABLE)"
+%token <ast> T_INLINE_HTML 321
+%token <ast> T_ENCAPSED_AND_WHITESPACE 322  //"quoted-string and whitespace (T_ENCAPSED_AND_WHITESPACE)"
+%token <ast> T_CONSTANT_ENCAPSED_STRING 323 //"quoted-string (T_CONSTANT_ENCAPSED_STRING)"
+%token <ast> T_STRING_VARNAME 324 //"variable name (T_STRING_VARNAME)"
+%token <ast> T_NUM_STRING 325 //"number (T_NUM_STRING)"
 
-/* Character tokens */
+/* Character tokens
 %token T_EXCLAM 33 // = (int)'!',
 %token T_DOUBLE_QUOTES 34 // = (int)'"',
 %token T_DOLLAR 36 // = (int)'$',
@@ -118,132 +118,133 @@ using FcnParam = System.Tuple<System.Collections.Generic.List<PHP.Core.AST.TypeR
 %token T_PIPE 124 // = (int)'|',
 %token T_RBRACE 125 // = (int)'}',
 %token T_TILDE 126 // = (int)'~',
+ */
 
 %token END 0 //"end of file"
-%token T_INCLUDE      //"include (T_INCLUDE)"
-%token T_INCLUDE_ONCE //"include_once (T_INCLUDE_ONCE)"
-%token T_EVAL         //"eval (T_EVAL)"
-%token T_REQUIRE      //"require (T_REQUIRE)"
-%token T_REQUIRE_ONCE //"require_once (T_REQUIRE_ONCE)"
-%token T_LOGICAL_OR   //"or (T_LOGICAL_OR)"
-%token T_LOGICAL_XOR  //"xor (T_LOGICAL_XOR)"
-%token T_LOGICAL_AND  //"and (T_LOGICAL_AND)"
-%token T_PRINT        //"print (T_PRINT)"
-%token T_YIELD        //"yield (T_YIELD)"
-%token T_YIELD_FROM   //"yield from (T_YIELD_FROM)"
-%token T_PLUS_EQUAL   //"+= (T_PLUS_EQUAL)"
-%token T_MINUS_EQUAL  //"-= (T_MINUS_EQUAL)"
-%token T_MUL_EQUAL    //"*= (T_MUL_EQUAL)"
-%token T_DIV_EQUAL    //"/= (T_DIV_EQUAL)"
-%token T_CONCAT_EQUAL //".= (T_CONCAT_EQUAL)"
-%token T_MOD_EQUAL    //"%= (T_MOD_EQUAL)"
-%token T_AND_EQUAL    //"&= (T_AND_EQUAL)"
-%token T_OR_EQUAL     //"|= (T_OR_EQUAL)"
-%token T_XOR_EQUAL    //"^= (T_XOR_EQUAL)"
-%token T_SL_EQUAL     //"<<= (T_SL_EQUAL)"
-%token T_SR_EQUAL     //">>= (T_SR_EQUAL)"
-%token T_BOOLEAN_OR   //"|| (T_BOOLEAN_OR)"
-%token T_BOOLEAN_AND  //"&& (T_BOOLEAN_AND)"
-%token T_IS_EQUAL     //"== (T_IS_EQUAL)"
-%token T_IS_NOT_EQUAL //"!= (T_IS_NOT_EQUAL)"
-%token T_IS_IDENTICAL //"=== (T_IS_IDENTICAL)"
-%token T_IS_NOT_IDENTICAL //"!== (T_IS_NOT_IDENTICAL)"
-%token T_IS_SMALLER_OR_EQUAL //"<= (T_IS_SMALLER_OR_EQUAL)"
-%token T_IS_GREATER_OR_EQUAL //">= (T_IS_GREATER_OR_EQUAL)"
-%token T_SPACESHIP //"<=> (T_SPACESHIP)"
-%token T_SL //"<< (T_SL)"
-%token T_SR //">> (T_SR)"
-%token T_INSTANCEOF  //"instanceof (T_INSTANCEOF)"
-%token T_INC //"++ (T_INC)"
-%token T_DEC //"-- (T_DEC)"
-%token T_INT_CAST    //"(int) (T_INT_CAST)"
-%token T_DOUBLE_CAST //"(double) (T_DOUBLE_CAST)"
-%token T_STRING_CAST //"(string) (T_STRING_CAST)"
-%token T_ARRAY_CAST  //"(array) (T_ARRAY_CAST)"
-%token T_OBJECT_CAST //"(object) (T_OBJECT_CAST)"
-%token T_BOOL_CAST   //"(bool) (T_BOOL_CAST)"
-%token T_UNSET_CAST  //"(unset) (T_UNSET_CAST)"
-%token T_NEW       //"new (T_NEW)"
-%token T_CLONE     //"clone (T_CLONE)"
-%token T_EXIT      //"exit (T_EXIT)"
-%token T_IF        //"if (T_IF)"
-%token T_ELSEIF    //"elseif (T_ELSEIF)"
-%token T_ELSE      //"else (T_ELSE)"
-%token T_ENDIF     //"endif (T_ENDIF)"
-%token T_ECHO       //"echo (T_ECHO)"
-%token T_DO         //"do (T_DO)"
-%token T_WHILE      //"while (T_WHILE)"
-%token T_ENDWHILE   //"endwhile (T_ENDWHILE)"
-%token T_FOR        //"for (T_FOR)"
-%token T_ENDFOR     //"endfor (T_ENDFOR)"
-%token T_FOREACH    //"foreach (T_FOREACH)"
-%token T_ENDFOREACH //"endforeach (T_ENDFOREACH)"
-%token T_DECLARE    //"declare (T_DECLARE)"
-%token T_ENDDECLARE //"enddeclare (T_ENDDECLARE)"
-%token T_AS         //"as (T_AS)"
-%token T_SWITCH     //"switch (T_SWITCH)"
-%token T_ENDSWITCH  //"endswitch (T_ENDSWITCH)"
-%token T_CASE       //"case (T_CASE)"
-%token T_DEFAULT    //"default (T_DEFAULT)"
-%token T_BREAK      //"break (T_BREAK)"
-%token T_CONTINUE   //"continue (T_CONTINUE)"
-%token T_GOTO       //"goto (T_GOTO)"
-%token T_FUNCTION   //"function (T_FUNCTION)"
-%token T_CONST      //"const (T_CONST)"
-%token T_RETURN     //"return (T_RETURN)"
-%token T_TRY        //"try (T_TRY)"
-%token T_CATCH      //"catch (T_CATCH)"
-%token T_FINALLY    //"finally (T_FINALLY)"
-%token T_THROW      //"throw (T_THROW)"
-%token T_USE        //"use (T_USE)"
-%token T_INSTEADOF  //"insteadof (T_INSTEADOF)"
-%token T_GLOBAL     //"global (T_GLOBAL)"
-%token T_STATIC     //"static (T_STATIC)"
-%token T_ABSTRACT   //"abstract (T_ABSTRACT)"
-%token T_FINAL      //"final (T_FINAL)"
-%token T_PRIVATE    //"private (T_PRIVATE)"
-%token T_PROTECTED  //"protected (T_PROTECTED)"
-%token T_PUBLIC     //"public (T_PUBLIC)"
-%token T_VAR        //"var (T_VAR)"
-%token T_UNSET      //"unset (T_UNSET)"
-%token T_ISSET      //"isset (T_ISSET)"
-%token T_EMPTY      //"empty (T_EMPTY)"
-%token T_HALT_COMPILER //"__halt_compiler (T_HALT_COMPILER)"
-%token T_CLASS      //"class (T_CLASS)"
-%token T_TRAIT      //"trait (T_TRAIT)"
-%token T_INTERFACE  //"interface (T_INTERFACE)"
-%token T_EXTENDS    //"extends (T_EXTENDS)"
-%token T_IMPLEMENTS //"implements (T_IMPLEMENTS)"
-%token T_OBJECT_OPERATOR //"-> (T_OBJECT_OPERATOR)"
-%token T_DOUBLE_ARROW    //"=> (T_DOUBLE_ARROW)"
-%token T_LIST            //"list (T_LIST)"
-%token T_ARRAY           //"array (T_ARRAY)"
-%token T_CALLABLE        //"callable (T_CALLABLE)"
-%token T_LINE            //"__LINE__ (T_LINE)"
-%token T_FILE            //"__FILE__ (T_FILE)"
-%token T_DIR             //"__DIR__ (T_DIR)"
-%token T_CLASS_C         //"__CLASS__ (T_CLASS_C)"
-%token T_TRAIT_C         //"__TRAIT__ (T_TRAIT_C)"
-%token T_METHOD_C        //"__METHOD__ (T_METHOD_C)"
-%token T_FUNC_C          //"__FUNCTION__ (T_FUNC_C)"
-%token T_COMMENT         //"comment (T_COMMENT)"
-%token T_DOC_COMMENT     //"doc comment (T_DOC_COMMENT)"
-%token T_OPEN_TAG        //"open tag (T_OPEN_TAG)"
-%token T_OPEN_TAG_WITH_ECHO //"open tag with echo (T_OPEN_TAG_WITH_ECHO)"
-%token T_CLOSE_TAG       //"close tag (T_CLOSE_TAG)"
-%token T_WHITESPACE      //"whitespace (T_WHITESPACE)"
-%token T_START_HEREDOC   //"heredoc start (T_START_HEREDOC)"
-%token T_END_HEREDOC     //"heredoc end (T_END_HEREDOC)"
-%token T_DOLLAR_OPEN_CURLY_BRACES //"${ (T_DOLLAR_OPEN_CURLY_BRACES)"
-%token T_CURLY_OPEN      //"{$ (T_CURLY_OPEN)"
-%token T_PAAMAYIM_NEKUDOTAYIM //":: (T_PAAMAYIM_NEKUDOTAYIM)"
-%token T_NAMESPACE       //"namespace (T_NAMESPACE)"
-%token T_NS_C            //"__NAMESPACE__ (T_NS_C)"
-%token T_NS_SEPARATOR    //"\\ (T_NS_SEPARATOR)"
-%token T_ELLIPSIS        //"... (T_ELLIPSIS)"
-%token T_COALESCE        //"?? (T_COALESCE)"
-%token T_POW             //"** (T_POW)"
-%token T_POW_EQUAL       //"**= (T_POW_EQUAL)"
+%token T_INCLUDE 262      //"include (T_INCLUDE)"
+%token T_INCLUDE_ONCE 261 //"include_once (T_INCLUDE_ONCE)"
+%token T_EVAL 260         //"eval (T_EVAL)"
+%token T_REQUIRE 259      //"require (T_REQUIRE)"
+%token T_REQUIRE_ONCE 258 //"require_once (T_REQUIRE_ONCE)"
+%token T_LOGICAL_OR 263   //"or (T_LOGICAL_OR)"
+%token T_LOGICAL_XOR 264  //"xor (T_LOGICAL_XOR)"
+%token T_LOGICAL_AND 265  //"and (T_LOGICAL_AND)"
+%token T_PRINT 266        //"print (T_PRINT)"
+%token T_YIELD 267        //"yield (T_YIELD)"
+%token T_YIELD_FROM 269    //"yield from (T_YIELD_FROM)"
+%token T_PLUS_EQUAL 281  //"+= (T_PLUS_EQUAL)"
+%token T_MINUS_EQUAL 280  //"-= (T_MINUS_EQUAL)"
+%token T_MUL_EQUAL 279    //"*= (T_MUL_EQUAL)"
+%token T_DIV_EQUAL 278   //"/= (T_DIV_EQUAL)"
+%token T_CONCAT_EQUAL 277 //".= (T_CONCAT_EQUAL)"
+%token T_MOD_EQUAL 276    //"%= (T_MOD_EQUAL)"
+%token T_AND_EQUAL 275    //"&= (T_AND_EQUAL)"
+%token T_OR_EQUAL 274     //"|= (T_OR_EQUAL)"
+%token T_XOR_EQUAL 273    //"^= (T_XOR_EQUAL)"
+%token T_SL_EQUAL 272    //"<<= (T_SL_EQUAL)"
+%token T_SR_EQUAL 271     //">>= (T_SR_EQUAL)"
+%token T_BOOLEAN_OR 283  //"|| (T_BOOLEAN_OR)"
+%token T_BOOLEAN_AND 284  //"&& (T_BOOLEAN_AND)"
+%token T_IS_EQUAL 289     //"== (T_IS_EQUAL)"
+%token T_IS_NOT_EQUAL 288 //"!= (T_IS_NOT_EQUAL)"
+%token T_IS_IDENTICAL 287 //"=== (T_IS_IDENTICAL)"
+%token T_IS_NOT_IDENTICAL 286 //"!== (T_IS_NOT_IDENTICAL)"
+%token T_IS_SMALLER_OR_EQUAL 291 //"<= (T_IS_SMALLER_OR_EQUAL)"
+%token T_IS_GREATER_OR_EQUAL 290 //">= (T_IS_GREATER_OR_EQUAL)"
+%token T_SPACESHIP 285 //"<=> (T_SPACESHIP)"
+%token T_SL 293 //"<< (T_SL)"
+%token T_SR 292 //">> (T_SR)"
+%token T_INSTANCEOF 294  //"instanceof (T_INSTANCEOF)"
+%token T_INC 303 //"++ (T_INC)"
+%token T_DEC 302 //"-- (T_DEC)"
+%token T_INT_CAST 301   //"(int) (T_INT_CAST)"
+%token T_DOUBLE_CAST 300 //"(double) (T_DOUBLE_CAST)"
+%token T_STRING_CAST 299 //"(string) (T_STRING_CAST)"
+%token T_ARRAY_CAST 298  //"(array) (T_ARRAY_CAST)"
+%token T_OBJECT_CAST 297 //"(object) (T_OBJECT_CAST)"
+%token T_BOOL_CAST 296   //"(bool) (T_BOOL_CAST)"
+%token T_UNSET_CAST 295  //"(unset) (T_UNSET_CAST)"
+%token T_NEW 306      //"new (T_NEW)"
+%token T_CLONE 305     //"clone (T_CLONE)"
+%token T_EXIT 326      //"exit (T_EXIT)"
+%token T_IF 327       //"if (T_IF)"
+%token T_ELSEIF 308   //"elseif (T_ELSEIF)"
+%token T_ELSE 309     //"else (T_ELSE)"
+%token T_ENDIF 310    //"endif (T_ENDIF)"
+%token T_ECHO 328      //"echo (T_ECHO)"
+%token T_DO 329        //"do (T_DO)"
+%token T_WHILE 330     //"while (T_WHILE)"
+%token T_ENDWHILE 331  //"endwhile (T_ENDWHILE)"
+%token T_FOR 332       //"for (T_FOR)"
+%token T_ENDFOR 333    //"endfor (T_ENDFOR)"
+%token T_FOREACH 334   //"foreach (T_FOREACH)"
+%token T_ENDFOREACH 335  //"endforeach (T_ENDFOREACH)"
+%token T_DECLARE 336   //"declare (T_DECLARE)"
+%token T_ENDDECLARE 337 //"enddeclare (T_ENDDECLARE)"
+%token T_AS 338        //"as (T_AS)"
+%token T_SWITCH 339    //"switch (T_SWITCH)"
+%token T_ENDSWITCH 340 //"endswitch (T_ENDSWITCH)"
+%token T_CASE 341      //"case (T_CASE)"
+%token T_DEFAULT 342   //"default (T_DEFAULT)"
+%token T_BREAK 343     //"break (T_BREAK)"
+%token T_CONTINUE 344  //"continue (T_CONTINUE)"
+%token T_GOTO 345      //"goto (T_GOTO)"
+%token T_FUNCTION 346   //"function (T_FUNCTION)"
+%token T_CONST 347     //"const (T_CONST)"
+%token T_RETURN 348     //"return (T_RETURN)"
+%token T_TRY 349       //"try (T_TRY)"
+%token T_CATCH 350     //"catch (T_CATCH)"
+%token T_FINALLY 351   //"finally (T_FINALLY)"
+%token T_THROW 352     //"throw (T_THROW)"
+%token T_USE 353       //"use (T_USE)"
+%token T_INSTEADOF 354  //"insteadof (T_INSTEADOF)"
+%token T_GLOBAL 355    //"global (T_GLOBAL)"
+%token T_STATIC 316    //"static (T_STATIC)"
+%token T_ABSTRACT 315  //"abstract (T_ABSTRACT)"
+%token T_FINAL 314     //"final (T_FINAL)"
+%token T_PRIVATE 313   //"private (T_PRIVATE)"
+%token T_PROTECTED 312 //"protected (T_PROTECTED)"
+%token T_PUBLIC 311    //"public (T_PUBLIC)"
+%token T_VAR 356        //"var (T_VAR)"
+%token T_UNSET 357     //"unset (T_UNSET)"
+%token T_ISSET 358     //"isset (T_ISSET)"
+%token T_EMPTY 359     //"empty (T_EMPTY)"
+%token T_HALT_COMPILER 360 //"__halt_compiler (T_HALT_COMPILER)"
+%token T_CLASS 361     //"class (T_CLASS)"
+%token T_TRAIT 362     //"trait (T_TRAIT)"
+%token T_INTERFACE 363 //"interface (T_INTERFACE)"
+%token T_EXTENDS 364   //"extends (T_EXTENDS)"
+%token T_IMPLEMENTS 365 //"implements (T_IMPLEMENTS)"
+%token T_OBJECT_OPERATOR 366 //"-> (T_OBJECT_OPERATOR)"
+%token T_DOUBLE_ARROW 268    //"=> (T_DOUBLE_ARROW)"
+%token T_LIST 367           //"list (T_LIST)"
+%token T_ARRAY 368          //"array (T_ARRAY)"
+%token T_CALLABLE 369       //"callable (T_CALLABLE)"
+%token T_LINE 370           //"__LINE__ (T_LINE)"
+%token T_FILE 371           //"__FILE__ (T_FILE)"
+%token T_DIR 372            //"__DIR__ (T_DIR)"
+%token T_CLASS_C 373        //"__CLASS__ (T_CLASS_C)"
+%token T_TRAIT_C 374        //"__TRAIT__ (T_TRAIT_C)"
+%token T_METHOD_C 375       //"__METHOD__ (T_METHOD_C)"
+%token T_FUNC_C 376         //"__FUNCTION__ (T_FUNC_C)"
+%token T_COMMENT 377        //"comment (T_COMMENT)"
+%token T_DOC_COMMENT 378    //"doc comment (T_DOC_COMMENT)"
+%token T_OPEN_TAG 379       //"open tag (T_OPEN_TAG)"
+%token T_OPEN_TAG_WITH_ECHO 380 //"open tag with echo (T_OPEN_TAG_WITH_ECHO)"
+%token T_CLOSE_TAG 381      //"close tag (T_CLOSE_TAG)"
+%token T_WHITESPACE 382     //"whitespace (T_WHITESPACE)"
+%token T_START_HEREDOC 383  //"heredoc start (T_START_HEREDOC)"
+%token T_END_HEREDOC 384    //"heredoc end (T_END_HEREDOC)"
+%token T_DOLLAR_OPEN_CURLY_BRACES 385 //"${ (T_DOLLAR_OPEN_CURLY_BRACES)"
+%token T_CURLY_OPEN 386     //"{$ (T_CURLY_OPEN)"
+%token T_DOUBLE_COLON 387  //":: (T_DOUBLE_COLON)"
+%token T_NAMESPACE 388       //"namespace (T_NAMESPACE)"
+%token T_NS_C 389            //"__NAMESPACE__ (T_NS_C)"
+%token T_NS_SEPARATOR 390    //"\\ (T_NS_SEPARATOR)"
+%token T_ELLIPSIS 391       //"... (T_ELLIPSIS)"
+%token T_COALESCE 282        //"?? (T_COALESCE)"
+%token T_POW 304            //"** (T_POW)"
+%token T_POW_EQUAL 270       //"**= (T_POW_EQUAL)"
 
 /* Token used to force a parse error from the lexer */
 %token T_ERROR
@@ -798,7 +799,7 @@ trait_method_reference:
 ;
 
 absolute_trait_method_reference:
-	name T_PAAMAYIM_NEKUDOTAYIM identifier
+	name T_DOUBLE_COLON identifier
 		{ $$ = zend_ast_create(ZEND_AST_METHOD_REFERENCE, $1, $3); }
 ;
 
@@ -1049,9 +1050,9 @@ lexical_var:
 function_call:
 		name argument_list
 			{ $$ = zend_ast_create(ZEND_AST_CALL, $1, $2); }
-	|	class_name T_PAAMAYIM_NEKUDOTAYIM member_name argument_list
+	|	class_name T_DOUBLE_COLON member_name argument_list
 			{ $$ = zend_ast_create(ZEND_AST_STATIC_CALL, $1, $3, $4); }
-	|	variable_class_name T_PAAMAYIM_NEKUDOTAYIM member_name argument_list
+	|	variable_class_name T_DOUBLE_COLON member_name argument_list
 			{ $$ = zend_ast_create(ZEND_AST_STATIC_CALL, $1, $3, $4); }
 	|	callable_expr argument_list
 			{ $$ = zend_ast_create(ZEND_AST_CALL, $1, $2); }
@@ -1116,9 +1117,9 @@ scalar:
 
 constant:
 		name { $$ = zend_ast_create(ZEND_AST_CONST, $1); }
-	|	class_name T_PAAMAYIM_NEKUDOTAYIM identifier
+	|	class_name T_DOUBLE_COLON identifier
 			{ $$ = zend_ast_create(ZEND_AST_CLASS_CONST, $1, $3); }
-	|	variable_class_name T_PAAMAYIM_NEKUDOTAYIM identifier
+	|	variable_class_name T_DOUBLE_COLON identifier
 			{ $$ = zend_ast_create(ZEND_AST_CLASS_CONST, $1, $3); }
 ;
 
@@ -1178,9 +1179,9 @@ simple_variable:
 ;
 
 static_member:
-		class_name T_PAAMAYIM_NEKUDOTAYIM simple_variable
+		class_name T_DOUBLE_COLON simple_variable
 			{ $$ = zend_ast_create(ZEND_AST_STATIC_PROP, $1, $3); }
-	|	variable_class_name T_PAAMAYIM_NEKUDOTAYIM simple_variable
+	|	variable_class_name T_DOUBLE_COLON simple_variable
 			{ $$ = zend_ast_create(ZEND_AST_STATIC_PROP, $1, $3); }
 ;
 
@@ -1193,9 +1194,9 @@ new_variable:
 			{ $$ = zend_ast_create(ZEND_AST_DIM, $1, $3); }
 	|	new_variable T_OBJECT_OPERATOR property_name
 			{ $$ = zend_ast_create(ZEND_AST_PROP, $1, $3); }
-	|	class_name T_PAAMAYIM_NEKUDOTAYIM simple_variable
+	|	class_name T_DOUBLE_COLON simple_variable
 			{ $$ = zend_ast_create(ZEND_AST_STATIC_PROP, $1, $3); }
-	|	new_variable T_PAAMAYIM_NEKUDOTAYIM simple_variable
+	|	new_variable T_DOUBLE_COLON simple_variable
 			{ $$ = zend_ast_create(ZEND_AST_STATIC_PROP, $1, $3); }
 ;
 
