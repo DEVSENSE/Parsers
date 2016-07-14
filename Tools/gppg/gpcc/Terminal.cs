@@ -9,6 +9,8 @@ namespace gpcc
 		private int n;
 		public bool symbolic;
         private bool custom = false;
+        private string comment;
+        public string Comment { get { return comment; } }
 		public override int num
 		{
 			get
@@ -43,7 +45,11 @@ namespace gpcc
             this.custom = true;
             this.n = value;
         }
-		public override bool IsNullable()
+        public void SetComment(string comment)
+        {
+            this.comment = comment;
+        }
+        public override bool IsNullable()
 		{
 			return false;
 		}

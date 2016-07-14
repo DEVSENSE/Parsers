@@ -284,14 +284,18 @@ namespace gpcc
                 this.Advance();
                 if (this.next == '/')
                 {
+                    this.builder.Length = 0;
                     while (this.next != '\n')
                     {
+                        this.builder.Append(this.next);
                         this.Advance();
                     }
-                    return this.Next();
+                    this.yylval = this.builder.ToString();
+                    return GrammarToken.Comment;
                 }
                 if (this.next == '*')
                 {
+                    this.builder.Length = 0;
                     this.Advance();
                     while (true)
                     {
@@ -305,11 +309,13 @@ namespace gpcc
                         }
                         else
                         {
+                            this.builder.Append(this.next);
                             this.Advance();
                         }
                     }
                     this.Advance();
-                    return this.Next();
+                    this.yylval = this.builder.ToString();
+                    return GrammarToken.Comment;
                 }
                 this.ReportError("unexpected / character, not in comment", new object[0]);
                 return this.Next();

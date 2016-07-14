@@ -63,7 +63,7 @@ namespace gpcc
         }
         private void GenerateTokens(Dictionary<string, Terminal> terminals)
         {
-            this.output.Write("{0} enum {1} {{", this.grammar.Visibility, this.grammar.TokenName);
+            this.output.Write("{0} enum {1} {{\n", this.grammar.Visibility, this.grammar.TokenName);
             bool flag = true;
             foreach (Terminal current in terminals.Values)
             {
@@ -73,7 +73,10 @@ namespace gpcc
                     {
                         this.output.Write(",");
                     }
-                    this.output.Write("{0}={1}", current.ToString(), current.num);
+                    if (string.IsNullOrEmpty(current.Comment))
+                        this.output.Write("\t{0}={1}\n", current.ToString(), current.num);
+                    else
+                        this.output.Write("\t{0}={1} //{2}\n", current.ToString(), current.num, current.Comment);
                     flag = false;
                 }
             }

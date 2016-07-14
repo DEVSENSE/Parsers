@@ -43,6 +43,14 @@ namespace gpcc
             }
             else throw new Exception("Terminal not found!");
         }
+        public void AssignTerminalComment(string name, string comment)
+        {
+            if (this.terminals.ContainsKey(name))
+            {
+                this.terminals[name].SetComment(comment);
+            }
+            else throw new Exception("Terminal not found!");
+        }
         public NonTerminal LookupNonTerminal(string name)
 		{
 			if (!this.nonTerminals.ContainsKey(name))

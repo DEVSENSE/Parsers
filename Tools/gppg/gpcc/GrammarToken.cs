@@ -34,6 +34,7 @@ namespace gpcc
 		TokenName,
 		ValueTypeName,
 		PositionType,
+        Comment,
         Number
     }
 }
