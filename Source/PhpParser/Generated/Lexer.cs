@@ -93,7 +93,7 @@ using System.Collections.Generic;
 		public LexicalStates CurrentLexicalState { get { return current_lexical_state; } set { current_lexical_state = value; } } 
 		private LexicalStates current_lexical_state;
 		
-		public Lexer(System.IO.TextReader reader)
+		protected Lexer(System.IO.TextReader reader)
 		{
 			Initialize(reader, LexicalStates.INITIAL);
 		}
@@ -138,11 +138,11 @@ using System.Collections.Generic;
 				case 3:
 					// #line 633
 					{
-						if (AllowShortTags) {
+						if (this._allowShortTags) {
 							BEGIN(LexicalStates.ST_IN_SCRIPTING);
 							return (Tokens.T_OPEN_TAG);
 						} else {
-							return Tokens.T_INLINE_HTML;
+							yymore(); break;//return Tokens.T_INLINE_HTML;
 						}
 					}
 					break;
@@ -194,7 +194,7 @@ using System.Collections.Generic;
 					break;
 					
 				case 10:
-					// #line 816
+					// #line 820
 					{
 						//zend_error(E_COMPILE_WARNING,"Unexpected character in input:  '%c' (ASCII=%d) state=%d", yytext[0], yytext[0], YYSTATE);
 						return Tokens.T_ERROR;
@@ -219,7 +219,7 @@ using System.Collections.Generic;
 				case 13:
 					// #line 536
 					{
-						RESET_DOC_COMMENT();
+						ResetDocComment();
 						if (!yy_pop_state()) 
 							return Tokens.T_ERROR; 
 						return (Tokens)'}';
@@ -669,7 +669,7 @@ using System.Collections.Generic;
 					
 				case 76:
 					// #line 696
-					{ BEGIN(LexicalStates.ST_DOC_COMMENT); yymore(); RESET_DOC_COMMENT(); break; }
+					{ BEGIN(LexicalStates.ST_DOC_COMMENT); yymore(); ResetDocComment(); break; }
 					break;
 					
 				case 77:
@@ -813,7 +813,7 @@ using System.Collections.Generic;
 					        }
 							BEGIN(LexicalStates.ST_HEREDOC);
 						}
-					    hereDocLabel = GetTokenSubstring(s, length);
+					    this._hereDocLabel = GetTokenSubstring(s, length);
 					    return (Tokens.T_START_HEREDOC);
 					}
 					break;
@@ -1149,9 +1149,9 @@ using System.Collections.Generic;
 					break;
 					
 				case 142:
-					// #line 798
+					// #line 802
 					{
-					    tokenSemantics.Object = ProcessEscapedString(GetTokenString(), this.sourceUnit.Encoding, false);
+					    this._tokenSemantics.Object = ProcessEscapedString(GetTokenString(), this._sourceUnit.Encoding, false);
 					    return (Tokens.T_ENCAPSED_AND_WHITESPACE);
 					}
 					break;
@@ -1211,9 +1211,9 @@ using System.Collections.Generic;
 					break;
 					
 				case 150:
-					// #line 803
+					// #line 807
 					{
-					    tokenSemantics.Object = ProcessEscapedString(GetTokenString(), this.sourceUnit.Encoding, false);
+					    this._tokenSemantics.Object = ProcessEscapedString(GetTokenString(), this._sourceUnit.Encoding, false);
 					    return (Tokens.T_ENCAPSED_AND_WHITESPACE);
 					}
 					break;
@@ -1227,22 +1227,24 @@ using System.Collections.Generic;
 					break;
 					
 				case 152:
-					// #line 810
+					// #line 814
 					{
-					    tokenSemantics.Object = ProcessEscapedString(GetTokenString(), this.sourceUnit.Encoding, false);
+					    this._tokenSemantics.Object = ProcessEscapedString(GetTokenString(), this._sourceUnit.Encoding, false);
 					    return (Tokens.T_ENCAPSED_AND_WHITESPACE);
 					}
 					break;
 					
 				case 153:
-					// #line 808
+					// #line 812
 					{ yymore(); break; }
 					break;
 					
 				case 154:
-					// #line 792
+					// #line 794
 					{
-						return ProcessEndNowDoc(s => (string)ProcessEscapedString(s, this.sourceUnit.Encoding, false));
+					    if(GetTokenString().Contains(this._hereDocLabel))
+							return ProcessEndNowDoc(s => (string)ProcessEscapedString(s, this._sourceUnit.Encoding, false));
+					    yymore(); break;
 					}
 					break;
 					
@@ -1284,7 +1286,7 @@ using System.Collections.Generic;
 					// #line 544
 					{
 						yyless(TokenLength - 1);
-						tokenSemantics.Object = GetTokenString();
+						this._tokenSemantics.Object = GetTokenString();
 						yy_pop_state();
 						yy_push_state(LexicalStates.ST_IN_SCRIPTING);
 						return (Tokens.T_STRING_VARNAME);
@@ -1303,7 +1305,7 @@ using System.Collections.Generic;
 					
 				case 162:
 					// #line 698
-					{ BEGIN(LexicalStates.ST_IN_SCRIPTING); SET_DOC_COMMENT(); return Tokens.T_DOC_COMMENT; }
+					{ BEGIN(LexicalStates.ST_IN_SCRIPTING); SetDocComment(); return Tokens.T_DOC_COMMENT; }
 					break;
 					
 				case 163:
@@ -1322,35 +1324,23 @@ using System.Collections.Generic;
 					break;
 					
 				case 166:
-					// #line 823
+					// #line 827
 					{ yymore(); break; }
 					break;
 					
 				case 167:
-					// #line 824
+					// #line 828
 					{ BEGIN(LexicalStates.ST_IN_SCRIPTING); return Tokens.T_COMMENT; }
 					break;
 					
 				case 168:
-					// #line 822
+					// #line 826
 					{ yymore(); break; }
 					break;
 					
 				case 169:
-					// #line 826
-					{ 
-					  if (AllowAspTags || GetTokenChar(TokenLength - 2) != '%') 
-					  { 
-							yyless(0);
-							BEGIN(LexicalStates.ST_IN_SCRIPTING);
-							return Tokens.T_COMMENT;
-						} 
-						else 
-						{
-							yymore();
-							break;
-						}
-					}
+					// #line 830
+					{ yymore(); break; }
 					break;
 					
 				case 170:
@@ -1397,20 +1387,22 @@ using System.Collections.Generic;
 					// #line 762
 					{
 						BEGIN(LexicalStates.ST_IN_SCRIPTING);
-						tokenSemantics.Object = hereDocLabel.Length;
+						this._tokenSemantics.Object = this._hereDocLabel;
 						return (Tokens.T_END_HEREDOC);
 					}
 					break;
 					
 				case 176:
-					// #line 796
+					// #line 800
 					{ yymore(); break; }
 					break;
 					
 				case 177:
 					// #line 788
 					{
-						return ProcessEndNowDoc(s => s);
+					    if(GetTokenString().Contains(this._hereDocLabel))
+							return ProcessEndNowDoc(s => s);
+					    yymore(); break;
 					}
 					break;
 					

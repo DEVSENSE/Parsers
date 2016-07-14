@@ -67,9 +67,10 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
     #region states
     states = new State[]
     {
-      new State(0, -2, new int[] {-125,1}),
+      new State(0, new int[] {321,3}, new int[] {-125,1}),
       new State(1, new int[] {263,2}),
       new State(2, -1),
+      new State(3, -2),
     };
     #endregion
 
@@ -78,7 +79,7 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
     {
     default(Rule),
     new Rule(-126, new int[]{-125,263}),
-    new Rule(-125, new int[]{}),
+    new Rule(-125, new int[]{321}),
     };
     #endregion
 
@@ -121,6 +122,10 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
   {
     switch (action)
     {
+      case 2: // start -> T_INLINE_HTML 
+#line 290 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
+			{ Debug.WriteLine("Hello"); }
+        return;
     }
   }
 
@@ -132,7 +137,7 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
       return CharToString((char)terminal);
   }
 
-#line 292 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
+#line 293 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 
 
 #if false

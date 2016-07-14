@@ -534,7 +534,7 @@ NonVariableStart        [^a-zA-Z_{]
 
 
 <ST_IN_SCRIPTING>"}" {
-	RESET_DOC_COMMENT();
+	ResetDocComment();
 	if (!yy_pop_state()) 
 		return Tokens.T_ERROR; 
 	return (Tokens)'}';
@@ -543,7 +543,7 @@ NonVariableStart        [^a-zA-Z_{]
 
 <ST_LOOKING_FOR_VARNAME>{LABEL}[[}] {
 	yyless(TokenLength - 1);
-	tokenSemantics.Object = GetTokenString();
+	this._tokenSemantics.Object = GetTokenString();
 	yy_pop_state();
 	yy_push_state(LexicalStates.ST_IN_SCRIPTING);
 	return (Tokens.T_STRING_VARNAME);
@@ -631,11 +631,11 @@ NonVariableStart        [^a-zA-Z_{]
 
 
 <INITIAL>"<?" {
-	if (AllowShortTags) {
+	if (this._allowShortTags) {
 		BEGIN(LexicalStates.ST_IN_SCRIPTING);
 		return (Tokens.T_OPEN_TAG);
 	} else {
-		return Tokens.T_INLINE_HTML;
+		yymore(); break;//return Tokens.T_INLINE_HTML;
 	}
 }
 
@@ -693,9 +693,9 @@ NonVariableStart        [^a-zA-Z_{]
 <ST_COMMENT>"*/"        { BEGIN(LexicalStates.ST_IN_SCRIPTING); return Tokens.T_COMMENT; }
 <ST_COMMENT>"*"         { yymore(); break; }
 
-<ST_IN_SCRIPTING>"/**"{WHITESPACE} 	{ BEGIN(LexicalStates.ST_DOC_COMMENT); yymore(); RESET_DOC_COMMENT(); break; }
+<ST_IN_SCRIPTING>"/**"{WHITESPACE} 	{ BEGIN(LexicalStates.ST_DOC_COMMENT); yymore(); ResetDocComment(); break; }
 <ST_DOC_COMMENT>[^*]+   { yymore(); break; }
-<ST_DOC_COMMENT>"*/"    { BEGIN(LexicalStates.ST_IN_SCRIPTING); SET_DOC_COMMENT(); return Tokens.T_DOC_COMMENT; }
+<ST_DOC_COMMENT>"*/"    { BEGIN(LexicalStates.ST_IN_SCRIPTING); SetDocComment(); return Tokens.T_DOC_COMMENT; }
 <ST_DOC_COMMENT>"*"     { yymore(); break; }
 
 <ST_IN_SCRIPTING>"?>"{NEWLINE}? {
@@ -748,7 +748,7 @@ NonVariableStart        [^a-zA-Z_{]
         }
 		BEGIN(LexicalStates.ST_HEREDOC);
 	}
-    hereDocLabel = GetTokenSubstring(s, length);
+    this._hereDocLabel = GetTokenSubstring(s, length);
     return (Tokens.T_START_HEREDOC);
 }
 
@@ -761,7 +761,7 @@ NonVariableStart        [^a-zA-Z_{]
 
 <ST_END_HEREDOC>{ANY_CHAR} {
 	BEGIN(LexicalStates.ST_IN_SCRIPTING);
-	tokenSemantics.Object = hereDocLabel.Length;
+	this._tokenSemantics.Object = this._hereDocLabel;
 	return (Tokens.T_END_HEREDOC);
 }
 
@@ -786,29 +786,33 @@ NonVariableStart        [^a-zA-Z_{]
 }
 
 <ST_NOWDOC>^{LABEL}(";")?{NEWLINE} {
-	return ProcessEndNowDoc(s => s);
+    if(GetTokenString().Contains(this._hereDocLabel))
+		return ProcessEndNowDoc(s => s);
+    yymore(); break;
 }
 
 <ST_HEREDOC>^{LABEL}(";")?{NEWLINE} {
-	return ProcessEndNowDoc(s => (string)ProcessEscapedString(s, this.sourceUnit.Encoding, false));
+    if(GetTokenString().Contains(this._hereDocLabel))
+		return ProcessEndNowDoc(s => (string)ProcessEscapedString(s, this._sourceUnit.Encoding, false));
+    yymore(); break;
 }
 
 <ST_NOWDOC>{ANY_CHAR}         { yymore(); break; }
 
 <ST_DOUBLE_QUOTES>([^"\{$\\]*(\\.|\{[^$])?)* {
-    tokenSemantics.Object = ProcessEscapedString(GetTokenString(), this.sourceUnit.Encoding, false);
+    this._tokenSemantics.Object = ProcessEscapedString(GetTokenString(), this._sourceUnit.Encoding, false);
     return (Tokens.T_ENCAPSED_AND_WHITESPACE);
 }
 
 <ST_BACKQUOTE>([^`\{$\\]*(\\.|\{[^$])?)* {
-    tokenSemantics.Object = ProcessEscapedString(GetTokenString(), this.sourceUnit.Encoding, false);
+    this._tokenSemantics.Object = ProcessEscapedString(GetTokenString(), this._sourceUnit.Encoding, false);
     return (Tokens.T_ENCAPSED_AND_WHITESPACE);
 }
 
 <ST_HEREDOC>([^\n\r\x2028\x2029\{$\\]*(\\.|\{[^$])?)*{NEWLINE} { yymore(); break; }
 
 <ST_HEREDOC>([^\n\r\x2028\x2029\{$\\]*(\\.|\{[^$])?)* {
-    tokenSemantics.Object = ProcessEscapedString(GetTokenString(), this.sourceUnit.Encoding, false);
+    this._tokenSemantics.Object = ProcessEscapedString(GetTokenString(), this._sourceUnit.Encoding, false);
     return (Tokens.T_ENCAPSED_AND_WHITESPACE);
 }
 
@@ -823,16 +827,4 @@ NonVariableStart        [^a-zA-Z_{]
 <ST_ONE_LINE_COMMENT>[^\n\r?%>]+ { yymore(); break; }
 <ST_ONE_LINE_COMMENT>{NEWLINE}   { BEGIN(LexicalStates.ST_IN_SCRIPTING); return Tokens.T_COMMENT; }
 
-<ST_ONE_LINE_COMMENT>"?>"|"%>"   { 
-  if (AllowAspTags || GetTokenChar(TokenLength - 2) != '%') 
-  { 
-		yyless(0);
-		BEGIN(LexicalStates.ST_IN_SCRIPTING);
-		return Tokens.T_COMMENT;
-	} 
-	else 
-	{
-		yymore();
-		break;
-	}
-}
+<ST_ONE_LINE_COMMENT>"?>"|"%>"   { yymore(); break; }

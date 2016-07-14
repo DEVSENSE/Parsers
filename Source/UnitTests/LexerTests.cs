@@ -8,6 +8,7 @@ using System.Diagnostics;
 using System.Text;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace UnitTests
 {
@@ -60,9 +61,10 @@ namespace UnitTests
 
             string parsed = ParseByPhp(path);
             parsed = parsed.Substring(0, parsed.LastIndexOf('-'));
+            parsed = Regex.Replace(parsed.Replace("\r", " ").Replace("\n", " "), @"\s+", " ");
             int i = 0;
             string[][] expectedTokens = (
-                from s in parsed.Replace("\r", "").Replace("\n", "").Split('-')
+                from s in parsed.Split('-')
                 let num = i++
                 group s by num / 3 into g
                 select g.ToArray()
@@ -79,9 +81,9 @@ namespace UnitTests
             {
                 Tokens token = (Tokens)lexer.GetNextToken();
                 Assert.AreEqual(int.Parse(expectedToken[0]), (int)token);
-                if (token == Tokens.T_VARIABLE || token == Tokens.T_STRING || token == Tokens.T_ENCAPSED_AND_WHITESPACE || token == Tokens.T_CONSTANT_ENCAPSED_STRING)
+                if (token == Tokens.T_VARIABLE || token == Tokens.T_STRING || token == Tokens.T_END_HEREDOC)
                 {
-                    //Assert.AreEqual(expectedToken[2].TrimStart('$').Trim(new char[] { '\'', '"' }).Replace("\\n", "\n").Replace("\\r", "\r").Replace("\\t", "\t"), lexer.TokenValue.Object.ToString());
+                    Assert.AreEqual(expectedToken[2].TrimStart('$'), lexer.TokenValue.Object.ToString());
                 }
             }
         }

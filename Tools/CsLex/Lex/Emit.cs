@@ -214,7 +214,7 @@ namespace Lex
 			this.outstream.WriteLine("public LexicalStates CurrentLexicalState { get { return current_lexical_state; } set { current_lexical_state = value; } } ");
 			this.outstream.WriteLine("private LexicalStates current_lexical_state;");
 			this.outstream.WriteLine();
-			this.outstream.WriteLine("public {0}(System.IO.TextReader reader)", this.spec.LexerName);
+			this.outstream.WriteLine("protected {0}(System.IO.TextReader reader)", this.spec.LexerName);
 			this.outstream.WriteLine("{");
 			this.outstream.Indent++;
 			this.outstream.WriteLine("Initialize(reader, LexicalStates.{0});", this.spec.InitialState);

@@ -287,6 +287,7 @@ using FcnParam = System.Tuple<System.Collections.Generic.List<PHP.Core.AST.TypeR
 %% /* Rules */
 
 start:
+	T_INLINE_HTML { Debug.WriteLine("Hello"); }
 ;
 
 %%

@@ -280,63 +280,81 @@ namespace PhpParser.Parser
 
     public partial class Lexer : ITokenProvider<SemanticValueType, Span>
     {
-        protected bool AllowAspTags = true;
-        protected bool AllowShortTags = true;
+        /// <summary>
+        /// Allow short opening tags
+        /// </summary>
+        protected bool _allowShortTags = true;
 
-        // token processing
-        Tokens token;
-        SemanticValueType tokenSemantics;
-        private Span tokenPosition;
-        private readonly SourceUnit/*!*/ sourceUnit;
-        private readonly ErrorSink/*!*/ errors;
+        /// <summary>
+        /// Semantic value of the actual token
+        /// </summary>
+        SemanticValueType _tokenSemantics;
 
-        // token postition
+        /// <summary>
+        /// Position of the actual token
+        /// </summary>
+        private Span _tokenPosition;
+
+        /// <summary>
+        /// Source unit (file) associated with the lexer
+        /// </summary>
+        private readonly SourceUnit/*!*/ _sourceUnit;
+
+        /// <summary>
+        /// Error sink used to report errors
+        /// </summary>
+        private readonly ErrorSink/*!*/ _errors;
+
+        /// <summary>
+        /// Token postition
+        /// </summary>
         int charOffset = 0;
-
-        /// <summary>
-        /// Whether tokens T_STRING, T_VARIABLE, '[', ']', '{', '}', '$', "->" are encapsulated in a string.
-        /// </summary>
-        protected bool inString;
-
-        /// <summary>
-        /// Whether T_STRING token should be treated as a string code token and not a plain string token.
-        /// </summary>
-        protected bool isCode;
 
         /// <summary>
         /// Last encountered documentation comment block
         /// </summary>
         private PHPDocBlock _docBlock = null;
 
-        public bool InUnicodeString { get { return inUnicodeString; } set { inUnicodeString = true; } }
-        private bool inUnicodeString = false;
+        /// <summary>
+        /// Last encountered heredoc or nowdoc label
+        /// </summary>
+        protected string _hereDocLabel = null;
 
-        protected string hereDocLabel = null;
-        protected Stack<LexicalStates> StateStack { get { return stateStack; } set { stateStack = value; } }
+        /// <summary>
+        /// Flag for handling unicode strings (currently always false, may be eliminated)
+        /// </summary>
+        private bool _inUnicodeString = false;
 
-        public Lexer(System.IO.TextReader reader, SourceUnit sourceUnit)
+        /// <summary>
+        /// Lexer constructor that initializes all the necessary members
+        /// </summary>
+        /// <param name="reader">Text reader containing the source code</param>
+        /// <param name="sourceUnit">Source unit (file) associated with the <paramref name="reader"/></param>
+        /// <param name="allowShortTags">Allow short oppening tags for PHP</param>
+        public Lexer(System.IO.TextReader reader, SourceUnit sourceUnit, bool allowShortTags = true)
         {
-            this.sourceUnit = sourceUnit;
-            this.errors = null;
+            this._sourceUnit = sourceUnit;
+            this._errors = null;
+            this._allowShortTags = allowShortTags;
             Initialize(reader, LexicalStates.INITIAL);
         }
 
         /// <summary>
-        /// Updates <see cref="charOffset"/> and <see cref="tokenPosition"/>.
+        /// Updates <see cref="charOffset"/> and <see cref="_tokenPosition"/>.
         /// </summary>
         private void UpdateTokenPosition()
         {
             int tokenLength = this.TokenLength;
 
             // update token position info:
-            tokenPosition = new Span(charOffset, tokenLength);
+            _tokenPosition = new Span(charOffset, tokenLength);
             charOffset += tokenLength;
         }
 
         void ITokenProvider<SemanticValueType, Span>.ReportError(string[] expectedTerminals)
         {
             // TODO (expected tokens....)
-            errors.Add(FatalErrors.SyntaxError, sourceUnit, tokenPosition,
+            _errors.Add(FatalErrors.SyntaxError, _sourceUnit, _tokenPosition,
                 CoreResources.GetString("unexpected_token", GetTokenString()));
 
             //throw new CompilerException();	
@@ -383,21 +401,6 @@ namespace PhpParser.Parser
         protected string GetTokenSubstring(int startIndex, int length)
         {
             return new String(buffer, token_start + startIndex, length);
-        }
-
-        protected void AppendTokenTextTo(StringBuilder/*!*/ builder)
-        {
-            builder.Append(buffer, token_start, token_end - token_start);
-        }
-
-        /// <summary>
-        /// Checks whether a specified heredoc lebel exactly matches {LABEL} in ^{LABEL}(";")?{NEWLINE}.
-        /// </summary>
-        private bool IsCurrentHeredocEnd(int startIndex)
-        {
-            int i = StringUtils.FirstDifferent(buffer, token_start + startIndex, hereDocLabel, 0, false);
-            return i == hereDocLabel.Length && (buffer[token_start + i] == ';' ||
-                IsNewLineCharacter(buffer[token_start + i]));
         }
 
         protected char GetTokenAsEscapedCharacter(int startIndex)
@@ -560,29 +563,6 @@ namespace PhpParser.Parser
             }
         }
 
-        //protected void GetTokenAsQualifiedName(int startIndex, List<string>/*!*/ result)
-        //{
-        //    Debug.Assert(result != null);
-
-        //    int current_name = token_start + startIndex;
-        //    int next_separator = token_start + startIndex;
-
-        //    for (; ; )
-        //    {
-        //        while (next_separator < token_end && buffer[next_separator] != '\\')
-        //            next_separator++;
-
-        //        if (next_separator == token_end) break;
-
-        //        result.Add(new String(buffer, current_name, next_separator - current_name));
-        //        next_separator += QualifiedName.Separator.ToString().Length;
-        //        current_name = next_separator;
-        //    }
-
-        //    // last item:
-        //    result.Add(new String(buffer, current_name, token_end - current_name));
-        //}
-
         #region GetTokenAs*QuotedString
 
         protected object GetTokenAsDoublyQuotedString(int startIndex, Encoding/*!*/ encoding, bool forceBinaryString)
@@ -622,13 +602,13 @@ namespace PhpParser.Parser
                             break;
 
                         case 'C':
-                            if (!inUnicodeString) goto default;
+                            if (!_inUnicodeString) goto default;
                             result.Append(ParseCodePointName(ref buffer_pos));
                             break;
 
                         case 'u':
                         case 'U':
-                            if (!inUnicodeString) goto default;
+                            if (!_inUnicodeString) goto default;
                             result.Append(ParseCodePoint(c == 'u' ? 4 : 6, ref buffer_pos));
                             break;
 
@@ -932,36 +912,6 @@ namespace PhpParser.Parser
             return buffer_pos - token_start;
         }
 
-        protected string GetTokenAsFilePragma()
-        {
-            int start_offset = GetPragmaValueStart("file".Length);
-            int end = token_end - 1;
-
-            while (end > 0 && Char.IsWhiteSpace(buffer[end])) end--;
-
-            return GetTokenSubstring(start_offset, end - token_start - start_offset + 1);
-        }
-
-        protected int? GetTokenAsLinePragma()
-        {
-            int start_offset = GetPragmaValueStart("line".Length);
-
-            int sign = +1;
-
-            if (GetTokenChar(start_offset) == '-')
-            {
-                sign = -1;
-                start_offset++;
-            }
-
-            // TP_COMMENT: modified call to GetTokenAsDecimalNumber
-            SemanticValueType val = default(SemanticValueType);
-            Tokens ret = GetTokenAsDecimalNumber(start_offset, 10, ref val);
-
-            // multiplication cannot overflow as ivalue >= 0
-            return (ret != Tokens.T_LNUMBER) ? null : (int?)(val.Integer * sign);
-        }
-
         #endregion
 
         private char Map(char c)
@@ -969,44 +919,11 @@ namespace PhpParser.Parser
             return (c > SByte.MaxValue) ? 'a' : c;
         }
 
-        /*
-		 * #region Unit Test
-				#if DEBUG
-
-				[Test]
-				static void Test2()
-				{
-					Debug.Assert(IsInteger("000000000000000001"));
-					Debug.Assert(IsInteger("0000"));
-					Debug.Assert(IsInteger("0"));
-					Debug.Assert(IsInteger("2147483647"));
-					Debug.Assert(!IsInteger("2147483648"));
-					Debug.Assert(!IsInteger("2147483648999999999999999999999999999999999999"));
-
-					Debug.Assert(IsHexInteger("0x00000000000001"));
-					Debug.Assert(IsHexInteger("0x00000"));
-					Debug.Assert(IsHexInteger("0x"));
-					Debug.Assert(!IsHexInteger("0x0012ABC67891"));
-					Debug.Assert(IsHexInteger("0xFFFFFFFF"));
-					Debug.Assert(!IsHexInteger("0x100000000"));
-
-					Debug.Assert(HereDocLabelsEqual("EOT", "EOT;\n"));
-					Debug.Assert(!HereDocLabelsEqual("EOT", "EOt\n"));
-					Debug.Assert(!HereDocLabelsEqual("EOT", "EOTT;\n"));
-					Debug.Assert(!HereDocLabelsEqual("EOT", "EOTT\n"));
-					Debug.Assert(!HereDocLabelsEqual("EOTX", "EOT\r"));
-					Debug.Assert(!HereDocLabelsEqual("EOTXYZ", "EOT\r"));
-				}
-
-				#endif
-				#endregion
-		*/
-
         public SemanticValueType TokenValue
         {
             get
             {
-                return tokenSemantics;
+                return _tokenSemantics;
             }
         }
 
@@ -1021,12 +938,12 @@ namespace PhpParser.Parser
         Tokens ProcessBinaryNumber()
         {
             // parse binary number value
-            token = GetTokenAsDecimalNumber(2, 2, ref tokenSemantics);
+            Tokens token = GetTokenAsDecimalNumber(2, 2, ref _tokenSemantics);
 
             if (token == Tokens.T_DNUMBER)
             {
                 // conversion to double causes data loss
-                errors.Add(Warnings.TooBigIntegerConversion, sourceUnit, tokenPosition, GetTokenString());
+                _errors.Add(Warnings.TooBigIntegerConversion, _sourceUnit, _tokenPosition, GetTokenString());
             }
             return token;
         }
@@ -1034,15 +951,16 @@ namespace PhpParser.Parser
         Tokens ProcessDecimalNumber()
         {
             // [0-9]* - value is either in octal or in decimal
+            Tokens token = Tokens.END;
             if (GetTokenChar(0) == '0')
-                token = GetTokenAsDecimalNumber(1, 8, ref tokenSemantics);
+                token = GetTokenAsDecimalNumber(1, 8, ref _tokenSemantics);
             else
-                token = GetTokenAsDecimalNumber(0, 10, ref tokenSemantics);
+                token = GetTokenAsDecimalNumber(0, 10, ref _tokenSemantics);
 
             if (token == Tokens.T_DNUMBER)
             {
                 // conversion to double causes data loss
-                errors.Add(Warnings.TooBigIntegerConversion, sourceUnit, tokenPosition, GetTokenString());
+                _errors.Add(Warnings.TooBigIntegerConversion, _sourceUnit, _tokenPosition, GetTokenString());
             }
             return token;
         }
@@ -1050,19 +968,19 @@ namespace PhpParser.Parser
         Tokens ProcessHexadecimalNumber()
         {
             // parse hexadecimal value
-            token = GetTokenAsDecimalNumber(2, 16, ref tokenSemantics);
+            Tokens token = GetTokenAsDecimalNumber(2, 16, ref _tokenSemantics);
 
             if (token == Tokens.T_DNUMBER)
             {
                 // conversion to double causes data loss
-                errors.Add(Warnings.TooBigIntegerConversion, sourceUnit, tokenPosition, GetTokenString());
+                _errors.Add(Warnings.TooBigIntegerConversion, _sourceUnit, _tokenPosition, GetTokenString());
             }
             return token;
         }
 
         Tokens ProcessRealNumber()
         {
-            tokenSemantics.Double = GetTokenAsDouble(0);
+            _tokenSemantics.Double = GetTokenAsDouble(0);
             return Tokens.T_DNUMBER;
         }
 
@@ -1070,7 +988,7 @@ namespace PhpParser.Parser
         {
             bool forceBinaryString = GetTokenChar(0) == 'b';
 
-            tokenSemantics.Object = GetTokenAsSinglyQuotedString(forceBinaryString ? 1 : 0, this.sourceUnit.Encoding, forceBinaryString);
+            _tokenSemantics.Object = GetTokenAsSinglyQuotedString(forceBinaryString ? 1 : 0, this._sourceUnit.Encoding, forceBinaryString);
             return Tokens.T_CONSTANT_ENCAPSED_STRING;
         }
 
@@ -1078,36 +996,36 @@ namespace PhpParser.Parser
         {
             bool forceBinaryString = GetTokenChar(0) == 'b';
 
-            tokenSemantics.Object = GetTokenAsDoublyQuotedString(forceBinaryString ? 1 : 0, this.sourceUnit.Encoding, forceBinaryString);
+            _tokenSemantics.Object = GetTokenAsDoublyQuotedString(forceBinaryString ? 1 : 0, this._sourceUnit.Encoding, forceBinaryString);
             return Tokens.T_CONSTANT_ENCAPSED_STRING;
         }
 
         Tokens ProcessLabel()
         {
-            tokenSemantics.Object = GetTokenString();
+            _tokenSemantics.Object = GetTokenString();
             return Tokens.T_STRING;
         }
 
         Tokens ProcessVariable()
         {
-            tokenSemantics.Object = GetTokenSubstring(1);
+            _tokenSemantics.Object = GetTokenSubstring(1);
             return Tokens.T_VARIABLE;
         }
 
         Tokens ProcessVariableOffsetNumber()
         {
-            Tokens token = GetTokenAsDecimalNumber(0, 10, ref tokenSemantics);
+            Tokens token = GetTokenAsDecimalNumber(0, 10, ref _tokenSemantics);
             if (token == Tokens.T_DNUMBER)
             {
-                tokenSemantics.Double = 0;
-                tokenSemantics.Object = GetTokenString();
+                _tokenSemantics.Double = 0;
+                _tokenSemantics.Object = GetTokenString();
             }
             return (Tokens.T_NUM_STRING);
         }
 
         Tokens ProcessVariableOffsetString()
         {
-            tokenSemantics.Object = GetTokenString();
+            _tokenSemantics.Object = GetTokenString();
             return (Tokens.T_NUM_STRING);
         }
 
@@ -1116,58 +1034,22 @@ namespace PhpParser.Parser
             BEGIN(LexicalStates.ST_END_HEREDOC);
             string label = GetTokenString();
             label = label.TrimEnd(new char[] { '\r', '\n', ';' });
-            lookahead_index = token_end = lookahead_index - (TokenLength - label.Length);
-            //yyless(TokenLength - label.Length);
-            tokenSemantics.Object = f(label.Substring(0, label.Length - hereDocLabel.Length));
+            // move back at the end of the heredoc label - yyless does not work properly (requires additional condition for the optional ';')
+            lookahead_index = token_end = lookahead_index - (TokenLength - label.Length) - 1;
+            _tokenSemantics.Object = f(label.Substring(0, label.Length - _hereDocLabel.Length));
             return (Tokens.T_ENCAPSED_AND_WHITESPACE);
         }
 
 
-        void RESET_DOC_COMMENT()
+        void ResetDocComment()
         {
             _docBlock = null;
         }
 
 
-        void SET_DOC_COMMENT()
+        void SetDocComment()
         {
             _docBlock = new PHPDocBlock(GetTokenString(), new Span(charOffset, TokenLength));
         }
-
-        bool IS_LABEL_START(char c)
-        {
-            return (((c) >= 'a' && (c) <= 'z') || ((c) >= 'A' && (c) <= 'Z') || (c) == '_' || (c) >= 0x80);
-        }
-
-        /* Compiler */
-        //# ifdef ZTS
-        //#define CG(v) ZEND_TSRMG(compiler_globals_id, zend_compiler_globals *, v)
-        //#else
-        //#define CG(v) (compiler_globals.v)
-        //        extern ZEND_API struct _zend_compiler_globals compiler_globals;
-        //#endif
-        //ZEND_API int zendparse(void);
-
-        //#define HANDLE_NEWLINES(s, l)													\
-        //do {																			\
-        // char* p = (s), *boundary = p+(l);											\
-        //												        \
-        // while (p<boundary) {														\
-        //  if (*p == '\n' || (*p == '\r' && (*(p+1) != '\n'))) {					\
-
-        //            CG(zend_lineno)++;													\
-        //  }																		\
-        //  p++;																	\
-        // }																			\
-        //} while (0)
-
-        //#define HANDLE_NEWLINE(c) \
-        //{ \
-        // if (c == '\n' || c == '\r') { \
-
-        //        CG(zend_lineno)++; \
-        // } \
-        //}
-
     }
 }
