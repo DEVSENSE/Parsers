@@ -71,16 +71,19 @@ namespace gpcc
                 {
                     if (!flag)
                     {
-                        this.output.Write(",");
+                        this.output.WriteLine(",");
                     }
                     if (string.IsNullOrEmpty(current.Comment))
-                        this.output.Write("\t{0}={1}\n", current.ToString(), current.num);
+                        this.output.Write("{0}={1}", current.ToString(), current.num);
                     else
-                        this.output.Write("\t{0}={1} //{2}\n", current.ToString(), current.num, current.Comment);
+                    {
+                        this.output.WriteLine("/// <summary>{0}</summary>", current.Comment);
+                        this.output.Write("{0}={1}", current.ToString(), current.num);
+                    }
                     flag = false;
                 }
             }
-            this.output.WriteLine("};");
+            this.output.WriteLine("\n};");
             this.output.WriteLine();
         }
         private string GenerateValueType()

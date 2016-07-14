@@ -17,8 +17,6 @@ namespace UnitTests
     [DeploymentItem(@"..\..\Tokens.php")]
     public class LexerTests
     {
-        public static readonly string FilesPath = "TestData";
-
         public TestContext TestContext { get; set; }
 
         private string ParseByPhp(string path)
@@ -33,9 +31,7 @@ namespace UnitTests
             process.StartInfo.CreateNoWindow = true;
             process.Start();
             while (!process.HasExited)
-            {
                 output.Append(process.StandardOutput.ReadToEnd());
-            }
             process.WaitForExit();// Waits here for the process to exit.
             return output.ToString();
         }
@@ -46,7 +42,7 @@ namespace UnitTests
         {
             string path = (string)TestContext.DataRow["files"];
             SourceUnit sourceUnit = new CodeSourceUnit(File.ReadAllText(path), path, new System.Text.ASCIIEncoding(), Lexer.LexicalStates.INITIAL);
-            PhpParser.Parser.ITokenProvider<SemanticValueType, Span> lexer = new Lexer(new StreamReader(path), sourceUnit);
+            PhpParser.Parser.ITokenProvider<SemanticValueType, Span> lexer = new Lexer(new StreamReader(path), sourceUnit, null, null, null, LanguageFeatures.ShortOpenTags, 0);
             Assert.AreNotEqual(null, lexer);
         }
 
@@ -57,7 +53,7 @@ namespace UnitTests
             string path = (string)TestContext.DataRow["files"];
 
             SourceUnit sourceUnit = new CodeSourceUnit(File.ReadAllText(path), path, new System.Text.ASCIIEncoding(), Lexer.LexicalStates.INITIAL);
-            PhpParser.Parser.ITokenProvider<SemanticValueType, Span> lexer = new Lexer(new StreamReader(path), sourceUnit);
+            PhpParser.Parser.ITokenProvider<SemanticValueType, Span> lexer = new Lexer(new StreamReader(path), sourceUnit, null, null, null, LanguageFeatures.ShortOpenTags, 0);
 
             string parsed = ParseByPhp(path);
             parsed = parsed.Substring(0, parsed.LastIndexOf('-'));
@@ -84,6 +80,14 @@ namespace UnitTests
                 if (token == Tokens.T_VARIABLE || token == Tokens.T_STRING || token == Tokens.T_END_HEREDOC)
                 {
                     Assert.AreEqual(expectedToken[2].TrimStart('$'), lexer.TokenValue.Object.ToString());
+                }
+                if (token == Tokens.T_DNUMBER)
+                {
+                    Assert.AreEqual(double.Parse(expectedToken[2]), lexer.TokenValue.Double);
+                }
+                if (token == Tokens.T_LNUMBER)
+                {
+                    Assert.AreEqual(int.Parse(expectedToken[2]), lexer.TokenValue.Integer);
                 }
             }
         }

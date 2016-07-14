@@ -614,6 +614,7 @@ NonVariableStart        [^a-zA-Z_{]
 }
 
 <INITIAL>(([^<]|<[^?<])+)|< { 
+    this._tokenSemantics.Object = GetTokenString();
 	return Tokens.T_INLINE_HTML; 
 }
 

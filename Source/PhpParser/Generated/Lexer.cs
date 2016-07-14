@@ -131,12 +131,13 @@ using System.Collections.Generic;
 				case 2:
 					// #line 616
 					{ 
+					    this._tokenSemantics.Object = GetTokenString();
 						return Tokens.T_INLINE_HTML; 
 					}
 					break;
 					
 				case 3:
-					// #line 633
+					// #line 634
 					{
 						if (this._allowShortTags) {
 							BEGIN(LexicalStates.ST_IN_SCRIPTING);
@@ -148,7 +149,7 @@ using System.Collections.Generic;
 					break;
 					
 				case 4:
-					// #line 620
+					// #line 621
 					{
 						BEGIN(LexicalStates.ST_IN_SCRIPTING);
 						return (Tokens.T_OPEN_TAG_WITH_ECHO);
@@ -156,7 +157,7 @@ using System.Collections.Generic;
 					break;
 					
 				case 5:
-					// #line 626
+					// #line 627
 					{
 						//HANDLE_NEWLINE(yytext[yyleng-1]);
 						BEGIN(LexicalStates.ST_IN_SCRIPTING);
@@ -165,7 +166,7 @@ using System.Collections.Generic;
 					break;
 					
 				case 6:
-					// #line 680
+					// #line 681
 					{
 						return ProcessLabel();
 					}
@@ -194,7 +195,7 @@ using System.Collections.Generic;
 					break;
 					
 				case 10:
-					// #line 820
+					// #line 821
 					{
 						//zend_error(E_COMPILE_WARNING,"Unexpected character in input:  '%c' (ASCII=%d) state=%d", yytext[0], yytext[0], YYSTATE);
 						return Tokens.T_ERROR;
@@ -227,7 +228,7 @@ using System.Collections.Generic;
 					break;
 					
 				case 14:
-					// #line 756
+					// #line 757
 					{
 						BEGIN(LexicalStates.ST_BACKQUOTE); 
 						return (Tokens)'`';
@@ -235,7 +236,7 @@ using System.Collections.Generic;
 					break;
 					
 				case 15:
-					// #line 708
+					// #line 709
 					{ 
 						// Gets here only in the case of unterminated singly-quoted string. That leads usually to an error token,
 						// however when the source code is parsed per-line (as in Visual Studio colorizer) it is important to remember
@@ -247,7 +248,7 @@ using System.Collections.Generic;
 					break;
 					
 				case 16:
-					// #line 685
+					// #line 686
 					{
 						BEGIN(LexicalStates.ST_ONE_LINE_COMMENT); 
 						yymore(); 
@@ -256,7 +257,7 @@ using System.Collections.Generic;
 					break;
 					
 				case 17:
-					// #line 723
+					// #line 724
 					{
 						BEGIN(LexicalStates.ST_DOUBLE_QUOTES);
 						return (Tokens)'"';
@@ -349,7 +350,7 @@ using System.Collections.Generic;
 					break;
 					
 				case 30:
-					// #line 701
+					// #line 702
 					{
 						BEGIN(LexicalStates.INITIAL);
 						return (Tokens.T_CLOSE_TAG);  /* implicit ';' at php-end tag */
@@ -434,7 +435,7 @@ using System.Collections.Generic;
 					break;
 					
 				case 42:
-					// #line 691
+					// #line 692
 					{ BEGIN(LexicalStates.ST_COMMENT); yymore(); break; }
 					break;
 					
@@ -481,19 +482,19 @@ using System.Collections.Generic;
 					break;
 					
 				case 49:
-					// #line 659
+					// #line 660
 					{
 						return ProcessVariable();
 					}
 					break;
 					
 				case 50:
-					// #line 706
+					// #line 707
 					{ return ProcessSingleQuotedString(); }
 					break;
 					
 				case 51:
-					// #line 719
+					// #line 720
 					{
 						return ProcessDoubleQuotedString();
 					}
@@ -668,7 +669,7 @@ using System.Collections.Generic;
 					break;
 					
 				case 76:
-					// #line 696
+					// #line 697
 					{ BEGIN(LexicalStates.ST_DOC_COMMENT); yymore(); ResetDocComment(); break; }
 					break;
 					
@@ -792,7 +793,7 @@ using System.Collections.Generic;
 					break;
 					
 				case 94:
-					// #line 729
+					// #line 730
 					{
 						int bprefix = (GetTokenChar(0) != '<') ? 1 : 0;
 						int s = bprefix + 3;
@@ -1149,7 +1150,7 @@ using System.Collections.Generic;
 					break;
 					
 				case 142:
-					// #line 802
+					// #line 803
 					{
 					    this._tokenSemantics.Object = ProcessEscapedString(GetTokenString(), this._sourceUnit.Encoding, false);
 					    return (Tokens.T_ENCAPSED_AND_WHITESPACE);
@@ -1157,7 +1158,7 @@ using System.Collections.Generic;
 					break;
 					
 				case 143:
-					// #line 778
+					// #line 779
 					{
 						BEGIN(LexicalStates.ST_IN_SCRIPTING);
 						return (Tokens)'"';
@@ -1165,7 +1166,7 @@ using System.Collections.Generic;
 					break;
 					
 				case 144:
-					// #line 769
+					// #line 770
 					{
 						//Z_LVAL_P(zendlval) = (zend_long) '{';
 						yy_push_state(LexicalStates.ST_IN_SCRIPTING);
@@ -1183,7 +1184,7 @@ using System.Collections.Generic;
 					break;
 					
 				case 146:
-					// #line 653
+					// #line 654
 					{
 						yyless(TokenLength - 1);
 						yy_push_state(LexicalStates.ST_VAR_OFFSET);
@@ -1192,7 +1193,7 @@ using System.Collections.Generic;
 					break;
 					
 				case 147:
-					// #line 647
+					// #line 648
 					{
 						yyless(TokenLength - 3);
 						yy_push_state(LexicalStates.ST_LOOKING_FOR_PROPERTY);
@@ -1201,17 +1202,17 @@ using System.Collections.Generic;
 					break;
 					
 				case 148:
-					// #line 716
+					// #line 717
 					{ yymore(); break; }
 					break;
 					
 				case 149:
-					// #line 717
+					// #line 718
 					{ BEGIN(LexicalStates.ST_IN_SCRIPTING); return ProcessSingleQuotedString(); }
 					break;
 					
 				case 150:
-					// #line 807
+					// #line 808
 					{
 					    this._tokenSemantics.Object = ProcessEscapedString(GetTokenString(), this._sourceUnit.Encoding, false);
 					    return (Tokens.T_ENCAPSED_AND_WHITESPACE);
@@ -1219,7 +1220,7 @@ using System.Collections.Generic;
 					break;
 					
 				case 151:
-					// #line 783
+					// #line 784
 					{
 						BEGIN(LexicalStates.ST_IN_SCRIPTING);
 						return (Tokens)'`';
@@ -1227,7 +1228,7 @@ using System.Collections.Generic;
 					break;
 					
 				case 152:
-					// #line 814
+					// #line 815
 					{
 					    this._tokenSemantics.Object = ProcessEscapedString(GetTokenString(), this._sourceUnit.Encoding, false);
 					    return (Tokens.T_ENCAPSED_AND_WHITESPACE);
@@ -1235,12 +1236,12 @@ using System.Collections.Generic;
 					break;
 					
 				case 153:
-					// #line 812
+					// #line 813
 					{ yymore(); break; }
 					break;
 					
 				case 154:
-					// #line 794
+					// #line 795
 					{
 					    if(GetTokenString().Contains(this._hereDocLabel))
 							return ProcessEndNowDoc(s => (string)ProcessEscapedString(s, this._sourceUnit.Encoding, false));
@@ -1294,57 +1295,57 @@ using System.Collections.Generic;
 					break;
 					
 				case 160:
-					// #line 697
+					// #line 698
 					{ yymore(); break; }
 					break;
 					
 				case 161:
-					// #line 699
+					// #line 700
 					{ yymore(); break; }
 					break;
 					
 				case 162:
-					// #line 698
+					// #line 699
 					{ BEGIN(LexicalStates.ST_IN_SCRIPTING); SetDocComment(); return Tokens.T_DOC_COMMENT; }
 					break;
 					
 				case 163:
-					// #line 692
+					// #line 693
 					{ yymore(); break; }
 					break;
 					
 				case 164:
-					// #line 694
+					// #line 695
 					{ yymore(); break; }
 					break;
 					
 				case 165:
-					// #line 693
+					// #line 694
 					{ BEGIN(LexicalStates.ST_IN_SCRIPTING); return Tokens.T_COMMENT; }
 					break;
 					
 				case 166:
-					// #line 827
+					// #line 828
 					{ yymore(); break; }
 					break;
 					
 				case 167:
-					// #line 828
+					// #line 829
 					{ BEGIN(LexicalStates.ST_IN_SCRIPTING); return Tokens.T_COMMENT; }
 					break;
 					
 				case 168:
-					// #line 826
+					// #line 827
 					{ yymore(); break; }
 					break;
 					
 				case 169:
-					// #line 830
+					// #line 831
 					{ yymore(); break; }
 					break;
 					
 				case 170:
-					// #line 673
+					// #line 674
 					{
 						/* Invalid rule to return a more explicit parse error with proper line number */
 						yyless(0);
@@ -1354,7 +1355,7 @@ using System.Collections.Generic;
 					break;
 					
 				case 171:
-					// #line 668
+					// #line 669
 					{
 						/* Only '[' can be valid, but returning other tokens will allow a more explicit parse error */
 						return (Tokens)GetTokenChar(0);
@@ -1369,7 +1370,7 @@ using System.Collections.Generic;
 					break;
 					
 				case 173:
-					// #line 663
+					// #line 664
 					{
 						yy_pop_state();
 						return (Tokens)']';
@@ -1384,7 +1385,7 @@ using System.Collections.Generic;
 					break;
 					
 				case 175:
-					// #line 762
+					// #line 763
 					{
 						BEGIN(LexicalStates.ST_IN_SCRIPTING);
 						this._tokenSemantics.Object = this._hereDocLabel;
@@ -1393,12 +1394,12 @@ using System.Collections.Generic;
 					break;
 					
 				case 176:
-					// #line 800
+					// #line 801
 					{ yymore(); break; }
 					break;
 					
 				case 177:
-					// #line 788
+					// #line 789
 					{
 					    if(GetTokenString().Contains(this._hereDocLabel))
 							return ProcessEndNowDoc(s => s);

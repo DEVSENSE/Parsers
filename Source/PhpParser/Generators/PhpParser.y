@@ -13,8 +13,6 @@ using PHP.Core;
 using PHP.Core.AST;
 using PHP.Core.Text;
 
-using FcnParam = System.Tuple<System.Collections.Generic.List<PHP.Core.AST.TypeRef>, System.Collections.Generic.List<PHP.Core.AST.ActualParam>, System.Collections.Generic.List<PHP.Core.AST.Expression>>;
-
 %%
 
 %namespace PhpParser.Parser
@@ -83,42 +81,41 @@ using FcnParam = System.Tuple<System.Collections.Generic.List<PHP.Core.AST.TypeR
 %token <ast> T_DNUMBER 318   //"floating-point number (T_DNUMBER)"
 %token <ast> T_STRING 319   //"identifier (T_STRING)"
 %token <ast> T_VARIABLE 320 //"variable (T_VARIABLE)"
-%token <ast> T_INLINE_HTML 321
+%token <Object> T_INLINE_HTML 321
 %token <ast> T_ENCAPSED_AND_WHITESPACE 322  //"quoted-string and whitespace (T_ENCAPSED_AND_WHITESPACE)"
 %token <ast> T_CONSTANT_ENCAPSED_STRING 323 //"quoted-string (T_CONSTANT_ENCAPSED_STRING)"
 %token <ast> T_STRING_VARNAME 324 //"variable name (T_STRING_VARNAME)"
 %token <ast> T_NUM_STRING 325 //"number (T_NUM_STRING)"
 
-/* Character tokens
-%token T_EXCLAM 33 // = (int)'!',
-%token T_DOUBLE_QUOTES 34 // = (int)'"',
-%token T_DOLLAR 36 // = (int)'$',
-%token T_PERCENT 37 // = (int)'%',
-%token T_AMP 38 // = (int)'&',
-%token T_LPAREN 40 // = (int)'(',
-%token T_RPAREN 41 // = (int)')',
-%token T_MUL 42 // = (int)'*',
-%token T_PLUS 43 // = (int)'+',
-%token T_COMMA 44 // = (int)',',
-%token T_MINUS 45 // = (int)'-',
-%token T_DOT 46 // = (int)'.',
-%token T_SLASH 47 // = (int)'/',
-%token T_COLON 58 // = (int)':',
-%token T_SEMI 59 // = (int)';',
-%token T_LT 60 // = (int)'<',
-%token T_EQ 61 // = (int)'=',
-%token T_GT 62 // = (int)'>',
-%token T_QUESTION 63 // = (int)'?',
-%token T_AT 64 // = (int)'@',
-%token T_LBRACKET 91 // = (int)'[',
-%token T_RBRACKET 93 // = (int)']',
-%token T_CARET 94 // = (int)'^',
-%token T_BACKQUOTE 96 // = (int)'`',
-%token T_LBRACE 123 // = (int)'{',
-%token T_PIPE 124 // = (int)'|',
-%token T_RBRACE 125 // = (int)'}',
-%token T_TILDE 126 // = (int)'~',
- */
+/* Character tokens */
+%token T_EXCLAM 33 //'!'
+%token T_DOUBLE_QUOTES 34 //'"'
+%token T_DOLLAR 36 //'$'
+%token T_PERCENT 37 //'%'
+%token T_AMP 38 //'&'
+%token T_LPAREN 40 //'('
+%token T_RPAREN 41 //')'
+%token T_MUL 42 //'*'
+%token T_PLUS 43 //'+'
+%token T_COMMA 44 //''
+%token T_MINUS 45 //'-'
+%token T_DOT 46 //'.'
+%token T_SLASH 47 //'/'
+%token T_COLON 58 //':'
+%token T_SEMI 59 //';'
+%token T_LT 60 //'<'
+%token T_EQ 61 //'='
+%token T_GT 62 //'>'
+%token T_QUESTION 63 //'?'
+%token T_AT 64 //'@'
+%token T_LBRACKET 91 //'['
+%token T_RBRACKET 93 //']'
+%token T_CARET 94 //'^'
+%token T_BACKQUOTE 96 //'`'
+%token T_LBRACE 123 //'{'
+%token T_PIPE 124 //'|'
+%token T_RBRACE 125 //'}'
+%token T_TILDE 126 //'~'
 
 %token END 0 //"end of file"
 %token T_INCLUDE 262      //"include (T_INCLUDE)"
@@ -284,10 +281,25 @@ using FcnParam = System.Tuple<System.Collections.Generic.List<PHP.Core.AST.TypeR
 
 %type <str> backup_doc_comment
 
+%type <Object> inline_html                     // Expression
+
 %% /* Rules */
 
 start:
-	T_INLINE_HTML { Debug.WriteLine("Hello"); }
+	inline_html
+	{ 
+		var list = new List<Statement>();
+		list.Add((Statement)$1);
+		_astRoot = new GlobalCode(list, _sourceUnit); 
+	}
+;
+
+inline_html:
+	T_INLINE_HTML		
+	{ 
+		/* Constants are not looked for within strings */
+		$$ = new EchoStmt(@$, new List<Expression>() { new StringLiteral(@$, $1 as string)});
+	}
 ;
 
 %%

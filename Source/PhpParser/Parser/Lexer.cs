@@ -280,6 +280,36 @@ namespace PhpParser.Parser
 
     public partial class Lexer : ITokenProvider<SemanticValueType, Span>
     {
+        #region Nested class: NullCommentsSink
+
+        internal sealed class NullCommentsSink : ICommentsSink
+        {
+            #region ICommentsSink Members
+
+            public void OnLineComment(Lexer scanner, TextSpan span) { }
+            public void OnComment(Lexer scanner, TextSpan span) { }
+            public void OnPhpDocComment(Lexer scanner, PHPDocBlock phpDocBlock) { }
+            public void OnOpenTag(Lexer scanner, TextSpan span) { }
+            public void OnCloseTag(Lexer scanner, TextSpan span) { }
+
+            #endregion
+        }
+
+        #endregion
+
+        #region Nested class: NullScannerHandler
+
+        internal sealed class NullScannerHandler : IScannerHandler
+        {
+            #region IScannerHandler Members
+
+            public void OnNextToken(Tokens token, char[] buffer, int tokenStart, int tokenLength) { }
+
+            #endregion
+        }
+
+        #endregion
+
         /// <summary>
         /// Allow short opening tags
         /// </summary>
@@ -308,7 +338,7 @@ namespace PhpParser.Parser
         /// <summary>
         /// Token postition
         /// </summary>
-        int charOffset = 0;
+        private int _charOffset = 0;
 
         /// <summary>
         /// Last encountered documentation comment block
@@ -326,16 +356,31 @@ namespace PhpParser.Parser
         private bool _inUnicodeString = false;
 
         /// <summary>
+        /// Sink for comments.
+        /// </summary>
+        private readonly ICommentsSink/*!*/commentsSink;
+
+        /// <summary>
+        /// Sink for various scanner events.
+        /// </summary>
+        private readonly IScannerHandler/*!*/scannerHandler;
+
+        /// <summary>
         /// Lexer constructor that initializes all the necessary members
         /// </summary>
         /// <param name="reader">Text reader containing the source code</param>
         /// <param name="sourceUnit">Source unit (file) associated with the <paramref name="reader"/></param>
         /// <param name="allowShortTags">Allow short oppening tags for PHP</param>
-        public Lexer(System.IO.TextReader reader, SourceUnit sourceUnit, bool allowShortTags = true)
+        public Lexer(System.IO.TextReader reader, SourceUnit sourceUnit, 
+            ErrorSink/*!*/ errors, ICommentsSink commentsSink, IScannerHandler scannerHandler,
+            LanguageFeatures features, int positionShift)
         {
             this._sourceUnit = sourceUnit;
-            this._errors = null;
-            this._allowShortTags = allowShortTags;
+            this._errors = errors;
+            this.commentsSink = commentsSink ?? new NullCommentsSink();
+            this.scannerHandler = scannerHandler ?? new NullScannerHandler();
+            this._charOffset = positionShift;
+            this._allowShortTags = features == LanguageFeatures.ShortOpenTags;
             Initialize(reader, LexicalStates.INITIAL);
         }
 
@@ -347,8 +392,8 @@ namespace PhpParser.Parser
             int tokenLength = this.TokenLength;
 
             // update token position info:
-            _tokenPosition = new Span(charOffset, tokenLength);
-            charOffset += tokenLength;
+            _tokenPosition = new Span(_charOffset, tokenLength);
+            _charOffset += tokenLength;
         }
 
         void ITokenProvider<SemanticValueType, Span>.ReportError(string[] expectedTerminals)
@@ -898,20 +943,6 @@ namespace PhpParser.Parser
             }
         }
 
-        private int GetPragmaValueStart(int directiveLength)
-        {
-            int buffer_pos = token_start + "#pragma".Length;
-            Debug.Assert(new String(buffer, token_start, buffer_pos - token_start) == "#pragma");
-
-            while (buffer[buffer_pos] == ' ' || buffer[buffer_pos] == '\t') buffer_pos++;
-
-            buffer_pos += directiveLength;
-
-            while (buffer[buffer_pos] == ' ' || buffer[buffer_pos] == '\t') buffer_pos++;
-
-            return buffer_pos - token_start;
-        }
-
         #endregion
 
         private char Map(char c)
@@ -931,7 +962,7 @@ namespace PhpParser.Parser
         {
             get
             {
-                throw new NotImplementedException();
+                return _tokenPosition;
             }
         }
 
@@ -1049,7 +1080,7 @@ namespace PhpParser.Parser
 
         void SetDocComment()
         {
-            _docBlock = new PHPDocBlock(GetTokenString(), new Span(charOffset, TokenLength));
+            _docBlock = new PHPDocBlock(GetTokenString(), _tokenPosition);
         }
     }
 }

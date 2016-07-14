@@ -21,12 +21,7 @@ namespace PHP.Syntax
         /// <summary>
         /// Allows using short open tags in the script.
         /// </summary>
-        ShortOpenTags = 1,
-
-        /// <summary>
-        /// Allows using ASP tags.
-        /// </summary>
-        AspTags = 2
+        ShortOpenTags = 1
     }
 
     #endregion

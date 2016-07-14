@@ -89,7 +89,9 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PreBuildEvent>Echo "files" &gt; TestData.csv
-For /R ..\..\TestData %25%25G IN (*) do Echo "%25%25G" &gt;&gt; TestData.csv</PreBuildEvent>
+For /R ..\..\TestData %25%25G IN (*) do Echo "%25%25G" &gt;&gt; TestData.csv
+Echo "files" &gt; ParserTestData.csv
+For %25%25G IN (C:\Users\Michal\Projects\Parsers\Source\UnitTests\TestData\*) do Echo "%25%25G" &gt;&gt; ParserTestData.csv</PreBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

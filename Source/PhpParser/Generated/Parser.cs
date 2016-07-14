@@ -2,7 +2,6 @@ using System;
 using System.Text;
 using System.Collections.Generic;
 
-#line 1 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 /*
 
 Copyright (c) 2016 Michal Brabec
@@ -18,155 +17,341 @@ using PHP.Core;
 using PHP.Core.AST;
 using PHP.Core.Text;
 
-using FcnParam = System.Tuple<System.Collections.Generic.List<PHP.Core.AST.TypeRef>, System.Collections.Generic.List<PHP.Core.AST.ActualParam>, System.Collections.Generic.List<PHP.Core.AST.Expression>>;
-
 
 namespace PhpParser.Parser
 {
 public enum Tokens {
-	T_INCLUDE=262 //"include (T_INCLUDE)"
-,	T_INCLUDE_ONCE=261 //"include_once (T_INCLUDE_ONCE)"
-,	T_EVAL=260 //"eval (T_EVAL)"
-,	T_REQUIRE=259 //"require (T_REQUIRE)"
-,	T_REQUIRE_ONCE=258 //"require_once (T_REQUIRE_ONCE)"
-,	T_LOGICAL_OR=263 //"or (T_LOGICAL_OR)"
-,	T_LOGICAL_XOR=264 //"xor (T_LOGICAL_XOR)"
-,	T_LOGICAL_AND=265 //"and (T_LOGICAL_AND)"
-,	T_PRINT=266 //"print (T_PRINT)"
-,	T_YIELD=267 //"yield (T_YIELD)"
-,	T_DOUBLE_ARROW=268 //"=> (T_DOUBLE_ARROW)"
-,	T_YIELD_FROM=269 //"yield from (T_YIELD_FROM)"
-,	T_PLUS_EQUAL=281 //"+= (T_PLUS_EQUAL)"
-,	T_MINUS_EQUAL=280 //"-= (T_MINUS_EQUAL)"
-,	T_MUL_EQUAL=279 //"*= (T_MUL_EQUAL)"
-,	T_DIV_EQUAL=278 //"/= (T_DIV_EQUAL)"
-,	T_CONCAT_EQUAL=277 //".= (T_CONCAT_EQUAL)"
-,	T_MOD_EQUAL=276 //"%= (T_MOD_EQUAL)"
-,	T_AND_EQUAL=275 //"&= (T_AND_EQUAL)"
-,	T_OR_EQUAL=274 //"|= (T_OR_EQUAL)"
-,	T_XOR_EQUAL=273 //"^= (T_XOR_EQUAL)"
-,	T_SL_EQUAL=272 //"<<= (T_SL_EQUAL)"
-,	T_SR_EQUAL=271 //">>= (T_SR_EQUAL)"
-,	T_POW_EQUAL=270 //"**= (T_POW_EQUAL)"
-,	T_COALESCE=282 //"?? (T_COALESCE)"
-,	T_BOOLEAN_OR=283 //"|| (T_BOOLEAN_OR)"
-,	T_BOOLEAN_AND=284 //"&& (T_BOOLEAN_AND)"
-,	T_IS_EQUAL=289 //"== (T_IS_EQUAL)"
-,	T_IS_NOT_EQUAL=288 //"!= (T_IS_NOT_EQUAL)"
-,	T_IS_IDENTICAL=287 //"=== (T_IS_IDENTICAL)"
-,	T_IS_NOT_IDENTICAL=286 //"!== (T_IS_NOT_IDENTICAL)"
-,	T_SPACESHIP=285 //"<=> (T_SPACESHIP)"
-,	T_IS_SMALLER_OR_EQUAL=291 //"<= (T_IS_SMALLER_OR_EQUAL)"
-,	T_IS_GREATER_OR_EQUAL=290 //">= (T_IS_GREATER_OR_EQUAL)"
-,	T_SL=293 //"<< (T_SL)"
-,	T_SR=292 //">> (T_SR)"
-,	T_INSTANCEOF=294 //"instanceof (T_INSTANCEOF)"
-,	T_INC=303 //"++ (T_INC)"
-,	T_DEC=302 //"-- (T_DEC)"
-,	T_INT_CAST=301 //"(int) (T_INT_CAST)"
-,	T_DOUBLE_CAST=300 //"(double) (T_DOUBLE_CAST)"
-,	T_STRING_CAST=299 //"(string) (T_STRING_CAST)"
-,	T_ARRAY_CAST=298 //"(array) (T_ARRAY_CAST)"
-,	T_OBJECT_CAST=297 //"(object) (T_OBJECT_CAST)"
-,	T_BOOL_CAST=296 //"(bool) (T_BOOL_CAST)"
-,	T_UNSET_CAST=295 //"(unset) (T_UNSET_CAST)"
-,	T_POW=304 //"** (T_POW)"
-,	T_NEW=306 //"new (T_NEW)"
-,	T_CLONE=305 //"clone (T_CLONE)"
-,	T_NOELSE=176
-,	T_ELSEIF=308 //"elseif (T_ELSEIF)"
-,	T_ELSE=309 //"else (T_ELSE)"
-,	T_ENDIF=310 //"endif (T_ENDIF)"
-,	T_STATIC=316 //"static (T_STATIC)"
-,	T_ABSTRACT=315 //"abstract (T_ABSTRACT)"
-,	T_FINAL=314 //"final (T_FINAL)"
-,	T_PRIVATE=313 //"private (T_PRIVATE)"
-,	T_PROTECTED=312 //"protected (T_PROTECTED)"
-,	T_PUBLIC=311 //"public (T_PUBLIC)"
-,	T_LNUMBER=317 //"integer number (T_LNUMBER)"
-,	T_DNUMBER=318 //"floating-point number (T_DNUMBER)"
-,	T_STRING=319 //"identifier (T_STRING)"
-,	T_VARIABLE=320 //"variable (T_VARIABLE)"
-,	T_INLINE_HTML=321
-,	T_ENCAPSED_AND_WHITESPACE=322 //"quoted-string and whitespace (T_ENCAPSED_AND_WHITESPACE)"
-,	T_CONSTANT_ENCAPSED_STRING=323 //"quoted-string (T_CONSTANT_ENCAPSED_STRING)"
-,	T_STRING_VARNAME=324 //"variable name (T_STRING_VARNAME)"
-,	T_NUM_STRING=325 //"number (T_NUM_STRING)"
-,	END=0 //"end of file"
-,	T_EXIT=326 //"exit (T_EXIT)"
-,	T_IF=327 //"if (T_IF)"
-,	T_ECHO=328 //"echo (T_ECHO)"
-,	T_DO=329 //"do (T_DO)"
-,	T_WHILE=330 //"while (T_WHILE)"
-,	T_ENDWHILE=331 //"endwhile (T_ENDWHILE)"
-,	T_FOR=332 //"for (T_FOR)"
-,	T_ENDFOR=333 //"endfor (T_ENDFOR)"
-,	T_FOREACH=334 //"foreach (T_FOREACH)"
-,	T_ENDFOREACH=335 //"endforeach (T_ENDFOREACH)"
-,	T_DECLARE=336 //"declare (T_DECLARE)"
-,	T_ENDDECLARE=337 //"enddeclare (T_ENDDECLARE)"
-,	T_AS=338 //"as (T_AS)"
-,	T_SWITCH=339 //"switch (T_SWITCH)"
-,	T_ENDSWITCH=340 //"endswitch (T_ENDSWITCH)"
-,	T_CASE=341 //"case (T_CASE)"
-,	T_DEFAULT=342 //"default (T_DEFAULT)"
-,	T_BREAK=343 //"break (T_BREAK)"
-,	T_CONTINUE=344 //"continue (T_CONTINUE)"
-,	T_GOTO=345 //"goto (T_GOTO)"
-,	T_FUNCTION=346 //"function (T_FUNCTION)"
-,	T_CONST=347 //"const (T_CONST)"
-,	T_RETURN=348 //"return (T_RETURN)"
-,	T_TRY=349 //"try (T_TRY)"
-,	T_CATCH=350 //"catch (T_CATCH)"
-,	T_FINALLY=351 //"finally (T_FINALLY)"
-,	T_THROW=352 //"throw (T_THROW)"
-,	T_USE=353 //"use (T_USE)"
-,	T_INSTEADOF=354 //"insteadof (T_INSTEADOF)"
-,	T_GLOBAL=355 //"global (T_GLOBAL)"
-,	T_VAR=356 //"var (T_VAR)"
-,	T_UNSET=357 //"unset (T_UNSET)"
-,	T_ISSET=358 //"isset (T_ISSET)"
-,	T_EMPTY=359 //"empty (T_EMPTY)"
-,	T_HALT_COMPILER=360 //"__halt_compiler (T_HALT_COMPILER)"
-,	T_CLASS=361 //"class (T_CLASS)"
-,	T_TRAIT=362 //"trait (T_TRAIT)"
-,	T_INTERFACE=363 //"interface (T_INTERFACE)"
-,	T_EXTENDS=364 //"extends (T_EXTENDS)"
-,	T_IMPLEMENTS=365 //"implements (T_IMPLEMENTS)"
-,	T_OBJECT_OPERATOR=366 //"-> (T_OBJECT_OPERATOR)"
-,	T_LIST=367 //"list (T_LIST)"
-,	T_ARRAY=368 //"array (T_ARRAY)"
-,	T_CALLABLE=369 //"callable (T_CALLABLE)"
-,	T_LINE=370 //"__LINE__ (T_LINE)"
-,	T_FILE=371 //"__FILE__ (T_FILE)"
-,	T_DIR=372 //"__DIR__ (T_DIR)"
-,	T_CLASS_C=373 //"__CLASS__ (T_CLASS_C)"
-,	T_TRAIT_C=374 //"__TRAIT__ (T_TRAIT_C)"
-,	T_METHOD_C=375 //"__METHOD__ (T_METHOD_C)"
-,	T_FUNC_C=376 //"__FUNCTION__ (T_FUNC_C)"
-,	T_COMMENT=377 //"comment (T_COMMENT)"
-,	T_DOC_COMMENT=378 //"doc comment (T_DOC_COMMENT)"
-,	T_OPEN_TAG=379 //"open tag (T_OPEN_TAG)"
-,	T_OPEN_TAG_WITH_ECHO=380 //"open tag with echo (T_OPEN_TAG_WITH_ECHO)"
-,	T_CLOSE_TAG=381 //"close tag (T_CLOSE_TAG)"
-,	T_WHITESPACE=382 //"whitespace (T_WHITESPACE)"
-,	T_START_HEREDOC=383 //"heredoc start (T_START_HEREDOC)"
-,	T_END_HEREDOC=384 //"heredoc end (T_END_HEREDOC)"
-,	T_DOLLAR_OPEN_CURLY_BRACES=385 //"${ (T_DOLLAR_OPEN_CURLY_BRACES)"
-,	T_CURLY_OPEN=386 //"{$ (T_CURLY_OPEN)"
-,	T_DOUBLE_COLON=387 //":: (T_DOUBLE_COLON)"
-,	T_NAMESPACE=388 //"namespace (T_NAMESPACE)"
-,	T_NS_C=389 //"__NAMESPACE__ (T_NS_C)"
-,	T_NS_SEPARATOR=390 //"\\ (T_NS_SEPARATOR)"
-,	T_ELLIPSIS=391 //"... (T_ELLIPSIS)"
-,	T_ERROR=262
-,	EOF=263
+/// <summary>"include (T_INCLUDE)"</summary>
+T_INCLUDE=262,
+/// <summary>"include_once (T_INCLUDE_ONCE)"</summary>
+T_INCLUDE_ONCE=261,
+/// <summary>"eval (T_EVAL)"</summary>
+T_EVAL=260,
+/// <summary>"require (T_REQUIRE)"</summary>
+T_REQUIRE=259,
+/// <summary>"require_once (T_REQUIRE_ONCE)"</summary>
+T_REQUIRE_ONCE=258,
+/// <summary>"or (T_LOGICAL_OR)"</summary>
+T_LOGICAL_OR=263,
+/// <summary>"xor (T_LOGICAL_XOR)"</summary>
+T_LOGICAL_XOR=264,
+/// <summary>"and (T_LOGICAL_AND)"</summary>
+T_LOGICAL_AND=265,
+/// <summary>"print (T_PRINT)"</summary>
+T_PRINT=266,
+/// <summary>"yield (T_YIELD)"</summary>
+T_YIELD=267,
+/// <summary>"=> (T_DOUBLE_ARROW)"</summary>
+T_DOUBLE_ARROW=268,
+/// <summary>"yield from (T_YIELD_FROM)"</summary>
+T_YIELD_FROM=269,
+/// <summary>"+= (T_PLUS_EQUAL)"</summary>
+T_PLUS_EQUAL=281,
+/// <summary>"-= (T_MINUS_EQUAL)"</summary>
+T_MINUS_EQUAL=280,
+/// <summary>"*= (T_MUL_EQUAL)"</summary>
+T_MUL_EQUAL=279,
+/// <summary>"/= (T_DIV_EQUAL)"</summary>
+T_DIV_EQUAL=278,
+/// <summary>".= (T_CONCAT_EQUAL)"</summary>
+T_CONCAT_EQUAL=277,
+/// <summary>"%= (T_MOD_EQUAL)"</summary>
+T_MOD_EQUAL=276,
+/// <summary>"&= (T_AND_EQUAL)"</summary>
+T_AND_EQUAL=275,
+/// <summary>"|= (T_OR_EQUAL)"</summary>
+T_OR_EQUAL=274,
+/// <summary>"^= (T_XOR_EQUAL)"</summary>
+T_XOR_EQUAL=273,
+/// <summary>"<<= (T_SL_EQUAL)"</summary>
+T_SL_EQUAL=272,
+/// <summary>">>= (T_SR_EQUAL)"</summary>
+T_SR_EQUAL=271,
+/// <summary>"**= (T_POW_EQUAL)"</summary>
+T_POW_EQUAL=270,
+/// <summary>"?? (T_COALESCE)"</summary>
+T_COALESCE=282,
+/// <summary>"|| (T_BOOLEAN_OR)"</summary>
+T_BOOLEAN_OR=283,
+/// <summary>"&& (T_BOOLEAN_AND)"</summary>
+T_BOOLEAN_AND=284,
+/// <summary>"== (T_IS_EQUAL)"</summary>
+T_IS_EQUAL=289,
+/// <summary>"!= (T_IS_NOT_EQUAL)"</summary>
+T_IS_NOT_EQUAL=288,
+/// <summary>"=== (T_IS_IDENTICAL)"</summary>
+T_IS_IDENTICAL=287,
+/// <summary>"!== (T_IS_NOT_IDENTICAL)"</summary>
+T_IS_NOT_IDENTICAL=286,
+/// <summary>"<=> (T_SPACESHIP)"</summary>
+T_SPACESHIP=285,
+/// <summary>"<= (T_IS_SMALLER_OR_EQUAL)"</summary>
+T_IS_SMALLER_OR_EQUAL=291,
+/// <summary>">= (T_IS_GREATER_OR_EQUAL)"</summary>
+T_IS_GREATER_OR_EQUAL=290,
+/// <summary>"<< (T_SL)"</summary>
+T_SL=293,
+/// <summary>">> (T_SR)"</summary>
+T_SR=292,
+/// <summary>"instanceof (T_INSTANCEOF)"</summary>
+T_INSTANCEOF=294,
+/// <summary>"++ (T_INC)"</summary>
+T_INC=303,
+/// <summary>"-- (T_DEC)"</summary>
+T_DEC=302,
+/// <summary>"(int) (T_INT_CAST)"</summary>
+T_INT_CAST=301,
+/// <summary>"(double) (T_DOUBLE_CAST)"</summary>
+T_DOUBLE_CAST=300,
+/// <summary>"(string) (T_STRING_CAST)"</summary>
+T_STRING_CAST=299,
+/// <summary>"(array) (T_ARRAY_CAST)"</summary>
+T_ARRAY_CAST=298,
+/// <summary>"(object) (T_OBJECT_CAST)"</summary>
+T_OBJECT_CAST=297,
+/// <summary>"(bool) (T_BOOL_CAST)"</summary>
+T_BOOL_CAST=296,
+/// <summary>"(unset) (T_UNSET_CAST)"</summary>
+T_UNSET_CAST=295,
+/// <summary>"** (T_POW)"</summary>
+T_POW=304,
+/// <summary>"new (T_NEW)"</summary>
+T_NEW=306,
+/// <summary>"clone (T_CLONE)"</summary>
+T_CLONE=305,
+T_NOELSE=176,
+/// <summary>"elseif (T_ELSEIF)"</summary>
+T_ELSEIF=308,
+/// <summary>"else (T_ELSE)"</summary>
+T_ELSE=309,
+/// <summary>"endif (T_ENDIF)"</summary>
+T_ENDIF=310,
+/// <summary>"static (T_STATIC)"</summary>
+T_STATIC=316,
+/// <summary>"abstract (T_ABSTRACT)"</summary>
+T_ABSTRACT=315,
+/// <summary>"final (T_FINAL)"</summary>
+T_FINAL=314,
+/// <summary>"private (T_PRIVATE)"</summary>
+T_PRIVATE=313,
+/// <summary>"protected (T_PROTECTED)"</summary>
+T_PROTECTED=312,
+/// <summary>"public (T_PUBLIC)"</summary>
+T_PUBLIC=311,
+/// <summary>"integer number (T_LNUMBER)"</summary>
+T_LNUMBER=317,
+/// <summary>"floating-point number (T_DNUMBER)"</summary>
+T_DNUMBER=318,
+/// <summary>"identifier (T_STRING)"</summary>
+T_STRING=319,
+/// <summary>"variable (T_VARIABLE)"</summary>
+T_VARIABLE=320,
+T_INLINE_HTML=321,
+/// <summary>"quoted-string and whitespace (T_ENCAPSED_AND_WHITESPACE)"</summary>
+T_ENCAPSED_AND_WHITESPACE=322,
+/// <summary>"quoted-string (T_CONSTANT_ENCAPSED_STRING)"</summary>
+T_CONSTANT_ENCAPSED_STRING=323,
+/// <summary>"variable name (T_STRING_VARNAME)"</summary>
+T_STRING_VARNAME=324,
+/// <summary>"number (T_NUM_STRING)"</summary>
+T_NUM_STRING=325,
+/// <summary>'!'</summary>
+T_EXCLAM=33,
+/// <summary>'"'</summary>
+T_DOUBLE_QUOTES=34,
+/// <summary>'$'</summary>
+T_DOLLAR=36,
+/// <summary>'%'</summary>
+T_PERCENT=37,
+/// <summary>'&'</summary>
+T_AMP=38,
+/// <summary>'('</summary>
+T_LPAREN=40,
+/// <summary>')'</summary>
+T_RPAREN=41,
+/// <summary>'*'</summary>
+T_MUL=42,
+/// <summary>'+'</summary>
+T_PLUS=43,
+/// <summary>''</summary>
+T_COMMA=44,
+/// <summary>'-'</summary>
+T_MINUS=45,
+/// <summary>'.'</summary>
+T_DOT=46,
+/// <summary>'/'</summary>
+T_SLASH=47,
+/// <summary>':'</summary>
+T_COLON=58,
+/// <summary>';'</summary>
+T_SEMI=59,
+/// <summary>'<'</summary>
+T_LT=60,
+/// <summary>'='</summary>
+T_EQ=61,
+/// <summary>'>'</summary>
+T_GT=62,
+/// <summary>'?'</summary>
+T_QUESTION=63,
+/// <summary>'@'</summary>
+T_AT=64,
+/// <summary>'['</summary>
+T_LBRACKET=91,
+/// <summary>']'</summary>
+T_RBRACKET=93,
+/// <summary>'^'</summary>
+T_CARET=94,
+/// <summary>'`'</summary>
+T_BACKQUOTE=96,
+/// <summary>'{'</summary>
+T_LBRACE=123,
+/// <summary>'|'</summary>
+T_PIPE=124,
+/// <summary>'}'</summary>
+T_RBRACE=125,
+/// <summary>'~'</summary>
+T_TILDE=126,
+/// <summary>"end of file"</summary>
+END=0,
+/// <summary>"exit (T_EXIT)"</summary>
+T_EXIT=326,
+/// <summary>"if (T_IF)"</summary>
+T_IF=327,
+/// <summary>"echo (T_ECHO)"</summary>
+T_ECHO=328,
+/// <summary>"do (T_DO)"</summary>
+T_DO=329,
+/// <summary>"while (T_WHILE)"</summary>
+T_WHILE=330,
+/// <summary>"endwhile (T_ENDWHILE)"</summary>
+T_ENDWHILE=331,
+/// <summary>"for (T_FOR)"</summary>
+T_FOR=332,
+/// <summary>"endfor (T_ENDFOR)"</summary>
+T_ENDFOR=333,
+/// <summary>"foreach (T_FOREACH)"</summary>
+T_FOREACH=334,
+/// <summary>"endforeach (T_ENDFOREACH)"</summary>
+T_ENDFOREACH=335,
+/// <summary>"declare (T_DECLARE)"</summary>
+T_DECLARE=336,
+/// <summary>"enddeclare (T_ENDDECLARE)"</summary>
+T_ENDDECLARE=337,
+/// <summary>"as (T_AS)"</summary>
+T_AS=338,
+/// <summary>"switch (T_SWITCH)"</summary>
+T_SWITCH=339,
+/// <summary>"endswitch (T_ENDSWITCH)"</summary>
+T_ENDSWITCH=340,
+/// <summary>"case (T_CASE)"</summary>
+T_CASE=341,
+/// <summary>"default (T_DEFAULT)"</summary>
+T_DEFAULT=342,
+/// <summary>"break (T_BREAK)"</summary>
+T_BREAK=343,
+/// <summary>"continue (T_CONTINUE)"</summary>
+T_CONTINUE=344,
+/// <summary>"goto (T_GOTO)"</summary>
+T_GOTO=345,
+/// <summary>"function (T_FUNCTION)"</summary>
+T_FUNCTION=346,
+/// <summary>"const (T_CONST)"</summary>
+T_CONST=347,
+/// <summary>"return (T_RETURN)"</summary>
+T_RETURN=348,
+/// <summary>"try (T_TRY)"</summary>
+T_TRY=349,
+/// <summary>"catch (T_CATCH)"</summary>
+T_CATCH=350,
+/// <summary>"finally (T_FINALLY)"</summary>
+T_FINALLY=351,
+/// <summary>"throw (T_THROW)"</summary>
+T_THROW=352,
+/// <summary>"use (T_USE)"</summary>
+T_USE=353,
+/// <summary>"insteadof (T_INSTEADOF)"</summary>
+T_INSTEADOF=354,
+/// <summary>"global (T_GLOBAL)"</summary>
+T_GLOBAL=355,
+/// <summary>"var (T_VAR)"</summary>
+T_VAR=356,
+/// <summary>"unset (T_UNSET)"</summary>
+T_UNSET=357,
+/// <summary>"isset (T_ISSET)"</summary>
+T_ISSET=358,
+/// <summary>"empty (T_EMPTY)"</summary>
+T_EMPTY=359,
+/// <summary>"__halt_compiler (T_HALT_COMPILER)"</summary>
+T_HALT_COMPILER=360,
+/// <summary>"class (T_CLASS)"</summary>
+T_CLASS=361,
+/// <summary>"trait (T_TRAIT)"</summary>
+T_TRAIT=362,
+/// <summary>"interface (T_INTERFACE)"</summary>
+T_INTERFACE=363,
+/// <summary>"extends (T_EXTENDS)"</summary>
+T_EXTENDS=364,
+/// <summary>"implements (T_IMPLEMENTS)"</summary>
+T_IMPLEMENTS=365,
+/// <summary>"-> (T_OBJECT_OPERATOR)"</summary>
+T_OBJECT_OPERATOR=366,
+/// <summary>"list (T_LIST)"</summary>
+T_LIST=367,
+/// <summary>"array (T_ARRAY)"</summary>
+T_ARRAY=368,
+/// <summary>"callable (T_CALLABLE)"</summary>
+T_CALLABLE=369,
+/// <summary>"__LINE__ (T_LINE)"</summary>
+T_LINE=370,
+/// <summary>"__FILE__ (T_FILE)"</summary>
+T_FILE=371,
+/// <summary>"__DIR__ (T_DIR)"</summary>
+T_DIR=372,
+/// <summary>"__CLASS__ (T_CLASS_C)"</summary>
+T_CLASS_C=373,
+/// <summary>"__TRAIT__ (T_TRAIT_C)"</summary>
+T_TRAIT_C=374,
+/// <summary>"__METHOD__ (T_METHOD_C)"</summary>
+T_METHOD_C=375,
+/// <summary>"__FUNCTION__ (T_FUNC_C)"</summary>
+T_FUNC_C=376,
+/// <summary>"comment (T_COMMENT)"</summary>
+T_COMMENT=377,
+/// <summary>"doc comment (T_DOC_COMMENT)"</summary>
+T_DOC_COMMENT=378,
+/// <summary>"open tag (T_OPEN_TAG)"</summary>
+T_OPEN_TAG=379,
+/// <summary>"open tag with echo (T_OPEN_TAG_WITH_ECHO)"</summary>
+T_OPEN_TAG_WITH_ECHO=380,
+/// <summary>"close tag (T_CLOSE_TAG)"</summary>
+T_CLOSE_TAG=381,
+/// <summary>"whitespace (T_WHITESPACE)"</summary>
+T_WHITESPACE=382,
+/// <summary>"heredoc start (T_START_HEREDOC)"</summary>
+T_START_HEREDOC=383,
+/// <summary>"heredoc end (T_END_HEREDOC)"</summary>
+T_END_HEREDOC=384,
+/// <summary>"${ (T_DOLLAR_OPEN_CURLY_BRACES)"</summary>
+T_DOLLAR_OPEN_CURLY_BRACES=385,
+/// <summary>"{$ (T_CURLY_OPEN)"</summary>
+T_CURLY_OPEN=386,
+/// <summary>":: (T_DOUBLE_COLON)"</summary>
+T_DOUBLE_COLON=387,
+/// <summary>"namespace (T_NAMESPACE)"</summary>
+T_NAMESPACE=388,
+/// <summary>"__NAMESPACE__ (T_NS_C)"</summary>
+T_NS_C=389,
+/// <summary>"\\ (T_NS_SEPARATOR)"</summary>
+T_NS_SEPARATOR=390,
+/// <summary>"... (T_ELLIPSIS)"</summary>
+T_ELLIPSIS=391,
+T_ERROR=290,
+EOF=291
 };
 
 [StructLayout(LayoutKind.Explicit)]
 public partial struct SemanticValueType
-#line 29 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
-			{
+{
 	// Integer and Offset are both used when generating code for string 
 	// with 'inline' variables. Other fields are not combined.
 	
@@ -205,10 +390,11 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
     #region states
     states = new State[]
     {
-      new State(0, new int[] {321,3}, new int[] {-125,1}),
-      new State(1, new int[] {263,2}),
+      new State(0, new int[] {321,4}, new int[] {-126,1,-125,3}),
+      new State(1, new int[] {291,2}),
       new State(2, -1),
       new State(3, -2),
+      new State(4, -3),
     };
     #endregion
 
@@ -216,7 +402,8 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
     rules = new Rule[]
     {
     default(Rule),
-    new Rule(-126, new int[]{-125,263}),
+    new Rule(-127, new int[]{-126,291}),
+    new Rule(-126, new int[]{-125}),
     new Rule(-125, new int[]{321}),
     };
     #endregion
@@ -250,8 +437,8 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
       "isset_variable", "type", "return_type", "type_expr", "identifier", "returns_ref", 
       "function", "is_reference", "is_variadic", "variable_modifiers", "method_modifiers", 
       "non_empty_member_modifiers", "member_modifier", "class_modifiers", "class_modifier", 
-      "use_type", "backup_fn_flags", "backup_doc_comment", "start", "$accept", 
-      };
+      "use_type", "backup_fn_flags", "backup_doc_comment", "inline_html", "start", 
+      "$accept", };
   }
 
   #endregion
@@ -260,9 +447,18 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
   {
     switch (action)
     {
-      case 2: // start -> T_INLINE_HTML 
-#line 290 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
-			{ Debug.WriteLine("Hello"); }
+      case 2: // start -> inline_html 
+{ 
+		var list = new List<Statement>();
+		list.Add((Statement)value_stack.array[value_stack.top-1].yyval.Object);
+		_astRoot = new GlobalCode(list, _sourceUnit); 
+	}
+        return;
+      case 3: // inline_html -> T_INLINE_HTML 
+{ 
+		/* Constants are not looked for within strings */
+		yyval.Object = new EchoStmt(yypos, new List<Expression>() { new StringLiteral(yypos, value_stack.array[value_stack.top-1].yyval.Object as string)});
+	}
         return;
     }
   }
@@ -275,7 +471,6 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
       return CharToString((char)terminal);
   }
 
-#line 293 "C:\Users\Michal\Projects\Parsers\Source\PhpParser\Generators\PhpParser.y"
 
 
 #if false

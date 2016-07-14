@@ -90,8 +90,12 @@
     <Compile Include="Generated\Lexer.cs" />
     <Compile Include="Parser\Convert.cs" />
     <Compile Include="Parser\GPPG.cs" />
+    <Compile Include="Parser\ICommentSink.cs" />
+    <Compile Include="Parser\IReductionsSink.cs" />
+    <Compile Include="Parser\IScannerHandle.cs" />
     <Compile Include="Parser\Lexer.cs" />
     <Compile Include="Parser\Parser.cs" />
+    <None Include="Generators\generate.bat" />
     <None Include="Parser\Scanner.cs" />
     <Compile Include="PhpParser.cs" />
     <Compile Include="Core\Text\ILineBreaks.cs" />
@@ -116,7 +120,7 @@
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
   <PropertyGroup>
     <PreBuildEvent>"$(ProjectDir)Generators\CsLex.exe" $(ProjectDir)Generators\PhpLexer.lex $(ProjectDir)Generated\Lexer.cs /version:2
-"$(ProjectDir)Generators\gppg.exe" $(ProjectDir)Generators\PhpParser.y $(ProjectDir)Generated\Parser.cs</PreBuildEvent>
+"$(ProjectDir)Generators\gppg.exe" /l $(ProjectDir)Generators\PhpParser.y $(ProjectDir)Generated\Parser.cs</PreBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
