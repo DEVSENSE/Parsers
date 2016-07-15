@@ -241,6 +241,25 @@ namespace PhpParser
         TNode BinaryOperation(TSpan span, Operations operation, TNode leftExpression, TNode rightExpression);
 
         /// <summary>
+        /// Creates unary operation expression.
+        /// </summary>
+        /// <param name="span">Entire element span.</param>
+        /// <param name="operation">Unary expression operation.</param>
+        /// <param name="expression">Operation parameter.</param>
+        /// <returns>Unary operation expression.</returns>
+        TNode UnaryOperation(TSpan span, Operations operation, TNode expression);
+
+        /// <summary>
+        /// Creates increment or decrement unary operation.
+        /// </summary>
+        /// <param name="span">Entire element span.</param>
+        /// <param name="refexpression">Variable expression.</param>
+        /// <param name="inc"><c>true</c> for increment, <c>false</c> for decrement.</param>
+        /// <param name="post"><c>true</c> for post incrementation(<c>i++</c>), <c>false</c> for pre incrementation (<c>++i</c>).</param>
+        /// <returns>Increment/Decrement expression.</returns>
+        TNode IncrementDecrement(TSpan span, TNode refexpression, bool inc, bool post);
+
+        /// <summary>
         /// Creates expression representing a string concatenation.
         /// </summary>
         /// <param name="span">Entire element span.</param>
