@@ -88,6 +88,7 @@
     <Compile Include="Core\TreeVisitor.cs" />
     <Compile Include="Core\Utils.cs" />
     <Compile Include="Generated\Lexer.cs" />
+    <Compile Include="INodesFactory.cs" />
     <Compile Include="Parser\Convert.cs" />
     <Compile Include="Parser\GPPG.cs" />
     <Compile Include="Parser\ICommentSink.cs" />
