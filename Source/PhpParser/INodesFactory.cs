@@ -181,6 +181,109 @@ namespace PhpParser
         /// <returns>Echo statement.</returns>
         TNode InlineHtml(TSpan span, string html);
 
+        /// <summary>
+        /// Creates <c>try</c>/<c>catch</c>/<c>finally</c> block.
+        /// </summary>
+        /// <param name="span">Entire element span.</param>
+        /// <param name="body">Try body.</param>
+        /// <param name="catches">Catch items.</param>
+        /// <param name="finallyBlockOpt">Optional. Finally block.</param>
+        /// <returns></returns>
+        TNode TryCatch(TSpan span, TNode body, IEnumerable<CatchItem> catches, TNode finallyBlockOpt);
+
+        #endregion
+
+        #region Loops, Branching
+
+        /// <summary>
+        /// Creates <c>do</c> statement.
+        /// </summary>
+        /// <param name="span">Entire element span.</param>
+        /// <param name="body">Loop body.</param>
+        /// <param name="cond">Condition that breaks the loop.</param>
+        /// <returns>Do statement.</returns>
+        TNode Do(TSpan span, TNode body, TNode cond);
+
+        /// <summary>
+        /// Creates <c>while</c> statement.
+        /// </summary>
+        /// <param name="span">Entire element span.</param>
+        /// <param name="cond">Condition that breaks the loop.</param>
+        /// <param name="body">Loop body.</param>
+        /// <returns>While statement.</returns>
+        TNode While(TSpan span, TNode cond, TNode body);
+
+        /// <summary>
+        /// Creates <c>for</c> statement.
+        /// </summary>
+        /// <param name="span">Entire element span.</param>
+        /// <param name="init">Initializer expressions.</param>
+        /// <param name="cond">Conditions, none, one or more. Only the last one breaks the loop.</param>
+        /// <param name="action">Actions to be performed after each loop.</param>
+        /// <param name="body">Loop body.</param>
+        /// <returns>For statement.</returns>
+        TNode For(TSpan span, IEnumerable<TNode> init, IEnumerable<TNode> cond, IEnumerable<TNode> action, TNode body);
+
+        /// <summary>
+        /// Creates <c>foreach</c> statement.
+        /// </summary>
+        /// <param name="span">Entire element span.</param>
+        /// <param name="enumeree">Expression being enumerated.</param>
+        /// <param name="keyOpt">Optional. The key variable.</param>
+        /// <param name="value">The value variable.</param>
+        /// <param name="body">Loop body.</param>
+        /// <returns>Foreach statement.</returns>
+        TNode Foreach(TSpan span, TNode enumeree, ForeachVar keyOpt, ForeachVar value, TNode body);
+
+        /// <summary>
+        /// Creates <c>if</c> statement.
+        /// </summary>
+        /// <param name="span">Entire element span.</param>
+        /// <param name="cond">Condition expression.</param>
+        /// <param name="body">True branch statement.</param>
+        /// <param name="elseOpt">Optional. False branch statement.
+        /// Can be another <c>if</c> in case of <c>elseif</c>, another statement in case of <c>else</c> or <c>null</c>.</param>
+        /// <returns>If statement.</returns>
+        TNode If(TSpan span, TNode cond, TNode body, TNode elseOpt);
+
+        /// <summary>
+        /// Creates <c>switch</c> statement.
+        /// </summary>
+        /// <param name="span">Entire element span.</param>
+        /// <param name="value">Switch value expression.</param>
+        /// <param name="block">Block statement containing only <see cref="SwitchItem"/> statements.</param>
+        /// <returns>Switch statement.</returns>
+        TNode Switch(TSpan span, TNode value, TNode block);
+
+        /// <summary>
+        /// Creates jump statement (<c>return</c>, <c>break</c> or <c>continue</c>);
+        /// </summary>
+        /// <param name="span">Entire element span.</param>
+        /// <param name="type">Jump type.</param>
+        /// <param name="exprOpt">Optional. Jump argument.</param>
+        /// <returns>Jump statement.</returns>
+        TNode Jump(TSpan span, JumpStmt.Types type, Expression exprOpt);
+
+        /// <summary>
+        /// Creates label statement.
+        /// </summary>
+        /// <param name="span">Entire element span.</param>
+        /// <param name="label">Label name.</param>
+        /// <param name="labelSpan">Name span.</param>
+        /// <returns>Label statement.</returns>
+        TNode Label(TSpan span, string label, TSpan labelSpan);
+
+        /// <summary>
+        /// Creates goto statement.
+        /// </summary>
+        /// <param name="span">Entire element span.</param>
+        /// <param name="label">Label name.</param>
+        /// <param name="labelSpan">Name span.</param>
+        /// <returns>Goto statement.</returns>
+        TNode Goto(TSpan span, string label, TSpan labelSpan);
+
+        // TODO: yield
+
         #endregion
 
         #region Expressions
@@ -267,6 +370,133 @@ namespace PhpParser
         /// <returns>Expression resulting in a concatenated string (<c>ConcatEx</c> or a reduced expression.).</returns>
         /// <remarks>A factory implementation may reduce the expression into a literal or a binary operation.</remarks>
         TNode Concat(TSpan span, IEnumerable<TNode> expressions);
+
+        /// <summary>
+        /// Creates assignment operation.
+        /// </summary>
+        /// <param name="span">Entire element span.</param>
+        /// <param name="target">Target expression (variable reference).</param>
+        /// <param name="value">Value expression.</param>
+        /// <param name="assignOp">Assign operation.</param>
+        /// <returns>Assignment expression.</returns>
+        TNode Assignment(TSpan span, TNode target, TNode value, Operations assignOp);
+
+        /// <summary>
+        /// Direct variable or field.
+        /// </summary>
+        /// <param name="span">Entire element span.</param>
+        /// <param name="name">Variable or field name.</param>
+        /// <param name="memberOfOpt">Optional. In case of a field, expression representing instance.</param>
+        /// <returns>Direct variable access expression.</returns>
+        TNode Variable(TSpan span, VariableName name, TNode memberOfOpt);
+
+        /// <summary>
+        /// Direct static field.
+        /// </summary>
+        /// <param name="span">Entire element span.</param>
+        /// <param name="name">Field name.</param>
+        /// <param name="typeRef">Field containing type.</param>
+        /// <returns>Direct static field access expression.</returns>
+        TNode Variable(TSpan span, VariableName name, TypeRef typeRef);
+
+        /// <summary>
+        /// Indirect variable or field.
+        /// </summary>
+        /// <param name="span">Entire element span.</param>
+        /// <param name="nameExpr">Expression representing variable or field name.</param>
+        /// <param name="memberOfOpt">Optional. In case of a field, expression representing instance.</param>
+        /// <returns>Direct variable access expression.</returns>
+        TNode Variable(TSpan span, TNode nameExpr, TNode memberOfOpt);
+
+        /// <summary>
+        /// Indirect static field.
+        /// </summary>
+        /// <param name="span">Entire element span.</param>
+        /// <param name="nameExpr">Expression representing field name.</param>
+        /// <param name="typeRef">Field containing type.</param>
+        /// <returns>Direct static field access expression.</returns>
+        TNode Variable(TSpan span, TNode nameExpr, TypeRef typeRef);
+
+        /// <summary>
+        /// Creates function or instance method call expression.
+        /// </summary>
+        /// <param name="span">Entire element span.</param>
+        /// <param name="name">Function name.</param>
+        /// <param name="nameFallback">Optional. Alternative function name in case the <paramref name="name"/> is not found in current context.</param>
+        /// <param name="nameSpan">Span of the <paramref name="name"/>.</param>
+        /// <param name="signature">Function call signature.</param>
+        /// <param name="memberOfOpt">Optional. Target expression in case of an instance method call.</param>
+        /// <returns>Function call expression.</returns>
+        TNode Call(TSpan span, QualifiedName name, QualifiedName? nameFallback, TSpan nameSpan, CallSignature signature, TNode memberOfOpt);
+
+        /// <summary>
+        /// Creates indirect function or instance method call expression.
+        /// </summary>
+        /// <param name="span">Entire element span.</param>
+        /// <param name="nameExpr">Function name expression.</param>
+        /// <param name="signature">Function call signature.</param>
+        /// <param name="memberOfOpt">Optional. Target expression in case of an instance method call.</param>
+        /// <returns>Indirect function call expression.</returns>
+        TNode Call(TSpan span, TNode nameExpr, CallSignature signature, TNode memberOfOpt);
+
+        /// <summary>
+        /// Creates static method call expression.
+        /// </summary>
+        /// <param name="span">Entire element span.</param>
+        /// <param name="name">Function name.</param>
+        /// <param name="nameSpan">Span of the <paramref name="name"/>.</param>
+        /// <param name="signature">Function call signature.</param>
+        /// <param name="typeRef">Method containing type.</param>
+        /// <returns>Function call expression.</returns>
+        TNode Call(TSpan span, QualifiedName name, TSpan nameSpan, CallSignature signature, TypeRef typeRef);
+
+        /// <summary>
+        /// Creates indirect static method call expression.
+        /// </summary>
+        /// <param name="span">Entire element span.</param>
+        /// <param name="nameExpr">Function name expression.</param>
+        /// <param name="signature">Function call signature.</param>
+        /// <param name="typeRef">Method containing type.</param>
+        /// <returns>Indirect function call expression.</returns>
+        TNode Call(TSpan span, TNode nameExpr, CallSignature signature, TypeRef typeRef);
+
+        /// <summary>
+        /// Creates new <c>array</c> expression.
+        /// </summary>
+        /// <param name="span">Entire element span.</param>
+        /// <param name="itemsOpt">Optional. Enumeration of array items.</param>
+        /// <returns>Array expression.</returns>
+        TNode NewArray(TSpan span, IEnumerable<Item> itemsOpt);
+
+        /// <summary>
+        /// Creates array item access expression.
+        /// </summary>
+        /// <param name="span">Entire element span.</param>
+        /// <param name="expression">Expression representing an array.</param>
+        /// <param name="indexOpt">Optional. Expression representing an index.</param>
+        /// <returns>Array item expression.</returns>
+        TNode ArrayItem(TSpan span, TNode expression, TNode indexOpt);
+
+        /// <summary>
+        /// Creates <c>new</c> expression.
+        /// </summary>
+        /// <param name="span">Entire element span.</param>
+        /// <param name="classNameRef">Name of the instantiated class.</param>
+        /// <param name="argsOpt">Optional. Class constructor arguments.</param>
+        /// <returns>The new expression.</returns>
+        TNode New(TSpan span, TypeRef classNameRef, IEnumerable<ActualParam> argsOpt);
+
+        /// <summary>
+        /// Creates <c>instanceof</c> operation expression.
+        /// </summary>
+        /// <param name="span">Entire element span.</param>
+        /// <param name="expression">Expression.</param>
+        /// <param name="typeRef">Type reference.</param>
+        /// <returns>The instanceof expression.</returns>
+        TNode InstanceOf(TSpan span, TNode expression, TypeRef typeRef);
+
+        // TODO: list()
+        // TODO: `` (shell expression)
 
         #endregion
     }
