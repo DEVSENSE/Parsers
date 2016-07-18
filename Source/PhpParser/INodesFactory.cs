@@ -544,6 +544,34 @@ namespace PhpParser
         TNode Shell(TSpan span, TNode command);
 
         #endregion
+
+        #region Comments
+
+        /// <summary>
+        /// Creates documentary comment element.
+        /// </summary>
+        /// <param name="span">Entire element span.</param>
+        /// <param name="content">Content of the comment including leading <c>/**</c> and trailing <c>*/</c>.</param>
+        /// <returns>PHPDoc comment element.</returns>
+        TNode PHPDoc(TSpan span, string content);
+
+        /// <summary>
+        /// Creates line comment.
+        /// </summary>
+        /// <param name="span">Entire element span.</param>
+        /// <param name="content">Comment text including leading <c>//</c> or <c>#</c>.</param>
+        /// <returns>Line comment element.</returns>
+        TNode LineComment(TSpan span, string content);
+
+        /// <summary>
+        /// Creates block comment.
+        /// </summary>
+        /// <param name="span">Entire element span.</param>
+        /// <param name="content">Comment text including leading <c>/*</c> and trailing <c>*/</c>.</param>
+        /// <returns>Block comment element.</returns>
+        TNode BlockComment(TSpan span, string content);
+
+        #endregion
     }
 
     /// <summary>
