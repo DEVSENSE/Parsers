@@ -333,7 +333,7 @@ namespace PhpParser
         /// <param name="span">Entire element span.</param>
         /// <param name="code">Code expression.</param>
         /// <returns>Eval expression.</returns>
-        TNode Eval(TSpan span, TNode statusOpt);
+        TNode Eval(TSpan span, TNode code);
 
         /// <summary>
         /// Creates assertion expression.
