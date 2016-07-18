@@ -105,6 +105,15 @@ namespace PhpParser
             IEnumerable<TNode> members, TSpan blockSpan);
 
         /// <summary>
+        /// Creates class traits.
+        /// </summary>
+        /// <param name="span">Entire element span.</param>
+        /// <param name="traits">Enumeration of traits.</param>
+        /// <param name="adaptations">Enumeration of trait adaptations.</param>
+        /// <returns>Trait use type member.</returns>
+        TNode TraitUse(TSpan span, IEnumerable<QualifiedName> traits, IEnumerable<TraitsUse.TraitAdaptation> adaptations);
+
+        /// <summary>
         /// Creates declaration of class constants, class fields or global constants.
         /// </summary>
         /// <param name="span">Entire element span.</param>
@@ -142,8 +151,6 @@ namespace PhpParser
         TNode GlobalConstDecl(TSpan span,
             bool conditional,
             VariableName name, TNode initializer);
-
-        // TODO: TraitsUse
 
         /// <summary>
         /// Creates block of code enclosed in braces (<c>{</c> ... <c>}</c>).
@@ -256,13 +263,30 @@ namespace PhpParser
         TNode Switch(TSpan span, TNode value, TNode block);
 
         /// <summary>
-        /// Creates jump statement (<c>return</c>, <c>break</c> or <c>continue</c>);
+        /// Creates a jump statement (<c>return</c>, <c>break</c> or <c>continue</c>);
         /// </summary>
         /// <param name="span">Entire element span.</param>
         /// <param name="type">Jump type.</param>
         /// <param name="exprOpt">Optional. Jump argument.</param>
         /// <returns>Jump statement.</returns>
-        TNode Jump(TSpan span, JumpStmt.Types type, Expression exprOpt);
+        TNode Jump(TSpan span, JumpStmt.Types type, TNode exprOpt);
+
+        /// <summary>
+        /// Creates <c>yield</c> expression.
+        /// </summary>
+        /// <param name="span">Entire element span.</param>
+        /// <param name="keyOpt">Optional. The yielded value key. If provided, <paramref name="valueOpt"/> is required.</param>
+        /// <param name="valueOpt">Optional. The yielded value. If not provided, <c>null</c> is yielded instead.</param>
+        /// <returns>Yield expression.</returns>
+        TNode Yield(TSpan span, TNode keyOpt, TNode valueOpt);
+
+        /// <summary>
+        /// Creates <c>yield from</c> expression.
+        /// </summary>
+        /// <param name="span">Entire element span.</param>
+        /// <param name="fromExpr">Expression representing enumeration to be yielded from.</param>
+        /// <returns>Yield from expression.</returns>
+        TNode YieldFrom(TSpan span, TNode fromExpr);
 
         /// <summary>
         /// Creates label statement.
@@ -281,8 +305,6 @@ namespace PhpParser
         /// <param name="labelSpan">Name span.</param>
         /// <returns>Goto statement.</returns>
         TNode Goto(TSpan span, string label, TSpan labelSpan);
-
-        // TODO: yield
 
         #endregion
 
@@ -313,7 +335,14 @@ namespace PhpParser
         /// <returns>Eval expression.</returns>
         TNode Eval(TSpan span, TNode statusOpt);
 
-        // TODO: assert
+        /// <summary>
+        /// Creates assertion expression.
+        /// </summary>
+        /// <param name="span">Entire element span.</param>
+        /// <param name="assertion">Text to be interpreted as an assertion expression.</param>
+        /// <param name="failureOpt">Optional. Second argument.</param>
+        /// <returns>Assertion expression.</returns>
+        TNode Assert(TSpan span, TNode assertion, TNode failureOpt);
 
         /// <summary>
         /// Creates inclusion (<c>include</c>, <c>require</c>, <c>include_once</c>, <c>require_once</c>) expression.
@@ -495,8 +524,24 @@ namespace PhpParser
         /// <returns>The instanceof expression.</returns>
         TNode InstanceOf(TSpan span, TNode expression, TypeRef typeRef);
 
-        // TODO: list()
-        // TODO: `` (shell expression)
+        /// <summary>
+        /// Creates <c>list</c> expression used as a target of a value assignment.
+        /// <code>
+        /// list($a, $b, list($c, $d)) = [1, 2, [3, 4]];
+        /// </code>
+        /// </summary>
+        /// <param name="span">Entire element span.</param>
+        /// <param name="targets">Enumeration of reference expressions (variables, fields, array items) or other <c>list</c> expressions.</param>
+        /// <returns>List expression.</returns>
+        TNode List(TSpan span, IEnumerable<TNode> targets);
+
+        /// <summary>
+        /// Creates shell expression.
+        /// </summary>
+        /// <param name="span">Entire element span.</param>
+        /// <param name="command">Command expression. Can be a string literal or a string concatenation. The command is enclosed in backtick operator.</param>
+        /// <returns>Shell expression.</returns>
+        TNode Shell(TSpan span, TNode command);
 
         #endregion
     }
