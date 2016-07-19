@@ -4,6 +4,7 @@ using PHP.Syntax;
 using System.IO;
 using PhpParser.Parser;
 using PHP.Core.AST;
+using UnitTests.TestImplementation;
 
 namespace UnitTests
 {
@@ -19,11 +20,15 @@ namespace UnitTests
         {
             string path = (string)TestContext.DataRow["files"];
             SourceUnit sourceUnit = new CodeSourceUnit(File.ReadAllText(path), path, new System.Text.ASCIIEncoding(), Lexer.LexicalStates.INITIAL);
-            Parser parser = new Parser();
+
             GlobalCode ast = null;
             using (StringReader source_reader = new StringReader(File.ReadAllText(path)))
             {
-                ast = parser.Parse(sourceUnit, source_reader, new EmptyErrorSink(), null, Lexer.LexicalStates.INITIAL, LanguageFeatures.ShortOpenTags);
+                TestNodesFactory astFactory = new TestNodesFactory(sourceUnit);
+                Lexer lexer = new Lexer(source_reader, sourceUnit, astFactory, LanguageFeatures.ShortOpenTags);
+                Parser parser = new Parser();
+                ast = (GlobalCode)parser.Parse(lexer, astFactory, LanguageFeatures.ShortOpenTags);
+                Assert.AreEqual(1, astFactory.Errors.Count);
             }
             Assert.IsNotNull(ast);
             Assert.AreEqual(1, ast.Statements.Length);

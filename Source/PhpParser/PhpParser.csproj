@@ -56,6 +56,7 @@
     <Compile Include="Core\AST\FunctionCall.cs" />
     <Compile Include="Core\AST\FunctionDecl.cs" />
     <Compile Include="Core\AST\GlobalCode.cs" />
+    <Compile Include="Core\AST\HaltCompiler.cs" />
     <Compile Include="Core\AST\IfStmt.cs" />
     <Compile Include="Core\AST\IncDecEx.cs" />
     <Compile Include="Core\AST\IndirectVariableUse.cs" />
@@ -91,14 +92,10 @@
     <Compile Include="INodesFactory.cs" />
     <Compile Include="Parser\Convert.cs" />
     <Compile Include="Parser\GPPG.cs" />
-    <Compile Include="Parser\ICommentSink.cs" />
-    <Compile Include="Parser\IReductionsSink.cs" />
-    <Compile Include="Parser\IScannerHandle.cs" />
     <Compile Include="Parser\Lexer.cs" />
     <Compile Include="Parser\Parser.cs" />
     <None Include="Generators\generate.bat" />
     <None Include="Parser\Scanner.cs" />
-    <Compile Include="PhpParser.cs" />
     <Compile Include="Core\Text\ILineBreaks.cs" />
     <Compile Include="Core\Text\Span.cs" />
     <Compile Include="Core\Text\TextPoint.cs" />

@@ -4,6 +4,8 @@ using System.Diagnostics;
 using System.Collections.Generic;
 using System.Reflection;
 using PHP.Syntax;
+using PhpParser;
+using PHP.Core.Text;
 
 namespace PHP.Core.AST
 {
@@ -61,9 +63,9 @@ namespace PHP.Core.AST
         /// <summary>
 		/// Gets the static type reference or <B>null</B> if the reference cannot be resolved at compile time.
 		/// </summary>
-		internal abstract object ToStaticTypeRef(ErrorSink errors, SourceUnit sourceUnit);
+		internal abstract object ToStaticTypeRef(IErrorSink<Span> errors, SourceUnit sourceUnit);
 
-		internal static object[]/*!!*/ ToStaticTypeRefs(List<TypeRef>/*!*/ typeRefs, ErrorSink errors, SourceUnit sourceUnit)
+		internal static object[]/*!!*/ ToStaticTypeRefs(List<TypeRef>/*!*/ typeRefs, IErrorSink<Span> errors, SourceUnit sourceUnit)
 		{
             if (typeRefs == null || typeRefs.Count == 0)
                 return ArrayUtils.EmptyObjects;
@@ -75,7 +77,7 @@ namespace PHP.Core.AST
                 if ((result[i] = typeRefs[i].ToStaticTypeRef(errors, sourceUnit)) == null)
 				{
 					if (errors != null)
-                        errors.Add(Errors.GenericParameterMustBeType, sourceUnit, typeRefs[i].Span);
+                        errors.Error(typeRefs[i].Span, Errors.GenericParameterMustBeType);
 
 					result[i] = new PrimitiveTypeName(QualifiedName.Object);
 				}
@@ -102,7 +104,7 @@ namespace PHP.Core.AST
             this.typeName = name;
 		}
 
-		internal override object ToStaticTypeRef(ErrorSink errors, SourceUnit sourceUnit)
+		internal override object ToStaticTypeRef(IErrorSink<Span> errors, SourceUnit sourceUnit)
 		{
 			return typeName;
 		}
@@ -139,7 +141,7 @@ namespace PHP.Core.AST
             get { return this.ClassName; }
         }
 
-        internal override object ToStaticTypeRef(ErrorSink/*!*/ errors, SourceUnit/*!*/ sourceUnit)
+        internal override object ToStaticTypeRef(IErrorSink<Span> errors, SourceUnit/*!*/ sourceUnit)
 		{
 			return new GenericQualifiedName(className, TypeRef.ToStaticTypeRefs(GenericParams, errors, sourceUnit));
 		}
@@ -230,7 +232,7 @@ namespace PHP.Core.AST
 			this.classNameVar = classNameVar;
 		}
 
-        internal override object ToStaticTypeRef(ErrorSink errors, SourceUnit sourceUnit)
+        internal override object ToStaticTypeRef(IErrorSink<Span> errors, SourceUnit sourceUnit)
 		{
 			return null;
 		}

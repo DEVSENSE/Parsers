@@ -3,10 +3,15 @@ using PHP.Syntax;
 
 namespace PHP.Core.AST
 {
+    public interface IAstNode
+    {
+
+    }
+
     /// <summary>
     /// Base class for all AST nodes.
     /// </summary>
-    public abstract class AstNode : IPropertyCollection
+    public abstract class AstNode : IAstNode, IPropertyCollection
     {
         #region Fields & Properties
 

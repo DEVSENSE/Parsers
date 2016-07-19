@@ -259,6 +259,10 @@ namespace gpcc
         {
             Production production = new Production(lhs);
             int num = 0;
+            while (this.token == GrammarToken.Comment)
+            {
+                this.Advance();
+            }
             while (this.token == GrammarToken.Symbol || this.token == GrammarToken.Literal || this.token == GrammarToken.Action || this.token == GrammarToken.Prec)
             {
                 GrammarToken grammarToken = this.token;
@@ -318,6 +322,10 @@ namespace gpcc
                             }
                         }
                         break;
+                }
+                while (this.token == GrammarToken.Comment)
+                {
+                    this.Advance();
                 }
             }
             this.grammar.AddProduction(production);

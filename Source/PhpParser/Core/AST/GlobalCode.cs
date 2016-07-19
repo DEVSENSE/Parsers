@@ -20,7 +20,7 @@ namespace PHP.Core.AST
     /// by GlobalCode node. Finally, it is emitted into Main() method of concrete PHPPage 
     /// class. The sample code below illustrates a part of PHP global code
     /// </remarks>
-    public sealed class GlobalCode : AstNode, IHasSourceUnit, IDeclarationElement
+    public sealed class GlobalCode : LangElement, IHasSourceUnit, IDeclarationElement
     {
         /// <summary>
         /// Array of nodes representing statements in PHP global code
@@ -41,7 +41,7 @@ namespace PHP.Core.AST
         /// <summary>
         /// Initializes a new instance of the GlobalCode class.
         /// </summary>
-        public GlobalCode(IList<Statement>/*!*/ statements, SourceUnit/*!*/ sourceUnit)
+        public GlobalCode(IList<Statement>/*!*/ statements, SourceUnit/*!*/ sourceUnit) : base(new Span())
         {
             Debug.Assert(statements != null && sourceUnit != null);
 
@@ -55,7 +55,7 @@ namespace PHP.Core.AST
         /// Call the right Visit* method on the given Visitor object.
         /// </summary>
         /// <param name="visitor">Visitor to be called.</param>
-        public void VisitMe(TreeVisitor visitor)
+        public override void VisitMe(TreeVisitor visitor)
         {
             visitor.VisitGlobalCode(this);
         }

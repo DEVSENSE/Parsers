@@ -9,6 +9,8 @@ using System.Text;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
+using UnitTests.TestImplementation;
+using PhpParser;
 
 namespace UnitTests
 {
@@ -18,6 +20,13 @@ namespace UnitTests
     public class LexerTests
     {
         public TestContext TestContext { get; set; }
+
+        Tokens _token = Tokens.END;
+
+        void handler(Tokens token, char[] buffer, int tokenStart, int tokenLength)
+        {
+            _token = token;
+        }
 
         private string ParseByPhp(string path)
         {
@@ -42,7 +51,8 @@ namespace UnitTests
         {
             string path = (string)TestContext.DataRow["files"];
             SourceUnit sourceUnit = new CodeSourceUnit(File.ReadAllText(path), path, new System.Text.ASCIIEncoding(), Lexer.LexicalStates.INITIAL);
-            PhpParser.Parser.ITokenProvider<SemanticValueType, Span> lexer = new Lexer(new StreamReader(path), sourceUnit, null, null, null, LanguageFeatures.ShortOpenTags, 0);
+            PhpParser.Parser.ITokenProvider<SemanticValueType, Span> lexer = new Lexer(new StreamReader(path), sourceUnit, new TestErrorSink(), 
+                LanguageFeatures.ShortOpenTags, 0, Lexer.LexicalStates.INITIAL);
             Assert.AreNotEqual(null, lexer);
         }
 
@@ -52,8 +62,11 @@ namespace UnitTests
         {
             string path = (string)TestContext.DataRow["files"];
 
+            TestErrorSink errorSink = new TestErrorSink();
             SourceUnit sourceUnit = new CodeSourceUnit(File.ReadAllText(path), path, new System.Text.ASCIIEncoding(), Lexer.LexicalStates.INITIAL);
-            PhpParser.Parser.ITokenProvider<SemanticValueType, Span> lexer = new Lexer(new StreamReader(path), sourceUnit, null, null, null, LanguageFeatures.ShortOpenTags, 0);
+            Lexer lexer = new Lexer(new StreamReader(path), sourceUnit, errorSink, 
+                LanguageFeatures.ShortOpenTags, 0, Lexer.LexicalStates.INITIAL);
+            lexer.NextTokenEvent += handler;
 
             string parsed = ParseByPhp(path);
             parsed = parsed.Substring(0, parsed.LastIndexOf('-'));
@@ -77,6 +90,7 @@ namespace UnitTests
             {
                 Tokens token = (Tokens)lexer.GetNextToken();
                 Assert.AreEqual(int.Parse(expectedToken[0]), (int)token);
+                Assert.AreEqual(token, _token);
                 if (token == Tokens.T_VARIABLE || token == Tokens.T_STRING || token == Tokens.T_END_HEREDOC)
                 {
                     Assert.AreEqual(expectedToken[2].TrimStart('$'), lexer.TokenValue.Object.ToString());
@@ -90,6 +104,7 @@ namespace UnitTests
                     Assert.AreEqual(int.Parse(expectedToken[2]), lexer.TokenValue.Integer);
                 }
             }
+            Assert.AreEqual(0, errorSink.Errors.Count);
         }
     }
 }

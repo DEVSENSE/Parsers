@@ -40,6 +40,9 @@ using PHP.Core.Text;
 
 	[FieldOffset(8)]
 	public object Object; 
+
+	[FieldOffset(16)]
+	public int Attr;
 }
 
 
@@ -77,15 +80,15 @@ using PHP.Core.Text;
 %left T_ENDIF
 %right T_STATIC T_ABSTRACT T_FINAL T_PRIVATE T_PROTECTED T_PUBLIC
 
-%token <ast> T_LNUMBER 317   //"integer number (T_LNUMBER)"
-%token <ast> T_DNUMBER 318   //"floating-point number (T_DNUMBER)"
-%token <ast> T_STRING 319   //"identifier (T_STRING)"
-%token <ast> T_VARIABLE 320 //"variable (T_VARIABLE)"
+%token <Object> T_LNUMBER 317   //"integer number (T_LNUMBER)"
+%token <Object> T_DNUMBER 318   //"floating-point number (T_DNUMBER)"
+%token <Object> T_STRING 319   //"identifier (T_STRING)"
+%token <Object> T_VARIABLE 320 //"variable (T_VARIABLE)"
 %token <Object> T_INLINE_HTML 321
-%token <ast> T_ENCAPSED_AND_WHITESPACE 322  //"quoted-string and whitespace (T_ENCAPSED_AND_WHITESPACE)"
-%token <ast> T_CONSTANT_ENCAPSED_STRING 323 //"quoted-string (T_CONSTANT_ENCAPSED_STRING)"
-%token <ast> T_STRING_VARNAME 324 //"variable name (T_STRING_VARNAME)"
-%token <ast> T_NUM_STRING 325 //"number (T_NUM_STRING)"
+%token <Object> T_ENCAPSED_AND_WHITESPACE 322  //"quoted-string and whitespace (T_ENCAPSED_AND_WHITESPACE)"
+%token <Object> T_CONSTANT_ENCAPSED_STRING 323 //"quoted-string (T_CONSTANT_ENCAPSED_STRING)"
+%token <Object> T_STRING_VARNAME 324 //"variable name (T_STRING_VARNAME)"
+%token <Object> T_NUM_STRING 325 //"number (T_NUM_STRING)"
 
 /* Character tokens */
 %token T_EXCLAM 33 //'!'
@@ -246,34 +249,34 @@ using PHP.Core.Text;
 /* Token used to force a parse error from the lexer */
 %token T_ERROR
 
-%type <ast> top_statement namespace_name name statement function_declaration_statement
-%type <ast> class_declaration_statement trait_declaration_statement
-%type <ast> interface_declaration_statement interface_extends_list
-%type <ast> group_use_declaration inline_use_declarations inline_use_declaration
-%type <ast> mixed_group_use_declaration use_declaration unprefixed_use_declaration
-%type <ast> unprefixed_use_declarations const_decl inner_statement
-%type <ast> expr optional_expr while_statement for_statement foreach_variable
-%type <ast> foreach_statement declare_statement finally_statement unset_variable variable
-%type <ast> extends_from parameter optional_type argument expr_without_variable global_var
-%type <ast> static_var class_statement trait_adaptation trait_precedence trait_alias
-%type <ast> absolute_trait_method_reference trait_method_reference property echo_expr
-%type <ast> new_expr anonymous_class class_name class_name_reference simple_variable
-%type <ast> internal_functions_in_yacc
-%type <ast> exit_expr scalar backticks_expr lexical_var function_call member_name property_name
-%type <ast> variable_class_name dereferencable_scalar constant dereferencable
-%type <ast> callable_expr callable_variable static_member new_variable
-%type <ast> encaps_var encaps_var_offset isset_variables
-%type <ast> top_statement_list use_declarations const_list inner_statement_list if_stmt
-%type <ast> alt_if_stmt for_exprs switch_case_list global_var_list static_var_list
-%type <ast> echo_expr_list unset_variables catch_name_list catch_list parameter_list class_statement_list
-%type <ast> implements_list case_list if_stmt_without_else
-%type <ast> non_empty_parameter_list argument_list non_empty_argument_list property_list
-%type <ast> class_const_list class_const_decl name_list trait_adaptations method_body non_empty_for_exprs
-%type <ast> ctor_arguments alt_if_stmt_without_else trait_adaptation_list lexical_vars
-%type <ast> lexical_var_list encaps_list
-%type <ast> array_pair non_empty_array_pair_list array_pair_list possible_array_pair
-%type <ast> isset_variable type return_type type_expr
-%type <ast> identifier
+%type <Object> top_statement namespace_name name statement function_declaration_statement
+%type <Object> class_declaration_statement trait_declaration_statement
+%type <Object> interface_declaration_statement interface_extends_list
+%type <Object> group_use_declaration inline_use_declarations inline_use_declaration
+%type <Object> mixed_group_use_declaration use_declaration unprefixed_use_declaration
+%type <Object> unprefixed_use_declarations const_decl inner_statement
+%type <Object> expr optional_expr while_statement for_statement foreach_variable
+%type <Object> foreach_statement declare_statement finally_statement unset_variable variable
+%type <Object> extends_from parameter optional_type argument expr_without_variable global_var
+%type <Object> static_var class_statement trait_adaptation trait_precedence trait_alias
+%type <Object> absolute_trait_method_reference trait_method_reference property echo_expr
+%type <Object> new_expr anonymous_class class_name class_name_reference simple_variable
+%type <Object> internal_functions_in_yacc
+%type <Object> exit_expr scalar backticks_expr lexical_var function_call member_name property_name
+%type <Object> variable_class_name dereferencable_scalar constant dereferencable
+%type <Object> callable_expr callable_variable static_member new_variable
+%type <Object> encaps_var encaps_var_offset isset_variables
+%type <Object> top_statement_list use_declarations const_list inner_statement_list if_stmt
+%type <Object> alt_if_stmt for_exprs switch_case_list global_var_list static_var_list
+%type <Object> echo_expr_list unset_variables catch_name_list catch_list parameter_list class_statement_list
+%type <Object> implements_list case_list if_stmt_without_else
+%type <Object> non_empty_parameter_list argument_list non_empty_argument_list property_list
+%type <Object> class_const_list class_const_decl name_list trait_adaptations method_body non_empty_for_exprs
+%type <Object> ctor_arguments alt_if_stmt_without_else trait_adaptation_list lexical_vars
+%type <Object> lexical_var_list encaps_list
+%type <Object> array_pair non_empty_array_pair_list array_pair_list possible_array_pair
+%type <Object> isset_variable type return_type type_expr
+%type <Object> identifier
 
 %type <num> returns_ref function is_reference is_variadic variable_modifiers
 %type <num> method_modifiers non_empty_member_modifiers member_modifier
@@ -286,28 +289,7 @@ using PHP.Core.Text;
 %% /* Rules */
 
 start:
-	inline_html
-	{ 
-		var list = new List<Statement>();
-		list.Add((Statement)$1);
-		_astRoot = new GlobalCode(list, _sourceUnit); 
-	}
-;
-
-inline_html:
-	T_INLINE_HTML		
-	{ 
-		/* Constants are not looked for within strings */
-		$$ = new EchoStmt(@$, new List<Expression>() { new StringLiteral(@$, $1 as string)});
-	}
-;
-
-%%
-
-#if false
-
-start:
-    top_statement_list	{ CG(ast) = $1; }
+    top_statement_list	{ _astRoot = _astFactory.GlobalCode(@$, (List<LangElement>)$1); }
 ;
 reserved_non_modifiers:
 	  T_INCLUDE | T_INCLUDE_ONCE | T_EVAL | T_REQUIRE | T_REQUIRE_ONCE | T_LOGICAL_OR | T_LOGICAL_XOR | T_LOGICAL_AND
@@ -334,13 +316,13 @@ identifier:
 ;
 
 top_statement_list:
-		top_statement_list top_statement { $$ = zend_ast_list_add($1, $2); }
-	|	/* empty */ { $$ = zend_ast_create_list(0, ZEND_AST_STMT_LIST); }
+		top_statement_list top_statement { $$ = $1; ((List<LangElement>)$$).Add((LangElement)$2); }
+	|	/* empty */ { $$ = new List<LangElement>(); }
 ;
 
 namespace_name:
 		T_STRING								{ $$ = $1; }
-	|	namespace_name T_NS_SEPARATOR T_STRING	{ $$ = zend_ast_append_str($1, $3); }
+	|	namespace_name T_NS_SEPARATOR T_STRING	{ $$ = (string)$$ + (string)$3; }
 ;
 
 name:
@@ -356,9 +338,7 @@ top_statement:
 	|	trait_declaration_statement			{ $$ = $1; }
 	|	interface_declaration_statement		{ $$ = $1; }
 	|	T_HALT_COMPILER '(' ')' ';'
-			{ $$ = zend_ast_create(ZEND_AST_HALT_COMPILER,
-			      zend_ast_create_zval_from_long(zend_get_scanned_file_offset()));
-			  zend_stop_lexing(); }
+			{ $$ = _astFactory.HalCompiler(@$); }
 	|	T_NAMESPACE namespace_name ';'
 			{ $$ = zend_ast_create(ZEND_AST_NAMESPACE, $2, NULL);
 			  RESET_DOC_COMMENT(); }

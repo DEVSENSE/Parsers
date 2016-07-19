@@ -213,7 +213,7 @@ using System.Collections.Generic;
 					// #line 524
 					{
 						yy_push_state(LexicalStates.ST_IN_SCRIPTING); 
-						return (Tokens)'{';
+						return (Tokens.T_LBRACE);
 					}
 					break;
 					
@@ -223,7 +223,7 @@ using System.Collections.Generic;
 						ResetDocComment();
 						if (!yy_pop_state()) 
 							return Tokens.T_ERROR; 
-						return (Tokens)'}';
+						return (Tokens.T_RBRACE);
 					}
 					break;
 					
@@ -231,7 +231,7 @@ using System.Collections.Generic;
 					// #line 757
 					{
 						BEGIN(LexicalStates.ST_BACKQUOTE); 
-						return (Tokens)'`';
+						return (Tokens.T_BACKQUOTE);
 					}
 					break;
 					
@@ -260,7 +260,7 @@ using System.Collections.Generic;
 					// #line 724
 					{
 						BEGIN(LexicalStates.ST_DOUBLE_QUOTES);
-						return (Tokens)'"';
+						return (Tokens.T_DOUBLE_QUOTES);
 					}
 					break;
 					
@@ -1161,7 +1161,7 @@ using System.Collections.Generic;
 					// #line 779
 					{
 						BEGIN(LexicalStates.ST_IN_SCRIPTING);
-						return (Tokens)'"';
+						return (Tokens.T_DOUBLE_QUOTES);
 					}
 					break;
 					
@@ -1223,7 +1223,7 @@ using System.Collections.Generic;
 					// #line 784
 					{
 						BEGIN(LexicalStates.ST_IN_SCRIPTING);
-						return (Tokens)'`';
+						return (Tokens.T_BACKQUOTE);
 					}
 					break;
 					
@@ -1373,7 +1373,7 @@ using System.Collections.Generic;
 					// #line 664
 					{
 						yy_pop_state();
-						return (Tokens)']';
+						return (Tokens.T_RBRACKET);
 					}
 					break;
 					

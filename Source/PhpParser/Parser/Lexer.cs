@@ -278,38 +278,17 @@ namespace PhpParser.Parser
 
     #endregion
 
+    /// <summary>
+    /// Called by <see cref="Scanner"/> when new token is obtained from lexer.
+    /// </summary>
+    /// <param name="token">Token.</param>
+    /// <param name="buffer">Internal text buffer.</param>
+    /// <param name="tokenStart">Position within <paramref name="buffer"/> where the token text starts.</param>
+    /// <param name="tokenLength">Length of the token text.</param>
+    public delegate void LexerEventHandler(Tokens token, char[] buffer, int tokenStart, int tokenLength);
+
     public partial class Lexer : ITokenProvider<SemanticValueType, Span>
     {
-        #region Nested class: NullCommentsSink
-
-        internal sealed class NullCommentsSink : ICommentsSink
-        {
-            #region ICommentsSink Members
-
-            public void OnLineComment(Lexer scanner, TextSpan span) { }
-            public void OnComment(Lexer scanner, TextSpan span) { }
-            public void OnPhpDocComment(Lexer scanner, PHPDocBlock phpDocBlock) { }
-            public void OnOpenTag(Lexer scanner, TextSpan span) { }
-            public void OnCloseTag(Lexer scanner, TextSpan span) { }
-
-            #endregion
-        }
-
-        #endregion
-
-        #region Nested class: NullScannerHandler
-
-        internal sealed class NullScannerHandler : IScannerHandler
-        {
-            #region IScannerHandler Members
-
-            public void OnNextToken(Tokens token, char[] buffer, int tokenStart, int tokenLength) { }
-
-            #endregion
-        }
-
-        #endregion
-
         /// <summary>
         /// Allow short opening tags
         /// </summary>
@@ -331,9 +310,9 @@ namespace PhpParser.Parser
         private readonly SourceUnit/*!*/ _sourceUnit;
 
         /// <summary>
-        /// Error sink used to report errors
+        /// Sink used to report lexical errors.
         /// </summary>
-        private readonly ErrorSink/*!*/ _errors;
+        IErrorSink<Span> _errors;
 
         /// <summary>
         /// Token postition
@@ -343,7 +322,7 @@ namespace PhpParser.Parser
         /// <summary>
         /// Last encountered documentation comment block
         /// </summary>
-        private PHPDocBlock _docBlock = null;
+        private string _docBlock = null;
 
         /// <summary>
         /// Last encountered heredoc or nowdoc label
@@ -356,14 +335,9 @@ namespace PhpParser.Parser
         private bool _inUnicodeString = false;
 
         /// <summary>
-        /// Sink for comments.
+        /// Event called every time a new token is processed in <see cref="GetNextToken"/>
         /// </summary>
-        private readonly ICommentsSink/*!*/commentsSink;
-
-        /// <summary>
-        /// Sink for various scanner events.
-        /// </summary>
-        private readonly IScannerHandler/*!*/scannerHandler;
+        public event LexerEventHandler NextTokenEvent;
 
         /// <summary>
         /// Lexer constructor that initializes all the necessary members
@@ -371,17 +345,14 @@ namespace PhpParser.Parser
         /// <param name="reader">Text reader containing the source code</param>
         /// <param name="sourceUnit">Source unit (file) associated with the <paramref name="reader"/></param>
         /// <param name="allowShortTags">Allow short oppening tags for PHP</param>
-        public Lexer(System.IO.TextReader reader, SourceUnit sourceUnit, 
-            ErrorSink/*!*/ errors, ICommentsSink commentsSink, IScannerHandler scannerHandler,
-            LanguageFeatures features, int positionShift)
+        public Lexer(System.IO.TextReader reader, SourceUnit sourceUnit, IErrorSink<Span> errors,
+            LanguageFeatures features, int positionShift = 0, LexicalStates initialState = LexicalStates.INITIAL)
         {
             this._sourceUnit = sourceUnit;
             this._errors = errors;
-            this.commentsSink = commentsSink ?? new NullCommentsSink();
-            this.scannerHandler = scannerHandler ?? new NullScannerHandler();
             this._charOffset = positionShift;
             this._allowShortTags = features == LanguageFeatures.ShortOpenTags;
-            Initialize(reader, LexicalStates.INITIAL);
+            Initialize(reader, initialState);
         }
 
         /// <summary>
@@ -399,15 +370,14 @@ namespace PhpParser.Parser
         void ITokenProvider<SemanticValueType, Span>.ReportError(string[] expectedTerminals)
         {
             // TODO (expected tokens....)
-            _errors.Add(FatalErrors.SyntaxError, _sourceUnit, _tokenPosition,
-                CoreResources.GetString("unexpected_token", GetTokenString()));
-
-            //throw new CompilerException();	
+            _errors.Error(_tokenPosition, FatalErrors.SyntaxError, CoreResources.GetString("unexpected_token", GetTokenString()));
         }
         public int GetNextToken()
         {
             Tokens token = NextToken();
             UpdateTokenPosition();
+            if (NextTokenEvent != null)
+                NextTokenEvent(token, buffer, token_start, TokenLength);
             return (int)token;
         }
 
@@ -974,7 +944,7 @@ namespace PhpParser.Parser
             if (token == Tokens.T_DNUMBER)
             {
                 // conversion to double causes data loss
-                _errors.Add(Warnings.TooBigIntegerConversion, _sourceUnit, _tokenPosition, GetTokenString());
+                _errors.Error(_tokenPosition, Warnings.TooBigIntegerConversion, GetTokenString());
             }
             return token;
         }
@@ -991,7 +961,7 @@ namespace PhpParser.Parser
             if (token == Tokens.T_DNUMBER)
             {
                 // conversion to double causes data loss
-                _errors.Add(Warnings.TooBigIntegerConversion, _sourceUnit, _tokenPosition, GetTokenString());
+                _errors.Error(_tokenPosition, Warnings.TooBigIntegerConversion, GetTokenString());
             }
             return token;
         }
@@ -1004,7 +974,7 @@ namespace PhpParser.Parser
             if (token == Tokens.T_DNUMBER)
             {
                 // conversion to double causes data loss
-                _errors.Add(Warnings.TooBigIntegerConversion, _sourceUnit, _tokenPosition, GetTokenString());
+                _errors.Error(_tokenPosition, Warnings.TooBigIntegerConversion, GetTokenString());
             }
             return token;
         }
@@ -1080,7 +1050,7 @@ namespace PhpParser.Parser
 
         void SetDocComment()
         {
-            _docBlock = new PHPDocBlock(GetTokenString(), _tokenPosition);
+            _docBlock = GetTokenString();
         }
     }
 }

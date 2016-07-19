@@ -8,6 +8,8 @@ using System.IO;
 using PHP.Core;
 using PHP.Core.Text;
 using PhpParser.Parser;
+using PhpParser;
+using PHP.Core.AST;
 
 namespace PHP.Syntax
 {
@@ -27,8 +29,8 @@ namespace PHP.Syntax
         public string/*!*/ FilePath { get { return _filePath; } }
         readonly string/*!*/ _filePath;
 
-        public Core.AST.GlobalCode Ast { get { return ast; } }
-        protected Core.AST.GlobalCode ast;
+        public Core.AST.GlobalCode Ast { get { return (GlobalCode)ast; } }
+        protected Core.AST.LangElement ast;
 
         /// <summary>
         /// Set of object properties.
@@ -105,7 +107,7 @@ namespace PHP.Syntax
         #region Abstract Methods
 
         public abstract void Parse(
-            ErrorSink/*!*/ errors, IReductionsSink/*!*/ reductionsSink,
+            ITokenProvider<SemanticValueType, Span> lexer, INodesFactory<LangElement, Span> astFactory,
             LanguageFeatures features);
 
         public abstract void Close();
@@ -238,13 +240,13 @@ namespace PHP.Syntax
             this.initialState = initialState;
         }
 
-        public override void Parse(ErrorSink/*!*/ errors, IReductionsSink/*!*/ reductionsSink, LanguageFeatures features)
+        public override void Parse(ITokenProvider<SemanticValueType, Span> lexer, INodesFactory<LangElement, Span> astFactory, LanguageFeatures features)
         {
             Parser parser = new Parser();
 
             using (StringReader source_reader = new StringReader(code))
             {
-                ast = parser.Parse(this, source_reader, errors, reductionsSink, initialState, features);
+                ast = parser.Parse(lexer, astFactory, features);
             }
         }
 
@@ -283,13 +285,13 @@ namespace PHP.Syntax
         /// This allows e.g. to parse PHP code without encapsulating the code into opening and closing tags.</param>
         /// <returns></returns>
         public static SourceUnit/*!*/ParseCode(string code, string filePath,
-            ErrorSink/*!*/ errors,
-            IReductionsSink/*!*/ reductionsSink = null,
+            ITokenProvider<SemanticValueType, Span> lexer, 
+            INodesFactory<LangElement, Span> astFactory,
             LanguageFeatures features = LanguageFeatures.Basic,
             Lexer.LexicalStates initialState = Lexer.LexicalStates.INITIAL)
         {
             var/*!*/unit = new CodeSourceUnit(code, filePath, Encoding.UTF8, initialState);
-            unit.Parse(errors, reductionsSink, features);
+            unit.Parse(lexer, astFactory, features);
             unit.Close();
 
             //

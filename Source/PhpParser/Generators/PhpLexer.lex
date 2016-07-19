@@ -523,7 +523,7 @@ NonVariableStart        [^a-zA-Z_{]
 
 <ST_IN_SCRIPTING>"{" {
 	yy_push_state(LexicalStates.ST_IN_SCRIPTING); 
-	return (Tokens)'{';
+	return (Tokens.T_LBRACE);
 }
 
 
@@ -537,7 +537,7 @@ NonVariableStart        [^a-zA-Z_{]
 	ResetDocComment();
 	if (!yy_pop_state()) 
 		return Tokens.T_ERROR; 
-	return (Tokens)'}';
+	return (Tokens.T_RBRACE);
 }
 
 
@@ -663,7 +663,7 @@ NonVariableStart        [^a-zA-Z_{]
 
 <ST_VAR_OFFSET>"]" {
 	yy_pop_state();
-	return (Tokens)']';
+	return (Tokens.T_RBRACKET);
 }
 
 <ST_VAR_OFFSET>{TOKENS}|[{}"`] {
@@ -723,7 +723,7 @@ NonVariableStart        [^a-zA-Z_{]
 
 <ST_IN_SCRIPTING>b?["] {
 	BEGIN(LexicalStates.ST_DOUBLE_QUOTES);
-	return (Tokens)'"';
+	return (Tokens.T_DOUBLE_QUOTES);
 }
 
 
@@ -756,7 +756,7 @@ NonVariableStart        [^a-zA-Z_{]
 
 <ST_IN_SCRIPTING>[`] {
 	BEGIN(LexicalStates.ST_BACKQUOTE); 
-	return (Tokens)'`';
+	return (Tokens.T_BACKQUOTE);
 }
 
 
@@ -778,12 +778,12 @@ NonVariableStart        [^a-zA-Z_{]
 
 <ST_DOUBLE_QUOTES>["] {
 	BEGIN(LexicalStates.ST_IN_SCRIPTING);
-	return (Tokens)'"';
+	return (Tokens.T_DOUBLE_QUOTES);
 }
 
 <ST_BACKQUOTE>[`] {
 	BEGIN(LexicalStates.ST_IN_SCRIPTING);
-	return (Tokens)'`';
+	return (Tokens.T_BACKQUOTE);
 }
 
 <ST_NOWDOC>^{LABEL}(";")?{NEWLINE} {

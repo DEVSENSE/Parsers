@@ -16,7 +16,7 @@ namespace PhpParser
     /// </summary>
     /// <typeparam name="TNode">Type of root node.</typeparam>
     /// <typeparam name="TSpan">Type of position object.</typeparam>
-    public interface INodesFactory<TNode, TSpan>
+    public interface INodesFactory<TNode, TSpan> : IErrorSink<TSpan>
     {
         #region GlobalCode
 
@@ -115,6 +115,10 @@ namespace PhpParser
 
         /// <summary>
         /// Creates declaration of class constants, class fields or global constants.
+        /// <code>
+        /// /** $var X */
+        /// var $field1, $field2;
+        /// </code>
         /// </summary>
         /// <param name="span">Entire element span.</param>
         /// <param name="attributes">Type member attributes.</param>
@@ -571,14 +575,25 @@ namespace PhpParser
         /// <returns>Block comment element.</returns>
         TNode BlockComment(TSpan span, string content);
 
+        /// <summary>
+        /// Create element representing <c>__haltcompiler();</c> call.
+        /// </summary>
+        /// <param name="span">Entire element span.</param>
+        /// <returns>Hal compiler element.</returns>
+        TNode HalCompiler(TSpan span);
+
         #endregion
     }
 
-    /// <summary>
-    /// Nodes factory used by <see cref="Parser.Parser"/>.
-    /// </summary>
-    public interface IParserNodesFactory : INodesFactory<LangElement, Span>
+    public interface IErrorSink<TSpan>
     {
-
+        /// <summary>
+        /// Report error. TODO
+        /// </summary>
+        /// <param name="span">Entire element span.</param>
+        /// <param name="info">Error type.</param>
+        /// <param name="argsOpt">Additional error informatin</param>
+        /// <returns></returns>
+        void Error(TSpan span, ErrorInfo info, params string[] argsOpt);
     }
 }
