@@ -26,7 +26,7 @@ namespace PhpParser
         /// <param name="span">Entire element span.</param>
         /// <param name="statements">Top statements.</param>
         /// <returns>Global code node.</returns>
-        TNode GlobalCode(TSpan span, IEnumerable<TNode> statements);
+        TNode GlobalCode(TSpan span, IEnumerable<TNode> statements, NamingContext context);
 
         #endregion
 
@@ -44,7 +44,7 @@ namespace PhpParser
         /// <param name="nameSpan">Name span. Can be <c>Invalid</c> in case the name is empty.</param>
         /// <param name="block">Block of code enclosed in brackets.</param>
         /// <returns>Namespace node.</returns>
-        TNode Namespace(TSpan span, QualifiedName? name, TSpan nameSpan, TNode block);
+        TNode Namespace(TSpan span, QualifiedName? name, TSpan nameSpan, TNode block, NamingContext context);
 
         /// <summary>
         /// Create simple namespace declaration node.
@@ -58,7 +58,7 @@ namespace PhpParser
         /// <param name="nameSpan">Name span. Can be <c>Invalid</c> in case the name is empty.</param>
         /// <param name="statements">List of statements within the namespace.</param>
         /// <returns>Namespace node.</returns>
-        TNode Namespace(TSpan span, QualifiedName? name, TSpan nameSpan, IEnumerable<TNode> statements);
+        TNode Namespace(TSpan span, QualifiedName? name, TSpan nameSpan, IEnumerable<TNode> statements, NamingContext context);
 
         /// <summary>
         /// Creates function declaration node.
@@ -580,7 +580,7 @@ namespace PhpParser
         /// </summary>
         /// <param name="span">Entire element span.</param>
         /// <returns>Hal compiler element.</returns>
-        TNode HalCompiler(TSpan span);
+        TNode HaltCompiler(TSpan span);
 
         #endregion
     }

@@ -67,22 +67,27 @@ NonVariableStart        [^a-zA-Z_{]
 %%
 
 <ST_IN_SCRIPTING>"exit" { 
+	this._tokenSemantics.Object = GetTokenString();
 	return (Tokens.T_EXIT); 
 }
 
 <ST_IN_SCRIPTING>"die" {
+	this._tokenSemantics.Object = GetTokenString();
 	return (Tokens.T_EXIT);
 }
 
 <ST_IN_SCRIPTING>"function" {
+	this._tokenSemantics.Object = GetTokenString();
 	return (Tokens.T_FUNCTION);
 }
 
 <ST_IN_SCRIPTING>"const" {
+	this._tokenSemantics.Object = GetTokenString();
 	return (Tokens.T_CONST);
 }
 
 <ST_IN_SCRIPTING>"return" {
+	this._tokenSemantics.Object = GetTokenString();
 	return (Tokens.T_RETURN);
 }
 
@@ -92,138 +97,172 @@ NonVariableStart        [^a-zA-Z_{]
 }
 
 <ST_IN_SCRIPTING>"yield" {
+	this._tokenSemantics.Object = GetTokenString();
 	return (Tokens.T_YIELD);
 }
 
 <ST_IN_SCRIPTING>"try" {
+	this._tokenSemantics.Object = GetTokenString();
 	return (Tokens.T_TRY);
 }
 
 <ST_IN_SCRIPTING>"catch" {
+	this._tokenSemantics.Object = GetTokenString();
 	return (Tokens.T_CATCH);
 }
 
 <ST_IN_SCRIPTING>"finally" {
+	this._tokenSemantics.Object = GetTokenString();
 	return (Tokens.T_FINALLY);
 }
 
 <ST_IN_SCRIPTING>"throw" {
+	this._tokenSemantics.Object = GetTokenString();
 	return (Tokens.T_THROW);
 }
 
 <ST_IN_SCRIPTING>"if" {
+	this._tokenSemantics.Object = GetTokenString();
 	return (Tokens.T_IF);
 }
 
 <ST_IN_SCRIPTING>"elseif" {
+	this._tokenSemantics.Object = GetTokenString();
 	return (Tokens.T_ELSEIF);
 }
 
 <ST_IN_SCRIPTING>"endif" {
+	this._tokenSemantics.Object = GetTokenString();
 	return (Tokens.T_ENDIF);
 }
 
 <ST_IN_SCRIPTING>"else" {
+	this._tokenSemantics.Object = GetTokenString();
 	return (Tokens.T_ELSE);
 }
 
 <ST_IN_SCRIPTING>"while" {
+	this._tokenSemantics.Object = GetTokenString();
 	return (Tokens.T_WHILE);
 }
 
 <ST_IN_SCRIPTING>"endwhile" {
+	this._tokenSemantics.Object = GetTokenString();
 	return (Tokens.T_ENDWHILE);
 }
 
 <ST_IN_SCRIPTING>"do" {
+	this._tokenSemantics.Object = GetTokenString();
 	return (Tokens.T_DO);
 }
 
 <ST_IN_SCRIPTING>"for" {
+	this._tokenSemantics.Object = GetTokenString();
 	return (Tokens.T_FOR);
 }
 
 <ST_IN_SCRIPTING>"endfor" {
+	this._tokenSemantics.Object = GetTokenString();
 	return (Tokens.T_ENDFOR);
 }
 
 <ST_IN_SCRIPTING>"foreach" {
+	this._tokenSemantics.Object = GetTokenString();
 	return (Tokens.T_FOREACH);
 }
 
 <ST_IN_SCRIPTING>"endforeach" {
+	this._tokenSemantics.Object = GetTokenString();
 	return (Tokens.T_ENDFOREACH);
 }
 
 <ST_IN_SCRIPTING>"declare" {
+	this._tokenSemantics.Object = GetTokenString();
 	return (Tokens.T_DECLARE);
 }
 
 <ST_IN_SCRIPTING>"enddeclare" {
+	this._tokenSemantics.Object = GetTokenString();
 	return (Tokens.T_ENDDECLARE);
 }
 
 <ST_IN_SCRIPTING>"instanceof" {
+	this._tokenSemantics.Object = GetTokenString();
 	return (Tokens.T_INSTANCEOF);
 }
 
 <ST_IN_SCRIPTING>"as" {
+	this._tokenSemantics.Object = GetTokenString();
 	return (Tokens.T_AS);
 }
 
 <ST_IN_SCRIPTING>"switch" {
+	this._tokenSemantics.Object = GetTokenString();
 	return (Tokens.T_SWITCH);
 }
 
 <ST_IN_SCRIPTING>"endswitch" {
+	this._tokenSemantics.Object = GetTokenString();
 	return (Tokens.T_ENDSWITCH);
 }
 
 <ST_IN_SCRIPTING>"case" {
+	this._tokenSemantics.Object = GetTokenString();
 	return (Tokens.T_CASE);
 }
 
 <ST_IN_SCRIPTING>"default" {
+	this._tokenSemantics.Object = GetTokenString();
 	return (Tokens.T_DEFAULT);
 }
 
 <ST_IN_SCRIPTING>"break" {
+	this._tokenSemantics.Object = GetTokenString();
 	return (Tokens.T_BREAK);
 }
 
 <ST_IN_SCRIPTING>"continue" {
+	this._tokenSemantics.Object = GetTokenString();
 	return (Tokens.T_CONTINUE);
 }
 
 <ST_IN_SCRIPTING>"goto" {
+	this._tokenSemantics.Object = GetTokenString();
 	return (Tokens.T_GOTO);
 }
 
 <ST_IN_SCRIPTING>"echo" {
+	this._tokenSemantics.Object = GetTokenString();
 	return (Tokens.T_ECHO);
 }
 
 <ST_IN_SCRIPTING>"print" {
+	this._tokenSemantics.Object = GetTokenString();
 	return (Tokens.T_PRINT);
 }
 
 <ST_IN_SCRIPTING>"class" {
+	this._tokenSemantics.Object = GetTokenString();
 	return (Tokens.T_CLASS);
 }
 
 <ST_IN_SCRIPTING>"interface" {
+	this._tokenSemantics.Object = GetTokenString();
 	return (Tokens.T_INTERFACE);
 }
 
 <ST_IN_SCRIPTING>"trait" {
+	this._tokenSemantics.Object = GetTokenString();
 	return (Tokens.T_TRAIT);
 }
 
 <ST_IN_SCRIPTING>"extends" {
+	this._tokenSemantics.Object = GetTokenString();
 	return (Tokens.T_EXTENDS);
 }
 
 <ST_IN_SCRIPTING>"implements" {
+	this._tokenSemantics.Object = GetTokenString();
 	return (Tokens.T_IMPLEMENTS);
 }
 
@@ -269,14 +308,17 @@ NonVariableStart        [^a-zA-Z_{]
 }
 
 <ST_IN_SCRIPTING>"new" {
+	this._tokenSemantics.Object = GetTokenString();
 	return (Tokens.T_NEW);
 }
 
 <ST_IN_SCRIPTING>"clone" {
+	this._tokenSemantics.Object = GetTokenString();
 	return (Tokens.T_CLONE);
 }
 
 <ST_IN_SCRIPTING>"var" {
+	this._tokenSemantics.Object = GetTokenString();
 	return (Tokens.T_VAR);
 }
 
@@ -309,46 +351,57 @@ NonVariableStart        [^a-zA-Z_{]
 }
 
 <ST_IN_SCRIPTING>"eval" {
+	this._tokenSemantics.Object = GetTokenString();
 	return (Tokens.T_EVAL);
 }
 
 <ST_IN_SCRIPTING>"include" {
+	this._tokenSemantics.Object = GetTokenString();
 	return (Tokens.T_INCLUDE);
 }
 
 <ST_IN_SCRIPTING>"include_once" {
+	this._tokenSemantics.Object = GetTokenString();
 	return (Tokens.T_INCLUDE_ONCE);
 }
 
 <ST_IN_SCRIPTING>"require" {
+	this._tokenSemantics.Object = GetTokenString();
 	return (Tokens.T_REQUIRE);
 }
 
 <ST_IN_SCRIPTING>"require_once" {
+	this._tokenSemantics.Object = GetTokenString();
 	return (Tokens.T_REQUIRE_ONCE);
 }
 
 <ST_IN_SCRIPTING>"namespace" {
+	this._tokenSemantics.Object = GetTokenString();
 	return (Tokens.T_NAMESPACE);
 }
 
 <ST_IN_SCRIPTING>"use" {
+	this._tokenSemantics.Object = GetTokenString();
 	return (Tokens.T_USE);
 }
 
 <ST_IN_SCRIPTING>"insteadof" {
+	this._tokenSemantics.Object = GetTokenString();
     return (Tokens.T_INSTEADOF);
 }
 
 <ST_IN_SCRIPTING>"global" {
+	this._tokenSemantics.Object = GetTokenString();
 	return (Tokens.T_GLOBAL);
 }
 
 <ST_IN_SCRIPTING>"isset" {
+	this._tokenSemantics.Object = GetTokenString();
 	return (Tokens.T_ISSET);
 }
 
 <ST_IN_SCRIPTING>"empty" {
+	this._tokenSemantics.Object = GetTokenString();
 	return (Tokens.T_EMPTY);
 }
 
@@ -357,30 +410,37 @@ NonVariableStart        [^a-zA-Z_{]
 }
 
 <ST_IN_SCRIPTING>"static" {
+	this._tokenSemantics.Object = GetTokenString();
 	return (Tokens.T_STATIC);
 }
 
 <ST_IN_SCRIPTING>"abstract" {
+	this._tokenSemantics.Object = GetTokenString();
 	return (Tokens.T_ABSTRACT);
 }
 
 <ST_IN_SCRIPTING>"final" {
+	this._tokenSemantics.Object = GetTokenString();
 	return (Tokens.T_FINAL);
 }
 
 <ST_IN_SCRIPTING>"private" {
+	this._tokenSemantics.Object = GetTokenString();
 	return (Tokens.T_PRIVATE);
 }
 
 <ST_IN_SCRIPTING>"protected" {
+	this._tokenSemantics.Object = GetTokenString();
 	return (Tokens.T_PROTECTED);
 }
 
 <ST_IN_SCRIPTING>"public" {
+	this._tokenSemantics.Object = GetTokenString();
 	return (Tokens.T_PUBLIC);
 }
 
 <ST_IN_SCRIPTING>"unset" {
+	this._tokenSemantics.Object = GetTokenString();
 	return (Tokens.T_UNSET);
 }
 
@@ -389,14 +449,17 @@ NonVariableStart        [^a-zA-Z_{]
 }
 
 <ST_IN_SCRIPTING>"list" {
+	this._tokenSemantics.Object = GetTokenString();
 	return (Tokens.T_LIST);
 }
 
 <ST_IN_SCRIPTING>"array" {
+	this._tokenSemantics.Object = GetTokenString();
 	return (Tokens.T_ARRAY);
 }
 
 <ST_IN_SCRIPTING>"callable" {
+	this._tokenSemantics.Object = GetTokenString();
 	return (Tokens.T_CALLABLE);
 }
 
@@ -582,34 +645,42 @@ NonVariableStart        [^a-zA-Z_{]
 }
 
 <ST_IN_SCRIPTING>"__CLASS__" {
+	this._tokenSemantics.Object = GetTokenString();
 	return (Tokens.T_CLASS_C);
 }
 
 <ST_IN_SCRIPTING>"__TRAIT__" {
+	this._tokenSemantics.Object = GetTokenString();
 	return (Tokens.T_TRAIT_C);
 }
 
 <ST_IN_SCRIPTING>"__FUNCTION__" {
+	this._tokenSemantics.Object = GetTokenString();
 	return (Tokens.T_FUNC_C);
 }
 
 <ST_IN_SCRIPTING>"__METHOD__" {
+	this._tokenSemantics.Object = GetTokenString();
 	return (Tokens.T_METHOD_C);
 }
 
 <ST_IN_SCRIPTING>"__LINE__" {
+	this._tokenSemantics.Object = GetTokenString();
 	return (Tokens.T_LINE);
 }
 
 <ST_IN_SCRIPTING>"__FILE__" {
+	this._tokenSemantics.Object = GetTokenString();
 	return (Tokens.T_FILE);
 }
 
 <ST_IN_SCRIPTING>"__DIR__" {
+	this._tokenSemantics.Object = GetTokenString();
 	return (Tokens.T_DIR);
 }
 
 <ST_IN_SCRIPTING>"__NAMESPACE__" {
+	this._tokenSemantics.Object = GetTokenString();
 	return (Tokens.T_NS_C);
 }
 

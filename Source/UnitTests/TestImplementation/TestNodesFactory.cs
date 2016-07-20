@@ -134,7 +134,7 @@ namespace UnitTests.TestImplementation
             throw new NotImplementedException();
         }
 
-        public LangElement GlobalCode(Span span, IEnumerable<LangElement> statements)
+        public LangElement GlobalCode(Span span, IEnumerable<LangElement> statements, NamingContext context)
         {
             Debug.Assert(statements.All(s => s is Statement), "Global code contains node that is not a statement!");
             return new GlobalCode(statements.Select(s => (Statement)s).ToList(), _sourceUnit);
@@ -150,7 +150,7 @@ namespace UnitTests.TestImplementation
             throw new NotImplementedException();
         }
 
-        public LangElement HalCompiler(Span span)
+        public LangElement HaltCompiler(Span span)
         {
             return new HaltCompiler(span);
         }
@@ -205,12 +205,12 @@ namespace UnitTests.TestImplementation
             throw new NotImplementedException();
         }
 
-        public LangElement Namespace(Span span, QualifiedName? name, Span nameSpan, IEnumerable<LangElement> statements)
+        public LangElement Namespace(Span span, QualifiedName? name, Span nameSpan, IEnumerable<LangElement> statements, NamingContext context)
         {
             throw new NotImplementedException();
         }
 
-        public LangElement Namespace(Span span, QualifiedName? name, Span nameSpan, LangElement block)
+        public LangElement Namespace(Span span, QualifiedName? name, Span nameSpan, LangElement block, NamingContext context)
         {
             throw new NotImplementedException();
         }
