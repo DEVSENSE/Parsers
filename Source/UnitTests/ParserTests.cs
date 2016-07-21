@@ -5,6 +5,7 @@ using System.IO;
 using PhpParser.Parser;
 using PHP.Core.AST;
 using UnitTests.TestImplementation;
+using PhpParser;
 
 namespace UnitTests
 {
@@ -22,7 +23,11 @@ namespace UnitTests
             SourceUnit sourceUnit = new CodeSourceUnit(File.ReadAllText(path), path, new System.Text.ASCIIEncoding(), Lexer.LexicalStates.INITIAL);
 
             GlobalCode ast = null;
-            using (StringReader source_reader = new StringReader(File.ReadAllText(path)))
+            string source = File.ReadAllText(path);
+            string[] sourceTest = source.Split(new string[] { "<<<TEST>>>" }, StringSplitOptions.RemoveEmptyEntries);
+            Assert.IsTrue(sourceTest.Length >= 2);
+
+            using (StringReader source_reader = new StringReader(sourceTest[0]))
             {
                 TestNodesFactory astFactory = new TestNodesFactory(sourceUnit);
                 Lexer lexer = new Lexer(source_reader, sourceUnit, astFactory, LanguageFeatures.ShortOpenTags);
@@ -30,10 +35,17 @@ namespace UnitTests
                 ast = (GlobalCode)parser.Parse(lexer, astFactory, LanguageFeatures.ShortOpenTags);
                 Assert.AreEqual(1, astFactory.Errors.Count);
             }
-            Assert.IsNotNull(ast);
-            Assert.AreEqual(1, ast.Statements.Length);
-            Assert.IsFalse(string.IsNullOrEmpty(((StringLiteral)((EchoStmt)ast.Statements[0]).Parameters[0]).Value));
-            Assert.IsTrue(((StringLiteral)((EchoStmt)ast.Statements[0]).Parameters[0]).Value.Contains("https://github.com/php/php-src/tree/master/Zend/tests"));
+
+            //Assert.IsNotNull(ast);
+            //Assert.AreEqual(1, ast.Statements.Length);
+            //Assert.IsFalse(string.IsNullOrEmpty(((StringLiteral)((EchoStmt)ast.Statements[0]).Parameters[0]).Value));
+            //Assert.IsTrue(((StringLiteral)((EchoStmt)ast.Statements[0]).Parameters[0]).Value.Contains("https://github.com/php/php-src/tree/master/Zend/tests"));
+
+            var serializer = new JsonSerializer();
+            SerializerTreeVisitor visitor = new SerializerTreeVisitor(serializer);
+            ast.VisitMe(visitor);
+            Assert.AreEqual(sourceTest[1].Trim().Replace("\r", "").Replace("\n", "").Replace(" ", ""), 
+                serializer.ToString().Replace("\r", "").Replace("\n", "").Replace(" ", ""));
         }
     }
 }

@@ -283,7 +283,7 @@ namespace PHP.Core.AST
         /// Visit all statements in the given list.
         /// </summary>
         /// <param name="statements">Collection of statements to visit.</param>
-        private void VisitStatements(IList<Statement> statements)
+        protected void VisitStatements(IList<Statement> statements)
         {
             if (statements != null)
                 foreach (Statement s in statements)
@@ -294,7 +294,7 @@ namespace PHP.Core.AST
         /// Visit all expressions in the given list.
         /// </summary>
         /// <param name="expressions"></param>
-        private void VisitExpressions(ICollection<Expression> expressions)
+        protected void VisitExpressions(ICollection<Expression> expressions)
         {
             if (expressions != null && expressions.Any())
                 foreach (Expression e in expressions)

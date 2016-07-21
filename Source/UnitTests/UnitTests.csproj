@@ -53,9 +53,11 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="JsonSerializerTests.cs" />
     <Compile Include="ParserTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="LexerTests.cs" />
+    <Compile Include="SerializerTreeVisitorTests.cs" />
     <Compile Include="TestImplementation\TestErrorSink.cs" />
     <Compile Include="TestImplementation\TestNodesFactory.cs" />
   </ItemGroup>

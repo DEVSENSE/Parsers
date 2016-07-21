@@ -90,17 +90,21 @@
     <Compile Include="Core\Utils.cs" />
     <Compile Include="Generated\Lexer.cs" />
     <Compile Include="INodesFactory.cs" />
+    <Compile Include="ISerializer.cs" />
+    <Compile Include="JsonSerializer.cs" />
     <Compile Include="Parser\Convert.cs" />
     <Compile Include="Parser\GPPG.cs" />
     <Compile Include="Parser\Lexer.cs" />
     <Compile Include="Parser\Parser.cs" />
     <None Include="Generators\generate.bat" />
+    <None Include="packages.config" />
     <None Include="Parser\Scanner.cs" />
     <Compile Include="Core\Text\ILineBreaks.cs" />
     <Compile Include="Core\Text\Span.cs" />
     <Compile Include="Core\Text\TextPoint.cs" />
     <Compile Include="Core\Text\TextSpan.cs" />
     <Compile Include="Core\Text\TextUtils.cs" />
+    <Compile Include="SerializerTreeVisitor.cs" />
     <Compile Include="Strings.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -114,6 +118,12 @@
     <None Include="Generators\OldParser.y" />
     <None Include="Generators\PhpLexer.lex" />
     <None Include="Generators\PhpParser.y" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\portable-net45+wp80+win8+wpa81\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
   <PropertyGroup>

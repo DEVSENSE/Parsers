@@ -75,47 +75,6 @@ namespace PhpParser.Parser
             return result;
         }
 
-        private void RESET_DOC_COMMENT()
-        {
-            // TODO implement
-        }
-
-        private LangElement zend_ast_create(params object[] abc)
-        {
-            // TODO implement
-            return null;
-        }
-
-        private LangElement zend_ast_create_decl(params object[] abc)
-        {
-            // TODO implement
-            return null;
-        }
-
-        private LangElement zend_handle_encoding_declaration(params object[] abc)
-        {
-            // TODO implement
-            return null;
-        }
-
-        private LangElement zend_ast_create_list(params object[] abc)
-        {
-            // TODO implement
-            return null;
-        }
-
-        private LangElement zend_ast_list_add(params object[] abc)
-        {
-            // TODO implement
-            return null;
-        }
-
-        private long CG(params object[] abc)
-        {
-            // TODO implement
-            return 0;
-        }
-
         private void SetNamingContext(string nameSpace)
         {
             _context.Add(new NamingContext(nameSpace, 1));
@@ -301,5 +260,392 @@ namespace PhpParser.Parser
             ZEND_AST_FOR,
             ZEND_AST_FOREACH,
         };
+
+        enum _zend_sup
+        {
+            ZEND_TYPE_nullABLE,
+            ZEND_PARAM_REF,
+            ZEND_PARAM_VARIADIC,
+            ZEND_INCLUDE,
+            ZEND_INCLUDE_ONCE,
+            ZEND_EVAL,
+            ZEND_REQUIRE,
+            ZEND_REQUIRE_ONCE,
+            ZEND_NOP,
+            ZEND_ADD,
+            ZEND_SUB,
+            ZEND_MUL,
+            ZEND_DIV,
+            ZEND_MOD,
+            ZEND_SL,
+            ZEND_SR,
+            ZEND_CONCAT,
+            ZEND_BW_OR,
+            ZEND_BW_AND,
+            ZEND_BW_XOR,
+            ZEND_BW_NOT,
+            ZEND_BOOL_NOT,
+            ZEND_BOOL_XOR,
+            ZEND_IS_IDENTICAL,
+            ZEND_IS_NOT_IDENTICAL,
+            ZEND_IS_EQUAL,
+            ZEND_IS_NOT_EQUAL,
+            ZEND_IS_SMALLER,
+            ZEND_IS_SMALLER_OR_EQUAL,
+            ZEND_CAST,
+            ZEND_QM_ASSIGN,
+            ZEND_ASSIGN_ADD,
+            ZEND_ASSIGN_SUB,
+            ZEND_ASSIGN_MUL,
+            ZEND_ASSIGN_DIV,
+            ZEND_ASSIGN_MOD,
+            ZEND_ASSIGN_SL,
+            ZEND_ASSIGN_SR,
+            ZEND_ASSIGN_CONCAT,
+            ZEND_ASSIGN_BW_OR,
+            ZEND_ASSIGN_BW_AND,
+            ZEND_ASSIGN_BW_XOR,
+            ZEND_PRE_INC,
+            ZEND_PRE_DEC,
+            ZEND_POST_INC,
+            ZEND_POST_DEC,
+            ZEND_ASSIGN,
+            ZEND_ASSIGN_REF,
+            ZEND_ECHO,
+            ZEND_GENERATOR_CREATE,
+            ZEND_JMP,
+            ZEND_JMPZ,
+            ZEND_JMPNZ,
+            ZEND_JMPZNZ,
+            ZEND_JMPZ_EX,
+            ZEND_JMPNZ_EX,
+            ZEND_CASE,
+            ZEND_SEND_VAR_NO_REF_EX,
+            ZEND_BOOL,
+            ZEND_FAST_CONCAT,
+            ZEND_ROPE_INIT,
+            ZEND_ROPE_ADD,
+            ZEND_ROPE_END,
+            ZEND_BEGIN_SILENCE,
+            ZEND_END_SILENCE,
+            ZEND_INIT_FCALL_BY_NAME,
+            ZEND_DO_FCALL,
+            ZEND_INIT_FCALL,
+            ZEND_RETURN,
+            ZEND_RECV,
+            ZEND_RECV_INIT,
+            ZEND_SEND_VAL,
+            ZEND_SEND_VAR_EX,
+            ZEND_SEND_REF,
+            ZEND_NEW,
+            ZEND_INIT_NS_FCALL_BY_NAME,
+            ZEND_FREE,
+            ZEND_INIT_ARRAY,
+            ZEND_ADD_ARRAY_ELEMENT,
+            ZEND_INCLUDE_OR_EVAL,
+            ZEND_UNSET_VAR,
+            ZEND_UNSET_DIM,
+            ZEND_UNSET_OBJ,
+            ZEND_FE_RESET_R,
+            ZEND_FE_FETCH_R,
+            ZEND_EXIT,
+            ZEND_FETCH_R,
+            ZEND_FETCH_DIM_R,
+            ZEND_FETCH_OBJ_R,
+            ZEND_FETCH_W,
+            ZEND_FETCH_DIM_W,
+            ZEND_FETCH_OBJ_W,
+            ZEND_FETCH_RW,
+            ZEND_FETCH_DIM_RW,
+            ZEND_FETCH_OBJ_RW,
+            ZEND_FETCH_IS,
+            ZEND_FETCH_DIM_IS,
+            ZEND_FETCH_OBJ_IS,
+            ZEND_FETCH_FUNC_ARG,
+            ZEND_FETCH_DIM_FUNC_ARG,
+            ZEND_FETCH_OBJ_FUNC_ARG,
+            ZEND_FETCH_UNSET,
+            ZEND_FETCH_DIM_UNSET,
+            ZEND_FETCH_OBJ_UNSET,
+            ZEND_FETCH_LIST,
+            ZEND_FETCH_CONSTANT,
+            ZEND_EXT_STMT,
+            ZEND_EXT_FCALL_BEGIN,
+            ZEND_EXT_FCALL_END,
+            ZEND_EXT_NOP,
+            ZEND_TICKS,
+            ZEND_SEND_VAR_NO_REF,
+            ZEND_CATCH,
+            ZEND_THROW,
+            ZEND_FETCH_CLASS,
+            ZEND_CLONE,
+            ZEND_RETURN_BY_REF,
+            ZEND_INIT_METHOD_CALL,
+            ZEND_INIT_STATIC_METHOD_CALL,
+            ZEND_ISSET_ISEMPTY_VAR,
+            ZEND_ISSET_ISEMPTY_DIM_OBJ,
+            ZEND_SEND_VAL_EX,
+            ZEND_SEND_VAR,
+            ZEND_INIT_USER_CALL,
+            ZEND_SEND_ARRAY,
+            ZEND_SEND_USER,
+            ZEND_STRLEN,
+            ZEND_DEFINED,
+            ZEND_TYPE_CHECK,
+            ZEND_VERIFY_RETURN_TYPE,
+            ZEND_FE_RESET_RW,
+            ZEND_FE_FETCH_RW,
+            ZEND_FE_FREE,
+            ZEND_INIT_DYNAMIC_CALL,
+            ZEND_DO_ICALL,
+            ZEND_DO_UCALL,
+            ZEND_DO_FCALL_BY_NAME,
+            ZEND_PRE_INC_OBJ,
+            ZEND_PRE_DEC_OBJ,
+            ZEND_POST_INC_OBJ,
+            ZEND_POST_DEC_OBJ,
+            ZEND_ASSIGN_OBJ,
+            ZEND_OP_DATA,
+            ZEND_INSTANCEOF,
+            ZEND_DECLARE_CLASS,
+            ZEND_DECLARE_INHERITED_CLASS,
+            ZEND_DECLARE_FUNCTION,
+            ZEND_YIELD_FROM,
+            ZEND_DECLARE_CONST,
+            ZEND_ADD_INTERFACE,
+            ZEND_DECLARE_INHERITED_CLASS_DELAYED,
+            ZEND_VERIFY_ABSTRACT_CLASS,
+            ZEND_ASSIGN_DIM,
+            ZEND_ISSET_ISEMPTY_PROP_OBJ,
+            ZEND_HANDLE_EXCEPTION,
+            ZEND_USER_OPCODE,
+            ZEND_ASSERT_CHECK,
+            ZEND_JMP_SET,
+            ZEND_DECLARE_LAMBDA_FUNCTION,
+            ZEND_ADD_TRAIT,
+            ZEND_BIND_TRAITS,
+            ZEND_SEPARATE,
+            ZEND_FETCH_CLASS_NAME,
+            ZEND_CALL_TRAMPOLINE,
+            ZEND_DISCARD_EXCEPTION,
+            ZEND_YIELD,
+            ZEND_GENERATOR_RETURN,
+            ZEND_FAST_CALL,
+            ZEND_FAST_RET,
+            ZEND_RECV_VARIADIC,
+            ZEND_SEND_UNPACK,
+            ZEND_POW,
+            ZEND_ASSIGN_POW,
+            ZEND_BIND_GLOBAL,
+            ZEND_COALESCE,
+            ZEND_SPACESHIP,
+            ZEND_DECLARE_ANON_CLASS,
+            ZEND_DECLARE_ANON_INHERITED_CLASS,
+            ZEND_FETCH_STATIC_PROP_R,
+            ZEND_FETCH_STATIC_PROP_W,
+            ZEND_FETCH_STATIC_PROP_RW,
+            ZEND_FETCH_STATIC_PROP_IS,
+            ZEND_FETCH_STATIC_PROP_FUNC_ARG,
+            ZEND_FETCH_STATIC_PROP_UNSET,
+            ZEND_UNSET_STATIC_PROP,
+            ZEND_ISSET_ISEMPTY_STATIC_PROP,
+            ZEND_FETCH_CLASS_CONSTANT,
+            ZEND_BIND_LEXICAL,
+            ZEND_BIND_STATIC,
+            ZEND_FETCH_THIS,
+            ZEND_ISSET_ISEMPTY_THIS,
+            ZEND_ACC_STATIC,
+            ZEND_ACC_ABSTRACT,
+            ZEND_ACC_FINAL,
+            ZEND_ACC_IMPLEMENTED_ABSTRACT,
+            ZEND_ACC_IMPLICIT_ABSTRACT_CLASS,
+            ZEND_ACC_EXPLICIT_ABSTRACT_CLASS,
+            ZEND_ACC_INTERFACE,
+            ZEND_ACC_TRAIT,
+            ZEND_ACC_ANON_CLASS,
+            ZEND_ACC_ANON_BOUND,
+            ZEND_ACC_PUBLIC,
+            ZEND_ACC_PROTECTED,
+            ZEND_ACC_PRIVATE,
+            ZEND_ACC_PPP_MASK,
+            ZEND_ACC_CHANGED,
+            ZEND_ACC_IMPLICIT_PUBLIC,
+            ZEND_ACC_CTOR,
+            ZEND_ACC_DTOR,
+            ZEND_ACC_CLONE,
+            ZEND_ACC_USER_ARG_INFO,
+            ZEND_ACC_ALLOW_STATIC,
+            ZEND_ACC_SHADOW,
+            ZEND_ACC_DEPRECATED,
+            ZEND_ACC_IMPLEMENT_INTERFACES,
+            ZEND_ACC_IMPLEMENT_TRAITS,
+            ZEND_ACC_CONSTANTS_UPDATED,
+            ZEND_HAS_STATIC_IN_METHODS,
+            ZEND_ACC_CLOSURE,
+            ZEND_ACC_GENERATOR,
+            ZEND_ACC_NO_RT_ARENA,
+            ZEND_ACC_CALL_VIA_TRAMPOLINE,
+            ZEND_ACC_CALL_VIA_HANDLER,
+            ZEND_ACC_NEVER_CACHE,
+            ZEND_ACC_VARIADIC,
+            ZEND_ACC_RETURN_REFERENCE,
+            ZEND_ACC_DONE_PASS_TWO,
+            ZEND_ACC_USE_GUARDS,
+            ZEND_ACC_HAS_TYPE_HINTS,
+            ZEND_ACC_HAS_FINALLY_BLOCK,
+            ZEND_ACC_ARENA_ALLOCATED,
+            ZEND_ACC_HAS_RETURN_TYPE,
+            ZEND_ACC_STRICT_TYPES,
+            IS_UNDEF,
+            IS_NULL,
+            IS_FALSE,
+            IS_TRUE,
+            IS_LONG,
+            IS_DOUBLE,
+            IS_STRING,
+            IS_ARRAY,
+            IS_OBJECT,
+            IS_RESOURCE,
+            IS_REFERENCE,
+            IS_CONSTANT,
+            IS_CONSTANT_AST,
+            _IS_BOOL,
+            IS_CALLABLE,
+            IS_VOID,
+            IS_INDIRECT,
+            IS_PTR,
+            _IS_ERROR,
+            T_LINE,
+            T_FILE,
+            T_DIR,
+            T_TRAIT_C,
+            T_METHOD_C,
+            T_FUNC_C,
+            T_NS_C,
+            T_CLASS_C
+        };
+
+        private void RESET_DOC_COMMENT()
+        {
+            // TODO implement
+        }
+
+        private object ZSTR_EMPTY_ALLOC()
+        {
+            // TODO implement
+            return null;
+        }
+
+        private object zend_ast_create(params object[] abc)
+        {
+            // TODO implement
+            return null;
+        }
+
+        private object zend_ast_create_decl(params object[] abc)
+        {
+            // TODO implement
+            return null;
+        }
+
+        private object zend_handle_encoding_declaration(params object[] abc)
+        {
+            // TODO implement
+            return null;
+        }
+
+        private object zend_ast_create_list(params object[] abc)
+        {
+            // TODO implement
+            return null;
+        }
+
+        private object zend_ast_list_add(params object[] abc)
+        {
+            // TODO implement
+            return null;
+        }
+
+        private long CG(params object[] abc)
+        {
+            // TODO implement
+            return 0;
+        }
+
+        private long zend_add_member_modifier(params object[] abc)
+        {
+            // TODO implement
+            return 0;
+        }
+
+        private object zend_ast_create_ex(params object[] abc)
+        {
+            // TODO implement
+            return 0;
+        }
+
+        private object zend_lex_tstring(params object[] abc)
+        {
+            // TODO implement
+            return 0;
+        }
+
+        private object zend_ast_get_str(params object[] abc)
+        {
+            // TODO implement
+            return 0;
+        }
+
+        private long zend_add_class_modifier(params object[] abc)
+        {
+            // TODO implement
+            return 0;
+        }
+
+        private object zend_ast_create_zval(params object[] abc)
+        {
+            // TODO implement
+            return 0;
+        }
+
+        private object zend_ast_create_zval_from_str(params object[] abc)
+        {
+            // TODO implement
+            return 0;
+        }
+
+        private object zend_ast_create_cast(params object[] abc)
+        {
+            // TODO implement
+            return 0;
+        }
+
+        private object zend_ast_create_assign_op(params object[] abc)
+        {
+            // TODO implement
+            return 0;
+        }
+
+        private object zend_ast_create_binary_op(params object[] abc)
+        {
+            // TODO implement
+            return 0;
+        }
+
+        private object zend_ast_list_rtrim(params object[] abc)
+        {
+            // TODO implement
+            return 0;
+        }
+
+        private object zend_string_init(params object[] abc)
+        {
+            // TODO implement
+            return 0;
+        }
+
+        long zend_lineno = 0; // TODO implement
+        long extra_fn_flags = 0; // TODO implement
+        object doc_comment = null; // TODO implement
     }
 }
