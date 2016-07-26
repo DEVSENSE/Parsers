@@ -104,6 +104,7 @@
     <Compile Include="Core\Text\TextPoint.cs" />
     <Compile Include="Core\Text\TextSpan.cs" />
     <Compile Include="Core\Text\TextUtils.cs" />
+    <Compile Include="Parser\PhpStringBuilder.cs" />
     <Compile Include="SerializerTreeVisitor.cs" />
     <Compile Include="Strings.Designer.cs">
       <AutoGen>True</AutoGen>

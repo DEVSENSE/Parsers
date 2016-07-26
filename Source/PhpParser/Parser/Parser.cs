@@ -20,6 +20,7 @@ namespace PhpParser.Parser
         ITokenProvider<SemanticValueType, Span> _lexer;
         INodesFactory<LangElement, Span> _astFactory;
         Scope _currentScope;
+        NamespaceDecl _currentNamespace = null;
         List<NamingContext> _context = new List<NamingContext>();
         NamingContext _namingContext { get { return _context.Last(); } }
         ContextType _contextType = ContextType.Class;
@@ -75,14 +76,24 @@ namespace PhpParser.Parser
             return result;
         }
 
-        private void SetNamingContext(string nameSpace)
+        void SetNamingContext(string nameSpace)
         {
             _context.Add(new NamingContext(nameSpace, 1));
         }
 
-        private void ResetNamingContext()
+        void ResetNamingContext()
         {
             _context.RemoveLast();
+        }
+
+        void AssignNamingContext()
+        {
+            if (_currentNamespace != null)
+            {
+                Debug.Assert(_context.Count == 2);
+                _currentNamespace.Naming = _namingContext;
+                ResetNamingContext();
+            }
         }
 
         private void AddAlias(Tuple<List<string>, string> alias)
@@ -92,16 +103,17 @@ namespace PhpParser.Parser
 
         private void AddAlias(Tuple<List<string>, string> alias, ContextType contextType)
         {
+            string aliasName = string.IsNullOrEmpty(alias.Item2)? alias.Item1.Last() : alias.Item2;
             switch (contextType)
             {
                 case ContextType.Class:
-                    _namingContext.AddAlias(alias.Item2, new QualifiedName(alias.Item1, true, true));
+                    _namingContext.AddAlias(aliasName, new QualifiedName(alias.Item1, true, true));
                     break;
                 case ContextType.Function:
-                    _namingContext.AddFunctionAlias(alias.Item2, new QualifiedName(alias.Item1, true, true));
+                    _namingContext.AddFunctionAlias(aliasName, new QualifiedName(alias.Item1, true, true));
                     break;
                 case ContextType.Constant:
-                    _namingContext.AddConstantAlias(alias.Item2, new QualifiedName(alias.Item1, true, true));
+                    _namingContext.AddConstantAlias(aliasName, new QualifiedName(alias.Item1, true, true));
                     break;
             }
         }
@@ -609,12 +621,6 @@ namespace PhpParser.Parser
         }
 
         private object zend_ast_create_zval_from_str(params object[] abc)
-        {
-            // TODO implement
-            return 0;
-        }
-
-        private object zend_ast_create_cast(params object[] abc)
         {
             // TODO implement
             return 0;

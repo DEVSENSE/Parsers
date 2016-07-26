@@ -290,8 +290,8 @@ using PHP.Syntax;
 %% /* Rules */
 
 start:
-    top_statement_list { SetNamingContext(null); } END
-	{ _astRoot = _astFactory.GlobalCode(@$, (List<LangElement>)$1, _namingContext); ResetNamingContext(); }
+    { SetNamingContext(null); } top_statement_list END
+	{ AssignNamingContext(); _astRoot = _astFactory.GlobalCode(@$, (List<LangElement>)$2, _namingContext); ResetNamingContext(); }
 ;
 reserved_non_modifiers:
 	  T_INCLUDE | T_INCLUDE_ONCE | T_EVAL | T_REQUIRE | T_REQUIRE_ONCE | T_LOGICAL_OR | T_LOGICAL_XOR | T_LOGICAL_AND
@@ -338,9 +338,14 @@ top_statement:
 	|	T_HALT_COMPILER '(' ')' ';'
 			{ $$ = _astFactory.HaltCompiler(@$); }
 	|	T_NAMESPACE namespace_name ';'
-			{ $$ = _astFactory.Namespace(@$, new QualifiedName((List<string>)$2, false, true), @2, (LangElement)null, new NamingContext(null, 0));
-			  RESET_DOC_COMMENT(); }
-	|	T_NAMESPACE namespace_name { RESET_DOC_COMMENT(); SetNamingContext((string)$2); }
+			{
+				AssignNamingContext();
+                QualifiedName name = new QualifiedName((List<string>)value_stack.array[value_stack.top - 2].yyval.Object, false, true);
+                SetNamingContext(name.NamespacePhpName);
+                yyval.Object = _currentNamespace = (NamespaceDecl)_astFactory.Namespace(yypos, name, value_stack.array[value_stack.top-2].yypos, (LangElement)null, new NamingContext(null, 0));
+				RESET_DOC_COMMENT(); 
+			}
+	|	T_NAMESPACE namespace_name { RESET_DOC_COMMENT(); var list = (List<string>)$2; SetNamingContext((list != null && list.Count > 0)? string.Join(QualifiedName.Separator.ToString(), list): null); }
 		'{' top_statement_list '}'
 			{ $$ = _astFactory.Namespace(@$, new QualifiedName((List<string>)$2, false, true), @2, (List<LangElement>)$5, _namingContext); ResetNamingContext(); }
 	|	T_NAMESPACE { RESET_DOC_COMMENT(); SetNamingContext(null); }
@@ -454,7 +459,7 @@ statement:
 	|	T_RETURN optional_expr ';'		{ $$ = zend_ast_create(_zend_ast_kind.ZEND_AST_RETURN, $2); }
 	|	T_GLOBAL global_var_list ';'	{ $$ = $2; }
 	|	T_STATIC static_var_list ';'	{ $$ = $2; }
-	|	T_ECHO echo_expr_list ';'		{ $$ = $2; }
+	|	T_ECHO echo_expr_list ';'		{ $$ = _astFactory.Echo(@$, (List<LangElement>)$2); }
 	|	T_INLINE_HTML { $$ = _astFactory.InlineHtml(@$, (string)$1); }
 	|	expr ';' { $$ = $1; }
 	|	T_UNSET '(' unset_variables ')' ';' { $$ = $3; }
@@ -853,11 +858,11 @@ const_decl:
 ;
 
 echo_expr_list:
-		echo_expr_list ',' echo_expr { $$ = zend_ast_list_add($1, $3); }
-	|	echo_expr { $$ = zend_ast_create_list(1, _zend_ast_kind.ZEND_AST_STMT_LIST, $1); }
+		echo_expr_list ',' echo_expr { $$ = AddToList<LangElement>($1, $3); }
+	|	echo_expr { $$ = new List<LangElement>() { (LangElement)$1 }; }
 ;
 echo_expr:
-	expr { $$ = zend_ast_create(_zend_ast_kind.ZEND_AST_ECHO, $1); }
+	expr { $$ = $1; }
 ;
 
 for_exprs:
@@ -980,16 +985,16 @@ expr_without_variable:
 	|	expr T_COALESCE expr
 			{ $$ = zend_ast_create(_zend_ast_kind.ZEND_AST_COALESCE, $1, $3); }
 	|	internal_functions_in_yacc { $$ = $1; }
-	|	T_INT_CAST expr		{ $$ = zend_ast_create_cast(_zend_sup.IS_LONG, $2); }
-	|	T_DOUBLE_CAST expr	{ $$ = zend_ast_create_cast(_zend_sup.IS_DOUBLE, $2); }
-	|	T_STRING_CAST expr	{ $$ = zend_ast_create_cast(_zend_sup.IS_STRING, $2); }
-	|	T_ARRAY_CAST expr	{ $$ = zend_ast_create_cast(_zend_sup.IS_ARRAY, $2); }
-	|	T_OBJECT_CAST expr	{ $$ = zend_ast_create_cast(_zend_sup.IS_OBJECT, $2); }
-	|	T_BOOL_CAST expr	{ $$ = zend_ast_create_cast(_zend_sup._IS_BOOL, $2); }
-	|	T_UNSET_CAST expr	{ $$ = zend_ast_create_cast(_zend_sup.IS_NULL, $2); }
-	|	T_EXIT exit_expr	{ $$ = zend_ast_create(_zend_ast_kind.ZEND_AST_EXIT, $2); }
-	|	'@' expr			{ $$ = zend_ast_create(_zend_ast_kind.ZEND_AST_SILENCE, $2); }
-	|	scalar { $$ = $1; }
+	|	T_INT_CAST expr		{ $$ = _astFactory.UnaryOperation(@$, Operations.LongCast,   (Expression)$2); }
+	|	T_DOUBLE_CAST expr	{ $$ = _astFactory.UnaryOperation(@$, Operations.DoubleCast, (Expression)$2); }
+	|	T_STRING_CAST expr	{ $$ = _astFactory.UnaryOperation(@$, Operations.StringCast, (Expression)$2); }
+	|	T_ARRAY_CAST expr	{ $$ = _astFactory.UnaryOperation(@$, Operations.ArrayCast,  (Expression)$2); } 
+	|	T_OBJECT_CAST expr	{ $$ = _astFactory.UnaryOperation(@$, Operations.ObjectCast, (Expression)$2); }
+	|	T_BOOL_CAST expr	{ $$ = _astFactory.UnaryOperation(@$, Operations.BoolCast,   (Expression)$2); }
+	|	T_UNSET_CAST expr	{ $$ = _astFactory.UnaryOperation(@$, Operations.UnsetCast,  (Expression)$2); }
+	|	T_EXIT exit_expr	{ $$ = _astFactory.UnaryOperation(@$, Operations.Exit,       (Expression)$2); }
+	|	'@' expr			{ $$ = _astFactory.UnaryOperation(@$, Operations.Silence,    (Expression)$2); }
+	|	scalar { $$ = _astFactory.Literal(@$, $1); }
 	|	'`' backticks_expr '`' { $$ = zend_ast_create(_zend_ast_kind.ZEND_AST_SHELL_EXEC, $2); }
 	|	T_PRINT expr { $$ = zend_ast_create(_zend_ast_kind.ZEND_AST_PRINT, $2); }
 	|	T_YIELD { $$ = zend_ast_create(_zend_ast_kind.ZEND_AST_YIELD, null, null); /*CG(extra_fn_flags) |= (long)_zend_sup.ZEND_ACC_GENERATOR;*/ }
@@ -1091,17 +1096,17 @@ dereferencable_scalar:
 scalar:
 		T_LNUMBER 	{ $$ = $1; }
 	|	T_DNUMBER 	{ $$ = $1; }
-	|	T_LINE 		{ $$ = zend_ast_create_ex(_zend_ast_kind.ZEND_AST_MAGIC_CONST, _zend_sup.T_LINE); }
-	|	T_FILE 		{ $$ = zend_ast_create_ex(_zend_ast_kind.ZEND_AST_MAGIC_CONST, _zend_sup.T_FILE); }
-	|	T_DIR   	{ $$ = zend_ast_create_ex(_zend_ast_kind.ZEND_AST_MAGIC_CONST, _zend_sup.T_DIR); }
-	|	T_TRAIT_C	{ $$ = zend_ast_create_ex(_zend_ast_kind.ZEND_AST_MAGIC_CONST, _zend_sup.T_TRAIT_C); }
-	|	T_METHOD_C	{ $$ = zend_ast_create_ex(_zend_ast_kind.ZEND_AST_MAGIC_CONST, _zend_sup.T_METHOD_C); }
-	|	T_FUNC_C	{ $$ = zend_ast_create_ex(_zend_ast_kind.ZEND_AST_MAGIC_CONST, _zend_sup.T_FUNC_C); }
-	|	T_NS_C		{ $$ = zend_ast_create_ex(_zend_ast_kind.ZEND_AST_MAGIC_CONST, _zend_sup.T_NS_C); }
-	|	T_CLASS_C	{ $$ = zend_ast_create_ex(_zend_ast_kind.ZEND_AST_MAGIC_CONST, _zend_sup.T_CLASS_C); }
+	|	T_LINE 		{ $$ = _astFactory.PseudoConstUse(@$, PseudoConstUse.Types.Line); }
+	|	T_FILE 		{ $$ = _astFactory.PseudoConstUse(@$, PseudoConstUse.Types.File); }     
+	|	T_DIR   	{ $$ = _astFactory.PseudoConstUse(@$, PseudoConstUse.Types.Dir); }      
+	|	T_TRAIT_C	{ $$ = _astFactory.PseudoConstUse(@$, PseudoConstUse.Types.Trait); }    
+	|	T_METHOD_C	{ $$ = _astFactory.PseudoConstUse(@$, PseudoConstUse.Types.Method); }   
+	|	T_FUNC_C	{ $$ = _astFactory.PseudoConstUse(@$, PseudoConstUse.Types.Function); } 
+	|	T_NS_C		{ $$ = _astFactory.PseudoConstUse(@$, PseudoConstUse.Types.Namespace); }
+	|	T_CLASS_C	{ $$ = _astFactory.PseudoConstUse(@$, PseudoConstUse.Types.Class); }    
 	|	T_START_HEREDOC T_ENCAPSED_AND_WHITESPACE T_END_HEREDOC { $$ = $2; }
 	|	T_START_HEREDOC T_END_HEREDOC
-			{ $$ = zend_ast_create_zval_from_str(ZSTR_EMPTY_ALLOC()); }
+			{ $$ = ""; }
 	|	'"' encaps_list '"' 	{ $$ = $2; }
 	|	T_START_HEREDOC encaps_list T_END_HEREDOC { $$ = $2; }
 	|	dereferencable_scalar	{ $$ = $1; }

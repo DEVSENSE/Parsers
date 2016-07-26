@@ -19,6 +19,12 @@ namespace UnitTests.TestImplementation
     {
         SourceUnit _sourceUnit;
 
+        List<T> ConvertList<T>(IEnumerable<LangElement> list) where T : LangElement
+        {
+            Debug.Assert(list.All(s => s == null || s is T), "List of LangELements contains node that is not valid!");
+            return list.Select(s => (T)s).ToList();
+        }
+
         public TestNodesFactory(SourceUnit sourceUnit)
         {
             _sourceUnit = sourceUnit;
@@ -101,7 +107,7 @@ namespace UnitTests.TestImplementation
 
         public LangElement Echo(Span span, IEnumerable<LangElement> parameters)
         {
-            throw new NotImplementedException();
+            return new EchoStmt(span, ConvertList<Expression>(parameters));
         }
 
         public LangElement Eval(Span span, LangElement code)
@@ -136,8 +142,7 @@ namespace UnitTests.TestImplementation
 
         public LangElement GlobalCode(Span span, IEnumerable<LangElement> statements, NamingContext context)
         {
-            Debug.Assert(statements.All(s => s is Statement), "Global code contains node that is not a statement!");
-            return new GlobalCode(statements.Select(s => (Statement)s).ToList(), _sourceUnit);
+            return new GlobalCode(ConvertList<Statement>(statements), _sourceUnit, context);
         }
 
         public LangElement GlobalConstDecl(Span span, bool conditional, VariableName name, LangElement initializer)
@@ -202,17 +207,29 @@ namespace UnitTests.TestImplementation
 
         public LangElement Literal(Span span, object value)
         {
+            if (value is long)
+                return new LongIntLiteral(span, (long)value);
+            else if (value is double)
+                return new DoubleLiteral(span, (double)value);
+            else if (value is string)
+                return new StringLiteral(span, (string)value);
+            else if (value is byte[])
+                return new BinaryStringLiteral(span, (byte[])value);
+            else if (value is bool)
+                return new BoolLiteral(span, (bool)value);
+            else if (value == null)
+                return new NullLiteral(span);
             throw new NotImplementedException();
         }
 
         public LangElement Namespace(Span span, QualifiedName? name, Span nameSpan, IEnumerable<LangElement> statements, NamingContext context)
         {
-            throw new NotImplementedException();
+            return new NamespaceDecl(span, name ?? new QualifiedName(Name.EmptyBaseName, Name.EmptyNames), context, ConvertList<Statement>(statements));
         }
 
         public LangElement Namespace(Span span, QualifiedName? name, Span nameSpan, LangElement block, NamingContext context)
         {
-            throw new NotImplementedException();
+            return new NamespaceDecl(span, name ?? new QualifiedName(Name.EmptyBaseName, Name.EmptyNames), context, block == null);
         }
 
         public LangElement New(Span span, TypeRef classNameRef, IEnumerable<ActualParam> argsOpt)
@@ -262,7 +279,7 @@ namespace UnitTests.TestImplementation
 
         public LangElement UnaryOperation(Span span, Operations operation, LangElement expression)
         {
-            throw new NotImplementedException();
+            return new UnaryEx(operation, (Expression)expression);
         }
 
         public LangElement Variable(Span span, LangElement nameExpr, TypeRef typeRef)
@@ -298,6 +315,11 @@ namespace UnitTests.TestImplementation
         public LangElement YieldFrom(Span span, LangElement fromExpr)
         {
             throw new NotImplementedException();
+        }
+
+        public LangElement PseudoConstUse(Span span, PseudoConstUse.Types type)
+        {
+            return PseudoConstUse(span, type);
         }
     }
 }

@@ -44,8 +44,12 @@ namespace UnitTests
             var serializer = new JsonSerializer();
             SerializerTreeVisitor visitor = new SerializerTreeVisitor(serializer);
             ast.VisitMe(visitor);
-            Assert.AreEqual(sourceTest[1].Trim().Replace("\r", "").Replace("\n", "").Replace(" ", ""), 
-                serializer.ToString().Replace("\r", "").Replace("\n", "").Replace(" ", ""));
+            string expected = sourceTest[1].Trim().Replace("\r", "").Replace("\n", "").Replace(" ", "");
+            string actual = serializer.ToString().Replace("\r", "").Replace("\n", "").Replace(" ", "");
+            Assert.AreEqual(expected.Length, actual.Length);
+            //for (int i = 0; i < expected.Length; i++)
+            //    Assert.AreEqual(expected[i], actual[i], "difference at " + i.ToString());
+            Assert.AreEqual(expected, actual);
         }
     }
 }

@@ -49,6 +49,18 @@ namespace PHP.Core.AST
             this.statements = statements.AsArray();
         }
 
+        /// <summary>
+        /// Initializes a new instance of the GlobalCode class.
+        /// </summary>
+        public GlobalCode(IList<Statement>/*!*/ statements, SourceUnit/*!*/ sourceUnit, NamingContext context) : base(new Span())
+        {
+            Debug.Assert(statements != null && sourceUnit != null);
+
+            this.sourceUnit = sourceUnit;
+            this.sourceUnit.Naming = context;
+            this.statements = statements.AsArray();
+        }
+
         #endregion
 
         /// <summary>
@@ -91,8 +103,8 @@ namespace PHP.Core.AST
         /// <summary>
         /// Naming context defining aliases.
         /// </summary>
-        public NamingContext/*!*/ Naming { get { return this.naming; } }
-        private readonly NamingContext naming;
+        public NamingContext/*!*/ Naming { get { return this.naming; } internal set { this.naming = value; } }
+        private NamingContext naming;
 
         public bool IsAnonymous { get { return this.isAnonymous; } }
         private readonly bool isAnonymous;
@@ -122,6 +134,21 @@ namespace PHP.Core.AST
             this.qualifiedName = new QualifiedName(names, false, true);
             this.IsSimpleSyntax = simpleSyntax;
             this.naming = new NamingContext(this.qualifiedName, null);
+        }
+
+        public NamespaceDecl(Text.Span p, QualifiedName name, NamingContext context, bool simpleSyntax)
+            : base(p)
+        {
+            this.isAnonymous = false;
+            this.qualifiedName = name;
+            this.IsSimpleSyntax = simpleSyntax;
+            this.naming = context;
+        }
+
+        public NamespaceDecl(Text.Span p, QualifiedName name, NamingContext context, List<Statement> statements)
+            : this(p, name, context, false)
+        {
+            Statements = statements;
         }
 
         /// <summary>

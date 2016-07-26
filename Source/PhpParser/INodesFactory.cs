@@ -114,6 +114,17 @@ namespace PhpParser
         TNode TraitUse(TSpan span, IEnumerable<QualifiedName> traits, IEnumerable<TraitsUse.TraitAdaptation> adaptations);
 
         /// <summary>
+        /// Creates a pseudo constant use.
+        /// <code>
+        /// $x = __LINE__;
+        /// </code>
+        /// </summary>
+        /// <param name="span">Entire element span.</param>
+        /// <param name="type">Type of the pseudo constant.</param>
+        /// <returns></returns>
+        TNode PseudoConstUse(TSpan span, PseudoConstUse.Types type);
+
+        /// <summary>
         /// Creates declaration of class constants, class fields or global constants.
         /// <code>
         /// /** $var X */

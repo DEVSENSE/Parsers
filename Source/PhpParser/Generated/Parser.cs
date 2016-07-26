@@ -394,11 +394,11 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
     #region states
     states = new State[]
     {
-      new State(0, -81, new int[] {-126,1,-68,3}),
+      new State(0, -2, new int[] {-126,1,-128,3}),
       new State(1, new int[] {291,2}),
       new State(2, -1),
-      new State(3, new int[] {123,8,327,20,330,37,329,43,332,158,339,168,343,180,344,469,348,473,355,476,316,483,328,492,321,499,320,107,36,108,319,502,388,867,390,192,40,279,368,283,91,300,323,305,367,314,305,320,303,322,302,333,43,336,45,338,33,340,126,342,306,345,358,356,359,363,262,367,261,369,260,371,259,375,258,377,301,379,300,381,299,383,298,385,297,387,296,389,295,391,326,393,64,398,317,401,318,402,370,403,371,404,372,405,374,406,375,407,376,408,389,409,373,410,383,411,34,433,96,443,266,448,267,450,269,454,346,472,357,517,334,526,336,534,59,541,349,542,352,556,345,559,315,623,314,624,361,625,362,671,363,679,360,878,353,882,347,934,0,-2}, new int[] {-128,4,-1,6,-4,7,-72,13,-86,14,-73,27,-98,28,-19,500,-28,118,-62,123,-48,124,-60,125,-63,130,-46,131,-3,183,-2,185,-57,194,-58,282,-59,306,-54,310,-61,311,-33,313,-44,344,-49,355,-51,400,-113,504,-5,874,-6,875,-120,564,-121,622,-7,876,-8,877}),
-      new State(4, new int[] {0,5}),
+      new State(3, -81, new int[] {-68,4}),
+      new State(4, new int[] {0,5,123,8,327,20,330,37,329,43,332,158,339,168,343,180,344,469,348,473,355,476,316,483,328,492,321,499,320,107,36,108,319,502,388,867,390,192,40,279,368,283,91,300,323,305,367,314,305,320,303,322,302,333,43,336,45,338,33,340,126,342,306,345,358,356,359,363,262,367,261,369,260,371,259,375,258,377,301,379,300,381,299,383,298,385,297,387,296,389,295,391,326,393,64,398,317,401,318,402,370,403,371,404,372,405,374,406,375,407,376,408,389,409,373,410,383,411,34,433,96,443,266,448,267,450,269,454,346,472,357,517,334,526,336,534,59,541,349,542,352,556,345,559,315,623,314,624,361,625,362,671,363,679,360,878,353,882,347,934}, new int[] {-1,6,-4,7,-72,13,-86,14,-73,27,-98,28,-19,500,-28,118,-62,123,-48,124,-60,125,-63,130,-46,131,-3,183,-2,185,-57,194,-58,282,-59,306,-54,310,-61,311,-33,313,-44,344,-49,355,-51,400,-113,504,-5,874,-6,875,-120,564,-121,622,-7,876,-8,877}),
       new State(5, -3),
       new State(6, -80),
       new State(7, -87),
@@ -408,7 +408,7 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
       new State(11, -123),
       new State(12, -125),
       new State(13, -132),
-      new State(14, new int[] {308,15,309,865,123,-211,327,-211,330,-211,329,-211,332,-211,339,-211,343,-211,344,-211,348,-211,355,-211,316,-211,328,-211,321,-211,320,-211,36,-211,319,-211,388,-211,390,-211,40,-211,368,-211,91,-211,323,-211,367,-211,305,-211,303,-211,302,-211,43,-211,45,-211,33,-211,126,-211,306,-211,358,-211,359,-211,262,-211,261,-211,260,-211,259,-211,258,-211,301,-211,300,-211,299,-211,298,-211,297,-211,296,-211,295,-211,326,-211,64,-211,317,-211,318,-211,370,-211,371,-211,372,-211,374,-211,375,-211,376,-211,389,-211,373,-211,383,-211,34,-211,96,-211,266,-211,267,-211,269,-211,346,-211,357,-211,334,-211,336,-211,59,-211,349,-211,352,-211,345,-211,315,-211,314,-211,361,-211,362,-211,363,-211,360,-211,353,-211,347,-211,0,-211,125,-211,310,-211,341,-211,342,-211,340,-211,337,-211,335,-211,333,-211,331,-211}),
+      new State(14, new int[] {308,15,309,865,0,-211,123,-211,327,-211,330,-211,329,-211,332,-211,339,-211,343,-211,344,-211,348,-211,355,-211,316,-211,328,-211,321,-211,320,-211,36,-211,319,-211,388,-211,390,-211,40,-211,368,-211,91,-211,323,-211,367,-211,305,-211,303,-211,302,-211,43,-211,45,-211,33,-211,126,-211,306,-211,358,-211,359,-211,262,-211,261,-211,260,-211,259,-211,258,-211,301,-211,300,-211,299,-211,298,-211,297,-211,296,-211,295,-211,326,-211,64,-211,317,-211,318,-211,370,-211,371,-211,372,-211,374,-211,375,-211,376,-211,389,-211,373,-211,383,-211,34,-211,96,-211,266,-211,267,-211,269,-211,346,-211,357,-211,334,-211,336,-211,59,-211,349,-211,352,-211,345,-211,315,-211,314,-211,361,-211,362,-211,363,-211,360,-211,353,-211,347,-211,125,-211,310,-211,341,-211,342,-211,340,-211,337,-211,335,-211,333,-211,331,-211}),
       new State(15, new int[] {40,16}),
       new State(16, new int[] {320,107,36,108,316,144,319,188,388,189,390,192,40,279,368,283,91,300,323,305,367,314,305,320,303,322,302,333,43,336,45,338,33,340,126,342,306,345,358,356,359,363,262,367,261,369,260,371,259,375,258,377,301,379,300,381,299,383,298,385,297,387,296,389,295,391,326,393,64,398,317,401,318,402,370,403,371,404,372,405,374,406,375,407,376,408,389,409,373,410,383,411,34,433,96,443,266,448,267,450,269,454,346,472}, new int[] {-19,17,-28,118,-62,123,-48,124,-60,125,-63,130,-46,131,-3,183,-2,185,-57,194,-58,282,-59,306,-54,310,-61,311,-33,313,-44,344,-49,355,-51,400,-113,456}),
       new State(17, new int[] {41,18,283,50,284,52,263,54,265,56,264,58,124,60,38,62,94,64,46,66,43,68,45,70,42,72,304,74,47,76,37,78,293,80,292,82,287,84,286,86,289,88,288,90,60,92,291,94,62,96,290,98,285,100,294,102,63,112,282,116}),
@@ -940,7 +940,7 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
       new State(543, -124, new int[] {-71,544}),
       new State(544, new int[] {125,545,123,8,327,20,330,37,329,43,332,158,339,168,343,180,344,469,348,473,355,476,316,483,328,492,321,499,320,107,36,108,319,502,388,189,390,192,40,279,368,283,91,300,323,305,367,314,305,320,303,322,302,333,43,336,45,338,33,340,126,342,306,345,358,356,359,363,262,367,261,369,260,371,259,375,258,377,301,379,300,381,299,383,298,385,297,387,296,389,295,391,326,393,64,398,317,401,318,402,370,403,371,404,372,405,374,406,375,407,376,408,389,409,373,410,383,411,34,433,96,443,266,448,267,450,269,454,346,472,357,517,334,526,336,534,59,541,349,542,352,556,345,559,315,623,314,624,361,625,362,671,363,679,360,689}, new int[] {-18,11,-4,12,-72,13,-86,14,-73,27,-98,28,-19,500,-28,118,-62,123,-48,124,-60,125,-63,130,-46,131,-3,183,-2,185,-57,194,-58,282,-59,306,-54,310,-61,311,-33,313,-44,344,-49,355,-51,400,-113,504,-5,562,-6,563,-120,564,-121,622,-7,670,-8,678}),
       new State(545, -156, new int[] {-81,546}),
-      new State(546, new int[] {350,548,351,719,123,-160,327,-160,330,-160,329,-160,332,-160,339,-160,343,-160,344,-160,348,-160,355,-160,316,-160,328,-160,321,-160,320,-160,36,-160,319,-160,388,-160,390,-160,40,-160,368,-160,91,-160,323,-160,367,-160,305,-160,303,-160,302,-160,43,-160,45,-160,33,-160,126,-160,306,-160,358,-160,359,-160,262,-160,261,-160,260,-160,259,-160,258,-160,301,-160,300,-160,299,-160,298,-160,297,-160,296,-160,295,-160,326,-160,64,-160,317,-160,318,-160,370,-160,371,-160,372,-160,374,-160,375,-160,376,-160,389,-160,373,-160,383,-160,34,-160,96,-160,266,-160,267,-160,269,-160,346,-160,357,-160,334,-160,336,-160,59,-160,349,-160,352,-160,345,-160,315,-160,314,-160,361,-160,362,-160,363,-160,360,-160,353,-160,347,-160,0,-160,125,-160,308,-160,309,-160,310,-160,341,-160,342,-160,340,-160,337,-160,335,-160,333,-160,331,-160}, new int[] {-26,547}),
+      new State(546, new int[] {350,548,351,719,0,-160,123,-160,327,-160,330,-160,329,-160,332,-160,339,-160,343,-160,344,-160,348,-160,355,-160,316,-160,328,-160,321,-160,320,-160,36,-160,319,-160,388,-160,390,-160,40,-160,368,-160,91,-160,323,-160,367,-160,305,-160,303,-160,302,-160,43,-160,45,-160,33,-160,126,-160,306,-160,358,-160,359,-160,262,-160,261,-160,260,-160,259,-160,258,-160,301,-160,300,-160,299,-160,298,-160,297,-160,296,-160,295,-160,326,-160,64,-160,317,-160,318,-160,370,-160,371,-160,372,-160,374,-160,375,-160,376,-160,389,-160,373,-160,383,-160,34,-160,96,-160,266,-160,267,-160,269,-160,346,-160,357,-160,334,-160,336,-160,59,-160,349,-160,352,-160,345,-160,315,-160,314,-160,361,-160,362,-160,363,-160,360,-160,353,-160,347,-160,125,-160,308,-160,309,-160,310,-160,341,-160,342,-160,340,-160,337,-160,335,-160,333,-160,331,-160}, new int[] {-26,547}),
       new State(547, -152),
       new State(548, new int[] {40,549}),
       new State(549, new int[] {319,188,388,189,390,192}, new int[] {-80,550,-3,718,-2,185}),
@@ -1344,7 +1344,7 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
     default(Rule),
     new Rule(-127, new int[]{-126,291}),
     new Rule(-128, new int[]{}),
-    new Rule(-126, new int[]{-68,-128,0}),
+    new Rule(-126, new int[]{-128,-68,0}),
     new Rule(-129, new int[]{262}),
     new Rule(-129, new int[]{261}),
     new Rule(-129, new int[]{260}),
@@ -1884,8 +1884,8 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
       case 2: // @1 -> 
 { SetNamingContext(null); }
         return;
-      case 3: // start -> top_statement_list @1 END 
-{ _astRoot = _astFactory.GlobalCode(yypos, (List<LangElement>)value_stack.array[value_stack.top-3].yyval.Object, _namingContext); ResetNamingContext(); }
+      case 3: // start -> @1 top_statement_list END 
+{ AssignNamingContext(); _astRoot = _astFactory.GlobalCode(yypos, (List<LangElement>)value_stack.array[value_stack.top-2].yyval.Object, _namingContext); ResetNamingContext(); }
         return;
       case 71: // semi_reserved -> reserved_non_modifiers 
 { yyval = value_stack.array[value_stack.top-1].yyval; }
@@ -1936,11 +1936,16 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 { yyval.Object = _astFactory.HaltCompiler(yypos); }
         return;
       case 93: // top_statement -> T_NAMESPACE namespace_name ';' 
-{ yyval.Object = _astFactory.Namespace(yypos, new QualifiedName((List<string>)value_stack.array[value_stack.top-2].yyval.Object, false, true), value_stack.array[value_stack.top-2].yypos, (LangElement)null, new NamingContext(null, 0));
-			  RESET_DOC_COMMENT(); }
+{
+				AssignNamingContext();
+                QualifiedName name = new QualifiedName((List<string>)value_stack.array[value_stack.top - 2].yyval.Object, false, true);
+                SetNamingContext(name.NamespacePhpName);
+                yyval.Object = _currentNamespace = (NamespaceDecl)_astFactory.Namespace(yypos, name, value_stack.array[value_stack.top-2].yypos, (LangElement)null, new NamingContext(null, 0));
+				RESET_DOC_COMMENT(); 
+			}
         return;
       case 94: // @2 -> 
-{ RESET_DOC_COMMENT(); SetNamingContext((string)value_stack.array[value_stack.top-1].yyval.Object); }
+{ RESET_DOC_COMMENT(); var list = (List<string>)value_stack.array[value_stack.top-1].yyval.Object; SetNamingContext((list != null && list.Count > 0)? string.Join(QualifiedName.Separator.ToString(), list): null); }
         return;
       case 95: // top_statement -> T_NAMESPACE namespace_name @2 '{' top_statement_list '}' 
 { yyval.Object = _astFactory.Namespace(yypos, new QualifiedName((List<string>)value_stack.array[value_stack.top-5].yyval.Object, false, true), value_stack.array[value_stack.top-5].yypos, (List<LangElement>)value_stack.array[value_stack.top-2].yyval.Object, _namingContext); ResetNamingContext(); }
@@ -2090,7 +2095,7 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 { yyval.Object = value_stack.array[value_stack.top-2].yyval.Object; }
         return;
       case 143: // statement -> T_ECHO echo_expr_list ';' 
-{ yyval.Object = value_stack.array[value_stack.top-2].yyval.Object; }
+{ yyval.Object = _astFactory.Echo(yypos, (List<LangElement>)value_stack.array[value_stack.top-2].yyval.Object); }
         return;
       case 144: // statement -> T_INLINE_HTML 
 { yyval.Object = _astFactory.InlineHtml(yypos, (string)value_stack.array[value_stack.top-1].yyval.Object); }
@@ -2532,13 +2537,13 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 { yyval.Object = _astFactory.GlobalConstDecl(yypos, false, new VariableName((string)value_stack.array[value_stack.top-4].yyval.Object), (LangElement)value_stack.array[value_stack.top-2].yyval.Object); }
         return;
       case 290: // echo_expr_list -> echo_expr_list ',' echo_expr 
-{ yyval.Object = zend_ast_list_add(value_stack.array[value_stack.top-3].yyval.Object, value_stack.array[value_stack.top-1].yyval.Object); }
+{ yyval.Object = AddToList<LangElement>(value_stack.array[value_stack.top-3].yyval.Object, value_stack.array[value_stack.top-1].yyval.Object); }
         return;
       case 291: // echo_expr_list -> echo_expr 
-{ yyval.Object = zend_ast_create_list(1, _zend_ast_kind.ZEND_AST_STMT_LIST, value_stack.array[value_stack.top-1].yyval.Object); }
+{ yyval.Object = new List<LangElement>() { (LangElement)value_stack.array[value_stack.top-1].yyval.Object }; }
         return;
       case 292: // echo_expr -> expr 
-{ yyval.Object = zend_ast_create(_zend_ast_kind.ZEND_AST_ECHO, value_stack.array[value_stack.top-1].yyval.Object); }
+{ yyval.Object = value_stack.array[value_stack.top-1].yyval.Object; }
         return;
       case 293: // for_exprs -> 
 { yyval.Object = null; }
@@ -2744,34 +2749,34 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 { yyval.Object = value_stack.array[value_stack.top-1].yyval.Object; }
         return;
       case 359: // expr_without_variable -> T_INT_CAST expr 
-{ yyval.Object = zend_ast_create_cast(_zend_sup.IS_LONG, value_stack.array[value_stack.top-1].yyval.Object); }
+{ yyval.Object = _astFactory.UnaryOperation(yypos, Operations.LongCast,   (Expression)value_stack.array[value_stack.top-1].yyval.Object); }
         return;
       case 360: // expr_without_variable -> T_DOUBLE_CAST expr 
-{ yyval.Object = zend_ast_create_cast(_zend_sup.IS_DOUBLE, value_stack.array[value_stack.top-1].yyval.Object); }
+{ yyval.Object = _astFactory.UnaryOperation(yypos, Operations.DoubleCast, (Expression)value_stack.array[value_stack.top-1].yyval.Object); }
         return;
       case 361: // expr_without_variable -> T_STRING_CAST expr 
-{ yyval.Object = zend_ast_create_cast(_zend_sup.IS_STRING, value_stack.array[value_stack.top-1].yyval.Object); }
+{ yyval.Object = _astFactory.UnaryOperation(yypos, Operations.StringCast, (Expression)value_stack.array[value_stack.top-1].yyval.Object); }
         return;
       case 362: // expr_without_variable -> T_ARRAY_CAST expr 
-{ yyval.Object = zend_ast_create_cast(_zend_sup.IS_ARRAY, value_stack.array[value_stack.top-1].yyval.Object); }
+{ yyval.Object = _astFactory.UnaryOperation(yypos, Operations.ArrayCast,  (Expression)value_stack.array[value_stack.top-1].yyval.Object); }
         return;
       case 363: // expr_without_variable -> T_OBJECT_CAST expr 
-{ yyval.Object = zend_ast_create_cast(_zend_sup.IS_OBJECT, value_stack.array[value_stack.top-1].yyval.Object); }
+{ yyval.Object = _astFactory.UnaryOperation(yypos, Operations.ObjectCast, (Expression)value_stack.array[value_stack.top-1].yyval.Object); }
         return;
       case 364: // expr_without_variable -> T_BOOL_CAST expr 
-{ yyval.Object = zend_ast_create_cast(_zend_sup._IS_BOOL, value_stack.array[value_stack.top-1].yyval.Object); }
+{ yyval.Object = _astFactory.UnaryOperation(yypos, Operations.BoolCast,   (Expression)value_stack.array[value_stack.top-1].yyval.Object); }
         return;
       case 365: // expr_without_variable -> T_UNSET_CAST expr 
-{ yyval.Object = zend_ast_create_cast(_zend_sup.IS_NULL, value_stack.array[value_stack.top-1].yyval.Object); }
+{ yyval.Object = _astFactory.UnaryOperation(yypos, Operations.UnsetCast,  (Expression)value_stack.array[value_stack.top-1].yyval.Object); }
         return;
       case 366: // expr_without_variable -> T_EXIT exit_expr 
-{ yyval.Object = zend_ast_create(_zend_ast_kind.ZEND_AST_EXIT, value_stack.array[value_stack.top-1].yyval.Object); }
+{ yyval.Object = _astFactory.UnaryOperation(yypos, Operations.Exit,       (Expression)value_stack.array[value_stack.top-1].yyval.Object); }
         return;
       case 367: // expr_without_variable -> '@' expr 
-{ yyval.Object = zend_ast_create(_zend_ast_kind.ZEND_AST_SILENCE, value_stack.array[value_stack.top-1].yyval.Object); }
+{ yyval.Object = _astFactory.UnaryOperation(yypos, Operations.Silence,    (Expression)value_stack.array[value_stack.top-1].yyval.Object); }
         return;
       case 368: // expr_without_variable -> scalar 
-{ yyval.Object = value_stack.array[value_stack.top-1].yyval.Object; }
+{ yyval.Object = _astFactory.Literal(yypos, value_stack.array[value_stack.top-1].yyval.Object); }
         return;
       case 369: // expr_without_variable -> '`' backticks_expr '`' 
 { yyval.Object = zend_ast_create(_zend_ast_kind.ZEND_AST_SHELL_EXEC, value_stack.array[value_stack.top-2].yyval.Object); }
@@ -2896,34 +2901,34 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 { yyval.Object = value_stack.array[value_stack.top-1].yyval.Double; }
         return;
       case 408: // scalar -> T_LINE 
-{ yyval.Object = zend_ast_create_ex(_zend_ast_kind.ZEND_AST_MAGIC_CONST, _zend_sup.T_LINE); }
+{ yyval.Object = _astFactory.PseudoConstUse(yypos, PseudoConstUse.Types.Line); }
         return;
       case 409: // scalar -> T_FILE 
-{ yyval.Object = zend_ast_create_ex(_zend_ast_kind.ZEND_AST_MAGIC_CONST, _zend_sup.T_FILE); }
+{ yyval.Object = _astFactory.PseudoConstUse(yypos, PseudoConstUse.Types.File); }
         return;
       case 410: // scalar -> T_DIR 
-{ yyval.Object = zend_ast_create_ex(_zend_ast_kind.ZEND_AST_MAGIC_CONST, _zend_sup.T_DIR); }
+{ yyval.Object = _astFactory.PseudoConstUse(yypos, PseudoConstUse.Types.Dir); }
         return;
       case 411: // scalar -> T_TRAIT_C 
-{ yyval.Object = zend_ast_create_ex(_zend_ast_kind.ZEND_AST_MAGIC_CONST, _zend_sup.T_TRAIT_C); }
+{ yyval.Object = _astFactory.PseudoConstUse(yypos, PseudoConstUse.Types.Trait); }
         return;
       case 412: // scalar -> T_METHOD_C 
-{ yyval.Object = zend_ast_create_ex(_zend_ast_kind.ZEND_AST_MAGIC_CONST, _zend_sup.T_METHOD_C); }
+{ yyval.Object = _astFactory.PseudoConstUse(yypos, PseudoConstUse.Types.Method); }
         return;
       case 413: // scalar -> T_FUNC_C 
-{ yyval.Object = zend_ast_create_ex(_zend_ast_kind.ZEND_AST_MAGIC_CONST, _zend_sup.T_FUNC_C); }
+{ yyval.Object = _astFactory.PseudoConstUse(yypos, PseudoConstUse.Types.Function); }
         return;
       case 414: // scalar -> T_NS_C 
-{ yyval.Object = zend_ast_create_ex(_zend_ast_kind.ZEND_AST_MAGIC_CONST, _zend_sup.T_NS_C); }
+{ yyval.Object = _astFactory.PseudoConstUse(yypos, PseudoConstUse.Types.Namespace); }
         return;
       case 415: // scalar -> T_CLASS_C 
-{ yyval.Object = zend_ast_create_ex(_zend_ast_kind.ZEND_AST_MAGIC_CONST, _zend_sup.T_CLASS_C); }
+{ yyval.Object = _astFactory.PseudoConstUse(yypos, PseudoConstUse.Types.Class); }
         return;
       case 416: // scalar -> T_START_HEREDOC T_ENCAPSED_AND_WHITESPACE T_END_HEREDOC 
 { yyval.Object = value_stack.array[value_stack.top-2].yyval.Object; }
         return;
       case 417: // scalar -> T_START_HEREDOC T_END_HEREDOC 
-{ yyval.Object = zend_ast_create_zval_from_str(ZSTR_EMPTY_ALLOC()); }
+{ yyval.Object = ""; }
         return;
       case 418: // scalar -> '"' encaps_list '"' 
 { yyval.Object = value_stack.array[value_stack.top-2].yyval.Object; }

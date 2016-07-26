@@ -31,7 +31,8 @@ namespace PHP.Core.AST
 		UInt16Cast,
 		UInt32Cast,
 		UInt64Cast,
-		DoubleCast,
+        LongCast = Int64Cast,
+        DoubleCast,
 		FloatCast,
 		DecimalCast,
 		StringCast,
@@ -112,7 +113,8 @@ namespace PHP.Core.AST
 
 		// others:
 		Exit,
-		ShellCommand,
+        Silence,
+        ShellCommand,
 		IncDec,
         Yield,
 

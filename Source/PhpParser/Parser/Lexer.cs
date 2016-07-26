@@ -9,275 +9,6 @@ using PHP.Syntax;
 
 namespace PhpParser.Parser
 {
-    #region PhpStringBuilder
-
-    /// <summary>
-    /// The PHP-semantic string builder. Binary or Unicode string builder.
-    /// </summary>
-    internal class PhpStringBuilder
-    {
-        #region Fields & Properties
-        /// <summary>
-        /// Currently used encoding.
-        /// </summary>
-        private readonly Encoding/*!*/encoding;
-
-        private readonly byte[] encodeBytes = new byte[4];
-        private readonly char[] encodeChars = new char[5];
-
-        private StringBuilder _unicodeBuilder;
-        private List<byte> _binaryBuilder;
-
-        private bool IsUnicode { get { return !IsBinary; } }
-        private bool IsBinary { get { return _binaryBuilder != null; } }
-
-        private Span span;
-
-        /// <summary>
-        /// Length of contained data (string or byte[]).
-        /// </summary>
-        public int Length
-        {
-            get
-            {
-                if (_unicodeBuilder != null)
-                    return _unicodeBuilder.Length;
-                else if (_binaryBuilder != null)
-                    return _binaryBuilder.Count;
-                else
-                    return 0;
-            }
-        }
-
-        private StringBuilder UnicodeBuilder
-        {
-            get
-            {
-                if (_unicodeBuilder == null)
-                {
-                    if (_binaryBuilder != null && _binaryBuilder.Count > 0)
-                    {
-                        byte[] bytes = _binaryBuilder.ToArray();
-                        _unicodeBuilder = new StringBuilder(encoding.GetString(bytes, 0, bytes.Length));
-                    }
-                    else
-                    {
-                        _unicodeBuilder = new StringBuilder();
-                    }
-                    _binaryBuilder = null;
-                }
-
-                return _unicodeBuilder;
-            }
-        }
-
-        private List<byte> BinaryBuilder
-        {
-            get
-            {
-                if (_binaryBuilder == null)
-                {
-                    if (_unicodeBuilder != null && _unicodeBuilder.Length > 0)
-                    {
-                        _binaryBuilder = new List<byte>(encoding.GetBytes(_unicodeBuilder.ToString()));
-                    }
-                    else
-                    {
-                        _binaryBuilder = new List<byte>();
-                    }
-                    _unicodeBuilder = null;
-                }
-
-                return _binaryBuilder;
-            }
-        }
-
-        #endregion
-
-        #region Results
-
-        /// <summary>
-        /// The result of builder: String or byte[].
-        /// </summary>
-        public object Result
-        {
-            get
-            {
-                if (IsBinary)
-                    return BinaryBuilder.ToArray();
-                else
-                    return UnicodeBuilder.ToString();
-            }
-        }
-
-        public Literal CreateLiteral()
-        {
-            if (IsBinary)
-                return new BinaryStringLiteral(span, BinaryBuilder.ToArray());
-            else
-                return new StringLiteral(span, UnicodeBuilder.ToString());
-        }
-
-        #endregion
-
-        #region Construct
-
-        /// <summary>
-        /// Initialize the PhpStringBuilder.
-        /// </summary>
-        /// <param name="encoding"></param>
-        /// <param name="binary"></param>
-        /// <param name="initialLength"></param>
-        public PhpStringBuilder(Encoding/*!*/encoding, bool binary, int initialLength)
-        {
-            Debug.Assert(encoding != null);
-
-            this.encoding = encoding;
-            this.span = Span.Invalid;
-
-            //if (binary)
-            //    _binaryBuilder = new List<byte>(initialLength);
-            //else
-            _unicodeBuilder = new StringBuilder(initialLength);
-        }
-
-        public PhpStringBuilder(Encoding/*!*/encoding, string/*!*/value, Span span)
-            : this(encoding, false, value.Length)
-        {
-            Append(value, span);
-        }
-
-        #endregion
-
-        #region Append
-
-        private void Append(Span span)
-        {
-            if (this.span.IsValid)
-            {
-                if (span.IsValid)
-                    this.span = Span.Combine(this.span, span);
-            }
-            else
-            {
-                this.span = span;
-            }
-        }
-
-        public void Append(string str, Span span)
-        {
-            Append(span);
-            Append(str);
-        }
-        public void Append(string str)
-        {
-            if (IsUnicode)
-                UnicodeBuilder.Append(str);
-            else
-            {
-                BinaryBuilder.AddRange(encoding.GetBytes(str));
-            }
-        }
-
-        public void Append(char c, Span span)
-        {
-            Append(span);
-            Append(c);
-        }
-        public void Append(char c)
-        {
-            if (IsUnicode)
-                UnicodeBuilder.Append(c);
-            else
-            {
-                encodeChars[0] = c;
-                int count = encoding.GetBytes(encodeChars, 0, 1, encodeBytes, 0);
-                for (int i = 0; i < count; ++i)
-                    BinaryBuilder.Add(encodeBytes[i]);
-            }
-        }
-
-        public void Append(byte b, Span span)
-        {
-            Append(span);
-            Append(b);
-        }
-        public void Append(byte b)
-        {
-            // force binary string
-
-            if (IsUnicode)
-            {
-                encodeBytes[0] = b;
-                UnicodeBuilder.Append(encodeChars, 0, encoding.GetChars(encodeBytes, 0, 1, encodeChars, 0));
-            }
-            else
-                BinaryBuilder.Add(b);
-        }
-
-        public void Append(int c, Span span)
-        {
-            Append(span);
-            Append(c);
-        }
-        public void Append(int c)
-        {
-            Debug.Assert(c >= 0);
-
-            //if (c <= 0xff)
-            if (IsBinary)
-                BinaryBuilder.Add((byte)c);
-            else
-                UnicodeBuilder.Append((char)c);
-        }
-
-        #endregion
-
-        #region Misc
-
-        /// <summary>
-        /// Trim ending /r/n or /n characters. Assuming the string ends with /n.
-        /// </summary>
-        internal void TrimEoln()
-        {
-            if (IsUnicode)
-            {
-                if (UnicodeBuilder.Length > 0)
-                {
-                    if (UnicodeBuilder.Length >= 2 && UnicodeBuilder[UnicodeBuilder.Length - 2] == '\r')
-                    {
-                        // trim ending \r\n:
-                        UnicodeBuilder.Length -= 2;
-                    }
-                    else
-                    {
-                        // trim ending \n:
-                        UnicodeBuilder.Length -= 1;
-                    }
-                }
-            }
-            else
-            {
-                if (BinaryBuilder.Count > 0)
-                {
-                    if (BinaryBuilder.Count >= 2 && BinaryBuilder[BinaryBuilder.Count - 2] == (byte)'\r')
-                    {
-                        BinaryBuilder.RemoveRange(BinaryBuilder.Count - 2, 2);
-                    }
-                    else
-                    {
-                        BinaryBuilder.RemoveAt(BinaryBuilder.Count - 1);
-                    }
-                }
-            }
-
-        }
-
-        #endregion
-    }
-
-    #endregion
-
     /// <summary>
     /// Called by <see cref="Scanner"/> when new token is obtained from lexer.
     /// </summary>
@@ -320,6 +51,11 @@ namespace PhpParser.Parser
         private int _charOffset = 0;
 
         /// <summary>
+        /// Used to activate the zendlex functionality in GetNextToken - skip open tags, close tags and comments as the grammar ignores them
+        /// </summary>
+        private bool _skipEmptyTokens = true;
+
+        /// <summary>
         /// Last encountered documentation comment block
         /// </summary>
         private string _docBlock = null;
@@ -345,13 +81,14 @@ namespace PhpParser.Parser
         /// <param name="reader">Text reader containing the source code</param>
         /// <param name="sourceUnit">Source unit (file) associated with the <paramref name="reader"/></param>
         /// <param name="allowShortTags">Allow short oppening tags for PHP</param>
-        public Lexer(System.IO.TextReader reader, SourceUnit sourceUnit, IErrorSink<Span> errors,
-            LanguageFeatures features, int positionShift = 0, LexicalStates initialState = LexicalStates.INITIAL)
+        public Lexer(System.IO.TextReader reader, SourceUnit sourceUnit, IErrorSink<Span> errors, LanguageFeatures features, 
+            bool skipEmptyTokens = true, int positionShift = 0, LexicalStates initialState = LexicalStates.INITIAL)
         {
             this._sourceUnit = sourceUnit;
             this._errors = errors;
             this._charOffset = positionShift;
             this._allowShortTags = features == LanguageFeatures.ShortOpenTags;
+            this._skipEmptyTokens = skipEmptyTokens;
             Initialize(reader, initialState);
         }
 
@@ -374,11 +111,32 @@ namespace PhpParser.Parser
         }
         public int GetNextToken()
         {
-            Tokens token = NextToken();
-            UpdateTokenPosition();
-            if (NextTokenEvent != null)
-                NextTokenEvent(token, buffer, token_start, TokenLength);
-            return (int)token;
+            do
+            {
+                Tokens token = NextToken();
+                UpdateTokenPosition();
+
+                if(_skipEmptyTokens)
+                    // origianl zendlex() functionality - skip open and close tags because they are not in the PHP grammar
+                    switch (token)
+                    {
+                        case Tokens.T_COMMENT:
+                        case Tokens.T_DOC_COMMENT:
+                        case Tokens.T_OPEN_TAG:
+                        case Tokens.T_WHITESPACE:
+                            continue;
+                        case Tokens.T_CLOSE_TAG:
+                            token = Tokens.T_SEMI; /* implicit ; */
+                            break;
+                        case Tokens.T_OPEN_TAG_WITH_ECHO:
+                            token = Tokens.T_ECHO;
+                            break;
+                    }
+
+                if (NextTokenEvent != null)
+                    NextTokenEvent(token, buffer, token_start, TokenLength);
+                return (int)token;
+            } while (true);
         }
 
         protected void _yymore() { yymore(); }

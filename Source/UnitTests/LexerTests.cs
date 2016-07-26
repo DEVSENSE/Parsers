@@ -52,7 +52,7 @@ namespace UnitTests
             string path = (string)TestContext.DataRow["files"];
             SourceUnit sourceUnit = new CodeSourceUnit(File.ReadAllText(path), path, new System.Text.ASCIIEncoding(), Lexer.LexicalStates.INITIAL);
             PhpParser.Parser.ITokenProvider<SemanticValueType, Span> lexer = new Lexer(new StreamReader(path), sourceUnit, new TestErrorSink(), 
-                LanguageFeatures.ShortOpenTags, 0, Lexer.LexicalStates.INITIAL);
+                LanguageFeatures.ShortOpenTags, false, 0, Lexer.LexicalStates.INITIAL);
             Assert.AreNotEqual(null, lexer);
         }
 
@@ -65,7 +65,7 @@ namespace UnitTests
             TestErrorSink errorSink = new TestErrorSink();
             SourceUnit sourceUnit = new CodeSourceUnit(File.ReadAllText(path), path, new System.Text.ASCIIEncoding(), Lexer.LexicalStates.INITIAL);
             Lexer lexer = new Lexer(new StreamReader(path), sourceUnit, errorSink, 
-                LanguageFeatures.ShortOpenTags, 0, Lexer.LexicalStates.INITIAL);
+                LanguageFeatures.ShortOpenTags, false, 0, Lexer.LexicalStates.INITIAL);
             lexer.NextTokenEvent += handler;
 
             string parsed = ParseByPhp(path);
