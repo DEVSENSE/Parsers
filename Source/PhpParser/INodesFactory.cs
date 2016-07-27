@@ -114,17 +114,6 @@ namespace PhpParser
         TNode TraitUse(TSpan span, IEnumerable<QualifiedName> traits, IEnumerable<TraitsUse.TraitAdaptation> adaptations);
 
         /// <summary>
-        /// Creates a pseudo constant use.
-        /// <code>
-        /// $x = __LINE__;
-        /// </code>
-        /// </summary>
-        /// <param name="span">Entire element span.</param>
-        /// <param name="type">Type of the pseudo constant.</param>
-        /// <returns></returns>
-        TNode PseudoConstUse(TSpan span, PseudoConstUse.Types type);
-
-        /// <summary>
         /// Creates declaration of class constants, class fields or global constants.
         /// <code>
         /// /** $var X */
@@ -212,6 +201,21 @@ namespace PhpParser
         /// <param name="finallyBlockOpt">Optional. Finally block.</param>
         /// <returns></returns>
         TNode TryCatch(TSpan span, TNode body, IEnumerable<CatchItem> catches, TNode finallyBlockOpt);
+
+        /// <summary>
+        /// Create element representing <c>__haltcompiler();</c> call.
+        /// </summary>
+        /// <param name="span">Entire element span.</param>
+        /// <returns>Hal compiler element.</returns>
+        TNode HaltCompiler(TSpan span);
+
+        /// <summary>
+        /// Creates a statement from an expression.
+        /// </summary>
+        /// <param name="span">Entire element span.</param>
+        /// <param name="expression">The expression used as statement.</param>
+        /// <returns></returns>
+        TNode ExpressionStmt(Span span, TNode expression);
 
         #endregion
 
@@ -462,6 +466,36 @@ namespace PhpParser
         TNode Variable(TSpan span, TNode nameExpr, TypeRef typeRef);
 
         /// <summary>
+        /// Creates a pseudo constant use.
+        /// <code>
+        /// __LINE__;
+        /// </code>
+        /// </summary>
+        /// <param name="span">Entire element span.</param>
+        /// <param name="type">Type of the pseudo constant.</param>
+        /// <returns>Pseudoconstant access expression.</returns>
+        TNode PseudoConstUse(TSpan span, PseudoConstUse.Types type);
+
+        /// <summary>
+        /// Creates global constant use.
+        /// </summary>
+        /// <param name="span">Entire element span.</param>
+        /// <param name="name">Constant name.</param>
+        /// <param name="nameFallback">Fallback name in case <paramref name="name"/> does not exist in current context.</param>
+        /// <returns>Global constant access expression.</returns>
+        TNode ConstUse(TSpan span, QualifiedName name, QualifiedName? nameFallback);
+
+        /// <summary>
+        /// Creates global constant use.
+        /// </summary>
+        /// <param name="span">Entire element span.</param>
+        /// <param name="tref">Containing class name.</param>
+        /// <param name="name">Constant name.</param>
+        /// <param name="nameSpan">Span of <paramref name="name"/>.</param>
+        /// <returns>Class constant access expression.</returns>
+        TNode ClassConstUse(TSpan span, TypeRef tref, Name name, TSpan nameSpan);
+
+        /// <summary>
         /// Creates function or instance method call expression.
         /// </summary>
         /// <param name="span">Entire element span.</param>
@@ -492,7 +526,7 @@ namespace PhpParser
         /// <param name="signature">Function call signature.</param>
         /// <param name="typeRef">Method containing type.</param>
         /// <returns>Function call expression.</returns>
-        TNode Call(TSpan span, QualifiedName name, TSpan nameSpan, CallSignature signature, TypeRef typeRef);
+        TNode Call(TSpan span, Name name, TSpan nameSpan, CallSignature signature, TypeRef typeRef);
 
         /// <summary>
         /// Creates indirect static method call expression.
@@ -585,21 +619,6 @@ namespace PhpParser
         /// <param name="content">Comment text including leading <c>/*</c> and trailing <c>*/</c>.</param>
         /// <returns>Block comment element.</returns>
         TNode BlockComment(TSpan span, string content);
-
-        /// <summary>
-        /// Create element representing <c>__haltcompiler();</c> call.
-        /// </summary>
-        /// <param name="span">Entire element span.</param>
-        /// <returns>Hal compiler element.</returns>
-        TNode HaltCompiler(TSpan span);
-
-        /// <summary>
-        /// Creates a statement from an expression.
-        /// </summary>
-        /// <param name="span">Entire element span.</param>
-        /// <param name="expression">The expression used as statement.</param>
-        /// <returns></returns>
-        TNode ExpressionStmt(Span span, TNode expression);
 
         #endregion
     }

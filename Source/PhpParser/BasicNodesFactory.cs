@@ -80,7 +80,7 @@ namespace PhpParser
             throw new NotImplementedException();
         }
 
-        public LangElement Call(Span span, QualifiedName name, Span nameSpan, CallSignature signature, TypeRef typeRef)
+        public LangElement Call(Span span, Name name, Span nameSpan, CallSignature signature, TypeRef typeRef)
         {
             throw new NotImplementedException();
         }
@@ -349,6 +349,16 @@ namespace PhpParser
         public LangElement ExpressionStmt(Span span, LangElement expression)
         {
             return new ExpressionStmt(span, (Expression)expression);
+        }
+
+        public LangElement ConstUse(Span span, QualifiedName name, QualifiedName? nameFallback)
+        {
+            return new GlobalConstUse(span, name, nameFallback);
+        }
+
+        public LangElement ClassConstUse(Span span, TypeRef tref, Name name, Span nameSpan)
+        {
+            return new ClassConstUse(span, tref, name.Value, nameSpan);
         }
     }
 }
