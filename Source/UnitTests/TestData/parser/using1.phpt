@@ -24,19 +24,19 @@ use My\Full\Classname as Another;
       "Aliases" : {
         "Another" : "My\Full\Classname"
       }
-    }
-  },
-  "EchoStmt" : {
-    "Span" : {
-      "start" : "64",
-      "end" : "66"
     },
-    "StringLiteral" : {
+    "EchoStmt" : {
       "Span" : {
         "start" : "64",
         "end" : "66"
       },
-      "Value" : ""
+      "StringLiteral" : {
+        "Span" : {
+          "start" : "64",
+          "end" : "66"
+        },
+        "Value" : ""
+      }
     }
   }
 }

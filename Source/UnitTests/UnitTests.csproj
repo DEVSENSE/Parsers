@@ -59,7 +59,6 @@
     <Compile Include="LexerTests.cs" />
     <Compile Include="SerializerTreeVisitorTests.cs" />
     <Compile Include="TestImplementation\TestErrorSink.cs" />
-    <Compile Include="TestImplementation\TestNodesFactory.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\PhpParser\PhpParser.csproj">

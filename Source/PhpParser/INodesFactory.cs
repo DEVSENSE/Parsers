@@ -593,6 +593,14 @@ namespace PhpParser
         /// <returns>Hal compiler element.</returns>
         TNode HaltCompiler(TSpan span);
 
+        /// <summary>
+        /// Creates a statement from an expression.
+        /// </summary>
+        /// <param name="span">Entire element span.</param>
+        /// <param name="expression">The expression used as statement.</param>
+        /// <returns></returns>
+        TNode ExpressionStmt(Span span, TNode expression);
+
         #endregion
     }
 

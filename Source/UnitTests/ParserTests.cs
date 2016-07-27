@@ -4,8 +4,8 @@ using PHP.Syntax;
 using System.IO;
 using PhpParser.Parser;
 using PHP.Core.AST;
-using UnitTests.TestImplementation;
 using PhpParser;
+using System.Text.RegularExpressions;
 
 namespace UnitTests
 {
@@ -27,26 +27,25 @@ namespace UnitTests
             string[] sourceTest = source.Split(new string[] { "<<<TEST>>>" }, StringSplitOptions.RemoveEmptyEntries);
             Assert.IsTrue(sourceTest.Length >= 2);
 
+            BasicNodesFactory astFactory = new BasicNodesFactory(sourceUnit);
+            Parser parser = new Parser();
             using (StringReader source_reader = new StringReader(sourceTest[0]))
             {
-                TestNodesFactory astFactory = new TestNodesFactory(sourceUnit);
-                Lexer lexer = new Lexer(source_reader, sourceUnit, astFactory, LanguageFeatures.ShortOpenTags);
-                Parser parser = new Parser();
+                Lexer lexer = new CompliantLexer(source_reader, sourceUnit, astFactory, LanguageFeatures.ShortOpenTags);
                 ast = (GlobalCode)parser.Parse(lexer, astFactory, LanguageFeatures.ShortOpenTags);
                 Assert.AreEqual(1, astFactory.Errors.Count);
             }
 
-            //Assert.IsNotNull(ast);
-            //Assert.AreEqual(1, ast.Statements.Length);
-            //Assert.IsFalse(string.IsNullOrEmpty(((StringLiteral)((EchoStmt)ast.Statements[0]).Parameters[0]).Value));
-            //Assert.IsTrue(((StringLiteral)((EchoStmt)ast.Statements[0]).Parameters[0]).Value.Contains("https://github.com/php/php-src/tree/master/Zend/tests"));
-
             var serializer = new JsonSerializer();
             SerializerTreeVisitor visitor = new SerializerTreeVisitor(serializer);
             ast.VisitMe(visitor);
-            string expected = sourceTest[1].Trim().Replace("\r", "").Replace("\n", "").Replace(" ", "");
-            string actual = serializer.ToString().Replace("\r", "").Replace("\n", "").Replace(" ", "");
-            Assert.AreEqual(expected.Length, actual.Length);
+
+            Regex rgx = new Regex("\"Span\"[^}]*},?"); // omit Span for more compact testing (position must be verified separately)
+            // Regex rgx = new Regex(""); // for testing position
+            string expected = rgx.Replace(sourceTest[1].Trim().Replace("\r", string.Empty).Replace("\n", string.Empty).Replace(" ", string.Empty), string.Empty);
+            string actual = rgx.Replace(serializer.ToString().Replace("\r", string.Empty).Replace("\n", string.Empty).Replace(" ", string.Empty), string.Empty);
+
+            //Assert.AreEqual(expected.Length, actual.Length);
             //for (int i = 0; i < expected.Length; i++)
             //    Assert.AreEqual(expected[i], actual[i], "difference at " + i.ToString());
             Assert.AreEqual(expected, actual);

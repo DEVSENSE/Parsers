@@ -41,6 +41,7 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BasicNodesFactory.cs" />
     <Compile Include="Core\AST\ArrayEx.cs" />
     <Compile Include="Core\AST\AssignEx.cs" />
     <Compile Include="Core\AST\BinaryEx.cs" />

@@ -6,6 +6,7 @@ namespace MyProject
 
 namespace MyProject\AnotherProject
 {
+  use My\ClassA as cls;
   echo "world";
 }
 ?>
@@ -44,22 +45,25 @@ namespace MyProject\AnotherProject
   "NamespaceDecl" : {
     "Span" : {
       "start" : "53",
-      "end" : "110"
+      "end" : "135"
     },
     "Name" : "MyProject\AnotherProject",
     "SimpleSyntax" : "False",
     "NamingContext" : {
-      "Namespace" : "MyProject\AnotherProject"
+      "Namespace" : "MyProject\AnotherProject",
+      "Aliases" : {
+          "cls" : "My\ClassA"
+      }
     },
     "EchoStmt" : {
       "Span" : {
-        "start" : "94",
-        "end" : "107"
+        "start" : "119",
+        "end" : "132"
       },
       "StringLiteral" : {
         "Span" : {
-          "start" : "99",
-          "end" : "106"
+          "start" : "124",
+          "end" : "131"
         },
         "Value" : "world"
       }

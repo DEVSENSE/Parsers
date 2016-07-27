@@ -113,5 +113,76 @@ namespace PhpParser
             base.VisitNamespaceDecl(x);
             _serializer.EndSerialize();
         }
+
+        /// <summary>
+        /// Visit constant declarations.
+        /// </summary>
+        /// <param name="x"></param>
+        override public void VisitGlobalConstDeclList(GlobalConstDeclList x)
+        {
+            _serializer.StartSerialize(typeof(GlobalConstDeclList).Name, SerializeSpan(x.Span));
+            base.VisitGlobalConstDeclList(x);
+            _serializer.EndSerialize();
+        }
+
+        override public void VisitGlobalConstantDecl(GlobalConstantDecl x)
+        {
+            _serializer.StartSerialize(typeof(GlobalConstantDecl).Name, SerializeSpan(x.Span),
+                new NodeObj("NameIsConditional", x.IsConditional.ToString()), new NodeObj("Name", x.Name.Value));
+            VisitElement(x.Initializer);
+            _serializer.EndSerialize();
+        }
+
+        override public void VisitIncDecEx(IncDecEx x)
+        {
+            _serializer.StartSerialize(typeof(IncDecEx).Name, SerializeSpan(x.Span),
+                new NodeObj("Inc", x.Inc.ToString()), new NodeObj("Post", x.Post.ToString()));
+            base.VisitIncDecEx(x);
+            _serializer.EndSerialize();
+        }
+
+        override public void VisitAssignEx(AssignEx x)
+        {
+            base.VisitAssignEx(x);
+        }
+
+        override public void VisitValueAssignEx(ValueAssignEx x)
+        {
+            _serializer.StartSerialize(typeof(ValueAssignEx).Name, SerializeSpan(x.Span),
+                new NodeObj("Operation", x.Operation.ToString()));
+            base.VisitValueAssignEx(x);
+            _serializer.EndSerialize();
+        }
+
+        override public void VisitRefAssignEx(RefAssignEx x)
+        {
+            _serializer.StartSerialize(typeof(RefAssignEx).Name, SerializeSpan(x.Span),
+                new NodeObj("Operation", x.Operation.ToString()));
+            base.VisitRefAssignEx(x);
+            _serializer.EndSerialize();
+        }
+
+        override public void VisitUnaryEx(UnaryEx x)
+        {
+            _serializer.StartSerialize(typeof(UnaryEx).Name, SerializeSpan(x.Span),
+                new NodeObj("Operation", x.Operation.ToString()));
+            base.VisitUnaryEx(x);
+            _serializer.EndSerialize();
+        }
+
+        override public void VisitBinaryEx(BinaryEx x)
+        {
+            _serializer.StartSerialize(typeof(BinaryEx).Name, SerializeSpan(x.Span),
+                new NodeObj("Operation", x.Operation.ToString()));
+            base.VisitBinaryEx(x);
+            _serializer.EndSerialize();
+        }
+        override public void VisitDirectFcnCall(DirectFcnCall x)
+        {
+            _serializer.StartSerialize(typeof(DirectFcnCall).Name, SerializeSpan(x.Span),
+                new NodeObj("Name", x.QualifiedName.ToString()));
+            base.VisitDirectFcnCall(x);
+            _serializer.EndSerialize();
+        }
     }
 }

@@ -17,7 +17,7 @@ namespace UnitTests
         public void ToStringTest()
         {
             ISerializer serializer = new JsonSerializer();
-            Assert.AreEqual("", serializer.ToString());
+            Assert.AreEqual(string.Empty, serializer.ToString());
             serializer.Serialize("hello", null);
             Assert.AreEqual("\"hello\" : {\n}", serializer.ToString());
         }
@@ -30,7 +30,7 @@ namespace UnitTests
             Assert.AreEqual("}", serializer.ToString());
 
             serializer = new JsonSerializer();
-            Assert.AreEqual("", serializer.ToString());
+            Assert.AreEqual(string.Empty, serializer.ToString());
             serializer.EndSerialize(new NodeObj("hello", "world"));
             Assert.AreEqual("\"hello\" : \"world\"\n}", serializer.ToString());
         }

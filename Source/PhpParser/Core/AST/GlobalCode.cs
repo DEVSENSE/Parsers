@@ -49,18 +49,6 @@ namespace PHP.Core.AST
             this.statements = statements.AsArray();
         }
 
-        /// <summary>
-        /// Initializes a new instance of the GlobalCode class.
-        /// </summary>
-        public GlobalCode(IList<Statement>/*!*/ statements, SourceUnit/*!*/ sourceUnit, NamingContext context) : base(new Span())
-        {
-            Debug.Assert(statements != null && sourceUnit != null);
-
-            this.sourceUnit = sourceUnit;
-            this.sourceUnit.Naming = context;
-            this.statements = statements.AsArray();
-        }
-
         #endregion
 
         /// <summary>
@@ -103,8 +91,11 @@ namespace PHP.Core.AST
         /// <summary>
         /// Naming context defining aliases.
         /// </summary>
-        public NamingContext/*!*/ Naming { get { return this.naming; } internal set { this.naming = value; } }
-        private NamingContext naming;
+        public NamingContext/*!*/ Naming {
+            get { return this.naming; }
+            internal /* friend Parser */ set { this.naming = value; }
+        }
+        private NamingContext naming = null;
 
         public bool IsAnonymous { get { return this.isAnonymous; } }
         private readonly bool isAnonymous;
@@ -114,7 +105,7 @@ namespace PHP.Core.AST
             get { return this.statements; }
             internal /* friend Parser */ set { this.statements = value; }
         }
-        private List<Statement>/*!*/ statements;
+        private List<Statement>/*!*/ statements = null;
 
         #region Construction
 
@@ -124,31 +115,14 @@ namespace PHP.Core.AST
             this.isAnonymous = true;
             this.qualifiedName = new QualifiedName(Name.EmptyBaseName, Name.EmptyNames);
             this.IsSimpleSyntax = false;
-            this.naming = new NamingContext(null, null);
         }
 
-        public NamespaceDecl(Text.Span p, List<string>/*!*/ names, bool simpleSyntax)
-            : base(p)
-        {
-            this.isAnonymous = false;
-            this.qualifiedName = new QualifiedName(names, false, true);
-            this.IsSimpleSyntax = simpleSyntax;
-            this.naming = new NamingContext(this.qualifiedName, null);
-        }
-
-        public NamespaceDecl(Text.Span p, QualifiedName name, NamingContext context, bool simpleSyntax)
+        public NamespaceDecl(Text.Span p, QualifiedName name, bool simpleSyntax)
             : base(p)
         {
             this.isAnonymous = false;
             this.qualifiedName = name;
             this.IsSimpleSyntax = simpleSyntax;
-            this.naming = context;
-        }
-
-        public NamespaceDecl(Text.Span p, QualifiedName name, NamingContext context, List<Statement> statements)
-            : this(p, name, context, false)
-        {
-            Statements = statements;
         }
 
         /// <summary>
@@ -236,33 +210,20 @@ namespace PHP.Core.AST
     public sealed class GlobalConstantDecl : ConstantDecl
     {
         /// <summary>
-        /// Namespace.
-        /// </summary>
-        public NamespaceDecl Namespace { get { return ns; } }
-        private NamespaceDecl ns;
-
-        /// <summary>
         /// Gets value indicating whether this global constant is declared conditionally.
         /// </summary>
         public bool IsConditional { get; private set; }
-
-        /// <summary>
-        /// Scope.
-        /// </summary>
-        internal Scope Scope { get; private set; }
 
         /// <summary>
         /// Source unit.
         /// </summary>
         internal SourceUnit SourceUnit { get; private set; }
 
-        public GlobalConstantDecl(SourceUnit/*!*/ sourceUnit, Text.Span span, bool isConditional, Scope scope,
-            string/*!*/ name, NamespaceDecl ns, Expression/*!*/ initializer)
+        public GlobalConstantDecl(SourceUnit/*!*/ sourceUnit, Text.Span span, bool isConditional, 
+            string/*!*/ name, Expression/*!*/ initializer)
             : base(span, name, initializer)
         {
-            this.ns = ns;
             this.IsConditional = IsConditional;
-            this.Scope = scope;
             this.SourceUnit = sourceUnit;
         }
 

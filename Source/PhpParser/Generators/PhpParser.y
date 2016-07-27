@@ -291,7 +291,12 @@ using PHP.Syntax;
 
 start:
     { SetNamingContext(null); } top_statement_list END
-	{ AssignNamingContext(); _astRoot = _astFactory.GlobalCode(@$, (List<LangElement>)$2, _namingContext); ResetNamingContext(); }
+	{ 
+		AssignNamingContext(); 
+		AssignStatements((List<LangElement>)$2);
+		_astRoot = _astFactory.GlobalCode(@$, (List<LangElement>)$2, _namingContext); 
+		ResetNamingContext(); 
+	}
 ;
 reserved_non_modifiers:
 	  T_INCLUDE | T_INCLUDE_ONCE | T_EVAL | T_REQUIRE | T_REQUIRE_ONCE | T_LOGICAL_OR | T_LOGICAL_XOR | T_LOGICAL_AND
@@ -342,20 +347,26 @@ top_statement:
 				AssignNamingContext();
                 QualifiedName name = new QualifiedName((List<string>)value_stack.array[value_stack.top - 2].yyval.Object, false, true);
                 SetNamingContext(name.NamespacePhpName);
-                yyval.Object = _currentNamespace = (NamespaceDecl)_astFactory.Namespace(yypos, name, value_stack.array[value_stack.top-2].yypos, (LangElement)null, new NamingContext(null, 0));
+                yyval.Object = _currentNamespace = (NamespaceDecl)_astFactory.Namespace(yypos, name, value_stack.array[value_stack.top-2].yypos, (LangElement)null, _namingContext);
 				RESET_DOC_COMMENT(); 
 			}
 	|	T_NAMESPACE namespace_name { RESET_DOC_COMMENT(); var list = (List<string>)$2; SetNamingContext((list != null && list.Count > 0)? string.Join(QualifiedName.Separator.ToString(), list): null); }
 		'{' top_statement_list '}'
-			{ $$ = _astFactory.Namespace(@$, new QualifiedName((List<string>)$2, false, true), @2, (List<LangElement>)$5, _namingContext); ResetNamingContext(); }
+			{ 
+				$$ = _astFactory.Namespace(@$, new QualifiedName((List<string>)$2, false, true), @2, (List<LangElement>)$5, _namingContext); 
+				ResetNamingContext(); 
+			}
 	|	T_NAMESPACE { RESET_DOC_COMMENT(); SetNamingContext(null); }
 		'{' top_statement_list '}'
-			{ $$ = _astFactory.Namespace(@$, null, @$, (List<LangElement>)$4, _namingContext); ResetNamingContext(); }
+			{ 
+				$$ = _astFactory.Namespace(@$, null, @$, (List<LangElement>)$4, _namingContext); 
+				ResetNamingContext(); 
+			}
 	|	T_USE mixed_group_use_declaration ';'		{ _contextType = ContextType.Class; }
 	|	T_USE use_type group_use_declaration ';'	{ _contextType = ContextType.Class; }
 	|	T_USE use_declarations ';'					{ _contextType = ContextType.Class; }
 	|	T_USE use_type use_declarations ';'			{ _contextType = ContextType.Class; }
-	|	T_CONST const_list ';'						{ $$ = $2; }
+	|	T_CONST const_list ';'						{ $$ = _astFactory.List(@$, (List<LangElement>)$2); }
 ;
 
 use_type:
@@ -416,15 +427,15 @@ use_declaration:
 ;
 
 const_list:
-		const_list ',' const_decl { $$ = zend_ast_list_add($1, $3); }
-	|	const_decl { $$ = zend_ast_create_list(1, _zend_ast_kind.ZEND_AST_CONST_DECL, $1); }
+		const_list ',' const_decl { $$ = AddToList<LangElement>($1, $3); }
+	|	const_decl { $$ = new List<LangElement>() { (LangElement)$1 }; }
 ;
 
 inner_statement_list:
 		inner_statement_list inner_statement
-			{ $$ = zend_ast_list_add($1, $2); }
+			{ $$ = AddToList<LangElement>($1, $2); }
 	|	/* empty */
-			{ $$ = zend_ast_create_list(0, _zend_ast_kind.ZEND_AST_STMT_LIST); }
+			{ $$ = new List<LangElement>(); }
 ;
 
 
@@ -443,7 +454,7 @@ inner_statement:
 
 
 statement:
-		'{' inner_statement_list '}' { $$ = $2; }
+		'{' inner_statement_list '}' { $$ = _astFactory.Block(@$, (List<LangElement>)$2); }
 	|	if_stmt { $$ = $1; }
 	|	alt_if_stmt { $$ = $1; }
 	|	T_WHILE '(' expr ')' while_statement
@@ -461,7 +472,7 @@ statement:
 	|	T_STATIC static_var_list ';'	{ $$ = $2; }
 	|	T_ECHO echo_expr_list ';'		{ $$ = _astFactory.Echo(@$, (List<LangElement>)$2); }
 	|	T_INLINE_HTML { $$ = _astFactory.InlineHtml(@$, (string)$1); }
-	|	expr ';' { $$ = $1; }
+	|	expr ';' { $$ = _astFactory.ExpressionStmt(@$, (LangElement)$1); }
 	|	T_UNSET '(' unset_variables ')' ';' { $$ = $3; }
 	|	T_FOREACH '(' expr T_AS foreach_variable ')' foreach_statement
 			{ $$ = zend_ast_create(_zend_ast_kind.ZEND_AST_FOREACH, $3, $5, null, $7); }
@@ -692,15 +703,15 @@ return_type:
 ;
 
 argument_list:
-		'(' ')'	{ $$ = zend_ast_create_list(0, _zend_ast_kind.ZEND_AST_ARG_LIST); }
+		'(' ')'	{ $$ = new List<ActualParam>(); }
 	|	'(' non_empty_argument_list ')' { $$ = $2; }
 ;
 
 non_empty_argument_list:
 		argument
-			{ $$ = zend_ast_create_list(1, _zend_ast_kind.ZEND_AST_ARG_LIST, $1); }
+			{ $$ = new List<ActualParam>() { new ActualParam(@1, (Expression)$1) }; }
 	|	non_empty_argument_list ',' argument
-			{ $$ = zend_ast_list_add($1, $3); }
+			{ $$ = AddToList<ActualParam>($1, new ActualParam(@3, (Expression)$3)); }
 ;
 
 argument:
@@ -894,88 +905,88 @@ new_expr:
 
 expr_without_variable:
 		T_LIST '(' array_pair_list ')' '=' expr
-			{ $3/*->attr*/ = 1; $$ = zend_ast_create(_zend_ast_kind.ZEND_AST_ASSIGN, $3, $6); }
+			{ $$ = _astFactory.Assignment(@$, (LangElement)$1, (LangElement)$3, Operations.AssignValue); }
 	|	'[' array_pair_list ']' '=' expr
-			{ $$ = zend_ast_create(_zend_ast_kind.ZEND_AST_ASSIGN, $2, $5); }
+			{ $$ = _astFactory.Assignment(@$, (LangElement)$2, (LangElement)$5, Operations.AssignValue); }
 	|	variable '=' expr
-			{ $$ = zend_ast_create(_zend_ast_kind.ZEND_AST_ASSIGN, $1, $3); }
+			{ $$ = _astFactory.Assignment(@$, (LangElement)$1, (LangElement)$3, Operations.AssignValue); }
 	|	variable '=' '&' variable
-			{ $$ = zend_ast_create(_zend_ast_kind.ZEND_AST_ASSIGN_REF, $1, $4); }
+			{ $$ = _astFactory.Assignment(@$, (LangElement)$1, (LangElement)$4, Operations.AssignRef); }
 	|	T_CLONE expr { $$ = zend_ast_create(_zend_ast_kind.ZEND_AST_CLONE, $2); }
 	|	variable T_PLUS_EQUAL expr
-			{ $$ = zend_ast_create_assign_op(_zend_sup.ZEND_ASSIGN_ADD, $1, $3); }
+			{ $$ = _astFactory.Assignment(@$, (LangElement)$1, (LangElement)$3, Operations.AssignAdd); }
 	|	variable T_MINUS_EQUAL expr
-			{ $$ = zend_ast_create_assign_op(_zend_sup.ZEND_ASSIGN_SUB, $1, $3); }
+			{ $$ = _astFactory.Assignment(@$, (LangElement)$1, (LangElement)$3, Operations.AssignSub); }
 	|	variable T_MUL_EQUAL expr
-			{ $$ = zend_ast_create_assign_op(_zend_sup.ZEND_ASSIGN_MUL, $1, $3); }
+			{ $$ = _astFactory.Assignment(@$, (LangElement)$1, (LangElement)$3, Operations.AssignMul); }
 	|	variable T_POW_EQUAL expr
-			{ $$ = zend_ast_create_assign_op(_zend_sup.ZEND_ASSIGN_POW, $1, $3); }
+			{ $$ = _astFactory.Assignment(@$, (LangElement)$1, (LangElement)$3, Operations.AssignPow); }
 	|	variable T_DIV_EQUAL expr
-			{ $$ = zend_ast_create_assign_op(_zend_sup.ZEND_ASSIGN_DIV, $1, $3); }
+			{ $$ = _astFactory.Assignment(@$, (LangElement)$1, (LangElement)$3, Operations.AssignDiv); }
 	|	variable T_CONCAT_EQUAL expr
-			{ $$ = zend_ast_create_assign_op(_zend_sup.ZEND_ASSIGN_CONCAT, $1, $3); }
+			{ $$ = _astFactory.Assignment(@$, (LangElement)$1, (LangElement)$3, Operations.AssignAppend); }
 	|	variable T_MOD_EQUAL expr
-			{ $$ = zend_ast_create_assign_op(_zend_sup.ZEND_ASSIGN_MOD, $1, $3); }
+			{ $$ = _astFactory.Assignment(@$, (LangElement)$1, (LangElement)$3, Operations.AssignMod); }
 	|	variable T_AND_EQUAL expr
-			{ $$ = zend_ast_create_assign_op(_zend_sup.ZEND_ASSIGN_BW_AND, $1, $3); }
+			{ $$ = _astFactory.Assignment(@$, (LangElement)$1, (LangElement)$3, Operations.AssignAnd); }
 	|	variable T_OR_EQUAL expr
-			{ $$ = zend_ast_create_assign_op(_zend_sup.ZEND_ASSIGN_BW_OR, $1, $3); }
+			{ $$ = _astFactory.Assignment(@$, (LangElement)$1, (LangElement)$3, Operations.AssignOr); }
 	|	variable T_XOR_EQUAL expr
-			{ $$ = zend_ast_create_assign_op(_zend_sup.ZEND_ASSIGN_BW_XOR, $1, $3); }
+			{ $$ = _astFactory.Assignment(@$, (LangElement)$1, (LangElement)$3, Operations.AssignXor); }
 	|	variable T_SL_EQUAL expr
-			{ $$ = zend_ast_create_assign_op(_zend_sup.ZEND_ASSIGN_SL, $1, $3); }
+			{ $$ = _astFactory.Assignment(@$, (LangElement)$1, (LangElement)$3, Operations.AssignShiftLeft); }
 	|	variable T_SR_EQUAL expr
-			{ $$ = zend_ast_create_assign_op(_zend_sup.ZEND_ASSIGN_SR, $1, $3); }
-	|	variable T_INC { $$ = zend_ast_create(_zend_ast_kind.ZEND_AST_POST_INC, $1); }
-	|	T_INC variable { $$ = zend_ast_create(_zend_ast_kind.ZEND_AST_PRE_INC, $2); }
-	|	variable T_DEC { $$ = zend_ast_create(_zend_ast_kind.ZEND_AST_POST_DEC, $1); }
-	|	T_DEC variable { $$ = zend_ast_create(_zend_ast_kind.ZEND_AST_PRE_DEC, $2); }
+			{ $$ = _astFactory.Assignment(@$, (LangElement)$1, (LangElement)$3, Operations.AssignShiftRight); }
+	|	variable T_INC { $$ = _astFactory.IncrementDecrement(@$, (Expression)$2, true,  true); }
+	|	T_INC variable { $$ = _astFactory.IncrementDecrement(@$, (Expression)$2, true,  false); }
+	|	variable T_DEC { $$ = _astFactory.IncrementDecrement(@$, (Expression)$2, false, true); }
+	|	T_DEC variable { $$ = _astFactory.IncrementDecrement(@$, (Expression)$2, false, false); }
 	|	expr T_BOOLEAN_OR expr
-			{ $$ = zend_ast_create(_zend_ast_kind.ZEND_AST_OR, $1, $3); }
+			{ $$ = _astFactory.BinaryOperation(@$, Operations.Or,   (LangElement)$1, (LangElement)$3); }
 	|	expr T_BOOLEAN_AND expr
-			{ $$ = zend_ast_create(_zend_ast_kind.ZEND_AST_AND, $1, $3); }
+			{ $$ = _astFactory.BinaryOperation(@$, Operations.And,  (LangElement)$1, (LangElement)$3); }
 	|	expr T_LOGICAL_OR expr
-			{ $$ = zend_ast_create(_zend_ast_kind.ZEND_AST_OR, $1, $3); }
+			{ $$ = _astFactory.BinaryOperation(@$, Operations.Or,   (LangElement)$1, (LangElement)$3); }
 	|	expr T_LOGICAL_AND expr
-			{ $$ = zend_ast_create(_zend_ast_kind.ZEND_AST_AND, $1, $3); }
+			{ $$ = _astFactory.BinaryOperation(@$, Operations.And,  (LangElement)$1, (LangElement)$3); }
 	|	expr T_LOGICAL_XOR expr
-			{ $$ = zend_ast_create_binary_op(_zend_sup.ZEND_BOOL_XOR, $1, $3); }
-	|	expr '|' expr	{ $$ = zend_ast_create_binary_op(_zend_sup.ZEND_BW_OR, $1, $3); }
-	|	expr '&' expr	{ $$ = zend_ast_create_binary_op(_zend_sup.ZEND_BW_AND, $1, $3); }
-	|	expr '^' expr	{ $$ = zend_ast_create_binary_op(_zend_sup.ZEND_BW_XOR, $1, $3); }
-	|	expr '.' expr 	{ $$ = zend_ast_create_binary_op(_zend_sup.ZEND_CONCAT, $1, $3); }
-	|	expr '+' expr 	{ $$ = zend_ast_create_binary_op(_zend_sup.ZEND_ADD, $1, $3); }
-	|	expr '-' expr 	{ $$ = zend_ast_create_binary_op(_zend_sup.ZEND_SUB, $1, $3); }
-	|	expr '*' expr	{ $$ = zend_ast_create_binary_op(_zend_sup.ZEND_MUL, $1, $3); }
-	|	expr T_POW expr	{ $$ = zend_ast_create_binary_op(_zend_sup.ZEND_POW, $1, $3); }
-	|	expr '/' expr	{ $$ = zend_ast_create_binary_op(_zend_sup.ZEND_DIV, $1, $3); }
-	|	expr '%' expr 	{ $$ = zend_ast_create_binary_op(_zend_sup.ZEND_MOD, $1, $3); }
-	| 	expr T_SL expr	{ $$ = zend_ast_create_binary_op(_zend_sup.ZEND_SL, $1, $3); }
-	|	expr T_SR expr	{ $$ = zend_ast_create_binary_op(_zend_sup.ZEND_SR, $1, $3); }
-	|	'+' expr %prec T_INC { $$ = zend_ast_create(_zend_ast_kind.ZEND_AST_UNARY_PLUS, $2); }
-	|	'-' expr %prec T_INC { $$ = zend_ast_create(_zend_ast_kind.ZEND_AST_UNARY_MINUS, $2); }
-	|	'!' expr { $$ = zend_ast_create_ex(_zend_ast_kind.ZEND_AST_UNARY_OP, _zend_sup.ZEND_BOOL_NOT, $2); }
-	|	'~' expr { $$ = zend_ast_create_ex(_zend_ast_kind.ZEND_AST_UNARY_OP, _zend_sup.ZEND_BW_NOT, $2); }
+			{ $$ = _astFactory.BinaryOperation(@$, Operations.Xor,  (LangElement)$1, (LangElement)$3); }
+	|	expr '|' expr	{ $$ = _astFactory.BinaryOperation(@$, Operations.BitOr,  (LangElement)$1, (LangElement)$3); }
+	|	expr '&' expr	{ $$ = _astFactory.BinaryOperation(@$, Operations.BitAnd, (LangElement)$1, (LangElement)$3); }
+	|	expr '^' expr	{ $$ = _astFactory.BinaryOperation(@$, Operations.BitXor, (LangElement)$1, (LangElement)$3); }
+	|	expr '.' expr 	{ $$ = _astFactory.BinaryOperation(@$, Operations.Concat, (LangElement)$1, (LangElement)$3); }
+	|	expr '+' expr 	{ $$ = _astFactory.BinaryOperation(@$, Operations.Add,    (LangElement)$1, (LangElement)$3); }
+	|	expr '-' expr 	{ $$ = _astFactory.BinaryOperation(@$, Operations.Sub,    (LangElement)$1, (LangElement)$3); }
+	|	expr '*' expr	{ $$ = _astFactory.BinaryOperation(@$, Operations.Mul,    (LangElement)$1, (LangElement)$3); }
+	|	expr T_POW expr	{ $$ = _astFactory.BinaryOperation(@$, Operations.Pow,    (LangElement)$1, (LangElement)$3); }
+	|	expr '/' expr	{ $$ = _astFactory.BinaryOperation(@$, Operations.Div,    (LangElement)$1, (LangElement)$3); }
+	|	expr '%' expr 	{ $$ = _astFactory.BinaryOperation(@$, Operations.Mod,    (LangElement)$1, (LangElement)$3); }
+	| 	expr T_SL expr	{ $$ = _astFactory.BinaryOperation(@$, Operations.ShiftLeft,  (LangElement)$1, (LangElement)$3); } 
+	|	expr T_SR expr	{ $$ = _astFactory.BinaryOperation(@$, Operations.ShiftRight, (LangElement)$1, (LangElement)$3); } 
+	|	'+' expr %prec T_INC { $$ = _astFactory.UnaryOperation(@$, Operations.Plus,   (Expression)$2); }
+	|	'-' expr %prec T_INC { $$ = _astFactory.UnaryOperation(@$, Operations.Plus,   (Expression)$2); }
+	|	'!' expr { $$ = _astFactory.UnaryOperation(@$, Operations.LogicNegation, (Expression)$2); }
+	|	'~' expr { $$ = _astFactory.UnaryOperation(@$, Operations.BitNegation,   (Expression)$2); }
 	|	expr T_IS_IDENTICAL expr
-			{ $$ = zend_ast_create_binary_op(_zend_sup.ZEND_IS_IDENTICAL, $1, $3); }
+			{ $$ = _astFactory.BinaryOperation(@$, Operations.ShiftRight, (LangElement)$1, (LangElement)$3); }
 	|	expr T_IS_NOT_IDENTICAL expr
-			{ $$ = zend_ast_create_binary_op(_zend_sup.ZEND_IS_NOT_IDENTICAL, $1, $3); }
+			{ $$ = _astFactory.BinaryOperation(@$, Operations.NotIdentical, (LangElement)$1, (LangElement)$3); }
 	|	expr T_IS_EQUAL expr
-			{ $$ = zend_ast_create_binary_op(_zend_sup.ZEND_IS_EQUAL, $1, $3); }
+			{ $$ = _astFactory.BinaryOperation(@$, Operations.Equal, (LangElement)$1, (LangElement)$3); }
 	|	expr T_IS_NOT_EQUAL expr
-			{ $$ = zend_ast_create_binary_op(_zend_sup.ZEND_IS_NOT_EQUAL, $1, $3); }
+			{ $$ = _astFactory.BinaryOperation(@$, Operations.NotEqual, (LangElement)$1, (LangElement)$3); }
 	|	expr '<' expr
-			{ $$ = zend_ast_create_binary_op(_zend_sup.ZEND_IS_SMALLER, $1, $3); }
+			{ $$ = _astFactory.BinaryOperation(@$, Operations.LessThan, (LangElement)$1, (LangElement)$3); }
 	|	expr T_IS_SMALLER_OR_EQUAL expr
-			{ $$ = zend_ast_create_binary_op(_zend_sup.ZEND_IS_SMALLER_OR_EQUAL, $1, $3); }
+			{ $$ = _astFactory.BinaryOperation(@$, Operations.LessThanOrEqual, (LangElement)$1, (LangElement)$3); }
 	|	expr '>' expr
-			{ $$ = zend_ast_create(_zend_ast_kind.ZEND_AST_GREATER, $1, $3); }
+			{ $$ = _astFactory.BinaryOperation(@$, Operations.GreaterThan, (LangElement)$1, (LangElement)$3); }
 	|	expr T_IS_GREATER_OR_EQUAL expr
-			{ $$ = zend_ast_create(_zend_ast_kind.ZEND_AST_GREATER_EQUAL, $1, $3); }
+			{ $$ = _astFactory.BinaryOperation(@$, Operations.GreaterThanOrEqual, (LangElement)$1, (LangElement)$3); }
 	|	expr T_SPACESHIP expr
-			{ $$ = zend_ast_create_binary_op(_zend_sup.ZEND_SPACESHIP, $1, $3); }
+			{ $$ = _astFactory.BinaryOperation(@$, Operations.Spaceship, (LangElement)$1, (LangElement)$3); }
 	|	expr T_INSTANCEOF class_name_reference
-			{ $$ = zend_ast_create(_zend_ast_kind.ZEND_AST_INSTANCEOF, $1, $3); }
+			{ $$ = _astFactory.BinaryOperation(@$, Operations.InstanceOf, (LangElement)$1, (LangElement)$3); }
 	|	'(' expr ')' { $$ = $2; }
 	|	new_expr { $$ = $1; }
 	|	expr '?' expr ':' expr
@@ -993,7 +1004,7 @@ expr_without_variable:
 	|	T_BOOL_CAST expr	{ $$ = _astFactory.UnaryOperation(@$, Operations.BoolCast,   (Expression)$2); }
 	|	T_UNSET_CAST expr	{ $$ = _astFactory.UnaryOperation(@$, Operations.UnsetCast,  (Expression)$2); }
 	|	T_EXIT exit_expr	{ $$ = _astFactory.UnaryOperation(@$, Operations.Exit,       (Expression)$2); }
-	|	'@' expr			{ $$ = _astFactory.UnaryOperation(@$, Operations.Silence,    (Expression)$2); }
+	|	'@' expr			{ $$ = _astFactory.UnaryOperation(@$, Operations.AtSign,     (Expression)$2); }
 	|	scalar { $$ = _astFactory.Literal(@$, $1); }
 	|	'`' backticks_expr '`' { $$ = zend_ast_create(_zend_ast_kind.ZEND_AST_SHELL_EXEC, $2); }
 	|	T_PRINT expr { $$ = zend_ast_create(_zend_ast_kind.ZEND_AST_PRINT, $2); }
@@ -1047,13 +1058,13 @@ lexical_var:
 
 function_call:
 		name argument_list
-			{ $$ = zend_ast_create(_zend_ast_kind.ZEND_AST_CALL, $1, $2); }
+			{ $$ = _astFactory.Call(@$, (QualifiedName)$1, null, @1, new CallSignature((List<ActualParam>)$2), null); }
 	|	class_name T_DOUBLE_COLON member_name argument_list
 			{ $$ = zend_ast_create(_zend_ast_kind.ZEND_AST_STATIC_CALL, $1, $3, $4); }
 	|	variable_class_name T_DOUBLE_COLON member_name argument_list
 			{ $$ = zend_ast_create(_zend_ast_kind.ZEND_AST_STATIC_CALL, $1, $3, $4); }
 	|	callable_expr argument_list
-			{ $$ = zend_ast_create(_zend_ast_kind.ZEND_AST_CALL, $1, $2); }
+			{ $$ = _astFactory.Call(@$, new QualifiedName(), null, @1, new CallSignature((List<ActualParam>)$2), (LangElement)$1); }
 ;
 
 class_name:
@@ -1106,7 +1117,7 @@ scalar:
 	|	T_CLASS_C	{ $$ = _astFactory.PseudoConstUse(@$, PseudoConstUse.Types.Class); }    
 	|	T_START_HEREDOC T_ENCAPSED_AND_WHITESPACE T_END_HEREDOC { $$ = $2; }
 	|	T_START_HEREDOC T_END_HEREDOC
-			{ $$ = ""; }
+			{ $$ = string.Empty; }
 	|	'"' encaps_list '"' 	{ $$ = $2; }
 	|	T_START_HEREDOC encaps_list T_END_HEREDOC { $$ = $2; }
 	|	dereferencable_scalar	{ $$ = $1; }

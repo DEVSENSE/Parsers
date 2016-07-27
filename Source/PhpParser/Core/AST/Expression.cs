@@ -50,7 +50,7 @@ namespace PHP.Core.AST
 		LessThan, GreaterThan, LessThanOrEqual, GreaterThanOrEqual,
 		ShiftLeft, ShiftRight,
 		Add, Sub, Mul, Div, Mod, Pow,
-		Concat,
+		Concat, Spaceship,
 
 		// n-ary ops:
 		ConcatN,
@@ -113,7 +113,6 @@ namespace PHP.Core.AST
 
 		// others:
 		Exit,
-        Silence,
         ShellCommand,
 		IncDec,
         Yield,

@@ -10,14 +10,21 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace UnitTests.TestImplementation
+namespace PhpParser
 {
     /// <summary>
     /// Nodes factory used by <see cref="Parser.Parser"/>.
     /// </summary>
-    internal class TestNodesFactory : TestErrorSink, INodesFactory<LangElement, Span>
+    public class BasicNodesFactory : INodesFactory<LangElement, Span>
     {
         SourceUnit _sourceUnit;
+        List<Tuple<Span, ErrorInfo, string[]>> _errors = new List<Tuple<Span, ErrorInfo, string[]>>();
+        public List<Tuple<Span, ErrorInfo, string[]>> Errors { get { return _errors; } }
+
+        public void Error(Span span, ErrorInfo info, params string[] argsOpt)
+        {
+            Errors.Add(new Tuple<Span, ErrorInfo, string[]>(span, info, argsOpt));
+        }
 
         List<T> ConvertList<T>(IEnumerable<LangElement> list) where T : LangElement
         {
@@ -25,7 +32,7 @@ namespace UnitTests.TestImplementation
             return list.Select(s => (T)s).ToList();
         }
 
-        public TestNodesFactory(SourceUnit sourceUnit)
+        public BasicNodesFactory(SourceUnit sourceUnit)
         {
             _sourceUnit = sourceUnit;
         }
@@ -42,12 +49,15 @@ namespace UnitTests.TestImplementation
 
         public LangElement Assignment(Span span, LangElement target, LangElement value, Operations assignOp)
         {
-            throw new NotImplementedException();
+            if (assignOp == Operations.AssignRef)
+                return new ValueAssignEx(span, Operations.AssignRef, (VariableUse)target, (Expression)value);
+            else
+                return new ValueAssignEx(span, assignOp, (VariableUse)target, (Expression)value);
         }
 
         public LangElement BinaryOperation(Span span, Operations operation, LangElement leftExpression, LangElement rightExpression)
         {
-            throw new NotImplementedException();
+            return new BinaryEx(span, operation, (Expression)leftExpression, (Expression)rightExpression);
         }
 
         public LangElement Block(Span span, IEnumerable<LangElement> statements)
@@ -77,7 +87,10 @@ namespace UnitTests.TestImplementation
 
         public LangElement Call(Span span, QualifiedName name, QualifiedName? nameFallback, Span nameSpan, CallSignature signature, LangElement memberOfOpt)
         {
-            throw new NotImplementedException();
+            if (memberOfOpt == null)
+                return new DirectFcnCall(span, name, nameFallback, nameSpan, signature.Parameters.ToList(), signature.GenericParams.ToList());
+            else
+                return new IndirectFcnCall(span, (Expression)memberOfOpt, signature.Parameters.ToList(), signature.GenericParams.ToList());
         }
 
         public LangElement ClassConstDecl(Span span, VariableName name, LangElement initializer)
@@ -142,12 +155,13 @@ namespace UnitTests.TestImplementation
 
         public LangElement GlobalCode(Span span, IEnumerable<LangElement> statements, NamingContext context)
         {
-            return new GlobalCode(ConvertList<Statement>(statements), _sourceUnit, context);
+            _sourceUnit.Naming = context;
+            return new GlobalCode(ConvertList<Statement>(statements), _sourceUnit);
         }
 
         public LangElement GlobalConstDecl(Span span, bool conditional, VariableName name, LangElement initializer)
         {
-            throw new NotImplementedException();
+            return new GlobalConstantDecl(_sourceUnit, span, conditional, name.Value, (Expression)initializer);
         }
 
         public LangElement Goto(Span span, string label, Span labelSpan)
@@ -202,6 +216,10 @@ namespace UnitTests.TestImplementation
 
         public LangElement List(Span span, IEnumerable<LangElement> targets)
         {
+            if (targets.All(e => e is GlobalConstantDecl))
+                return new GlobalConstDeclList(span, ConvertList<GlobalConstantDecl>(targets), null);
+            if (targets.All(e => e is ClassConstantDecl))
+                return new ConstDeclList(span, ConvertList<ClassConstantDecl>(targets), null);
             throw new NotImplementedException();
         }
 
@@ -224,12 +242,18 @@ namespace UnitTests.TestImplementation
 
         public LangElement Namespace(Span span, QualifiedName? name, Span nameSpan, IEnumerable<LangElement> statements, NamingContext context)
         {
-            return new NamespaceDecl(span, name ?? new QualifiedName(Name.EmptyBaseName, Name.EmptyNames), context, ConvertList<Statement>(statements));
+            NamespaceDecl space = new NamespaceDecl(span, name ?? new QualifiedName(Name.EmptyBaseName, Name.EmptyNames), statements == null);
+            space.Naming = context;
+            space.Statements = ConvertList<Statement>(statements);
+            return space;
         }
 
         public LangElement Namespace(Span span, QualifiedName? name, Span nameSpan, LangElement block, NamingContext context)
         {
-            return new NamespaceDecl(span, name ?? new QualifiedName(Name.EmptyBaseName, Name.EmptyNames), context, block == null);
+            NamespaceDecl space = new NamespaceDecl(span, name ?? new QualifiedName(Name.EmptyBaseName, Name.EmptyNames), block == null);
+            space.Naming = context;
+            space.Statements = new List<Statement>() { (Statement)block };
+            return space;
         }
 
         public LangElement New(Span span, TypeRef classNameRef, IEnumerable<ActualParam> argsOpt)
@@ -320,6 +344,11 @@ namespace UnitTests.TestImplementation
         public LangElement PseudoConstUse(Span span, PseudoConstUse.Types type)
         {
             return PseudoConstUse(span, type);
+        }
+
+        public LangElement ExpressionStmt(Span span, LangElement expression)
+        {
+            return new ExpressionStmt(span, (Expression)expression);
         }
     }
 }

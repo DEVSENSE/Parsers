@@ -15,10 +15,8 @@ namespace PhpParser
     public class JsonSerializer : ISerializer
     {
         StringBuilder _builder = new StringBuilder();
-        string _indent = "";
+        string _indent = string.Empty;
         bool _first = true;
-
-        INodesFactory<LangElement, Span> _astFactory = null;
 
         void Indent() { _indent += "  "; _first = true; }
         void DeIndent() { if(_indent.Length >= 2) _indent = _indent.Remove(_indent.Length - 2); _first = false; }
@@ -178,7 +176,7 @@ namespace PhpParser
         //    //        //if token.Value is not nested
         //    //        // child.Text = token.Key.ToString();
         //    //        //change the value into N/A if value == null or an empty string 
-        //    //        if (token.Value.ToString() == "")
+        //    //        if (token.Value.ToString() == string.Empty)
         //    //            child.Nodes.Add("N/A");
         //    //        else
         //    //            child.Nodes.Add(token.Value.ToString());

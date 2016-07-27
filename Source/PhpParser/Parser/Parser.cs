@@ -91,9 +91,26 @@ namespace PhpParser.Parser
             if (_currentNamespace != null)
             {
                 Debug.Assert(_context.Count == 2);
-                _currentNamespace.Naming = _namingContext;
+                Debug.Assert(_currentNamespace.Naming == _namingContext);
                 ResetNamingContext();
             }
+        }
+
+        void AssignStatements(List<LangElement> statements)
+        {
+            Debug.Assert(statements.All(s => s == null || s is Statement), "Code contains an invalid statement.");
+            List<LangElement> namespaces = new List<LangElement>();
+            int i = 0;
+            while((i = statements.FindLastIndex(s => s is NamespaceDecl && ((NamespaceDecl)s).IsSimpleSyntax)) != -1)
+            {
+                int count = statements.Count - i;
+                namespaces.Add(statements[i]);
+                // add all the subsequent statements except the NamespaceDecl itself
+                ((NamespaceDecl)statements[i]).Statements = statements.GetRange(i+1, count-1).Select(s => (Statement)s).ToList();
+                statements.RemoveRange(i, count);
+            }
+            namespaces.Reverse(); // keep the original order
+            statements.AddRange(namespaces);
         }
 
         private void AddAlias(Tuple<List<string>, string> alias)
@@ -103,7 +120,7 @@ namespace PhpParser.Parser
 
         private void AddAlias(Tuple<List<string>, string> alias, ContextType contextType)
         {
-            string aliasName = string.IsNullOrEmpty(alias.Item2)? alias.Item1.Last() : alias.Item2;
+            string aliasName = string.IsNullOrEmpty(alias.Item2) ? alias.Item1.Last() : alias.Item2;
             switch (contextType)
             {
                 case ContextType.Class:
@@ -627,12 +644,6 @@ namespace PhpParser.Parser
         }
 
         private object zend_ast_create_assign_op(params object[] abc)
-        {
-            // TODO implement
-            return 0;
-        }
-
-        private object zend_ast_create_binary_op(params object[] abc)
         {
             // TODO implement
             return 0;

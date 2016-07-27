@@ -10,6 +10,61 @@ using PHP.Syntax;
 namespace PhpParser.Parser
 {
     /// <summary>
+    /// PHP lexer generated according to the PhpLexer.l grammar.
+    /// Special implementation of the PHP lexer that skips empty nodes (open tag, comment, etc.), which is required by the PHP grammar.
+    /// </summary>
+    public class CompliantLexer : Lexer
+    {
+        /// <summary>
+        /// Lexer constructor that initializes all the necessary members
+        /// </summary>
+        /// <param name="reader">Text reader containing the source code.</param>
+        /// <param name="sourceUnit">Source unit (file) associated with the <paramref name="reader"/>.</param>
+        /// <param name="errors">Error sink used to report lexical error, usually implemented by NodesFactory.</param>
+        /// <param name="features">Allow or disable short oppening tags for PHP.</param>
+        /// <param name="positionShift">Starting position of the first token, used during custom restart.</param>
+        /// <param name="initialState">Initial state of the lexer, used during custom restart.</param>
+        public CompliantLexer(System.IO.TextReader reader, SourceUnit sourceUnit, IErrorSink<Span> errors, LanguageFeatures features,
+            int positionShift = 0, LexicalStates initialState = LexicalStates.INITIAL)
+            : base(reader, sourceUnit, errors, features, positionShift, initialState)
+        {
+        }
+
+        /// <summary>
+        /// Get next token, store its actual position in the source unit and call the <see cref="NextTokenEvent"/>.
+        /// This implementation supports the functionality of zendlex, which skips empty nodes (open tag, comment, etc.).
+        /// </summary>
+        /// <returns>Next token.</returns>
+        override public int GetNextToken()
+        {
+            do
+            {
+                Tokens token = NextToken();
+                UpdateTokenPosition();
+
+                // origianl zendlex() functionality - skip open and close tags because they are not in the PHP grammar
+                switch (token)
+                {
+                    case Tokens.T_COMMENT:
+                    case Tokens.T_DOC_COMMENT:
+                    case Tokens.T_OPEN_TAG:
+                    case Tokens.T_WHITESPACE:
+                        continue;
+                    case Tokens.T_CLOSE_TAG:
+                        token = Tokens.T_SEMI; /* implicit ; */
+                        break;
+                    case Tokens.T_OPEN_TAG_WITH_ECHO:
+                        token = Tokens.T_ECHO;
+                        break;
+                }
+
+                CallNextTokenEvent(token);
+                return (int)token;
+            } while (true);
+        }
+    }
+
+    /// <summary>
     /// Called by <see cref="Scanner"/> when new token is obtained from lexer.
     /// </summary>
     /// <param name="token">Token.</param>
@@ -18,6 +73,9 @@ namespace PhpParser.Parser
     /// <param name="tokenLength">Length of the token text.</param>
     public delegate void LexerEventHandler(Tokens token, char[] buffer, int tokenStart, int tokenLength);
 
+    /// <summary>
+    /// PHP lexer generated according to the PhpLexer.l grammar.
+    /// </summary>
     public partial class Lexer : ITokenProvider<SemanticValueType, Span>
     {
         /// <summary>
@@ -51,11 +109,6 @@ namespace PhpParser.Parser
         private int _charOffset = 0;
 
         /// <summary>
-        /// Used to activate the zendlex functionality in GetNextToken - skip open tags, close tags and comments as the grammar ignores them
-        /// </summary>
-        private bool _skipEmptyTokens = true;
-
-        /// <summary>
         /// Last encountered documentation comment block
         /// </summary>
         private string _docBlock = null;
@@ -71,31 +124,43 @@ namespace PhpParser.Parser
         private bool _inUnicodeString = false;
 
         /// <summary>
-        /// Event called every time a new token is processed in <see cref="GetNextToken"/>
+        /// Event called every time a new token is processed by the <see cref="GetNextToken/> method.
         /// </summary>
         public event LexerEventHandler NextTokenEvent;
 
         /// <summary>
+        /// Call the <see cref="NextTokenEvent"/> event.
+        /// </summary>
+        /// <param name="token">The next token.</param>
+        protected void CallNextTokenEvent(Tokens token)
+        {
+            if (NextTokenEvent != null)
+                NextTokenEvent(token, buffer, token_start, TokenLength);
+        }
+
+        /// <summary>
         /// Lexer constructor that initializes all the necessary members
         /// </summary>
-        /// <param name="reader">Text reader containing the source code</param>
-        /// <param name="sourceUnit">Source unit (file) associated with the <paramref name="reader"/></param>
-        /// <param name="allowShortTags">Allow short oppening tags for PHP</param>
-        public Lexer(System.IO.TextReader reader, SourceUnit sourceUnit, IErrorSink<Span> errors, LanguageFeatures features, 
-            bool skipEmptyTokens = true, int positionShift = 0, LexicalStates initialState = LexicalStates.INITIAL)
+        /// <param name="reader">Text reader containing the source code.</param>
+        /// <param name="sourceUnit">Source unit (file) associated with the <paramref name="reader"/>.</param>
+        /// <param name="errors">Error sink used to report lexical error, usually implemented by NodesFactory.</param>
+        /// <param name="features">Allow or disable short oppening tags for PHP.</param>
+        /// <param name="positionShift">Starting position of the first token, used during custom restart.</param>
+        /// <param name="initialState">Initial state of the lexer, used during custom restart.</param>
+        public Lexer(System.IO.TextReader reader, SourceUnit sourceUnit, IErrorSink<Span> errors, LanguageFeatures features,
+            int positionShift = 0, LexicalStates initialState = LexicalStates.INITIAL)
         {
             this._sourceUnit = sourceUnit;
             this._errors = errors;
             this._charOffset = positionShift;
             this._allowShortTags = features == LanguageFeatures.ShortOpenTags;
-            this._skipEmptyTokens = skipEmptyTokens;
             Initialize(reader, initialState);
         }
 
         /// <summary>
         /// Updates <see cref="charOffset"/> and <see cref="_tokenPosition"/>.
         /// </summary>
-        private void UpdateTokenPosition()
+        protected void UpdateTokenPosition()
         {
             int tokenLength = this.TokenLength;
 
@@ -109,34 +174,17 @@ namespace PhpParser.Parser
             // TODO (expected tokens....)
             _errors.Error(_tokenPosition, FatalErrors.SyntaxError, CoreResources.GetString("unexpected_token", GetTokenString()));
         }
-        public int GetNextToken()
+
+        /// <summary>
+        /// Get next token, store its actual position in the source unit and call the <see cref="NextTokenEvent"/>.
+        /// </summary>
+        /// <returns>Next token.</returns>
+        virtual public int GetNextToken()
         {
-            do
-            {
-                Tokens token = NextToken();
-                UpdateTokenPosition();
-
-                if(_skipEmptyTokens)
-                    // origianl zendlex() functionality - skip open and close tags because they are not in the PHP grammar
-                    switch (token)
-                    {
-                        case Tokens.T_COMMENT:
-                        case Tokens.T_DOC_COMMENT:
-                        case Tokens.T_OPEN_TAG:
-                        case Tokens.T_WHITESPACE:
-                            continue;
-                        case Tokens.T_CLOSE_TAG:
-                            token = Tokens.T_SEMI; /* implicit ; */
-                            break;
-                        case Tokens.T_OPEN_TAG_WITH_ECHO:
-                            token = Tokens.T_ECHO;
-                            break;
-                    }
-
-                if (NextTokenEvent != null)
-                    NextTokenEvent(token, buffer, token_start, TokenLength);
-                return (int)token;
-            } while (true);
+            Tokens token = NextToken();
+            UpdateTokenPosition();
+            CallNextTokenEvent(token);
+            return (int)token;
         }
 
         protected void _yymore() { yymore(); }
