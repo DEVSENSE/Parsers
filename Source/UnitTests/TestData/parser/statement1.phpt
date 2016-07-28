@@ -1,6 +1,6 @@
 <?php
 $x = 4 * 5;
-$x = 'hello'."world$x";  // TODO string handling must be fixed (tomorrow)
+$x = 'hello'."world$x";  // complex string
 ?>
 <<<TEST>>>
 
@@ -9,6 +9,9 @@ $x = 'hello'."world$x";  // TODO string handling must be fixed (tomorrow)
   },
   "ValueAssignEx" : {
     "Operation" : "AssignValue",
+    "DirectVarUse" : {
+      "VarName" : "x"
+    },
     "BinaryEx" : {
       "Operation" : "Mul",
       "LongIntLiteral" : {
@@ -20,14 +23,22 @@ $x = 'hello'."world$x";  // TODO string handling must be fixed (tomorrow)
     }
   },   
   "ValueAssignEx" : {
-    "Operation" : "AssignValue",
+    "Operation" : "AssignValue", 
+    "DirectVarUse" : {
+      "VarName" : "x"
+    },
     "BinaryEx" : {
-      "Operation" : "Concat",
+      "Operation" : "Concat", 
       "StringLiteral" : {
         "Value" : "hello"
       },
-      "NullLiteral" : {
-        "Value" : "null"
+      "ConcatEx" : {
+        "StringLiteral" : {
+          "Value" : "world"
+        },
+        "DirectVarUse" : {
+          "VarName":"x"
+        }
       }
     }
   }

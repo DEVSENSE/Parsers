@@ -190,5 +190,45 @@ namespace PhpParser
             base.VisitActualParam(x);
             _serializer.EndSerialize();
         }
+        override public void VisitBlockStmt(BlockStmt x)
+        {
+            _serializer.StartSerialize(typeof(BlockStmt).Name, SerializeSpan(x.Span));
+            base.VisitBlockStmt(x);
+            _serializer.EndSerialize();
+        }
+
+        override public void VisitJumpStmt(JumpStmt x)
+        {
+            _serializer.StartSerialize(typeof(JumpStmt).Name, SerializeSpan(x.Span),
+                new NodeObj("Type", x.Type.ToString()));
+            base.VisitJumpStmt(x);
+            _serializer.EndSerialize();
+        }
+        override public void VisitWhileStmt(WhileStmt x)
+        {
+            _serializer.StartSerialize(typeof(WhileStmt).Name, SerializeSpan(x.Span),
+                new NodeObj("LoopType", x.LoopType.ToString()));
+            _serializer.StartSerialize("CondExpr");
+            VisitElement(x.CondExpr);
+            _serializer.EndSerialize();
+            _serializer.StartSerialize("Body");
+            VisitElement(x.Body);
+            _serializer.EndSerialize();
+            _serializer.EndSerialize();
+        }
+
+        override public void VisitDirectVarUse(DirectVarUse x)
+        {
+            _serializer.StartSerialize(typeof(DirectVarUse).Name, SerializeSpan(x.Span),
+                new NodeObj("VarName", x.VarName.Value));
+            base.VisitDirectVarUse(x);
+            _serializer.EndSerialize();
+        }
+        override public void VisitConcatEx(ConcatEx x)
+        {
+            _serializer.StartSerialize(typeof(ConcatEx).Name, SerializeSpan(x.Span));
+            base.VisitConcatEx(x);
+            _serializer.EndSerialize();
+        }
     }
 }

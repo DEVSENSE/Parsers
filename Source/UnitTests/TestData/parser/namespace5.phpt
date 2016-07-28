@@ -81,18 +81,20 @@ namespace Incomple
       "SimpleSyntax" : "False",
       "NamingContext" : { 
         "Namespace" : "Incomple"
-      },
-      "EchoStmt" : {
-        "Span" : {
-          "start" : "154",
-          "end" : "165"
-        },
-        "StringLiteral" : {
+      },   
+      "BlockStmt" : {
+        "EchoStmt" : {
           "Span" : {
-            "start" : "159",
-            "end" : "164"
+            "start" : "154",
+            "end" : "165"
           },
-          "Value" : "end"
+          "StringLiteral" : {
+            "Span" : {
+              "start" : "159",
+              "end" : "164"
+            },
+            "Value" : "end"
+          }
         }
       }
     }

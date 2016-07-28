@@ -27,18 +27,20 @@ namespace MyProject\AnotherProject
     "SimpleSyntax" : "False",
     "NamingContext" : {
       "Namespace" : "MyProject"
-    },
-    "EchoStmt" : {
-      "Span" : {
-        "start" : "33",
-        "end" : "46"
-      },
-      "StringLiteral" : {
+    },   
+    "BlockStmt" : {
+      "EchoStmt" : {
         "Span" : {
-          "start" : "38",
-          "end" : "45"
+          "start" : "33",
+          "end" : "46"
         },
-        "Value" : "hello"
+        "StringLiteral" : {
+          "Span" : {
+            "start" : "38",
+            "end" : "45"
+          },
+          "Value" : "hello"
+        }
       }
     }
   },
@@ -54,18 +56,20 @@ namespace MyProject\AnotherProject
       "Aliases" : {
           "cls" : "My\ClassA"
       }
-    },
-    "EchoStmt" : {
-      "Span" : {
-        "start" : "119",
-        "end" : "132"
-      },
-      "StringLiteral" : {
+    },   
+    "BlockStmt" : {
+      "EchoStmt" : {
         "Span" : {
-          "start" : "124",
-          "end" : "131"
+          "start" : "119",
+          "end" : "132"
         },
-        "Value" : "world"
+        "StringLiteral" : {
+          "Span" : {
+            "start" : "124",
+            "end" : "131"
+          },
+          "Value" : "world"
+        }
       }
     }
   }

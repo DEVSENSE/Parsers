@@ -102,7 +102,7 @@ namespace PhpParser
 
         public LangElement Concat(Span span, IEnumerable<LangElement> expressions)
         {
-            throw new NotImplementedException();
+            return new ConcatEx(span, ConvertList<Expression>(expressions));
         }
 
         public LangElement DeclList(Span span, PhpMemberAttributes attributes, IEnumerable<LangElement> decls)
@@ -117,7 +117,7 @@ namespace PhpParser
 
         public LangElement Do(Span span, LangElement body, LangElement cond)
         {
-            throw new NotImplementedException();
+            return new WhileStmt(span, WhileStmt.Type.Do, (Expression)cond, (Statement)body);
         }
 
         public LangElement Echo(Span span, IEnumerable<LangElement> parameters)
@@ -142,12 +142,12 @@ namespace PhpParser
 
         public LangElement For(Span span, IEnumerable<LangElement> init, IEnumerable<LangElement> cond, IEnumerable<LangElement> action, LangElement body)
         {
-            throw new NotImplementedException();
+            return new ForStmt(span, ConvertList<Expression>(init), ConvertList<Expression>(cond), ConvertList<Expression>(action), (Statement)body);
         }
 
         public LangElement Foreach(Span span, LangElement enumeree, ForeachVar keyOpt, ForeachVar value, LangElement body)
         {
-            throw new NotImplementedException();
+            return new ForeachStmt(span, (Expression)enumeree, keyOpt, value, (Statement)body);
         }
 
         public LangElement Function(Span span, bool conditional, bool aliasReturn, PhpMemberAttributes attributes, QualifiedName? returnType, Span returnTypeSpan, Name name, Span nameSpan, IEnumerable<FormalTypeParam> typeParamsOpt, IEnumerable<FormalParam> formalParams, Span formalParamsSpan, LangElement body)
@@ -188,7 +188,7 @@ namespace PhpParser
 
         public LangElement IncrementDecrement(Span span, LangElement refexpression, bool inc, bool post)
         {
-            throw new NotImplementedException();
+            return new IncDecEx(span, inc, post, (VariableUse)refexpression);
         }
 
         public LangElement InlineHtml(Span span, string html)
@@ -203,7 +203,7 @@ namespace PhpParser
 
         public LangElement Jump(Span span, JumpStmt.Types type, LangElement exprOpt)
         {
-            throw new NotImplementedException();
+            return new JumpStmt(span, type, (Expression)exprOpt);
         }
 
         public LangElement Label(Span span, string label, Span labelSpan)
@@ -312,7 +312,7 @@ namespace PhpParser
 
         public LangElement Variable(Span span, LangElement nameExpr, LangElement memberOfOpt)
         {
-            throw new NotImplementedException();
+            return new IndirectVarUse(span, 0, (Expression)nameExpr) { IsMemberOf = (VarLikeConstructUse)memberOfOpt };
         }
 
         public LangElement Variable(Span span, VariableName name, TypeRef typeRef)
@@ -322,12 +322,12 @@ namespace PhpParser
 
         public LangElement Variable(Span span, VariableName name, LangElement memberOfOpt)
         {
-            throw new NotImplementedException();
+            return new DirectVarUse(span, name) { IsMemberOf = (VarLikeConstructUse)memberOfOpt };
         }
 
         public LangElement While(Span span, LangElement cond, LangElement body)
         {
-            throw new NotImplementedException();
+            return new WhileStmt(span, WhileStmt.Type.While, (Expression)cond, (Statement)body);
         }
 
         public LangElement Yield(Span span, LangElement keyOpt, LangElement valueOpt)
