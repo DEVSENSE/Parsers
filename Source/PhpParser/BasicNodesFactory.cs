@@ -50,7 +50,7 @@ namespace PhpParser
         public LangElement Assignment(Span span, LangElement target, LangElement value, Operations assignOp)
         {
             if (assignOp == Operations.AssignRef)
-                return new ValueAssignEx(span, Operations.AssignRef, (VariableUse)target, (Expression)value);
+                return new RefAssignEx(span, (VariableUse)target, (Expression)value);
             else
                 return new ValueAssignEx(span, assignOp, (VariableUse)target, (Expression)value);
         }
@@ -62,7 +62,7 @@ namespace PhpParser
 
         public LangElement Block(Span span, IEnumerable<LangElement> statements)
         {
-            throw new NotImplementedException();
+            return new BlockStmt(span, ConvertList<Statement>(statements));
         }
 
         public LangElement BlockComment(Span span, string content)
@@ -87,10 +87,7 @@ namespace PhpParser
 
         public LangElement Call(Span span, QualifiedName name, QualifiedName? nameFallback, Span nameSpan, CallSignature signature, LangElement memberOfOpt)
         {
-            if (memberOfOpt == null)
-                return new DirectFcnCall(span, name, nameFallback, nameSpan, signature.Parameters.ToList(), signature.GenericParams.ToList());
-            else
-                return new IndirectFcnCall(span, (Expression)memberOfOpt, signature.Parameters.ToList(), signature.GenericParams.ToList());
+            return new DirectFcnCall(span, name, nameFallback, nameSpan, signature.Parameters.ToList(), signature.GenericParams.ToList()) { IsMemberOf = (VarLikeConstructUse)memberOfOpt } ;
         }
 
         public LangElement ClassConstDecl(Span span, VariableName name, LangElement initializer)
@@ -110,6 +107,11 @@ namespace PhpParser
 
         public LangElement DeclList(Span span, PhpMemberAttributes attributes, IEnumerable<LangElement> decls)
         {
+            Debug.Assert(decls.All(e => e is GlobalConstantDecl) || decls.All(e => e is ClassConstantDecl));
+            if (decls.All(e => e is GlobalConstantDecl))
+                return new GlobalConstDeclList(span, ConvertList<GlobalConstantDecl>(decls), null);
+            else if (decls.All(e => e is ClassConstantDecl))
+                return new ConstDeclList(span, ConvertList<ClassConstantDecl>(decls), null);
             throw new NotImplementedException();
         }
 
@@ -216,10 +218,6 @@ namespace PhpParser
 
         public LangElement List(Span span, IEnumerable<LangElement> targets)
         {
-            if (targets.All(e => e is GlobalConstantDecl))
-                return new GlobalConstDeclList(span, ConvertList<GlobalConstantDecl>(targets), null);
-            if (targets.All(e => e is ClassConstantDecl))
-                return new ConstDeclList(span, ConvertList<ClassConstantDecl>(targets), null);
             throw new NotImplementedException();
         }
 
@@ -242,15 +240,16 @@ namespace PhpParser
 
         public LangElement Namespace(Span span, QualifiedName? name, Span nameSpan, IEnumerable<LangElement> statements, NamingContext context)
         {
-            NamespaceDecl space = new NamespaceDecl(span, name ?? new QualifiedName(Name.EmptyBaseName, Name.EmptyNames), statements == null);
+            NamespaceDecl space = new NamespaceDecl(span, name ?? new QualifiedName(Name.EmptyBaseName, Name.EmptyNames), true);
             space.Naming = context;
-            space.Statements = ConvertList<Statement>(statements);
+            space.Statements = (statements != null)? ConvertList<Statement>(statements): null;
             return space;
         }
 
         public LangElement Namespace(Span span, QualifiedName? name, Span nameSpan, LangElement block, NamingContext context)
         {
-            NamespaceDecl space = new NamespaceDecl(span, name ?? new QualifiedName(Name.EmptyBaseName, Name.EmptyNames), block == null);
+            Debug.Assert(block != null);
+            NamespaceDecl space = new NamespaceDecl(span, name ?? new QualifiedName(Name.EmptyBaseName, Name.EmptyNames), false);
             space.Naming = context;
             space.Statements = new List<Statement>() { (Statement)block };
             return space;

@@ -347,26 +347,26 @@ top_statement:
 				AssignNamingContext();
                 QualifiedName name = new QualifiedName((List<string>)value_stack.array[value_stack.top - 2].yyval.Object, false, true);
                 SetNamingContext(name.NamespacePhpName);
-                yyval.Object = _currentNamespace = (NamespaceDecl)_astFactory.Namespace(yypos, name, value_stack.array[value_stack.top-2].yypos, (LangElement)null, _namingContext);
+                yyval.Object = _currentNamespace = (NamespaceDecl)_astFactory.Namespace(yypos, name, value_stack.array[value_stack.top-2].yypos, (List<LangElement>)null, _namingContext);
 				RESET_DOC_COMMENT(); 
 			}
 	|	T_NAMESPACE namespace_name { RESET_DOC_COMMENT(); var list = (List<string>)$2; SetNamingContext((list != null && list.Count > 0)? string.Join(QualifiedName.Separator.ToString(), list): null); }
 		'{' top_statement_list '}'
 			{ 
-				$$ = _astFactory.Namespace(@$, new QualifiedName((List<string>)$2, false, true), @2, (List<LangElement>)$5, _namingContext); 
+				$$ = _astFactory.Namespace(@$, new QualifiedName((List<string>)$2, false, true), @2, _astFactory.Block(@5, (List<LangElement>)$5), _namingContext); 
 				ResetNamingContext(); 
 			}
 	|	T_NAMESPACE { RESET_DOC_COMMENT(); SetNamingContext(null); }
 		'{' top_statement_list '}'
 			{ 
-				$$ = _astFactory.Namespace(@$, null, @$, (List<LangElement>)$4, _namingContext); 
+				$$ = _astFactory.Namespace(@$, null, @$, _astFactory.Block(@4, (List<LangElement>)$4), _namingContext); 
 				ResetNamingContext(); 
 			}
 	|	T_USE mixed_group_use_declaration ';'		{ _contextType = ContextType.Class; }
 	|	T_USE use_type group_use_declaration ';'	{ _contextType = ContextType.Class; }
 	|	T_USE use_declarations ';'					{ _contextType = ContextType.Class; }
 	|	T_USE use_type use_declarations ';'			{ _contextType = ContextType.Class; }
-	|	T_CONST const_list ';'						{ $$ = _astFactory.List(@$, (List<LangElement>)$2); }
+	|	T_CONST const_list ';'						{ $$ = _astFactory.DeclList(@$, PhpMemberAttributes.None, (List<LangElement>)$2); }
 ;
 
 use_type:

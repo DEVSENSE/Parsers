@@ -12,12 +12,16 @@ define("constB", 0);
 "GlobalCode" : {
   "NamingContext" : {},
   "DirectFcnCall" : {
-    "Name" : "define",
-    "StringLiteral" : {
-      "Value" : "constA"
-    },
-    "StringLiteral" : {
-      "Value" : "Hello"
+    "Name" : "define", 
+    "ActualParam" : {
+      "StringLiteral" : {
+        "Value" : "constA"
+      }
+    },        
+    "ActualParam" : {
+      "StringLiteral" : {
+        "Value" : "Hello"
+      }
     }
   },
   "NamespaceDecl" : {
@@ -28,12 +32,16 @@ define("constB", 0);
     },
     "DirectFcnCall" : {
       "Name" : "define",
-      "StringLiteral" : {
-        "Value" : "constB"
-      },
-      "LongIntLiteral" : {
-        "Value" : "0"
-      }
+      "ActualParam" : {
+        "StringLiteral" : {
+          "Value" : "constB"
+        }
+      },       
+      "ActualParam" : {
+        "LongIntLiteral" : {
+          "Value" : "0" 
+        }
+      } 
     }
   }
 }

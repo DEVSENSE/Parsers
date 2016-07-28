@@ -184,5 +184,11 @@ namespace PhpParser
             base.VisitDirectFcnCall(x);
             _serializer.EndSerialize();
         }
+        override public void VisitActualParam(ActualParam x)
+        {
+            _serializer.StartSerialize(typeof(ActualParam).Name, SerializeSpan(x.Span));
+            base.VisitActualParam(x);
+            _serializer.EndSerialize();
+        }
     }
 }
