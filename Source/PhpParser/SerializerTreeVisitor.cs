@@ -107,7 +107,7 @@ namespace PhpParser
                     SerializeNamingContext(x.Naming));
             else
                 _serializer.StartSerialize(typeof(NamespaceDecl).Name, SerializeSpan(x.Span),
-                    new NodeObj("Name", x.QualifiedName.NamespacePhpName), 
+                    new NodeObj("Name", x.QualifiedName.NamespacePhpName),
                     new NodeObj("SimpleSyntax", x.IsSimpleSyntax.ToString()),
                     SerializeNamingContext(x.Naming));
             base.VisitNamespaceDecl(x);
@@ -228,6 +228,58 @@ namespace PhpParser
         {
             _serializer.StartSerialize(typeof(ConcatEx).Name, SerializeSpan(x.Span));
             base.VisitConcatEx(x);
+            _serializer.EndSerialize();
+        }
+        override public void VisitConditionalEx(ConditionalEx x)
+        {
+            _serializer.StartSerialize(typeof(ConditionalEx).Name, SerializeSpan(x.Span));
+            _serializer.StartSerialize("CondExpr");
+            VisitElement(x.CondExpr);
+            _serializer.EndSerialize();
+            _serializer.StartSerialize("TrueExpr");
+            VisitElement(x.TrueExpr);
+            _serializer.EndSerialize();
+            _serializer.StartSerialize("FalseExpr");
+            VisitElement(x.FalseExpr);
+            _serializer.EndSerialize();
+            _serializer.EndSerialize();
+        }
+        override public void VisitForStmt(ForStmt x)
+        {
+            _serializer.StartSerialize(typeof(WhileStmt).Name, SerializeSpan(x.Span));
+            _serializer.StartSerialize("InitExList");
+            VisitExpressions(x.InitExList);
+            _serializer.EndSerialize();
+            _serializer.StartSerialize("CondExList");
+            VisitExpressions(x.CondExList);
+            _serializer.EndSerialize();
+            _serializer.StartSerialize("ActionExList");
+            VisitExpressions(x.ActionExList);
+            _serializer.EndSerialize();
+            _serializer.StartSerialize("Body");
+            VisitElement(x.Body);
+            _serializer.EndSerialize();
+            _serializer.EndSerialize();
+        }
+        override public void VisitIfStmt(IfStmt x)
+        {
+            _serializer.StartSerialize(typeof(IfStmt).Name, SerializeSpan(x.Span));
+            _serializer.StartSerialize("CondList");
+            base.VisitIfStmt(x);
+            _serializer.EndSerialize();
+            _serializer.EndSerialize();
+        }
+        override public void VisitConditionalStmt(ConditionalStmt x)
+        {
+            _serializer.StartSerialize(typeof(ConditionalStmt).Name, SerializeSpan(x.Span));
+            _serializer.StartSerialize("Condition");
+            if (x.Condition != null)
+                VisitElement(x.Condition);
+            _serializer.EndSerialize();
+
+            _serializer.StartSerialize("Statement");
+            VisitElement(x.Statement);
+            _serializer.EndSerialize();
             _serializer.EndSerialize();
         }
     }

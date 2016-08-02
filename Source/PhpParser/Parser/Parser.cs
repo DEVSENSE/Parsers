@@ -52,8 +52,11 @@ namespace PhpParser.Parser
             else
                 return first;
         }
+        
+//$$ = AddToList<LangElement>($1, $3);
+//$$ = new List<LangElement>() { (LangElement)$1 };
 
-        public LangElement Parse(
+    public LangElement Parse(
             ITokenProvider<SemanticValueType, Span> lexer, INodesFactory<LangElement, Span> astFactory,
             LanguageFeatures features, int positionShift = 0)
         {
@@ -66,7 +69,8 @@ namespace PhpParser.Parser
             this._currentScope = new Scope(1); // starts assigning scopes from 2 (1 is reserved for prepended inclusion)
 
             base.Scanner = this._lexer;
-            base.Parse();
+            bool accept = base.Parse();
+            Debug.Assert(accept, "Parser rejected the source code.");
 
             LangElement result = _astRoot;
 
@@ -169,6 +173,19 @@ namespace PhpParser.Parser
         private Tuple<T1, T2, T3> JoinTuples<T1, T2, T3>(Tuple<T1, T2> first, T3 second)
         {
             return new Tuple<T1, T2, T3>(first.Item1, first.Item2, second);
+        }
+
+        private LangElement StatementsToBlock(Span span, List<LangElement> statements)
+        {
+            if (statements.Count > 1)
+                return _astFactory.Block(span, statements);
+            else return statements.First();
+        }
+
+        private LangElement StatementsToBlock(Span span, object statements)
+        {
+            Debug.Assert(statements is List<LangElement>);
+            return StatementsToBlock(span, (List<LangElement>)statements);
         }
 
         enum _zend_ast_kind

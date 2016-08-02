@@ -411,6 +411,15 @@ namespace PhpParser
         TNode IncrementDecrement(TSpan span, TNode refexpression, bool inc, bool post);
 
         /// <summary>
+        /// Creates conditional expression.
+        /// <param name="span">Entire element span.</param>
+        /// <param name="condExpr">Condition expression.</param>
+        /// <param name="trueExpr">True expression.</param>
+        /// <param name="falseExpr">False expression.</param>
+        /// <returns>Conditional expression.</returns>
+        TNode ConditionalEx(TSpan span, TNode condExpr, TNode trueExpr, TNode falseExpr);
+
+        /// <summary>
         /// Creates expression representing a string concatenation.
         /// </summary>
         /// <param name="span">Entire element span.</param>

@@ -290,7 +290,7 @@ using PHP.Syntax;
 %% /* Rules */
 
 start:
-    { SetNamingContext(null); } top_statement_list END
+    { SetNamingContext(null); } top_statement_list
 	{ 
 		AssignNamingContext(); 
 		AssignStatements((List<LangElement>)$2);
@@ -462,7 +462,7 @@ statement:
 	|	T_DO statement T_WHILE '(' expr ')' ';'
 			{ $$ = _astFactory.Do(@$, (LangElement)$2, (LangElement)$5); }
 	|	T_FOR '(' for_exprs ';' for_exprs ';' for_exprs ')' for_statement
-			{ $$ = _astFactory.For(@$, (List<LangElement>)$3, (List<LangElement>)$5, (List<LangElement>)$7, (LangElement)$9); }
+			{ $$ = _astFactory.For(@$, (List<LangElement>)$3, (List<LangElement>)$5, (List<LangElement>)$7, ($9 is Statement)? (LangElement)$9: StatementsToBlock(@9, $9)); }
 	|	T_SWITCH '(' expr ')' switch_case_list
 			{ $$ = zend_ast_create(_zend_ast_kind.ZEND_AST_SWITCH, $3, $5); }
 	|	T_BREAK optional_expr ';'		{ $$ = _astFactory.Jump(@$, JumpStmt.Types.Break, (LangElement)$2);}
@@ -499,8 +499,8 @@ catch_list:
 ;
 
 catch_name_list:
-		name { $$ = zend_ast_create_list(1, _zend_ast_kind.ZEND_AST_NAME_LIST, $1); }
-	|	catch_name_list '|' name { $$ = zend_ast_list_add($1, $3); }
+		name { $$ = new List<LangElement>() { (LangElement)$1 }; }
+	|	catch_name_list '|' name { $$ = AddToList<LangElement>($1, $3); }
 ;
 
 finally_statement:
@@ -509,8 +509,8 @@ finally_statement:
 ;
 
 unset_variables:
-		unset_variable { $$ = zend_ast_create_list(1, _zend_ast_kind.ZEND_AST_STMT_LIST, $1); }
-	|	unset_variables ',' unset_variable { $$ = zend_ast_list_add($1, $3); }
+		unset_variable { $$ = new List<LangElement>() { (LangElement)$1 }; }
+	|	unset_variables ',' unset_variable { $$ = AddToList<LangElement>($1, $3); }
 ;
 
 unset_variable:
@@ -625,52 +625,61 @@ case_separator:
 
 while_statement:
 		statement { $$ = $1; }
-	|	':' inner_statement_list T_ENDWHILE ';' { $$ = _astFactory.Block(@$, (List<LangElement>)$2); }
+	|	':' inner_statement_list T_ENDWHILE ';' { $$ = StatementsToBlock(@2, $2); }
 ;
 
 
 if_stmt_without_else:
 		T_IF '(' expr ')' statement
-			{ $$ = zend_ast_create_list(1, _zend_ast_kind.ZEND_AST_IF,
-			      zend_ast_create(_zend_ast_kind.ZEND_AST_IF_ELEM, $3, $5)); }
+			{ $$ = new List<Tuple<LangElement, LangElement>>() { 
+				new Tuple<LangElement, LangElement>((LangElement)$3, (LangElement)$5) }; 
+			}
 	|	if_stmt_without_else T_ELSEIF '(' expr ')' statement
-			{ $$ = zend_ast_list_add($1,
-			      zend_ast_create(_zend_ast_kind.ZEND_AST_IF_ELEM, $4, $6)); }
+			{ $$ = AddToList<LangElement>($1, 
+				new Tuple<LangElement, LangElement>((LangElement)$4, (LangElement)$6)); 
+			}
 ;
 
 if_stmt:
-		if_stmt_without_else %prec T_NOELSE { $$ = $1; }
+		if_stmt_without_else %prec T_NOELSE 
+			{ ((List<Tuple<LangElement, LangElement>>)$1).Reverse(); $$ = null; 
+			foreach (var item in (List<Tuple<LangElement, LangElement>>)$1) $$ = _astFactory.If(@$, item.Item1, item.Item2, (LangElement)$$); }
 	|	if_stmt_without_else T_ELSE statement
-			{ $$ = zend_ast_list_add($1, zend_ast_create(_zend_ast_kind.ZEND_AST_IF_ELEM, null, $3)); }
+			{ ((List<Tuple<LangElement, LangElement>>)$1).Reverse(); $$ = _astFactory.If(@$, null, (LangElement)$3, null); 
+			foreach (var item in (List<Tuple<LangElement, LangElement>>)$1) $$ = _astFactory.If(@$, item.Item1, item.Item2, (LangElement)$$); }
 ;
 
 alt_if_stmt_without_else:
 		T_IF '(' expr ')' ':' inner_statement_list
-			{ $$ = zend_ast_create_list(1, _zend_ast_kind.ZEND_AST_IF,
-			      zend_ast_create(_zend_ast_kind.ZEND_AST_IF_ELEM, $3, $6)); }
+			{ $$ = new List<Tuple<LangElement, LangElement>>() { 
+				new Tuple<LangElement, LangElement>((LangElement)$3, StatementsToBlock(@6, $6)) }; 
+			}
 	|	alt_if_stmt_without_else T_ELSEIF '(' expr ')' ':' inner_statement_list
-			{ $$ = zend_ast_list_add($1,
-			      zend_ast_create(_zend_ast_kind.ZEND_AST_IF_ELEM, $4, $7)); }
+			{ $$ = AddToList<LangElement>($1, 
+				new Tuple<LangElement, LangElement>((LangElement)$4, StatementsToBlock(@7, $7))); 
+			}
 ;
 
 alt_if_stmt:
-		alt_if_stmt_without_else T_ENDIF ';' { $$ = $1; }
+		alt_if_stmt_without_else T_ENDIF ';' 
+			{ ((List<Tuple<LangElement, LangElement>>)$1).Reverse(); $$ = null; 
+			foreach (var item in (List<Tuple<LangElement, LangElement>>)$1) $$ = _astFactory.If(@$, item.Item1, item.Item2, (LangElement)$$); }
 	|	alt_if_stmt_without_else T_ELSE ':' inner_statement_list T_ENDIF ';'
-			{ $$ = zend_ast_list_add($1,
-			      zend_ast_create(_zend_ast_kind.ZEND_AST_IF_ELEM, null, $4)); }
+			{ ((List<Tuple<LangElement, LangElement>>)$1).Reverse(); $$ = _astFactory.If(@$, null, StatementsToBlock(@4, $4), null); 
+			foreach (var item in (List<Tuple<LangElement, LangElement>>)$1) $$ = _astFactory.If(@$, item.Item1, item.Item2, (LangElement)$$); }
 ;
 
 parameter_list:
 		non_empty_parameter_list { $$ = $1; }
-	|	/* empty */	{ $$ = zend_ast_create_list(0, _zend_ast_kind.ZEND_AST_PARAM_LIST); }
+	|	/* empty */	{ $$ = new List<LangElement>(); }
 ;
 
 
 non_empty_parameter_list:
 		parameter
-			{ $$ = zend_ast_create_list(1, _zend_ast_kind.ZEND_AST_PARAM_LIST, $1); }
+			{ $$ = new List<LangElement>() { (LangElement)$1 }; }
 	|	non_empty_parameter_list ',' parameter
-			{ $$ = zend_ast_list_add($1, $3); }
+			{ $$ = AddToList<LangElement>($1, $3); }
 ;
 
 parameter:
@@ -720,8 +729,8 @@ argument:
 ;
 
 global_var_list:
-		global_var_list ',' global_var { $$ = zend_ast_list_add($1, $3); }
-	|	global_var { $$ = zend_ast_create_list(1, _zend_ast_kind.ZEND_AST_STMT_LIST, $1); }
+		global_var_list ',' global_var { $$ = AddToList<LangElement>($1, $3); }
+	|	global_var { $$ = new List<LangElement>() { (LangElement)$1 }; }
 ;
 
 global_var:
@@ -731,8 +740,8 @@ global_var:
 
 
 static_var_list:
-		static_var_list ',' static_var { $$ = zend_ast_list_add($1, $3); }
-	|	static_var { $$ = zend_ast_create_list(1, _zend_ast_kind.ZEND_AST_STMT_LIST, $1); }
+		static_var_list ',' static_var { $$ = AddToList<LangElement>($1, $3); }
+	|	static_var { $$ = new List<LangElement>() { (LangElement)$1 }; }
 ;
 
 static_var:
@@ -743,9 +752,9 @@ static_var:
 
 class_statement_list:
 		class_statement_list class_statement
-			{ $$ = zend_ast_list_add($1, $2); }
+			{ $$ = AddToList<LangElement>($1, $2); }
 	|	/* empty */
-			{ $$ = zend_ast_create_list(0, _zend_ast_kind.ZEND_AST_STMT_LIST); }
+			{ $$ = new List<LangElement>(); }
 ;
 
 
@@ -763,8 +772,9 @@ class_statement:
 ;
 
 name_list:
-		name { $$ = zend_ast_create_list(1, _zend_ast_kind.ZEND_AST_NAME_LIST, $1); }
-	|	name_list ',' name { $$ = zend_ast_list_add($1, $3); }
+		name { $$ = new List<LangElement>() { (LangElement)$1 };
+ }
+	|	name_list ',' name { $$ = AddToList<LangElement>($1, $3); }
 ;
 
 trait_adaptations:
@@ -775,9 +785,10 @@ trait_adaptations:
 
 trait_adaptation_list:
 		trait_adaptation
-			{ $$ = zend_ast_create_list(1, _zend_ast_kind.ZEND_AST_TRAIT_ADAPTATIONS, $1); }
+			{ $$ = new List<LangElement>() { (LangElement)$1 };
+ }
 	|	trait_adaptation_list trait_adaptation
-			{ $$ = zend_ast_list_add($1, $2); }
+			{ $$ = AddToList<LangElement>($1, $2); }
 ;
 
 trait_adaptation:
@@ -844,8 +855,8 @@ member_modifier:
 ;
 
 property_list:
-		property_list ',' property { $$ = zend_ast_list_add($1, $3); }
-	|	property { $$ = zend_ast_create_list(1, _zend_ast_kind.ZEND_AST_PROP_DECL, $1); }
+		property_list ',' property { $$ = AddToList<LangElement>($1, $3); }
+	|	property { $$ = new List<LangElement>() { (LangElement)$1 }; }
 ;
 
 property:
@@ -856,8 +867,8 @@ property:
 ;
 
 class_const_list:
-		class_const_list ',' class_const_decl { $$ = zend_ast_list_add($1, $3); }
-	|	class_const_decl { $$ = zend_ast_create_list(1, _zend_ast_kind.ZEND_AST_CLASS_CONST_DECL, $1); }
+		class_const_list ',' class_const_decl { $$ = AddToList<LangElement>($1, $3); }
+	|	class_const_decl { $$ = new List<LangElement>() { (LangElement)$1 }; }
 ;
 
 class_const_decl:
@@ -882,8 +893,8 @@ for_exprs:
 ;
 
 non_empty_for_exprs:
-		non_empty_for_exprs ',' expr { $$ = zend_ast_list_add($1, $3); }
-	|	expr { $$ = zend_ast_create_list(1, _zend_ast_kind.ZEND_AST_EXPR_LIST, $1); }
+		non_empty_for_exprs ',' expr { $$ = AddToList<LangElement>($1, $3); }
+	|	expr { $$ = new List<LangElement>() { (LangElement)$1 }; }
 ;
 
 anonymous_class:
@@ -990,9 +1001,9 @@ expr_without_variable:
 	|	'(' expr ')' { $$ = $2; }
 	|	new_expr { $$ = $1; }
 	|	expr '?' expr ':' expr
-			{ $$ = zend_ast_create(_zend_ast_kind.ZEND_AST_CONDITIONAL, $1, $3, $5); }
+			{ $$ = _astFactory.ConditionalEx(@$, (LangElement)$1, (LangElement)$3, (LangElement)$5); }
 	|	expr '?' ':' expr
-			{ $$ = zend_ast_create(_zend_ast_kind.ZEND_AST_CONDITIONAL, $1, null, $4); }
+			{ $$ = _astFactory.ConditionalEx(@$, (LangElement)$1, null, (LangElement)$4); }
 	|	expr T_COALESCE expr
 			{ $$ = zend_ast_create(_zend_ast_kind.ZEND_AST_COALESCE, $1, $3); }
 	|	internal_functions_in_yacc { $$ = $1; }
@@ -1047,8 +1058,8 @@ lexical_vars:
 ;
 
 lexical_var_list:
-		lexical_var_list ',' lexical_var { $$ = zend_ast_list_add($1, $3); }
-	|	lexical_var { $$ = zend_ast_create_list(1, _zend_ast_kind.ZEND_AST_CLOSURE_USES, $1); }
+		lexical_var_list ',' lexical_var { $$ = AddToList<LangElement>($1, $3); }
+	|	lexical_var { $$ = new List<LangElement>() { (LangElement)$1 }; }
 ;
 
 lexical_var:
@@ -1093,7 +1104,7 @@ backticks_expr:
 
 
 ctor_arguments:
-		/* empty */	{ $$ = zend_ast_create_list(0, _zend_ast_kind.ZEND_AST_ARG_LIST); }
+		/* empty */	{ $$ = new List<LangElement>(); }
 	|	argument_list { $$ = $1; }
 ;
 
@@ -1233,9 +1244,9 @@ possible_array_pair:
 
 non_empty_array_pair_list:
 		non_empty_array_pair_list ',' possible_array_pair
-			{ $$ = zend_ast_list_add($1, $3); }
+			{ $$ = AddToList<LangElement>($1, $3); }
 	|	possible_array_pair
-			{ $$ = zend_ast_create_list(1, _zend_ast_kind.ZEND_AST_ARRAY, $1); }
+			{ $$ = new List<LangElement>() { (LangElement)$1 }; }
 ;
 
 array_pair:

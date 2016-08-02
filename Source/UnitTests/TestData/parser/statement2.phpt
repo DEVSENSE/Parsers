@@ -13,6 +13,12 @@ while ($i <= 10):
     echo $i;
     break;
 endwhile;
+ 
+while ($i <= 10)
+{
+    echo $i;
+    break;
+}
 ?>
 <<<TEST>>>
 
@@ -61,6 +67,32 @@ endwhile;
     },
     "LongIntLiteral" : {
       "Value" : "1"
+    }
+  },
+  "WhileStmt" : {
+    "LoopType" : "While",     
+    "CondExpr" : {
+      "BinaryEx" : {
+        "Operation" : "LessThanOrEqual",
+        "DirectVarUse" : {
+          "VarName" : "i"
+        },
+        "LongIntLiteral" : {
+          "Value":"10"
+        }
+      }
+    },   
+    "Body" : {
+      "BlockStmt" : {
+        "EchoStmt" : {
+          "DirectVarUse":{
+            "VarName" : "i"
+          }
+        },
+        "JumpStmt" : {
+          "Type" : "Break"
+        }
+      }
     }
   },
   "WhileStmt" : {

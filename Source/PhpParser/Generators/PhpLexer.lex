@@ -22,7 +22,7 @@ using System.Collections.Generic;
 %namespace PhpParser.Parser
 %type Tokens
 %class Lexer
-%eofval Tokens.END
+%eofval Tokens.EOF
 %errorval Tokens.T_ERROR
 %attributes public partial
 %function NextToken

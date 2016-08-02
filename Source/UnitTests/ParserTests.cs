@@ -33,8 +33,9 @@ namespace UnitTests
             {
                 Lexer lexer = new CompliantLexer(source_reader, sourceUnit, astFactory, LanguageFeatures.ShortOpenTags);
                 ast = (GlobalCode)parser.Parse(lexer, astFactory, LanguageFeatures.ShortOpenTags);
-                Assert.AreEqual(1, astFactory.Errors.Count);
+                Assert.AreEqual(0, astFactory.Errors.Count);
             }
+            Assert.AreEqual(0, astFactory.Errors.Count);
 
             var serializer = new JsonSerializer();
             SerializerTreeVisitor visitor = new SerializerTreeVisitor(serializer);

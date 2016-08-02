@@ -178,7 +178,14 @@ namespace PhpParser
 
         public LangElement If(Span span, LangElement cond, LangElement body, LangElement elseOpt)
         {
-            throw new NotImplementedException();
+            List<ConditionalStmt> conditions = new List<ConditionalStmt>() { new ConditionalStmt(span, (Expression)cond, (Statement)body) };
+            if (elseOpt != null)
+            {
+                Debug.Assert(elseOpt is IfStmt);
+                IfStmt elseIf = (IfStmt)elseOpt;
+                conditions = conditions.Concat(elseIf.Conditions).ToList();
+            }
+            return new IfStmt(span, conditions);
         }
 
         public LangElement Inclusion(Span span, bool conditional, InclusionTypes type, LangElement fileNameExpression)
@@ -358,6 +365,11 @@ namespace PhpParser
         public LangElement ClassConstUse(Span span, TypeRef tref, Name name, Span nameSpan)
         {
             return new ClassConstUse(span, tref, name.Value, nameSpan);
+        }
+
+        public LangElement ConditionalEx(Span span, LangElement condExpr, LangElement trueExpr, LangElement falseExpr)
+        {
+            return new ConditionalEx(span, (Expression)condExpr, (Expression)trueExpr, (Expression)falseExpr);
         }
     }
 }

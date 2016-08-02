@@ -3149,7 +3149,7 @@ using System.Collections.Generic;
 				
 				if (lookahead == EOF && is_initial_state)
 				{
-					return Tokens.END;
+					return Tokens.EOF;
 				}
 				if (next_state != -1)
 				{
