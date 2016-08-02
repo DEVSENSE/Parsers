@@ -259,7 +259,7 @@ namespace PhpParser
         /// <param name="value">The value variable.</param>
         /// <param name="body">Loop body.</param>
         /// <returns>Foreach statement.</returns>
-        TNode Foreach(TSpan span, TNode enumeree, ForeachVar keyOpt, ForeachVar value, TNode body);
+        TNode Foreach(TSpan span, TNode enumeree, VariableUse keyOpt, VariableUse value, TNode body);
 
         /// <summary>
         /// Creates <c>if</c> statement.
@@ -277,9 +277,18 @@ namespace PhpParser
         /// </summary>
         /// <param name="span">Entire element span.</param>
         /// <param name="value">Switch value expression.</param>
-        /// <param name="block">Block statement containing only <see cref="SwitchItem"/> statements.</param>
+        /// <param name="block">List of statements containing only <see cref="SwitchItem"/> statements.</param>
         /// <returns>Switch statement.</returns>
-        TNode Switch(TSpan span, TNode value, TNode block);
+        TNode Switch(TSpan span, TNode value, List<TNode> block);
+
+        /// <summary>
+        /// Creates <c>case</c> or <c>default</c> statement used in <c>switch</c> statement.
+        /// </summary>
+        /// <param name="span">Entire element span.</param>
+        /// <param name="valueOpt">Case value expression, <c>null</c> for default.</param>
+        /// <param name="block">Block of statements.</param>
+        /// <returns>SwitchItem statement.</</returns>
+        TNode Case(Span span, LangElement valueOpt, TNode block);
 
         /// <summary>
         /// Creates a jump statement (<c>return</c>, <c>break</c> or <c>continue</c>);

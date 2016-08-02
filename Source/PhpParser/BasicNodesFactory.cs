@@ -145,9 +145,9 @@ namespace PhpParser
             return new ForStmt(span, ConvertList<Expression>(init), ConvertList<Expression>(cond), ConvertList<Expression>(action), (Statement)body);
         }
 
-        public LangElement Foreach(Span span, LangElement enumeree, ForeachVar keyOpt, ForeachVar value, LangElement body)
+        public LangElement Foreach(Span span, LangElement enumeree, VariableUse keyOpt, VariableUse value, LangElement body)
         {
-            return new ForeachStmt(span, (Expression)enumeree, keyOpt, value, (Statement)body);
+            return new ForeachStmt(span, (Expression)enumeree, new ForeachVar(keyOpt, false), new ForeachVar(value, false), (Statement)body);
         }
 
         public LangElement Function(Span span, bool conditional, bool aliasReturn, PhpMemberAttributes attributes, QualifiedName? returnType, Span returnTypeSpan, Name name, Span nameSpan, IEnumerable<FormalTypeParam> typeParamsOpt, IEnumerable<FormalParam> formalParams, Span formalParamsSpan, LangElement body)
@@ -287,9 +287,17 @@ namespace PhpParser
             throw new NotImplementedException();
         }
 
-        public LangElement Switch(Span span, LangElement value, LangElement block)
+        public LangElement Switch(Span span, LangElement value, List<LangElement> block)
         {
-            throw new NotImplementedException();
+            return new SwitchStmt(span, (Expression)value, ConvertList<SwitchItem>(block));
+        }
+
+        public LangElement Case(Span span, LangElement valueOpt, LangElement block)
+        {
+            if(valueOpt != null)
+                return new CaseItem(span, (Expression)valueOpt, ((BlockStmt)block).Statements);
+            else
+                return new DefaultItem(span, ((BlockStmt)block).Statements);
         }
 
         public LangElement TraitUse(Span span, IEnumerable<QualifiedName> traits, IEnumerable<TraitsUse.TraitAdaptation> adaptations)
@@ -319,7 +327,7 @@ namespace PhpParser
 
         public LangElement Variable(Span span, LangElement nameExpr, LangElement memberOfOpt)
         {
-            return new IndirectVarUse(span, 0, (Expression)nameExpr) { IsMemberOf = (VarLikeConstructUse)memberOfOpt };
+            return new IndirectVarUse(span, 1, (Expression)nameExpr) { IsMemberOf = (VarLikeConstructUse)memberOfOpt };
         }
 
         public LangElement Variable(Span span, VariableName name, TypeRef typeRef)

@@ -188,6 +188,11 @@ namespace PhpParser.Parser
             return StatementsToBlock(span, (List<LangElement>)statements);
         }
 
+        private LangElement StatementBlock(Span span, object statements)
+        {
+            return (statements is Statement) ? (LangElement)statements : StatementsToBlock(span, statements);
+        }
+
         enum _zend_ast_kind
         {
             /* special nodes */

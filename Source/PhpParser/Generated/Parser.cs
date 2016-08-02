@@ -2084,10 +2084,10 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 { yyval.Object = _astFactory.Do(yypos, (LangElement)value_stack.array[value_stack.top-6].yyval.Object, (LangElement)value_stack.array[value_stack.top-3].yyval.Object); }
         return;
       case 136: // statement -> T_FOR '(' for_exprs ';' for_exprs ';' for_exprs ')' for_statement 
-{ yyval.Object = _astFactory.For(yypos, (List<LangElement>)value_stack.array[value_stack.top-7].yyval.Object, (List<LangElement>)value_stack.array[value_stack.top-5].yyval.Object, (List<LangElement>)value_stack.array[value_stack.top-3].yyval.Object, (value_stack.array[value_stack.top-1].yyval.Object is Statement)? (LangElement)value_stack.array[value_stack.top-1].yyval.Object: StatementsToBlock(value_stack.array[value_stack.top-1].yypos, value_stack.array[value_stack.top-1].yyval.Object)); }
+{ yyval.Object = _astFactory.For(yypos, (List<LangElement>)value_stack.array[value_stack.top-7].yyval.Object, (List<LangElement>)value_stack.array[value_stack.top-5].yyval.Object, (List<LangElement>)value_stack.array[value_stack.top-3].yyval.Object, StatementBlock(value_stack.array[value_stack.top-1].yypos, value_stack.array[value_stack.top-1].yyval.Object)); }
         return;
       case 137: // statement -> T_SWITCH '(' expr ')' switch_case_list 
-{ yyval.Object = zend_ast_create(_zend_ast_kind.ZEND_AST_SWITCH, value_stack.array[value_stack.top-3].yyval.Object, value_stack.array[value_stack.top-1].yyval.Object); }
+{ yyval.Object = _astFactory.Switch(yypos, (LangElement)value_stack.array[value_stack.top-3].yyval.Object, (List<LangElement>)value_stack.array[value_stack.top-1].yyval.Object); }
         return;
       case 138: // statement -> T_BREAK optional_expr ';' 
 { yyval.Object = _astFactory.Jump(yypos, JumpStmt.Types.Break, (LangElement)value_stack.array[value_stack.top-2].yyval.Object);}
@@ -2117,10 +2117,10 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 { yyval.Object = value_stack.array[value_stack.top-3].yyval.Object; }
         return;
       case 147: // statement -> T_FOREACH '(' expr T_AS foreach_variable ')' foreach_statement 
-{ yyval.Object = _astFactory.Foreach(yypos, (LangElement)value_stack.array[value_stack.top-5].yyval.Object, null, (ForeachVar)value_stack.array[value_stack.top-3].yyval.Object, (LangElement)value_stack.array[value_stack.top-1].yyval.Object); }
+{ yyval.Object = _astFactory.Foreach(yypos, (LangElement)value_stack.array[value_stack.top-5].yyval.Object, null, (VariableUse)value_stack.array[value_stack.top-3].yyval.Object, StatementBlock(value_stack.array[value_stack.top-1].yypos, value_stack.array[value_stack.top-1].yyval.Object)); }
         return;
       case 148: // statement -> T_FOREACH '(' expr T_AS foreach_variable T_DOUBLE_ARROW foreach_variable ')' foreach_statement 
-{ yyval.Object = _astFactory.Foreach(yypos, (LangElement)value_stack.array[value_stack.top-7].yyval.Object, (ForeachVar)value_stack.array[value_stack.top-5].yyval.Object, (ForeachVar)value_stack.array[value_stack.top-3].yyval.Object, (LangElement)value_stack.array[value_stack.top-1].yyval.Object); }
+{ yyval.Object = _astFactory.Foreach(yypos, (LangElement)value_stack.array[value_stack.top-7].yyval.Object, (VariableUse)value_stack.array[value_stack.top-5].yyval.Object, (VariableUse)value_stack.array[value_stack.top-3].yyval.Object, StatementBlock(value_stack.array[value_stack.top-1].yypos, value_stack.array[value_stack.top-1].yyval.Object)); }
         return;
       case 149: // @4 -> 
 { zend_handle_encoding_declaration(value_stack.array[value_stack.top-2].yyval.Object); }
@@ -2244,7 +2244,7 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 { yyval.Object = value_stack.array[value_stack.top-1].yyval.Object; }
         return;
       case 189: // foreach_variable -> '&' variable 
-{ yyval.Object = zend_ast_create(_zend_ast_kind.ZEND_AST_REF, value_stack.array[value_stack.top-1].yyval.Object); }
+{ yyval.Object = _astFactory.Variable(yypos, (LangElement)value_stack.array[value_stack.top-1].yyval.Object, (LangElement)null); }
         return;
       case 190: // foreach_variable -> T_LIST '(' array_pair_list ')' 
 { value_stack.array[value_stack.top-2].yyval.Object/*->attr*/ = 1; yyval.Object = value_stack.array[value_stack.top-2].yyval.Object; }
@@ -2283,13 +2283,13 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 { yyval.Object = value_stack.array[value_stack.top-3].yyval.Object; }
         return;
       case 202: // case_list -> 
-{ yyval.Object = zend_ast_create_list(0, _zend_ast_kind.ZEND_AST_SWITCH_LIST); }
+{ yyval.Object = new List<LangElement>(); }
         return;
       case 203: // case_list -> case_list T_CASE expr case_separator inner_statement_list 
-{ yyval.Object = zend_ast_list_add(value_stack.array[value_stack.top-5].yyval.Object, zend_ast_create(_zend_ast_kind.ZEND_AST_SWITCH_CASE, value_stack.array[value_stack.top-3].yyval.Object, value_stack.array[value_stack.top-1].yyval.Object)); }
+{ yyval.Object = AddToList<LangElement>(value_stack.array[value_stack.top-5].yyval.Object, _astFactory.Case(yypos, (LangElement)value_stack.array[value_stack.top-3].yyval.Object, StatementBlock(value_stack.array[value_stack.top-1].yypos, value_stack.array[value_stack.top-1].yyval.Object))); }
         return;
       case 204: // case_list -> case_list T_DEFAULT case_separator inner_statement_list 
-{ yyval.Object = zend_ast_list_add(value_stack.array[value_stack.top-4].yyval.Object, zend_ast_create(_zend_ast_kind.ZEND_AST_SWITCH_CASE, null, value_stack.array[value_stack.top-1].yyval.Object)); }
+{ yyval.Object = AddToList<LangElement>(value_stack.array[value_stack.top-4].yyval.Object, _astFactory.Case(yypos, null, StatementBlock(value_stack.array[value_stack.top-1].yypos, value_stack.array[value_stack.top-1].yyval.Object))); }
         return;
       case 207: // while_statement -> statement 
 { yyval.Object = value_stack.array[value_stack.top-1].yyval.Object; }
@@ -2603,7 +2603,7 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 { yyval.Object = _astFactory.Assignment(yypos, (LangElement)value_stack.array[value_stack.top-3].yyval.Object, (LangElement)value_stack.array[value_stack.top-1].yyval.Object, Operations.AssignValue); }
         return;
       case 304: // expr_without_variable -> variable '=' '&' variable 
-{ yyval.Object = _astFactory.Assignment(yypos, (LangElement)value_stack.array[value_stack.top-4].yyval.Object, (LangElement)value_stack.array[value_stack.top-1].yyval.Object, Operations.AssignRef); }
+{ yyval.Object = _astFactory.Assignment(yypos, (LangElement)value_stack.array[value_stack.top-4].yyval.Object, _astFactory.Variable(yypos, (LangElement)value_stack.array[value_stack.top-1].yyval.Object, (LangElement)null), Operations.AssignRef); }
         return;
       case 305: // expr_without_variable -> T_CLONE expr 
 { yyval.Object = zend_ast_create(_zend_ast_kind.ZEND_AST_CLONE, value_stack.array[value_stack.top-1].yyval.Object); }

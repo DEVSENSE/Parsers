@@ -282,5 +282,53 @@ namespace PhpParser
             _serializer.EndSerialize();
             _serializer.EndSerialize();
         }
+        override public void VisitForeachStmt(ForeachStmt x)
+        {
+            _serializer.StartSerialize(typeof(ForeachStmt).Name, SerializeSpan(x.Span));
+            _serializer.StartSerialize("Enumeree");
+            VisitElement(x.Enumeree);
+            _serializer.EndSerialize();
+            _serializer.StartSerialize("KeyVariable");
+            if (x.KeyVariable != null)
+                VisitElement(x.KeyVariable.Variable);
+            _serializer.EndSerialize();
+            _serializer.StartSerialize("Body");
+            VisitElement(x.Body);
+            _serializer.EndSerialize();
+            _serializer.EndSerialize();
+        }
+        override public void VisitSwitchStmt(SwitchStmt x)
+        {
+            _serializer.StartSerialize(typeof(SwitchStmt).Name, SerializeSpan(x.Span));
+            _serializer.StartSerialize("SwitchValue");
+            VisitElement(x.SwitchValue);
+            _serializer.EndSerialize();
+            _serializer.StartSerialize("SwitchItems");
+            foreach (SwitchItem item in x.SwitchItems)
+                VisitElement(item);
+            _serializer.EndSerialize();
+            _serializer.EndSerialize();
+        }
+
+        override public void VisitCaseItem(CaseItem x)
+        {
+            _serializer.StartSerialize(typeof(CaseItem).Name, SerializeSpan(x.Span));
+            _serializer.StartSerialize("CaseVal");
+            VisitElement(x.CaseVal);
+            _serializer.EndSerialize();
+            _serializer.StartSerialize("Statements");
+            VisitSwitchItem(x);
+            _serializer.EndSerialize();
+            _serializer.EndSerialize();
+        }
+
+        override public void VisitDefaultItem(DefaultItem x)
+        {
+            _serializer.StartSerialize(typeof(DefaultItem).Name, SerializeSpan(x.Span));
+            _serializer.StartSerialize("Statements");
+            VisitSwitchItem(x);
+            _serializer.EndSerialize();
+            _serializer.EndSerialize();
+        }
     }
 }

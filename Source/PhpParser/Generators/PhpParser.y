@@ -452,7 +452,6 @@ inner_statement:
 			}
 ;
 
-
 statement:
 		'{' inner_statement_list '}' { $$ = _astFactory.Block(@$, (List<LangElement>)$2); }
 	|	if_stmt { $$ = $1; }
@@ -462,9 +461,9 @@ statement:
 	|	T_DO statement T_WHILE '(' expr ')' ';'
 			{ $$ = _astFactory.Do(@$, (LangElement)$2, (LangElement)$5); }
 	|	T_FOR '(' for_exprs ';' for_exprs ';' for_exprs ')' for_statement
-			{ $$ = _astFactory.For(@$, (List<LangElement>)$3, (List<LangElement>)$5, (List<LangElement>)$7, ($9 is Statement)? (LangElement)$9: StatementsToBlock(@9, $9)); }
+			{ $$ = _astFactory.For(@$, (List<LangElement>)$3, (List<LangElement>)$5, (List<LangElement>)$7, StatementBlock(@9, $9)); }
 	|	T_SWITCH '(' expr ')' switch_case_list
-			{ $$ = zend_ast_create(_zend_ast_kind.ZEND_AST_SWITCH, $3, $5); }
+			{ $$ = _astFactory.Switch(@$, (LangElement)$3, (List<LangElement>)$5); }
 	|	T_BREAK optional_expr ';'		{ $$ = _astFactory.Jump(@$, JumpStmt.Types.Break, (LangElement)$2);}
 	|	T_CONTINUE optional_expr ';'	{ $$ = _astFactory.Jump(@$, JumpStmt.Types.Continue, (LangElement)$2); }
 	|	T_RETURN optional_expr ';'		{ $$ = _astFactory.Jump(@$, JumpStmt.Types.Return, (LangElement)$2); }
@@ -475,10 +474,10 @@ statement:
 	|	expr ';' { $$ = _astFactory.ExpressionStmt(@$, (LangElement)$1); }
 	|	T_UNSET '(' unset_variables ')' ';' { $$ = $3; }
 	|	T_FOREACH '(' expr T_AS foreach_variable ')' foreach_statement
-			{ $$ = _astFactory.Foreach(@$, (LangElement)$3, null, (ForeachVar)$5, (LangElement)$7); }
+			{ $$ = _astFactory.Foreach(@$, (LangElement)$3, null, (VariableUse)$5, StatementBlock(@7, $7)); }
 	|	T_FOREACH '(' expr T_AS foreach_variable T_DOUBLE_ARROW foreach_variable ')'
 		foreach_statement
-			{ $$ = _astFactory.Foreach(@$, (LangElement)$3, (ForeachVar)$5, (ForeachVar)$7, (LangElement)$9); }
+			{ $$ = _astFactory.Foreach(@$, (LangElement)$3, (VariableUse)$5, (VariableUse)$7, StatementBlock(@9, $9)); }
 	|	T_DECLARE '(' const_list ')'
 			{ zend_handle_encoding_declaration($3); }
 		declare_statement
@@ -582,7 +581,7 @@ implements_list:
 
 foreach_variable:
 		variable			{ $$ = $1; }
-	|	'&' variable		{ $$ = zend_ast_create(_zend_ast_kind.ZEND_AST_REF, $2); }
+	|	'&' variable		{ $$ = _astFactory.Variable(@$, (LangElement)$2, (LangElement)null); }
 	|	T_LIST '(' array_pair_list ')' { $3/*->attr*/ = 1; $$ = $3; }
 	|	'[' array_pair_list ']' { $$ = $2; }
 ;
@@ -610,12 +609,15 @@ switch_case_list:
 ;
 
 case_list:
-		/* empty */ { $$ = zend_ast_create_list(0, _zend_ast_kind.ZEND_AST_SWITCH_LIST); }
+		/* empty */ { $$ = new List<LangElement>(); }
 	|	case_list T_CASE expr case_separator inner_statement_list
-			{ $$ = zend_ast_list_add($1, zend_ast_create(_zend_ast_kind.ZEND_AST_SWITCH_CASE, $3, $5)); }
+			{ $$ = AddToList<LangElement>($1, _astFactory.Case(@$, (LangElement)$3, StatementBlock(@5, $5))); }
 	|	case_list T_DEFAULT case_separator inner_statement_list
-			{ $$ = zend_ast_list_add($1, zend_ast_create(_zend_ast_kind.ZEND_AST_SWITCH_CASE, null, $4)); }
+			{ $$ = AddToList<LangElement>($1, _astFactory.Case(@$, null, StatementBlock(@4, $4))); }
 ;
+
+//$$ = AddToList<LangElement>($1, $3);
+//$$ = new List<LangElement>() { (LangElement)$1 };
 
 case_separator:
 		':'
@@ -922,7 +924,7 @@ expr_without_variable:
 	|	variable '=' expr
 			{ $$ = _astFactory.Assignment(@$, (LangElement)$1, (LangElement)$3, Operations.AssignValue); }
 	|	variable '=' '&' variable
-			{ $$ = _astFactory.Assignment(@$, (LangElement)$1, (LangElement)$4, Operations.AssignRef); }
+			{ $$ = _astFactory.Assignment(@$, (LangElement)$1, _astFactory.Variable(@$, (LangElement)$4, (LangElement)null), Operations.AssignRef); }
 	|	T_CLONE expr { $$ = zend_ast_create(_zend_ast_kind.ZEND_AST_CLONE, $2); }
 	|	variable T_PLUS_EQUAL expr
 			{ $$ = _astFactory.Assignment(@$, (LangElement)$1, (LangElement)$3, Operations.AssignAdd); }
