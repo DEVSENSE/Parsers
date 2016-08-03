@@ -203,6 +203,25 @@ namespace PhpParser
         TNode TryCatch(TSpan span, TNode body, IEnumerable<CatchItem> catches, TNode finallyBlockOpt);
 
         /// <summary>
+        /// Creates <c>catch</c> of <c>finally</c> block according to the optional parameters.
+        /// When both optional parameters are null, <c>finally</c> block is created.
+        /// </summary>
+        /// <param name="span">Entire element span.</param>
+        /// <param name="typeOpt">Exception type.</param>
+        /// <param name="variableOpt">Exception variable.</param>
+        /// <param name="block">Statements of the block.</param>
+        /// <returns></returns>
+        TNode Catch(Span span, DirectTypeRef typeOpt, DirectVarUse variableOpt, TNode block);
+
+        /// <summary>
+        /// Creates a <c>throw</c> statment;
+        /// </summary>
+        /// <param name="span">Entire element span.</param>
+        /// <param name="expression">The exception statement.</param>
+        /// <returns></returns>
+        TNode Throw(Span span, TNode expression);
+
+        /// <summary>
         /// Create element representing <c>__haltcompiler();</c> call.
         /// </summary>
         /// <param name="span">Entire element span.</param>
@@ -482,6 +501,24 @@ namespace PhpParser
         /// <param name="typeRef">Field containing type.</param>
         /// <returns>Direct static field access expression.</returns>
         TNode Variable(TSpan span, TNode nameExpr, TypeRef typeRef);
+
+        /// <summary>
+        /// Create <c>TypeRef</c> reference to a type.
+        /// </summary>
+        /// <param name="span">Entire element span.</param>
+        /// <param name="className">Qualified class name.</param>
+        /// <param name="genericParamsOpt">Actual generic parameters</param>
+        /// <returns></returns>
+        TNode TypeReference(TSpan span, QualifiedName className, List<TypeRef> genericParamsOpt);
+
+        /// <summary>
+        /// Create <c>TypeRef</c> reference to a type.
+        /// </summary>
+        /// <param name="span">Entire element span.</param>
+        /// <param name="varName">Indirect name.</param>
+        /// <param name="genericParamsOpt">Actual generic parameters</param>
+        /// <returns></returns>
+        TNode TypeReference(TSpan span, VariableUse varName, List<TypeRef> genericParamsOpt);
 
         /// <summary>
         /// Creates a pseudo constant use.

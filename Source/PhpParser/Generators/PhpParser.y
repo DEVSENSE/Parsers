@@ -484,27 +484,33 @@ statement:
 			{ $$ = zend_ast_create(_zend_ast_kind.ZEND_AST_DECLARE, $3, $6); }
 	|	';'	/* empty statement */ { $$ = null; }
 	|	T_TRY '{' inner_statement_list '}' catch_list finally_statement
-			{ $$ = zend_ast_create(_zend_ast_kind.ZEND_AST_TRY, $3, $5, $6); }
-	|	T_THROW expr ';' { $$ = zend_ast_create(_zend_ast_kind.ZEND_AST_THROW, $2); }
-	|	T_GOTO T_STRING ';' { $$ = zend_ast_create(_zend_ast_kind.ZEND_AST_GOTO, $2); }
-	|	T_STRING ':' { $$ = zend_ast_create(_zend_ast_kind.ZEND_AST_LABEL, $1); }
+			{ $$ = _astFactory.TryCatch(@$, _astFactory.Block(@3, (List<LangElement>)$3), (List<CatchItem>)$5, (LangElement)$6); }
+	|	T_THROW expr ';' { $$ = _astFactory.Throw(@$, (LangElement)$2); }
+	|	T_GOTO T_STRING ';' { $$ = _astFactory.Goto(@$, (string)$2, @2); }
+	|	T_STRING ':' { $$ = _astFactory.Label(@$, (string)$1, @1); }
 ;
 
 catch_list:
 		/* empty */
-			{ $$ = zend_ast_create_list(0, _zend_ast_kind.ZEND_AST_CATCH_LIST); }
+			{ $$ = new List<CatchItem>(); }
 	|	catch_list T_CATCH '(' catch_name_list T_VARIABLE ')' '{' inner_statement_list '}'
-			{ $$ = zend_ast_list_add($1, zend_ast_create(_zend_ast_kind.ZEND_AST_CATCH, $4, $5, $8)); }
+			{ 
+			foreach (var item in (List<QualifiedName>)$4)
+				$$ = AddToList<CatchItem>($1, _astFactory.Catch(@$, 
+					(DirectTypeRef)_astFactory.TypeReference(@4, item, null), 
+					(DirectVarUse)_astFactory.Variable(@5, new VariableName((string)$5), (LangElement)null), 
+					_astFactory.Block(@8, (List<LangElement>)$8))); 
+			}
 ;
 
 catch_name_list:
-		name { $$ = new List<LangElement>() { (LangElement)$1 }; }
-	|	catch_name_list '|' name { $$ = AddToList<LangElement>($1, $3); }
+		name { $$ = new List<QualifiedName>() { (QualifiedName)$1 }; }
+	|	catch_name_list '|' name { $$ = AddToList<QualifiedName>($1, $3); }
 ;
 
 finally_statement:
 		/* empty */ { $$ = null; }
-	|	T_FINALLY '{' inner_statement_list '}' { $$ = $3; }
+	|	T_FINALLY '{' inner_statement_list '}' { $$ =_astFactory.Catch(@$, null, null, _astFactory.Block(@3, (List<LangElement>)$3)); }
 ;
 
 unset_variables:
@@ -615,9 +621,6 @@ case_list:
 	|	case_list T_DEFAULT case_separator inner_statement_list
 			{ $$ = AddToList<LangElement>($1, _astFactory.Case(@$, null, StatementBlock(@4, $4))); }
 ;
-
-//$$ = AddToList<LangElement>($1, $3);
-//$$ = new List<LangElement>() { (LangElement)$1 };
 
 case_separator:
 		':'
@@ -911,7 +914,7 @@ anonymous_class:
 
 new_expr:
 		T_NEW class_name_reference ctor_arguments
-			{ $$ = zend_ast_create(_zend_ast_kind.ZEND_AST_NEW, $2, $3); }
+			{ $$ = _astFactory.New(@$, (TypeRef)_astFactory.TypeReference(@2, (QualifiedName)$2, null), (List<ActualParam>)$3); }
 	|	T_NEW anonymous_class
 			{ $$ = $2; }
 ;
@@ -925,7 +928,7 @@ expr_without_variable:
 			{ $$ = _astFactory.Assignment(@$, (LangElement)$1, (LangElement)$3, Operations.AssignValue); }
 	|	variable '=' '&' variable
 			{ $$ = _astFactory.Assignment(@$, (LangElement)$1, _astFactory.Variable(@$, (LangElement)$4, (LangElement)null), Operations.AssignRef); }
-	|	T_CLONE expr { $$ = zend_ast_create(_zend_ast_kind.ZEND_AST_CLONE, $2); }
+	|	T_CLONE expr { $$ = _astFactory.UnaryOperation(@$, Operations.Clone,   (Expression)$2); }
 	|	variable T_PLUS_EQUAL expr
 			{ $$ = _astFactory.Assignment(@$, (LangElement)$1, (LangElement)$3, Operations.AssignAdd); }
 	|	variable T_MINUS_EQUAL expr
@@ -1007,7 +1010,7 @@ expr_without_variable:
 	|	expr '?' ':' expr
 			{ $$ = _astFactory.ConditionalEx(@$, (LangElement)$1, null, (LangElement)$4); }
 	|	expr T_COALESCE expr
-			{ $$ = zend_ast_create(_zend_ast_kind.ZEND_AST_COALESCE, $1, $3); }
+			{ $$ = _astFactory.BinaryOperation(@$, Operations.Coalesce, (LangElement)$1, (LangElement)$3); }
 	|	internal_functions_in_yacc { $$ = $1; }
 	|	T_INT_CAST expr		{ $$ = _astFactory.UnaryOperation(@$, Operations.LongCast,   (Expression)$2); }
 	|	T_DOUBLE_CAST expr	{ $$ = _astFactory.UnaryOperation(@$, Operations.DoubleCast, (Expression)$2); }
@@ -1019,8 +1022,8 @@ expr_without_variable:
 	|	T_EXIT exit_expr	{ $$ = _astFactory.UnaryOperation(@$, Operations.Exit,       (Expression)$2); }
 	|	'@' expr			{ $$ = _astFactory.UnaryOperation(@$, Operations.AtSign,     (Expression)$2); }
 	|	scalar { $$ = $1; }
-	|	'`' backticks_expr '`' { $$ = zend_ast_create(_zend_ast_kind.ZEND_AST_SHELL_EXEC, $2); }
-	|	T_PRINT expr { $$ = zend_ast_create(_zend_ast_kind.ZEND_AST_PRINT, $2); }
+	|	'`' backticks_expr '`' { $$ = _astFactory.Shell(@$, (LangElement)$2); }
+	|	T_PRINT expr { $$ = _astFactory.UnaryOperation(@$, Operations.Print, (Expression)$2); }
 	|	T_YIELD { $$ = zend_ast_create(_zend_ast_kind.ZEND_AST_YIELD, null, null); /*CG(extra_fn_flags) |= (long)_zend_sup.ZEND_ACC_GENERATOR;*/ }
 	|	T_YIELD expr { $$ = zend_ast_create(_zend_ast_kind.ZEND_AST_YIELD, $2, null); /*CG(extra_fn_flags) |= (long)_zend_sup.ZEND_ACC_GENERATOR;*/ }
 	|	T_YIELD expr T_DOUBLE_ARROW expr { $$ = zend_ast_create(_zend_ast_kind.ZEND_AST_YIELD, $4, $2); /*CG(extra_fn_flags) |= (long)_zend_sup.ZEND_ACC_GENERATOR;*/ }
@@ -1065,8 +1068,8 @@ lexical_var_list:
 ;
 
 lexical_var:
-		T_VARIABLE		{ $$ = $1; }
-	|	'&' T_VARIABLE	{ $$ = $2; $$/*->attr*/ = 1; }
+		T_VARIABLE		{ $$ = _astFactory.Variable(@$, new VariableName((string)$1), (LangElement)null); }
+	|	'&' T_VARIABLE	{ $$ = _astFactory.Variable(@$, (LangElement)$2, (LangElement)null); $$/*->attr*/ = 1; }
 ;
 
 function_call:
@@ -1082,8 +1085,7 @@ function_call:
 
 class_name:
 		T_STATIC
-			{/* long zv = 0; ZVAL_INTERNED_STR(zv, CG(known_strings)[ZEND_STR_STATIC]);
-			  $$ = zend_ast_create_zval_ex(zv, ZEND_NAME_NOT_FQ); */}
+			{ $$ = new QualifiedName(new List<string>() { "static" }, true, false); }
 	|	name { $$ = $1; }
 ;
 
@@ -1099,14 +1101,14 @@ exit_expr:
 
 backticks_expr:
 		/* empty */
-			{ $$ = zend_ast_create_zval_from_str(ZSTR_EMPTY_ALLOC()); }
-	|	T_ENCAPSED_AND_WHITESPACE { $$ = $1; }
+			{ $$ = _astFactory.Literal(@$, string.Empty); }
+	|	T_ENCAPSED_AND_WHITESPACE { $$ = _astFactory.Literal(@$, $1); }
 	|	encaps_list { $$ = $1; }
 ;
 
 
 ctor_arguments:
-		/* empty */	{ $$ = new List<LangElement>(); }
+		/* empty */	{ $$ = new List<ActualParam>(); }
 	|	argument_list { $$ = $1; }
 ;
 

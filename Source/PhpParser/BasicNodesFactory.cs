@@ -87,6 +87,7 @@ namespace PhpParser
 
         public LangElement Call(Span span, QualifiedName name, QualifiedName? nameFallback, Span nameSpan, CallSignature signature, LangElement memberOfOpt)
         {
+            Debug.Assert(memberOfOpt == null || memberOfOpt is VarLikeConstructUse);
             return new DirectFcnCall(span, name, nameFallback, nameSpan, signature.Parameters.ToList(), signature.GenericParams.ToList()) { IsMemberOf = (VarLikeConstructUse)memberOfOpt } ;
         }
 
@@ -168,7 +169,7 @@ namespace PhpParser
 
         public LangElement Goto(Span span, string label, Span labelSpan)
         {
-            throw new NotImplementedException();
+            return new GotoStmt(span, label, labelSpan);
         }
 
         public LangElement HaltCompiler(Span span)
@@ -215,7 +216,7 @@ namespace PhpParser
 
         public LangElement Label(Span span, string label, Span labelSpan)
         {
-            throw new NotImplementedException();
+            return new LabelStmt(span, label, labelSpan);
         }
 
         public LangElement LineComment(Span span, string content)
@@ -264,7 +265,7 @@ namespace PhpParser
 
         public LangElement New(Span span, TypeRef classNameRef, IEnumerable<ActualParam> argsOpt)
         {
-            throw new NotImplementedException();
+            return new NewEx(span, classNameRef, argsOpt.ToList());
         }
 
         public LangElement NewArray(Span span, IEnumerable<Item> itemsOpt)
@@ -284,7 +285,8 @@ namespace PhpParser
 
         public LangElement Shell(Span span, LangElement command)
         {
-            throw new NotImplementedException();
+            Debug.Assert(command is Expression);
+            return new ShellEx(span, (Expression)command);
         }
 
         public LangElement Switch(Span span, LangElement value, List<LangElement> block)
@@ -294,7 +296,8 @@ namespace PhpParser
 
         public LangElement Case(Span span, LangElement valueOpt, LangElement block)
         {
-            if(valueOpt != null)
+            Debug.Assert(block is BlockStmt);
+            if (valueOpt != null)
                 return new CaseItem(span, (Expression)valueOpt, ((BlockStmt)block).Statements);
             else
                 return new DefaultItem(span, ((BlockStmt)block).Statements);
@@ -307,7 +310,23 @@ namespace PhpParser
 
         public LangElement TryCatch(Span span, LangElement body, IEnumerable<CatchItem> catches, LangElement finallyBlockOpt)
         {
-            throw new NotImplementedException();
+            Debug.Assert(body is BlockStmt);
+            return new TryStmt(span, ((BlockStmt)body).Statements, catches.ToList(), (FinallyItem)finallyBlockOpt);
+        }
+
+        public LangElement Catch(Span span, DirectTypeRef typeOpt, DirectVarUse variableOpt, LangElement block)
+        {
+            Debug.Assert(block is BlockStmt);
+            Debug.Assert(typeOpt == null && variableOpt == null || typeOpt != null && variableOpt != null);
+            if (typeOpt != null && variableOpt != null)
+                return new CatchItem(span, typeOpt, variableOpt, ((BlockStmt)block).Statements);
+            else
+                return new FinallyItem(span, ((BlockStmt)block).Statements);
+        }
+        public LangElement Throw(Span span, LangElement expression)
+        {
+            Debug.Assert(expression is Expression);
+            return new ThrowStmt(span, (Expression)expression);
         }
 
         public LangElement Type(Span span, bool conditional, PhpMemberAttributes attributes, Name name, Span nameSpan, IEnumerable<FormalTypeParam> typeParamsOpt, Tuple<GenericQualifiedName, Span> baseClassOpt, IEnumerable<Tuple<GenericQualifiedName, Span>> implements, IEnumerable<LangElement> members, Span blockSpan)
@@ -317,6 +336,7 @@ namespace PhpParser
 
         public LangElement UnaryOperation(Span span, Operations operation, LangElement expression)
         {
+            Debug.Assert(expression is Expression);
             return new UnaryEx(operation, (Expression)expression);
         }
 
@@ -327,6 +347,7 @@ namespace PhpParser
 
         public LangElement Variable(Span span, LangElement nameExpr, LangElement memberOfOpt)
         {
+            Debug.Assert(nameExpr is Expression);
             return new IndirectVarUse(span, 1, (Expression)nameExpr) { IsMemberOf = (VarLikeConstructUse)memberOfOpt };
         }
 
@@ -337,11 +358,21 @@ namespace PhpParser
 
         public LangElement Variable(Span span, VariableName name, LangElement memberOfOpt)
         {
+            Debug.Assert(memberOfOpt == null || memberOfOpt is VarLikeConstructUse);
             return new DirectVarUse(span, name) { IsMemberOf = (VarLikeConstructUse)memberOfOpt };
+        }
+        public LangElement TypeReference(Span span, QualifiedName className, List<TypeRef> genericParamsOpt)
+        {
+            return new DirectTypeRef(span, className, genericParamsOpt);
+        }
+        public LangElement TypeReference(Span span, VariableUse varName, List<TypeRef> genericParamsOpt)
+        {
+            return new IndirectTypeRef(span, varName, genericParamsOpt);
         }
 
         public LangElement While(Span span, LangElement cond, LangElement body)
         {
+            Debug.Assert(cond is Expression && body is Statement);
             return new WhileStmt(span, WhileStmt.Type.While, (Expression)cond, (Statement)body);
         }
 
@@ -362,6 +393,7 @@ namespace PhpParser
 
         public LangElement ExpressionStmt(Span span, LangElement expression)
         {
+            Debug.Assert(expression is Expression);
             return new ExpressionStmt(span, (Expression)expression);
         }
 
@@ -377,6 +409,7 @@ namespace PhpParser
 
         public LangElement ConditionalEx(Span span, LangElement condExpr, LangElement trueExpr, LangElement falseExpr)
         {
+            Debug.Assert(condExpr is Expression && trueExpr is Expression && falseExpr is Expression);
             return new ConditionalEx(span, (Expression)condExpr, (Expression)trueExpr, (Expression)falseExpr);
         }
     }

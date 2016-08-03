@@ -581,12 +581,6 @@ namespace PhpParser.Parser
             // TODO implement
         }
 
-        private object ZSTR_EMPTY_ALLOC()
-        {
-            // TODO implement
-            return null;
-        }
-
         private object zend_ast_create(params object[] abc)
         {
             // TODO implement
@@ -600,18 +594,6 @@ namespace PhpParser.Parser
         }
 
         private object zend_handle_encoding_declaration(params object[] abc)
-        {
-            // TODO implement
-            return null;
-        }
-
-        private object zend_ast_create_list(params object[] abc)
-        {
-            // TODO implement
-            return null;
-        }
-
-        private object zend_ast_list_add(params object[] abc)
         {
             // TODO implement
             return null;
@@ -660,12 +642,6 @@ namespace PhpParser.Parser
         }
 
         private object zend_ast_create_zval_from_str(params object[] abc)
-        {
-            // TODO implement
-            return 0;
-        }
-
-        private object zend_ast_create_assign_op(params object[] abc)
         {
             // TODO implement
             return 0;

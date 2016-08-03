@@ -330,5 +330,69 @@ namespace PhpParser
             _serializer.EndSerialize();
             _serializer.EndSerialize();
         }
+        override public void VisitShellEx(ShellEx x)
+        {
+            _serializer.StartSerialize(typeof(ShellEx).Name, SerializeSpan(x.Span));
+            base.VisitShellEx(x);
+            _serializer.EndSerialize();
+        }
+        override public void VisitTryStmt(TryStmt x)
+        {
+            _serializer.StartSerialize(typeof(TryStmt).Name, SerializeSpan(x.Span));
+            _serializer.StartSerialize("Statements");
+            // visit statements
+            VisitStatements(x.Statements);
+            _serializer.EndSerialize();
+
+            _serializer.StartSerialize("Catches");
+            // visit catch blocks
+            if (x.Catches != null)
+                foreach (CatchItem c in x.Catches)
+                    VisitElement(c);
+            _serializer.EndSerialize();
+
+            _serializer.StartSerialize("FinallyItem");
+            // visit finally block
+            VisitElement(x.FinallyItem);
+            _serializer.EndSerialize();
+            _serializer.EndSerialize();
+        }
+        override public void VisitCatchItem(CatchItem x)
+        {
+            _serializer.StartSerialize(typeof(CatchItem).Name, SerializeSpan(x.Span));
+            _serializer.StartSerialize("TypeRef");
+            VisitElement(x.TypeRef);
+            _serializer.EndSerialize();
+            _serializer.StartSerialize("Variable");
+            VisitElement(x.Variable);
+            _serializer.EndSerialize();
+            _serializer.StartSerialize("Statements");
+            VisitStatements(x.Statements);
+            _serializer.EndSerialize();
+            _serializer.EndSerialize();
+        }
+        override public void VisitDirectTypeRef(DirectTypeRef x)
+        {
+            _serializer.StartSerialize(typeof(DirectTypeRef).Name, SerializeSpan(x.Span), new NodeObj("ClassName", x.ClassName.ToString()));
+            _serializer.StartSerialize("GenericParams");
+            foreach (var param in x.GenericParams)
+                VisitElement(param);
+            _serializer.EndSerialize();
+            _serializer.EndSerialize();
+        }
+        override public void VisitGotoStmt(GotoStmt x)
+        {
+            _serializer.Serialize(typeof(GotoStmt).Name, SerializeSpan(x.Span), new NodeObj("LabelName", x.LabelName.Value));
+        }
+        override public void VisitLabelStmt(LabelStmt x)
+        {
+            _serializer.Serialize(typeof(LabelStmt).Name, SerializeSpan(x.Span), new NodeObj("Name", x.Name.Value));
+        }
+        override public void VisitNewEx(NewEx x)
+        {
+            _serializer.StartSerialize(typeof(NewEx).Name, SerializeSpan(x.Span));
+            base.VisitNewEx(x);
+            _serializer.EndSerialize();
+        }
     }
 }

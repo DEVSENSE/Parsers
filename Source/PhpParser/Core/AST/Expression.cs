@@ -50,10 +50,10 @@ namespace PHP.Core.AST
 		LessThan, GreaterThan, LessThanOrEqual, GreaterThanOrEqual,
 		ShiftLeft, ShiftRight,
 		Add, Sub, Mul, Div, Mod, Pow,
-		Concat, Spaceship,
+		Concat, Spaceship, Coalesce,
 
-		// n-ary ops:
-		ConcatN,
+        // n-ary ops:
+        ConcatN,
 		List,
 		Conditional,
 
