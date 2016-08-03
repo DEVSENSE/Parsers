@@ -394,5 +394,32 @@ namespace PhpParser
             base.VisitNewEx(x);
             _serializer.EndSerialize();
         }
+        override public void VisitFunctionDecl(FunctionDecl x)
+        {
+            _serializer.StartSerialize(typeof(FunctionDecl).Name, SerializeSpan(x.Span), new NodeObj("Name", x.Name.Value), new NodeObj("IsConditional", x.IsConditional.ToString()));
+            if (x.PHPDoc != null)
+                _serializer.Serialize("PHPDoc", new NodeObj("Comment", x.PHPDoc.ToString()));
+            _serializer.StartSerialize("FormalParams");
+            // function parameters
+            foreach (FormalParam p in x.Signature.FormalParams)
+                VisitElement(p);
+            _serializer.EndSerialize();
+
+            _serializer.StartSerialize("Body");
+            // function body
+            VisitStatements(x.Body);
+            _serializer.EndSerialize();
+            _serializer.EndSerialize();
+        }
+        override public void VisitFormalParam(FormalParam x)
+        {
+            _serializer.StartSerialize(typeof(FormalParam).Name, SerializeSpan(x.Span), new NodeObj("Name", x.Name.Value), 
+                new NodeObj("PassedByRef", x.PassedByRef.ToString()), new NodeObj("IsVariadic", x.IsVariadic.ToString()));
+            _serializer.StartSerialize("InitValue");
+            if (x.InitValue != null)
+                VisitElement(x.InitValue);
+            _serializer.EndSerialize();
+            _serializer.EndSerialize();
+        }
     }
 }

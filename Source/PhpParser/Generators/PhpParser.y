@@ -453,7 +453,7 @@ inner_statement:
 ;
 
 statement:
-		'{' inner_statement_list '}' { $$ = _astFactory.Block(@$, (List<LangElement>)$2); }
+		{ _conditionalCode = true; } '{' inner_statement_list '}' { $$ = _astFactory.Block(@$, (List<LangElement>)$3); _conditionalCode = false; }
 	|	if_stmt { $$ = $1; }
 	|	alt_if_stmt { $$ = $1; }
 	|	T_WHILE '(' expr ')' while_statement
@@ -525,18 +525,23 @@ unset_variable:
 function_declaration_statement:
 	function returns_ref T_STRING backup_doc_comment '(' parameter_list ')' return_type
 	backup_fn_flags '{' inner_statement_list '}' backup_fn_flags
-		{ $$ = zend_ast_create_decl(_zend_ast_kind.ZEND_AST_FUNC_DECL, $2 | $13, $1, $4,
-		      zend_ast_get_str($3), $6, null, $11, $8); CG(extra_fn_flags) ;/*= $9;*/ }
+		{ $$ = _astFactory.Function(@$, _conditionalCode, false, PhpMemberAttributes.None, 
+			($8 != null)? ((TypeRef)$8).QualifiedName: (QualifiedName?)null, @8, 
+			new Name((string)$3), @3, null, (List<FormalParam>)$6, @6, 
+			_astFactory.Block(@11, (List<LangElement>)$11)); 
+		if($4 != null)
+			((FunctionDecl)$$).PHPDoc = new PHPDocBlock((string)$4, @4);
+		}
 ;
 
 is_reference:
 		/* empty */	{ $$ = 0; }
-	|	'&'			{ $$ = (long)_zend_sup.ZEND_PARAM_REF; }
+	|	'&'			{ $$ = (long)FormalParam.Flags.IsByRef; }
 ;
 
 is_variadic:
 		/* empty */ { $$ = 0; }
-	|	T_ELLIPSIS  { $$ = (long)_zend_sup.ZEND_PARAM_VARIADIC; }
+	|	T_ELLIPSIS  { $$ = (long)FormalParam.Flags.IsVariadic; }
 ;
 
 class_declaration_statement:
@@ -676,22 +681,22 @@ alt_if_stmt:
 
 parameter_list:
 		non_empty_parameter_list { $$ = $1; }
-	|	/* empty */	{ $$ = new List<LangElement>(); }
+	|	/* empty */	{ $$ = new List<FormalParam>(); }
 ;
 
 
 non_empty_parameter_list:
 		parameter
-			{ $$ = new List<LangElement>() { (LangElement)$1 }; }
+			{ $$ = new List<FormalParam>() { (FormalParam)$1 }; }
 	|	non_empty_parameter_list ',' parameter
-			{ $$ = AddToList<LangElement>($1, $3); }
+			{ $$ = AddToList<FormalParam>($1, $3); }
 ;
 
 parameter:
 		optional_type is_reference is_variadic T_VARIABLE
-			{ $$ = zend_ast_create_ex(_zend_ast_kind.ZEND_AST_PARAM, $2 | $3, $1, $4, null); }
+			{ $$ = _astFactory.Parameter(@$, (string)$4, (FormalParam.Flags)$2|(FormalParam.Flags)$3, null); }
 	|	optional_type is_reference is_variadic T_VARIABLE '=' expr
-			{ $$ = zend_ast_create_ex(_zend_ast_kind.ZEND_AST_PARAM, $2 | $3, $1, $4, $6); }
+			{ $$ = _astFactory.Parameter(@$, (string)$4, (FormalParam.Flags)$2|(FormalParam.Flags)$3|FormalParam.Flags.Default, (Expression)$6); }
 ;
 
 
@@ -706,9 +711,9 @@ type_expr:
 ;
 
 type:
-		T_ARRAY		{ $$ = zend_ast_create_ex(_zend_ast_kind.ZEND_AST_TYPE, _zend_sup.IS_ARRAY); }
-	|	T_CALLABLE	{ $$ = zend_ast_create_ex(_zend_ast_kind.ZEND_AST_TYPE, _zend_sup.IS_CALLABLE); }
-	|	name		{ $$ = $1; }
+		T_ARRAY		{ $$ = _astFactory.TypeReference(@$, QualifiedName.Array, null); }
+	|	T_CALLABLE	{ $$ = _astFactory.TypeReference(@$, QualifiedName.Callable, null); }
+	|	name		{ $$ = _astFactory.TypeReference(@$, (QualifiedName)$1, null); }
 ;
 
 return_type:
@@ -1041,20 +1046,20 @@ expr_without_variable:
 ;
 
 function:
-	T_FUNCTION { $$ = CG(zend_lineno); }
+	T_FUNCTION 
 ;
 
 backup_doc_comment:
-	/* empty */ { $$ = CG(doc_comment); /*CG(doc_comment) = null;*/ }
+	/* empty */ { $$ = Scanner.DocBlock; }
 ;
 
 backup_fn_flags:
-	/* empty */ { $$ = CG(extra_fn_flags); CG(extra_fn_flags) ;/*= 0;*/ }
+	/* empty */ { /*$$ = CG(extra_fn_flags); CG(extra_fn_flags) = 0;*/ }
 ;
 
 returns_ref:
 		/* empty */	{ $$ = 0; }
-	|	'&'			{ $$ = (long)_zend_sup.ZEND_ACC_RETURN_REFERENCE; }
+	|	'&'			{ $$ = (long)FormalParam.Flags.IsByRef; }
 ;
 
 lexical_vars:

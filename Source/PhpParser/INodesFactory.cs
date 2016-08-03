@@ -84,6 +84,16 @@ namespace PhpParser
             TNode body);
 
         /// <summary>
+        /// Creates <c>FormalParam</c> for a function of method declaration.
+        /// </summary>
+        /// <param name="span">Entire element span.</param>
+        /// <param name="name">Parameter name.</param>
+        /// <param name="flags">Parameter flags.</param>
+        /// <param name="initValue">Default value expression.</param>
+        /// <returns></returns>
+        TNode Parameter(Span span, string name, FormalParam.Flags flags, Expression initValue);
+
+        /// <summary>
         /// Creates type declaration node.
         /// </summary>
         /// <param name="span">Entire element span.</param>

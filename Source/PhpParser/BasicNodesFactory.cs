@@ -153,7 +153,15 @@ namespace PhpParser
 
         public LangElement Function(Span span, bool conditional, bool aliasReturn, PhpMemberAttributes attributes, QualifiedName? returnType, Span returnTypeSpan, Name name, Span nameSpan, IEnumerable<FormalTypeParam> typeParamsOpt, IEnumerable<FormalParam> formalParams, Span formalParamsSpan, LangElement body)
         {
-            throw new NotImplementedException();
+            Debug.Assert(body is BlockStmt || body is Statement);
+            return new FunctionDecl(_sourceUnit, nameSpan, span, 0, 0, conditional, new Scope(), attributes, name.Value, null, false, 
+                formalParams.ToList(), (typeParamsOpt != null)? typeParamsOpt.ToList(): new List<FormalTypeParam>(), 
+                (body is BlockStmt)? ((BlockStmt)body).Statements.ToList(): new List<Statement>() { (Statement)body }, null);
+        }
+
+        public LangElement Parameter(Span span, string name, FormalParam.Flags flags, Expression initValue)
+        {
+            return new FormalParam(span, name, null, flags, initValue, null);
         }
 
         public LangElement GlobalCode(Span span, IEnumerable<LangElement> statements, NamingContext context)

@@ -24,6 +24,7 @@ namespace PhpParser.Parser
         List<NamingContext> _context = new List<NamingContext>();
         NamingContext _namingContext { get { return _context.Last(); } }
         ContextType _contextType = ContextType.Class;
+        bool _conditionalCode = false;
 
         /// <summary>
         /// The root of AST.

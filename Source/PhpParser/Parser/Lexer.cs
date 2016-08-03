@@ -129,6 +129,11 @@ namespace PhpParser.Parser
         public event LexerEventHandler NextTokenEvent;
 
         /// <summary>
+        /// Get actual doc comment.
+        /// </summary>
+        public string DocBlock { get { var temp = _docBlock; _docBlock = null; return temp; } }
+
+        /// <summary>
         /// Call the <see cref="NextTokenEvent"/> event.
         /// </summary>
         /// <param name="token">The next token.</param>
