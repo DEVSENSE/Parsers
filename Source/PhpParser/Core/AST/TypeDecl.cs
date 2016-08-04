@@ -175,7 +175,7 @@ namespace PHP.Core.AST
         /// <summary>
         /// Gets value indicating whether the declaration is conditional.
         /// </summary>
-        public bool IsConditional { get; private set; }
+        public bool IsConditional { get; internal set; }
 
         public SourceUnit SourceUnit { get; private set; }
         
@@ -453,7 +453,16 @@ namespace PHP.Core.AST
         {
             visitor.VisitFieldDecl(this);
         }
-	}
+
+        /// <summary>
+        /// <see cref="PHPDocBlock"/> instance or <c>null</c> reference.
+        /// </summary>
+        public PHPDocBlock PHPDoc
+        {
+            get { return this.GetPHPDoc(); }
+            set { this.SetPHPDoc(value); }
+        }
+    }
 
 	#endregion
 
@@ -515,7 +524,16 @@ namespace PHP.Core.AST
         {
             visitor.VisitClassConstantDecl(this);
         }
-	}
+
+        /// <summary>
+        /// <see cref="PHPDocBlock"/> instance or <c>null</c> reference.
+        /// </summary>
+        public PHPDocBlock PHPDoc
+        {
+            get { return this.GetPHPDoc(); }
+            set { this.SetPHPDoc(value); }
+        }
+    }
 
 	#endregion
 

@@ -161,7 +161,7 @@ namespace PHP.Core.AST
         /// <summary>
         /// Gets value indicating whether the function is declared conditionally.
         /// </summary>
-        public bool IsConditional { get; private set; }
+        public bool IsConditional { get; internal set; }
 
         /// <summary>
         /// Gets function declaration attributes.

@@ -20,6 +20,39 @@ namespace PhpParser
             _serializer = serializer;
         }
 
+        string MemberAttributesToString(PhpMemberAttributes attr)
+        {
+            switch (attr)
+            {
+                case PhpMemberAttributes.Public:
+                    return "Public";
+                case PhpMemberAttributes.Private:
+                    return "Private";
+                case PhpMemberAttributes.Protected:
+                    return "Protected";
+                case PhpMemberAttributes.Static:
+                    return "Static";
+                case PhpMemberAttributes.AppStatic:
+                    return "AppStatic";
+                case PhpMemberAttributes.Abstract:
+                    return "Abstract";
+                case PhpMemberAttributes.Final:
+                    return "Final";
+                case PhpMemberAttributes.Interface:
+                    return "Interface";
+                case PhpMemberAttributes.Trait:
+                    return "Trait";
+                case PhpMemberAttributes.Constructor:
+                    return "Constructor";
+                case PhpMemberAttributes.Ambiguous:
+                    return "Ambiguous";
+                case PhpMemberAttributes.InactiveConditional:
+                    return "InactiveConditional";
+                default:
+                    return "Error";
+            }
+        }
+
         NodeObj SerializeSpan(Span span)
         {
             return new NodeObj("Span", new NodeObj("start", span.Start.ToString()), new NodeObj("end", span.End.ToString()));
@@ -129,6 +162,8 @@ namespace PhpParser
         {
             _serializer.StartSerialize(typeof(GlobalConstantDecl).Name, SerializeSpan(x.Span),
                 new NodeObj("NameIsConditional", x.IsConditional.ToString()), new NodeObj("Name", x.Name.Value));
+            if (x.PHPDoc != null)
+                _serializer.Serialize("PHPDoc", new NodeObj("Comment", x.PHPDoc.ToString()));
             VisitElement(x.Initializer);
             _serializer.EndSerialize();
         }
@@ -411,6 +446,34 @@ namespace PhpParser
             _serializer.EndSerialize();
             _serializer.EndSerialize();
         }
+
+        /// <summary>
+        /// Visit <see cref="LambdaFunctionExpr"/> expression.
+        /// </summary>
+        override public void VisitLambdaFunctionExpr(LambdaFunctionExpr x)
+        {
+            _serializer.StartSerialize(typeof(LambdaFunctionExpr).Name, SerializeSpan(x.Span));
+            if (x.PHPDoc != null)
+                _serializer.Serialize("PHPDoc", new NodeObj("Comment", x.PHPDoc.ToString()));
+            _serializer.StartSerialize("UseParams");
+            // use parameters
+            if (x.UseParams != null)
+                foreach (var p in x.UseParams)
+                    VisitElement(p);
+            _serializer.EndSerialize();
+
+            _serializer.StartSerialize("FormalParams");
+            // function parameters
+            foreach (var p in x.Signature.FormalParams)
+                VisitElement(p);
+            _serializer.EndSerialize();
+
+            _serializer.StartSerialize("Body");
+            // function body
+            VisitStatements(x.Body);
+            _serializer.EndSerialize();
+            _serializer.EndSerialize();
+        }
         override public void VisitFormalParam(FormalParam x)
         {
             _serializer.StartSerialize(typeof(FormalParam).Name, SerializeSpan(x.Span), new NodeObj("Name", x.Name.Value), 
@@ -419,6 +482,56 @@ namespace PhpParser
             if (x.InitValue != null)
                 VisitElement(x.InitValue);
             _serializer.EndSerialize();
+            _serializer.EndSerialize();
+        }
+        override public void VisitYieldEx(YieldEx x)
+        {
+            _serializer.StartSerialize(typeof(YieldEx).Name, SerializeSpan(x.Span));
+            base.VisitYieldEx(x);
+            _serializer.EndSerialize();
+        }
+        override public void VisitDeclareStmt(DeclareStmt x)
+        {
+            _serializer.StartSerialize(typeof(DeclareStmt).Name, SerializeSpan(x.Span));
+            base.VisitDeclareStmt(x);
+            _serializer.EndSerialize();
+        }
+        override public void VisitTypeDecl(TypeDecl x)
+        {
+            _serializer.StartSerialize(typeof(TypeDecl).Name, SerializeSpan(x.Span), 
+                new NodeObj("Name", x.Name.Value), new NodeObj("MemberAttributes", x.MemberAttributes.ToString()),
+                new NodeObj("IsConditional", x.IsConditional.ToString()));
+            if (x.PHPDoc != null)
+                _serializer.Serialize("PHPDoc", new NodeObj("Comment", x.PHPDoc.ToString()));
+            base.VisitTypeDecl(x);
+            _serializer.EndSerialize();
+        }
+        override public void VisitFieldDeclList(FieldDeclList x)
+        {
+            foreach (FieldDecl f in x.Fields)
+                VisitFieldDecl(f, x.Modifiers);
+        }
+        public void VisitFieldDecl(FieldDecl x, PhpMemberAttributes attributes)
+        {
+            _serializer.StartSerialize(typeof(FieldDecl).Name, SerializeSpan(x.Span),
+                new NodeObj("Name", x.Name.Value), new NodeObj("MemberAttributes", MemberAttributesToString(attributes)));
+            if (x.PHPDoc != null)
+                _serializer.Serialize("PHPDoc", new NodeObj("Comment", x.PHPDoc.ToString()));
+            VisitElement(x.Initializer);
+            _serializer.EndSerialize();
+        }
+        override public void VisitConstDeclList(ConstDeclList x)
+        {
+            foreach (ClassConstantDecl c in x.Constants)
+                VisitClassConstantDecl(c, x.Modifiers);
+        }
+        public void VisitClassConstantDecl(ClassConstantDecl x, PhpMemberAttributes attributes)
+        {
+            _serializer.StartSerialize(typeof(ClassConstantDecl).Name, SerializeSpan(x.Span),
+                new NodeObj("Name", x.Name.Value), new NodeObj("MemberAttributes", MemberAttributesToString(attributes)));
+            if (x.PHPDoc != null)
+                _serializer.Serialize("PHPDoc", new NodeObj("Comment", x.PHPDoc.ToString()));
+            VisitElement(x.Initializer);
             _serializer.EndSerialize();
         }
     }

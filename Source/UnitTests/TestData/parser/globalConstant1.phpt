@@ -4,7 +4,7 @@ const constA = 'Hello', ConstB = 0;
 
 namespace MyProject;  
 
-const constC = 'World', ConstD = 11;
+const constC = 'World' /** global const */, ConstD = 11;
 
 ?>
 <<<TEST>>>
@@ -73,6 +73,7 @@ const constC = 'World', ConstD = 11;
         },
         "NameIsConditional" : "False",
         "Name" : "constC",
+        "PHPDoc":{"Comment":"global const"},
         "StringLiteral" : {
           "Span" : {
             "start" : "89",

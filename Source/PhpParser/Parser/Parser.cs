@@ -24,7 +24,6 @@ namespace PhpParser.Parser
         List<NamingContext> _context = new List<NamingContext>();
         NamingContext _namingContext { get { return _context.Last(); } }
         ContextType _contextType = ContextType.Class;
-        bool _conditionalCode = false;
 
         /// <summary>
         /// The root of AST.
@@ -579,7 +578,8 @@ namespace PhpParser.Parser
 
         private void RESET_DOC_COMMENT()
         {
-            // TODO implement
+            // reades and deletes the actual doc block
+            string doc = _lexer.DocBlock;
         }
 
         private object zend_ast_create(params object[] abc)
@@ -594,19 +594,7 @@ namespace PhpParser.Parser
             return null;
         }
 
-        private object zend_handle_encoding_declaration(params object[] abc)
-        {
-            // TODO implement
-            return null;
-        }
-
         private long CG(params object[] abc)
-        {
-            // TODO implement
-            return 0;
-        }
-
-        private long zend_add_member_modifier(params object[] abc)
         {
             // TODO implement
             return 0;
@@ -630,19 +618,7 @@ namespace PhpParser.Parser
             return 0;
         }
 
-        private long zend_add_class_modifier(params object[] abc)
-        {
-            // TODO implement
-            return 0;
-        }
-
         private object zend_ast_create_zval(params object[] abc)
-        {
-            // TODO implement
-            return 0;
-        }
-
-        private object zend_ast_create_zval_from_str(params object[] abc)
         {
             // TODO implement
             return 0;
@@ -654,14 +630,6 @@ namespace PhpParser.Parser
             return 0;
         }
 
-        private object zend_string_init(params object[] abc)
-        {
-            // TODO implement
-            return 0;
-        }
-
         long zend_lineno = 0; // TODO implement
-        long extra_fn_flags = 0; // TODO implement
-        object doc_comment = null; // TODO implement
     }
 }

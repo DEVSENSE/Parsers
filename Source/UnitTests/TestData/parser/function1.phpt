@@ -24,7 +24,7 @@ function foo(...$arg_1)
     "Body":{
       "FunctionDecl":{
         "Name":"bar",
-        "IsConditional":"False",
+        "IsConditional":"True",
         "FormalParams":{
           "FormalParam":{"Name":"arg_2","PassedByRef":"False","IsVariadic":"False","InitValue":{}}
         },

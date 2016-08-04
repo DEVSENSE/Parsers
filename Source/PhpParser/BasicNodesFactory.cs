@@ -93,7 +93,8 @@ namespace PhpParser
 
         public LangElement ClassConstDecl(Span span, VariableName name, LangElement initializer)
         {
-            throw new NotImplementedException();
+            Debug.Assert(initializer == null || initializer is Expression);
+            return new ClassConstantDecl(span, name.Value, (Expression)initializer);
         }
 
         public LangElement ColonBlock(Span span, IEnumerable<LangElement> statements, Tokens endToken)
@@ -108,12 +109,13 @@ namespace PhpParser
 
         public LangElement DeclList(Span span, PhpMemberAttributes attributes, IEnumerable<LangElement> decls)
         {
-            Debug.Assert(decls.All(e => e is GlobalConstantDecl) || decls.All(e => e is ClassConstantDecl));
+            Debug.Assert(decls.All(e => e is FieldDecl) || decls.All(e => e is GlobalConstantDecl) || decls.All(e => e is ClassConstantDecl));
             if (decls.All(e => e is GlobalConstantDecl))
                 return new GlobalConstDeclList(span, ConvertList<GlobalConstantDecl>(decls), null);
             else if (decls.All(e => e is ClassConstantDecl))
                 return new ConstDeclList(span, ConvertList<ClassConstantDecl>(decls), null);
-            throw new NotImplementedException();
+            else //if (decls.All(e => e is FieldDecl))
+                return new FieldDeclList(span, attributes, ConvertList<FieldDecl>(decls), null);
         }
 
         public LangElement Do(Span span, LangElement body, LangElement cond)
@@ -138,7 +140,8 @@ namespace PhpParser
 
         public LangElement FieldDecl(Span span, VariableName name, LangElement initializerOpt)
         {
-            throw new NotImplementedException();
+            Debug.Assert(initializerOpt == null || initializerOpt is Expression);
+            return new FieldDecl(span, name.Value, (Expression)initializerOpt);
         }
 
         public LangElement For(Span span, IEnumerable<LangElement> init, IEnumerable<LangElement> cond, IEnumerable<LangElement> action, LangElement body)
@@ -154,9 +157,17 @@ namespace PhpParser
         public LangElement Function(Span span, bool conditional, bool aliasReturn, PhpMemberAttributes attributes, QualifiedName? returnType, Span returnTypeSpan, Name name, Span nameSpan, IEnumerable<FormalTypeParam> typeParamsOpt, IEnumerable<FormalParam> formalParams, Span formalParamsSpan, LangElement body)
         {
             Debug.Assert(body is BlockStmt || body is Statement);
-            return new FunctionDecl(_sourceUnit, nameSpan, span, 0, 0, conditional, new Scope(), attributes, name.Value, null, false, 
+            return new FunctionDecl(_sourceUnit, nameSpan, span, formalParamsSpan.End, body.Span.Start, conditional, new Scope(), attributes, name.Value, null, aliasReturn, 
                 formalParams.ToList(), (typeParamsOpt != null)? typeParamsOpt.ToList(): new List<FormalTypeParam>(), 
                 (body is BlockStmt)? ((BlockStmt)body).Statements.ToList(): new List<Statement>() { (Statement)body }, null);
+        }
+
+        public LangElement Lambda(Span span, bool aliasReturn, QualifiedName? returnType, Span returnTypeSpan, Span headSpan, IEnumerable<FormalParam> formalParams, Span formalParamsSpan, IEnumerable<FormalParam> lexicalVars, LangElement body)
+        {
+            Debug.Assert(body is BlockStmt || body is Statement);
+            return new LambdaFunctionExpr(_sourceUnit, headSpan, span, formalParamsSpan.End, body.Span.Start, 
+                new Scope(), null, false, formalParams.ToList(), lexicalVars.ToList(),
+                (body is BlockStmt) ? ((BlockStmt)body).Statements.ToList() : new List<Statement>() { (Statement)body });
         }
 
         public LangElement Parameter(Span span, string name, FormalParam.Flags flags, Expression initValue)
@@ -271,6 +282,12 @@ namespace PhpParser
             return space;
         }
 
+        public LangElement Declare(Span span, LangElement statementOpt)
+        {
+            Debug.Assert(statementOpt == null || statementOpt is Statement);
+            return new DeclareStmt(span, (Statement)statementOpt);
+        }
+
         public LangElement New(Span span, TypeRef classNameRef, IEnumerable<ActualParam> argsOpt)
         {
             return new NewEx(span, classNameRef, argsOpt.ToList());
@@ -339,7 +356,20 @@ namespace PhpParser
 
         public LangElement Type(Span span, bool conditional, PhpMemberAttributes attributes, Name name, Span nameSpan, IEnumerable<FormalTypeParam> typeParamsOpt, Tuple<GenericQualifiedName, Span> baseClassOpt, IEnumerable<Tuple<GenericQualifiedName, Span>> implements, IEnumerable<LangElement> members, Span blockSpan)
         {
-            throw new NotImplementedException();
+            if (implements == null) implements = new List<Tuple<GenericQualifiedName, Span>>();
+            if (typeParamsOpt == null) typeParamsOpt = new List<FormalTypeParam>();
+            Debug.Assert(members != null && implements != null && typeParamsOpt != null);
+            return new TypeDecl(_sourceUnit, nameSpan, span, blockSpan.Start, blockSpan.Start, conditional, new Scope(), attributes, false, 
+                name, nameSpan, null, typeParamsOpt.ToList(), baseClassOpt, implements.ToList(), 
+                ConvertList<TypeMemberDecl>(members), null);
+        }
+
+        public LangElement Method(Span span, bool conditional, bool aliasReturn, PhpMemberAttributes attributes, QualifiedName? returnType, Span returnTypeSpan, Name name, Span nameSpan, IEnumerable<FormalTypeParam> typeParamsOpt, IEnumerable<FormalParam> formalParams, Span formalParamsSpan, IEnumerable<ActualParam> baseCtorParams, LangElement body)
+        {
+            Debug.Assert(body is BlockStmt || body is Statement);
+            return new MethodDecl(nameSpan, span, formalParamsSpan.End, body.Span.Start, name.Value, aliasReturn, formalParams.ToList(), 
+                (typeParamsOpt != null) ? typeParamsOpt.ToList() : new List<FormalTypeParam>(),
+                (body is BlockStmt) ? ((BlockStmt)body).Statements.ToList() : new List<Statement>() { (Statement)body }, attributes, baseCtorParams.ToList(), null);
         }
 
         public LangElement UnaryOperation(Span span, Operations operation, LangElement expression)
@@ -386,12 +416,14 @@ namespace PhpParser
 
         public LangElement Yield(Span span, LangElement keyOpt, LangElement valueOpt)
         {
-            throw new NotImplementedException();
+            Debug.Assert(keyOpt == null || keyOpt is Expression && valueOpt == null || valueOpt is Expression);
+            return new YieldEx(span, (Expression)keyOpt, (Expression)valueOpt);
         }
 
         public LangElement YieldFrom(Span span, LangElement fromExpr)
         {
-            throw new NotImplementedException();
+            Debug.Assert(fromExpr is Expression);
+            return new YieldEx(span, null, (Expression)fromExpr);
         }
 
         public LangElement PseudoConstUse(Span span, PseudoConstUse.Types type)

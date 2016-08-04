@@ -235,6 +235,15 @@ namespace PHP.Core.AST
         {
             visitor.VisitGlobalConstantDecl(this);
         }
+
+        /// <summary>
+        /// <see cref="PHPDocBlock"/> instance or <c>null</c> reference.
+        /// </summary>
+        public PHPDocBlock PHPDoc
+        {
+            get { return this.GetPHPDoc(); }
+            set { this.SetPHPDoc(value); }
+        }
     }
 
     #endregion
