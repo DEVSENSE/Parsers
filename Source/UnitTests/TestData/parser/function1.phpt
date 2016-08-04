@@ -17,7 +17,7 @@ function foo(...$arg_1)
   "FunctionDecl":{
     "Name":"foo",
     "IsConditional":"False",
-    "PHPDoc":{"Comment":"functiondoc"},
+    "PHPDoc":{"Comment":"function doc"},
     "FormalParams":{
       "FormalParam":{"Name":"arg_1","PassedByRef":"False","IsVariadic":"True","InitValue":{}}
     },

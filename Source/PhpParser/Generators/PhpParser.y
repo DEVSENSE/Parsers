@@ -547,13 +547,13 @@ class_declaration_statement:
 			{ 
 				$$ = _astFactory.Type(@$, true, (PhpMemberAttributes)$1, new Name((string)$3), @3, null, 
 				(Tuple<GenericQualifiedName, Span>)$4, (List<Tuple<GenericQualifiedName, Span>>)$5, (List<LangElement>)$8, @8); 
-				if($5 != null) ((FunctionDecl)$$).PHPDoc = new PHPDocBlock((string)$5, @5);
+				if($6 != null) ((TypeDecl)$$).PHPDoc = new PHPDocBlock((string)$6, @6);
 			}
 	|	T_CLASS T_STRING extends_from implements_list backup_doc_comment '{' class_statement_list '}'
 			{ 
 				$$ = _astFactory.Type(@$, true, PhpMemberAttributes.None, new Name((string)$2), @2, null, 
 				(Tuple<GenericQualifiedName, Span>)$3, (List<Tuple<GenericQualifiedName, Span>>)$4, (List<LangElement>)$7, @7); 
-				if($4 != null) ((FunctionDecl)$$).PHPDoc = new PHPDocBlock((string)$4, @4);
+				if($5 != null) ((TypeDecl)$$).PHPDoc = new PHPDocBlock((string)$5, @5);
 			}
 ;
 

@@ -21,6 +21,7 @@ class SimpleClass
     "Name":"SimpleClass",
     "MemberAttributes":"None",
     "IsConditional":"False",
+    "PHPDoc":{"Comment":"class declaration"},
     "FieldDecl":{"Name":"var","MemberAttributes":"Private","PHPDoc":{"Comment":"property declaration"},"StringLiteral":{"Value":"a default value"}}, 
     "FieldDecl":{"Name":"vara","MemberAttributes":"Private","PHPDoc":{"Comment":"second doc"},"LongIntLiteral":{"Value":"10"}},
     "FieldDecl":{"Name":"pvar","MemberAttributes":"Public","PHPDoc":{"Comment":"default property declaration"},"LongIntLiteral":{"Value":"1"}},

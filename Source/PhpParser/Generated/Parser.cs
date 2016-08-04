@@ -2192,14 +2192,14 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 { 
 				yyval.Object = _astFactory.Type(yypos, true, (PhpMemberAttributes)value_stack.array[value_stack.top-9].yyval.Long, new Name((string)value_stack.array[value_stack.top-7].yyval.Object), value_stack.array[value_stack.top-7].yypos, null, 
 				(Tuple<GenericQualifiedName, Span>)value_stack.array[value_stack.top-6].yyval.Object, (List<Tuple<GenericQualifiedName, Span>>)value_stack.array[value_stack.top-5].yyval.Object, (List<LangElement>)value_stack.array[value_stack.top-2].yyval.Object, value_stack.array[value_stack.top-2].yypos); 
-				if(value_stack.array[value_stack.top-5].yyval.Object != null) ((FunctionDecl)yyval.Object).PHPDoc = new PHPDocBlock((string)value_stack.array[value_stack.top-5].yyval.Object, value_stack.array[value_stack.top-5].yypos);
+				if(value_stack.array[value_stack.top-4].yyval.Object != null) ((TypeDecl)yyval.Object).PHPDoc = new PHPDocBlock((string)value_stack.array[value_stack.top-4].yyval.Object, value_stack.array[value_stack.top-4].yypos);
 			}
         return;
       case 170: // class_declaration_statement -> T_CLASS T_STRING extends_from implements_list backup_doc_comment '{' class_statement_list '}' 
 { 
 				yyval.Object = _astFactory.Type(yypos, true, PhpMemberAttributes.None, new Name((string)value_stack.array[value_stack.top-7].yyval.Object), value_stack.array[value_stack.top-7].yypos, null, 
 				(Tuple<GenericQualifiedName, Span>)value_stack.array[value_stack.top-6].yyval.Object, (List<Tuple<GenericQualifiedName, Span>>)value_stack.array[value_stack.top-5].yyval.Object, (List<LangElement>)value_stack.array[value_stack.top-2].yyval.Object, value_stack.array[value_stack.top-2].yypos); 
-				if(value_stack.array[value_stack.top-5].yyval.Object != null) ((FunctionDecl)yyval.Object).PHPDoc = new PHPDocBlock((string)value_stack.array[value_stack.top-5].yyval.Object, value_stack.array[value_stack.top-5].yypos);
+				if(value_stack.array[value_stack.top-4].yyval.Object != null) ((TypeDecl)yyval.Object).PHPDoc = new PHPDocBlock((string)value_stack.array[value_stack.top-4].yyval.Object, value_stack.array[value_stack.top-4].yypos);
 			}
         return;
       case 171: // class_modifiers -> class_modifier 
