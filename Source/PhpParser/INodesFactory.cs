@@ -263,15 +263,23 @@ namespace PhpParser
         TNode TryCatch(TSpan span, TNode body, IEnumerable<CatchItem> catches, TNode finallyBlockOpt);
 
         /// <summary>
-        /// Creates <c>catch</c> of <c>finally</c> block according to the optional parameters.
-        /// When both optional parameters are null, <c>finally</c> block is created.
+        /// Creates <c>catch</c> block according to the optional parameters.
         /// </summary>
         /// <param name="span">Entire element span.</param>
         /// <param name="typeOpt">Exception type.</param>
-        /// <param name="variableOpt">Exception variable.</param>
+        /// <param name="variable">Exception variable.</param>
         /// <param name="block">Statements of the block.</param>
         /// <returns>Catch clause.</returns>
-        TNode Catch(Span span, DirectTypeRef typeOpt, DirectVarUse variableOpt, TNode block);
+        TNode Catch(Span span, IEnumerable<DirectTypeRef> typeOpt, DirectVarUse variable, TNode block);
+
+        /// <summary>
+        /// Creates <c>finally</c> block.
+        /// When both optional parameters are null, <c>finally</c> block is created.
+        /// </summary>
+        /// <param name="span">Entire element span.</param>
+        /// <param name="block">Statements of the block.</param>
+        /// <returns>Finally clause.</returns>
+        TNode Finally(Span span, TNode block);
 
         /// <summary>
         /// Creates a <c>throw</c> statment;

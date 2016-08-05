@@ -11,6 +11,7 @@ distributed with PHP7 interpreter.
 
 */
 
+using System.Linq;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using PHP.Core;
@@ -1936,7 +1937,7 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
       case 93: // top_statement -> T_NAMESPACE namespace_name ';' 
 {
 				AssignNamingContext();
-                QualifiedName name = new QualifiedName((List<string>)value_stack.array[value_stack.top - 2].yyval.Object, false, true);
+                QualifiedName name = new QualifiedName((List<string>)value_stack.array[value_stack.top-2].yyval.Object, false, true);
                 SetNamingContext(name.NamespacePhpName);
                 yyval.Object = _currentNamespace = (NamespaceDecl)_astFactory.Namespace(yypos, name, value_stack.array[value_stack.top-2].yypos, (List<LangElement>)null, _namingContext);
 				RESET_DOC_COMMENT(); 
@@ -2139,9 +2140,8 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
         return;
       case 156: // catch_list -> catch_list T_CATCH '(' catch_name_list T_VARIABLE ')' '{' inner_statement_list '}' 
 { 
-			foreach (var item in (List<QualifiedName>)value_stack.array[value_stack.top-6].yyval.Object)
 				yyval.Object = AddToList<CatchItem>(value_stack.array[value_stack.top-9].yyval.Object, _astFactory.Catch(yypos, 
-					(DirectTypeRef)_astFactory.TypeReference(value_stack.array[value_stack.top-6].yypos, item, null), 
+					((List<QualifiedName>)value_stack.array[value_stack.top-6].yyval.Object).Select(q => (DirectTypeRef)_astFactory.TypeReference(value_stack.array[value_stack.top-6].yypos, q, null)), 
 					(DirectVarUse)_astFactory.Variable(value_stack.array[value_stack.top-5].yypos, new VariableName((string)value_stack.array[value_stack.top-5].yyval.Object), (LangElement)null), 
 					_astFactory.Block(value_stack.array[value_stack.top-2].yypos, (List<LangElement>)value_stack.array[value_stack.top-2].yyval.Object))); 
 			}
@@ -2156,7 +2156,7 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 { yyval.Object = null; }
         return;
       case 160: // finally_statement -> T_FINALLY '{' inner_statement_list '}' 
-{ yyval.Object =_astFactory.Catch(yypos, null, null, _astFactory.Block(value_stack.array[value_stack.top-2].yypos, (List<LangElement>)value_stack.array[value_stack.top-2].yyval.Object)); }
+{ yyval.Object =_astFactory.Finally(yypos, _astFactory.Block(value_stack.array[value_stack.top-2].yypos, (List<LangElement>)value_stack.array[value_stack.top-2].yyval.Object)); }
         return;
       case 161: // unset_variables -> unset_variable 
 { yyval.Object = new List<LangElement>() { (LangElement)value_stack.array[value_stack.top-1].yyval.Object }; }

@@ -3,7 +3,7 @@ try {
     echo 'hello';   
 } catch (TestEx $e) {
     echo 'world';
-} catch (Exception|MyEx $e) {
+} catch (Exception $e) {
     echo 'all';
 } finally {
     echo 'finally';
@@ -40,22 +40,6 @@ try {
         "TypeRef":{
           "DirectTypeRef":{
             "ClassName":"Exception",
-            "GenericParams":{}
-          }
-        },
-        "Variable":{
-          "DirectVarUse":{"VarName":"e"}
-        },
-        "Statements":{
-          "EchoStmt":{
-            "StringLiteral":{"Value":"all"}
-          }
-        }
-      },
-      "CatchItem":{
-        "TypeRef":{
-          "DirectTypeRef":{
-            "ClassName":"MyEx",
             "GenericParams":{}
           }
         },

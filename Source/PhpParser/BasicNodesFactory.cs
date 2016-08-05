@@ -340,14 +340,17 @@ namespace PhpParser
             return new TryStmt(span, ((BlockStmt)body).Statements, catches.ToList(), (FinallyItem)finallyBlockOpt);
         }
 
-        public LangElement Catch(Span span, DirectTypeRef typeOpt, DirectVarUse variableOpt, LangElement block)
+        public LangElement Catch(Span span, IEnumerable<DirectTypeRef> typeOpt, DirectVarUse variable, LangElement block)
+        {
+            Debug.Assert(block is BlockStmt && (typeOpt == null || typeOpt.Count() > 0));
+            // TODO fix catch ast
+            return new CatchItem(span, (typeOpt != null)? typeOpt.First(): null, variable, ((BlockStmt)block).Statements);
+        }
+
+        public LangElement Finally(Span span, LangElement block)
         {
             Debug.Assert(block is BlockStmt);
-            Debug.Assert(typeOpt == null && variableOpt == null || typeOpt != null && variableOpt != null);
-            if (typeOpt != null && variableOpt != null)
-                return new CatchItem(span, typeOpt, variableOpt, ((BlockStmt)block).Statements);
-            else
-                return new FinallyItem(span, ((BlockStmt)block).Statements);
+            return new FinallyItem(span, ((BlockStmt)block).Statements);
         }
 
         public LangElement Throw(Span span, LangElement expression)

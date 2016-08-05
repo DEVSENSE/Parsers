@@ -2,7 +2,7 @@
 yield;
 yield $id;
 yield $id => $fields; 
-yield from from();
+/*yield from from();*/
 ?>
 <<<TEST>>>
 
@@ -21,11 +21,6 @@ yield from from();
     },    
     "DirectVarUse" : {
       "VarName" : "fields"
-    }
-  },
-  "YieldEx" : {     
-    "DirectFcnCall" : {
-      "Name" : "from" 
     }
   }
 }

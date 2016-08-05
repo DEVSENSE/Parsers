@@ -7,6 +7,7 @@ distributed with PHP7 interpreter.
 
 */
 
+using System.Linq;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using PHP.Core;
@@ -345,9 +346,9 @@ top_statement:
 	|	T_NAMESPACE namespace_name ';'
 			{
 				AssignNamingContext();
-                QualifiedName name = new QualifiedName((List<string>)value_stack.array[value_stack.top - 2].yyval.Object, false, true);
+                QualifiedName name = new QualifiedName((List<string>)$2, false, true);
                 SetNamingContext(name.NamespacePhpName);
-                yyval.Object = _currentNamespace = (NamespaceDecl)_astFactory.Namespace(yypos, name, value_stack.array[value_stack.top-2].yypos, (List<LangElement>)null, _namingContext);
+                $$ = _currentNamespace = (NamespaceDecl)_astFactory.Namespace(yypos, name, @2, (List<LangElement>)null, _namingContext);
 				RESET_DOC_COMMENT(); 
 			}
 	|	T_NAMESPACE namespace_name { RESET_DOC_COMMENT(); var list = (List<string>)$2; SetNamingContext((list != null && list.Count > 0)? string.Join(QualifiedName.Separator.ToString(), list): null); }
@@ -493,9 +494,8 @@ catch_list:
 			{ $$ = new List<CatchItem>(); }
 	|	catch_list T_CATCH '(' catch_name_list T_VARIABLE ')' '{' inner_statement_list '}'
 			{ 
-			foreach (var item in (List<QualifiedName>)$4)
 				$$ = AddToList<CatchItem>($1, _astFactory.Catch(@$, 
-					(DirectTypeRef)_astFactory.TypeReference(@4, item, null), 
+					((List<QualifiedName>)$4).Select(q => (DirectTypeRef)_astFactory.TypeReference(@4, q, null)), 
 					(DirectVarUse)_astFactory.Variable(@5, new VariableName((string)$5), (LangElement)null), 
 					_astFactory.Block(@8, (List<LangElement>)$8))); 
 			}
@@ -508,7 +508,7 @@ catch_name_list:
 
 finally_statement:
 		/* empty */ { $$ = null; }
-	|	T_FINALLY '{' inner_statement_list '}' { $$ =_astFactory.Catch(@$, null, null, _astFactory.Block(@3, (List<LangElement>)$3)); }
+	|	T_FINALLY '{' inner_statement_list '}' { $$ =_astFactory.Finally(@$, _astFactory.Block(@3, (List<LangElement>)$3)); }
 ;
 
 unset_variables:
