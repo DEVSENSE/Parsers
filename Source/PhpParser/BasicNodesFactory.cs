@@ -418,14 +418,13 @@ namespace PhpParser
 
         public LangElement Yield(Span span, LangElement keyOpt, LangElement valueOpt)
         {
-            Debug.Assert(keyOpt == null || keyOpt is Expression && valueOpt == null || valueOpt is Expression);
             return new YieldEx(span, (Expression)keyOpt, (Expression)valueOpt);
         }
 
         public LangElement YieldFrom(Span span, LangElement fromExpr)
         {
-            Debug.Assert(fromExpr is Expression);
-            return new YieldEx(span, null, (Expression)fromExpr);
+            //return new YieldFromEx(span, null, (Expression)fromExpr);
+            throw new NotImplementedException();
         }
 
         public LangElement PseudoConstUse(Span span, PseudoConstUse.Types type)
