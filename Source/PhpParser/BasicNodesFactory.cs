@@ -17,10 +17,11 @@ namespace PhpParser
     /// </summary>
     public class BasicNodesFactory : INodesFactory<LangElement, Span>
     {
-        SourceUnit _sourceUnit;
-        List<Tuple<Span, ErrorInfo, string[]>> _errors = new List<Tuple<Span, ErrorInfo, string[]>>();
-        public List<Tuple<Span, ErrorInfo, string[]>> Errors { get { return _errors; } }
+        readonly SourceUnit _sourceUnit;
 
+        public List<Tuple<Span, ErrorInfo, string[]>> Errors { get { return _errors; } }
+        readonly List<Tuple<Span, ErrorInfo, string[]>> _errors = new List<Tuple<Span, ErrorInfo, string[]>>();
+        
         public void Error(Span span, ErrorInfo info, params string[] argsOpt)
         {
             Errors.Add(new Tuple<Span, ErrorInfo, string[]>(span, info, argsOpt));
@@ -348,6 +349,7 @@ namespace PhpParser
             else
                 return new FinallyItem(span, ((BlockStmt)block).Statements);
         }
+
         public LangElement Throw(Span span, LangElement expression)
         {
             Debug.Assert(expression is Expression);
@@ -380,23 +382,23 @@ namespace PhpParser
 
         public LangElement Variable(Span span, LangElement nameExpr, TypeRef typeRef)
         {
-            throw new NotImplementedException();
+            Debug.Assert(typeRef != null);
+            return new IndirectStFldUse(span, typeRef, (Expression)nameExpr);
         }
 
         public LangElement Variable(Span span, LangElement nameExpr, LangElement memberOfOpt)
         {
-            Debug.Assert(nameExpr is Expression);
             return new IndirectVarUse(span, 1, (Expression)nameExpr) { IsMemberOf = (VarLikeConstructUse)memberOfOpt };
         }
 
         public LangElement Variable(Span span, VariableName name, TypeRef typeRef)
         {
-            throw new NotImplementedException();
+            Debug.Assert(typeRef != null);
+            return new DirectStFldUse(span, typeRef, name, Span.FromBounds(span.End - name.Value.Length, span.End));
         }
 
         public LangElement Variable(Span span, VariableName name, LangElement memberOfOpt)
         {
-            Debug.Assert(memberOfOpt == null || memberOfOpt is VarLikeConstructUse);
             return new DirectVarUse(span, name) { IsMemberOf = (VarLikeConstructUse)memberOfOpt };
         }
         public LangElement TypeReference(Span span, QualifiedName className, List<TypeRef> genericParamsOpt)
