@@ -342,9 +342,9 @@ namespace PhpParser
 
         public LangElement Catch(Span span, IEnumerable<DirectTypeRef> typeOpt, DirectVarUse variable, LangElement block)
         {
-            Debug.Assert(block is BlockStmt && (typeOpt == null || typeOpt.Count() > 0));
+            Debug.Assert(block is BlockStmt && typeOpt != null);
             // TODO fix catch ast
-            return new CatchItem(span, (typeOpt != null)? typeOpt.First(): null, variable, ((BlockStmt)block).Statements);
+            return new CatchItem(span, typeOpt.SingleOrDefault(), variable, ((BlockStmt)block).Statements);
         }
 
         public LangElement Finally(Span span, LangElement block)
