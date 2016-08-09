@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Reflection;
@@ -78,25 +79,25 @@ namespace PHP.Core.AST
 		/// <summary>
 		/// An index of type identifier.
 		/// </summary>
-		private DirectTypeRef tref;
+		private List<DirectTypeRef> tref;
         /// <summary>An index of type identifier.</summary>
-        public QualifiedName ClassName { get { return tref.QualifiedName; } }
+        public List<QualifiedName> ClassName { get { return tref.Select(t => t.QualifiedName).ToList(); } }
 
         /// <summary>
         /// Position of <see cref="TypeRef"/>.
         /// </summary>
-        public Text.Span ClassNameSpan { get { return tref.Span; } }
+        public List<Text.Span> ClassNameSpan { get { return tref.Select(t => t.Span).ToList(); } }
 
         /// <summary>
         /// Catch type reference.
         /// </summary>
-        public DirectTypeRef TypeRef { get { return tref; } }
+        public List<DirectTypeRef> TypeRef { get { return tref; } }
 
-        public CatchItem(Text.Span p, DirectTypeRef tref, DirectVarUse/*!*/ variable,
+        public CatchItem(Text.Span p, List<DirectTypeRef> tref, DirectVarUse/*!*/ variable,
 			IList<Statement>/*!*/ statements)
 			: base(p)
 		{
-			Debug.Assert(variable != null && statements != null);
+			Debug.Assert(variable != null && statements != null && tref != null);
 
 			this.tref = tref;
 			this.variable = variable;

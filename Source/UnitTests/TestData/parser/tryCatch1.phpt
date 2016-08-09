@@ -1,7 +1,7 @@
 <?php
 try {
     echo 'hello';   
-} catch (TestEx $e) {
+} catch (TestEx|MyEx $e) {
     echo 'world';
 } catch (Exception $e) {
     echo 'all';
@@ -23,7 +23,13 @@ try {
       "CatchItem":{
         "TypeRef":{
           "DirectTypeRef":{
-            "ClassName":"TestEx",
+            "ClassName":"TestEx", 
+            "IsNullable":"False", 
+            "GenericParams":{}
+          },         
+          "DirectTypeRef":{
+            "ClassName":"MyEx", 
+            "IsNullable":"False",  
             "GenericParams":{}
           }
         },
@@ -39,7 +45,8 @@ try {
       "CatchItem":{
         "TypeRef":{
           "DirectTypeRef":{
-            "ClassName":"Exception",
+            "ClassName":"Exception",  
+            "IsNullable":"False", 
             "GenericParams":{}
           }
         },

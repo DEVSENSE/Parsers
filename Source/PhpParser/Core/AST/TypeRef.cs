@@ -20,6 +20,12 @@ namespace PHP.Core.AST
         /// Immutable empty list of <see cref="TypeRef"/>.
         /// </summary>
 		internal static readonly List<TypeRef>/*!*/ EmptyList = new List<TypeRef>();
+        
+        bool isNullable;
+        /// <summary>
+        /// Indicates if the type is nullable.
+        /// </summary>
+        public bool IsNullable { get { return isNullable; } internal set { isNullable = value; } }
 
         /// <summary>
         /// List of generic parameters.
@@ -54,7 +60,7 @@ namespace PHP.Core.AST
 
         internal abstract QualifiedName QualifiedName { get; }
 
-        public TypeRef(Text.Span span, List<TypeRef> genericParams)
+        public TypeRef(Text.Span span, bool isNullable, List<TypeRef> genericParams)
 			: base(span)
 		{
 			this.GenericParams = genericParams;
@@ -98,8 +104,8 @@ namespace PHP.Core.AST
 	{
         private PrimitiveTypeName typeName;
 
-		public PrimitiveTypeRef(Text.Span span, PrimitiveTypeName name)
-			: base(span, null)
+		public PrimitiveTypeRef(Text.Span span, PrimitiveTypeName name, bool isNullable)
+			: base(span, isNullable, null)
 		{
             this.typeName = name;
 		}
@@ -146,8 +152,8 @@ namespace PHP.Core.AST
 			return new GenericQualifiedName(className, TypeRef.ToStaticTypeRefs(GenericParams, errors, sourceUnit));
 		}
 
-        public DirectTypeRef(Text.Span span, QualifiedName className, List<TypeRef>/*!*/ genericParams)
-			: base(span, genericParams)
+        public DirectTypeRef(Text.Span span, QualifiedName className, bool isNullable, List<TypeRef>/*!*/ genericParams)
+			: base(span, isNullable, genericParams)
 		{
 			this.className = className;
 		}
@@ -163,8 +169,8 @@ namespace PHP.Core.AST
                 {
                     TypeRef objtype;
                     if (obj is GenericQualifiedName) objtype = FromGenericQualifiedName(Text.Span.Invalid, (GenericQualifiedName)obj);
-                    else if (obj is PrimitiveTypeName) objtype = new PrimitiveTypeRef(Text.Span.Invalid, (PrimitiveTypeName)obj);
-                    else objtype = new PrimitiveTypeRef(Text.Span.Invalid, new PrimitiveTypeName(QualifiedName.Object));
+                    else if (obj is PrimitiveTypeName) objtype = new PrimitiveTypeRef(Text.Span.Invalid, (PrimitiveTypeName)obj, false);
+                    else objtype = new PrimitiveTypeRef(Text.Span.Invalid, new PrimitiveTypeName(QualifiedName.Object), false);
 
                     genericParams.Add(objtype);
                 }
@@ -177,7 +183,7 @@ namespace PHP.Core.AST
                 genericParams = TypeRef.EmptyList;
             }
 
-            return new DirectTypeRef(span, genericQualifiedName.QualifiedName, genericParams.ToList());
+            return new DirectTypeRef(span, genericQualifiedName.QualifiedName, false, genericParams.ToList());
         }
 
 		/// <summary>
@@ -225,7 +231,7 @@ namespace PHP.Core.AST
         }
 
 		public IndirectTypeRef(Text.Span span, VariableUse/*!*/ classNameVar, List<TypeRef>/*!*/ genericParams)
-			: base(span, genericParams)
+			: base(span, true, genericParams)
 		{
 			Debug.Assert(classNameVar != null && genericParams != null);
 

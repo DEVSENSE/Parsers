@@ -86,7 +86,7 @@ namespace PhpParser
         /// <returns>Function node.</returns>
         TNode Function(TSpan span,
             bool conditional, bool aliasReturn, PhpMemberAttributes attributes,
-            QualifiedName? returnType, TSpan returnTypeSpan,
+            TypeRef returnType, TSpan returnTypeSpan,
             Name name, TSpan nameSpan, IEnumerable<FormalTypeParam> typeParamsOpt,
             IEnumerable<FormalParam> formalParams, TSpan formalParamsSpan,
             TNode body);
@@ -105,7 +105,7 @@ namespace PhpParser
         /// <param name="body">Lambda body.</param>
         /// <returns>Lambda node.</returns>
         TNode Lambda(TSpan span, bool aliasReturn,
-            QualifiedName? returnType, TSpan returnTypeSpan, TSpan headSpan,
+            TypeRef returnType, TSpan returnTypeSpan, TSpan headSpan,
             IEnumerable<FormalParam> formalParams, TSpan formalParamsSpan,
             IEnumerable<FormalParam> lexicalVars, TNode body);
 
@@ -114,10 +114,11 @@ namespace PhpParser
         /// </summary>
         /// <param name="span">Entire element span.</param>
         /// <param name="name">Parameter name.</param>
+        /// <param name="typeOpt">Parameter type.</param>
         /// <param name="flags">Parameter flags.</param>
         /// <param name="initValue">Default value expression.</param>
         /// <returns></returns>
-        TNode Parameter(Span span, string name, FormalParam.Flags flags, Expression initValue);
+        TNode Parameter(Span span, string name, TypeRef typeOpt, FormalParam.Flags flags, Expression initValue);
 
         /// <summary>
         /// Creates type declaration node.
@@ -158,8 +159,8 @@ namespace PhpParser
         /// <param name="body">Method body.</param>
         /// <returns>Method node.</returns>
         TNode Method(TSpan span,
-            bool conditional, bool aliasReturn, PhpMemberAttributes attributes,
-            QualifiedName? returnType, TSpan returnTypeSpan,
+            bool aliasReturn, PhpMemberAttributes attributes,
+            TypeRef returnType, TSpan returnTypeSpan,
             Name name, TSpan nameSpan, IEnumerable<FormalTypeParam> typeParamsOpt,
             IEnumerable<FormalParam> formalParams, TSpan formalParamsSpan,
             IEnumerable<ActualParam> baseCtorParams, TNode body);
@@ -245,6 +246,14 @@ namespace PhpParser
         TNode Echo(TSpan span, IEnumerable<TNode> parameters);
 
         /// <summary>
+        /// Creates <c>unset</c> statement.
+        /// </summary>
+        /// <param name="span">Entire element span.</param>
+        /// <param name="parameters">Variables to be unset.</param>
+        /// <returns>Unset statement.</returns>
+        TNode Unset(Span span, IEnumerable<TNode> variables);
+
+        /// <summary>
         /// Creates pseudo <c>echo</c> statement representing HTML code.
         /// </summary>
         /// <param name="span">Entire text span.</param>
@@ -303,6 +312,14 @@ namespace PhpParser
         /// <param name="expression">The expression used as statement.</param>
         /// <returns>Expression statement.</returns>
         TNode ExpressionStmt(Span span, TNode expression);
+
+        /// <summary>
+        /// Create static variable declaration statement.
+        /// </summary>
+        /// <param name="span">Entire element span.</param>
+        /// <param name="staticVariables">List of variable declarations.</param>
+        /// <returns>Static statement.</returns>
+        TNode Static(Span span, IEnumerable<TNode> staticVariables);
 
         #endregion
 
@@ -575,18 +592,20 @@ namespace PhpParser
         /// </summary>
         /// <param name="span">Entire element span.</param>
         /// <param name="className">Qualified class name.</param>
+        /// <param name="isNullable">Indicates if the type is nullable.</param>
         /// <param name="genericParamsOpt">Actual generic parameters</param>
         /// <returns>Type reference.</returns>
-        TNode TypeReference(TSpan span, QualifiedName className, List<TypeRef> genericParamsOpt);
+        TNode TypeReference(TSpan span, QualifiedName className, bool isNullable, List<TypeRef> genericParamsOpt);
 
         /// <summary>
         /// Create <c>TypeRef</c> reference to a type.
         /// </summary>
         /// <param name="span">Entire element span.</param>
         /// <param name="varName">Indirect name.</param>
+        /// <param name="isNullable">Indicates if the type is nullable.</param>
         /// <param name="genericParamsOpt">Actual generic parameters</param>
         /// <returns>Type reference.</returns>
-        TNode TypeReference(TSpan span, VariableUse varName, List<TypeRef> genericParamsOpt);
+        TNode TypeReference(TSpan span, VariableUse varName, bool isNullable, List<TypeRef> genericParamsOpt);
 
         /// <summary>
         /// Creates a pseudo constant use.
@@ -660,6 +679,17 @@ namespace PhpParser
         /// <param name="typeRef">Method containing type.</param>
         /// <returns>Indirect function call expression.</returns>
         TNode Call(TSpan span, TNode nameExpr, CallSignature signature, TypeRef typeRef);
+
+        /// <summary>
+        /// Creates <c>FormalParam</c> for a function of method declaration.
+        /// </summary>
+        /// <param name="span">Entire element span.</param>
+        /// <param name="name">Parameter name.</param>
+        /// <param name="typeOpt">Parameter type.</param>
+        /// <param name="flags">Parameter flags.</param>
+        /// <param name="initValue">Default value expression.</param>
+        /// <returns></returns>
+        TNode ActualParameter(Span span, TNode expr, ActualParam.Flags flags);
 
         /// <summary>
         /// Creates new <c>array</c> expression.

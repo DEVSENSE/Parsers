@@ -13,12 +13,14 @@ define("constB", 0);
   "NamingContext" : {},
   "DirectFcnCall" : {
     "Name" : "define", 
-    "ActualParam" : {
+    "ActualParam" : {  
+      "IsUnpack":"False",
       "StringLiteral" : {
         "Value" : "constA"
       }
     },        
-    "ActualParam" : {
+    "ActualParam" : {  
+      "IsUnpack":"False",
       "StringLiteral" : {
         "Value" : "Hello"
       }
@@ -32,12 +34,14 @@ define("constB", 0);
     },
     "DirectFcnCall" : {
       "Name" : "define",
-      "ActualParam" : {
+      "ActualParam" : {    
+        "IsUnpack":"False",
         "StringLiteral" : {
           "Value" : "constB"
         }
       },       
-      "ActualParam" : {
+      "ActualParam" : {    
+        "IsUnpack":"False",
         "LongIntLiteral" : {
           "Value" : "0" 
         }

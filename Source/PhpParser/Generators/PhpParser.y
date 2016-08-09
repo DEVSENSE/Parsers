@@ -339,8 +339,8 @@ top_statement:
 		statement							{ $$ = $1; }
 	|	function_declaration_statement		{ $$ = $1; ((FunctionDecl)$$).IsConditional = false; }
 	|	class_declaration_statement			{ $$ = $1; ((TypeDecl)$$).IsConditional = false; }
-	|	trait_declaration_statement			{ $$ = $1; }
-	|	interface_declaration_statement		{ $$ = $1; }
+	|	trait_declaration_statement			{ $$ = $1; ((TypeDecl)$$).IsConditional = false; }
+	|	interface_declaration_statement		{ $$ = $1; ((TypeDecl)$$).IsConditional = false; }
 	|	T_HALT_COMPILER '(' ')' ';'
 			{ $$ = _astFactory.HaltCompiler(@$); }
 	|	T_NAMESPACE namespace_name ';'
@@ -473,7 +473,7 @@ statement:
 	|	T_ECHO echo_expr_list ';'		{ $$ = _astFactory.Echo(@$, (List<LangElement>)$2); }
 	|	T_INLINE_HTML { $$ = _astFactory.InlineHtml(@$, (string)$1); }
 	|	expr ';' { $$ = _astFactory.ExpressionStmt(@$, (LangElement)$1); }
-	|	T_UNSET '(' unset_variables ')' ';' { $$ = $3; }
+	|	T_UNSET '(' unset_variables ')' ';' { $$ = _astFactory.Unset(@$, (List<LangElement>)$3); }
 	|	T_FOREACH '(' expr T_AS foreach_variable ')' foreach_statement
 			{ $$ = _astFactory.Foreach(@$, (LangElement)$3, null, (VariableUse)$5, StatementBlock(@7, $7)); }
 	|	T_FOREACH '(' expr T_AS foreach_variable T_DOUBLE_ARROW foreach_variable ')'
@@ -495,7 +495,7 @@ catch_list:
 	|	catch_list T_CATCH '(' catch_name_list T_VARIABLE ')' '{' inner_statement_list '}'
 			{ 
 				$$ = AddToList<CatchItem>($1, _astFactory.Catch(@$, 
-					((List<QualifiedName>)$4).Select(q => (DirectTypeRef)_astFactory.TypeReference(@4, q, null)), 
+					((List<QualifiedName>)$4).Select(q => (DirectTypeRef)_astFactory.TypeReference(@4, q, false, null)), 
 					(DirectVarUse)_astFactory.Variable(@5, new VariableName((string)$5), (LangElement)null), 
 					_astFactory.Block(@8, (List<LangElement>)$8))); 
 			}
@@ -517,14 +517,13 @@ unset_variables:
 ;
 
 unset_variable:
-		variable { $$ = zend_ast_create(_zend_ast_kind.ZEND_AST_UNSET, $1); }
+		variable { $$ = $1; }
 ;
 
 function_declaration_statement:
 	function returns_ref T_STRING backup_doc_comment '(' parameter_list ')' return_type
 	backup_fn_flags '{' inner_statement_list '}' backup_fn_flags
-		{ $$ = _astFactory.Function(@$, true, false, PhpMemberAttributes.None, 
-			($8 != null)? ((TypeRef)$8).QualifiedName: (QualifiedName?)null, @8, 
+		{ $$ = _astFactory.Function(@$, true, false, PhpMemberAttributes.None, (TypeRef)$8, @8, 
 			new Name((string)$3), @3, null, (List<FormalParam>)$6, @7, 
 			_astFactory.Block(@11, (List<LangElement>)$11)); 
 		if($4 != null)
@@ -568,30 +567,36 @@ class_modifier:
 ;
 
 trait_declaration_statement:
-		T_TRAIT { $<Long>$ = CG(zend_lineno); }
-		T_STRING backup_doc_comment '{' class_statement_list '}'
-			{ $$ = zend_ast_create_decl(_zend_ast_kind.ZEND_AST_CLASS, (long)_zend_sup.ZEND_ACC_TRAIT, $<Long>2, $4, zend_ast_get_str($3), null, null, $6, null); }
+		T_TRAIT T_STRING backup_doc_comment '{' class_statement_list '}'
+			{ 
+				$$ = _astFactory.Type(@$, true, PhpMemberAttributes.Trait, new Name((string)$2), @2, null, 
+				null, null, (List<LangElement>)$5, @5); 
+				if($3 != null) ((TypeDecl)$$).PHPDoc = new PHPDocBlock((string)$3, @3);
+			}
 ;
 
 interface_declaration_statement:
-		T_INTERFACE { $<Long>$ = CG(zend_lineno); }
-		T_STRING interface_extends_list backup_doc_comment '{' class_statement_list '}'
-			{ $$ = zend_ast_create_decl(_zend_ast_kind.ZEND_AST_CLASS, (long)_zend_sup.ZEND_ACC_INTERFACE, $<Long>2, $5, zend_ast_get_str($3), null, $4, $7, null); }
+		T_INTERFACE T_STRING interface_extends_list backup_doc_comment '{' class_statement_list '}'
+			{ 
+				$$ = _astFactory.Type(@$, true, PhpMemberAttributes.Interface, new Name((string)$2), @2, null, 
+				null, (List<Tuple<GenericQualifiedName, Span>>)$3, (List<LangElement>)$6, @6); 
+				if($4 != null) ((TypeDecl)$$).PHPDoc = new PHPDocBlock((string)$4, @4);
+			}
 ;
 
 extends_from:
 		/* empty */		{ $$ = null; }
-	|	T_EXTENDS name	{ $$ = $2; }
+	|	T_EXTENDS name	{ $$ = new Tuple<GenericQualifiedName, Span>(new GenericQualifiedName((QualifiedName)$2, new object[0]), @2); }
 ;
 
 interface_extends_list:
 		/* empty */			{ $$ = null; }
-	|	T_EXTENDS name_list	{ $$ = $2; }
+	|	T_EXTENDS name_list { $$ = NameListToImplementsList(@2, (List<QualifiedName>)$2); }
 ;
 
 implements_list:
 		/* empty */				{ $$ = null; }
-	|	T_IMPLEMENTS name_list	{ $$ = $2; }
+	|	T_IMPLEMENTS name_list	{ $$ = NameListToImplementsList(@2, (List<QualifiedName>)$2); }
 ;
 
 foreach_variable:
@@ -698,9 +703,9 @@ non_empty_parameter_list:
 
 parameter:
 		optional_type is_reference is_variadic T_VARIABLE
-			{ $$ = _astFactory.Parameter(@$, (string)$4, (FormalParam.Flags)$2|(FormalParam.Flags)$3, null); }
+			{ $$ = _astFactory.Parameter(@$, (string)$4, (TypeRef)$1, (FormalParam.Flags)$2|(FormalParam.Flags)$3, null); }
 	|	optional_type is_reference is_variadic T_VARIABLE '=' expr
-			{ $$ = _astFactory.Parameter(@$, (string)$4, (FormalParam.Flags)$2|(FormalParam.Flags)$3|FormalParam.Flags.Default, (Expression)$6); }
+			{ $$ = _astFactory.Parameter(@$, (string)$4, (TypeRef)$1, (FormalParam.Flags)$2|(FormalParam.Flags)$3|FormalParam.Flags.Default, (Expression)$6); }
 ;
 
 
@@ -710,14 +715,14 @@ optional_type:
 ;
 
 type_expr:
-		type		{ $$ = $1; }
-	|	'?' type	{ $$ = $2; /*$$->attr |= _zend_sup.ZEND_TYPE_nullABLE;*/ }
+		type		{ $$ = _astFactory.TypeReference(@$, (QualifiedName)$1, false, null); }
+	|	'?' type	{ $$ = _astFactory.TypeReference(@$, (QualifiedName)$2, true, null); }
 ;
 
 type:
-		T_ARRAY		{ $$ = _astFactory.TypeReference(@$, QualifiedName.Array, null); }
-	|	T_CALLABLE	{ $$ = _astFactory.TypeReference(@$, QualifiedName.Callable, null); }
-	|	name		{ $$ = _astFactory.TypeReference(@$, (QualifiedName)$1, null); }
+		T_ARRAY		{ $$ = QualifiedName.Array; }
+	|	T_CALLABLE	{ $$ = QualifiedName.Callable; }
+	|	name		{ $$ = (QualifiedName)$1; }
 ;
 
 return_type:
@@ -732,14 +737,14 @@ argument_list:
 
 non_empty_argument_list:
 		argument
-			{ $$ = new List<ActualParam>() { new ActualParam(@1, (Expression)$1) }; }
+			{ $$ = new List<ActualParam>() { (ActualParam)$1 }; }
 	|	non_empty_argument_list ',' argument
-			{ $$ = AddToList<ActualParam>($1, new ActualParam(@3, (Expression)$3)); }
+			{ $$ = AddToList<ActualParam>($1, (ActualParam)$3); }
 ;
 
 argument:
-		expr			{ $$ = $1; }
-	|	T_ELLIPSIS expr	{ $$ = zend_ast_create(_zend_ast_kind.ZEND_AST_UNPACK, $2); }
+		expr			{ $$ = _astFactory.ActualParameter(@1, (Expression)$1, ActualParam.Flags.Default); }
+	|	T_ELLIPSIS expr	{ $$ = _astFactory.ActualParameter(@2, (Expression)$2, ActualParam.Flags.IsUnpack); }
 ;
 
 global_var_list:
@@ -781,14 +786,19 @@ class_statement:
 			{ $$ = zend_ast_create(_zend_ast_kind.ZEND_AST_USE_TRAIT, $2, $3); }
 	|	method_modifiers function returns_ref identifier backup_doc_comment '(' parameter_list ')'
 		return_type backup_fn_flags method_body backup_fn_flags
-			{ $$ = zend_ast_create_decl(_zend_ast_kind.ZEND_AST_METHOD, $3 | $1 | $12, $2, $5,
-				  zend_ast_get_str($4), $7, null, $11, $9); }
+			{ $$ = _astFactory.Method(@$, false, (PhpMemberAttributes)$1, 
+				(TypeRef)$9, @9, 
+				new Name((string)$4), @4, null, (List<FormalParam>)$7, @8, 
+				null, _astFactory.Block(@11, (List<LangElement>)$11)); 
+			if($5 != null)
+				((MethodDecl)$$).PHPDoc = new PHPDocBlock((string)$5, @5);
+			}
 ;
 
 name_list:
-		name { $$ = new List<LangElement>() { (LangElement)$1 };
+		name { $$ = new List<QualifiedName>() { (QualifiedName)$1 };
  }
-	|	name_list ',' name { $$ = AddToList<LangElement>($1, $3); }
+	|	name_list ',' name { $$ = AddToList<QualifiedName>($1, $3); }
 ;
 
 trait_adaptations:
@@ -925,7 +935,7 @@ anonymous_class:
 
 new_expr:
 		T_NEW class_name_reference ctor_arguments
-			{ $$ = _astFactory.New(@$, (TypeRef)_astFactory.TypeReference(@2, (QualifiedName)$2, null), (List<ActualParam>)$3); }
+			{ $$ = _astFactory.New(@$, (TypeRef)_astFactory.TypeReference(@2, (QualifiedName)$2, false, null), (List<ActualParam>)$3); }
 	|	T_NEW anonymous_class
 			{ $$ = $2; }
 ;
@@ -1041,7 +1051,7 @@ expr_without_variable:
 	|	T_YIELD_FROM expr { $$ = _astFactory.YieldFrom(@$, (LangElement)$2); }
 	|	function returns_ref backup_doc_comment '(' parameter_list ')' lexical_vars return_type
 		backup_fn_flags '{' inner_statement_list '}' backup_fn_flags
-			{ $$ = _astFactory.Lambda(@$, false, ($8 != null)? ((TypeRef)$8).QualifiedName: (QualifiedName?)null, @8, 
+			{ $$ = _astFactory.Lambda(@$, false, (TypeRef)$8, @8, 
 				Span.FromBounds(@1.Start, @4.End), (List<FormalParam>)$5, @6, 
 				(List<FormalParam>)$7, _astFactory.Block(@11, (List<LangElement>)$11)); 
 			if($3 != null)
@@ -1049,7 +1059,7 @@ expr_without_variable:
 			}
 	|	T_STATIC function returns_ref backup_doc_comment '(' parameter_list ')' lexical_vars
 		return_type backup_fn_flags '{' inner_statement_list '}' backup_fn_flags
-			{ $$ = _astFactory.Lambda(@$, false, ($9 != null)? ((TypeRef)$9).QualifiedName: (QualifiedName?)null, @9, 
+			{ $$ = _astFactory.Lambda(@$, false, (TypeRef)$9, @9, 
 				Span.FromBounds(@1.Start, @5.End), (List<FormalParam>)$6, @7, 
 				(List<FormalParam>)$8, _astFactory.Block(@12, (List<LangElement>)$12)); 
 			if($4 != null)
@@ -1085,8 +1095,8 @@ lexical_var_list:
 ;
 
 lexical_var:
-		T_VARIABLE		{ $$ = _astFactory.Parameter(@$, (string)$1, FormalParam.Flags.Default, null); }
-	|	'&' T_VARIABLE	{ $$ = _astFactory.Parameter(@$, (string)$2, FormalParam.Flags.IsByRef, null); }
+		T_VARIABLE		{ $$ = _astFactory.Parameter(@$, (string)$1, null, FormalParam.Flags.Default, null); }
+	|	'&' T_VARIABLE	{ $$ = _astFactory.Parameter(@$, (string)$2, null, FormalParam.Flags.IsByRef, null); }
 ;
 
 function_call:
@@ -1102,7 +1112,7 @@ function_call:
 
 class_name:
 		T_STATIC
-			{ $$ = new QualifiedName(new List<string>() { "static" }, true, false); }
+			{ $$ = new QualifiedName(Name.StaticClassName); }
 	|	name { $$ = $1; }
 ;
 

@@ -52,13 +52,13 @@ namespace PhpParser.Parser
             else
                 return first;
         }
-        
-//$$ = AddToList<LangElement>($1, $3);
-//$$ = new List<LangElement>() { (LangElement)$1 };
 
-    public LangElement Parse(
-            ITokenProvider<SemanticValueType, Span> lexer, INodesFactory<LangElement, Span> astFactory,
-            LanguageFeatures features, int positionShift = 0)
+        //$$ = AddToList<LangElement>($1, $3);
+        //$$ = new List<LangElement>() { (LangElement)$1 };
+
+        public LangElement Parse(
+                ITokenProvider<SemanticValueType, Span> lexer, INodesFactory<LangElement, Span> astFactory,
+                LanguageFeatures features, int positionShift = 0)
         {
             // initialization:
             this._features = features;
@@ -105,12 +105,12 @@ namespace PhpParser.Parser
             Debug.Assert(statements.All(s => s == null || s is Statement), "Code contains an invalid statement.");
             List<LangElement> namespaces = new List<LangElement>();
             int i = 0;
-            while((i = statements.FindLastIndex(s => s is NamespaceDecl && ((NamespaceDecl)s).IsSimpleSyntax)) != -1)
+            while ((i = statements.FindLastIndex(s => s is NamespaceDecl && ((NamespaceDecl)s).IsSimpleSyntax)) != -1)
             {
                 int count = statements.Count - i;
                 namespaces.Add(statements[i]);
                 // add all the subsequent statements except the NamespaceDecl itself
-                ((NamespaceDecl)statements[i]).Statements = statements.GetRange(i+1, count-1).Select(s => (Statement)s).ToList();
+                ((NamespaceDecl)statements[i]).Statements = statements.GetRange(i + 1, count - 1).Select(s => (Statement)s).ToList();
                 statements.RemoveRange(i, count);
             }
             namespaces.Reverse(); // keep the original order
@@ -191,6 +191,12 @@ namespace PhpParser.Parser
         private LangElement StatementBlock(Span span, object statements)
         {
             return (statements is Statement) ? (LangElement)statements : StatementsToBlock(span, statements);
+        }
+
+        private List<Tuple<GenericQualifiedName, Span>> NameListToImplementsList(Span span, List<QualifiedName> nameList)
+        {
+            return nameList.Select(n => new Tuple<GenericQualifiedName, Span>(
+                new GenericQualifiedName(n, new object[0]), span)).ToList();
         }
 
         enum _zend_ast_kind

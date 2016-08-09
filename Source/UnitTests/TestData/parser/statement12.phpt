@@ -14,9 +14,11 @@ nothrow:
   "NewEx":{
     "DirectTypeRef":{
       "ClassName":"Exception",
+      "IsNullable":"False",
       "GenericParams":{}
     },
-    "ActualParam":{ 
+    "ActualParam":{   
+      "IsUnpack":"False",
       "StringLiteral":{"Value":"hello"}
     }
   },     

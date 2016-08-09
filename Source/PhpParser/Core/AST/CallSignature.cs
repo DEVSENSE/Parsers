@@ -18,7 +18,7 @@ namespace PHP.Core.AST
         {
             Default = 0,
             IsByRef = 1,
-            IsVariadic = 2,
+            IsUnpack = 2,
         }
 
 		public Expression/*!*/ Expression { get { return _expression; } }
@@ -32,7 +32,7 @@ namespace PHP.Core.AST
         /// <summary>
         /// Gets value indicating whether the parameter is passed with <c>...</c> prefix and so it has to be unpacked before passing to the function call.
         /// </summary>
-        public bool IsVariadic { get { return (_flags & Flags.IsVariadic) != 0; } }
+        public bool IsUnpack { get { return (_flags & Flags.IsUnpack) != 0; } }
         
         /// <summary>
         /// Flags describing use of the parameter.

@@ -52,6 +52,7 @@ foreach ($arr as $key => $value) {
         "DirectFcnCall" : {
           "Name" : "print_r", 
           "ActualParam" : {
+            "IsUnpack":"False",
             "DirectVarUse":{
               "VarName":"arr"
             }

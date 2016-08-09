@@ -19,7 +19,7 @@ class SimpleClass
   "NamingContext" : {},
   "TypeDecl":{
     "Name":"SimpleClass",
-    "MemberAttributes":"None",
+    "MemberAttributes":"Public",
     "IsConditional":"False",
     "PHPDoc":{"Comment":"class declaration"},
     "FieldDecl":{"Name":"var","MemberAttributes":"Private","PHPDoc":{"Comment":"property declaration"},"StringLiteral":{"Value":"a default value"}}, 

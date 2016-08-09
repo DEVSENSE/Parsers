@@ -221,7 +221,8 @@ namespace PhpParser
         }
         override public void VisitActualParam(ActualParam x)
         {
-            _serializer.StartSerialize(typeof(ActualParam).Name, SerializeSpan(x.Span));
+            _serializer.StartSerialize(typeof(ActualParam).Name, SerializeSpan(x.Span),
+                new NodeObj("IsUnpack", x.IsUnpack.ToString()));
             base.VisitActualParam(x);
             _serializer.EndSerialize();
         }
@@ -396,7 +397,8 @@ namespace PhpParser
         {
             _serializer.StartSerialize(typeof(CatchItem).Name, SerializeSpan(x.Span));
             _serializer.StartSerialize("TypeRef");
-            VisitElement(x.TypeRef);
+            foreach (var type in x.TypeRef)
+                VisitElement(type);
             _serializer.EndSerialize();
             _serializer.StartSerialize("Variable");
             VisitElement(x.Variable);
@@ -408,7 +410,9 @@ namespace PhpParser
         }
         override public void VisitDirectTypeRef(DirectTypeRef x)
         {
-            _serializer.StartSerialize(typeof(DirectTypeRef).Name, SerializeSpan(x.Span), new NodeObj("ClassName", x.ClassName.ToString()));
+            _serializer.StartSerialize(typeof(DirectTypeRef).Name, SerializeSpan(x.Span), 
+                new NodeObj("ClassName", x.ClassName.ToString()), 
+                new NodeObj("IsNullable", x.IsNullable.ToString()));
             _serializer.StartSerialize("GenericParams");
             foreach (var param in x.GenericParams)
                 VisitElement(param);
@@ -499,8 +503,12 @@ namespace PhpParser
         override public void VisitTypeDecl(TypeDecl x)
         {
             _serializer.StartSerialize(typeof(TypeDecl).Name, SerializeSpan(x.Span), 
-                new NodeObj("Name", x.Name.Value), new NodeObj("MemberAttributes", x.MemberAttributes.ToString()),
+                new NodeObj("Name", x.Name.Value), new NodeObj("MemberAttributes", MemberAttributesToString(x.MemberAttributes)),
                 new NodeObj("IsConditional", x.IsConditional.ToString()));
+            if (x.BaseClassName != null)
+                _serializer.Serialize("BaseClassName", new NodeObj("Name", x.BaseClassName.Value.QualifiedName.ToString()));
+            if (x.ImplementsList != null && x.ImplementsList.Length > 0)
+                _serializer.Serialize("ImplementsList", x.ImplementsList.Select(n => new NodeObj("Name", n.QualifiedName.ToString())).ToArray());
             if (x.PHPDoc != null)
                 _serializer.Serialize("PHPDoc", new NodeObj("Comment", x.PHPDoc.ToString()));
             base.VisitTypeDecl(x);
@@ -532,6 +540,30 @@ namespace PhpParser
             if (x.PHPDoc != null)
                 _serializer.Serialize("PHPDoc", new NodeObj("Comment", x.PHPDoc.ToString()));
             VisitElement(x.Initializer);
+            _serializer.EndSerialize();
+        }
+        override public void VisitMethodDecl(MethodDecl x)
+        {
+            _serializer.StartSerialize(typeof(MethodDecl).Name, SerializeSpan(x.Span), new NodeObj("Name", x.Name.Value), 
+                new NodeObj("Modifiers", MemberAttributesToString(x.Modifiers)));
+            if (x.PHPDoc != null)
+                _serializer.Serialize("PHPDoc", new NodeObj("Comment", x.PHPDoc.ToString()));
+            _serializer.StartSerialize("FormalParams");
+            // method parameters
+            foreach (FormalParam p in x.Signature.FormalParams)
+                VisitElement(p);
+            _serializer.EndSerialize();
+
+            _serializer.StartSerialize("Body");
+            // method body
+            VisitStatements(x.Body);
+            _serializer.EndSerialize();
+            _serializer.EndSerialize();
+        }
+        override public void VisitUnsetStmt(UnsetStmt x)
+        {
+            _serializer.StartSerialize(typeof(UnsetStmt).Name, SerializeSpan(x.Span));
+            base.VisitUnsetStmt(x);
             _serializer.EndSerialize();
         }
     }

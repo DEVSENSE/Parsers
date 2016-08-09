@@ -19,7 +19,8 @@ try {
       "CatchItem":{
         "TypeRef":{
           "DirectTypeRef":{
-            "ClassName":"TestEx",
+            "ClassName":"TestEx", 
+            "IsNullable":"False", 
             "GenericParams":{}
           }
         },

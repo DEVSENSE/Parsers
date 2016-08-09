@@ -6,7 +6,7 @@ endforeach;
 foreach ($arr as $key => $value):
     // $arr[3] will be updated with each value from $arr...
     echo "hello";
-    print_r($arr);
+    print_r(...$arr);
 endforeach;
 ?>
 <<<TEST>>>
@@ -52,7 +52,8 @@ endforeach;
         },
         "DirectFcnCall" : {
           "Name" : "print_r", 
-          "ActualParam" : {
+          "ActualParam" : {   
+            "IsUnpack":"True",
             "DirectVarUse":{
               "VarName":"arr"
             }
