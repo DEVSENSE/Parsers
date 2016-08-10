@@ -468,8 +468,8 @@ statement:
 	|	T_BREAK optional_expr ';'		{ $$ = _astFactory.Jump(@$, JumpStmt.Types.Break, (LangElement)$2);}
 	|	T_CONTINUE optional_expr ';'	{ $$ = _astFactory.Jump(@$, JumpStmt.Types.Continue, (LangElement)$2); }
 	|	T_RETURN optional_expr ';'		{ $$ = _astFactory.Jump(@$, JumpStmt.Types.Return, (LangElement)$2); }
-	|	T_GLOBAL global_var_list ';'	{ $$ = $2; }
-	|	T_STATIC static_var_list ';'	{ $$ = $2; }
+	|	T_GLOBAL global_var_list ';'	{ $$ = _astFactory.Global(@$, (List<LangElement>)$2); }
+	|	T_STATIC static_var_list ';'	{ $$ = _astFactory.Static(@$, (List<LangElement>)$2); }
 	|	T_ECHO echo_expr_list ';'		{ $$ = _astFactory.Echo(@$, (List<LangElement>)$2); }
 	|	T_INLINE_HTML { $$ = _astFactory.InlineHtml(@$, (string)$1); }
 	|	expr ';' { $$ = _astFactory.ExpressionStmt(@$, (LangElement)$1); }
@@ -754,7 +754,7 @@ global_var_list:
 
 global_var:
 	simple_variable
-		{ $$ = zend_ast_create(_zend_ast_kind.ZEND_AST_GLOBAL, zend_ast_create(_zend_ast_kind.ZEND_AST_VAR, $1)); }
+		{ $$ = $1; }
 ;
 
 
@@ -764,8 +764,8 @@ static_var_list:
 ;
 
 static_var:
-		T_VARIABLE			{ $$ = zend_ast_create(_zend_ast_kind.ZEND_AST_STATIC, $1, null); }
-	|	T_VARIABLE '=' expr	{ $$ = zend_ast_create(_zend_ast_kind.ZEND_AST_STATIC, $1, $3); }
+		T_VARIABLE			{ $$ = _astFactory.StaticVarDecl(@$, new VariableName((string)$1), null); }
+	|	T_VARIABLE '=' expr	{ $$ = _astFactory.StaticVarDecl(@$, new VariableName((string)$1), (LangElement)$3); }
 ;
 
 
@@ -783,7 +783,7 @@ class_statement:
 	|	method_modifiers T_CONST class_const_list ';'
 			{ $$ = _astFactory.DeclList(@$, (PhpMemberAttributes)$1, (List<LangElement>)$3); }
 	|	T_USE name_list trait_adaptations
-			{ $$ = zend_ast_create(_zend_ast_kind.ZEND_AST_USE_TRAIT, $2, $3); }
+			{ $$ = _astFactory.TraitUse(@$, (List<QualifiedName>)$2, (List<TraitsUse.TraitAdaptation>)$3); }
 	|	method_modifiers function returns_ref identifier backup_doc_comment '(' parameter_list ')'
 		return_type backup_fn_flags method_body backup_fn_flags
 			{ $$ = _astFactory.Method(@$, false, (PhpMemberAttributes)$1, 
@@ -809,10 +809,10 @@ trait_adaptations:
 
 trait_adaptation_list:
 		trait_adaptation
-			{ $$ = new List<LangElement>() { (LangElement)$1 };
+			{ $$ = new List<TraitsUse.TraitAdaptation>() { (TraitsUse.TraitAdaptation)$1 };
  }
 	|	trait_adaptation_list trait_adaptation
-			{ $$ = AddToList<LangElement>($1, $2); }
+			{ $$ = AddToList<TraitsUse.TraitAdaptation>($1, $2); }
 ;
 
 trait_adaptation:
@@ -822,29 +822,29 @@ trait_adaptation:
 
 trait_precedence:
 	absolute_trait_method_reference T_INSTEADOF name_list
-		{ $$ = zend_ast_create(_zend_ast_kind.ZEND_AST_TRAIT_PRECEDENCE, $1, $3); }
+		{ $$ = _astFactory.TraitAdaptationPrecedence(@$, (Tuple<QualifiedName?,Name>)$1, (List<QualifiedName>)$3); }
 ;
 
 trait_alias:
 		trait_method_reference T_AS T_STRING
-			{ $$ = zend_ast_create_ex(_zend_ast_kind.ZEND_AST_TRAIT_ALIAS, 0, $1, $3); }
+			{ $$ = _astFactory.TraitAdaptationAlias(@$, (Tuple<QualifiedName?, Name>)$1, (string)$3, null); }
 	|	trait_method_reference T_AS reserved_non_modifiers
-			{ long zv = 0; zend_lex_tstring(zv); $$ = zend_ast_create_ex(_zend_ast_kind.ZEND_AST_TRAIT_ALIAS, 0, $1, zend_ast_create_zval(zv)); }
+			{ $$ = _astFactory.TraitAdaptationAlias(@$, (Tuple<QualifiedName?, Name>)$1, (string)$3.Object, null); }
 	|	trait_method_reference T_AS member_modifier identifier
-			{ $$ = zend_ast_create_ex(_zend_ast_kind.ZEND_AST_TRAIT_ALIAS, $3, $1, $4); }
+			{ $$ = _astFactory.TraitAdaptationAlias(@$, (Tuple<QualifiedName?, Name>)$1, (string)$4, (PhpMemberAttributes)$3); }
 	|	trait_method_reference T_AS member_modifier
-			{ $$ = zend_ast_create_ex(_zend_ast_kind.ZEND_AST_TRAIT_ALIAS, $3, $1, null); }
+			{ $$ = _astFactory.TraitAdaptationAlias(@$, (Tuple<QualifiedName?, Name>)$1, null, (PhpMemberAttributes)$3); }
 ;
 
 trait_method_reference:
 		identifier
-			{ $$ = zend_ast_create(_zend_ast_kind.ZEND_AST_METHOD_REFERENCE, null, $1); }
+			{ $$ = new Tuple<QualifiedName?,Name>(null, new Name((string)$1)); }
 	|	absolute_trait_method_reference { $$ = $1; }
 ;
 
 absolute_trait_method_reference:
 	name T_DOUBLE_COLON identifier
-		{ $$ = zend_ast_create(_zend_ast_kind.ZEND_AST_METHOD_REFERENCE, $1, $3); }
+		{ $$ = new Tuple<QualifiedName?,Name>((QualifiedName)$1, new Name((string)$3)); }
 ;
 
 method_body:

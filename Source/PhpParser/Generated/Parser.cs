@@ -2090,10 +2090,10 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 { yyval.Object = _astFactory.Jump(yypos, JumpStmt.Types.Return, (LangElement)value_stack.array[value_stack.top-2].yyval.Object); }
         return;
       case 141: // statement -> T_GLOBAL global_var_list ';' 
-{ yyval.Object = value_stack.array[value_stack.top-2].yyval.Object; }
+{ yyval.Object = _astFactory.Global(yypos, (List<LangElement>)value_stack.array[value_stack.top-2].yyval.Object); }
         return;
       case 142: // statement -> T_STATIC static_var_list ';' 
-{ yyval.Object = value_stack.array[value_stack.top-2].yyval.Object; }
+{ yyval.Object = _astFactory.Static(yypos, (List<LangElement>)value_stack.array[value_stack.top-2].yyval.Object); }
         return;
       case 143: // statement -> T_ECHO echo_expr_list ';' 
 { yyval.Object = _astFactory.Echo(yypos, (List<LangElement>)value_stack.array[value_stack.top-2].yyval.Object); }
@@ -2404,7 +2404,7 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 { yyval.Object = new List<LangElement>() { (LangElement)value_stack.array[value_stack.top-1].yyval.Object }; }
         return;
       case 235: // global_var -> simple_variable 
-{ yyval.Object = zend_ast_create(_zend_ast_kind.ZEND_AST_GLOBAL, zend_ast_create(_zend_ast_kind.ZEND_AST_VAR, value_stack.array[value_stack.top-1].yyval.Object)); }
+{ yyval.Object = value_stack.array[value_stack.top-1].yyval.Object; }
         return;
       case 236: // static_var_list -> static_var_list ',' static_var 
 { yyval.Object = AddToList<LangElement>(value_stack.array[value_stack.top-3].yyval.Object, value_stack.array[value_stack.top-1].yyval.Object); }
@@ -2413,10 +2413,10 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 { yyval.Object = new List<LangElement>() { (LangElement)value_stack.array[value_stack.top-1].yyval.Object }; }
         return;
       case 238: // static_var -> T_VARIABLE 
-{ yyval.Object = zend_ast_create(_zend_ast_kind.ZEND_AST_STATIC, value_stack.array[value_stack.top-1].yyval.Object, null); }
+{ yyval.Object = _astFactory.StaticVarDecl(yypos, new VariableName((string)value_stack.array[value_stack.top-1].yyval.Object), null); }
         return;
       case 239: // static_var -> T_VARIABLE '=' expr 
-{ yyval.Object = zend_ast_create(_zend_ast_kind.ZEND_AST_STATIC, value_stack.array[value_stack.top-3].yyval.Object, value_stack.array[value_stack.top-1].yyval.Object); }
+{ yyval.Object = _astFactory.StaticVarDecl(yypos, new VariableName((string)value_stack.array[value_stack.top-3].yyval.Object), (LangElement)value_stack.array[value_stack.top-1].yyval.Object); }
         return;
       case 240: // class_statement_list -> class_statement_list class_statement 
 { yyval.Object = AddToList<LangElement>(value_stack.array[value_stack.top-2].yyval.Object, value_stack.array[value_stack.top-1].yyval.Object); }
@@ -2431,7 +2431,7 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 { yyval.Object = _astFactory.DeclList(yypos, (PhpMemberAttributes)value_stack.array[value_stack.top-4].yyval.Long, (List<LangElement>)value_stack.array[value_stack.top-2].yyval.Object); }
         return;
       case 244: // class_statement -> T_USE name_list trait_adaptations 
-{ yyval.Object = zend_ast_create(_zend_ast_kind.ZEND_AST_USE_TRAIT, value_stack.array[value_stack.top-2].yyval.Object, value_stack.array[value_stack.top-1].yyval.Object); }
+{ yyval.Object = _astFactory.TraitUse(yypos, (List<QualifiedName>)value_stack.array[value_stack.top-2].yyval.Object, (List<TraitsUse.TraitAdaptation>)value_stack.array[value_stack.top-1].yyval.Object); }
         return;
       case 245: // class_statement -> method_modifiers function returns_ref identifier backup_doc_comment '(' parameter_list ')' return_type backup_fn_flags method_body backup_fn_flags 
 { yyval.Object = _astFactory.Method(yypos, false, (PhpMemberAttributes)value_stack.array[value_stack.top-12].yyval.Long, 
@@ -2459,11 +2459,11 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 { yyval.Object = value_stack.array[value_stack.top-2].yyval.Object; }
         return;
       case 251: // trait_adaptation_list -> trait_adaptation 
-{ yyval.Object = new List<LangElement>() { (LangElement)value_stack.array[value_stack.top-1].yyval.Object };
+{ yyval.Object = new List<TraitsUse.TraitAdaptation>() { (TraitsUse.TraitAdaptation)value_stack.array[value_stack.top-1].yyval.Object };
  }
         return;
       case 252: // trait_adaptation_list -> trait_adaptation_list trait_adaptation 
-{ yyval.Object = AddToList<LangElement>(value_stack.array[value_stack.top-2].yyval.Object, value_stack.array[value_stack.top-1].yyval.Object); }
+{ yyval.Object = AddToList<TraitsUse.TraitAdaptation>(value_stack.array[value_stack.top-2].yyval.Object, value_stack.array[value_stack.top-1].yyval.Object); }
         return;
       case 253: // trait_adaptation -> trait_precedence ';' 
 { yyval.Object = value_stack.array[value_stack.top-2].yyval.Object; }
@@ -2472,28 +2472,28 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 { yyval.Object = value_stack.array[value_stack.top-2].yyval.Object; }
         return;
       case 255: // trait_precedence -> absolute_trait_method_reference T_INSTEADOF name_list 
-{ yyval.Object = zend_ast_create(_zend_ast_kind.ZEND_AST_TRAIT_PRECEDENCE, value_stack.array[value_stack.top-3].yyval.Object, value_stack.array[value_stack.top-1].yyval.Object); }
+{ yyval.Object = _astFactory.TraitAdaptationPrecedence(yypos, (Tuple<QualifiedName?,Name>)value_stack.array[value_stack.top-3].yyval.Object, (List<QualifiedName>)value_stack.array[value_stack.top-1].yyval.Object); }
         return;
       case 256: // trait_alias -> trait_method_reference T_AS T_STRING 
-{ yyval.Object = zend_ast_create_ex(_zend_ast_kind.ZEND_AST_TRAIT_ALIAS, 0, value_stack.array[value_stack.top-3].yyval.Object, value_stack.array[value_stack.top-1].yyval.Object); }
+{ yyval.Object = _astFactory.TraitAdaptationAlias(yypos, (Tuple<QualifiedName?, Name>)value_stack.array[value_stack.top-3].yyval.Object, (string)value_stack.array[value_stack.top-1].yyval.Object, null); }
         return;
       case 257: // trait_alias -> trait_method_reference T_AS reserved_non_modifiers 
-{ long zv = 0; zend_lex_tstring(zv); yyval.Object = zend_ast_create_ex(_zend_ast_kind.ZEND_AST_TRAIT_ALIAS, 0, value_stack.array[value_stack.top-3].yyval.Object, zend_ast_create_zval(zv)); }
+{ yyval.Object = _astFactory.TraitAdaptationAlias(yypos, (Tuple<QualifiedName?, Name>)value_stack.array[value_stack.top-3].yyval.Object, (string)value_stack.array[value_stack.top-1].yyval.Object, null); }
         return;
       case 258: // trait_alias -> trait_method_reference T_AS member_modifier identifier 
-{ yyval.Object = zend_ast_create_ex(_zend_ast_kind.ZEND_AST_TRAIT_ALIAS, value_stack.array[value_stack.top-2].yyval.Long, value_stack.array[value_stack.top-4].yyval.Object, value_stack.array[value_stack.top-1].yyval.Object); }
+{ yyval.Object = _astFactory.TraitAdaptationAlias(yypos, (Tuple<QualifiedName?, Name>)value_stack.array[value_stack.top-4].yyval.Object, (string)value_stack.array[value_stack.top-1].yyval.Object, (PhpMemberAttributes)value_stack.array[value_stack.top-2].yyval.Long); }
         return;
       case 259: // trait_alias -> trait_method_reference T_AS member_modifier 
-{ yyval.Object = zend_ast_create_ex(_zend_ast_kind.ZEND_AST_TRAIT_ALIAS, value_stack.array[value_stack.top-1].yyval.Long, value_stack.array[value_stack.top-3].yyval.Object, null); }
+{ yyval.Object = _astFactory.TraitAdaptationAlias(yypos, (Tuple<QualifiedName?, Name>)value_stack.array[value_stack.top-3].yyval.Object, null, (PhpMemberAttributes)value_stack.array[value_stack.top-1].yyval.Long); }
         return;
       case 260: // trait_method_reference -> identifier 
-{ yyval.Object = zend_ast_create(_zend_ast_kind.ZEND_AST_METHOD_REFERENCE, null, value_stack.array[value_stack.top-1].yyval.Object); }
+{ yyval.Object = new Tuple<QualifiedName?,Name>(null, new Name((string)value_stack.array[value_stack.top-1].yyval.Object)); }
         return;
       case 261: // trait_method_reference -> absolute_trait_method_reference 
 { yyval.Object = value_stack.array[value_stack.top-1].yyval.Object; }
         return;
       case 262: // absolute_trait_method_reference -> name T_DOUBLE_COLON identifier 
-{ yyval.Object = zend_ast_create(_zend_ast_kind.ZEND_AST_METHOD_REFERENCE, value_stack.array[value_stack.top-3].yyval.Object, value_stack.array[value_stack.top-1].yyval.Object); }
+{ yyval.Object = new Tuple<QualifiedName?,Name>((QualifiedName)value_stack.array[value_stack.top-3].yyval.Object, new Name((string)value_stack.array[value_stack.top-1].yyval.Object)); }
         return;
       case 263: // method_body -> ';' 
 { yyval.Object = null; }

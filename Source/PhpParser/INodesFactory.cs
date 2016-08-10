@@ -166,13 +166,40 @@ namespace PhpParser
             IEnumerable<ActualParam> baseCtorParams, TNode body);
 
         /// <summary>
-        /// Creates class traits.
+        /// Creates class trait use statement.
         /// </summary>
         /// <param name="span">Entire element span.</param>
         /// <param name="traits">Enumeration of traits.</param>
         /// <param name="adaptations">Enumeration of trait adaptations.</param>
         /// <returns>Trait use type member.</returns>
-        TNode TraitUse(TSpan span, IEnumerable<QualifiedName> traits, IEnumerable<TraitsUse.TraitAdaptation> adaptations);
+        TNode TraitUse(TSpan span, IEnumerable<QualifiedName> traits, IEnumerable<TNode> adaptations);
+
+        /// <summary>
+        /// Create <c>TraitAdaptationPrecedence</c> expression.
+        /// </summary>
+        /// <param name="span">Entire element span.</param>
+        /// <param name="name">Member affected by the precedence.</param>
+        /// <param name="precedences">The renamed types and members.</param>
+        /// <returns>TraitAdaptationPrecedence expression</returns>
+        TNode TraitAdaptationPrecedence(TSpan span, Tuple<QualifiedName?, Name> name, List<QualifiedName> precedences);
+
+        /// <summary>
+        /// Create <c>TraitAdaptationAlias</c> expression.
+        /// </summary>
+        /// <param name="span">Entire element span.</param>
+        /// <param name="name">Member affected by the alias.</param>
+        /// <param name="identifierOpt">New name assigned by the alias.</param>
+        /// <param name="attributeOpt">New accessibility modifier.</param>
+        /// <returns>TraitAdaptationAlias expression</returns>
+        TNode TraitAdaptationAlias(TSpan span, Tuple<QualifiedName?, Name> name, string identifierOpt, PhpMemberAttributes? attributeOpt);
+
+        /// <summary>
+        /// Create global declaration statement.
+        /// </summary>
+        /// <param name="span">Entire element span.</param>
+        /// <param name="variables">Global variables.</param>
+        /// <returns>GlobalStmt statement.</returns>
+        TNode Global(Span span, List<TNode> variables);
 
         /// <summary>
         /// Creates declaration of class constants, class fields or global constants.
@@ -320,6 +347,15 @@ namespace PhpParser
         /// <param name="staticVariables">List of variable declarations.</param>
         /// <returns>Static statement.</returns>
         TNode Static(Span span, IEnumerable<TNode> staticVariables);
+
+        /// <summary>
+        /// Create static variable declaration statement.
+        /// </summary>
+        /// <param name="span">Entire element span.</param>
+        /// <param name="name">Variable naem.</param>
+        /// <param name="initializerOpt">Variable initializer.</param>
+        /// <returns>StaticVarDecl statement.</returns>
+        TNode StaticVarDecl(Span span, VariableName name, LangElement initializerOpt);
 
         #endregion
 

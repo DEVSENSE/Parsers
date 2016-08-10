@@ -23,7 +23,7 @@ namespace PhpParser
 
         void SerializeValue(string nodeType, string nodeValue)
         {
-            Debug.Assert(!string.IsNullOrEmpty(nodeType) && !string.IsNullOrEmpty(nodeValue));
+            Debug.Assert(!string.IsNullOrEmpty(nodeType));
             if (!_first)
                 _builder.Append(",");
             else _first = false;

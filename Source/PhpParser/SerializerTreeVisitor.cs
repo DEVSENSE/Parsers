@@ -22,6 +22,8 @@ namespace PhpParser
 
         string MemberAttributesToString(PhpMemberAttributes attr)
         {
+            //if (attr == PhpMemberAttributes.None)
+            //    return "None";
             switch (attr)
             {
                 case PhpMemberAttributes.Public:
@@ -564,6 +566,48 @@ namespace PhpParser
         {
             _serializer.StartSerialize(typeof(UnsetStmt).Name, SerializeSpan(x.Span));
             base.VisitUnsetStmt(x);
+            _serializer.EndSerialize();
+        }
+
+        override public void VisitTraitsUse(TraitsUse x)
+        {
+            _serializer.StartSerialize(typeof(TraitsUse).Name, SerializeSpan(x.Span));
+            _serializer.Serialize("Traits", x.TraitsList.Select(t => new NodeObj("Trait", t.ToString())).ToArray());
+            base.VisitTraitsUse(x);
+            _serializer.EndSerialize();
+        }
+
+        override public void VisitTraitAdaptationPrecedence(TraitsUse.TraitAdaptationPrecedence x)
+        {
+            _serializer.StartSerialize(typeof(TraitsUse.TraitAdaptationPrecedence).Name, SerializeSpan(x.Span), 
+                new NodeObj("TraitMemberName", (x.TraitMemberName.Item1.HasValue? x.TraitMemberName.Item1.Value.ToString() + "::": string.Empty) + x.TraitMemberName.Item2.Value));
+            _serializer.Serialize("IgnoredTypes", x.IgnoredTypes.Select(t => new NodeObj("IgnoredType", t.ToString())).ToArray());
+            _serializer.EndSerialize();
+        }
+
+        override public void VisitTraitAdaptationAlias(TraitsUse.TraitAdaptationAlias x)
+        {
+            _serializer.StartSerialize(typeof(TraitsUse.TraitAdaptationAlias).Name, SerializeSpan(x.Span),
+                new NodeObj("TraitMemberName", (x.TraitMemberName.Item1.HasValue ? x.TraitMemberName.Item1.Value.ToString() + "::" : string.Empty) + x.TraitMemberName.Item2.Value),
+                new NodeObj("NewName", x.NewName ?? string.Empty), new NodeObj("NewModifier", MemberAttributesToString(x.NewModifier ?? PhpMemberAttributes.None)));
+            _serializer.EndSerialize();
+        }
+        override public void VisitGlobalStmt(GlobalStmt x)
+        {
+            _serializer.StartSerialize(typeof(GlobalStmt).Name, SerializeSpan(x.Span));
+            base.VisitGlobalStmt(x);
+            _serializer.EndSerialize();
+        }
+
+        override public void VisitStaticStmt(StaticStmt x)
+        {
+            _serializer.StartSerialize(typeof(StaticStmt).Name, SerializeSpan(x.Span));
+            foreach (StaticVarDecl v in x.StVarList)
+            {
+                _serializer.StartSerialize(typeof(StaticVarDecl).Name, SerializeSpan(x.Span), new NodeObj("Name", v.Variable.VarName.Value));
+                VisitElement(v.Initializer);
+                _serializer.EndSerialize();
+            }
             _serializer.EndSerialize();
         }
     }

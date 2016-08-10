@@ -339,9 +339,27 @@ namespace PhpParser
                 return new DefaultItem(span, ((BlockStmt)block).Statements);
         }
 
-        public LangElement TraitUse(Span span, IEnumerable<QualifiedName> traits, IEnumerable<TraitsUse.TraitAdaptation> adaptations)
+        public LangElement TraitUse(Span span, IEnumerable<QualifiedName> traits, IEnumerable<LangElement> adaptations)
         {
-            throw new NotImplementedException();
+            Debug.Assert(traits != null);
+            return new TraitsUse(span, 0, traits.ToList(), (adaptations != null)? ConvertList<TraitsUse.TraitAdaptation>(adaptations): null);
+        }
+
+        public LangElement TraitAdaptationPrecedence(Span span, Tuple<QualifiedName?, Name> name, List<QualifiedName> precedences)
+        {
+            Debug.Assert(precedences != null);
+            return new TraitsUse.TraitAdaptationPrecedence(span, name, precedences);
+        }
+
+        public LangElement TraitAdaptationAlias(Span span, Tuple<QualifiedName?, Name> name, string identifierOpt, PhpMemberAttributes? attributeOpt)
+        {
+            Debug.Assert(!string.IsNullOrEmpty(identifierOpt) || attributeOpt != null);
+            return new TraitsUse.TraitAdaptationAlias(span, name, identifierOpt, attributeOpt);
+        }
+
+        public LangElement Global(Span span, List<LangElement> variables)
+        {
+            return new GlobalStmt(span, ConvertList<SimpleVarUse>(variables));
         }
 
         public LangElement TryCatch(Span span, LangElement body, IEnumerable<CatchItem> catches, LangElement finallyBlockOpt)
@@ -457,6 +475,11 @@ namespace PhpParser
         public LangElement Static(Span span, IEnumerable<LangElement> staticVariables)
         {
             return new StaticStmt(span, ConvertList<StaticVarDecl>(staticVariables));
+        }
+        public LangElement StaticVarDecl(Span span, VariableName name, LangElement initializerOpt)
+        {
+            Debug.Assert(initializerOpt == null || initializerOpt is Expression);
+            return new StaticVarDecl(span, new DirectVarUse(span, name), (Expression)initializerOpt);
         }
 
         public LangElement ConstUse(Span span, QualifiedName name, QualifiedName? nameFallback)
