@@ -1103,11 +1103,21 @@ function_call:
 		name argument_list
 			{ $$ = _astFactory.Call(@$, (QualifiedName)$1, null, @1, new CallSignature((List<ActualParam>)$2), null); }
 	|	class_name T_DOUBLE_COLON member_name argument_list
-			{ $$ = zend_ast_create(_zend_ast_kind.ZEND_AST_STATIC_CALL, $1, $3, $4); }
+			{
+				if($3 is Name)
+					$$ = _astFactory.Call(@$, (Name)$3, @2, new CallSignature((List<ActualParam>)$4), (TypeRef)_astFactory.TypeReference(@$, (QualifiedName)$1, false, null)); 
+				else
+					$$ = _astFactory.Call(@$, (LangElement)$3, new CallSignature((List<ActualParam>)$4), (TypeRef)_astFactory.TypeReference(@$, (QualifiedName)$1, false, null)); 
+			}
 	|	variable_class_name T_DOUBLE_COLON member_name argument_list
-			{ $$ = zend_ast_create(_zend_ast_kind.ZEND_AST_STATIC_CALL, $1, $3, $4); }
+			{
+				if($3 is Name)
+					$$ = _astFactory.Call(@$, (Name)$3, @2, new CallSignature((List<ActualParam>)$4), (TypeRef)_astFactory.TypeReference(@$, (LangElement)$1, false, null)); 
+				else
+					$$ = _astFactory.Call(@$, (LangElement)$3, new CallSignature((List<ActualParam>)$4), (TypeRef)_astFactory.TypeReference(@$, (LangElement)$1, false, null)); 
+			}
 	|	callable_expr argument_list
-			{ $$ = _astFactory.Call(@$, new QualifiedName(), null, @1, new CallSignature((List<ActualParam>)$2), (LangElement)$1); }
+			{ $$ = _astFactory.Call(@$, (LangElement)$1, new CallSignature((List<ActualParam>)$2), (LangElement)null);}
 ;
 
 class_name:
@@ -1210,7 +1220,12 @@ callable_variable:
 	|	dereferencable '{' expr '}'
 			{ $$ = zend_ast_create(_zend_ast_kind.ZEND_AST_DIM, $1, $3); }
 	|	dereferencable T_OBJECT_OPERATOR property_name argument_list
-			{ $$ = zend_ast_create(_zend_ast_kind.ZEND_AST_METHOD_CALL, $1, $3, $4); }
+			{
+				if($3 is Name)
+					$$ = _astFactory.Call(@$, new QualifiedName((Name)$3), null, @3, new CallSignature((List<ActualParam>)$4), (LangElement)$1);
+				else
+					$$ = _astFactory.Call(@$, (LangElement)$3, new CallSignature((List<ActualParam>)$4), (LangElement)$1);
+			}
 	|	function_call { $$ = $1; }
 ;
 
@@ -1252,15 +1267,15 @@ new_variable:
 ;
 
 member_name:
-		identifier { $$ = $1; }
+		identifier { $$ = new Name((string)$1); }
 	|	'{' expr '}'	{ $$ = $2; }
-	|	simple_variable	{ $$ = zend_ast_create(_zend_ast_kind.ZEND_AST_VAR, $1); }
+	|	simple_variable	{ $$ = $1; }
 ;
 
 property_name:
-		T_STRING { $$ = $1; }
+		T_STRING { $$ = new Name((string)$1); }
 	|	'{' expr '}'	{ $$ = $2; }
-	|	simple_variable	{ $$ = zend_ast_create(_zend_ast_kind.ZEND_AST_VAR, $1); }
+	|	simple_variable	{ $$ = $1; }
 ;
 
 array_pair_list:

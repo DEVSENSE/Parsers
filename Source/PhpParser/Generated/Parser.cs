@@ -2873,13 +2873,23 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 { yyval.Object = _astFactory.Call(yypos, (QualifiedName)value_stack.array[value_stack.top-2].yyval.Object, null, value_stack.array[value_stack.top-2].yypos, new CallSignature((List<ActualParam>)value_stack.array[value_stack.top-1].yyval.Object), null); }
         return;
       case 384: // function_call -> class_name T_DOUBLE_COLON member_name argument_list 
-{ yyval.Object = zend_ast_create(_zend_ast_kind.ZEND_AST_STATIC_CALL, value_stack.array[value_stack.top-4].yyval.Object, value_stack.array[value_stack.top-2].yyval.Object, value_stack.array[value_stack.top-1].yyval.Object); }
+{
+				if(value_stack.array[value_stack.top-2].yyval.Object is Name)
+					yyval.Object = _astFactory.Call(yypos, (Name)value_stack.array[value_stack.top-2].yyval.Object, value_stack.array[value_stack.top-3].yypos, new CallSignature((List<ActualParam>)value_stack.array[value_stack.top-1].yyval.Object), (TypeRef)_astFactory.TypeReference(yypos, (QualifiedName)value_stack.array[value_stack.top-4].yyval.Object, false, null)); 
+				else
+					yyval.Object = _astFactory.Call(yypos, (LangElement)value_stack.array[value_stack.top-2].yyval.Object, new CallSignature((List<ActualParam>)value_stack.array[value_stack.top-1].yyval.Object), (TypeRef)_astFactory.TypeReference(yypos, (QualifiedName)value_stack.array[value_stack.top-4].yyval.Object, false, null)); 
+			}
         return;
       case 385: // function_call -> variable_class_name T_DOUBLE_COLON member_name argument_list 
-{ yyval.Object = zend_ast_create(_zend_ast_kind.ZEND_AST_STATIC_CALL, value_stack.array[value_stack.top-4].yyval.Object, value_stack.array[value_stack.top-2].yyval.Object, value_stack.array[value_stack.top-1].yyval.Object); }
+{
+				if(value_stack.array[value_stack.top-2].yyval.Object is Name)
+					yyval.Object = _astFactory.Call(yypos, (Name)value_stack.array[value_stack.top-2].yyval.Object, value_stack.array[value_stack.top-3].yypos, new CallSignature((List<ActualParam>)value_stack.array[value_stack.top-1].yyval.Object), (TypeRef)_astFactory.TypeReference(yypos, (LangElement)value_stack.array[value_stack.top-4].yyval.Object, false, null)); 
+				else
+					yyval.Object = _astFactory.Call(yypos, (LangElement)value_stack.array[value_stack.top-2].yyval.Object, new CallSignature((List<ActualParam>)value_stack.array[value_stack.top-1].yyval.Object), (TypeRef)_astFactory.TypeReference(yypos, (LangElement)value_stack.array[value_stack.top-4].yyval.Object, false, null)); 
+			}
         return;
       case 386: // function_call -> callable_expr argument_list 
-{ yyval.Object = _astFactory.Call(yypos, new QualifiedName(), null, value_stack.array[value_stack.top-2].yypos, new CallSignature((List<ActualParam>)value_stack.array[value_stack.top-1].yyval.Object), (LangElement)value_stack.array[value_stack.top-2].yyval.Object); }
+{ yyval.Object = _astFactory.Call(yypos, (LangElement)value_stack.array[value_stack.top-2].yyval.Object, new CallSignature((List<ActualParam>)value_stack.array[value_stack.top-1].yyval.Object), (LangElement)null);}
         return;
       case 387: // class_name -> T_STATIC 
 { yyval.Object = new QualifiedName(Name.StaticClassName); }
@@ -3026,7 +3036,12 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 { yyval.Object = zend_ast_create(_zend_ast_kind.ZEND_AST_DIM, value_stack.array[value_stack.top-4].yyval.Object, value_stack.array[value_stack.top-2].yyval.Object); }
         return;
       case 435: // callable_variable -> dereferencable T_OBJECT_OPERATOR property_name argument_list 
-{ yyval.Object = zend_ast_create(_zend_ast_kind.ZEND_AST_METHOD_CALL, value_stack.array[value_stack.top-4].yyval.Object, value_stack.array[value_stack.top-2].yyval.Object, value_stack.array[value_stack.top-1].yyval.Object); }
+{
+				if(value_stack.array[value_stack.top-2].yyval.Object is Name)
+					yyval.Object = _astFactory.Call(yypos, new QualifiedName((Name)value_stack.array[value_stack.top-2].yyval.Object), null, value_stack.array[value_stack.top-2].yypos, new CallSignature((List<ActualParam>)value_stack.array[value_stack.top-1].yyval.Object), (LangElement)value_stack.array[value_stack.top-4].yyval.Object);
+				else
+					yyval.Object = _astFactory.Call(yypos, (LangElement)value_stack.array[value_stack.top-2].yyval.Object, new CallSignature((List<ActualParam>)value_stack.array[value_stack.top-1].yyval.Object), (LangElement)value_stack.array[value_stack.top-4].yyval.Object);
+			}
         return;
       case 436: // callable_variable -> function_call 
 { yyval.Object = value_stack.array[value_stack.top-1].yyval.Object; }
@@ -3074,22 +3089,22 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 { yyval.Object = zend_ast_create(_zend_ast_kind.ZEND_AST_STATIC_PROP, value_stack.array[value_stack.top-3].yyval.Object, value_stack.array[value_stack.top-1].yyval.Object); }
         return;
       case 451: // member_name -> identifier 
-{ yyval.Object = value_stack.array[value_stack.top-1].yyval.Object; }
+{ yyval.Object = new Name((string)value_stack.array[value_stack.top-1].yyval.Object); }
         return;
       case 452: // member_name -> '{' expr '}' 
 { yyval.Object = value_stack.array[value_stack.top-2].yyval.Object; }
         return;
       case 453: // member_name -> simple_variable 
-{ yyval.Object = zend_ast_create(_zend_ast_kind.ZEND_AST_VAR, value_stack.array[value_stack.top-1].yyval.Object); }
+{ yyval.Object = value_stack.array[value_stack.top-1].yyval.Object; }
         return;
       case 454: // property_name -> T_STRING 
-{ yyval.Object = value_stack.array[value_stack.top-1].yyval.Object; }
+{ yyval.Object = new Name((string)value_stack.array[value_stack.top-1].yyval.Object); }
         return;
       case 455: // property_name -> '{' expr '}' 
 { yyval.Object = value_stack.array[value_stack.top-2].yyval.Object; }
         return;
       case 456: // property_name -> simple_variable 
-{ yyval.Object = zend_ast_create(_zend_ast_kind.ZEND_AST_VAR, value_stack.array[value_stack.top-1].yyval.Object); }
+{ yyval.Object = value_stack.array[value_stack.top-1].yyval.Object; }
         return;
       case 457: // array_pair_list -> non_empty_array_pair_list 
 { /* allow single trailing comma */ yyval.Object = zend_ast_list_rtrim(value_stack.array[value_stack.top-1].yyval.Object); }

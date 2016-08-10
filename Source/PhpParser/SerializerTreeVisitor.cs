@@ -218,7 +218,53 @@ namespace PhpParser
         {
             _serializer.StartSerialize(typeof(DirectFcnCall).Name, SerializeSpan(x.Span),
                 new NodeObj("Name", x.QualifiedName.ToString()));
-            base.VisitDirectFcnCall(x);
+            if (x.IsMemberOf != null)
+            {
+                _serializer.StartSerialize("IsMemberOf");
+                VisitMemberOf(x);
+                _serializer.EndSerialize();
+            }
+
+            foreach (ActualParam p in x.CallSignature.Parameters)
+                VisitElement(p);
+            _serializer.EndSerialize();
+        }
+        override public void VisitIndirectFcnCall(IndirectFcnCall x)
+        {
+            _serializer.StartSerialize(typeof(IndirectFcnCall).Name, SerializeSpan(x.Span));
+            VisitElement(x.NameExpr);
+            if (x.IsMemberOf != null)
+            {
+                _serializer.StartSerialize("IsMemberOf");
+                VisitMemberOf(x);
+                _serializer.EndSerialize();
+            }
+
+            foreach (ActualParam p in x.CallSignature.Parameters)
+                VisitElement(p);
+            _serializer.EndSerialize();
+        }
+        void VisitMemberOf(VarLikeConstructUse x)
+        {
+            if (x is DirectVarUse)
+                VisitDirectVarUse((DirectVarUse)x);
+            else if (x is IndirectVarUse)
+                VisitIndirectVarUse((IndirectVarUse)x);
+            if (x.IsMemberOf != null)
+                VisitMemberOf(x.IsMemberOf);
+        }
+        override public void VisitDirectStMtdCall(DirectStMtdCall x)
+        {
+            _serializer.StartSerialize(typeof(DirectStMtdCall).Name, SerializeSpan(x.Span),
+                new NodeObj("ClassName", x.ClassName.QualifiedName.ToString()),
+                new NodeObj("MethodName", x.MethodName.Value));
+            base.VisitDirectStMtdCall(x);
+            _serializer.EndSerialize();
+        }
+        override public void VisitIndirectStMtdCall(IndirectStMtdCall x)
+        {
+            _serializer.StartSerialize(typeof(IndirectStMtdCall).Name, SerializeSpan(x.Span));
+            base.VisitIndirectStMtdCall(x);
             _serializer.EndSerialize();
         }
         override public void VisitActualParam(ActualParam x)
@@ -260,6 +306,12 @@ namespace PhpParser
             _serializer.StartSerialize(typeof(DirectVarUse).Name, SerializeSpan(x.Span),
                 new NodeObj("VarName", x.VarName.Value));
             base.VisitDirectVarUse(x);
+            _serializer.EndSerialize();
+        }
+        override public void VisitIndirectVarUse(IndirectVarUse x)
+        {
+            _serializer.StartSerialize(typeof(IndirectVarUse).Name, SerializeSpan(x.Span));
+            base.VisitIndirectVarUse(x);
             _serializer.EndSerialize();
         }
         override public void VisitConcatEx(ConcatEx x)
@@ -419,6 +471,12 @@ namespace PhpParser
             foreach (var param in x.GenericParams)
                 VisitElement(param);
             _serializer.EndSerialize();
+            _serializer.EndSerialize();
+        }
+        override public void VisitIndirectTypeRef(IndirectTypeRef x)
+        {
+            _serializer.StartSerialize(typeof(IndirectTypeRef).Name, SerializeSpan(x.Span));
+            base.VisitIndirectTypeRef(x);
             _serializer.EndSerialize();
         }
         override public void VisitGotoStmt(GotoStmt x)

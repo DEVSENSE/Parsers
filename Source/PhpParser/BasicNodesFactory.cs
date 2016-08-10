@@ -21,7 +21,7 @@ namespace PhpParser
 
         public List<Tuple<Span, ErrorInfo, string[]>> Errors { get { return _errors; } }
         readonly List<Tuple<Span, ErrorInfo, string[]>> _errors = new List<Tuple<Span, ErrorInfo, string[]>>();
-        
+
         public void Error(Span span, ErrorInfo info, params string[] argsOpt)
         {
             Errors.Add(new Tuple<Span, ErrorInfo, string[]>(span, info, argsOpt));
@@ -73,23 +73,27 @@ namespace PhpParser
 
         public LangElement Call(Span span, LangElement nameExpr, CallSignature signature, TypeRef typeRef)
         {
-            throw new NotImplementedException();
+            Debug.Assert(nameExpr is CompoundVarUse);
+            return new IndirectStMtdCall(span, typeRef, (CompoundVarUse)nameExpr, signature.Parameters.ToList(), signature.GenericParams.ToList());
         }
 
         public LangElement Call(Span span, LangElement nameExpr, CallSignature signature, LangElement memberOfOpt)
         {
-            throw new NotImplementedException();
+            Debug.Assert(nameExpr is Expression);
+            return new IndirectFcnCall(span, (Expression)nameExpr, signature.Parameters.ToList(), signature.GenericParams.ToList()) { IsMemberOf = (VarLikeConstructUse)memberOfOpt };
         }
 
         public LangElement Call(Span span, Name name, Span nameSpan, CallSignature signature, TypeRef typeRef)
         {
-            throw new NotImplementedException();
+            if(typeRef is IndirectTypeRef)
+                return new DirectStMtdCall(span, new ClassConstUse(span, typeRef, name.Value, nameSpan), signature.Parameters.ToList(), signature.GenericParams.ToList());
+            return new DirectStMtdCall(span, typeRef.GenericQualifiedName, typeRef.Span, name, nameSpan, signature.Parameters.ToList(), signature.GenericParams.ToList());
         }
 
         public LangElement Call(Span span, QualifiedName name, QualifiedName? nameFallback, Span nameSpan, CallSignature signature, LangElement memberOfOpt)
         {
             Debug.Assert(memberOfOpt == null || memberOfOpt is VarLikeConstructUse);
-            return new DirectFcnCall(span, name, nameFallback, nameSpan, signature.Parameters.ToList(), signature.GenericParams.ToList()) { IsMemberOf = (VarLikeConstructUse)memberOfOpt } ;
+            return new DirectFcnCall(span, name, nameFallback, nameSpan, signature.Parameters.ToList(), signature.GenericParams.ToList()) { IsMemberOf = (VarLikeConstructUse)memberOfOpt };
         }
         public LangElement ActualParameter(Span span, LangElement expr, ActualParam.Flags flags)
         {
@@ -168,15 +172,15 @@ namespace PhpParser
         public LangElement Function(Span span, bool conditional, bool aliasReturn, PhpMemberAttributes attributes, TypeRef returnType, Span returnTypeSpan, Name name, Span nameSpan, IEnumerable<FormalTypeParam> typeParamsOpt, IEnumerable<FormalParam> formalParams, Span formalParamsSpan, LangElement body)
         {
             Debug.Assert(body is BlockStmt || body is Statement);
-            return new FunctionDecl(_sourceUnit, nameSpan, span, formalParamsSpan.End, body.Span.Start, conditional, new Scope(), attributes, name.Value, null, aliasReturn, 
-                formalParams.ToList(), (typeParamsOpt != null)? typeParamsOpt.ToList(): new List<FormalTypeParam>(), 
-                (body is BlockStmt)? ((BlockStmt)body).Statements.ToList(): new List<Statement>() { (Statement)body }, null);
+            return new FunctionDecl(_sourceUnit, nameSpan, span, formalParamsSpan.End, body.Span.Start, conditional, new Scope(), attributes, name.Value, null, aliasReturn,
+                formalParams.ToList(), (typeParamsOpt != null) ? typeParamsOpt.ToList() : new List<FormalTypeParam>(),
+                (body is BlockStmt) ? ((BlockStmt)body).Statements.ToList() : new List<Statement>() { (Statement)body }, null);
         }
 
         public LangElement Lambda(Span span, bool aliasReturn, TypeRef returnType, Span returnTypeSpan, Span headSpan, IEnumerable<FormalParam> formalParams, Span formalParamsSpan, IEnumerable<FormalParam> lexicalVars, LangElement body)
         {
             Debug.Assert(body is BlockStmt || body is Statement);
-            return new LambdaFunctionExpr(_sourceUnit, headSpan, span, formalParamsSpan.End, body.Span.Start, 
+            return new LambdaFunctionExpr(_sourceUnit, headSpan, span, formalParamsSpan.End, body.Span.Start,
                 new Scope(), null, false, formalParams.ToList(), lexicalVars.ToList(),
                 (body is BlockStmt) ? ((BlockStmt)body).Statements.ToList() : new List<Statement>() { (Statement)body });
         }
@@ -280,7 +284,7 @@ namespace PhpParser
         {
             NamespaceDecl space = new NamespaceDecl(span, name ?? new QualifiedName(Name.EmptyBaseName, Name.EmptyNames), true);
             space.Naming = context;
-            space.Statements = (statements != null)? ConvertList<Statement>(statements): null;
+            space.Statements = (statements != null) ? ConvertList<Statement>(statements) : null;
             return space;
         }
 
@@ -342,7 +346,7 @@ namespace PhpParser
         public LangElement TraitUse(Span span, IEnumerable<QualifiedName> traits, IEnumerable<LangElement> adaptations)
         {
             Debug.Assert(traits != null);
-            return new TraitsUse(span, 0, traits.ToList(), (adaptations != null)? ConvertList<TraitsUse.TraitAdaptation>(adaptations): null);
+            return new TraitsUse(span, 0, traits.ToList(), (adaptations != null) ? ConvertList<TraitsUse.TraitAdaptation>(adaptations) : null);
         }
 
         public LangElement TraitAdaptationPrecedence(Span span, Tuple<QualifiedName?, Name> name, List<QualifiedName> precedences)
@@ -391,17 +395,17 @@ namespace PhpParser
             if (implements == null) implements = new List<Tuple<GenericQualifiedName, Span>>();
             if (typeParamsOpt == null) typeParamsOpt = new List<FormalTypeParam>();
             Debug.Assert(members != null && implements != null && typeParamsOpt != null);
-            return new TypeDecl(_sourceUnit, nameSpan, span, blockSpan.Start, blockSpan.Start, conditional, new Scope(), attributes, false, 
-                name, nameSpan, null, typeParamsOpt.ToList(), baseClassOpt, implements.ToList(), 
+            return new TypeDecl(_sourceUnit, nameSpan, span, blockSpan.Start, blockSpan.Start, conditional, new Scope(), attributes, false,
+                name, nameSpan, null, typeParamsOpt.ToList(), baseClassOpt, implements.ToList(),
                 ConvertList<TypeMemberDecl>(members), null);
         }
 
         public LangElement Method(Span span, bool aliasReturn, PhpMemberAttributes attributes, TypeRef returnType, Span returnTypeSpan, Name name, Span nameSpan, IEnumerable<FormalTypeParam> typeParamsOpt, IEnumerable<FormalParam> formalParams, Span formalParamsSpan, IEnumerable<ActualParam> baseCtorParams, LangElement body)
         {
             Debug.Assert(body is BlockStmt || body is Statement);
-            return new MethodDecl(nameSpan, span, formalParamsSpan.End, body.Span.Start, name.Value, aliasReturn, formalParams.ToList(), 
+            return new MethodDecl(nameSpan, span, formalParamsSpan.End, body.Span.Start, name.Value, aliasReturn, formalParams.ToList(),
                 (typeParamsOpt != null) ? typeParamsOpt.ToList() : new List<FormalTypeParam>(),
-                (body is BlockStmt) ? ((BlockStmt)body).Statements.ToList() : new List<Statement>() { (Statement)body }, 
+                (body is BlockStmt) ? ((BlockStmt)body).Statements.ToList() : new List<Statement>() { (Statement)body },
                 attributes, (baseCtorParams != null) ? baseCtorParams.ToList() : new List<ActualParam>(), null);
         }
 
@@ -434,15 +438,15 @@ namespace PhpParser
         }
         public LangElement TypeReference(Span span, QualifiedName className, bool isNullable, List<TypeRef> genericParamsOpt)
         {
-            if(className == QualifiedName.Boolean || className == QualifiedName.Integer ||
+            if (className == QualifiedName.Boolean || className == QualifiedName.Integer ||
                 className == QualifiedName.Float || className == QualifiedName.String ||
                 className == QualifiedName.Null)
                 return new PrimitiveTypeRef(span, new PrimitiveTypeName(className), isNullable);
-            return new DirectTypeRef(span, className, isNullable, genericParamsOpt);
+            return new DirectTypeRef(span, className, isNullable, genericParamsOpt ?? new List<TypeRef>());
         }
-        public LangElement TypeReference(Span span, VariableUse varName, bool isNullable, List<TypeRef> genericParamsOpt)
+        public LangElement TypeReference(Span span, LangElement varName, bool isNullable, List<TypeRef> genericParamsOpt)
         {
-            return new IndirectTypeRef(span, varName, genericParamsOpt);
+            return new IndirectTypeRef(span, (VariableUse)varName, genericParamsOpt ?? new List<TypeRef>());
         }
 
         public LangElement While(Span span, LangElement cond, LangElement body)

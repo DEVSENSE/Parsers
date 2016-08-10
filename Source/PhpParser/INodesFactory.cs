@@ -641,7 +641,7 @@ namespace PhpParser
         /// <param name="isNullable">Indicates if the type is nullable.</param>
         /// <param name="genericParamsOpt">Actual generic parameters</param>
         /// <returns>Type reference.</returns>
-        TNode TypeReference(TSpan span, VariableUse varName, bool isNullable, List<TypeRef> genericParamsOpt);
+        TNode TypeReference(TSpan span, TNode varName, bool isNullable, List<TypeRef> genericParamsOpt);
 
         /// <summary>
         /// Creates a pseudo constant use.
