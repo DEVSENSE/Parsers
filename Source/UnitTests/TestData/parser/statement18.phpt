@@ -8,6 +8,6 @@ $x->{$a}();
 
 "GlobalCode":{
   "NamingContext":{},
-  "DirectFcnCall":{"Name":"func","IsMemberOf":{"DirectVarUse":{"VarName":"x"}}},
-  "IndirectFcnCall":{"DirectVarUse":{"VarName":"a"},"IsMemberOf":{"DirectVarUse":{"VarName":"x"}}}
+  "DirectFcnCall":{"Name":"func","DirectVarUse":{"VarName":"x"}},
+  "IndirectFcnCall":{"DirectVarUse":{"VarName":"a"},"DirectVarUse":{"VarName":"x"}}
 }

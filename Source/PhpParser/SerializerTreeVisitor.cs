@@ -218,40 +218,14 @@ namespace PhpParser
         {
             _serializer.StartSerialize(typeof(DirectFcnCall).Name, SerializeSpan(x.Span),
                 new NodeObj("Name", x.QualifiedName.ToString()));
-            if (x.IsMemberOf != null)
-            {
-                _serializer.StartSerialize("IsMemberOf");
-                VisitMemberOf(x);
-                _serializer.EndSerialize();
-            }
-
-            foreach (ActualParam p in x.CallSignature.Parameters)
-                VisitElement(p);
+            base.VisitDirectFcnCall(x);
             _serializer.EndSerialize();
         }
         override public void VisitIndirectFcnCall(IndirectFcnCall x)
         {
             _serializer.StartSerialize(typeof(IndirectFcnCall).Name, SerializeSpan(x.Span));
-            VisitElement(x.NameExpr);
-            if (x.IsMemberOf != null)
-            {
-                _serializer.StartSerialize("IsMemberOf");
-                VisitMemberOf(x);
-                _serializer.EndSerialize();
-            }
-
-            foreach (ActualParam p in x.CallSignature.Parameters)
-                VisitElement(p);
+            base.VisitIndirectFcnCall(x);
             _serializer.EndSerialize();
-        }
-        void VisitMemberOf(VarLikeConstructUse x)
-        {
-            if (x is DirectVarUse)
-                VisitDirectVarUse((DirectVarUse)x);
-            else if (x is IndirectVarUse)
-                VisitIndirectVarUse((IndirectVarUse)x);
-            if (x.IsMemberOf != null)
-                VisitMemberOf(x.IsMemberOf);
         }
         override public void VisitDirectStMtdCall(DirectStMtdCall x)
         {
