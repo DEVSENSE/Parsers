@@ -40,7 +40,15 @@ namespace PhpParser
 
         public LangElement ArrayItem(Span span, LangElement expression, LangElement indexOpt)
         {
-            throw new NotImplementedException();
+            return new ItemUse(span, (VarLikeConstructUse)expression, (Expression)indexOpt);
+        }
+        public Item ArrayItemValue(Span span, LangElement indexOpt, LangElement valueExpr)
+        {
+            return new ValueItem((Expression)indexOpt, (Expression)valueExpr);
+        }
+        public Item ArrayItemRef(Span span, LangElement indexOpt, LangElement variable)
+        {
+            return new RefItem((Expression)indexOpt, (VariableUse)variable);
         }
 
         public LangElement Assert(Span span, LangElement assertion, LangElement failureOpt)
@@ -256,9 +264,9 @@ namespace PhpParser
             throw new NotImplementedException();
         }
 
-        public LangElement List(Span span, IEnumerable<LangElement> targets)
+        public LangElement List(Span span, IEnumerable<Item> targets)
         {
-            throw new NotImplementedException();
+            return new ListEx(span, targets.ToList());
         }
 
         public LangElement Literal(Span span, object value)
@@ -308,7 +316,7 @@ namespace PhpParser
 
         public LangElement NewArray(Span span, IEnumerable<Item> itemsOpt)
         {
-            throw new NotImplementedException();
+            return new ArrayEx(span, itemsOpt.ToList());
         }
 
         public LangElement ParenthesisExpression(Span span, LangElement expression)

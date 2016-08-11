@@ -24,12 +24,10 @@ try {
         "TypeRef":{   
           "MultipleTypeRef":{
             "DirectTypeRef":{
-              "ClassName":"TestEx", 
-              "GenericParams":{}
+              "ClassName":"TestEx"
             },         
             "DirectTypeRef":{
-              "ClassName":"MyEx",  
-              "GenericParams":{}
+              "ClassName":"MyEx"
             }
           }
         },
@@ -45,8 +43,7 @@ try {
       "CatchItem":{
         "TypeRef":{
           "DirectTypeRef":{
-            "ClassName":"Exception", 
-            "GenericParams":{}
+            "ClassName":"Exception"
           }
         },
         "Variable":{

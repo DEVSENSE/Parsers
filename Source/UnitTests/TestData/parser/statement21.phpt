@@ -1,0 +1,42 @@
+<?php
+       
+$x->y; 
+$x->$y;   
+$x->{$y};
+$x->$y->z;
+
+?>
+<<<TEST>>>
+
+"GlobalCode":{
+  "NamingContext":{},
+  "DirectVarUse":{
+    "VarName":"y",
+    "IsMemberOf":{
+      "DirectVarUse":{"VarName":"x"}
+    }
+  },
+  "IndirectVarUse":{
+    "IsMemberOf":{
+      "DirectVarUse":{"VarName":"x"}
+    },
+    "DirectVarUse":{"VarName":"y"}
+  },
+  "IndirectVarUse":{
+    "IsMemberOf":{
+      "DirectVarUse":{"VarName":"x"}
+    },
+    "DirectVarUse":{"VarName":"y"}
+  },
+  "DirectVarUse":{
+    "VarName":"z",
+    "IsMemberOf":{
+      "IndirectVarUse":{
+        "IsMemberOf":{
+          "DirectVarUse":{"VarName":"x"}
+        },
+        "DirectVarUse":{"VarName":"y"}
+      }
+    }
+  }
+}

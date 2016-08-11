@@ -754,6 +754,24 @@ namespace PhpParser
         TNode ArrayItem(TSpan span, TNode expression, TNode indexOpt);
 
         /// <summary>
+        /// Creates array value item initialization expression.
+        /// </summary>
+        /// <param name="span">Entire element span.</param>
+        /// <param name="indexOpt">Optional. Expression representing an index.</param>
+        /// <param name="valueExpr">Expression representing an item.</param>
+        /// <returns>Array value item expression.</returns>
+        Item ArrayItemValue(TSpan span, TNode indexOpt, TNode valueExpr);
+
+        /// <summary>
+        /// Creates array reference item initialization expression.
+        /// </summary>
+        /// <param name="span">Entire element span.</param>
+        /// <param name="indexOpt">Optional. Expression representing an index.</param>
+        /// <param name="variable">Expression representing a variable.</param>
+        /// <returns>Array reference item expression.</returns>
+        Item ArrayItemRef(TSpan span, TNode indexOpt, TNode variable);
+
+        /// <summary>
         /// Creates <c>new</c> expression.
         /// </summary>
         /// <param name="span">Entire element span.</param>
@@ -780,7 +798,7 @@ namespace PhpParser
         /// <param name="span">Entire element span.</param>
         /// <param name="targets">Enumeration of reference expressions (variables, fields, array items) or other <c>list</c> expressions.</param>
         /// <returns>List expression.</returns>
-        TNode List(TSpan span, IEnumerable<TNode> targets);
+        TNode List(TSpan span, IEnumerable<Item> targets);
 
         /// <summary>
         /// Creates shell expression.

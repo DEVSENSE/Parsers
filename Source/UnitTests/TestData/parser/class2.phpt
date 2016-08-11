@@ -35,8 +35,7 @@ class SimpleClass
       },
       "ReturnType":{
         "DirectTypeRef":{
-          "ClassName":"int",
-          "GenericParams":{}
+          "ClassName":"int"
         }
       } 
     }

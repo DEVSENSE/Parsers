@@ -10,8 +10,8 @@ $classname::func($a);
 
 "GlobalCode":{
   "NamingContext":{},
-  "DirectStMtdCall":{"ClassName":"X","MethodName":"func","DirectTypeRef":{"ClassName":"X","GenericParams":{}},"ActualParam":{"IsUnpack":"False","DirectVarUse":{"VarName":"a"}}},
-  "IndirectStMtdCall":{"DirectTypeRef":{"ClassName":"X","GenericParams":{}},"DirectVarUse":{"VarName":"funcname"},"ActualParam":{"IsUnpack":"False","DirectVarUse":{"VarName":"a"}}},
-  "IndirectStMtdCall":{"DirectTypeRef":{"ClassName":"X","GenericParams":{}},"DirectVarUse":{"VarName":"a"},"ActualParam":{"IsUnpack":"False","DirectVarUse":{"VarName":"a"}}},
+  "DirectStMtdCall":{"ClassName":"X","MethodName":"func","DirectTypeRef":{"ClassName":"X"},"ActualParam":{"IsUnpack":"False","DirectVarUse":{"VarName":"a"}}},
+  "IndirectStMtdCall":{"DirectTypeRef":{"ClassName":"X"},"DirectVarUse":{"VarName":"funcname"},"ActualParam":{"IsUnpack":"False","DirectVarUse":{"VarName":"a"}}},
+  "IndirectStMtdCall":{"DirectTypeRef":{"ClassName":"X"},"DirectVarUse":{"VarName":"a"},"ActualParam":{"IsUnpack":"False","DirectVarUse":{"VarName":"a"}}},
   "DirectStMtdCall":{"ClassName":"","MethodName":"func","IndirectTypeRef":{"DirectVarUse":{"VarName":"classname"}},"ActualParam":{"IsUnpack":"False","DirectVarUse":{"VarName":"a"}}}
 }

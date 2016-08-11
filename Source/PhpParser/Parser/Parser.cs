@@ -199,6 +199,38 @@ namespace PhpParser.Parser
                 new GenericQualifiedName(n, new object[0]), span)).ToList();
         }
 
+        private LangElement CreateProperty(Span span, LangElement objectExpr, object name)
+        {
+            if (name is Name)
+				return _astFactory.Variable(span, new VariableName(((Name)name).Value), objectExpr);
+			else
+                return _astFactory.Variable(span, (LangElement)name, objectExpr);
+        }
+
+        private LangElement CreateStaticProperty(Span span, QualifiedName objectName, Span objectNamePos, object name)
+        {
+            if (name is DirectVarUse)
+				return _astFactory.Variable(span, ((DirectVarUse)name).VarName, (TypeRef)_astFactory.TypeReference(objectNamePos, objectName, false, null)); 
+			else
+				return _astFactory.Variable(span, ((IndirectVarUse)name).VarNameEx, (TypeRef)_astFactory.TypeReference(objectNamePos, objectName, false, null));
+        }
+
+        private LangElement CreateStaticProperty(Span span, LangElement objectExpr, Span objectNamePos, object name)
+        {
+            if (name is DirectVarUse)
+                return _astFactory.Variable(span, ((DirectVarUse)name).VarName, (TypeRef)_astFactory.TypeReference(objectNamePos, objectExpr, null));
+            else
+                return _astFactory.Variable(span, ((IndirectVarUse)name).VarNameEx, (TypeRef)_astFactory.TypeReference(objectNamePos, objectExpr, null));
+        }
+
+        private List<T> RightTrimList<T>(List<T> list)
+        {
+            T elem;
+            if (list.Count > 0 && (elem = list.Last()) == null)
+                list.Remove(elem);
+            return list;
+        }
+
         enum _zend_ast_kind
         {
             /* special nodes */
@@ -625,12 +657,6 @@ namespace PhpParser.Parser
         }
 
         private object zend_ast_create_zval(params object[] abc)
-        {
-            // TODO implement
-            return 0;
-        }
-
-        private object zend_ast_list_rtrim(params object[] abc)
         {
             // TODO implement
             return 0;

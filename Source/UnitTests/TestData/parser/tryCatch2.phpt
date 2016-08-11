@@ -19,8 +19,7 @@ try {
       "CatchItem":{
         "TypeRef":{
           "DirectTypeRef":{
-            "ClassName":"TestEx", 
-            "GenericParams":{}
+            "ClassName":"TestEx"
           }
         },
         "Variable":{

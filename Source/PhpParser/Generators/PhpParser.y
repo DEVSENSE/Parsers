@@ -602,8 +602,8 @@ implements_list:
 foreach_variable:
 		variable			{ $$ = $1; }
 	|	'&' variable		{ $$ = _astFactory.Variable(@$, (LangElement)$2, (LangElement)null); }
-	|	T_LIST '(' array_pair_list ')' { $3/*->attr*/ = 1; $$ = $3; }
-	|	'[' array_pair_list ']' { $$ = $2; }
+	|	T_LIST '(' array_pair_list ')' { $$ = _astFactory.List(@3, (List<Item>)$3); }
+	|	'[' array_pair_list ']' { $$ = _astFactory.NewArray(@2, (List<Item>)$2); }
 ;
 
 for_statement:
@@ -935,16 +935,16 @@ anonymous_class:
 
 new_expr:
 		T_NEW class_name_reference ctor_arguments
-			{ $$ = _astFactory.New(@$, (TypeRef)_astFactory.TypeReference(@2, (QualifiedName)$2, false, null), (List<ActualParam>)$3); }
+			{ $$ = _astFactory.New(@$, (TypeRef)$2, (List<ActualParam>)$3); }
 	|	T_NEW anonymous_class
 			{ $$ = $2; }
 ;
 
 expr_without_variable:
 		T_LIST '(' array_pair_list ')' '=' expr
-			{ $$ = _astFactory.Assignment(@$, (LangElement)$1, (LangElement)$3, Operations.AssignValue); }
+			{ $$ = _astFactory.Assignment(@$, _astFactory.List(@3, (List<Item>)$3), (LangElement)$6, Operations.AssignValue); }
 	|	'[' array_pair_list ']' '=' expr
-			{ $$ = _astFactory.Assignment(@$, (LangElement)$2, (LangElement)$5, Operations.AssignValue); }
+			{ $$ = _astFactory.Assignment(@$, _astFactory.NewArray(@2, (List<Item>)$2), (LangElement)$5, Operations.AssignValue); }
 	|	variable '=' expr
 			{ $$ = _astFactory.Assignment(@$, (LangElement)$1, (LangElement)$3, Operations.AssignValue); }
 	|	variable '=' '&' variable
@@ -1105,16 +1105,16 @@ function_call:
 	|	class_name T_DOUBLE_COLON member_name argument_list
 			{
 				if($3 is Name)
-					$$ = _astFactory.Call(@$, (Name)$3, @2, new CallSignature((List<ActualParam>)$4), (TypeRef)_astFactory.TypeReference(@$, (QualifiedName)$1, false, null)); 
+					$$ = _astFactory.Call(@$, (Name)$3, @2, new CallSignature((List<ActualParam>)$4), (TypeRef)_astFactory.TypeReference(@1, (QualifiedName)$1, false, null)); 
 				else
-					$$ = _astFactory.Call(@$, (LangElement)$3, new CallSignature((List<ActualParam>)$4), (TypeRef)_astFactory.TypeReference(@$, (QualifiedName)$1, false, null)); 
+					$$ = _astFactory.Call(@$, (LangElement)$3, new CallSignature((List<ActualParam>)$4), (TypeRef)_astFactory.TypeReference(@1, (QualifiedName)$1, false, null)); 
 			}
 	|	variable_class_name T_DOUBLE_COLON member_name argument_list
 			{
 				if($3 is Name)
-					$$ = _astFactory.Call(@$, (Name)$3, @2, new CallSignature((List<ActualParam>)$4), (TypeRef)_astFactory.TypeReference(@$, (LangElement)$1, null)); 
+					$$ = _astFactory.Call(@$, (Name)$3, @2, new CallSignature((List<ActualParam>)$4), (TypeRef)_astFactory.TypeReference(@1, (LangElement)$1, null)); 
 				else
-					$$ = _astFactory.Call(@$, (LangElement)$3, new CallSignature((List<ActualParam>)$4), (TypeRef)_astFactory.TypeReference(@$, (LangElement)$1, null)); 
+					$$ = _astFactory.Call(@$, (LangElement)$3, new CallSignature((List<ActualParam>)$4), (TypeRef)_astFactory.TypeReference(@1, (LangElement)$1, null)); 
 			}
 	|	callable_expr argument_list
 			{ $$ = _astFactory.Call(@$, (LangElement)$1, new CallSignature((List<ActualParam>)$2), (LangElement)null);}
@@ -1127,8 +1127,8 @@ class_name:
 ;
 
 class_name_reference:
-		class_name		{ $$ = $1; }
-	|	new_variable	{ $$ = $1; }
+		class_name		{ $$ = _astFactory.TypeReference(@1, (QualifiedName)$1, false, null); }
+	|	new_variable	{ $$ = _astFactory.TypeReference(@1, (LangElement)$1, null); }
 ;
 
 exit_expr:
@@ -1214,18 +1214,18 @@ callable_variable:
 		simple_variable
 			{ $$ = $1; }
 	|	dereferencable '[' optional_expr ']'
-			{ $$ = zend_ast_create(_zend_ast_kind.ZEND_AST_DIM, $1, $3); }
+			{ $$ = _astFactory.ArrayItem(@$, (LangElement)$1, (LangElement)$3); }
 	|	constant '[' optional_expr ']'
-			{ $$ = zend_ast_create(_zend_ast_kind.ZEND_AST_DIM, $1, $3); }
+			{ $$ = _astFactory.ArrayItem(@$, (LangElement)$1, (LangElement)$3); }
 	|	dereferencable '{' expr '}'
-			{ $$ = zend_ast_create(_zend_ast_kind.ZEND_AST_DIM, $1, $3); }
+			{ $$ = _astFactory.ArrayItem(@$, (LangElement)$1, (LangElement)$3); }
 	|	dereferencable T_OBJECT_OPERATOR property_name argument_list
-			{
-				if($3 is Name)
-					$$ = _astFactory.Call(@$, new QualifiedName((Name)$3), null, @3, new CallSignature((List<ActualParam>)$4), (LangElement)$1);
-				else
-					$$ = _astFactory.Call(@$, (LangElement)$3, new CallSignature((List<ActualParam>)$4), (LangElement)$1);
-			}
+		{
+			if($3 is Name)
+				$$ = _astFactory.Call(@$, new QualifiedName((Name)$3), null, @3, new CallSignature((List<ActualParam>)$4), (LangElement)$1);
+			else
+				$$ = _astFactory.Call(@$, (LangElement)$3, new CallSignature((List<ActualParam>)$4), (LangElement)$1);
+		}
 	|	function_call { $$ = $1; }
 ;
 
@@ -1235,7 +1235,7 @@ variable:
 	|	static_member
 			{ $$ = $1; }
 	|	dereferencable T_OBJECT_OPERATOR property_name
-			{ $$ = zend_ast_create(_zend_ast_kind.ZEND_AST_PROP, $1, $3); }
+			{ $$ = CreateProperty(@$, (LangElement)$1, $3); }
 ;
 
 simple_variable:
@@ -1246,24 +1246,24 @@ simple_variable:
 
 static_member:
 		class_name T_DOUBLE_COLON simple_variable
-			{ $$ = zend_ast_create(_zend_ast_kind.ZEND_AST_STATIC_PROP, $1, $3); }
+			{ $$ = CreateStaticProperty(@$, (QualifiedName)$1, @1, (LangElement)$3); }	
 	|	variable_class_name T_DOUBLE_COLON simple_variable
-			{ $$ = zend_ast_create(_zend_ast_kind.ZEND_AST_STATIC_PROP, $1, $3); }
+			{ $$ = CreateStaticProperty(@$, (LangElement)$1, @1, (LangElement)$3); }
 ;
 
 new_variable:
 		simple_variable
-			{ $$ = zend_ast_create(_zend_ast_kind.ZEND_AST_VAR, $1); }
+			{ $$ = $1; }
 	|	new_variable '[' optional_expr ']'
-			{ $$ = zend_ast_create(_zend_ast_kind.ZEND_AST_DIM, $1, $3); }
+			{ $$ = _astFactory.ArrayItem(@$, (LangElement)$1, (LangElement)$3); }
 	|	new_variable '{' expr '}'
-			{ $$ = zend_ast_create(_zend_ast_kind.ZEND_AST_DIM, $1, $3); }
+			{ $$ = _astFactory.ArrayItem(@$, (LangElement)$1, (LangElement)$3); }
 	|	new_variable T_OBJECT_OPERATOR property_name
-			{ $$ = zend_ast_create(_zend_ast_kind.ZEND_AST_PROP, $1, $3); }
+			{ $$ = CreateProperty(@$, (LangElement)$1, $3); }
 	|	class_name T_DOUBLE_COLON simple_variable
-			{ $$ = zend_ast_create(_zend_ast_kind.ZEND_AST_STATIC_PROP, $1, $3); }
+			{ $$ = CreateStaticProperty(@$, (QualifiedName)$1, @1, (LangElement)$3); }
 	|	new_variable T_DOUBLE_COLON simple_variable
-			{ $$ = zend_ast_create(_zend_ast_kind.ZEND_AST_STATIC_PROP, $1, $3); }
+			{ $$ = CreateStaticProperty(@$, (LangElement)$1, @1, (LangElement)$3); }
 ;
 
 member_name:
@@ -1280,7 +1280,7 @@ property_name:
 
 array_pair_list:
 		non_empty_array_pair_list
-			{ /* allow single trailing comma */ $$ = zend_ast_list_rtrim($1); }
+			{ $$ = RightTrimList((List<Item>)$1);  }
 ;
 
 possible_array_pair:
@@ -1290,24 +1290,24 @@ possible_array_pair:
 
 non_empty_array_pair_list:
 		non_empty_array_pair_list ',' possible_array_pair
-			{ $$ = AddToList<LangElement>($1, $3); }
+			{ $$ = AddToList<Item>($1, $3); }
 	|	possible_array_pair
-			{ $$ = new List<LangElement>() { (LangElement)$1 }; }
+			{ $$ = new List<Item>() { (Item)$1 }; }
 ;
 
 array_pair:
 		expr T_DOUBLE_ARROW expr
-			{ $$ = zend_ast_create(_zend_ast_kind.ZEND_AST_ARRAY_ELEM, $3, $1); }
+			{ $$ = _astFactory.ArrayItemValue(@$, (LangElement)$1, (LangElement)$3); }
 	|	expr
-			{ $$ = zend_ast_create(_zend_ast_kind.ZEND_AST_ARRAY_ELEM, $1, null); }
+			{ $$ = _astFactory.ArrayItemValue(@$, null, (LangElement)$1); }
 	|	expr T_DOUBLE_ARROW '&' variable
-			{ $$ = zend_ast_create_ex(_zend_ast_kind.ZEND_AST_ARRAY_ELEM, 1, $4, $1); }
+			{ $$ = _astFactory.ArrayItemRef(@$, (LangElement)$1, (LangElement)$4); }
 	|	'&' variable
-			{ $$ = zend_ast_create_ex(_zend_ast_kind.ZEND_AST_ARRAY_ELEM, 1, $2, null); }
+			{ $$ = _astFactory.ArrayItemRef(@$, null, (LangElement)$2); }
 	|	expr T_DOUBLE_ARROW T_LIST '(' array_pair_list ')'
-			{ $5/*->attr*/ = 1; $$ = zend_ast_create(_zend_ast_kind.ZEND_AST_ARRAY_ELEM, $5, $1); }
+			{ $$ = _astFactory.ArrayItemValue(@$, (LangElement)$1, _astFactory.List(@5, (List<Item>)$5)); }
 	|	T_LIST '(' array_pair_list ')'
-			{ $3/*->attr*/ = 1; $$ = zend_ast_create(_zend_ast_kind.ZEND_AST_ARRAY_ELEM, $3, null); }
+			{ $$ = _astFactory.ArrayItemValue(@$, null, _astFactory.List(@3, (List<Item>)$3)); }
 ;
 
 encaps_list:

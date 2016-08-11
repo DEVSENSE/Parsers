@@ -17,21 +17,20 @@ namespace PHP.Core.AST
         /// Null represents empty expression - for example next piece of code is ok: 
         /// list(, $value) = each ($arr)
         /// </summary>
-        public List<Expression>/*!*/LValues { get; private set; }
+        public List<Item>/*!*/LValues { get; private set; }
         /// <summary>Array being assigned</summary>
         public Expression RValue { get; internal set; }
 
-        public ListEx(Text.Span p, List<Expression>/*!*/ lvalues, Expression rvalue)
+        public ListEx(Text.Span p, List<Item>/*!*/ lvalues)
             : base(p)
         {
-            Debug.Assert(lvalues != null /*&& rvalue != null*/);    // rvalue can be determined during runtime in case of list in list.
-            Debug.Assert(lvalues.TrueForAll(delegate(Expression lvalue)
-            {
-                return lvalue == null || lvalue is VarLikeConstructUse || lvalue is ListEx;
-            }));
+            Debug.Assert(lvalues != null);
+            //Debug.Assert(lvalues.TrueForAll(delegate(Expression lvalue)
+            //{
+            //    return lvalue. == null || lvalue is VarLikeConstructUse || lvalue is ListEx;
+            //}));
 
             this.LValues = lvalues;
-            this.RValue = rvalue;
         }
 
         /// <summary>

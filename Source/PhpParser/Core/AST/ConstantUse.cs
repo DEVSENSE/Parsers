@@ -11,8 +11,8 @@ namespace PHP.Core.AST
 	/// <summary>
 	/// Base class for constant uses.
 	/// </summary>
-	public abstract class ConstantUse : Expression
-	{
+	public abstract class ConstantUse : VarLikeConstructUse
+    {
 		public ConstantUse(Text.Span span)
 			: base(span)
 		{

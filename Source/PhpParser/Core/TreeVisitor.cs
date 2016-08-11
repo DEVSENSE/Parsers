@@ -536,6 +536,26 @@ namespace PHP.Core.AST
         }
 
         /// <summary>
+        /// Visit item use index (if not null) and array.
+        /// </summary>
+        /// <param name="x"></param>
+        virtual public void VisitValueItem(ValueItem x)
+        {
+            VisitElement(x.Index);
+            VisitElement(x.ValueExpr);
+        }
+
+        /// <summary>
+        /// Visit item use index (if not null) and array.
+        /// </summary>
+        /// <param name="x"></param>
+        virtual public void VisitRefItem(RefItem x)
+        {
+            VisitElement(x.Index);
+            VisitElement(x.RefToGet);
+        }
+
+        /// <summary>
         /// Visits string literal dereferencing.
         /// </summary>
         virtual public void VisitStringLiteralDereferenceEx(StringLiteralDereferenceEx x)
@@ -600,9 +620,9 @@ namespace PHP.Core.AST
             VisitElement(x.TypeRef);
         }
         virtual public void VisitIndirectStFldUse(IndirectStFldUse x)
-        {
-            VisitElement(x.TypeRef);            
+        {     
             VisitElement(x.FieldNameExpr);
+            VisitElement(x.TypeRef);       
         }
 
         /// <summary>
@@ -731,8 +751,7 @@ namespace PHP.Core.AST
         /// <param name="x"></param>
         virtual public void VisitListEx(ListEx x)
         {
-            VisitExpressions(x.LValues);
-            VisitElement(x.RValue);
+            //VisitExpressions(x.LValues);
         }
 
         /// <summary>

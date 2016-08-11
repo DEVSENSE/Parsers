@@ -2248,10 +2248,10 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 { yyval.Object = _astFactory.Variable(yypos, (LangElement)value_stack.array[value_stack.top-1].yyval.Object, (LangElement)null); }
         return;
       case 185: // foreach_variable -> T_LIST '(' array_pair_list ')' 
-{ value_stack.array[value_stack.top-2].yyval.Object/*->attr*/ = 1; yyval.Object = value_stack.array[value_stack.top-2].yyval.Object; }
+{ yyval.Object = _astFactory.List(value_stack.array[value_stack.top-2].yypos, (List<Item>)value_stack.array[value_stack.top-2].yyval.Object); }
         return;
       case 186: // foreach_variable -> '[' array_pair_list ']' 
-{ yyval.Object = value_stack.array[value_stack.top-2].yyval.Object; }
+{ yyval.Object = _astFactory.NewArray(value_stack.array[value_stack.top-2].yypos, (List<Item>)value_stack.array[value_stack.top-2].yyval.Object); }
         return;
       case 187: // for_statement -> statement 
 { yyval.Object = value_stack.array[value_stack.top-1].yyval.Object; }
@@ -2596,16 +2596,16 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 		}
         return;
       case 294: // new_expr -> T_NEW class_name_reference ctor_arguments 
-{ yyval.Object = _astFactory.New(yypos, (TypeRef)_astFactory.TypeReference(value_stack.array[value_stack.top-2].yypos, (QualifiedName)value_stack.array[value_stack.top-2].yyval.Object, false, null), (List<ActualParam>)value_stack.array[value_stack.top-1].yyval.Object); }
+{ yyval.Object = _astFactory.New(yypos, (TypeRef)value_stack.array[value_stack.top-2].yyval.Object, (List<ActualParam>)value_stack.array[value_stack.top-1].yyval.Object); }
         return;
       case 295: // new_expr -> T_NEW anonymous_class 
 { yyval.Object = value_stack.array[value_stack.top-1].yyval.Object; }
         return;
       case 296: // expr_without_variable -> T_LIST '(' array_pair_list ')' '=' expr 
-{ yyval.Object = _astFactory.Assignment(yypos, (LangElement)value_stack.array[value_stack.top-6].yyval.Object, (LangElement)value_stack.array[value_stack.top-4].yyval.Object, Operations.AssignValue); }
+{ yyval.Object = _astFactory.Assignment(yypos, _astFactory.List(value_stack.array[value_stack.top-4].yypos, (List<Item>)value_stack.array[value_stack.top-4].yyval.Object), (LangElement)value_stack.array[value_stack.top-1].yyval.Object, Operations.AssignValue); }
         return;
       case 297: // expr_without_variable -> '[' array_pair_list ']' '=' expr 
-{ yyval.Object = _astFactory.Assignment(yypos, (LangElement)value_stack.array[value_stack.top-4].yyval.Object, (LangElement)value_stack.array[value_stack.top-1].yyval.Object, Operations.AssignValue); }
+{ yyval.Object = _astFactory.Assignment(yypos, _astFactory.NewArray(value_stack.array[value_stack.top-4].yypos, (List<Item>)value_stack.array[value_stack.top-4].yyval.Object), (LangElement)value_stack.array[value_stack.top-1].yyval.Object, Operations.AssignValue); }
         return;
       case 298: // expr_without_variable -> variable '=' expr 
 { yyval.Object = _astFactory.Assignment(yypos, (LangElement)value_stack.array[value_stack.top-3].yyval.Object, (LangElement)value_stack.array[value_stack.top-1].yyval.Object, Operations.AssignValue); }
@@ -2875,17 +2875,17 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
       case 384: // function_call -> class_name T_DOUBLE_COLON member_name argument_list 
 {
 				if(value_stack.array[value_stack.top-2].yyval.Object is Name)
-					yyval.Object = _astFactory.Call(yypos, (Name)value_stack.array[value_stack.top-2].yyval.Object, value_stack.array[value_stack.top-3].yypos, new CallSignature((List<ActualParam>)value_stack.array[value_stack.top-1].yyval.Object), (TypeRef)_astFactory.TypeReference(yypos, (QualifiedName)value_stack.array[value_stack.top-4].yyval.Object, false, null)); 
+					yyval.Object = _astFactory.Call(yypos, (Name)value_stack.array[value_stack.top-2].yyval.Object, value_stack.array[value_stack.top-3].yypos, new CallSignature((List<ActualParam>)value_stack.array[value_stack.top-1].yyval.Object), (TypeRef)_astFactory.TypeReference(value_stack.array[value_stack.top-4].yypos, (QualifiedName)value_stack.array[value_stack.top-4].yyval.Object, false, null)); 
 				else
-					yyval.Object = _astFactory.Call(yypos, (LangElement)value_stack.array[value_stack.top-2].yyval.Object, new CallSignature((List<ActualParam>)value_stack.array[value_stack.top-1].yyval.Object), (TypeRef)_astFactory.TypeReference(yypos, (QualifiedName)value_stack.array[value_stack.top-4].yyval.Object, false, null)); 
+					yyval.Object = _astFactory.Call(yypos, (LangElement)value_stack.array[value_stack.top-2].yyval.Object, new CallSignature((List<ActualParam>)value_stack.array[value_stack.top-1].yyval.Object), (TypeRef)_astFactory.TypeReference(value_stack.array[value_stack.top-4].yypos, (QualifiedName)value_stack.array[value_stack.top-4].yyval.Object, false, null)); 
 			}
         return;
       case 385: // function_call -> variable_class_name T_DOUBLE_COLON member_name argument_list 
 {
 				if(value_stack.array[value_stack.top-2].yyval.Object is Name)
-					yyval.Object = _astFactory.Call(yypos, (Name)value_stack.array[value_stack.top-2].yyval.Object, value_stack.array[value_stack.top-3].yypos, new CallSignature((List<ActualParam>)value_stack.array[value_stack.top-1].yyval.Object), (TypeRef)_astFactory.TypeReference(yypos, (LangElement)value_stack.array[value_stack.top-4].yyval.Object, null)); 
+					yyval.Object = _astFactory.Call(yypos, (Name)value_stack.array[value_stack.top-2].yyval.Object, value_stack.array[value_stack.top-3].yypos, new CallSignature((List<ActualParam>)value_stack.array[value_stack.top-1].yyval.Object), (TypeRef)_astFactory.TypeReference(value_stack.array[value_stack.top-4].yypos, (LangElement)value_stack.array[value_stack.top-4].yyval.Object, null)); 
 				else
-					yyval.Object = _astFactory.Call(yypos, (LangElement)value_stack.array[value_stack.top-2].yyval.Object, new CallSignature((List<ActualParam>)value_stack.array[value_stack.top-1].yyval.Object), (TypeRef)_astFactory.TypeReference(yypos, (LangElement)value_stack.array[value_stack.top-4].yyval.Object, null)); 
+					yyval.Object = _astFactory.Call(yypos, (LangElement)value_stack.array[value_stack.top-2].yyval.Object, new CallSignature((List<ActualParam>)value_stack.array[value_stack.top-1].yyval.Object), (TypeRef)_astFactory.TypeReference(value_stack.array[value_stack.top-4].yypos, (LangElement)value_stack.array[value_stack.top-4].yyval.Object, null)); 
 			}
         return;
       case 386: // function_call -> callable_expr argument_list 
@@ -2898,10 +2898,10 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 { yyval.Object = value_stack.array[value_stack.top-1].yyval.Object; }
         return;
       case 389: // class_name_reference -> class_name 
-{ yyval.Object = value_stack.array[value_stack.top-1].yyval.Object; }
+{ yyval.Object = _astFactory.TypeReference(value_stack.array[value_stack.top-1].yypos, (QualifiedName)value_stack.array[value_stack.top-1].yyval.Object, false, null); }
         return;
       case 390: // class_name_reference -> new_variable 
-{ yyval.Object = value_stack.array[value_stack.top-1].yyval.Object; }
+{ yyval.Object = _astFactory.TypeReference(value_stack.array[value_stack.top-1].yypos, (LangElement)value_stack.array[value_stack.top-1].yyval.Object, null); }
         return;
       case 391: // exit_expr -> 
 { yyval.Object = null; }
@@ -3027,21 +3027,21 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 { yyval.Object = value_stack.array[value_stack.top-1].yyval.Object; }
         return;
       case 432: // callable_variable -> dereferencable '[' optional_expr ']' 
-{ yyval.Object = zend_ast_create(_zend_ast_kind.ZEND_AST_DIM, value_stack.array[value_stack.top-4].yyval.Object, value_stack.array[value_stack.top-2].yyval.Object); }
+{ yyval.Object = _astFactory.ArrayItem(yypos, (LangElement)value_stack.array[value_stack.top-4].yyval.Object, (LangElement)value_stack.array[value_stack.top-2].yyval.Object); }
         return;
       case 433: // callable_variable -> constant '[' optional_expr ']' 
-{ yyval.Object = zend_ast_create(_zend_ast_kind.ZEND_AST_DIM, value_stack.array[value_stack.top-4].yyval.Object, value_stack.array[value_stack.top-2].yyval.Object); }
+{ yyval.Object = _astFactory.ArrayItem(yypos, (LangElement)value_stack.array[value_stack.top-4].yyval.Object, (LangElement)value_stack.array[value_stack.top-2].yyval.Object); }
         return;
       case 434: // callable_variable -> dereferencable '{' expr '}' 
-{ yyval.Object = zend_ast_create(_zend_ast_kind.ZEND_AST_DIM, value_stack.array[value_stack.top-4].yyval.Object, value_stack.array[value_stack.top-2].yyval.Object); }
+{ yyval.Object = _astFactory.ArrayItem(yypos, (LangElement)value_stack.array[value_stack.top-4].yyval.Object, (LangElement)value_stack.array[value_stack.top-2].yyval.Object); }
         return;
       case 435: // callable_variable -> dereferencable T_OBJECT_OPERATOR property_name argument_list 
 {
-				if(value_stack.array[value_stack.top-2].yyval.Object is Name)
-					yyval.Object = _astFactory.Call(yypos, new QualifiedName((Name)value_stack.array[value_stack.top-2].yyval.Object), null, value_stack.array[value_stack.top-2].yypos, new CallSignature((List<ActualParam>)value_stack.array[value_stack.top-1].yyval.Object), (LangElement)value_stack.array[value_stack.top-4].yyval.Object);
-				else
-					yyval.Object = _astFactory.Call(yypos, (LangElement)value_stack.array[value_stack.top-2].yyval.Object, new CallSignature((List<ActualParam>)value_stack.array[value_stack.top-1].yyval.Object), (LangElement)value_stack.array[value_stack.top-4].yyval.Object);
-			}
+			if(value_stack.array[value_stack.top-2].yyval.Object is Name)
+				yyval.Object = _astFactory.Call(yypos, new QualifiedName((Name)value_stack.array[value_stack.top-2].yyval.Object), null, value_stack.array[value_stack.top-2].yypos, new CallSignature((List<ActualParam>)value_stack.array[value_stack.top-1].yyval.Object), (LangElement)value_stack.array[value_stack.top-4].yyval.Object);
+			else
+				yyval.Object = _astFactory.Call(yypos, (LangElement)value_stack.array[value_stack.top-2].yyval.Object, new CallSignature((List<ActualParam>)value_stack.array[value_stack.top-1].yyval.Object), (LangElement)value_stack.array[value_stack.top-4].yyval.Object);
+		}
         return;
       case 436: // callable_variable -> function_call 
 { yyval.Object = value_stack.array[value_stack.top-1].yyval.Object; }
@@ -3053,7 +3053,7 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 { yyval.Object = value_stack.array[value_stack.top-1].yyval.Object; }
         return;
       case 439: // variable -> dereferencable T_OBJECT_OPERATOR property_name 
-{ yyval.Object = zend_ast_create(_zend_ast_kind.ZEND_AST_PROP, value_stack.array[value_stack.top-3].yyval.Object, value_stack.array[value_stack.top-1].yyval.Object); }
+{ yyval.Object = CreateProperty(yypos, (LangElement)value_stack.array[value_stack.top-3].yyval.Object, value_stack.array[value_stack.top-1].yyval.Object); }
         return;
       case 440: // simple_variable -> T_VARIABLE 
 { yyval.Object = _astFactory.Variable(yypos, new VariableName((string)value_stack.array[value_stack.top-1].yyval.Object), (LangElement)null); }
@@ -3065,28 +3065,28 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 { yyval.Object = value_stack.array[value_stack.top-1].yyval.Object; }
         return;
       case 443: // static_member -> class_name T_DOUBLE_COLON simple_variable 
-{ yyval.Object = zend_ast_create(_zend_ast_kind.ZEND_AST_STATIC_PROP, value_stack.array[value_stack.top-3].yyval.Object, value_stack.array[value_stack.top-1].yyval.Object); }
+{ yyval.Object = CreateStaticProperty(yypos, (QualifiedName)value_stack.array[value_stack.top-3].yyval.Object, value_stack.array[value_stack.top-3].yypos, (LangElement)value_stack.array[value_stack.top-1].yyval.Object); }
         return;
       case 444: // static_member -> variable_class_name T_DOUBLE_COLON simple_variable 
-{ yyval.Object = zend_ast_create(_zend_ast_kind.ZEND_AST_STATIC_PROP, value_stack.array[value_stack.top-3].yyval.Object, value_stack.array[value_stack.top-1].yyval.Object); }
+{ yyval.Object = CreateStaticProperty(yypos, (LangElement)value_stack.array[value_stack.top-3].yyval.Object, value_stack.array[value_stack.top-3].yypos, (LangElement)value_stack.array[value_stack.top-1].yyval.Object); }
         return;
       case 445: // new_variable -> simple_variable 
-{ yyval.Object = zend_ast_create(_zend_ast_kind.ZEND_AST_VAR, value_stack.array[value_stack.top-1].yyval.Object); }
+{ yyval.Object = value_stack.array[value_stack.top-1].yyval.Object; }
         return;
       case 446: // new_variable -> new_variable '[' optional_expr ']' 
-{ yyval.Object = zend_ast_create(_zend_ast_kind.ZEND_AST_DIM, value_stack.array[value_stack.top-4].yyval.Object, value_stack.array[value_stack.top-2].yyval.Object); }
+{ yyval.Object = _astFactory.ArrayItem(yypos, (LangElement)value_stack.array[value_stack.top-4].yyval.Object, (LangElement)value_stack.array[value_stack.top-2].yyval.Object); }
         return;
       case 447: // new_variable -> new_variable '{' expr '}' 
-{ yyval.Object = zend_ast_create(_zend_ast_kind.ZEND_AST_DIM, value_stack.array[value_stack.top-4].yyval.Object, value_stack.array[value_stack.top-2].yyval.Object); }
+{ yyval.Object = _astFactory.ArrayItem(yypos, (LangElement)value_stack.array[value_stack.top-4].yyval.Object, (LangElement)value_stack.array[value_stack.top-2].yyval.Object); }
         return;
       case 448: // new_variable -> new_variable T_OBJECT_OPERATOR property_name 
-{ yyval.Object = zend_ast_create(_zend_ast_kind.ZEND_AST_PROP, value_stack.array[value_stack.top-3].yyval.Object, value_stack.array[value_stack.top-1].yyval.Object); }
+{ yyval.Object = CreateProperty(yypos, (LangElement)value_stack.array[value_stack.top-3].yyval.Object, value_stack.array[value_stack.top-1].yyval.Object); }
         return;
       case 449: // new_variable -> class_name T_DOUBLE_COLON simple_variable 
-{ yyval.Object = zend_ast_create(_zend_ast_kind.ZEND_AST_STATIC_PROP, value_stack.array[value_stack.top-3].yyval.Object, value_stack.array[value_stack.top-1].yyval.Object); }
+{ yyval.Object = CreateStaticProperty(yypos, (QualifiedName)value_stack.array[value_stack.top-3].yyval.Object, value_stack.array[value_stack.top-3].yypos, (LangElement)value_stack.array[value_stack.top-1].yyval.Object); }
         return;
       case 450: // new_variable -> new_variable T_DOUBLE_COLON simple_variable 
-{ yyval.Object = zend_ast_create(_zend_ast_kind.ZEND_AST_STATIC_PROP, value_stack.array[value_stack.top-3].yyval.Object, value_stack.array[value_stack.top-1].yyval.Object); }
+{ yyval.Object = CreateStaticProperty(yypos, (LangElement)value_stack.array[value_stack.top-3].yyval.Object, value_stack.array[value_stack.top-3].yypos, (LangElement)value_stack.array[value_stack.top-1].yyval.Object); }
         return;
       case 451: // member_name -> identifier 
 { yyval.Object = new Name((string)value_stack.array[value_stack.top-1].yyval.Object); }
@@ -3107,7 +3107,7 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 { yyval.Object = value_stack.array[value_stack.top-1].yyval.Object; }
         return;
       case 457: // array_pair_list -> non_empty_array_pair_list 
-{ /* allow single trailing comma */ yyval.Object = zend_ast_list_rtrim(value_stack.array[value_stack.top-1].yyval.Object); }
+{ yyval.Object = RightTrimList((List<Item>)value_stack.array[value_stack.top-1].yyval.Object);  }
         return;
       case 458: // possible_array_pair -> 
 { yyval.Object = null; }
@@ -3116,28 +3116,28 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 { yyval.Object = value_stack.array[value_stack.top-1].yyval.Object; }
         return;
       case 460: // non_empty_array_pair_list -> non_empty_array_pair_list ',' possible_array_pair 
-{ yyval.Object = AddToList<LangElement>(value_stack.array[value_stack.top-3].yyval.Object, value_stack.array[value_stack.top-1].yyval.Object); }
+{ yyval.Object = AddToList<Item>(value_stack.array[value_stack.top-3].yyval.Object, value_stack.array[value_stack.top-1].yyval.Object); }
         return;
       case 461: // non_empty_array_pair_list -> possible_array_pair 
-{ yyval.Object = new List<LangElement>() { (LangElement)value_stack.array[value_stack.top-1].yyval.Object }; }
+{ yyval.Object = new List<Item>() { (Item)value_stack.array[value_stack.top-1].yyval.Object }; }
         return;
       case 462: // array_pair -> expr T_DOUBLE_ARROW expr 
-{ yyval.Object = zend_ast_create(_zend_ast_kind.ZEND_AST_ARRAY_ELEM, value_stack.array[value_stack.top-1].yyval.Object, value_stack.array[value_stack.top-3].yyval.Object); }
+{ yyval.Object = _astFactory.ArrayItemValue(yypos, (LangElement)value_stack.array[value_stack.top-3].yyval.Object, (LangElement)value_stack.array[value_stack.top-1].yyval.Object); }
         return;
       case 463: // array_pair -> expr 
-{ yyval.Object = zend_ast_create(_zend_ast_kind.ZEND_AST_ARRAY_ELEM, value_stack.array[value_stack.top-1].yyval.Object, null); }
+{ yyval.Object = _astFactory.ArrayItemValue(yypos, null, (LangElement)value_stack.array[value_stack.top-1].yyval.Object); }
         return;
       case 464: // array_pair -> expr T_DOUBLE_ARROW '&' variable 
-{ yyval.Object = zend_ast_create_ex(_zend_ast_kind.ZEND_AST_ARRAY_ELEM, 1, value_stack.array[value_stack.top-1].yyval.Object, value_stack.array[value_stack.top-4].yyval.Object); }
+{ yyval.Object = _astFactory.ArrayItemRef(yypos, (LangElement)value_stack.array[value_stack.top-4].yyval.Object, (LangElement)value_stack.array[value_stack.top-1].yyval.Object); }
         return;
       case 465: // array_pair -> '&' variable 
-{ yyval.Object = zend_ast_create_ex(_zend_ast_kind.ZEND_AST_ARRAY_ELEM, 1, value_stack.array[value_stack.top-1].yyval.Object, null); }
+{ yyval.Object = _astFactory.ArrayItemRef(yypos, null, (LangElement)value_stack.array[value_stack.top-1].yyval.Object); }
         return;
       case 466: // array_pair -> expr T_DOUBLE_ARROW T_LIST '(' array_pair_list ')' 
-{ value_stack.array[value_stack.top-2].yyval.Object/*->attr*/ = 1; yyval.Object = zend_ast_create(_zend_ast_kind.ZEND_AST_ARRAY_ELEM, value_stack.array[value_stack.top-2].yyval.Object, value_stack.array[value_stack.top-6].yyval.Object); }
+{ yyval.Object = _astFactory.ArrayItemValue(yypos, (LangElement)value_stack.array[value_stack.top-6].yyval.Object, _astFactory.List(value_stack.array[value_stack.top-2].yypos, (List<Item>)value_stack.array[value_stack.top-2].yyval.Object)); }
         return;
       case 467: // array_pair -> T_LIST '(' array_pair_list ')' 
-{ value_stack.array[value_stack.top-2].yyval.Object/*->attr*/ = 1; yyval.Object = zend_ast_create(_zend_ast_kind.ZEND_AST_ARRAY_ELEM, value_stack.array[value_stack.top-2].yyval.Object, null); }
+{ yyval.Object = _astFactory.ArrayItemValue(yypos, null, _astFactory.List(value_stack.array[value_stack.top-2].yypos, (List<Item>)value_stack.array[value_stack.top-2].yyval.Object)); }
         return;
       case 468: // encaps_list -> encaps_list encaps_var 
 { yyval.Object = AddToList<LangElement>(value_stack.array[value_stack.top-2].yyval.Object, value_stack.array[value_stack.top-1].yyval.Object); }

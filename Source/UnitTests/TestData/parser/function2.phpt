@@ -32,7 +32,7 @@ if ($a > $b)
               "PHPDoc":{"Comment":"function doc"},
               "FormalParams":{
                 "FormalParam":{"Name":"arg_1","PassedByRef":"False","IsVariadic":"False",
-                  "TypeHint":{"DirectTypeRef":{"ClassName":"MyClass","GenericParams":{}}}},
+                  "TypeHint":{"DirectTypeRef":{"ClassName":"MyClass"}}},
                 "FormalParam":{"Name":"arg_2","PassedByRef":"False","IsVariadic":"False",
                   "TypeHint":{"PrimitiveTypeRef":{"QualifiedName":"integer"}},
                   "InitValue":{"LongIntLiteral":{"Value":"4"}}},
