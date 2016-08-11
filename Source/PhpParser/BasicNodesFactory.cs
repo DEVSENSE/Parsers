@@ -405,7 +405,7 @@ namespace PhpParser
             return new MethodDecl(nameSpan, span, formalParamsSpan.End, body.Span.Start, name.Value, aliasReturn, formalParams.ToList(),
                 (typeParamsOpt != null) ? typeParamsOpt.ToList() : FormalTypeParam.EmptyList,
                 (body is BlockStmt) ? ((BlockStmt)body).Statements : new Statement[] { (Statement)body },
-                attributes, (baseCtorParams != null) ? baseCtorParams.ToList() : new List<ActualParam>(), null, returnType);
+                attributes, (baseCtorParams != null) ? baseCtorParams.ToList() :  new List<ActualParam>(), null, returnType);
         }
 
         public LangElement UnaryOperation(Span span, Operations operation, LangElement expression)
@@ -443,22 +443,22 @@ namespace PhpParser
                 className == QualifiedName.Null || className == QualifiedName.Resource)
                 type = new PrimitiveTypeRef(span, new PrimitiveTypeName(className));
             else
-                type = new DirectTypeRef(span, className, genericParamsOpt);
+                type = new DirectTypeRef(span, className, genericParamsOpt ?? TypeRef.EmptyList);
             if (isNullable)
-                type = new NullableTypeRef(span, type, genericParamsOpt);
+                type = new NullableTypeRef(span, type);
             return type;
         }
         public LangElement TypeReference(Span span, LangElement varName, List<TypeRef> genericParamsOpt)
         {
-            return new IndirectTypeRef(span, (VariableUse)varName, genericParamsOpt ?? new List<TypeRef>());
+            return new IndirectTypeRef(span, (VariableUse)varName, genericParamsOpt ?? TypeRef.EmptyList);
         }
         public LangElement TypeReference(Span span, IEnumerable<QualifiedName> classNames, List<TypeRef> genericParamsOpt)
         {
             Debug.Assert(classNames != null && classNames.Count() > 0);
             if (classNames.Count() == 1)
-                return TypeReference(span, classNames.First(), false, genericParamsOpt);
+                return TypeReference(span, classNames.First(), false, genericParamsOpt ?? TypeRef.EmptyList);
             else
-                return new MultipleTypeRef(span, classNames.Select(q => (TypeRef)TypeReference(span, q, false, null)).ToList(), genericParamsOpt);
+                return new MultipleTypeRef(span, classNames.Select(q => (TypeRef)TypeReference(span, q, false, null)).ToList());
         }
 
         public LangElement While(Span span, LangElement cond, LangElement body)

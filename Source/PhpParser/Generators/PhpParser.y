@@ -1177,11 +1177,11 @@ scalar:
 ;
 
 constant:
-		name { $$ = zend_ast_create(_zend_ast_kind.ZEND_AST_CONST, $1); }
+		name { $$ = _astFactory.ConstUse(@$, (QualifiedName)$1, null); }
 	|	class_name T_DOUBLE_COLON identifier
-			{ $$ = zend_ast_create(_zend_ast_kind.ZEND_AST_CLASS_CONST, $1, $3); }
+			{ $$ = _astFactory.ClassConstUse(@$, (TypeRef)_astFactory.TypeReference(@$, (QualifiedName)$1, false, null), new Name((string)$3), @3); }
 	|	variable_class_name T_DOUBLE_COLON identifier
-			{ $$ = zend_ast_create(_zend_ast_kind.ZEND_AST_CLASS_CONST, $1, $3); }
+			{ $$ = _astFactory.ClassConstUse(@$, (TypeRef)_astFactory.TypeReference(@$, (LangElement)$1, null), new Name((string)$3), @3); }
 ;
 
 expr:

@@ -149,6 +149,7 @@ namespace PHP.Core.AST
         public DirectTypeRef(Text.Span span, QualifiedName className, List<TypeRef>/*!*/ genericParams)
 			: base(span, genericParams)
 		{
+            Debug.Assert(genericParams != null);
 			this.className = className;
 		}
 
@@ -227,7 +228,7 @@ namespace PHP.Core.AST
 		public IndirectTypeRef(Text.Span span, VariableUse/*!*/ classNameVar, List<TypeRef>/*!*/ genericParams)
 			: base(span, genericParams)
 		{
-			Debug.Assert(classNameVar != null);
+			Debug.Assert(classNameVar != null && genericParams != null);
 
 			this.classNameVar = classNameVar;
 		}
@@ -267,8 +268,8 @@ namespace PHP.Core.AST
             get { return new QualifiedName(Name.EmptyBaseName); }
         }
 
-        public NullableTypeRef(Text.Span span, TypeRef/*!*/ targetType, List<TypeRef>/*!*/ genericParams)
-            : base(span, genericParams)
+        public NullableTypeRef(Text.Span span, TypeRef/*!*/ targetType)
+            : base(span, TypeRef.EmptyList)
         {
             Debug.Assert(targetType != null);
 
@@ -310,8 +311,8 @@ namespace PHP.Core.AST
             get { return new QualifiedName(Name.EmptyBaseName); }
         }
 
-        public MultipleTypeRef(Text.Span span, IList<TypeRef>/*!*/ multipleTypes, List<TypeRef>/*!*/ genericParams)
-            : base(span, genericParams)
+        public MultipleTypeRef(Text.Span span, IList<TypeRef>/*!*/ multipleTypes)
+            : base(span, TypeRef.EmptyList)
         {
             Debug.Assert(multipleTypes != null);
 

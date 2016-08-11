@@ -2982,13 +2982,13 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 { yyval.Object = value_stack.array[value_stack.top-1].yyval.Object; }
         return;
       case 417: // constant -> name 
-{ yyval.Object = zend_ast_create(_zend_ast_kind.ZEND_AST_CONST, value_stack.array[value_stack.top-1].yyval.Object); }
+{ yyval.Object = _astFactory.ConstUse(yypos, (QualifiedName)value_stack.array[value_stack.top-1].yyval.Object, null); }
         return;
       case 418: // constant -> class_name T_DOUBLE_COLON identifier 
-{ yyval.Object = zend_ast_create(_zend_ast_kind.ZEND_AST_CLASS_CONST, value_stack.array[value_stack.top-3].yyval.Object, value_stack.array[value_stack.top-1].yyval.Object); }
+{ yyval.Object = _astFactory.ClassConstUse(yypos, (TypeRef)_astFactory.TypeReference(yypos, (QualifiedName)value_stack.array[value_stack.top-3].yyval.Object, false, null), new Name((string)value_stack.array[value_stack.top-1].yyval.Object), value_stack.array[value_stack.top-1].yypos); }
         return;
       case 419: // constant -> variable_class_name T_DOUBLE_COLON identifier 
-{ yyval.Object = zend_ast_create(_zend_ast_kind.ZEND_AST_CLASS_CONST, value_stack.array[value_stack.top-3].yyval.Object, value_stack.array[value_stack.top-1].yyval.Object); }
+{ yyval.Object = _astFactory.ClassConstUse(yypos, (TypeRef)_astFactory.TypeReference(yypos, (LangElement)value_stack.array[value_stack.top-3].yyval.Object, null), new Name((string)value_stack.array[value_stack.top-1].yyval.Object), value_stack.array[value_stack.top-1].yypos); }
         return;
       case 420: // expr -> variable 
 { yyval.Object = value_stack.array[value_stack.top-1].yyval.Object; }
