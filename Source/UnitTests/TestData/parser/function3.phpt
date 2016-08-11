@@ -16,7 +16,7 @@ function foo($arg_1)
     "IsConditional":"False",
     "PHPDoc":{"Comment":"function doc"},
     "FormalParams":{
-      "FormalParam":{"Name":"arg_1","PassedByRef":"False","IsVariadic":"False","InitValue":{}}
+      "FormalParam":{"Name":"arg_1","PassedByRef":"False","IsVariadic":"False"}
     },
     "Body":{
       "GlobalStmt":{"DirectVarUse":{"VarName":"a"},"DirectVarUse":{"VarName":"b"}},

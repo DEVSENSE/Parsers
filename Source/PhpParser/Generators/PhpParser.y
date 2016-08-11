@@ -495,7 +495,7 @@ catch_list:
 	|	catch_list T_CATCH '(' catch_name_list T_VARIABLE ')' '{' inner_statement_list '}'
 			{ 
 				$$ = AddToList<CatchItem>($1, _astFactory.Catch(@$, 
-					((List<QualifiedName>)$4).Select(q => (DirectTypeRef)_astFactory.TypeReference(@4, q, false, null)), 
+					(TypeRef)_astFactory.TypeReference(@4, (List<QualifiedName>)$4, null), 
 					(DirectVarUse)_astFactory.Variable(@5, new VariableName((string)$5), (LangElement)null), 
 					_astFactory.Block(@8, (List<LangElement>)$8))); 
 			}
@@ -1112,9 +1112,9 @@ function_call:
 	|	variable_class_name T_DOUBLE_COLON member_name argument_list
 			{
 				if($3 is Name)
-					$$ = _astFactory.Call(@$, (Name)$3, @2, new CallSignature((List<ActualParam>)$4), (TypeRef)_astFactory.TypeReference(@$, (LangElement)$1, false, null)); 
+					$$ = _astFactory.Call(@$, (Name)$3, @2, new CallSignature((List<ActualParam>)$4), (TypeRef)_astFactory.TypeReference(@$, (LangElement)$1, null)); 
 				else
-					$$ = _astFactory.Call(@$, (LangElement)$3, new CallSignature((List<ActualParam>)$4), (TypeRef)_astFactory.TypeReference(@$, (LangElement)$1, false, null)); 
+					$$ = _astFactory.Call(@$, (LangElement)$3, new CallSignature((List<ActualParam>)$4), (TypeRef)_astFactory.TypeReference(@$, (LangElement)$1, null)); 
 			}
 	|	callable_expr argument_list
 			{ $$ = _astFactory.Call(@$, (LangElement)$1, new CallSignature((List<ActualParam>)$2), (LangElement)null);}

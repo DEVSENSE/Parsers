@@ -1,6 +1,6 @@
 <?php
 /** lambda doc */
-$greet = static function($name) use($x, $y)
+$greet = static function(string $name) use($x, $y): integer
 {
     print("Hello world");
 };
@@ -16,11 +16,12 @@ $greet = static function($name) use($x, $y)
     "LambdaFunctionExpr":{
       "PHPDoc":{"Comment":"lambda doc"},
       "UseParams":{
-        "FormalParam":{"Name":"x","PassedByRef":"False","IsVariadic":"False","InitValue":{}},
-        "FormalParam":{"Name":"y","PassedByRef":"False","IsVariadic":"False","InitValue":{}}
+        "FormalParam":{"Name":"x","PassedByRef":"False","IsVariadic":"False"},
+        "FormalParam":{"Name":"y","PassedByRef":"False","IsVariadic":"False"}
       },
       "FormalParams":{
-        "FormalParam":{"Name":"name","PassedByRef":"False","IsVariadic":"False","InitValue":{}}
+        "FormalParam":{"Name":"name","PassedByRef":"False","IsVariadic":"False",
+          "TypeHint":{"PrimitiveTypeRef":{"QualifiedName":"string"}}}
       },
       "Body":{
         "UnaryEx" : {
@@ -29,7 +30,10 @@ $greet = static function($name) use($x, $y)
               "Value" : "Hello world"
           }
         }
-      }
+      },
+      "ReturnType":{
+        "PrimitiveTypeRef":{"QualifiedName":"integer"}
+      }      
     }
   }  
 }

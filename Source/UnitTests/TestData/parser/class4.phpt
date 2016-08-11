@@ -22,7 +22,7 @@ trait SimpleTrait
         "Modifiers":"Public",
         "PHPDoc":{"Comment":"method comment"},
         "FormalParams":{
-          "FormalParam":{"Name":"arg_1","PassedByRef":"False","IsVariadic":"False","InitValue":{}}
+          "FormalParam":{"Name":"arg_1","PassedByRef":"False","IsVariadic":"False"}
         },
         "Body":{
           "UnaryEx" : {

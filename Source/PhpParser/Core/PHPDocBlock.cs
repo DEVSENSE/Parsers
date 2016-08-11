@@ -1557,7 +1557,7 @@ namespace PHP.Syntax
                 }
 
                 return new FormalParam(
-                    Span.Invalid, paramname, typehint,
+                    Span.Invalid, paramname, DirectTypeRef.FromGenericQualifiedName(Span.Invalid, new GenericQualifiedName(new QualifiedName(new Name(typehint)))),
                     byref ? FormalParam.Flags.IsByRef : FormalParam.Flags.Default,
                     null, null);
             }

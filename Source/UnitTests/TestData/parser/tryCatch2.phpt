@@ -20,7 +20,6 @@ try {
         "TypeRef":{
           "DirectTypeRef":{
             "ClassName":"TestEx", 
-            "IsNullable":"False", 
             "GenericParams":{}
           }
         },

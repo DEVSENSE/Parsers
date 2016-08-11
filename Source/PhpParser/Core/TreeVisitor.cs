@@ -762,6 +762,14 @@ namespace PHP.Core.AST
             VisitElement(x.ValueExpr);
         }
 
+
+        /// <summary>
+        /// Visit <see cref="YieldFromEx"/> expression.
+        /// </summary>
+        virtual public void VisitYieldFromEx(YieldFromEx x)
+        {
+            VisitElement(x.ValueExpr);
+        }
         #endregion
 
         #region Literals
@@ -806,8 +814,7 @@ namespace PHP.Core.AST
         /// <param name="x"></param>
         virtual public void VisitCatchItem(CatchItem x)
         {
-            foreach (var type in x.TypeRef)
-                VisitElement(type);
+            VisitElement(x.TypeRef);
             VisitElement(x.Variable);
             VisitStatements(x.Statements);
         }
@@ -884,6 +891,15 @@ namespace PHP.Core.AST
         virtual public void VisitIndirectTypeRef(IndirectTypeRef x)
         {
             VisitElement(x.ClassNameVar);
+        }
+        virtual public void VisitNullableTypeRef(NullableTypeRef x)
+        {
+            VisitElement(x.TargetType);
+        }
+        virtual public void VisitMultipleTypeRef(MultipleTypeRef x)
+        {
+            foreach (TypeRef p in x.MultipleTypes)
+                VisitElement(p);
         }
 
         virtual public void VisitPHPDocStmt(PHPDocStmt x) { }

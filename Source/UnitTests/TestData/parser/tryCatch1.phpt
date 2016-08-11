@@ -21,16 +21,16 @@ try {
     },
     "Catches":{
       "CatchItem":{
-        "TypeRef":{
-          "DirectTypeRef":{
-            "ClassName":"TestEx", 
-            "IsNullable":"False", 
-            "GenericParams":{}
-          },         
-          "DirectTypeRef":{
-            "ClassName":"MyEx", 
-            "IsNullable":"False",  
-            "GenericParams":{}
+        "TypeRef":{   
+          "MultipleTypeRef":{
+            "DirectTypeRef":{
+              "ClassName":"TestEx", 
+              "GenericParams":{}
+            },         
+            "DirectTypeRef":{
+              "ClassName":"MyEx",  
+              "GenericParams":{}
+            }
           }
         },
         "Variable":{
@@ -45,8 +45,7 @@ try {
       "CatchItem":{
         "TypeRef":{
           "DirectTypeRef":{
-            "ClassName":"Exception",  
-            "IsNullable":"False", 
+            "ClassName":"Exception", 
             "GenericParams":{}
           }
         },

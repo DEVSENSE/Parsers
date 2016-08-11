@@ -67,4 +67,51 @@ namespace PHP.Core.AST
 
         #endregion
     }
+
+    /// <summary>
+    /// Represents <c>yield from</c> expression for the support for PHP Generator.
+    /// </summary>
+    public sealed class YieldFromEx : Expression
+    {
+        #region Fields & Properties
+
+        public override Operations Operation { get { return Operations.Yield; } }
+
+        /// <summary>
+        /// Represents the value expression in case of <c>yield key =&gt; value</c> or <c>yield value</c> forms.
+        /// Can be a <c>null</c> reference in case of yield is used in read context. (see Generator::send()).
+        /// </summary>
+        public Expression ValueExpr { get { return _valueEx; } }
+
+        /// <summary>
+        /// <c>yield</c> parameters.
+        /// </summary>
+        private Expression _valueEx;
+
+        #endregion
+
+        #region Initialization
+
+        /// <summary>
+        /// Initializes new instance of <see cref="YieldEx"/>.
+        /// </summary>
+        public YieldFromEx(Text.Span span, Expression valueEx)
+            : base(span)
+        {
+            if (valueEx == null) throw new ArgumentException();
+            
+            _valueEx = valueEx;
+        }
+
+        #endregion
+
+        #region LangElement
+
+        public override void VisitMe(TreeVisitor visitor)
+        {
+            visitor.VisitYieldFromEx(this);
+        }
+
+        #endregion
+    }
 }
