@@ -64,13 +64,16 @@ namespace PHP.Core.AST
         public SourceUnit/*!*/SourceUnit { get { return this.sourceUnit; } }
         private readonly SourceUnit/*!*/sourceUnit;
 
+        public TypeRef ReturnType { get { return returnType; } }
+        private TypeRef returnType;
+
         #region Construction
 
         public LambdaFunctionExpr(SourceUnit/*!*/ sourceUnit,
             Text.Span span, Text.Span entireDeclarationPosition, int headingEndPosition, int declarationBodyPosition,
             Scope scope, NamespaceDecl ns,
             bool aliasReturn, List<FormalParam>/*!*/ formalParams, List<FormalParam> useParams,
-            IList<Statement>/*!*/ body)
+            IList<Statement>/*!*/ body, TypeRef returnType)
             : base(span)
         {
             Debug.Assert(formalParams != null && body != null);
@@ -87,6 +90,7 @@ namespace PHP.Core.AST
             this.entireDeclarationSpan = entireDeclarationPosition;
             this.headingEndPosition = headingEndPosition;
             this.declarationBodyPosition = declarationBodyPosition;
+            this.returnType = returnType;
         }
 
         #endregion

@@ -17,7 +17,7 @@ $greet = function($name)
       "PHPDoc":{"Comment":"lambda doc"},
       "UseParams":{},
       "FormalParams":{
-        "FormalParam":{"Name":"name","PassedByRef":"False","IsVariadic":"False","InitValue":{}}
+        "FormalParam":{"Name":"name","PassedByRef":"False","IsVariadic":"False"}
       },
       "Body":{
         "UnaryEx" : {

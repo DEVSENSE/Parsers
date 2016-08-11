@@ -306,7 +306,7 @@ namespace PhpParser
         /// <param name="variable">Exception variable.</param>
         /// <param name="block">Statements of the block.</param>
         /// <returns>Catch clause.</returns>
-        TNode Catch(Span span, IEnumerable<DirectTypeRef> typeOpt, DirectVarUse variable, TNode block);
+        TNode Catch(Span span, TypeRef typeOpt, DirectVarUse variable, TNode block);
 
         /// <summary>
         /// Creates <c>finally</c> block.
@@ -641,7 +641,16 @@ namespace PhpParser
         /// <param name="isNullable">Indicates if the type is nullable.</param>
         /// <param name="genericParamsOpt">Actual generic parameters</param>
         /// <returns>Type reference.</returns>
-        TNode TypeReference(TSpan span, TNode varName, bool isNullable, List<TypeRef> genericParamsOpt);
+        TNode TypeReference(TSpan span, TNode varName, List<TypeRef> genericParamsOpt);
+
+        /// <summary>
+        /// Create <c>TypeRef</c> reference to a type.
+        /// </summary>
+        /// <param name="span">Entire element span.</param>
+        /// <param name="className">List of all qualified class names in the expression.</param>
+        /// <param name="genericParamsOpt">Actual generic parameters</param>
+        /// <returns>Type reference.</returns>
+        TNode TypeReference(TSpan span, IEnumerable<QualifiedName> classNames, List<TypeRef> genericParamsOpt);
 
         /// <summary>
         /// Creates a pseudo constant use.

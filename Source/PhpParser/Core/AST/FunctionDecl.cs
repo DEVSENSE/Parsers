@@ -68,8 +68,8 @@ namespace PHP.Core.AST
 		/// <summary>
 		/// Either <see cref="PrimitiveTypeName"/>, <see cref="GenericQualifiedName"/>, or <B>null</B>.
 		/// </summary>
-        public object TypeHint { get { return typeHint; } }
-		private object typeHint;
+        public TypeRef TypeHint { get { return typeHint; } }
+		private TypeRef typeHint;
 
         /// <summary>Position of <see cref="TypeHint"/> if any.</summary>
         public Text.Span TypeHintPosition { get; internal set; }
@@ -85,12 +85,10 @@ namespace PHP.Core.AST
 
         #region Construction
 
-        public FormalParam(Text.Span span, string/*!*/ name, object typeHint, Flags flags,
+        public FormalParam(Text.Span span, string/*!*/ name, TypeRef typeHint, Flags flags,
 				Expression initValue, List<CustomAttribute> attributes)
             : base(span)
 		{
-            Debug.Assert(typeHint == null || typeHint is PrimitiveTypeName || typeHint is GenericQualifiedName);
-
 			this.name = new VariableName(name);
 			this.typeHint = typeHint;
             this._flags = flags;
@@ -189,13 +187,16 @@ namespace PHP.Core.AST
         public int DeclarationBodyPosition { get { return declarationBodyPosition; } }
         private int declarationBodyPosition;
 
-		#region Construction
+        public TypeRef ReturnType { get { return returnType; } }
+        private TypeRef returnType;
 
-		public FunctionDecl(SourceUnit/*!*/ sourceUnit,
+        #region Construction
+
+        public FunctionDecl(SourceUnit/*!*/ sourceUnit,
             Text.Span span, Text.Span entireDeclarationPosition, int headingEndPosition, int declarationBodyPosition,
 			bool isConditional, Scope scope, PhpMemberAttributes memberAttributes, string/*!*/ name, NamespaceDecl ns,
 			bool aliasReturn, List<FormalParam>/*!*/ formalParams, List<FormalTypeParam>/*!*/ genericParams,
-			IList<Statement>/*!*/ body, List<CustomAttribute> attributes)
+			IList<Statement>/*!*/ body, List<CustomAttribute> attributes, TypeRef returnType)
 			: base(span)
 		{
 			Debug.Assert(genericParams != null && name != null && formalParams != null && body != null);
@@ -214,6 +215,7 @@ namespace PHP.Core.AST
             this.MemberAttributes = memberAttributes;
             this.Scope = scope;
             this.SourceUnit = sourceUnit;
+            this.returnType = returnType;
 		}
 
 		#endregion

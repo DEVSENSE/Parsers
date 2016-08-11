@@ -2137,7 +2137,7 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
       case 156: // catch_list -> catch_list T_CATCH '(' catch_name_list T_VARIABLE ')' '{' inner_statement_list '}' 
 { 
 				yyval.Object = AddToList<CatchItem>(value_stack.array[value_stack.top-9].yyval.Object, _astFactory.Catch(yypos, 
-					((List<QualifiedName>)value_stack.array[value_stack.top-6].yyval.Object).Select(q => (DirectTypeRef)_astFactory.TypeReference(value_stack.array[value_stack.top-6].yypos, q, false, null)), 
+					(TypeRef)_astFactory.TypeReference(value_stack.array[value_stack.top-6].yypos, (List<QualifiedName>)value_stack.array[value_stack.top-6].yyval.Object, null), 
 					(DirectVarUse)_astFactory.Variable(value_stack.array[value_stack.top-5].yypos, new VariableName((string)value_stack.array[value_stack.top-5].yyval.Object), (LangElement)null), 
 					_astFactory.Block(value_stack.array[value_stack.top-2].yypos, (List<LangElement>)value_stack.array[value_stack.top-2].yyval.Object))); 
 			}
@@ -2883,9 +2883,9 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
       case 385: // function_call -> variable_class_name T_DOUBLE_COLON member_name argument_list 
 {
 				if(value_stack.array[value_stack.top-2].yyval.Object is Name)
-					yyval.Object = _astFactory.Call(yypos, (Name)value_stack.array[value_stack.top-2].yyval.Object, value_stack.array[value_stack.top-3].yypos, new CallSignature((List<ActualParam>)value_stack.array[value_stack.top-1].yyval.Object), (TypeRef)_astFactory.TypeReference(yypos, (LangElement)value_stack.array[value_stack.top-4].yyval.Object, false, null)); 
+					yyval.Object = _astFactory.Call(yypos, (Name)value_stack.array[value_stack.top-2].yyval.Object, value_stack.array[value_stack.top-3].yypos, new CallSignature((List<ActualParam>)value_stack.array[value_stack.top-1].yyval.Object), (TypeRef)_astFactory.TypeReference(yypos, (LangElement)value_stack.array[value_stack.top-4].yyval.Object, null)); 
 				else
-					yyval.Object = _astFactory.Call(yypos, (LangElement)value_stack.array[value_stack.top-2].yyval.Object, new CallSignature((List<ActualParam>)value_stack.array[value_stack.top-1].yyval.Object), (TypeRef)_astFactory.TypeReference(yypos, (LangElement)value_stack.array[value_stack.top-4].yyval.Object, false, null)); 
+					yyval.Object = _astFactory.Call(yypos, (LangElement)value_stack.array[value_stack.top-2].yyval.Object, new CallSignature((List<ActualParam>)value_stack.array[value_stack.top-1].yyval.Object), (TypeRef)_astFactory.TypeReference(yypos, (LangElement)value_stack.array[value_stack.top-4].yyval.Object, null)); 
 			}
         return;
       case 386: // function_call -> callable_expr argument_list 

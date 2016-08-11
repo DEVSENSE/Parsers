@@ -425,8 +425,7 @@ namespace PhpParser
         {
             _serializer.StartSerialize(typeof(CatchItem).Name, SerializeSpan(x.Span));
             _serializer.StartSerialize("TypeRef");
-            foreach (var type in x.TypeRef)
-                VisitElement(type);
+            VisitElement(x.TypeRef);
             _serializer.EndSerialize();
             _serializer.StartSerialize("Variable");
             VisitElement(x.Variable);
@@ -439,8 +438,7 @@ namespace PhpParser
         override public void VisitDirectTypeRef(DirectTypeRef x)
         {
             _serializer.StartSerialize(typeof(DirectTypeRef).Name, SerializeSpan(x.Span), 
-                new NodeObj("ClassName", x.ClassName.ToString()), 
-                new NodeObj("IsNullable", x.IsNullable.ToString()));
+                new NodeObj("ClassName", x.ClassName.ToString()));
             _serializer.StartSerialize("GenericParams");
             foreach (var param in x.GenericParams)
                 VisitElement(param);
@@ -451,6 +449,25 @@ namespace PhpParser
         {
             _serializer.StartSerialize(typeof(IndirectTypeRef).Name, SerializeSpan(x.Span));
             base.VisitIndirectTypeRef(x);
+            _serializer.EndSerialize();
+        }
+
+        override public void VisitPrimitiveTypeRef(PrimitiveTypeRef x)
+        {
+            _serializer.Serialize(typeof(PrimitiveTypeRef).Name, SerializeSpan(x.Span),
+                new NodeObj("QualifiedName", x.QualifiedName.ToString()));
+        }
+
+        override public void VisitNullableTypeRef(NullableTypeRef x)
+        {
+            _serializer.StartSerialize(typeof(NullableTypeRef).Name, SerializeSpan(x.Span));
+            base.VisitNullableTypeRef(x);
+            _serializer.EndSerialize();
+        }
+        override public void VisitMultipleTypeRef(MultipleTypeRef x)
+        {
+            _serializer.StartSerialize(typeof(MultipleTypeRef).Name, SerializeSpan(x.Span));
+            base.VisitMultipleTypeRef(x);
             _serializer.EndSerialize();
         }
         override public void VisitGotoStmt(GotoStmt x)
@@ -482,6 +499,13 @@ namespace PhpParser
             // function body
             VisitStatements(x.Body);
             _serializer.EndSerialize();
+
+            if (x.ReturnType != null)
+            {
+                _serializer.StartSerialize("ReturnType");
+                VisitElement(x.ReturnType);
+                _serializer.EndSerialize();
+            }
             _serializer.EndSerialize();
         }
 
@@ -510,22 +534,43 @@ namespace PhpParser
             // function body
             VisitStatements(x.Body);
             _serializer.EndSerialize();
+
+            if (x.ReturnType != null)
+            {
+                _serializer.StartSerialize("ReturnType");
+                VisitElement(x.ReturnType);
+                _serializer.EndSerialize();
+            }
             _serializer.EndSerialize();
         }
         override public void VisitFormalParam(FormalParam x)
         {
             _serializer.StartSerialize(typeof(FormalParam).Name, SerializeSpan(x.Span), new NodeObj("Name", x.Name.Value), 
                 new NodeObj("PassedByRef", x.PassedByRef.ToString()), new NodeObj("IsVariadic", x.IsVariadic.ToString()));
-            _serializer.StartSerialize("InitValue");
+            if (x.TypeHint != null)
+            {
+                _serializer.StartSerialize("TypeHint");
+                VisitElement(x.TypeHint);
+                _serializer.EndSerialize();
+            }
             if (x.InitValue != null)
+            {
+                _serializer.StartSerialize("InitValue");
                 VisitElement(x.InitValue);
-            _serializer.EndSerialize();
+                _serializer.EndSerialize();
+            }
             _serializer.EndSerialize();
         }
         override public void VisitYieldEx(YieldEx x)
         {
             _serializer.StartSerialize(typeof(YieldEx).Name, SerializeSpan(x.Span));
             base.VisitYieldEx(x);
+            _serializer.EndSerialize();
+        }
+        override public void VisitYieldFromEx(YieldFromEx x)
+        {
+            _serializer.StartSerialize(typeof(YieldFromEx).Name, SerializeSpan(x.Span));
+            base.VisitYieldFromEx(x);
             _serializer.EndSerialize();
         }
         override public void VisitDeclareStmt(DeclareStmt x)
@@ -592,6 +637,13 @@ namespace PhpParser
             // method body
             VisitStatements(x.Body);
             _serializer.EndSerialize();
+
+            if (x.ReturnType != null)
+            {
+                _serializer.StartSerialize("ReturnType");
+                VisitElement(x.ReturnType);
+                _serializer.EndSerialize();
+            }
             _serializer.EndSerialize();
         }
         override public void VisitUnsetStmt(UnsetStmt x)
@@ -641,6 +693,16 @@ namespace PhpParser
                 _serializer.EndSerialize();
             }
             _serializer.EndSerialize();
+        }
+
+        override public void VisitVarLikeConstructUse(VarLikeConstructUse x)
+        {
+            if (x.IsMemberOf != null)
+            {
+                _serializer.StartSerialize("IsMemberOf");
+                VisitElement(x.IsMemberOf);
+                _serializer.EndSerialize();
+            }
         }
     }
 }

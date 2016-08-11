@@ -19,14 +19,14 @@ function foo(...$arg_1)
     "IsConditional":"False",
     "PHPDoc":{"Comment":"function doc"},
     "FormalParams":{
-      "FormalParam":{"Name":"arg_1","PassedByRef":"False","IsVariadic":"True","InitValue":{}}
+      "FormalParam":{"Name":"arg_1","PassedByRef":"False","IsVariadic":"True"}
     },
     "Body":{
       "FunctionDecl":{
         "Name":"bar",
         "IsConditional":"True",
         "FormalParams":{
-          "FormalParam":{"Name":"arg_2","PassedByRef":"False","IsVariadic":"False","InitValue":{}}
+          "FormalParam":{"Name":"arg_2","PassedByRef":"False","IsVariadic":"False"}
         },
         "Body":{
           "JumpStmt":{"Type":"Return","DirectVarUse":{"VarName":"retval"}}

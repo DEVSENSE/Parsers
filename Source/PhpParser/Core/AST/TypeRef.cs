@@ -20,12 +20,6 @@ namespace PHP.Core.AST
         /// Immutable empty list of <see cref="TypeRef"/>.
         /// </summary>
 		internal static readonly List<TypeRef>/*!*/ EmptyList = new List<TypeRef>();
-        
-        bool isNullable;
-        /// <summary>
-        /// Indicates if the type is nullable.
-        /// </summary>
-        public bool IsNullable { get { return isNullable; } internal set { isNullable = value; } }
 
         /// <summary>
         /// List of generic parameters.
@@ -60,7 +54,7 @@ namespace PHP.Core.AST
 
         internal abstract QualifiedName QualifiedName { get; }
 
-        public TypeRef(Text.Span span, bool isNullable, List<TypeRef> genericParams)
+        public TypeRef(Text.Span span, List<TypeRef> genericParams)
 			: base(span)
 		{
 			this.GenericParams = genericParams;
@@ -104,8 +98,8 @@ namespace PHP.Core.AST
 	{
         private PrimitiveTypeName typeName;
 
-		public PrimitiveTypeRef(Text.Span span, PrimitiveTypeName name, bool isNullable)
-			: base(span, isNullable, null)
+		public PrimitiveTypeRef(Text.Span span, PrimitiveTypeName name)
+			: base(span, null)
 		{
             this.typeName = name;
 		}
@@ -152,8 +146,8 @@ namespace PHP.Core.AST
 			return new GenericQualifiedName(className, TypeRef.ToStaticTypeRefs(GenericParams, errors, sourceUnit));
 		}
 
-        public DirectTypeRef(Text.Span span, QualifiedName className, bool isNullable, List<TypeRef>/*!*/ genericParams)
-			: base(span, isNullable, genericParams)
+        public DirectTypeRef(Text.Span span, QualifiedName className, List<TypeRef>/*!*/ genericParams)
+			: base(span, genericParams)
 		{
 			this.className = className;
 		}
@@ -169,8 +163,8 @@ namespace PHP.Core.AST
                 {
                     TypeRef objtype;
                     if (obj is GenericQualifiedName) objtype = FromGenericQualifiedName(Text.Span.Invalid, (GenericQualifiedName)obj);
-                    else if (obj is PrimitiveTypeName) objtype = new PrimitiveTypeRef(Text.Span.Invalid, (PrimitiveTypeName)obj, false);
-                    else objtype = new PrimitiveTypeRef(Text.Span.Invalid, new PrimitiveTypeName(QualifiedName.Object), false);
+                    else if (obj is PrimitiveTypeName) objtype = new PrimitiveTypeRef(Text.Span.Invalid, (PrimitiveTypeName)obj);
+                    else objtype = new PrimitiveTypeRef(Text.Span.Invalid, new PrimitiveTypeName(QualifiedName.Object));
 
                     genericParams.Add(objtype);
                 }
@@ -183,7 +177,7 @@ namespace PHP.Core.AST
                 genericParams = TypeRef.EmptyList;
             }
 
-            return new DirectTypeRef(span, genericQualifiedName.QualifiedName, false, genericParams.ToList());
+            return new DirectTypeRef(span, genericQualifiedName.QualifiedName, genericParams.ToList());
         }
 
 		/// <summary>
@@ -231,9 +225,9 @@ namespace PHP.Core.AST
         }
 
 		public IndirectTypeRef(Text.Span span, VariableUse/*!*/ classNameVar, List<TypeRef>/*!*/ genericParams)
-			: base(span, true, genericParams)
+			: base(span, genericParams)
 		{
-			Debug.Assert(classNameVar != null && genericParams != null);
+			Debug.Assert(classNameVar != null);
 
 			this.classNameVar = classNameVar;
 		}
@@ -253,5 +247,91 @@ namespace PHP.Core.AST
         }
 	}
 
-	#endregion
+    #endregion
+
+    #region NullableTypeRef
+
+    /// <summary>
+    /// Indirect use of class name (through variable).
+    /// </summary>
+    public sealed class NullableTypeRef : TypeRef
+    {
+        /// <summary>
+        /// <see cref="VariableUse"/> which value in runtime contains the name of the type.
+        /// </summary>
+        public TypeRef/*!*/ TargetType { get { return this.targetType; } }
+        private readonly TypeRef/*!*/ targetType;
+
+        internal override QualifiedName QualifiedName
+        {
+            get { return new QualifiedName(Name.EmptyBaseName); }
+        }
+
+        public NullableTypeRef(Text.Span span, TypeRef/*!*/ targetType, List<TypeRef>/*!*/ genericParams)
+            : base(span, genericParams)
+        {
+            Debug.Assert(targetType != null);
+
+            this.targetType = targetType;
+        }
+
+        internal override object ToStaticTypeRef(IErrorSink<Span> errors, SourceUnit sourceUnit)
+        {
+            return null;
+        }
+
+        /// <summary>
+        /// Call the right Visit* method on the given Visitor object.
+        /// </summary>
+        /// <param name="visitor">Visitor to be called.</param>
+        public override void VisitMe(TreeVisitor visitor)
+        {
+            visitor.VisitNullableTypeRef(this);
+        }
+    }
+
+    #endregion
+
+    #region MultipleTypeRef
+
+    /// <summary>
+    /// Indirect use of class name (through variable).
+    /// </summary>
+    public sealed class MultipleTypeRef : TypeRef
+    {
+        /// <summary>
+        /// <see cref="VariableUse"/> which value in runtime contains the name of the type.
+        /// </summary>
+        public IList<TypeRef>/*!*/ MultipleTypes { get { return this.multipleTypes; } }
+        private readonly IList<TypeRef>/*!*/ multipleTypes;
+
+        internal override QualifiedName QualifiedName
+        {
+            get { return new QualifiedName(Name.EmptyBaseName); }
+        }
+
+        public MultipleTypeRef(Text.Span span, IList<TypeRef>/*!*/ multipleTypes, List<TypeRef>/*!*/ genericParams)
+            : base(span, genericParams)
+        {
+            Debug.Assert(multipleTypes != null);
+
+            this.multipleTypes = multipleTypes;
+        }
+
+        internal override object ToStaticTypeRef(IErrorSink<Span> errors, SourceUnit sourceUnit)
+        {
+            return null;
+        }
+
+        /// <summary>
+        /// Call the right Visit* method on the given Visitor object.
+        /// </summary>
+        /// <param name="visitor">Visitor to be called.</param>
+        public override void VisitMe(TreeVisitor visitor)
+        {
+            visitor.VisitMultipleTypeRef(this);
+        }
+    }
+
+    #endregion
 }

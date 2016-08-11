@@ -319,12 +319,15 @@ namespace PHP.Core.AST
         public int DeclarationBodyPosition { get { return declarationBodyPosition; } }
         private int declarationBodyPosition;
 
-		#region Construction
+        public TypeRef ReturnType { get { return returnType; } }
+        private TypeRef returnType;
+
+        #region Construction
 
         public MethodDecl(Text.Span span, Text.Span entireDeclarationPosition, int headingEndPosition, int declarationBodyPosition, 
 			string name, bool aliasReturn, IList<FormalParam>/*!*/ formalParams, IList<FormalTypeParam>/*!*/ genericParams, 
 			IList<Statement> body, PhpMemberAttributes modifiers, IList<ActualParam> baseCtorParams, 
-			List<CustomAttribute> attributes)
+			List<CustomAttribute> attributes, TypeRef returnType)
             : base(span, attributes)
         {
             Debug.Assert(genericParams != null && formalParams != null);
@@ -338,6 +341,7 @@ namespace PHP.Core.AST
             this.entireDeclarationSpan = entireDeclarationPosition;
             this.headingEndPosition = headingEndPosition;
             this.declarationBodyPosition = declarationBodyPosition;
+            this.returnType = returnType;
         }
 
 		#endregion
