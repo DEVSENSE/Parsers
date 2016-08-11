@@ -11,9 +11,9 @@ namespace PHP.Core.AST
 	{
 		internal override bool AllowsPassByReference { get { return true; } }
 
-		internal VariableUse lvalue;
+		internal VarLikeConstructUse lvalue;
         /// <summary>Target of assignment</summary>
-        public VariableUse LValue { get { return lvalue; } }
+        public VarLikeConstructUse LValue { get { return lvalue; } }
 
 		protected AssignEx(Text.Span p) : base(p) { }
 	}
@@ -35,7 +35,7 @@ namespace PHP.Core.AST
         /// <summary>Expression being assigned</summary>
         public Expression/*!*/RValue { get { return rvalue; } }
 
-		public ValueAssignEx(Text.Span span, Operations operation, VariableUse/*!*/ lvalue, Expression/*!*/ rvalue)
+		public ValueAssignEx(Text.Span span, Operations operation, VarLikeConstructUse/*!*/ lvalue, Expression/*!*/ rvalue)
 			: base(span)
 		{
 			this.lvalue = lvalue;
@@ -68,7 +68,7 @@ namespace PHP.Core.AST
         public Expression/*!*/RValue { get { return rvalue; } }
         internal Expression/*!*/ rvalue;
         
-		public RefAssignEx(Text.Span span, VariableUse/*!*/ lvalue, Expression/*!*/ rvalue)
+		public RefAssignEx(Text.Span span, VarLikeConstructUse/*!*/ lvalue, Expression/*!*/ rvalue)
 			: base(span)
 		{
 			Debug.Assert(rvalue is VarLikeConstructUse || rvalue is NewEx);

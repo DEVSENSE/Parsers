@@ -55,7 +55,7 @@ namespace PhpParser
             }
         }
 
-        void SerializeItem(string name, LangElement x)
+        void SerializeOptionalProperty(string name, LangElement x)
         {
             if (x != null)
             {
@@ -63,6 +63,22 @@ namespace PhpParser
                 VisitElement(x);
                 _serializer.EndSerialize();
             }
+        }
+
+        void SerializeItem(ValueItem item)
+        {
+            _serializer.StartSerialize("Item");
+            SerializeOptionalProperty("Index", item.Index);
+            SerializeOptionalProperty("ValueExpr", item.ValueExpr);
+            _serializer.EndSerialize();
+        }
+
+        void SerializeItem(RefItem item)
+        {
+            _serializer.StartSerialize("Item");
+            SerializeOptionalProperty("Index", item.Index);
+            SerializeOptionalProperty("RefToGet", item.RefToGet);
+            _serializer.EndSerialize();
         }
 
         void SerializePHPDoc(PHPDocBlock doc)
@@ -530,7 +546,7 @@ namespace PhpParser
             VisitStatements(x.Body);
             _serializer.EndSerialize();
             
-            SerializeItem("ReturnType", x.ReturnType);
+            SerializeOptionalProperty("ReturnType", x.ReturnType);
             _serializer.EndSerialize();
         }
 
@@ -571,8 +587,8 @@ namespace PhpParser
         {
             _serializer.StartSerialize(typeof(FormalParam).Name, SerializeSpan(x.Span), new NodeObj("Name", x.Name.Value), 
                 new NodeObj("PassedByRef", x.PassedByRef.ToString()), new NodeObj("IsVariadic", x.IsVariadic.ToString()));
-            SerializeItem("TypeHint", x.TypeHint);
-            SerializeItem("InitValue", x.InitValue);
+            SerializeOptionalProperty("TypeHint", x.TypeHint);
+            SerializeOptionalProperty("InitValue", x.InitValue);
             _serializer.EndSerialize();
         }
         override public void VisitYieldEx(YieldEx x)
@@ -648,7 +664,7 @@ namespace PhpParser
             VisitStatements(x.Body);
             _serializer.EndSerialize();
 
-            SerializeItem("ReturnType", x.ReturnType);
+            SerializeOptionalProperty("ReturnType", x.ReturnType);
             _serializer.EndSerialize();
         }
         override public void VisitUnsetStmt(UnsetStmt x)
@@ -702,7 +718,7 @@ namespace PhpParser
 
         override public void VisitVarLikeConstructUse(VarLikeConstructUse x)
         {
-            SerializeItem("IsMemberOf", x.IsMemberOf);
+            SerializeOptionalProperty("IsMemberOf", x.IsMemberOf);
         }
         override public void VisitGlobalConstUse(GlobalConstUse x)
         {
@@ -721,9 +737,28 @@ namespace PhpParser
         override public void VisitItemUse(ItemUse x)
         {
             _serializer.StartSerialize(typeof(ItemUse).Name, SerializeSpan(x.Span));
-            SerializeItem("Array", x.Array);
-            SerializeItem("Index", x.Index);
+            SerializeOptionalProperty("Array", x.Array);
+            SerializeOptionalProperty("Index", x.Index);
             VisitVarLikeConstructUse(x);
+            _serializer.EndSerialize();
+        }
+        override public void VisitListEx(ListEx x)
+        {
+            _serializer.StartSerialize(typeof(ListEx).Name, SerializeSpan(x.Span));
+            foreach (var item in x.LValues)
+                if (item is ValueItem)
+                    SerializeItem((ValueItem)item);
+                else SerializeItem((RefItem)item);
+            _serializer.EndSerialize();
+        }
+
+        override public void VisitArrayEx(ArrayEx x)
+        {
+            _serializer.StartSerialize(typeof(ArrayEx).Name, SerializeSpan(x.Span));
+            foreach (var item in x.Items)
+                if (item is ValueItem)
+                    SerializeItem((ValueItem)item);
+                else SerializeItem((RefItem)item);
             _serializer.EndSerialize();
         }
     }

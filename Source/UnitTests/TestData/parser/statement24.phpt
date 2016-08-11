@@ -1,6 +1,7 @@
 <?php
        
-list($a, $b) = 1;
+list($a, $b => $c) = 1; 
+[$a, $b => $c] = 1;
 
 
 ?>
@@ -8,27 +9,18 @@ list($a, $b) = 1;
 
 "GlobalCode":{
   "NamingContext":{},
-  "NewEx":{"IndirectTypeRef":{
-    "DirectVarUse":{"VarName":"x"}}
+  "ValueAssignEx":{"Operation":"AssignValue",
+    "ListEx":{
+      "Item":{"ValueExpr":{"DirectVarUse":{"VarName":"a"}}},
+      "Item":{"Index":{"DirectVarUse":{"VarName":"b"}},"ValueExpr":{"DirectVarUse":{"VarName":"c"}}}
+    },
+    "LongIntLiteral":{"Value":"1"}
   },
-  "NewEx":{"IndirectTypeRef":{
-    "ItemUse":{
-      "Array":{"DirectVarUse":{"VarName":"x"}}}
-    }
-  },
-  "NewEx":{"IndirectTypeRef":{
-    "ItemUse":{
-      "Array":{"DirectVarUse":{"VarName":"x"}},
-      "Index":{"LongIntLiteral":{"Value":"1"}}}
-    }
-  },
-  "NewEx":{"IndirectTypeRef":{
-    "DirectVarUse":{"VarName":"y","IsMemberOf":{"DirectVarUse":{"VarName":"x"}}}}
-  },
-  "NewEx":{"IndirectTypeRef":{
-    "DirectStFldUse":{"PropertyName":"y","DirectTypeRef":{"ClassName":"X"}}}
-  },
-  "NewEx":{"IndirectTypeRef":{
-    "DirectStFldUse":{"PropertyName":"y","IndirectTypeRef":{"DirectVarUse":{"VarName":"x"}}}}
+  "ValueAssignEx":{"Operation":"AssignValue",
+    "ArrayEx":{
+      "Item":{"ValueExpr":{"DirectVarUse":{"VarName":"a"}}},
+      "Item":{"Index":{"DirectVarUse":{"VarName":"b"}},"ValueExpr":{"DirectVarUse":{"VarName":"c"}}}
+    },
+    "LongIntLiteral":{"Value":"1"}
   }
 }

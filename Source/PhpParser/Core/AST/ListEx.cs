@@ -8,7 +8,7 @@ namespace PHP.Core.AST
 	/// <summary>
 	/// Represents a <c>list</c> construct.
 	/// </summary>
-	public sealed class ListEx : Expression
+	public sealed class ListEx : VarLikeConstructUse
 	{
         public override Operations Operation { get { return Operations.List; } }
 

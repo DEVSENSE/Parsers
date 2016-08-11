@@ -2925,10 +2925,10 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 { yyval.Object = value_stack.array[value_stack.top-1].yyval.Object; }
         return;
       case 398: // dereferencable_scalar -> T_ARRAY '(' array_pair_list ')' 
-{ yyval.Object = value_stack.array[value_stack.top-2].yyval.Object; }
+{ yyval.Object = _astFactory.NewArray(value_stack.array[value_stack.top-2].yypos, (List<Item>)value_stack.array[value_stack.top-2].yyval.Object); }
         return;
       case 399: // dereferencable_scalar -> '[' array_pair_list ']' 
-{ yyval.Object = value_stack.array[value_stack.top-2].yyval.Object; }
+{ yyval.Object = _astFactory.NewArray(value_stack.array[value_stack.top-2].yypos, (List<Item>)value_stack.array[value_stack.top-2].yyval.Object); }
         return;
       case 400: // dereferencable_scalar -> T_CONSTANT_ENCAPSED_STRING 
 { yyval.Object = _astFactory.Literal(yypos, value_stack.array[value_stack.top-1].yyval.Object); }

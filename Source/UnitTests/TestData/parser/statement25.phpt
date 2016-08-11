@@ -1,13 +1,13 @@
 <?php
        
-$array = array(
+$arr = [
     1 => "a",
     "hello",
     1.5 => &$x,
     &$x,
     true => list( 1 => "a" ),
     list( 1 => "a" ),
-);
+];
 
 
 ?>
@@ -15,27 +15,19 @@ $array = array(
 
 "GlobalCode":{
   "NamingContext":{},
-  "NewEx":{"IndirectTypeRef":{
-    "DirectVarUse":{"VarName":"x"}}
+  "ValueAssignEx":{"Operation":"AssignValue",
+  "DirectVarUse":{"VarName":"arr"},
+  "ArrayEx":{
+    "Item":{"Index":{"LongIntLiteral":{"Value":"1"}},"ValueExpr":{"StringLiteral":{"Value":"a"}}},
+    "Item":{"ValueExpr":{"StringLiteral":{"Value":"hello"}}},
+    "Item":{"Index":{"DoubleLiteral":{"Value":"1.5"}},"RefToGet":{"DirectVarUse":{"VarName":"x"}}},
+    "Item":{"RefToGet":{"DirectVarUse":{"VarName":"x"}}},
+    "Item":{"Index":{"GlobalConstUse":{"Name":"true"}},"ValueExpr":{
+      "ListEx":{
+        "Item":{"Index":{"LongIntLiteral":{"Value":"1"}},"ValueExpr":{"StringLiteral":{"Value":"a"}}}}
+      }
+    },
+    "Item":{"ValueExpr":{"ListEx":{"Item":{"Index":{"LongIntLiteral":{"Value":"1"}
   },
-  "NewEx":{"IndirectTypeRef":{
-    "ItemUse":{
-      "Array":{"DirectVarUse":{"VarName":"x"}}}
-    }
-  },
-  "NewEx":{"IndirectTypeRef":{
-    "ItemUse":{
-      "Array":{"DirectVarUse":{"VarName":"x"}},
-      "Index":{"LongIntLiteral":{"Value":"1"}}}
-    }
-  },
-  "NewEx":{"IndirectTypeRef":{
-    "DirectVarUse":{"VarName":"y","IsMemberOf":{"DirectVarUse":{"VarName":"x"}}}}
-  },
-  "NewEx":{"IndirectTypeRef":{
-    "DirectStFldUse":{"PropertyName":"y","DirectTypeRef":{"ClassName":"X"}}}
-  },
-  "NewEx":{"IndirectTypeRef":{
-    "DirectStFldUse":{"PropertyName":"y","IndirectTypeRef":{"DirectVarUse":{"VarName":"x"}}}}
-  }
+  "ValueExpr":{"StringLiteral":{"Value":"a"}}}}}}}}
 }

@@ -1151,8 +1151,8 @@ ctor_arguments:
 
 
 dereferencable_scalar:
-		T_ARRAY '(' array_pair_list ')'	{ $$ = $3; }
-	|	'[' array_pair_list ']'			{ $$ = $2; }
+		T_ARRAY '(' array_pair_list ')'	{ $$ = _astFactory.NewArray(@3, (List<Item>)$3); }
+	|	'[' array_pair_list ']'			{ $$ = _astFactory.NewArray(@2, (List<Item>)$2); }
 	|	T_CONSTANT_ENCAPSED_STRING		{ $$ = _astFactory.Literal(@$, $1); }
 ;
 

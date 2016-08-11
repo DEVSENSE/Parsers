@@ -59,9 +59,9 @@ namespace PhpParser
         public LangElement Assignment(Span span, LangElement target, LangElement value, Operations assignOp)
         {
             if (assignOp == Operations.AssignRef)
-                return new RefAssignEx(span, (VariableUse)target, (Expression)value);
+                return new RefAssignEx(span, (VarLikeConstructUse)target, (Expression)value);
             else
-                return new ValueAssignEx(span, assignOp, (VariableUse)target, (Expression)value);
+                return new ValueAssignEx(span, assignOp, (VarLikeConstructUse)target, (Expression)value);
         }
 
         public LangElement BinaryOperation(Span span, Operations operation, LangElement leftExpression, LangElement rightExpression)
