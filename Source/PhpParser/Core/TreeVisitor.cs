@@ -436,7 +436,7 @@ namespace PHP.Core.AST
         }
         virtual public void VisitClassConstUse(ClassConstUse x)
         {
-            VisitElement(x.TypeRef);
+            VisitElement(x.TargetType);
             VisitConstantUse(x);
         }
         virtual public void VisitPseudoClassConstUse(PseudoClassConstUse x)
@@ -601,7 +601,7 @@ namespace PHP.Core.AST
         /// <param name="x"></param>
         virtual public void VisitDirectStMtdCall(DirectStMtdCall x)
         {
-            VisitElement(x.TypeRef);            
+            VisitElement(x.TargetType);            
             VisitFunctionCall(x);
         }
 
@@ -611,18 +611,18 @@ namespace PHP.Core.AST
         /// <param name="x"></param>
         virtual public void VisitIndirectStMtdCall(IndirectStMtdCall x)
         {
-            VisitElement(x.TypeRef);            
+            VisitElement(x.TargetType);            
             VisitElement(x.MethodNameVar);
             VisitFunctionCall(x);
         }
         virtual public void VisitDirectStFldUse(DirectStFldUse x)
         {
-            VisitElement(x.TypeRef);
+            VisitElement(x.TargetType);
         }
         virtual public void VisitIndirectStFldUse(IndirectStFldUse x)
         {     
             VisitElement(x.FieldNameExpr);
-            VisitElement(x.TypeRef);       
+            VisitElement(x.TargetType);       
         }
 
         /// <summary>

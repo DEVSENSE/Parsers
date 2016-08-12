@@ -102,18 +102,16 @@ namespace PHP.Core.AST
 
 	public abstract class StaticMtdCall : FunctionCall
 	{
-        public GenericQualifiedName ClassName { get { return typeRef.GenericQualifiedName; } }
+        public TypeRef TargetType { get { return this.typeRef; } }
         protected readonly TypeRef/*!*/typeRef;
 
         /// <summary>
-        /// Position of <see cref="ClassName"/> in source code.
+        /// Position of <see cref="TargetType"/> in source code.
         /// </summary>
         public Text.Span ClassNamePosition { get { return this.typeRef.Span; } }
 
-        public TypeRef/*!*/ TypeRef { get { return this.typeRef; } }
-
-        public StaticMtdCall(Text.Span span, Text.Span methodNamePosition, GenericQualifiedName className, Text.Span classNamePosition, IList<ActualParam> parameters, IList<TypeRef> genericParams)
-            : this(span, methodNamePosition, DirectTypeRef.FromGenericQualifiedName(classNamePosition, className), parameters, genericParams)
+        internal StaticMtdCall(Text.Span span, Text.Span methodNamePosition, GenericQualifiedName className, Text.Span classNamePosition, IList<ActualParam> parameters, IList<TypeRef> genericParams)
+            : this(span, methodNamePosition, TypeRef.FromGenericQualifiedName(classNamePosition, className), parameters, genericParams)
 		{	
 		}
 
@@ -139,7 +137,7 @@ namespace PHP.Core.AST
 		
 		public DirectStMtdCall(Text.Span span, ClassConstUse/*!*/ classConstant,
             IList<ActualParam>/*!*/ parameters, IList<TypeRef>/*!*/ genericParams)
-			: base(span, classConstant.NamePosition, classConstant.TypeRef, parameters, genericParams)
+			: base(span, classConstant.NamePosition, classConstant.TargetType, parameters, genericParams)
 		{
 			this.methodName = new Name(classConstant.Name.Value);
 		}

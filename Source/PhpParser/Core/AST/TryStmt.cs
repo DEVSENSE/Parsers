@@ -70,22 +70,18 @@ namespace PHP.Core.AST
 
         /// <summary>
         /// A variable where an exception is assigned in.
+        /// Cannot be <c>null</c>.
         /// </summary>
         private readonly DirectVarUse/*!*/ variable;
         /// <summary>A variable where an exception is assigned in.</summary>
         public DirectVarUse/*!*/ Variable { get { return variable; } }
 
         /// <summary>
-        /// An index of type identifier.
+        /// Optional. Catch variable type reference.
+        /// Can be multiple type reference.
         /// </summary>
+        public TypeRef TargetType { get { return this.tref; } }
         private TypeRef tref;
-        /// <summary>An index of type identifier.</summary>
-        public QualifiedName ClassName { get { return tref.QualifiedName; } }
-
-        /// <summary>
-        /// Position of <see cref="TypeRef"/>.
-        /// </summary>
-        public Text.Span ClassNameSpan { get { return tref.Span; } }
 
         /// <summary>
         /// Catch type reference.

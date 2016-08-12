@@ -261,7 +261,7 @@ namespace PhpParser
         override public void VisitDirectStMtdCall(DirectStMtdCall x)
         {
             _serializer.StartSerialize(typeof(DirectStMtdCall).Name, SerializeSpan(x.Span),
-                new NodeObj("ClassName", x.ClassName.QualifiedName.ToString()),
+                new NodeObj("ClassName", x.TargetType.QualifiedName.ToString()),
                 new NodeObj("MethodName", x.MethodName.Value));
             base.VisitDirectStMtdCall(x);
             _serializer.EndSerialize();
@@ -482,7 +482,7 @@ namespace PhpParser
         override public void VisitDirectTypeRef(DirectTypeRef x)
         {
             _serializer.StartSerialize(typeof(DirectTypeRef).Name, SerializeSpan(x.Span), 
-                new NodeObj("ClassName", x.ClassName.ToString()));
+                new NodeObj("ClassName", x.QualifiedName.ToString()));
             _serializer.EndSerialize();
         }
         override public void VisitIndirectTypeRef(IndirectTypeRef x)
