@@ -137,7 +137,7 @@ namespace PHP.Core.AST
         {
             this.qualifiedName = qualifiedName;
             this.namedParameters = namedParameters;
-            this.callSignature = new CallSignature(parameters, TypeRef.EmptyList);
+            this.callSignature = new CallSignature(parameters, GenericTypeRef.EmptyList);
         }
 
         /// <summary>

@@ -644,24 +644,6 @@ namespace PhpParser.Parser
             return 0;
         }
 
-        private object zend_lex_tstring(params object[] abc)
-        {
-            // TODO implement
-            return 0;
-        }
-
-        private object zend_ast_get_str(params object[] abc)
-        {
-            // TODO implement
-            return 0;
-        }
-
-        private object zend_ast_create_zval(params object[] abc)
-        {
-            // TODO implement
-            return 0;
-        }
-
         long zend_lineno = 0; // TODO implement
     }
 }

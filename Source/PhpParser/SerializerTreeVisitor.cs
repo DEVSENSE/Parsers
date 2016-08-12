@@ -483,13 +483,6 @@ namespace PhpParser
         {
             _serializer.StartSerialize(typeof(DirectTypeRef).Name, SerializeSpan(x.Span), 
                 new NodeObj("ClassName", x.ClassName.ToString()));
-            if (x.GenericParams != null && x.GenericParams.Count > 0)
-            {
-                _serializer.StartSerialize("GenericParams");
-                foreach (var param in x.GenericParams)
-                    VisitElement(param);
-                _serializer.EndSerialize();
-            }
             _serializer.EndSerialize();
         }
         override public void VisitIndirectTypeRef(IndirectTypeRef x)
@@ -515,6 +508,19 @@ namespace PhpParser
         {
             _serializer.StartSerialize(typeof(MultipleTypeRef).Name, SerializeSpan(x.Span));
             base.VisitMultipleTypeRef(x);
+            _serializer.EndSerialize();
+        }
+        override public void VisitGenericTypeRef(GenericTypeRef x)
+        {
+            _serializer.StartSerialize(typeof(GenericTypeRef).Name, SerializeSpan(x.Span));
+            SerializeOptionalProperty("TargetType", x.TargetType);
+            if (x.GenericParams != null && x.GenericParams.Count > 0)
+            {
+                _serializer.StartSerialize("GenericParams");
+                foreach (var param in x.GenericParams)
+                    VisitElement(param);
+                _serializer.EndSerialize();
+            }
             _serializer.EndSerialize();
         }
         override public void VisitGotoStmt(GotoStmt x)

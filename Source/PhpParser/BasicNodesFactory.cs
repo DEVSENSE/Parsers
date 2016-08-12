@@ -451,22 +451,31 @@ namespace PhpParser
                 className == QualifiedName.Null || className == QualifiedName.Resource)
                 type = new PrimitiveTypeRef(span, new PrimitiveTypeName(className));
             else
-                type = new DirectTypeRef(span, className, genericParamsOpt ?? TypeRef.EmptyList);
+                type = new DirectTypeRef(span, className);
             if (isNullable)
                 type = new NullableTypeRef(span, type);
+            if (genericParamsOpt != null && genericParamsOpt != GenericTypeRef.EmptyList)
+                type = new GenericTypeRef(span, type, genericParamsOpt);
             return type;
         }
         public LangElement TypeReference(Span span, LangElement varName, List<TypeRef> genericParamsOpt)
         {
-            return new IndirectTypeRef(span, (VariableUse)varName, genericParamsOpt ?? TypeRef.EmptyList);
+            TypeRef type = new IndirectTypeRef(span, (VariableUse)varName);
+            if (genericParamsOpt != null && genericParamsOpt != GenericTypeRef.EmptyList)
+                type = new GenericTypeRef(span, type, genericParamsOpt);
+            return type;
         }
         public LangElement TypeReference(Span span, IEnumerable<QualifiedName> classNames, List<TypeRef> genericParamsOpt)
         {
             Debug.Assert(classNames != null && classNames.Count() > 0);
             if (classNames.Count() == 1)
-                return TypeReference(span, classNames.First(), false, genericParamsOpt ?? TypeRef.EmptyList);
-            else
-                return new MultipleTypeRef(span, classNames.Select(q => (TypeRef)TypeReference(span, q, false, null)).ToList());
+                return TypeReference(span, classNames.First(), false, genericParamsOpt ?? GenericTypeRef.EmptyList);
+
+            TypeRef type = null;
+            type = new MultipleTypeRef(span, classNames.Select(q => (TypeRef)TypeReference(span, q, false, null)).ToList());
+            if (genericParamsOpt != null && genericParamsOpt != GenericTypeRef.EmptyList)
+                type = new GenericTypeRef(span, type, genericParamsOpt);
+            return type;
         }
 
         public LangElement While(Span span, LangElement cond, LangElement body)

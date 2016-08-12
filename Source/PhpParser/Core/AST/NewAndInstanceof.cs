@@ -31,7 +31,7 @@ namespace PHP.Core.AST
 		{
 			Debug.Assert(classNameRef != null && parameters != null);
 			this.classNameRef = classNameRef;
-			this.callSignature = new CallSignature(parameters, TypeRef.EmptyList);
+			this.callSignature = new CallSignature(parameters, GenericTypeRef.EmptyList);
 		}
 
 		/// <summary>

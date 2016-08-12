@@ -3143,7 +3143,7 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 { yyval.Object = AddToList<LangElement>(value_stack.array[value_stack.top-2].yyval.Object, value_stack.array[value_stack.top-1].yyval.Object); }
         return;
       case 469: // encaps_list -> encaps_list T_ENCAPSED_AND_WHITESPACE 
-{ yyval.Object = AddToList<LangElement>(value_stack.array[value_stack.top-2].yyval.Object, value_stack.array[value_stack.top-1].yyval.Object); }
+{ yyval.Object = AddToList<LangElement>(value_stack.array[value_stack.top-2].yyval.Object, _astFactory.Literal(value_stack.array[value_stack.top-1].yypos, value_stack.array[value_stack.top-1].yyval.Object)); }
         return;
       case 470: // encaps_list -> encaps_var 
 { yyval.Object = new List<LangElement>() { _astFactory.Variable(yypos, new VariableName((string)value_stack.array[value_stack.top-1].yyval.Object), (LangElement)null) }; }
@@ -3155,34 +3155,33 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 { _astFactory.Variable(yypos, new VariableName((string)value_stack.array[value_stack.top-1].yyval.Object), (LangElement)null); }
         return;
       case 473: // encaps_var -> T_VARIABLE '[' encaps_var_offset ']' 
-{ yyval.Object = zend_ast_create(_zend_ast_kind.ZEND_AST_DIM,
-			      zend_ast_create(_zend_ast_kind.ZEND_AST_VAR, value_stack.array[value_stack.top-4].yyval.Object), value_stack.array[value_stack.top-2].yyval.Object); }
+{ yyval.Object = _astFactory.ArrayItem(yypos, 
+					_astFactory.Variable(value_stack.array[value_stack.top-4].yypos, new VariableName((string)value_stack.array[value_stack.top-4].yyval.Object), (LangElement)null), (LangElement)value_stack.array[value_stack.top-2].yyval.Object); }
         return;
       case 474: // encaps_var -> T_VARIABLE T_OBJECT_OPERATOR T_STRING 
-{ yyval.Object = zend_ast_create(_zend_ast_kind.ZEND_AST_PROP,
-			      zend_ast_create(_zend_ast_kind.ZEND_AST_VAR, value_stack.array[value_stack.top-3].yyval.Object), value_stack.array[value_stack.top-1].yyval.Object); }
+{ yyval.Object = CreateProperty(yypos, _astFactory.Variable(value_stack.array[value_stack.top-3].yypos, new VariableName((string)value_stack.array[value_stack.top-3].yyval.Object), (LangElement)null), new Name((string)value_stack.array[value_stack.top-1].yyval.Object)); }
         return;
       case 475: // encaps_var -> T_DOLLAR_OPEN_CURLY_BRACES expr '}' 
-{ yyval.Object = zend_ast_create(_zend_ast_kind.ZEND_AST_VAR, value_stack.array[value_stack.top-2].yyval.Object); }
+{ yyval.Object = _astFactory.Variable(yypos, (LangElement)value_stack.array[value_stack.top-2].yyval.Object, (LangElement)null); }
         return;
       case 476: // encaps_var -> T_DOLLAR_OPEN_CURLY_BRACES T_STRING_VARNAME '}' 
-{ yyval.Object = zend_ast_create(_zend_ast_kind.ZEND_AST_VAR, value_stack.array[value_stack.top-2].yyval.Object); }
+{ yyval.Object = _astFactory.Variable(yypos, new VariableName((string)value_stack.array[value_stack.top-2].yyval.Object), (LangElement)null); }
         return;
       case 477: // encaps_var -> T_DOLLAR_OPEN_CURLY_BRACES T_STRING_VARNAME '[' expr ']' '}' 
-{ yyval.Object = zend_ast_create(_zend_ast_kind.ZEND_AST_DIM,
-			      zend_ast_create(_zend_ast_kind.ZEND_AST_VAR, value_stack.array[value_stack.top-5].yyval.Object), value_stack.array[value_stack.top-3].yyval.Object); }
+{ yyval.Object = _astFactory.ArrayItem(yypos, 
+					_astFactory.Variable(yypos, new VariableName((string)value_stack.array[value_stack.top-5].yyval.Object), (LangElement)null), (LangElement)value_stack.array[value_stack.top-3].yyval.Object); }
         return;
       case 478: // encaps_var -> T_CURLY_OPEN variable '}' 
 { yyval.Object = value_stack.array[value_stack.top-2].yyval.Object; }
         return;
       case 479: // encaps_var_offset -> T_STRING 
-{ yyval.Object = value_stack.array[value_stack.top-1].yyval.Object; }
+{ yyval.Object = _astFactory.Literal(value_stack.array[value_stack.top-1].yypos, value_stack.array[value_stack.top-1].yyval.Object); }
         return;
       case 480: // encaps_var_offset -> T_NUM_STRING 
-{ yyval.Object = value_stack.array[value_stack.top-1].yyval.Double; }
+{ yyval.Object = _astFactory.Literal(value_stack.array[value_stack.top-1].yypos, value_stack.array[value_stack.top-1].yyval.Double); }
         return;
       case 481: // encaps_var_offset -> T_VARIABLE 
-{ yyval.Object = zend_ast_create(_zend_ast_kind.ZEND_AST_VAR, value_stack.array[value_stack.top-1].yyval.Object); }
+{ _astFactory.Variable(yypos, new VariableName((string)value_stack.array[value_stack.top-1].yyval.Object), (LangElement)null); }
         return;
       case 482: // internal_functions_in_yacc -> T_ISSET '(' isset_variables ')' 
 { yyval.Object = value_stack.array[value_stack.top-2].yyval.Object; }
@@ -3206,13 +3205,13 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 { yyval.Object = zend_ast_create_ex(_zend_ast_kind.ZEND_AST_INCLUDE_OR_EVAL, _zend_sup.ZEND_REQUIRE_ONCE, value_stack.array[value_stack.top-1].yyval.Object); }
         return;
       case 489: // isset_variables -> isset_variable 
-{ yyval.Object = value_stack.array[value_stack.top-1].yyval.Object; }
+{ yyval.Object = new List<LangElement>() { (LangElement)value_stack.array[value_stack.top-1].yyval.Object }; }
         return;
       case 490: // isset_variables -> isset_variables ',' isset_variable 
-{ yyval.Object = zend_ast_create(_zend_ast_kind.ZEND_AST_AND, value_stack.array[value_stack.top-3].yyval.Object, value_stack.array[value_stack.top-1].yyval.Object); }
+{ yyval.Object = AddToList<LangElement>(value_stack.array[value_stack.top-3].yyval.Object, value_stack.array[value_stack.top-1].yyval.Object); }
         return;
       case 491: // isset_variable -> expr 
-{ yyval.Object = zend_ast_create(_zend_ast_kind.ZEND_AST_ISSET, value_stack.array[value_stack.top-1].yyval.Object); }
+{ yyval.Object = _astFactory.Variable(yypos, (LangElement)value_stack.array[value_stack.top-1].yyval.Object, (LangElement)null); }
         return;
     }
   }

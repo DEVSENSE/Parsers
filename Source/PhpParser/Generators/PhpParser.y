@@ -1314,7 +1314,7 @@ encaps_list:
 		encaps_list encaps_var
 			{ $$ = AddToList<LangElement>($1, $2); }
 	|	encaps_list T_ENCAPSED_AND_WHITESPACE
-			{ $$ = AddToList<LangElement>($1, $2); }
+			{ $$ = AddToList<LangElement>($1, _astFactory.Literal(@2, $2)); }
 	|	encaps_var
 			{ $$ = new List<LangElement>() { _astFactory.Variable(@$, new VariableName((string)$1), (LangElement)null) }; }
 	|	T_ENCAPSED_AND_WHITESPACE encaps_var
@@ -1325,25 +1325,24 @@ encaps_var:
 		T_VARIABLE
 			{ _astFactory.Variable(@$, new VariableName((string)$1), (LangElement)null); }
 	|	T_VARIABLE '[' encaps_var_offset ']'
-			{ $$ = zend_ast_create(_zend_ast_kind.ZEND_AST_DIM,
-			      zend_ast_create(_zend_ast_kind.ZEND_AST_VAR, $1), $3); }
+			{ $$ = _astFactory.ArrayItem(@$, 
+					_astFactory.Variable(@1, new VariableName((string)$1), (LangElement)null), (LangElement)$3); }
 	|	T_VARIABLE T_OBJECT_OPERATOR T_STRING
-			{ $$ = zend_ast_create(_zend_ast_kind.ZEND_AST_PROP,
-			      zend_ast_create(_zend_ast_kind.ZEND_AST_VAR, $1), $3); }
+			{ $$ = CreateProperty(@$, _astFactory.Variable(@1, new VariableName((string)$1), (LangElement)null), new Name((string)$3)); }
 	|	T_DOLLAR_OPEN_CURLY_BRACES expr '}'
-			{ $$ = zend_ast_create(_zend_ast_kind.ZEND_AST_VAR, $2); }
+			{ $$ = _astFactory.Variable(@$, (LangElement)$2, (LangElement)null); }
 	|	T_DOLLAR_OPEN_CURLY_BRACES T_STRING_VARNAME '}'
-			{ $$ = zend_ast_create(_zend_ast_kind.ZEND_AST_VAR, $2); }
+			{ $$ = _astFactory.Variable(@$, new VariableName((string)$2), (LangElement)null); }
 	|	T_DOLLAR_OPEN_CURLY_BRACES T_STRING_VARNAME '[' expr ']' '}'
-			{ $$ = zend_ast_create(_zend_ast_kind.ZEND_AST_DIM,
-			      zend_ast_create(_zend_ast_kind.ZEND_AST_VAR, $2), $4); }
+			{ $$ = _astFactory.ArrayItem(@$, 
+					_astFactory.Variable(@$, new VariableName((string)$2), (LangElement)null), (LangElement)$4); }
 	|	T_CURLY_OPEN variable '}' { $$ = $2; }
 ;
 
 encaps_var_offset:
-		T_STRING		{ $$ = $1; }
-	|	T_NUM_STRING	{ $$ = $1; }
-	|	T_VARIABLE		{ $$ = zend_ast_create(_zend_ast_kind.ZEND_AST_VAR, $1); }
+		T_STRING		{ $$ = _astFactory.Literal(@1, $1); }
+	|	T_NUM_STRING	{ $$ = _astFactory.Literal(@1, $1); }
+	|	T_VARIABLE		{ _astFactory.Variable(@$, new VariableName((string)$1), (LangElement)null); }
 ;
 
 
@@ -1363,13 +1362,12 @@ internal_functions_in_yacc:
 ;
 
 isset_variables:
-		isset_variable { $$ = $1; }
-	|	isset_variables ',' isset_variable
-			{ $$ = zend_ast_create(_zend_ast_kind.ZEND_AST_AND, $1, $3); }
+		isset_variable { $$ = new List<LangElement>() { (LangElement)$1 }; }
+	|	isset_variables ',' isset_variable { $$ = AddToList<LangElement>($1, $3); }
 ;
 
 isset_variable:
-		expr { $$ = zend_ast_create(_zend_ast_kind.ZEND_AST_ISSET, $1); }
+		expr { $$ = _astFactory.Variable(@$, (LangElement)$1, (LangElement)null); }
 ;
 
 %%

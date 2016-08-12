@@ -9,107 +9,78 @@ using PHP.Core.Text;
 
 namespace PHP.Core.AST
 {
-	#region TypeRef
+    #region TypeRef
 
-	/// <summary>
-	/// Represents a use of a class name.
-	/// </summary>
-	public abstract class TypeRef : LangElement
-	{
-        /// <summary>
-        /// Immutable empty list of <see cref="TypeRef"/>.
-        /// </summary>
-		internal static readonly List<TypeRef>/*!*/ EmptyList = new List<TypeRef>();
-
-        /// <summary>
-        /// List of generic parameters.
-        /// </summary>
-        public List<TypeRef>/*!*/ GenericParams
+    /// <summary>
+    /// Represents a use of a class name.
+    /// </summary>
+    public abstract class TypeRef : LangElement
+    {
+        virtual public GenericQualifiedName GenericQualifiedName
         {
             get
             {
-                return this.Properties[GenericParamsPropertyKey] as List<TypeRef> ?? TypeRef.EmptyList;
-            }
-            private set
-            {
-                if (value != null && value.Count > 0)
-                    this.Properties[GenericParamsPropertyKey] = value;
-                else
-                    this.Properties.RemoveProperty(GenericParamsPropertyKey);
-            }
-        }
-        
-        /// <summary>
-        /// Key to property collection to get/store generic parameters list.
-        /// </summary>
-        private const string GenericParamsPropertyKey = "GenericParams";
-
-        public GenericQualifiedName GenericQualifiedName
-        {
-            get
-            {
-                return new GenericQualifiedName(this.QualifiedName, ToStaticTypeRefs(this.GenericParams, null, null));
+                return new GenericQualifiedName(this.QualifiedName);
             }
         }
 
         internal abstract QualifiedName QualifiedName { get; }
 
-        public TypeRef(Text.Span span, List<TypeRef> genericParams)
-			: base(span)
-		{
-			this.GenericParams = genericParams;
-		}
+        public TypeRef(Text.Span span)
+            : base(span)
+        {
+        }
 
         /// <summary>
 		/// Gets the static type reference or <B>null</B> if the reference cannot be resolved at compile time.
 		/// </summary>
 		internal abstract object ToStaticTypeRef(IErrorSink<Span> errors, SourceUnit sourceUnit);
 
-		internal static object[]/*!!*/ ToStaticTypeRefs(List<TypeRef>/*!*/ typeRefs, IErrorSink<Span> errors, SourceUnit sourceUnit)
-		{
+        internal static object[]/*!!*/ ToStaticTypeRefs(List<TypeRef>/*!*/ typeRefs, IErrorSink<Span> errors, SourceUnit sourceUnit)
+        {
             if (typeRefs == null || typeRefs.Count == 0)
                 return ArrayUtils.EmptyObjects;
 
-			object[] result = new object[typeRefs.Count];
+            object[] result = new object[typeRefs.Count];
 
-			for (int i = 0; i < typeRefs.Count; i++)
-			{
+            for (int i = 0; i < typeRefs.Count; i++)
+            {
                 if ((result[i] = typeRefs[i].ToStaticTypeRef(errors, sourceUnit)) == null)
-				{
-					if (errors != null)
+                {
+                    if (errors != null)
                         errors.Error(typeRefs[i].Span, Errors.GenericParameterMustBeType);
 
-					result[i] = new PrimitiveTypeName(QualifiedName.Object);
-				}
-			}
+                    result[i] = new PrimitiveTypeName(QualifiedName.Object);
+                }
+            }
 
-			return result;
-		}
-	}
+            return result;
+        }
+    }
 
-	#endregion
+    #endregion
 
-	#region PrimitiveTypeRef
+    #region PrimitiveTypeRef
 
-	/// <summary>
-	/// Primitive type reference.
-	/// </summary>
-	public sealed class PrimitiveTypeRef : TypeRef
-	{
+    /// <summary>
+    /// Primitive type reference.
+    /// </summary>
+    public sealed class PrimitiveTypeRef : TypeRef
+    {
         private PrimitiveTypeName typeName;
 
-		public PrimitiveTypeRef(Text.Span span, PrimitiveTypeName name)
-			: base(span, null)
-		{
+        public PrimitiveTypeRef(Text.Span span, PrimitiveTypeName name)
+            : base(span)
+        {
             this.typeName = name;
-		}
+        }
 
-		internal override object ToStaticTypeRef(IErrorSink<Span> errors, SourceUnit sourceUnit)
-		{
-			return typeName;
-		}
+        internal override object ToStaticTypeRef(IErrorSink<Span> errors, SourceUnit sourceUnit)
+        {
+            return typeName;
+        }
 
-		/// <summary>
+        /// <summary>
         /// Call the right Visit* method on the given Visitor object.
         /// </summary>
         /// <param name="visitor">Visitor to be called.</param>
@@ -122,44 +93,42 @@ namespace PHP.Core.AST
         {
             get { return this.typeName.QualifiedName; }
         }
-	}
+    }
 
-	#endregion
+    #endregion
 
-	#region DirectTypeRef
+    #region DirectTypeRef
 
-	/// <summary>
-	/// Direct use of class name.
-	/// </summary>
+    /// <summary>
+    /// Direct use of class name.
+    /// </summary>
     public sealed class DirectTypeRef : TypeRef
-	{
-		public QualifiedName ClassName { get { return className; } }
-		private QualifiedName className;
+    {
+        public QualifiedName ClassName { get { return className; } }
+        private QualifiedName className;
 
-		internal override QualifiedName QualifiedName
+        internal override QualifiedName QualifiedName
         {
             get { return this.ClassName; }
         }
 
         internal override object ToStaticTypeRef(IErrorSink<Span> errors, SourceUnit/*!*/ sourceUnit)
-		{
-			return new GenericQualifiedName(className, TypeRef.ToStaticTypeRefs(GenericParams, errors, sourceUnit));
-		}
-
-        public DirectTypeRef(Text.Span span, QualifiedName className, List<TypeRef>/*!*/ genericParams)
-			: base(span, genericParams)
-		{
-            Debug.Assert(genericParams != null);
-			this.className = className;
-		}
-
-        internal static DirectTypeRef/*!*/FromGenericQualifiedName(Text.Span span, GenericQualifiedName genericQualifiedName)
         {
-            List<TypeRef> genericParams;
+            return new GenericQualifiedName(className);
+        }
 
+        public DirectTypeRef(Text.Span span, QualifiedName className)
+            : base(span)
+        {
+            this.className = className;
+        }
+
+        internal static TypeRef/*!*/FromGenericQualifiedName(Text.Span span, GenericQualifiedName genericQualifiedName)
+        {
+            
             if (genericQualifiedName.IsGeneric)
             {
-                genericParams = new List<TypeRef>(genericQualifiedName.GenericParams.Length);
+                List<TypeRef> genericParams = new List<TypeRef>(genericQualifiedName.GenericParams.Length);
                 foreach (var obj in genericQualifiedName.GenericParams)
                 {
                     TypeRef objtype;
@@ -169,19 +138,18 @@ namespace PHP.Core.AST
 
                     genericParams.Add(objtype);
                 }
+                return new GenericTypeRef(span, new DirectTypeRef(span, genericQualifiedName.QualifiedName), genericParams);
             }
             else
             {
                 //if (genericQualifiedName.QualifiedName.IsPrimitiveTypeName)
                 //    return new PrimitiveTypeRef(position, new PrimitiveTypeName(genericQualifiedName.QualifiedName));
-
-                genericParams = TypeRef.EmptyList;
             }
 
-            return new DirectTypeRef(span, genericQualifiedName.QualifiedName, genericParams.ToList());
+            return new DirectTypeRef(span, genericQualifiedName.QualifiedName);
         }
 
-		/// <summary>
+        /// <summary>
         /// Call the right Visit* method on the given Visitor object.
         /// </summary>
         /// <param name="visitor">Visitor to be called.</param>
@@ -203,18 +171,18 @@ namespace PHP.Core.AST
         {
             return this.QualifiedName.GetHashCode();
         }
-	}
+    }
 
-	#endregion
+    #endregion
 
-	#region IndirectTypeRef
+    #region IndirectTypeRef
 
-	/// <summary>
-	/// Indirect use of class name (through variable).
-	/// </summary>
+    /// <summary>
+    /// Indirect use of class name (through variable).
+    /// </summary>
     public sealed class IndirectTypeRef : TypeRef
-	{
-		/// <summary>
+    {
+        /// <summary>
         /// <see cref="VariableUse"/> which value in runtime contains the name of the type.
         /// </summary>
         public VariableUse/*!*/ ClassNameVar { get { return this.classNameVar; } }
@@ -225,20 +193,20 @@ namespace PHP.Core.AST
             get { return new QualifiedName(Name.EmptyBaseName); }
         }
 
-		public IndirectTypeRef(Text.Span span, VariableUse/*!*/ classNameVar, List<TypeRef>/*!*/ genericParams)
-			: base(span, genericParams)
-		{
-			Debug.Assert(classNameVar != null && genericParams != null);
+        public IndirectTypeRef(Text.Span span, VariableUse/*!*/ classNameVar)
+            : base(span)
+        {
+            Debug.Assert(classNameVar != null);
 
-			this.classNameVar = classNameVar;
-		}
+            this.classNameVar = classNameVar;
+        }
 
         internal override object ToStaticTypeRef(IErrorSink<Span> errors, SourceUnit sourceUnit)
-		{
-			return null;
-		}
+        {
+            return null;
+        }
 
-		/// <summary>
+        /// <summary>
         /// Call the right Visit* method on the given Visitor object.
         /// </summary>
         /// <param name="visitor">Visitor to be called.</param>
@@ -246,7 +214,7 @@ namespace PHP.Core.AST
         {
             visitor.VisitIndirectTypeRef(this);
         }
-	}
+    }
 
     #endregion
 
@@ -269,7 +237,7 @@ namespace PHP.Core.AST
         }
 
         public NullableTypeRef(Text.Span span, TypeRef/*!*/ targetType)
-            : base(span, TypeRef.EmptyList)
+            : base(span)
         {
             Debug.Assert(targetType != null);
 
@@ -301,7 +269,7 @@ namespace PHP.Core.AST
     public sealed class MultipleTypeRef : TypeRef
     {
         /// <summary>
-        /// <see cref="VariableUse"/> which value in runtime contains the name of the type.
+        /// List of types represented by this reference.
         /// </summary>
         public IList<TypeRef>/*!*/ MultipleTypes { get { return this.multipleTypes; } }
         private readonly IList<TypeRef>/*!*/ multipleTypes;
@@ -312,7 +280,7 @@ namespace PHP.Core.AST
         }
 
         public MultipleTypeRef(Text.Span span, IList<TypeRef>/*!*/ multipleTypes)
-            : base(span, TypeRef.EmptyList)
+            : base(span)
         {
             Debug.Assert(multipleTypes != null);
 
@@ -331,6 +299,85 @@ namespace PHP.Core.AST
         public override void VisitMe(TreeVisitor visitor)
         {
             visitor.VisitMultipleTypeRef(this);
+        }
+    }
+
+    #endregion
+
+    #region GenericTypeRef
+
+    /// <summary>
+    /// Indirect use of class name (through variable).
+    /// </summary>
+    public sealed class GenericTypeRef : TypeRef
+    {
+        /// <summary>
+        /// Immutable empty list of <see cref="TypeRef"/>.
+        /// </summary>
+		internal static readonly List<TypeRef>/*!*/ EmptyList = new List<TypeRef>();
+
+        /// <summary>
+        /// Key to property collection to get/store generic parameters list.
+        /// </summary>
+        private const string GenericParamsPropertyKey = "GenericParams";
+
+        /// <summary>
+        /// List of generic parameters.
+        /// </summary>
+        public List<TypeRef>/*!*/ GenericParams
+        {
+            get
+            {
+                return this.Properties[GenericParamsPropertyKey] as List<TypeRef> ?? GenericTypeRef.EmptyList;
+            }
+            private set
+            {
+                if (value != null && value.Count > 0)
+                    this.Properties[GenericParamsPropertyKey] = value;
+                else
+                    this.Properties.RemoveProperty(GenericParamsPropertyKey);
+            }
+        }
+
+        /// <summary>
+        /// List of types represented by this reference.
+        /// </summary>
+        public TypeRef TargetType { get { return this.targetType; } }
+        private readonly TypeRef targetType;
+
+        internal override QualifiedName QualifiedName
+        {
+            get { return targetType.QualifiedName; }
+        }
+        override public GenericQualifiedName GenericQualifiedName
+        {
+            get
+            {
+                return new GenericQualifiedName(this.QualifiedName, ToStaticTypeRefs(this.GenericParams, null, null));
+            }
+        }
+
+        public GenericTypeRef(Text.Span span, TypeRef targetType, List<TypeRef> genericParams)
+            : base(span)
+        {
+            Debug.Assert(targetType != null && genericParams != null);
+
+            this.GenericParams = genericParams;
+            this.targetType = targetType;
+        }
+
+        internal override object ToStaticTypeRef(IErrorSink<Span> errors, SourceUnit sourceUnit)
+        {
+            return null;
+        }
+
+        /// <summary>
+        /// Call the right Visit* method on the given Visitor object.
+        /// </summary>
+        /// <param name="visitor">Visitor to be called.</param>
+        public override void VisitMe(TreeVisitor visitor)
+        {
+            visitor.VisitGenericTypeRef(this);
         }
     }
 

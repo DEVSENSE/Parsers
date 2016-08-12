@@ -920,6 +920,10 @@ namespace PHP.Core.AST
             foreach (TypeRef p in x.MultipleTypes)
                 VisitElement(p);
         }
+        virtual public void VisitGenericTypeRef(GenericTypeRef x)
+        {
+            // nothing
+        }
 
         virtual public void VisitPHPDocStmt(PHPDocStmt x) { }
 
