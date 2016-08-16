@@ -68,28 +68,18 @@ namespace PHP.Core.AST
 		public override Operations Operation { get { return Operations.ClassConstUse; } }
 
         /// <summary>
-        /// Class name. May have an empty <see cref="Name"/> if the class is referenced indirectly.
-        /// </summary>
-        public GenericQualifiedName ClassName { get { return this.typeRef.GenericQualifiedName; } }
-
-        /// <summary>
         /// Class type reference.
         /// </summary>
-        public TypeRef/*!*/TypeRef { get { return this.typeRef; } }
-        private readonly TypeRef/*!*/typeRef;
-        
-		public VariableName Name { get { return name; } }
-		private readonly VariableName name;
+        public TypeRef/*!*/TargetType { get { return this.targetType; } }
+        private readonly TypeRef/*!*/targetType;
+
+        public VariableName Name => name.Name;
+        private readonly VariableNode name;
 
         /// <summary>
         /// Position of <see cref="Name"/> part of the constant use.
         /// </summary>
-        public Text.Span NamePosition { get; private set; }
-
-        public ClassConstUse(Text.Span span, GenericQualifiedName className, Text.Span classNamePosition, string/*!*/ name, Text.Span namePosition)
-            : this(span, DirectTypeRef.FromGenericQualifiedName(classNamePosition, className), name, namePosition)
-		{
-		}
+        public Text.Span NamePosition => name.Span;
 
         public ClassConstUse(Text.Span span, TypeRef/*!*/typeRef, string/*!*/ name, Text.Span namePosition)
             : base(span)
@@ -97,9 +87,8 @@ namespace PHP.Core.AST
             Debug.Assert(typeRef != null);
             Debug.Assert(!string.IsNullOrEmpty(name));
 
-            this.typeRef = typeRef;
-			this.name = new VariableName(name);
-            this.NamePosition = namePosition;
+            this.targetType = typeRef;
+			this.name = new VariableNode(namePosition, name);
         }
 
 		/// <summary>
@@ -129,7 +118,7 @@ namespace PHP.Core.AST
         public Types Type { get { return consttype; } }
         private Types consttype;
 
-        public PseudoClassConstUse(Text.Span span, GenericQualifiedName className, Text.Span classNamePosition, Types type, Text.Span namePosition)
+        internal PseudoClassConstUse(Text.Span span, GenericQualifiedName className, Text.Span classNamePosition, Types type, Text.Span namePosition)
             : this(span, DirectTypeRef.FromGenericQualifiedName(classNamePosition, className), type, namePosition)
 		{
 		}

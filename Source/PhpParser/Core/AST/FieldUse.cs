@@ -3,6 +3,7 @@ using System.IO;
 using System.Diagnostics;
 using System.Reflection.Emit;
 using PHP.Syntax;
+using PHP.Core.Text;
 
 namespace PHP.Core.AST
 {
@@ -13,30 +14,23 @@ namespace PHP.Core.AST
     /// </summary>
     public abstract class StaticFieldUse : VariableUse
     {
-        /// <summary>Name of type which's field is being accessed</summary>
-        public GenericQualifiedName TypeName { get { return typeRef.GenericQualifiedName; } }
-
-        /// <summary>Position of <see cref="TypeName"/>.</summary>
-        public Text.Span TypeNameSpan { get { return this.typeRef.Span; } }
-
         /// <summary>Position of the field name.</summary>
-        public Text.Span NameSpan { get; private set; }
+        public abstract Text.Span NameSpan { get; }
 
-        public TypeRef TypeRef { get { return typeRef; } }
-        protected TypeRef typeRef;
+        public TypeRef TargetType { get { return targetType; } }
+        protected TypeRef targetType;
 
-        public StaticFieldUse(Text.Span span, Text.Span nameSpan, GenericQualifiedName typeName, Text.Span typeNamePosition)
-            : this(span, nameSpan, DirectTypeRef.FromGenericQualifiedName(typeNamePosition, typeName))
+        internal StaticFieldUse(Span span, GenericQualifiedName typeName, Span typeNamePosition)
+            : this(span, TypeRef.FromGenericQualifiedName(typeNamePosition, typeName))
         {
         }
 
-        public StaticFieldUse(Text.Span span, Text.Span nameSpan, TypeRef typeRef)
+        public StaticFieldUse(Span span, TypeRef typeRef)
             : base(span)
         {
             Debug.Assert(typeRef != null);
 
-            this.typeRef = typeRef;
-            this.NameSpan = nameSpan;
+            this.targetType = typeRef;
         }
     }
 
@@ -51,18 +45,24 @@ namespace PHP.Core.AST
     {
         public override Operations Operation { get { return Operations.DirectStaticFieldUse; } }
 
-        private VariableName propertyName;
-        /// <summary>Name of static field beign accessed</summary>
-        public VariableName PropertyName { get { return propertyName; } }
+        private VariableNode propertyName;
 
-        public DirectStFldUse(Text.Span span, TypeRef typeRef, VariableName propertyName, Text.Span propertyNamePosition)
-            : base(span, propertyNamePosition, typeRef)
+        /// <summary>Name of static field beign accessed</summary>
+        public VariableName PropertyName => propertyName.Name;
+
+        /// <summary>
+        /// <see cref="PropertyName"/> position within AST.
+        /// </summary>
+        public override Span NameSpan => propertyName.Span;
+
+        public DirectStFldUse(Span span, TypeRef typeRef, VariableName propertyName, Span propertyNamePosition)
+            : base(span, typeRef)
         {
-            this.propertyName = propertyName;
+            this.propertyName = new VariableNode(propertyNamePosition, propertyName);
         }
 
-        public DirectStFldUse(Text.Span span, GenericQualifiedName qualifiedName, Text.Span qualifiedNameSpan, VariableName propertyName, Text.Span propertyNameSpan)
-            : this(span, DirectTypeRef.FromGenericQualifiedName(qualifiedNameSpan, qualifiedName), propertyName, propertyNameSpan)
+        internal DirectStFldUse(Text.Span span, GenericQualifiedName qualifiedName, Span qualifiedNameSpan, VariableName propertyName, Span propertyNameSpan)
+            : this(span, TypeRef.FromGenericQualifiedName(qualifiedNameSpan, qualifiedName), propertyName, propertyNameSpan)
         {
         }
 
@@ -90,9 +90,11 @@ namespace PHP.Core.AST
         /// <summary>Expression that produces name of the field</summary>
         public Expression/*!*/ FieldNameExpr { get { return fieldNameExpr; } internal set { fieldNameExpr = value; } }
         private Expression/*!*/ fieldNameExpr;
-        
+
+        public override Span NameSpan => fieldNameExpr.Span;
+
         public IndirectStFldUse(Text.Span span, TypeRef typeRef, Expression/*!*/ fieldNameExpr)
-            : base(span, fieldNameExpr.Span, typeRef)
+            : base(span, typeRef)
         {
             this.fieldNameExpr = fieldNameExpr;
         }

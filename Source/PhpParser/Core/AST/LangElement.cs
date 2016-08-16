@@ -1,5 +1,6 @@
 using System;
 using PHP.Syntax;
+using PHP.Core.Text;
 
 namespace PHP.Core.AST
 {
@@ -97,13 +98,13 @@ namespace PHP.Core.AST
 		/// <summary>
 		/// Position of element in source file.
 		/// </summary>
-        public Text.Span Span { get; protected set; }
+        public Span Span { get; protected set; }
 		
 		/// <summary>
         /// Initialize the LangElement.
         /// </summary>
         /// <param name="span">The position of the LangElement in the source code.</param>
-		protected LangElement(Text.Span span)
+		protected LangElement(Span span)
 		{
 			this.Span = span;
 		}
@@ -115,8 +116,42 @@ namespace PHP.Core.AST
         public abstract void VisitMe(TreeVisitor/*!*/visitor);
 	}
 
+    #region VariableNode
+
+    /// <summary>
+    /// Represents a variable name and its position within AST.
+    /// </summary>
+    public struct VariableNode // : AstNode
+    {
+        private readonly Span _span;
+        private readonly VariableName _name;
+
+        /// <summary>
+        /// Position of the name.
+        /// </summary>
+        public Span Span => _span;
+
+        /// <summary>
+        /// Variable name.
+        /// </summary>
+        public VariableName Name => _name;
+
+        public VariableNode(Span span, string name)
+            : this(span, new VariableName(name))
+        {
+        }
+
+        public VariableNode(Span span, VariableName name)
+        {
+            _span = span;
+            _name = name;
+        }
+    }
+
+    #endregion
+
     #region Scope
-    
+
     public struct Scope
     {
         public int Start { get { return start; } }

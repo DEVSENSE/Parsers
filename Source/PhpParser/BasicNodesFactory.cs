@@ -445,7 +445,7 @@ namespace PhpParser
         public LangElement Variable(Span span, VariableName name, TypeRef typeRef)
         {
             Debug.Assert(typeRef != null);
-            return new DirectStFldUse(span, typeRef, name, Span.FromBounds(span.End - name.Value.Length, span.End));
+            return new DirectStFldUse(span, typeRef, name, new Span(span.End - name.Value.Length, name.Value.Length));
         }
 
         public LangElement Variable(Span span, VariableName name, LangElement memberOfOpt)

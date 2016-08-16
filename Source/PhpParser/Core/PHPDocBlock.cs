@@ -118,7 +118,7 @@ namespace PHP.Syntax
                 Debug.Assert(elementType != null && typeof(Element).GetTypeInfo().IsAssignableFrom(elementType));
 
                 var ctors = elementType.DeclaredConstructors.ToArray();
-                Debug.Assert(ctors != null && ctors.Length  == 1);
+                Debug.Assert(ctors != null && ctors.Length == 1);
                 var ctor = ctors[0];
 
                 var args = ctor.GetParameters();
@@ -169,7 +169,7 @@ namespace PHP.Syntax
 
                 string tagName = (endIndex < line.Length) ? line.Remove(endIndex) : line;
 
-                Func<string,string,Element> tmp;
+                Func<string, string, Element> tmp;
                 if (elementFactories.TryGetValue(tagName, out tmp))
                     return new KeyValuePair<string, Func<string, string, Element>>(tagName, tmp);
                 else
@@ -271,11 +271,11 @@ namespace PHP.Syntax
                 if (tagInfo.Key != null)
                 {
                     Debug.Assert(tagInfo.Value != null);
-                    
+
                     // initialize new tag element
                     return tagInfo.Value(tagInfo.Key, line);
                 }
-                
+
                 // unrecognized tag:
                 return null;
             }
@@ -535,9 +535,9 @@ namespace PHP.Syntax
             public string Author { get { return text; } }
 
             public AuthorTag(string/*!*/line)
-                :base(Name, line)
+                : base(Name, line)
             {
-                
+
             }
 
             public override string ToString()
@@ -601,7 +601,7 @@ namespace PHP.Syntax
         public sealed class ExampleTag : SingleLineTag
         {
             public const string Name = "@example";
-            
+
             /// <summary>
             /// /path/to/example
             /// </summary>
@@ -749,10 +749,10 @@ namespace PHP.Syntax
                 // [type] [$varname] [type] [description]
 
                 int index = tagName.Length; // current index within line
-                
+
                 // try to find [type]
                 TryReadTypeName(line, ref index, out _typeNames, out _typeNamesPos);
-                
+
                 if (allowVariableName)
                 {
                     // try to find [$varname]
@@ -777,7 +777,7 @@ namespace PHP.Syntax
             #region Helpers
 
             private static string NextWord(string/*!*/text, ref int index)
-            {   
+            {
                 // skip whitespaces:
                 while (index < text.Length && char.IsWhiteSpace(text[index]))
                     index++;
@@ -805,7 +805,7 @@ namespace PHP.Syntax
             internal static bool TryReadTypeName(string/*!*/text, ref int index, out string[] typenames, out int[] typenamesPos)
             {
                 // [type]
-                
+
                 var typenameend = index;
                 var typename = NextWord(text, ref typenameend);
                 if (IsTypeName(typename))
@@ -944,7 +944,7 @@ namespace PHP.Syntax
             public const string Name = "@global";
 
             public GlobalTag(string/*!*/line)
-                :base(Name, line, true)
+                : base(Name, line, true)
             {
             }
 
@@ -959,7 +959,7 @@ namespace PHP.Syntax
                 var varname = this.VariableName;
                 if (varname != null)
                     result += " " + varname;
-                
+
                 return result;
             }
         }
@@ -1002,7 +1002,7 @@ namespace PHP.Syntax
                 this.Text = (index < line.Length) ? line.Substring(index) : string.Empty;
             }
 
-            internal override void  ParseLine(string line, out Element next)
+            internal override void ParseLine(string line, out Element next)
             {
                 next = null;
                 this.Text = string.IsNullOrEmpty(this.Text) ? line : (this.Text + NewLineString + line);
@@ -1049,8 +1049,8 @@ namespace PHP.Syntax
             public const string Name = "@internal";
 
             public InternalTag(string/*!*/line)
-                :base(Name, line)
-            {                
+                : base(Name, line)
+            {
             }
 
             public override string ToString()
@@ -1093,7 +1093,7 @@ namespace PHP.Syntax
             public NameTag(string/*!*/line)
                 : base(Name, line)
             {
-                
+
             }
         }
 
@@ -1263,7 +1263,7 @@ namespace PHP.Syntax
             public const string Name = "@staticvar";
 
             public StaticVarTag(string/*!*/line)
-                :base(Name, line, false)
+                : base(Name, line, false)
             {
 
             }
@@ -1282,7 +1282,7 @@ namespace PHP.Syntax
             public const string Name = "@todo";
 
             public TodoTag(string/*!*/line)
-                :base(Name, line)
+                : base(Name, line)
             {
             }
 
@@ -1433,7 +1433,7 @@ namespace PHP.Syntax
                         return Span.Invalid;
                     Debug.Assert(MethodName != null);
                     return new Span(pos + this.Span.Start, this.MethodName.Length);
-                }            
+                }
             }
             private readonly int _methodNamePos;
 
@@ -1473,7 +1473,7 @@ namespace PHP.Syntax
                     descStart++;    // skip whitespaces
 
                 this.Parameters = null;
-                
+
                 int nameStart = descStart;
                 int paramsFrom = -1;
                 // skip [name]
@@ -1529,11 +1529,11 @@ namespace PHP.Syntax
             private static FormalParam/*!*/ParseParam(string/*!*/paramDecl)
             {
                 Debug.Assert(!string.IsNullOrEmpty(paramDecl));
-                
-                string typehint = null;
+
+                TypeRef typehint = null;
                 string paramname = null;
                 bool byref = false;
-                
+
                 int i = 0;
                 var word = NextWord(paramDecl, ref i);
                 if (word != null)
@@ -1541,7 +1541,7 @@ namespace PHP.Syntax
                     // [type]
                     if (word.Length > 0 && word[0] != '$')
                     {
-                        typehint = word;
+                        typehint = new DirectTypeRef(new Span(i - word.Length, word.Length), new QualifiedName(new Name(word)));
                         word = NextWord(paramDecl, ref i);
                     }
 
@@ -1552,12 +1552,12 @@ namespace PHP.Syntax
                         paramname = ((eqIndex == -1) ? word : word.Remove(eqIndex));
 
                         byref = paramname.IndexOf('&') != -1;
-                        paramname = paramname.TrimStart(new char[]{ '$', '&'});
+                        paramname = paramname.TrimStart(new char[] { '$', '&' });
                     }
                 }
 
                 return new FormalParam(
-                    Span.Invalid, paramname, DirectTypeRef.FromGenericQualifiedName(Span.Invalid, new GenericQualifiedName(new QualifiedName(new Name(typehint)))),
+                    Span.Invalid, paramname, typehint,
                     byref ? FormalParam.Flags.IsByRef : FormalParam.Flags.Default,
                     null, null);
             }
@@ -1565,7 +1565,7 @@ namespace PHP.Syntax
             #region Helpers
 
             private static string NextWord(string/*!*/text, ref int index)
-            {   
+            {
                 // skip whitespaces:
                 while (index < text.Length && char.IsWhiteSpace(text[index]))
                     index++;
@@ -1706,7 +1706,7 @@ namespace PHP.Syntax
                             // dispose the string
                             this._docCommentString = null;
                         }
-                
+
                 return this.elements;
             }
         }
@@ -1721,7 +1721,7 @@ namespace PHP.Syntax
         /// <param name="doccomment">PHPDoc token content.</param>
         /// <param name="span">Position of the comment in the source code.</param>
         public PHPDocBlock(string doccomment, Span span)
-            :base(span)
+            : base(span)
         {
             this._docCommentString = doccomment;
         }
@@ -1741,7 +1741,7 @@ namespace PHP.Syntax
             //
             var result = new List<Element>();
             Element tmp;
-            
+
             Element/*!*/current = new ShortDescriptionElement();
             current.Span = Span.Invalid;
 
@@ -1749,12 +1749,12 @@ namespace PHP.Syntax
             {
                 var lineSpan = lineBreaks.GetLineSpan(lineIndex);
                 string/*!*/line = lineSpan.GetText(doccomment);
-                
+
                 int startCharIndex, endCharIndex;
                 if (Element.TryParseLine(ref line, out tmp, lineIndex, out startCharIndex, out endCharIndex))    // validate the line, process tags
                 {
                     Debug.Assert(line != null);
-                    
+
                     if (tmp == null)    // no new element created
                     {
                         // pass the line into the current element
@@ -1802,7 +1802,7 @@ namespace PHP.Syntax
 
         #region Helper access methods
 
-        public T GetElement<T>()  where T: Element
+        public T GetElement<T>() where T : Element
         {
             var elements = this.Elements;
             for (int i = 0; i < elements.Length; i++)
