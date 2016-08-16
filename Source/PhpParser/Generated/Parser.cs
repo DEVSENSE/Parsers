@@ -2758,7 +2758,7 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 { yyval.Object = _astFactory.BinaryOperation(yypos, Operations.InstanceOf, (LangElement)value_stack.array[value_stack.top-3].yyval.Object, (LangElement)value_stack.array[value_stack.top-1].yyval.Object); }
         return;
       case 348: // expr_without_variable -> '(' expr ')' 
-{ yyval.Object = value_stack.array[value_stack.top-2].yyval.Object; }
+{ yyval.Object = _astFactory.ParenthesisExpression(yypos, (LangElement)value_stack.array[value_stack.top-2].yyval.Object); }
         return;
       case 349: // expr_without_variable -> new_expr 
 { yyval.Object = value_stack.array[value_stack.top-1].yyval.Object; }
@@ -2797,7 +2797,7 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 { yyval.Object = _astFactory.UnaryOperation(yypos, Operations.UnsetCast,  (Expression)value_stack.array[value_stack.top-1].yyval.Object); }
         return;
       case 361: // expr_without_variable -> T_EXIT exit_expr 
-{ yyval.Object = _astFactory.UnaryOperation(yypos, Operations.Exit,       (Expression)value_stack.array[value_stack.top-1].yyval.Object); }
+{ yyval.Object = _astFactory.Exit(yypos, (Expression)value_stack.array[value_stack.top-1].yyval.Object); }
         return;
       case 362: // expr_without_variable -> '@' expr 
 { yyval.Object = _astFactory.UnaryOperation(yypos, Operations.AtSign,     (Expression)value_stack.array[value_stack.top-1].yyval.Object); }
@@ -3175,34 +3175,34 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 { yyval.Object = value_stack.array[value_stack.top-2].yyval.Object; }
         return;
       case 479: // encaps_var_offset -> T_STRING 
-{ yyval.Object = _astFactory.Literal(value_stack.array[value_stack.top-1].yypos, value_stack.array[value_stack.top-1].yyval.Object); }
+{ yyval.Object = _astFactory.Literal(yypos, value_stack.array[value_stack.top-1].yyval.Object); }
         return;
       case 480: // encaps_var_offset -> T_NUM_STRING 
-{ yyval.Object = _astFactory.Literal(value_stack.array[value_stack.top-1].yypos, value_stack.array[value_stack.top-1].yyval.Double); }
+{ yyval.Object = _astFactory.Literal(yypos, value_stack.array[value_stack.top-1].yyval.Double); }
         return;
       case 481: // encaps_var_offset -> T_VARIABLE 
-{ _astFactory.Variable(yypos, new VariableName((string)value_stack.array[value_stack.top-1].yyval.Object), (LangElement)null); }
+{ yyval.Object = _astFactory.Variable(yypos, new VariableName((string)value_stack.array[value_stack.top-1].yyval.Object), (LangElement)null); }
         return;
       case 482: // internal_functions_in_yacc -> T_ISSET '(' isset_variables ')' 
-{ yyval.Object = value_stack.array[value_stack.top-2].yyval.Object; }
+{ yyval.Object = _astFactory.Isset(yypos, (List<LangElement>)value_stack.array[value_stack.top-2].yyval.Object); }
         return;
       case 483: // internal_functions_in_yacc -> T_EMPTY '(' expr ')' 
-{ yyval.Object = zend_ast_create(_zend_ast_kind.ZEND_AST_EMPTY, value_stack.array[value_stack.top-2].yyval.Object); }
+{ yyval.Object = _astFactory.Empty(yypos, (LangElement)value_stack.array[value_stack.top-2].yyval.Object);}
         return;
       case 484: // internal_functions_in_yacc -> T_INCLUDE expr 
-{ yyval.Object = zend_ast_create_ex(_zend_ast_kind.ZEND_AST_INCLUDE_OR_EVAL, _zend_sup.ZEND_INCLUDE, value_stack.array[value_stack.top-1].yyval.Object); }
+{ yyval.Object = _astFactory.Inclusion(yypos, true, InclusionTypes.Include, (LangElement)value_stack.array[value_stack.top-1].yyval.Object); }
         return;
       case 485: // internal_functions_in_yacc -> T_INCLUDE_ONCE expr 
-{ yyval.Object = zend_ast_create_ex(_zend_ast_kind.ZEND_AST_INCLUDE_OR_EVAL, _zend_sup.ZEND_INCLUDE_ONCE, value_stack.array[value_stack.top-1].yyval.Object); }
+{ yyval.Object = _astFactory.Inclusion(yypos, true, InclusionTypes.IncludeOnce, (LangElement)value_stack.array[value_stack.top-1].yyval.Object); }
         return;
       case 486: // internal_functions_in_yacc -> T_EVAL '(' expr ')' 
-{ yyval.Object = zend_ast_create_ex(_zend_ast_kind.ZEND_AST_INCLUDE_OR_EVAL, _zend_sup.ZEND_EVAL, value_stack.array[value_stack.top-2].yyval.Object); }
+{ yyval.Object = _astFactory.Eval(yypos, (LangElement)value_stack.array[value_stack.top-2].yyval.Object); }
         return;
       case 487: // internal_functions_in_yacc -> T_REQUIRE expr 
-{ yyval.Object = zend_ast_create_ex(_zend_ast_kind.ZEND_AST_INCLUDE_OR_EVAL, _zend_sup.ZEND_REQUIRE, value_stack.array[value_stack.top-1].yyval.Object); }
+{ yyval.Object = _astFactory.Inclusion(yypos, true, InclusionTypes.Require, (LangElement)value_stack.array[value_stack.top-1].yyval.Object); }
         return;
       case 488: // internal_functions_in_yacc -> T_REQUIRE_ONCE expr 
-{ yyval.Object = zend_ast_create_ex(_zend_ast_kind.ZEND_AST_INCLUDE_OR_EVAL, _zend_sup.ZEND_REQUIRE_ONCE, value_stack.array[value_stack.top-1].yyval.Object); }
+{ yyval.Object = _astFactory.Inclusion(yypos, true, InclusionTypes.RequireOnce, (LangElement)value_stack.array[value_stack.top-1].yyval.Object); }
         return;
       case 489: // isset_variables -> isset_variable 
 { yyval.Object = new List<LangElement>() { (LangElement)value_stack.array[value_stack.top-1].yyval.Object }; }

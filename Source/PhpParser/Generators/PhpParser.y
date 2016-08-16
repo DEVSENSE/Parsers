@@ -1024,7 +1024,7 @@ expr_without_variable:
 			{ $$ = _astFactory.BinaryOperation(@$, Operations.Spaceship, (LangElement)$1, (LangElement)$3); }
 	|	expr T_INSTANCEOF class_name_reference
 			{ $$ = _astFactory.BinaryOperation(@$, Operations.InstanceOf, (LangElement)$1, (LangElement)$3); }
-	|	'(' expr ')' { $$ = $2; }
+	|	'(' expr ')' { $$ = _astFactory.ParenthesisExpression(@$, (LangElement)$2); }
 	|	new_expr { $$ = $1; }
 	|	expr '?' expr ':' expr
 			{ $$ = _astFactory.ConditionalEx(@$, (LangElement)$1, (LangElement)$3, (LangElement)$5); }
@@ -1040,7 +1040,7 @@ expr_without_variable:
 	|	T_OBJECT_CAST expr	{ $$ = _astFactory.UnaryOperation(@$, Operations.ObjectCast, (Expression)$2); }
 	|	T_BOOL_CAST expr	{ $$ = _astFactory.UnaryOperation(@$, Operations.BoolCast,   (Expression)$2); }
 	|	T_UNSET_CAST expr	{ $$ = _astFactory.UnaryOperation(@$, Operations.UnsetCast,  (Expression)$2); }
-	|	T_EXIT exit_expr	{ $$ = _astFactory.UnaryOperation(@$, Operations.Exit,       (Expression)$2); }
+	|	T_EXIT exit_expr	{ $$ = _astFactory.Exit(@$, (Expression)$2); }
 	|	'@' expr			{ $$ = _astFactory.UnaryOperation(@$, Operations.AtSign,     (Expression)$2); }
 	|	scalar { $$ = $1; }
 	|	'`' backticks_expr '`' { $$ = _astFactory.Shell(@$, (LangElement)$2); }
@@ -1340,25 +1340,25 @@ encaps_var:
 ;
 
 encaps_var_offset:
-		T_STRING		{ $$ = _astFactory.Literal(@1, $1); }
-	|	T_NUM_STRING	{ $$ = _astFactory.Literal(@1, $1); }
-	|	T_VARIABLE		{ _astFactory.Variable(@$, new VariableName((string)$1), (LangElement)null); }
+		T_STRING		{ $$ = _astFactory.Literal(@$, $1); }
+	|	T_NUM_STRING	{ $$ = _astFactory.Literal(@$, $1); }
+	|	T_VARIABLE		{ $$ = _astFactory.Variable(@$, new VariableName((string)$1), (LangElement)null); }
 ;
 
 
 internal_functions_in_yacc:
-		T_ISSET '(' isset_variables ')' { $$ = $3; }
-	|	T_EMPTY '(' expr ')' { $$ = zend_ast_create(_zend_ast_kind.ZEND_AST_EMPTY, $3); }
+		T_ISSET '(' isset_variables ')' { $$ = _astFactory.Isset(@$, (List<LangElement>)$3); }
+	|	T_EMPTY '(' expr ')' { $$ = _astFactory.Empty(@$, (LangElement)$3);}
 	|	T_INCLUDE expr
-			{ $$ = zend_ast_create_ex(_zend_ast_kind.ZEND_AST_INCLUDE_OR_EVAL, _zend_sup.ZEND_INCLUDE, $2); }
+			{ $$ = _astFactory.Inclusion(@$, true, InclusionTypes.Include, (LangElement)$2); }
 	|	T_INCLUDE_ONCE expr
-			{ $$ = zend_ast_create_ex(_zend_ast_kind.ZEND_AST_INCLUDE_OR_EVAL, _zend_sup.ZEND_INCLUDE_ONCE, $2); }
+			{ $$ = _astFactory.Inclusion(@$, true, InclusionTypes.IncludeOnce, (LangElement)$2); }
 	|	T_EVAL '(' expr ')'
-			{ $$ = zend_ast_create_ex(_zend_ast_kind.ZEND_AST_INCLUDE_OR_EVAL, _zend_sup.ZEND_EVAL, $3); }
+			{ $$ = _astFactory.Eval(@$, (LangElement)$3); }
 	|	T_REQUIRE expr
-			{ $$ = zend_ast_create_ex(_zend_ast_kind.ZEND_AST_INCLUDE_OR_EVAL, _zend_sup.ZEND_REQUIRE, $2); }
+			{ $$ = _astFactory.Inclusion(@$, true, InclusionTypes.Require, (LangElement)$2); }
 	|	T_REQUIRE_ONCE expr
-			{ $$ = zend_ast_create_ex(_zend_ast_kind.ZEND_AST_INCLUDE_OR_EVAL, _zend_sup.ZEND_REQUIRE_ONCE, $2); }
+			{ $$ = _astFactory.Inclusion(@$, true, InclusionTypes.RequireOnce, (LangElement)$2); }
 ;
 
 isset_variables:

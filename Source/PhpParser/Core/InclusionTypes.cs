@@ -12,7 +12,7 @@ namespace PHP.Syntax
     /// </remarks>
     public enum InclusionTypes
     {
-        Include, IncludeOnce, Require, RequireOnce, Prepended, Appended, RunSilverlight
+        Include, IncludeOnce, Require, RequireOnce, Prepended, Appended
     }
 
     #endregion

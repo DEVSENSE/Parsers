@@ -151,12 +151,26 @@ namespace PhpParser
 
         public LangElement Eval(Span span, LangElement code)
         {
-            throw new NotImplementedException();
+            return new EvalEx(span, (Expression)code);
+        }
+        public LangElement ParenthesisExpression(Span span, LangElement expression)
+        {
+            return expression;
         }
 
         public LangElement Exit(Span span, LangElement statusOpt)
         {
-            throw new NotImplementedException();
+            return new ExitEx(span, (Expression)statusOpt);
+        }
+
+        public LangElement Empty(Span span, LangElement code)
+        {
+            return new EmptyEx(span, (Expression)code);
+        }
+
+        public LangElement Isset(Span span, IEnumerable<LangElement> variables)
+        {
+            return new IssetEx(span, ConvertList<VariableUse>(variables));
         }
 
         public LangElement FieldDecl(Span span, VariableName name, LangElement initializerOpt)
@@ -231,7 +245,7 @@ namespace PhpParser
 
         public LangElement Inclusion(Span span, bool conditional, InclusionTypes type, LangElement fileNameExpression)
         {
-            throw new NotImplementedException();
+            return new IncludingEx(_sourceUnit, conditional, span, type, (Expression)fileNameExpression);
         }
 
         public LangElement IncrementDecrement(Span span, LangElement refexpression, bool inc, bool post)
@@ -317,11 +331,6 @@ namespace PhpParser
         public LangElement NewArray(Span span, IEnumerable<Item> itemsOpt)
         {
             return new ArrayEx(span, itemsOpt.ToList());
-        }
-
-        public LangElement ParenthesisExpression(Span span, LangElement expression)
-        {
-            throw new NotImplementedException();
         }
 
         public LangElement PHPDoc(Span span, string content)

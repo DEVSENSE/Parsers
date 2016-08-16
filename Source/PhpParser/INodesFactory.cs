@@ -504,6 +504,22 @@ namespace PhpParser
         TNode Eval(TSpan span, TNode code);
 
         /// <summary>
+        /// Creates <c>empty</c> expression.
+        /// </summary>
+        /// <param name="span">Entire element span.</param>
+        /// <param name="code">Code expression.</param>
+        /// <returns>Empty expression.</returns>
+        TNode Empty(TSpan span, TNode code);
+
+        /// <summary>
+        /// Creates <c>isset</c> expression.
+        /// </summary>
+        /// <param name="span">Entire element span.</param>
+        /// <param name="variables">List of variables.</param>
+        /// <returns>Isset expression.</returns>
+        TNode Isset(TSpan span, IEnumerable<TNode> variables);
+
+        /// <summary>
         /// Creates assertion expression.
         /// </summary>
         /// <param name="span">Entire element span.</param>

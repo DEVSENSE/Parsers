@@ -767,5 +767,40 @@ namespace PhpParser
                 else SerializeItem((RefItem)item);
             _serializer.EndSerialize();
         }
+
+        override public void VisitEmptyEx(EmptyEx x)
+        {
+            _serializer.StartSerialize(typeof(EmptyEx).Name, SerializeSpan(x.Span));
+            base.VisitEmptyEx(x);
+            _serializer.EndSerialize();
+        }
+
+        override public void VisitExitEx(ExitEx x)
+        {
+            _serializer.StartSerialize(typeof(ExitEx).Name, SerializeSpan(x.Span));
+            base.VisitExitEx(x);
+            _serializer.EndSerialize();
+        }
+
+        override public void VisitEvalEx(EvalEx x)
+        {
+            _serializer.StartSerialize(typeof(EvalEx).Name, SerializeSpan(x.Span));
+            base.VisitEvalEx(x);
+            _serializer.EndSerialize();
+        }
+
+        override public void VisitIssetEx(IssetEx x)
+        {
+            _serializer.StartSerialize(typeof(IssetEx).Name, SerializeSpan(x.Span));
+            base.VisitIssetEx(x);
+            _serializer.EndSerialize();
+        }
+
+        override public void VisitIncludingEx(IncludingEx x)
+        {
+            _serializer.StartSerialize(typeof(IncludingEx).Name, SerializeSpan(x.Span), new NodeObj("InclusionType", x.InclusionType.ToString()));
+            base.VisitIncludingEx(x);
+            _serializer.EndSerialize();
+        }
     }
 }
