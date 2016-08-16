@@ -462,7 +462,7 @@ statement:
 	|	T_DO statement T_WHILE '(' expr ')' ';'
 			{ $$ = _astFactory.Do(@$, (LangElement)$2, (LangElement)$5); }
 	|	T_FOR '(' for_exprs ';' for_exprs ';' for_exprs ')' for_statement
-			{ $$ = _astFactory.For(@$, (List<LangElement>)$3, (List<LangElement>)$5, (List<LangElement>)$7, StatementBlock(@9, $9)); }
+			{ $$ = _astFactory.For(@$, (List<LangElement>)$3, (List<LangElement>)$5, (List<LangElement>)$7, (LangElement)$9); }
 	|	T_SWITCH '(' expr ')' switch_case_list
 			{ $$ = _astFactory.Switch(@$, (LangElement)$3, (List<LangElement>)$5); }
 	|	T_BREAK optional_expr ';'		{ $$ = _astFactory.Jump(@$, JumpStmt.Types.Break, (LangElement)$2);}
@@ -475,10 +475,9 @@ statement:
 	|	expr ';' { $$ = _astFactory.ExpressionStmt(@$, (LangElement)$1); }
 	|	T_UNSET '(' unset_variables ')' ';' { $$ = _astFactory.Unset(@$, (List<LangElement>)$3); }
 	|	T_FOREACH '(' expr T_AS foreach_variable ')' foreach_statement
-			{ $$ = _astFactory.Foreach(@$, (LangElement)$3, null, (VariableUse)$5, StatementBlock(@7, $7)); }
-	|	T_FOREACH '(' expr T_AS foreach_variable T_DOUBLE_ARROW foreach_variable ')'
-		foreach_statement
-			{ $$ = _astFactory.Foreach(@$, (LangElement)$3, (VariableUse)$5, (VariableUse)$7, StatementBlock(@9, $9)); }
+			{ $$ = _astFactory.Foreach(@$, (LangElement)$3, null, (VariableUse)$5, (LangElement)$7); }
+	|	T_FOREACH '(' expr T_AS foreach_variable T_DOUBLE_ARROW foreach_variable ')' foreach_statement
+			{ $$ = _astFactory.Foreach(@$, (LangElement)$3, (VariableUse)$5, (VariableUse)$7, (LangElement)$9); }
 	|	T_DECLARE '(' const_list ')' declare_statement
 			{ $$ = _astFactory.Declare(@$, (LangElement)$5); }
 	|	';'	/* empty statement */ { $$ = null; }
@@ -527,7 +526,7 @@ function_declaration_statement:
 			new Name((string)$3), @3, null, (List<FormalParam>)$6, @7, 
 			_astFactory.Block(@11, (List<LangElement>)$11)); 
 		if($4 != null)
-			((FunctionDecl)$$).PHPDoc = new PHPDocBlock((string)$4, @4);
+			((FunctionDecl)$$).PHPDoc = (PHPDocBlock)_astFactory.PHPDoc(@4, (string)$4);
 		}
 ;
 
@@ -546,13 +545,13 @@ class_declaration_statement:
 			{ 
 				$$ = _astFactory.NamedType(@$, true, (PhpMemberAttributes)$1, new Name((string)$3), @3, null, 
 				(TypeRef)$4, (List<TypeRef>)$5, (List<LangElement>)$8, @8); 
-				if($6 != null) ((TypeDecl)$$).PHPDoc = new PHPDocBlock((string)$6, @6);
+				if($6 != null) ((TypeDecl)$$).PHPDoc = (PHPDocBlock)_astFactory.PHPDoc(@6, (string)$6);
 			}
 	|	T_CLASS T_STRING extends_from implements_list backup_doc_comment '{' class_statement_list '}'
 			{ 
 				$$ = _astFactory.NamedType(@$, true, PhpMemberAttributes.None, new Name((string)$2), @2, null, 
 				(TypeRef)$3, (List<TypeRef>)$4, (List<LangElement>)$7, @7); 
-				if($5 != null) ((TypeDecl)$$).PHPDoc = new PHPDocBlock((string)$5, @5);
+				if($5 != null) ((TypeDecl)$$).PHPDoc = (PHPDocBlock)_astFactory.PHPDoc(@5, (string)$5);
 			}
 ;
 
@@ -571,7 +570,7 @@ trait_declaration_statement:
 			{ 
 				$$ = _astFactory.NamedType(@$, true, PhpMemberAttributes.Trait, new Name((string)$2), @2, null, 
 				null, null, (List<LangElement>)$5, @5); 
-				if($3 != null) ((TypeDecl)$$).PHPDoc = new PHPDocBlock((string)$3, @3);
+				if($3 != null) ((TypeDecl)$$).PHPDoc = (PHPDocBlock)_astFactory.PHPDoc(@3, (string)$3);
 			}
 ;
 
@@ -580,7 +579,7 @@ interface_declaration_statement:
 			{ 
 				$$ = _astFactory.NamedType(@$, true, PhpMemberAttributes.Interface, new Name((string)$2), @2, null, 
 				null, (List<TypeRef>)$3, (List<LangElement>)$6, @6); 
-				if($4 != null) ((TypeDecl)$$).PHPDoc = new PHPDocBlock((string)$4, @4);
+				if($4 != null) ((TypeDecl)$$).PHPDoc = (PHPDocBlock)_astFactory.PHPDoc(@4, (string)$4);
 			}
 ;
 
@@ -608,17 +607,17 @@ foreach_variable:
 
 for_statement:
 		statement { $$ = $1; }
-	|	':' inner_statement_list T_ENDFOR ';' { $$ = $2; }
+	|	':' inner_statement_list T_ENDFOR ';' { $$ = StatementsToBlock(@2, $2, Tokens.T_ENDFOR); }
 ;
 
 foreach_statement:
 		statement { $$ = $1; }
-	|	':' inner_statement_list T_ENDFOREACH ';' { $$ = $2; }
+	|	':' inner_statement_list T_ENDFOREACH ';' { $$ = StatementsToBlock(@2, $2, Tokens.T_ENDFOREACH); }
 ;
 
 declare_statement:
 		statement { $$ = $1; }
-	|	':' inner_statement_list T_ENDDECLARE ';' { $$ = StatementBlock(@2, $2); }
+	|	':' inner_statement_list T_ENDDECLARE ';' { $$ = StatementsToBlock(@2, $2, Tokens.T_ENDDECLARE); }
 ;
 
 switch_case_list:
@@ -631,9 +630,9 @@ switch_case_list:
 case_list:
 		/* empty */ { $$ = new List<LangElement>(); }
 	|	case_list T_CASE expr case_separator inner_statement_list
-			{ $$ = AddToList<LangElement>($1, _astFactory.Case(@$, (LangElement)$3, StatementBlock(@5, $5))); }
+			{ $$ = AddToList<LangElement>($1, _astFactory.Case(@$, (LangElement)$3, _astFactory.Block(@5, (List<LangElement>)$5))); }
 	|	case_list T_DEFAULT case_separator inner_statement_list
-			{ $$ = AddToList<LangElement>($1, _astFactory.Case(@$, null, StatementBlock(@4, $4))); }
+			{ $$ = AddToList<LangElement>($1, _astFactory.Case(@$, null, _astFactory.Block(@4, (List<LangElement>)$4))); }
 ;
 
 case_separator:
@@ -644,7 +643,7 @@ case_separator:
 
 while_statement:
 		statement { $$ = $1; }
-	|	':' inner_statement_list T_ENDWHILE ';' { $$ = StatementsToBlock(@2, $2); }
+	|	':' inner_statement_list T_ENDWHILE ';' { $$ = StatementsToBlock(@2, $2, Tokens.T_ENDWHILE); }
 ;
 
 
@@ -671,11 +670,11 @@ if_stmt:
 alt_if_stmt_without_else:
 		T_IF '(' expr ')' ':' inner_statement_list
 			{ $$ = new List<Tuple<LangElement, LangElement>>() { 
-				new Tuple<LangElement, LangElement>((LangElement)$3, StatementsToBlock(@6, $6)) }; 
+				new Tuple<LangElement, LangElement>((LangElement)$3, StatementsToBlock(@6, $6, Tokens.T_ENDIF)) }; 
 			}
 	|	alt_if_stmt_without_else T_ELSEIF '(' expr ')' ':' inner_statement_list
 			{ $$ = AddToList<LangElement>($1, 
-				new Tuple<LangElement, LangElement>((LangElement)$4, StatementsToBlock(@7, $7))); 
+				new Tuple<LangElement, LangElement>((LangElement)$4, StatementsToBlock(@7, $7, Tokens.T_ENDIF))); 
 			}
 ;
 
@@ -684,7 +683,7 @@ alt_if_stmt:
 			{ ((List<Tuple<LangElement, LangElement>>)$1).Reverse(); $$ = null; 
 			foreach (var item in (List<Tuple<LangElement, LangElement>>)$1) $$ = _astFactory.If(@$, item.Item1, item.Item2, (LangElement)$$); }
 	|	alt_if_stmt_without_else T_ELSE ':' inner_statement_list T_ENDIF ';'
-			{ ((List<Tuple<LangElement, LangElement>>)$1).Reverse(); $$ = _astFactory.If(@$, null, StatementsToBlock(@4, $4), null); 
+			{ ((List<Tuple<LangElement, LangElement>>)$1).Reverse(); $$ = _astFactory.If(@$, null, StatementsToBlock(@4, $4, Tokens.T_ENDIF), null); 
 			foreach (var item in (List<Tuple<LangElement, LangElement>>)$1) $$ = _astFactory.If(@$, item.Item1, item.Item2, (LangElement)$$); }
 ;
 
@@ -790,8 +789,7 @@ class_statement:
 				(TypeRef)$9, @9, 
 				new Name((string)$4), @4, null, (List<FormalParam>)$7, @8, 
 				null, _astFactory.Block(@11, (List<LangElement>)$11)); 
-			if($5 != null)
-				((MethodDecl)$$).PHPDoc = new PHPDocBlock((string)$5, @5);
+			if($5 != null) ((MethodDecl)$$).PHPDoc = (PHPDocBlock)_astFactory.PHPDoc(@5, (string)$5);
 			}
 ;
 
@@ -885,9 +883,9 @@ property_list:
 
 property:
 		T_VARIABLE backup_doc_comment
-			{ $$ = _astFactory.FieldDecl(@$, new VariableName((string)$1), null); if($2 != null) ((FieldDecl)$$).PHPDoc = new PHPDocBlock((string)$2, @2); }
+			{ $$ = _astFactory.FieldDecl(@$, new VariableName((string)$1), null); if($2 != null) ((FieldDecl)$$).PHPDoc = (PHPDocBlock)_astFactory.PHPDoc(@2, (string)$2); }
 	|	T_VARIABLE '=' expr backup_doc_comment
-			{ $$ = _astFactory.FieldDecl(@$, new VariableName((string)$1), (Expression)$3); if($4 != null) ((FieldDecl)$$).PHPDoc = new PHPDocBlock((string)$4, @4); }
+			{ $$ = _astFactory.FieldDecl(@$, new VariableName((string)$1), (Expression)$3); if($4 != null) ((FieldDecl)$$).PHPDoc = (PHPDocBlock)_astFactory.PHPDoc(@4, (string)$4); }
 ;
 
 class_const_list:
@@ -897,12 +895,12 @@ class_const_list:
 
 class_const_decl:
 	identifier '=' expr backup_doc_comment { $$ = _astFactory.ClassConstDecl(@$, new VariableName((string)$1), (LangElement)$3); 
-		if($4 != null) ((ClassConstantDecl)$$).PHPDoc = new PHPDocBlock((string)$4, @4); }
+		if($4 != null) ((ClassConstantDecl)$$).PHPDoc = (PHPDocBlock)_astFactory.PHPDoc(@4, (string)$4); }
 ;
 
 const_decl:
 	T_STRING '=' expr backup_doc_comment { $$ = _astFactory.GlobalConstDecl(@$, false, new VariableName((string)$1), (LangElement)$3); 
-		if($4 != null) ((GlobalConstantDecl)$$).PHPDoc = new PHPDocBlock((string)$4, @4); }
+		if($4 != null) ((GlobalConstantDecl)$$).PHPDoc = (PHPDocBlock)_astFactory.PHPDoc(@4, (string)$4); }
 ;
 
 echo_expr_list:
@@ -929,7 +927,7 @@ anonymous_class:
 			$$ = new Tuple<TypeRef, List<ActualParam>>((TypeRef)_astFactory.AnonymousTypeReference(@$, true, PhpMemberAttributes.None, null, 
 				(TypeRef)$3, (List<TypeRef>)$4, (List<LangElement>)$7, @7),
 				(List<ActualParam>)$2); 
-			if($5 != null) ((AnonymousTypeRef)((Tuple<TypeRef, List<ActualParam>>)$$).Item1).TypeDeclaration.PHPDoc = new PHPDocBlock((string)$5, @5);
+			if($5 != null) ((AnonymousTypeRef)((Tuple<TypeRef, List<ActualParam>>)$$).Item1).TypeDeclaration.PHPDoc = (PHPDocBlock)_astFactory.PHPDoc(@5, (string)$5);
 		}
 ;
 
@@ -1023,7 +1021,7 @@ expr_without_variable:
 	|	expr T_SPACESHIP expr
 			{ $$ = _astFactory.BinaryOperation(@$, Operations.Spaceship, (LangElement)$1, (LangElement)$3); }
 	|	expr T_INSTANCEOF class_name_reference
-			{ $$ = _astFactory.BinaryOperation(@$, Operations.InstanceOf, (LangElement)$1, (LangElement)$3); }
+			{ $$ = _astFactory.InstanceOf(@$, (LangElement)$1, (TypeRef)$3); }
 	|	'(' expr ')' { $$ = _astFactory.ParenthesisExpression(@$, (LangElement)$2); }
 	|	new_expr { $$ = $1; }
 	|	expr '?' expr ':' expr
@@ -1054,16 +1052,14 @@ expr_without_variable:
 			{ $$ = _astFactory.Lambda(@$, false, (TypeRef)$8, @8, 
 				Span.FromBounds(@1.Start, @4.End), (List<FormalParam>)$5, @6, 
 				(List<FormalParam>)$7, _astFactory.Block(@11, (List<LangElement>)$11)); 
-			if($3 != null)
-				((LambdaFunctionExpr)$$).PHPDoc = new PHPDocBlock((string)$3, @3);
+			if($3 != null) ((LambdaFunctionExpr)$$).PHPDoc = (PHPDocBlock)_astFactory.PHPDoc(@3, (string)$3);
 			}
 	|	T_STATIC function returns_ref backup_doc_comment '(' parameter_list ')' lexical_vars
 		return_type backup_fn_flags '{' inner_statement_list '}' backup_fn_flags
 			{ $$ = _astFactory.Lambda(@$, false, (TypeRef)$9, @9, 
 				Span.FromBounds(@1.Start, @5.End), (List<FormalParam>)$6, @7, 
 				(List<FormalParam>)$8, _astFactory.Block(@12, (List<LangElement>)$12)); 
-			if($4 != null)
-				((LambdaFunctionExpr)$$).PHPDoc = new PHPDocBlock((string)$4, @4);
+			if($4 != null) ((LambdaFunctionExpr)$$).PHPDoc = (PHPDocBlock)_astFactory.PHPDoc(@4, (string)$4);
 			}
 ;
 

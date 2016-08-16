@@ -815,5 +815,12 @@ namespace PhpParser
             base.VisitIncludingEx(x);
             _serializer.EndSerialize();
         }
+
+        override public void VisitAssertEx(AssertEx x)
+        {
+            _serializer.StartSerialize(typeof(AssertEx).Name, SerializeSpan(x.Span));
+            base.VisitAssertEx(x);
+            _serializer.EndSerialize();
+        }
     }
 }

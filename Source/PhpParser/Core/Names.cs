@@ -440,6 +440,7 @@ namespace PHP.Syntax
     {
         #region Special names
 
+        public static readonly QualifiedName Assert = new QualifiedName(new Name("assert"), Name.EmptyNames);
         public static readonly QualifiedName Error = new QualifiedName(new Name("<error>"), Name.EmptyNames);
 		public static readonly QualifiedName Global = new QualifiedName(new Name("<Global>"), Name.EmptyNames);
 		public static readonly QualifiedName Lambda = new QualifiedName(new Name("Lambda"), Name.EmptyNames);

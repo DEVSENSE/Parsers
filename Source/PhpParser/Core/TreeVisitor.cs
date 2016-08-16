@@ -946,6 +946,10 @@ namespace PHP.Core.AST
         {
             VisitAnonymousTypeDecl(x.TypeDeclaration);
         }
+        virtual public void VisitAssertEx(AssertEx x)
+        {
+            VisitElement(x.CodeEx);
+        }
 
         virtual public void VisitPHPDocStmt(PHPDocStmt x) { }
 

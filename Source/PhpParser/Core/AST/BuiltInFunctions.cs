@@ -174,7 +174,7 @@ namespace PHP.Core.AST
     /// <summary>
     /// Meta language element used for assert() function call analysis.
     /// </summary>
-    internal sealed class AssertEx : Expression
+    public sealed class AssertEx : Expression
     {
         public override Operations Operation { get { return Operations.Eval; } }
 
@@ -196,9 +196,7 @@ namespace PHP.Core.AST
 
         public override void VisitMe(TreeVisitor visitor)
         {
-            // note: should not be used
-            visitor.VisitElement(this.CodeEx);
-            //visitor.VisitElement(this.DescriptionEx);
+            visitor.VisitAssertEx(this);
         }
     }
 

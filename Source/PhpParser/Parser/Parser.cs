@@ -103,6 +103,12 @@ namespace PhpParser.Parser
         void AssignStatements(List<LangElement> statements)
         {
             Debug.Assert(statements.All(s => s == null || s is Statement), "Code contains an invalid statement.");
+            if (statements.Count > 0 &&
+                    statements.Any(s => s is NamespaceDecl && ((NamespaceDecl)s).IsSimpleSyntax) &&
+                    statements.Any(s => s is NamespaceDecl && !((NamespaceDecl)s).IsSimpleSyntax))
+                _astFactory.Error(Span.Combine(statements.First(s => s != null).Span, statements.Last(s => s != null).Span),
+                    new ErrorInfo(9999, "Cannot mix bracketed namespace declarations with unbracketed namespace declarations", ErrorSeverity.Error),
+                    null);
             List<LangElement> namespaces = new List<LangElement>();
             int i = 0;
             while ((i = statements.FindLastIndex(s => s is NamespaceDecl && ((NamespaceDecl)s).IsSimpleSyntax)) != -1)
@@ -175,38 +181,33 @@ namespace PhpParser.Parser
             return new Tuple<T1, T2, T3>(first.Item1, first.Item2, second);
         }
 
-        private LangElement StatementsToBlock(Span span, List<LangElement> statements)
+        private LangElement StatementsToBlock(Span span, List<LangElement> statements, Tokens endToken)
         {
             if (statements.Count > 1)
-                return _astFactory.Block(span, statements);
+                return _astFactory.ColonBlock(span, statements, endToken);
             else return statements.First();
         }
 
-        private LangElement StatementsToBlock(Span span, object statements)
+        private LangElement StatementsToBlock(Span span, object statements, Tokens endToken)
         {
-            Debug.Assert(statements is List<LangElement>);
-            return StatementsToBlock(span, (List<LangElement>)statements);
-        }
-
-        private LangElement StatementBlock(Span span, object statements)
-        {
-            return (statements is Statement) ? (LangElement)statements : StatementsToBlock(span, statements);
+            Debug.Assert(statements is List<LangElement>); 
+            return StatementsToBlock(span, (List<LangElement>)statements, endToken);
         }
 
         private LangElement CreateProperty(Span span, LangElement objectExpr, object name)
         {
             if (name is Name)
-				return _astFactory.Variable(span, new VariableName(((Name)name).Value), objectExpr);
-			else
+                return _astFactory.Variable(span, new VariableName(((Name)name).Value), objectExpr);
+            else
                 return _astFactory.Variable(span, (LangElement)name, objectExpr);
         }
 
         private LangElement CreateStaticProperty(Span span, TypeRef objectName, Span objectNamePos, object name)
         {
             if (name is DirectVarUse)
-				return _astFactory.Variable(span, ((DirectVarUse)name).VarName, objectName); 
-			else
-				return _astFactory.Variable(span, ((IndirectVarUse)name).VarNameEx, objectName);
+                return _astFactory.Variable(span, ((DirectVarUse)name).VarName, objectName);
+            else
+                return _astFactory.Variable(span, ((IndirectVarUse)name).VarNameEx, objectName);
         }
 
         private LangElement CreateStaticProperty(Span span, LangElement objectExpr, Span objectNamePos, object name)

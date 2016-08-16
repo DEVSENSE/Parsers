@@ -7,11 +7,6 @@ namespace MyProject\AnotherProject;
 
 use My\ClassA as cls;
 echo "world";  
-
-namespace Incomple
-{
-  echo "end";
-}
   
 ?>
 <<<TEST>>>
@@ -70,32 +65,6 @@ namespace Incomple
           "end" : "122"
         },
         "Value" : "world"
-      }
-    },
-    "NamespaceDecl" : {
-      "Span" : {
-        "start" : "129",
-        "end" : "168"
-      },
-      "Name" : "Incomple",
-      "SimpleSyntax" : "False",
-      "NamingContext" : { 
-        "Namespace" : "Incomple"
-      },   
-      "BlockStmt" : {
-        "EchoStmt" : {
-          "Span" : {
-            "start" : "154",
-            "end" : "165"
-          },
-          "StringLiteral" : {
-            "Span" : {
-              "start" : "159",
-              "end" : "164"
-            },
-            "Value" : "end"
-          }
-        }
       }
     }
   }

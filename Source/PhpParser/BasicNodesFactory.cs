@@ -51,9 +51,9 @@ namespace PhpParser
             return new RefItem((Expression)indexOpt, (VariableUse)variable);
         }
 
-        public LangElement Assert(Span span, LangElement assertion, LangElement failureOpt)
+        public LangElement Assert(Span span, CallSignature signature)
         {
-            throw new NotImplementedException();
+            return new AssertEx(span, signature);
         }
 
         public LangElement Assignment(Span span, LangElement target, LangElement value, Operations assignOp)
@@ -99,6 +99,8 @@ namespace PhpParser
         public LangElement Call(Span span, QualifiedName name, QualifiedName? nameFallback, Span nameSpan, CallSignature signature, LangElement memberOfOpt)
         {
             Debug.Assert(memberOfOpt == null || memberOfOpt is VarLikeConstructUse);
+            if (name == QualifiedName.Assert)
+                return Assert(span, signature);
             return new DirectFcnCall(span, name, nameFallback, nameSpan, signature.Parameters, signature.GenericParams) { IsMemberOf = (VarLikeConstructUse)memberOfOpt };
         }
         public LangElement ActualParameter(Span span, LangElement expr, ActualParam.Flags flags)
@@ -115,7 +117,7 @@ namespace PhpParser
 
         public LangElement ColonBlock(Span span, IEnumerable<LangElement> statements, Tokens endToken)
         {
-            throw new NotImplementedException();
+            return Block(span, statements);
         }
 
         public LangElement Concat(Span span, IEnumerable<LangElement> expressions)
@@ -260,7 +262,7 @@ namespace PhpParser
 
         public LangElement InstanceOf(Span span, LangElement expression, TypeRef typeRef)
         {
-            throw new NotImplementedException();
+            return new InstanceOfEx(span, (Expression)expression, typeRef);
         }
 
         public LangElement Jump(Span span, JumpStmt.Types type, LangElement exprOpt)
@@ -287,6 +289,8 @@ namespace PhpParser
         {
             if (value is long)
                 return new LongIntLiteral(span, (long)value);
+            else if(value is int)
+                return new LongIntLiteral(span, (int)value);
             else if (value is double)
                 return new DoubleLiteral(span, (double)value);
             else if (value is string)
@@ -297,7 +301,7 @@ namespace PhpParser
                 return new BoolLiteral(span, (bool)value);
             else if (value == null)
                 return new NullLiteral(span);
-            throw new NotImplementedException();
+            throw new ArgumentException("Value does not have supported type.");
         }
 
         public LangElement Namespace(Span span, QualifiedName? name, Span nameSpan, IEnumerable<LangElement> statements, NamingContext context)
@@ -335,7 +339,7 @@ namespace PhpParser
 
         public LangElement PHPDoc(Span span, string content)
         {
-            throw new NotImplementedException();
+            return new PHPDocBlock(content, span);
         }
 
         public LangElement Shell(Span span, LangElement command)

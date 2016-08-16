@@ -523,10 +523,9 @@ namespace PhpParser
         /// Creates assertion expression.
         /// </summary>
         /// <param name="span">Entire element span.</param>
-        /// <param name="assertion">Text to be interpreted as an assertion expression.</param>
-        /// <param name="failureOpt">Optional. Second argument.</param>
+        /// <param name="assertion">Parameters evaluated by the assert.</param>
         /// <returns>Assertion expression.</returns>
-        TNode Assert(TSpan span, TNode assertion, TNode failureOpt);
+        TNode Assert(TSpan span, CallSignature signature);
 
         /// <summary>
         /// Creates inclusion (<c>include</c>, <c>require</c>, <c>include_once</c>, <c>require_once</c>) expression.
