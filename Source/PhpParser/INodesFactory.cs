@@ -134,11 +134,11 @@ namespace PhpParser
         /// <param name="members">Enumeration of type members.</param>
         /// <param name="blockSpan">Span of block enclosing members (including <c>{</c> and <c>}</c>.</param>
         /// <returns>Type node.</returns>
-        TNode Type(TSpan span,
+        TNode NamedType(TSpan span,
             bool conditional, PhpMemberAttributes attributes,
             Name name, TSpan nameSpan, IEnumerable<FormalTypeParam> typeParamsOpt,
-            Tuple<GenericQualifiedName, TSpan> baseClassOpt,
-            IEnumerable<Tuple<GenericQualifiedName, TSpan>> implements,
+            TypeRef baseClassOpt,
+            IEnumerable<TypeRef> implements,
             IEnumerable<TNode> members, TSpan blockSpan);
 
         /// <summary>
@@ -181,7 +181,7 @@ namespace PhpParser
         /// <param name="name">Member affected by the precedence.</param>
         /// <param name="precedences">The renamed types and members.</param>
         /// <returns>TraitAdaptationPrecedence expression</returns>
-        TNode TraitAdaptationPrecedence(TSpan span, Tuple<QualifiedName?, Name> name, List<QualifiedName> precedences);
+        TNode TraitAdaptationPrecedence(TSpan span, Tuple<QualifiedName?, Name> name, IEnumerable<QualifiedName> precedences);
 
         /// <summary>
         /// Create <c>TraitAdaptationAlias</c> expression.
@@ -660,13 +660,32 @@ namespace PhpParser
         TNode TypeReference(TSpan span, TNode varName, List<TypeRef> genericParamsOpt);
 
         /// <summary>
+        /// Creates anonymous type reference node.
+        /// </summary>
+        /// <param name="span">Entire element span.</param>
+        /// <param name="conditional">Whether the declaration is conditional.</param>
+        /// <param name="attributes">Type attributes.</param>
+        /// <param name="typeParamsOpt">Optional. Generic type parameters.</param>
+        /// <param name="baseClassOpt">Base class name if any.</param>
+        /// <param name="implements">Enumeration of interfaces implemented by this type.</param>
+        /// <param name="members">Enumeration of type members.</param>
+        /// <param name="blockSpan">Span of block enclosing members (including <c>{</c> and <c>}</c>.</param>
+        /// <returns>Type node.</returns>
+        TNode AnonymousTypeReference(TSpan span,
+            bool conditional, PhpMemberAttributes attributes,
+            IEnumerable<FormalTypeParam> typeParamsOpt,
+            TypeRef baseClassOpt,
+            IEnumerable<TypeRef> implements,
+            IEnumerable<TNode> members, TSpan blockSpan);
+
+        /// <summary>
         /// Create <c>TypeRef</c> reference to a type.
         /// </summary>
         /// <param name="span">Entire element span.</param>
-        /// <param name="className">List of all qualified class names in the expression.</param>
+        /// <param name="classes">List of all qualified classes in the expression.</param>
         /// <param name="genericParamsOpt">Actual generic parameters</param>
         /// <returns>Type reference.</returns>
-        TNode TypeReference(TSpan span, IEnumerable<QualifiedName> classNames, List<TypeRef> genericParamsOpt);
+        TNode TypeReference(TSpan span, IEnumerable<TNode> classes, List<TypeRef> genericParamsOpt);
 
         /// <summary>
         /// Creates a pseudo constant use.

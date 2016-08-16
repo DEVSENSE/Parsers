@@ -371,4 +371,34 @@ namespace PHP.Core.AST
     }
 
     #endregion
+
+    #region AnonymousTypeRef
+
+    /// <summary>
+    /// Direct use of class name.
+    /// </summary>
+    public sealed class AnonymousTypeRef : TypeRef
+    {
+        /// <summary>
+        /// Non nullable <see cref="QualifiedName"/>.
+        /// </summary>
+        public AnonymousTypeDecl TypeDeclaration => _typeDeclaration;
+        private readonly AnonymousTypeDecl _typeDeclaration;
+
+        public override QualifiedName? QualifiedName => null;
+
+        public AnonymousTypeRef(Span span, AnonymousTypeDecl typeDeclaration)
+            : base(span)
+        {
+            _typeDeclaration = typeDeclaration;
+        }
+
+        /// <summary>
+        /// Call the right Visit* method on the given Visitor object.
+        /// </summary>
+        /// <param name="visitor">Visitor to be called.</param>
+        public override void VisitMe(TreeVisitor visitor) => visitor.VisitAnonymousTypeRef(this);
+    }
+
+    #endregion
 }

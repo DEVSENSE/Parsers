@@ -615,17 +615,30 @@ namespace PhpParser
             base.VisitDeclareStmt(x);
             _serializer.EndSerialize();
         }
-        override public void VisitTypeDecl(TypeDecl x)
+        override public void VisitNamedTypeDecl(NamedTypeDecl x)
         {
-            _serializer.StartSerialize(typeof(TypeDecl).Name, SerializeSpan(x.Span), 
+            _serializer.StartSerialize(typeof(NamedTypeDecl).Name, SerializeSpan(x.Span), 
                 new NodeObj("Name", x.Name.Value), new NodeObj("MemberAttributes", MemberAttributesToString(x.MemberAttributes)),
                 new NodeObj("IsConditional", x.IsConditional.ToString()));
-            if (x.BaseClassName != null)
-                _serializer.Serialize("BaseClassName", new NodeObj("Name", x.BaseClassName.Value.QualifiedName.ToString()));
+            if (x.BaseClass != null)
+                _serializer.Serialize("BaseClassName", new NodeObj("Name", x.BaseClass.QualifiedName.ToString()));
             if (x.ImplementsList != null && x.ImplementsList.Length > 0)
                 _serializer.Serialize("ImplementsList", x.ImplementsList.Select(n => new NodeObj("Name", n.QualifiedName.ToString())).ToArray());
             SerializePHPDoc(x.PHPDoc);
-            base.VisitTypeDecl(x);
+            base.VisitNamedTypeDecl(x);
+            _serializer.EndSerialize();
+        }
+        override public void VisitAnonymousTypeDecl(AnonymousTypeDecl x)
+        {
+            _serializer.StartSerialize(typeof(AnonymousTypeDecl).Name, SerializeSpan(x.Span),
+                new NodeObj("MemberAttributes", MemberAttributesToString(x.MemberAttributes)),
+                new NodeObj("IsConditional", x.IsConditional.ToString()));
+            if (x.BaseClass != null)
+                _serializer.Serialize("BaseClassName", new NodeObj("Name", x.BaseClass.QualifiedName.ToString()));
+            if (x.ImplementsList != null && x.ImplementsList.Length > 0)
+                _serializer.Serialize("ImplementsList", x.ImplementsList.Select(n => new NodeObj("Name", n.QualifiedName.ToString())).ToArray());
+            SerializePHPDoc(x.PHPDoc);
+            base.VisitAnonymousTypeDecl(x);
             _serializer.EndSerialize();
         }
         override public void VisitFieldDeclList(FieldDeclList x)

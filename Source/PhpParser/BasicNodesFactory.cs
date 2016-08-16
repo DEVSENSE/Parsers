@@ -364,10 +364,10 @@ namespace PhpParser
             return new TraitsUse(span, 0, traits.ToList(), (adaptations != null) ? ConvertList<TraitsUse.TraitAdaptation>(adaptations) : null);
         }
 
-        public LangElement TraitAdaptationPrecedence(Span span, Tuple<QualifiedName?, Name> name, List<QualifiedName> precedences)
+        public LangElement TraitAdaptationPrecedence(Span span, Tuple<QualifiedName?, Name> name, IEnumerable<QualifiedName> precedences)
         {
             Debug.Assert(precedences != null);
-            return new TraitsUse.TraitAdaptationPrecedence(span, name, precedences);
+            return new TraitsUse.TraitAdaptationPrecedence(span, name, precedences.ToList());
         }
 
         public LangElement TraitAdaptationAlias(Span span, Tuple<QualifiedName?, Name> name, string identifierOpt, PhpMemberAttributes? attributeOpt)
@@ -405,14 +405,24 @@ namespace PhpParser
             return new ThrowStmt(span, (Expression)expression);
         }
 
-        public LangElement Type(Span span, bool conditional, PhpMemberAttributes attributes, Name name, Span nameSpan, IEnumerable<FormalTypeParam> typeParamsOpt, Tuple<GenericQualifiedName, Span> baseClassOpt, IEnumerable<Tuple<GenericQualifiedName, Span>> implements, IEnumerable<LangElement> members, Span blockSpan)
+        public LangElement NamedType(Span span, bool conditional, PhpMemberAttributes attributes, Name name, Span nameSpan, IEnumerable<FormalTypeParam> typeParamsOpt, TypeRef baseClassOpt, IEnumerable<TypeRef> implements, IEnumerable<LangElement> members, Span blockSpan)
         {
-            if (implements == null) implements = new List<Tuple<GenericQualifiedName, Span>>();
-            
+            if (implements == null) implements = TypeRef.EmptyList;
+
             Debug.Assert(members != null && implements != null);
-            return new TypeDecl(_sourceUnit, nameSpan, span, blockSpan.Start, blockSpan.Start, conditional, new Scope(), attributes, false,
+            return new NamedTypeDecl(_sourceUnit, nameSpan, span, blockSpan.Start, blockSpan.Start, conditional, new Scope(), attributes, false,
                 name, nameSpan, null, (typeParamsOpt != null) ? typeParamsOpt.ToList() : FormalTypeParam.EmptyList, baseClassOpt, implements.ToList(),
                 ConvertList<TypeMemberDecl>(members), null);
+        }
+
+        public LangElement AnonymousTypeReference(Span span, bool conditional, PhpMemberAttributes attributes, IEnumerable<FormalTypeParam> typeParamsOpt, TypeRef baseClassOpt, IEnumerable<TypeRef> implements, IEnumerable<LangElement> members, Span blockSpan)
+        {
+            if (implements == null) implements = TypeRef.EmptyList;
+
+            Debug.Assert(members != null && implements != null);
+            return new AnonymousTypeRef(span, new AnonymousTypeDecl(_sourceUnit, span, span, blockSpan.Start, blockSpan.Start,
+                conditional, new Scope(), attributes, false, null, (typeParamsOpt != null) ? typeParamsOpt.ToList() : FormalTypeParam.EmptyList,
+                baseClassOpt, implements.ToList(), ConvertList<TypeMemberDecl>(members), null));
         }
 
         public LangElement Method(Span span, bool aliasReturn, PhpMemberAttributes attributes, TypeRef returnType, Span returnTypeSpan, Name name, Span nameSpan, IEnumerable<FormalTypeParam> typeParamsOpt, IEnumerable<FormalParam> formalParams, Span formalParamsSpan, IEnumerable<ActualParam> baseCtorParams, LangElement body)
@@ -422,7 +432,7 @@ namespace PhpParser
             return new MethodDecl(nameSpan, span, formalParamsSpan.End, body.Span.Start, name.Value, aliasReturn, formalParams.ToList(),
                 (typeParamsOpt != null) ? typeParamsOpt.ToList() : FormalTypeParam.EmptyList,
                 (body is BlockStmt) ? ((BlockStmt)body).Statements : new Statement[] { (Statement)body },
-                attributes, (baseCtorParams != null) ? baseCtorParams.ToList() :  new List<ActualParam>(), null, returnType);
+                attributes, (baseCtorParams != null) ? baseCtorParams.ToList() : new List<ActualParam>(), null, returnType);
         }
 
         public LangElement UnaryOperation(Span span, Operations operation, LangElement expression)
@@ -474,14 +484,14 @@ namespace PhpParser
                 type = new GenericTypeRef(span, type, genericParamsOpt);
             return type;
         }
-        public LangElement TypeReference(Span span, IEnumerable<QualifiedName> classNames, List<TypeRef> genericParamsOpt)
+        public LangElement TypeReference(Span span, IEnumerable<LangElement> classes, List<TypeRef> genericParamsOpt)
         {
-            Debug.Assert(classNames != null && classNames.Count() > 0);
-            if (classNames.Count() == 1)
-                return TypeReference(span, classNames.First(), false, genericParamsOpt ?? GenericTypeRef.EmptyList);
+            Debug.Assert(classes != null && classes.Count() > 0 && classes.All(c => c is TypeRef));
+            if (classes.Count() == 1)
+                return classes.First();
 
             TypeRef type = null;
-            type = new MultipleTypeRef(span, classNames.Select(q => (TypeRef)TypeReference(span, q, false, null)).ToList());
+            type = new MultipleTypeRef(span, ConvertList<TypeRef>(classes));
             if (genericParamsOpt != null && genericParamsOpt != GenericTypeRef.EmptyList)
                 type = new GenericTypeRef(span, type, genericParamsOpt);
             return type;

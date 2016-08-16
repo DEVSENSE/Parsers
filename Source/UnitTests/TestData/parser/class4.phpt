@@ -12,7 +12,7 @@ trait SimpleTrait
 
 "GlobalCode" : {
   "NamingContext" : {},
-  "TypeDecl":{
+  "NamedTypeDecl":{
     "Name":"SimpleTrait",
     "MemberAttributes":"Trait",
     "IsConditional":"False",

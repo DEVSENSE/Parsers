@@ -12,7 +12,7 @@ interface SimpleInterface extends SimpleInter1, SimpleInter2
 
 "GlobalCode" : {
   "NamingContext" : {},
-  "TypeDecl":{
+  "NamedTypeDecl":{
     "Name":"SimpleInterface",
     "MemberAttributes":"Interface",
     "IsConditional":"False",    

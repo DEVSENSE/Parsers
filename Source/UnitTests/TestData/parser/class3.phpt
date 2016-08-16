@@ -8,7 +8,7 @@ class SimpleClass extends SimpleTrait implements SimpleInter1, SimpleInter2
 
 "GlobalCode" : {
   "NamingContext" : {},
-  "TypeDecl":{
+  "NamedTypeDecl":{
     "Name":"SimpleClass",
     "MemberAttributes":"Public",
     "IsConditional":"False",

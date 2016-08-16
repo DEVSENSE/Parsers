@@ -17,7 +17,7 @@ class SimpleClass
 
 "GlobalCode" : {
   "NamingContext" : {},
-  "TypeDecl":{
+  "NamedTypeDecl":{
     "Name":"SimpleClass",
     "MemberAttributes":"Public",
     "IsConditional":"False",

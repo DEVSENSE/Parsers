@@ -177,6 +177,24 @@ namespace PHP.Core.AST
         }
 
         /// <summary>
+        /// Visit named type.
+        /// </summary>
+        /// <param name="x"></param>
+        virtual public void VisitNamedTypeDecl(NamedTypeDecl x)
+        {
+            VisitTypeDecl(x);
+        }
+
+        /// <summary>
+        /// Visit anonymous type.
+        /// </summary>
+        /// <param name="x"></param>
+        virtual public void VisitAnonymousTypeDecl(AnonymousTypeDecl x)
+        {
+            VisitTypeDecl(x);
+        }
+
+        /// <summary>
         /// Visit method parameters and method body.
         /// </summary>
         /// <param name="x"></param>
@@ -923,6 +941,10 @@ namespace PHP.Core.AST
         virtual public void VisitGenericTypeRef(GenericTypeRef x)
         {
             // nothing
+        }
+        virtual public void VisitAnonymousTypeRef(AnonymousTypeRef x)
+        {
+            VisitAnonymousTypeDecl(x.TypeDeclaration);
         }
 
         virtual public void VisitPHPDocStmt(PHPDocStmt x) { }

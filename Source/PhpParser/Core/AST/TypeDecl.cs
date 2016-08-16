@@ -83,67 +83,50 @@ namespace PHP.Core.AST
 		#endregion
 	}
 
-	#endregion
+    #endregion
 
-	#region TypeDecl
+    #region TypeDecl
 
-	/// <summary>
-	/// Represents a class or an interface declaration.
-	/// </summary>
-    public sealed class TypeDecl : Statement, IHasSourceUnit, IDeclarationElement
-	{
-		#region Properties
+    /// <summary>
+    /// Represents a class or an interface declaration.
+    /// </summary>
+    public abstract class TypeDecl : Statement, IHasSourceUnit, IDeclarationElement
+    {
+        #region Properties
 
-		internal override bool IsDeclaration { get { return true; } }
-
-		/// <summary>
-		/// Name of the class.
-		/// </summary>
-		public Name Name { get { return name; } }
-		private readonly Name name;
+        internal override bool IsDeclaration { get { return true; } }
 
         /// <summary>
-        /// Position of <see cref="Name"/> in the source code.
+        /// Namespace where the class is declared in.
         /// </summary>
-        public Text.Span NamePosition { get; private set; }
-
-		/// <summary>
-		/// Namespace where the class is declared in.
-		/// </summary>
-		public NamespaceDecl Namespace { get { return ns; } }
-		private readonly NamespaceDecl ns;
+        public NamespaceDecl Namespace { get { return ns; } }
+        private readonly NamespaceDecl ns;
 
         /// <summary>
 		/// Name of the base class.
 		/// </summary>
-		private readonly GenericQualifiedName? baseClassName;
+		private readonly TypeRef baseClass;
         /// <summary>Name of the base class.</summary>
-        public GenericQualifiedName? BaseClassName { get { return baseClassName; } }
-
-        /// <summary>Position of <see cref="BaseClassName"/>.</summary>
-        public Text.Span BaseClassNamePosition { get; private set; }
+        public TypeRef BaseClass { get { return baseClass; } }
 
         public PhpMemberAttributes MemberAttributes { get; private set; }
 
-		/// <summary>Implemented interface name indices. </summary>
-        public GenericQualifiedName[]/*!!*/ ImplementsList { get; private set; }
+        /// <summary>Implemented interface name indices. </summary>
+        public TypeRef[]/*!!*/ ImplementsList { get; private set; }
 
-        /// <summary>Positions of <see cref="ImplementsList"/> elements.</summary>
-        public Text.Span[]/*!!*/ImplementsListPosition { get; private set; }
-
-		/// <summary>
-		/// Type parameters.
-		/// </summary>
+        /// <summary>
+        /// Type parameters.
+        /// </summary>
         public TypeSignature TypeSignature { get { return typeSignature; } }
         internal readonly TypeSignature typeSignature;
 
-		/// <summary>
-		/// Member declarations. Partial classes merged to the aggregate has this field <B>null</B>ed.
-		/// </summary>
+        /// <summary>
+        /// Member declarations. Partial classes merged to the aggregate has this field <B>null</B>ed.
+        /// </summary>
         public List<TypeMemberDecl> Members { get { return members; } internal set { members = value; } }
-		private List<TypeMemberDecl> members;
+        private List<TypeMemberDecl> members;
 
-		/// <summary>
+        /// <summary>
         /// Gets collection of CLR attributes annotating this statement.
         /// </summary>
         public CustomAttributes Attributes
@@ -152,10 +135,10 @@ namespace PHP.Core.AST
             set { this.SetCustomAttributes(value); }
         }
 
-		/// <summary>
-		/// Position spanning over the entire declaration including the attributes.
-		/// Used for transformation to an eval and for VS integration.
-		/// </summary>
+        /// <summary>
+        /// Position spanning over the entire declaration including the attributes.
+        /// Used for transformation to an eval and for VS integration.
+        /// </summary>
         public Text.Span EntireDeclarationSpan { get { return entireDeclarationSpan; } }
         private Text.Span entireDeclarationSpan;
 
@@ -178,30 +161,27 @@ namespace PHP.Core.AST
         public bool IsConditional { get; internal set; }
 
         public SourceUnit SourceUnit { get; private set; }
-        
-		#endregion
 
-		#region Construction
+        #endregion
 
-		public TypeDecl(SourceUnit/*!*/ sourceUnit,
+        #region Construction
+
+        public TypeDecl(SourceUnit/*!*/ sourceUnit,
             Text.Span span, Text.Span entireDeclarationPosition, int headingEndPosition, int declarationBodyPosition,
-            bool isConditional, Scope scope, PhpMemberAttributes memberAttributes, bool isPartial, Name className, Text.Span classNamePosition,
-            NamespaceDecl ns, List<FormalTypeParam>/*!*/ genericParams, Tuple<GenericQualifiedName, Text.Span> baseClassName,
-            List<Tuple<GenericQualifiedName, Text.Span>>/*!*/ implementsList, List<TypeMemberDecl>/*!*/ elements,
-			List<CustomAttribute> attributes)
+            bool isConditional, Scope scope, PhpMemberAttributes memberAttributes, bool isPartial,
+            NamespaceDecl ns, List<FormalTypeParam>/*!*/ genericParams, TypeRef baseClass,
+            List<TypeRef>/*!*/ implementsList, List<TypeMemberDecl>/*!*/ elements,
+            List<CustomAttribute> attributes)
             : base(span)
-		{
-			Debug.Assert(genericParams != null && implementsList != null && elements != null);
+        {
+            Debug.Assert(genericParams != null && implementsList != null && elements != null);
             Debug.Assert((memberAttributes & PhpMemberAttributes.Trait) == 0 || (memberAttributes & PhpMemberAttributes.Interface) == 0, "Interface cannot be a trait");
-
-			this.name = className;
-            this.NamePosition = classNamePosition;
-			this.ns = ns;
-			this.typeSignature = new TypeSignature(genericParams);
-            if (baseClassName != null)
+            
+            this.ns = ns;
+            this.typeSignature = new TypeSignature(genericParams);
+            if (baseClass != null)
             {
-                this.baseClassName = baseClassName.Item1;
-                this.BaseClassNamePosition = baseClassName.Item2;
+                this.baseClass = baseClass;
             }
             this.MemberAttributes = memberAttributes;
             this.Scope = scope;
@@ -209,24 +189,22 @@ namespace PHP.Core.AST
             this.IsConditional = isConditional;
             if (implementsList == null || implementsList.Count == 0)
             {
-                this.ImplementsList = EmptyArray<GenericQualifiedName>.Instance;
-                this.ImplementsListPosition = EmptyArray<Text.Span>.Instance;
+                this.ImplementsList = EmptyArray<TypeRef>.Instance;
             }
             else
             {
-                this.ImplementsList = implementsList.Select(x => x.Item1).ToArray();
-                this.ImplementsListPosition = implementsList.Select(x => x.Item2).ToArray();
+                this.ImplementsList = implementsList.ToArray();
             }
             this.members = elements;
             this.members.TrimExcess();
 
-			if (attributes != null && attributes.Count != 0)
+            if (attributes != null && attributes.Count != 0)
                 this.Attributes = new CustomAttributes(attributes);
-			this.entireDeclarationSpan = entireDeclarationPosition;
+            this.entireDeclarationSpan = entireDeclarationPosition;
             this.headingEndPosition = headingEndPosition;
-			this.declarationBodyPosition = declarationBodyPosition;
+            this.declarationBodyPosition = declarationBodyPosition;
             this.partialKeyword = isPartial;
-		}
+        }
 
         #endregion
 
@@ -249,13 +227,96 @@ namespace PHP.Core.AST
         }
     }
 
-	#endregion
+    /// <summary>
+    /// Represents a class or an interface declaration.
+    /// </summary>
+    public sealed class NamedTypeDecl : TypeDecl
+    {
+		#region Properties
+		/// <summary>
+		/// Name of the class.
+		/// </summary>
+		public Name Name { get { return name; } }
+		private readonly Name name;
 
-	#region TypeMemberDecl
+        /// <summary>
+        /// Position of <see cref="Name"/> in the source code.
+        /// </summary>
+        public Text.Span NamePosition { get; private set; }
+        
+		#endregion
 
-	/// <summary>
-	/// Represents a member declaration.
-	/// </summary>
+		#region Construction
+
+		public NamedTypeDecl(SourceUnit/*!*/ sourceUnit,
+            Text.Span span, Text.Span entireDeclarationPosition, int headingEndPosition, int declarationBodyPosition,
+            bool isConditional, Scope scope, PhpMemberAttributes memberAttributes, bool isPartial, Name className, Text.Span classNamePosition,
+            NamespaceDecl ns, List<FormalTypeParam>/*!*/ genericParams, TypeRef baseClass,
+            List<TypeRef>/*!*/ implementsList, List<TypeMemberDecl>/*!*/ elements,
+			List<CustomAttribute> attributes)
+            : base(sourceUnit, span, entireDeclarationPosition, headingEndPosition, declarationBodyPosition, isConditional, 
+                  scope, memberAttributes, isPartial, ns, genericParams, baseClass, implementsList, elements, attributes)
+		{
+			Debug.Assert(genericParams != null && implementsList != null && elements != null);
+            Debug.Assert((memberAttributes & PhpMemberAttributes.Trait) == 0 || (memberAttributes & PhpMemberAttributes.Interface) == 0, "Interface cannot be a trait");
+
+			this.name = className;
+            this.NamePosition = classNamePosition;
+		}
+
+        #endregion
+
+        /// <summary>
+        /// Call the right Visit* method on the given Visitor object.
+        /// </summary>
+        /// <param name="visitor">Visitor to be called.</param>
+        public override void VisitMe(TreeVisitor visitor)
+        {
+            visitor.VisitNamedTypeDecl(this);
+        }
+    }
+
+    /// <summary>
+    /// Represents a class or an interface declaration.
+    /// </summary>
+    public sealed class AnonymousTypeDecl : TypeDecl
+    {
+        #region Properties
+
+        #endregion
+
+        #region Construction
+
+        public AnonymousTypeDecl(SourceUnit/*!*/ sourceUnit,
+            Text.Span span, Text.Span entireDeclarationPosition, int headingEndPosition, int declarationBodyPosition,
+            bool isConditional, Scope scope, PhpMemberAttributes memberAttributes, bool isPartial,
+            NamespaceDecl ns, List<FormalTypeParam>/*!*/ genericParams, TypeRef baseClass,
+            List<TypeRef>/*!*/ implementsList, List<TypeMemberDecl>/*!*/ elements,
+            List<CustomAttribute> attributes)
+            : base(sourceUnit, span, entireDeclarationPosition, headingEndPosition, declarationBodyPosition, isConditional,
+                  scope, memberAttributes, isPartial, ns, genericParams, baseClass, implementsList, elements, attributes)
+        {
+        }
+
+        #endregion
+
+        /// <summary>
+        /// Call the right Visit* method on the given Visitor object.
+        /// </summary>
+        /// <param name="visitor">Visitor to be called.</param>
+        public override void VisitMe(TreeVisitor visitor)
+        {
+            visitor.VisitAnonymousTypeDecl(this);
+        }
+    }
+
+    #endregion
+
+    #region TypeMemberDecl
+
+    /// <summary>
+    /// Represents a member declaration.
+    /// </summary>
     public abstract class TypeMemberDecl : LangElement, IDeclarationElement
 	{
         public PhpMemberAttributes Modifiers { get { return modifiers; } }

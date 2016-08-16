@@ -330,9 +330,9 @@ namespace_name:
 ;
 
 name:
-		namespace_name								{ $$ = new QualifiedName((List<string>)$1, true, false); }
-	|	T_NAMESPACE T_NS_SEPARATOR namespace_name	{ $$ = new QualifiedName((List<string>)$3, false, false); }
-	|	T_NS_SEPARATOR namespace_name				{ $$ = new QualifiedName((List<string>)$2, true, true); }
+		namespace_name								{ $$ = _astFactory.TypeReference(@1, new QualifiedName((List<string>)$1, true, false), false, TypeRef.EmptyList); }
+	|	T_NAMESPACE T_NS_SEPARATOR namespace_name	{ $$ = _astFactory.TypeReference(@3, new QualifiedName((List<string>)$3, false, false), false, TypeRef.EmptyList); }
+	|	T_NS_SEPARATOR namespace_name				{ $$ = _astFactory.TypeReference(@2, new QualifiedName((List<string>)$2, true, true), false, TypeRef.EmptyList);  }
 ;
 
 top_statement:
@@ -349,15 +349,15 @@ top_statement:
                 QualifiedName name = new QualifiedName((List<string>)$2, false, true);
                 SetNamingContext(name.NamespacePhpName);
                 $$ = _currentNamespace = (NamespaceDecl)_astFactory.Namespace(yypos, name, @2, (List<LangElement>)null, _namingContext);
-				RESET_DOC_COMMENT(); 
+				ResetDocComment(); 
 			}
-	|	T_NAMESPACE namespace_name { RESET_DOC_COMMENT(); var list = (List<string>)$2; SetNamingContext((list != null && list.Count > 0)? string.Join(QualifiedName.Separator.ToString(), list): null); }
+	|	T_NAMESPACE namespace_name { ResetDocComment(); var list = (List<string>)$2; SetNamingContext((list != null && list.Count > 0)? string.Join(QualifiedName.Separator.ToString(), list): null); }
 		'{' top_statement_list '}'
 			{ 
 				$$ = _astFactory.Namespace(@$, new QualifiedName((List<string>)$2, false, true), @2, _astFactory.Block(@5, (List<LangElement>)$5), _namingContext); 
 				ResetNamingContext(); 
 			}
-	|	T_NAMESPACE { RESET_DOC_COMMENT(); SetNamingContext(null); }
+	|	T_NAMESPACE { ResetDocComment(); SetNamingContext(null); }
 		'{' top_statement_list '}'
 			{ 
 				$$ = _astFactory.Namespace(@$, null, @$, _astFactory.Block(@4, (List<LangElement>)$4), _namingContext); 
@@ -495,15 +495,15 @@ catch_list:
 	|	catch_list T_CATCH '(' catch_name_list T_VARIABLE ')' '{' inner_statement_list '}'
 			{ 
 				$$ = AddToList<CatchItem>($1, _astFactory.Catch(@$, 
-					(TypeRef)_astFactory.TypeReference(@4, (List<QualifiedName>)$4, null), 
+					(TypeRef)_astFactory.TypeReference(@4, (List<TypeRef>)$4, null), 
 					(DirectVarUse)_astFactory.Variable(@5, new VariableName((string)$5), (LangElement)null), 
 					_astFactory.Block(@8, (List<LangElement>)$8))); 
 			}
 ;
 
 catch_name_list:
-		name { $$ = new List<QualifiedName>() { (QualifiedName)$1 }; }
-	|	catch_name_list '|' name { $$ = AddToList<QualifiedName>($1, $3); }
+		name { $$ = new List<TypeRef>() { (TypeRef)$1 }; }
+	|	catch_name_list '|' name { $$ = AddToList<TypeRef>($1, $3); }
 ;
 
 finally_statement:
@@ -544,14 +544,14 @@ is_variadic:
 class_declaration_statement:
 		class_modifiers T_CLASS T_STRING extends_from implements_list backup_doc_comment '{' class_statement_list '}'
 			{ 
-				$$ = _astFactory.Type(@$, true, (PhpMemberAttributes)$1, new Name((string)$3), @3, null, 
-				(Tuple<GenericQualifiedName, Span>)$4, (List<Tuple<GenericQualifiedName, Span>>)$5, (List<LangElement>)$8, @8); 
+				$$ = _astFactory.NamedType(@$, true, (PhpMemberAttributes)$1, new Name((string)$3), @3, null, 
+				(TypeRef)$4, (List<TypeRef>)$5, (List<LangElement>)$8, @8); 
 				if($6 != null) ((TypeDecl)$$).PHPDoc = new PHPDocBlock((string)$6, @6);
 			}
 	|	T_CLASS T_STRING extends_from implements_list backup_doc_comment '{' class_statement_list '}'
 			{ 
-				$$ = _astFactory.Type(@$, true, PhpMemberAttributes.None, new Name((string)$2), @2, null, 
-				(Tuple<GenericQualifiedName, Span>)$3, (List<Tuple<GenericQualifiedName, Span>>)$4, (List<LangElement>)$7, @7); 
+				$$ = _astFactory.NamedType(@$, true, PhpMemberAttributes.None, new Name((string)$2), @2, null, 
+				(TypeRef)$3, (List<TypeRef>)$4, (List<LangElement>)$7, @7); 
 				if($5 != null) ((TypeDecl)$$).PHPDoc = new PHPDocBlock((string)$5, @5);
 			}
 ;
@@ -569,7 +569,7 @@ class_modifier:
 trait_declaration_statement:
 		T_TRAIT T_STRING backup_doc_comment '{' class_statement_list '}'
 			{ 
-				$$ = _astFactory.Type(@$, true, PhpMemberAttributes.Trait, new Name((string)$2), @2, null, 
+				$$ = _astFactory.NamedType(@$, true, PhpMemberAttributes.Trait, new Name((string)$2), @2, null, 
 				null, null, (List<LangElement>)$5, @5); 
 				if($3 != null) ((TypeDecl)$$).PHPDoc = new PHPDocBlock((string)$3, @3);
 			}
@@ -578,25 +578,25 @@ trait_declaration_statement:
 interface_declaration_statement:
 		T_INTERFACE T_STRING interface_extends_list backup_doc_comment '{' class_statement_list '}'
 			{ 
-				$$ = _astFactory.Type(@$, true, PhpMemberAttributes.Interface, new Name((string)$2), @2, null, 
-				null, (List<Tuple<GenericQualifiedName, Span>>)$3, (List<LangElement>)$6, @6); 
+				$$ = _astFactory.NamedType(@$, true, PhpMemberAttributes.Interface, new Name((string)$2), @2, null, 
+				null, (List<TypeRef>)$3, (List<LangElement>)$6, @6); 
 				if($4 != null) ((TypeDecl)$$).PHPDoc = new PHPDocBlock((string)$4, @4);
 			}
 ;
 
 extends_from:
 		/* empty */		{ $$ = null; }
-	|	T_EXTENDS name	{ $$ = new Tuple<GenericQualifiedName, Span>(new GenericQualifiedName((QualifiedName)$2, new object[0]), @2); }
+	|	T_EXTENDS name	{ $$ = $2; }
 ;
 
 interface_extends_list:
 		/* empty */			{ $$ = null; }
-	|	T_EXTENDS name_list { $$ = NameListToImplementsList(@2, (List<QualifiedName>)$2); }
+	|	T_EXTENDS name_list { $$ = $2; }
 ;
 
 implements_list:
 		/* empty */				{ $$ = null; }
-	|	T_IMPLEMENTS name_list	{ $$ = NameListToImplementsList(@2, (List<QualifiedName>)$2); }
+	|	T_IMPLEMENTS name_list	{ $$ = $2; }
 ;
 
 foreach_variable:
@@ -722,7 +722,7 @@ type_expr:
 type:
 		T_ARRAY		{ $$ = QualifiedName.Array; }
 	|	T_CALLABLE	{ $$ = QualifiedName.Callable; }
-	|	name		{ $$ = (QualifiedName)$1; }
+	|	name		{ $$ = ((TypeRef)$1).QualifiedName.Value; }
 ;
 
 return_type:
@@ -783,7 +783,7 @@ class_statement:
 	|	method_modifiers T_CONST class_const_list ';'
 			{ $$ = _astFactory.DeclList(@$, (PhpMemberAttributes)$1, (List<LangElement>)$3); }
 	|	T_USE name_list trait_adaptations
-			{ $$ = _astFactory.TraitUse(@$, (List<QualifiedName>)$2, (List<TraitsUse.TraitAdaptation>)$3); }
+			{ $$ = _astFactory.TraitUse(@$, ((List<TypeRef>)$2).Select(t => t.QualifiedName.Value), (List<TraitsUse.TraitAdaptation>)$3); }
 	|	method_modifiers function returns_ref identifier backup_doc_comment '(' parameter_list ')'
 		return_type backup_fn_flags method_body backup_fn_flags
 			{ $$ = _astFactory.Method(@$, false, (PhpMemberAttributes)$1, 
@@ -796,9 +796,9 @@ class_statement:
 ;
 
 name_list:
-		name { $$ = new List<QualifiedName>() { (QualifiedName)$1 };
+		name { $$ = new List<TypeRef>() { (TypeRef)$1 };
  }
-	|	name_list ',' name { $$ = AddToList<QualifiedName>($1, $3); }
+	|	name_list ',' name { $$ = AddToList<TypeRef>($1, $3); }
 ;
 
 trait_adaptations:
@@ -822,7 +822,7 @@ trait_adaptation:
 
 trait_precedence:
 	absolute_trait_method_reference T_INSTEADOF name_list
-		{ $$ = _astFactory.TraitAdaptationPrecedence(@$, (Tuple<QualifiedName?,Name>)$1, (List<QualifiedName>)$3); }
+		{ $$ = _astFactory.TraitAdaptationPrecedence(@$, (Tuple<QualifiedName?,Name>)$1, ((List<TypeRef>)$3).Select(t => t.QualifiedName.Value)); }
 ;
 
 trait_alias:
@@ -844,7 +844,7 @@ trait_method_reference:
 
 absolute_trait_method_reference:
 	name T_DOUBLE_COLON identifier
-		{ $$ = new Tuple<QualifiedName?,Name>((QualifiedName)$1, new Name((string)$3)); }
+		{ $$ = new Tuple<QualifiedName?,Name>(((TypeRef)$1).QualifiedName.Value, new Name((string)$3)); }
 ;
 
 method_body:
@@ -924,12 +924,12 @@ non_empty_for_exprs:
 ;
 
 anonymous_class:
-        T_CLASS { $<Long>$ = CG(zend_lineno); } ctor_arguments
+        T_CLASS ctor_arguments
 		extends_from implements_list backup_doc_comment '{' class_statement_list '}' {
-			object decl = zend_ast_create_decl(
-				_zend_ast_kind.ZEND_AST_CLASS, (long)_zend_sup.ZEND_ACC_ANON_CLASS, $<Long>2, $6, null,
-				$4, $5, $8, null);
-			$$ = zend_ast_create(_zend_ast_kind.ZEND_AST_NEW, decl, $3);
+			$$ = new Tuple<TypeRef, List<ActualParam>>((TypeRef)_astFactory.AnonymousTypeReference(@$, true, PhpMemberAttributes.None, null, 
+				(TypeRef)$3, (List<TypeRef>)$4, (List<LangElement>)$7, @7),
+				(List<ActualParam>)$2); 
+			if($5 != null) ((AnonymousTypeRef)((Tuple<TypeRef, List<ActualParam>>)$$).Item1).TypeDeclaration.PHPDoc = new PHPDocBlock((string)$5, @5);
 		}
 ;
 
@@ -937,7 +937,7 @@ new_expr:
 		T_NEW class_name_reference ctor_arguments
 			{ $$ = _astFactory.New(@$, (TypeRef)$2, (List<ActualParam>)$3); }
 	|	T_NEW anonymous_class
-			{ $$ = $2; }
+			{ $$ = _astFactory.New(@$, ((Tuple<TypeRef, List<ActualParam>>)$2).Item1, ((Tuple<TypeRef, List<ActualParam>>)$2).Item2); }
 ;
 
 expr_without_variable:
@@ -1101,13 +1101,13 @@ lexical_var:
 
 function_call:
 		name argument_list
-			{ $$ = _astFactory.Call(@$, (QualifiedName)$1, null, @1, new CallSignature((List<ActualParam>)$2), null); }
+			{ $$ = _astFactory.Call(@$, ((TypeRef)$1).QualifiedName.Value, null, @1, new CallSignature((List<ActualParam>)$2), null); }
 	|	class_name T_DOUBLE_COLON member_name argument_list
 			{
 				if($3 is Name)
-					$$ = _astFactory.Call(@$, (Name)$3, @2, new CallSignature((List<ActualParam>)$4), (TypeRef)_astFactory.TypeReference(@1, (QualifiedName)$1, false, null)); 
+					$$ = _astFactory.Call(@$, (Name)$3, @2, new CallSignature((List<ActualParam>)$4), (TypeRef)_astFactory.TypeReference(@1, ((TypeRef)$1).QualifiedName.Value, false, null)); 
 				else
-					$$ = _astFactory.Call(@$, (LangElement)$3, new CallSignature((List<ActualParam>)$4), (TypeRef)_astFactory.TypeReference(@1, (QualifiedName)$1, false, null)); 
+					$$ = _astFactory.Call(@$, (LangElement)$3, new CallSignature((List<ActualParam>)$4), (TypeRef)_astFactory.TypeReference(@1, ((TypeRef)$1).QualifiedName.Value, false, null)); 
 			}
 	|	variable_class_name T_DOUBLE_COLON member_name argument_list
 			{
@@ -1122,12 +1122,12 @@ function_call:
 
 class_name:
 		T_STATIC
-			{ $$ = new QualifiedName(Name.StaticClassName); }
+			{ $$ = _astFactory.TypeReference(@1, new QualifiedName(Name.StaticClassName), false, null); }
 	|	name { $$ = $1; }
 ;
 
 class_name_reference:
-		class_name		{ $$ = _astFactory.TypeReference(@1, (QualifiedName)$1, false, null); }
+		class_name		{ $$ = $1; }
 	|	new_variable	{ $$ = _astFactory.TypeReference(@1, (LangElement)$1, null); }
 ;
 
@@ -1177,9 +1177,9 @@ scalar:
 ;
 
 constant:
-		name { $$ = _astFactory.ConstUse(@$, (QualifiedName)$1, null); }
+		name { $$ = _astFactory.ConstUse(@$, ((TypeRef)$1).QualifiedName.Value, null); }
 	|	class_name T_DOUBLE_COLON identifier
-			{ $$ = _astFactory.ClassConstUse(@$, (TypeRef)_astFactory.TypeReference(@$, (QualifiedName)$1, false, null), new Name((string)$3), @3); }
+			{ $$ = _astFactory.ClassConstUse(@$, (TypeRef)$1, new Name((string)$3), @3); }
 	|	variable_class_name T_DOUBLE_COLON identifier
 			{ $$ = _astFactory.ClassConstUse(@$, (TypeRef)_astFactory.TypeReference(@$, (LangElement)$1, null), new Name((string)$3), @3); }
 ;
@@ -1246,7 +1246,7 @@ simple_variable:
 
 static_member:
 		class_name T_DOUBLE_COLON simple_variable
-			{ $$ = CreateStaticProperty(@$, (QualifiedName)$1, @1, (LangElement)$3); }	
+			{ $$ = CreateStaticProperty(@$, (TypeRef)$1, @1, (LangElement)$3); }	
 	|	variable_class_name T_DOUBLE_COLON simple_variable
 			{ $$ = CreateStaticProperty(@$, (LangElement)$1, @1, (LangElement)$3); }
 ;
@@ -1261,7 +1261,7 @@ new_variable:
 	|	new_variable T_OBJECT_OPERATOR property_name
 			{ $$ = CreateProperty(@$, (LangElement)$1, $3); }
 	|	class_name T_DOUBLE_COLON simple_variable
-			{ $$ = CreateStaticProperty(@$, (QualifiedName)$1, @1, (LangElement)$3); }
+			{ $$ = CreateStaticProperty(@$, (TypeRef)$1, @1, (LangElement)$3); }
 	|	new_variable T_DOUBLE_COLON simple_variable
 			{ $$ = CreateStaticProperty(@$, (LangElement)$1, @1, (LangElement)$3); }
 ;
