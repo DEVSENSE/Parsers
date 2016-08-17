@@ -23,11 +23,13 @@ $greet = static function(string $name) use($x, $y): integer
         "FormalParam":{"Name":"name","PassedByRef":"False","IsVariadic":"False",
           "TypeHint":{"PrimitiveTypeRef":{"QualifiedName":"string"}}}
       },
-      "Body":{
-        "UnaryEx" : {
-          "Operation" : "Print",
-          "StringLiteral" : {
-              "Value" : "Hello world"
+      "Body":{  
+        "BlockStmt":{
+          "UnaryEx" : {
+            "Operation" : "Print",
+            "StringLiteral" : {
+                "Value" : "Hello world"
+            }
           }
         }
       },

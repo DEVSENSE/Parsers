@@ -183,9 +183,7 @@ namespace PhpParser.Parser
 
         private LangElement StatementsToBlock(Span span, List<LangElement> statements, Tokens endToken)
         {
-            if (statements.Count > 1)
-                return _astFactory.ColonBlock(span, statements, endToken);
-            else return statements.First();
+            return _astFactory.ColonBlock(span, statements, endToken);
         }
 
         private LangElement StatementsToBlock(Span span, object statements, Tokens endToken)
@@ -230,6 +228,11 @@ namespace PhpParser.Parser
         {
             // reades and deletes the actual doc block
             string doc = _lexer.DocBlock;
+        }
+
+        private Span CombineSpans(params Span[] spans)
+        {
+            return new Span(spans.Min(s => s.Start), spans.Max(s => s.End));
         }
     }
 }

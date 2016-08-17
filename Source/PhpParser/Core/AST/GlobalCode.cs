@@ -20,7 +20,7 @@ namespace PHP.Core.AST
     /// by GlobalCode node. Finally, it is emitted into Main() method of concrete PHPPage 
     /// class. The sample code below illustrates a part of PHP global code
     /// </remarks>
-    public sealed class GlobalCode : LangElement, IHasSourceUnit, IDeclarationElement
+    public sealed class GlobalCode : LangElement, IHasSourceUnit
     {
         /// <summary>
         /// Array of nodes representing statements in PHP global code
@@ -34,14 +34,12 @@ namespace PHP.Core.AST
         public SourceUnit/*!*/ SourceUnit { get { return sourceUnit; } }
         private readonly SourceUnit/*!*/ sourceUnit;
 
-        public Span EntireDeclarationSpan { get { return new Text.Span(0, sourceUnit.LineBreaks.TextLength); } }
-
         #region Constructors
 
         /// <summary>
         /// Initializes a new instance of the GlobalCode class.
         /// </summary>
-        public GlobalCode(IList<Statement>/*!*/ statements, SourceUnit/*!*/ sourceUnit) : base(new Span())
+        public GlobalCode(Text.Span span, IList<Statement>/*!*/ statements, SourceUnit/*!*/ sourceUnit) : base(span)
         {
             Debug.Assert(statements != null && sourceUnit != null);
 
@@ -74,7 +72,7 @@ namespace PHP.Core.AST
 
     #region NamespaceDecl
 
-    public sealed class NamespaceDecl : Statement, IDeclarationElement
+    public sealed class NamespaceDecl : Statement
     {
         internal override bool IsDeclaration { get { return true; } }
 
@@ -85,8 +83,6 @@ namespace PHP.Core.AST
 
         public QualifiedName QualifiedName { get { return this.qualifiedName; } }
         private QualifiedName qualifiedName;
-
-        public Span EntireDeclarationSpan { get { return this.Span; } }
 
         /// <summary>
         /// Naming context defining aliases.
@@ -159,7 +155,7 @@ namespace PHP.Core.AST
 
     #region GlobalConstDeclList, GlobalConstantDecl
 
-    public sealed class GlobalConstDeclList : Statement, IDeclarationElement
+    public sealed class GlobalConstDeclList : Statement
     {
         /// <summary>
         /// Gets collection of CLR attributes annotating this statement.

@@ -4,7 +4,8 @@ const constA = 'Hello', ConstB = 0;
 
 namespace MyProject;  
 
-const constC = 'World' /** global const */, ConstD = 11;
+/** global const */
+const constC = 'World', ConstD = 11;
 
 ?>
 <<<TEST>>>
@@ -65,7 +66,8 @@ const constC = 'World' /** global const */, ConstD = 11;
       "Span" : {
         "start" : "74",
         "end" : "110"
-      },
+      },     
+      "PHPDoc":{"Comment":"global const"},
       "GlobalConstantDecl" : {
         "Span" : {
           "start" : "80",

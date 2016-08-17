@@ -74,7 +74,7 @@ namespace PHP.Core.AST
         private readonly TypeRef/*!*/targetType;
 
         public VariableName Name => name.Name;
-        private readonly VariableNode name;
+        private readonly VariableNameRef name;
 
         /// <summary>
         /// Position of <see cref="Name"/> part of the constant use.
@@ -88,7 +88,7 @@ namespace PHP.Core.AST
             Debug.Assert(!string.IsNullOrEmpty(name));
 
             this.targetType = typeRef;
-			this.name = new VariableNode(namePosition, name);
+			this.name = new VariableNameRef(namePosition, name);
         }
 
 		/// <summary>

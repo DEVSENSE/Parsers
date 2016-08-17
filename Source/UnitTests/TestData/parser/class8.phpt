@@ -29,18 +29,26 @@ $x = new class(1, "world")
       "AnonymousTypeDecl":{
         "MemberAttributes":"Public",
         "IsConditional":"True",
-        "PHPDoc":{"Comment":"classdeclaration"},
-        "FieldDecl":{"Name":"var","MemberAttributes":"Private","PHPDoc":{"Comment":"propertydeclaration"},
-          "StringLiteral":{"Value":"adefaultvalue"}
-        },
-        "FieldDecl":{"Name":"vara","MemberAttributes":"Private","PHPDoc":{"Comment":"seconddoc"},
-          "LongIntLiteral":{"Value":"10"}
-        },
-        "FieldDecl":{"Name":"pvar","MemberAttributes":"Public","PHPDoc":{"Comment":"defaultpropertydeclaration"},
-          "LongIntLiteral":{"Value":"1"}
-        },
-        "ClassConstantDecl":{"Name":"cvar","MemberAttributes":"Public","PHPDoc":{"Comment":"constantdeclaration"},
-          "LongIntLiteral":{"Value":"22"}
+        "PHPDoc":{"Comment":"classdeclaration"},  
+        "FieldDeclList":{
+            "FieldDecl":{"Name":"var","MemberAttributes":"Private","PHPDoc":{"Comment":"propertydeclaration"},
+              "StringLiteral":{"Value":"adefaultvalue"}
+            },
+            "FieldDecl":{"Name":"vara","MemberAttributes":"Private","PHPDoc":{"Comment":"seconddoc"},
+              "LongIntLiteral":{"Value":"10"}
+            }
+        }, 
+        "FieldDeclList":{
+          "PHPDoc":{"Comment":"default property declaration"},
+          "FieldDecl":{"Name":"pvar","MemberAttributes":"Public","PHPDoc":{"Comment":"defaultpropertydeclaration"},
+            "LongIntLiteral":{"Value":"1"}
+          }
+        }, 
+        "ConstDeclList":{
+          "PHPDoc":{"Comment":"constant declaration"},
+          "ClassConstantDecl":{"Name":"cvar","MemberAttributes":"Public","PHPDoc":{"Comment":"constantdeclaration"},
+            "LongIntLiteral":{"Value":"22"}
+          }
         }
       },
       "ActualParam":{"IsUnpack":"False","LongIntLiteral":{"Value":"1"}},

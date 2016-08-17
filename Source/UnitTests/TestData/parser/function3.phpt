@@ -18,9 +18,11 @@ function foo($arg_1)
     "FormalParams":{
       "FormalParam":{"Name":"arg_1","PassedByRef":"False","IsVariadic":"False"}
     },
-    "Body":{
-      "GlobalStmt":{"DirectVarUse":{"VarName":"a"},"DirectVarUse":{"VarName":"b"}},
-      "StaticStmt":{"StaticVarDecl":{"Name":"x"},"StaticVarDecl":{"Name":"y"}}
+    "Body":{  
+      "BlockStmt":{
+        "GlobalStmt":{"DirectVarUse":{"VarName":"a"},"DirectVarUse":{"VarName":"b"}},
+        "StaticStmt":{"StaticVarDecl":{"Name":"x"},"StaticVarDecl":{"Name":"y"}}
+      }
     }
   }
 }

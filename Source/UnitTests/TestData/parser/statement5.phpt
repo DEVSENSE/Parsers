@@ -30,10 +30,12 @@ endif;
             "DirectVarUse":{"VarName":"b"}
           }
         },
-        "Statement":{   
-          "EchoStmt":{
-            "StringLiteral":{"Value":"aisbiggerthanb"}
-          }   
+        "Statement":{
+          "BlockStmt":{   
+            "EchoStmt":{
+              "StringLiteral":{"Value":"aisbiggerthanb"}
+            }   
+          }
         }
       }
     }
@@ -72,21 +74,25 @@ endif;
             "DirectVarUse":{"VarName":"a"},
             "DirectVarUse":{"VarName":"b"}
           }
-        },
-        "Statement":{  
-          "EchoStmt":{
-            "StringLiteral":{"Value":"aisbiggerthanb"}
+        },   
+        "Statement":{
+          "BlockStmt":{  
+            "EchoStmt":{
+              "StringLiteral":{"Value":"aisbiggerthanb"}
+            }
           }
         }
       },
       "ConditionalStmt":{
         "Condition":{
-        },
+        }, 
         "Statement":{
-          "ValueAssignEx":{
-            "Operation":"AssignValue",
-            "DirectVarUse":{"VarName":"b"},
-            "DirectVarUse":{"VarName":"a"}
+          "BlockStmt":{
+            "ValueAssignEx":{
+              "Operation":"AssignValue",
+              "DirectVarUse":{"VarName":"b"},
+              "DirectVarUse":{"VarName":"a"}
+            }
           }
         }
       }

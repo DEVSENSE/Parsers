@@ -266,7 +266,7 @@ namespace PHP.Core.AST
                 VisitElement(p);
 
             // function body
-            VisitStatements(x.Body);
+            VisitElement(x.Body);
         }
 
         virtual public void VisitTraitsUse(TraitsUse x)
@@ -787,7 +787,7 @@ namespace PHP.Core.AST
                 VisitElement(p);
 
             // function body
-            VisitStatements(x.Body);
+            VisitElement(x.Body);
         }
 
         /// <summary>

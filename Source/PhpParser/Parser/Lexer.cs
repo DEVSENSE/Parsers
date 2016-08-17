@@ -131,7 +131,9 @@ namespace PhpParser.Parser
         /// <summary>
         /// Get actual doc comment.
         /// </summary>
-        public string DocBlock { get { var temp = _docBlock; _docBlock = null; return temp; } }
+        public string DocBlock => _docBlock;
+
+        public string ResetDocBlock() => _docBlock = null;
 
         /// <summary>
         /// Call the <see cref="NextTokenEvent"/> event.

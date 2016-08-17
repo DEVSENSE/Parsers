@@ -121,7 +121,7 @@ namespace PHP.Core.AST
     /// <summary>
     /// Represents a variable name and its position within AST.
     /// </summary>
-    public struct VariableNode // : AstNode
+    public struct VariableNameRef
     {
         private readonly Span _span;
         private readonly VariableName _name;
@@ -136,12 +136,12 @@ namespace PHP.Core.AST
         /// </summary>
         public VariableName Name => _name;
 
-        public VariableNode(Span span, string name)
+        public VariableNameRef(Span span, string name)
             : this(span, new VariableName(name))
         {
         }
 
-        public VariableNode(Span span, VariableName name)
+        public VariableNameRef(Span span, VariableName name)
         {
             _span = span;
             _name = name;
@@ -191,18 +191,6 @@ namespace PHP.Core.AST
         {
             return start.ToString();
         }
-    }
-
-    #endregion
-
-    #region IDeclarationElement
-
-    public interface IDeclarationElement
-    {
-        /// <summary>
-        /// Gets extent of entire declaration including header, modifiers, attributes and eventually function body.
-        /// </summary>
-        Text.Span EntireDeclarationSpan { get; }
     }
 
     #endregion

@@ -10,15 +10,17 @@ require_once(__ROOT__.'/config.php');
 
 "GlobalCode":{
   "NamingContext":{},
-  "IncludingEx":{"InclusionType":"Include","StringLiteral":{"Value":"a.php"}},
-  "IncludingEx":{"InclusionType":"IncludeOnce","StringLiteral":{"Value":"A.php"}},
+  "IncludingEx":{"InclusionType":"Include","IsConditional":"False","StringLiteral":{"Value":"a.php"}},
+  "IncludingEx":{"InclusionType":"IncludeOnce","IsConditional":"False","StringLiteral":{"Value":"A.php"}},
   "IncludingEx":{"InclusionType":"Require",
+    "IsConditional":"False",
     "BinaryEx":{"Operation":"Concat",
       "GlobalConstUse":{"Name":"__ROOT__"},
       "StringLiteral":{"Value":"/config.php"}
     }
   },
   "IncludingEx":{"InclusionType":"RequireOnce",
+    "IsConditional":"False",
     "BinaryEx":{"Operation":"Concat",
       "GlobalConstUse":{"Name":"__ROOT__"},
       "StringLiteral":{"Value":"/config.php"}

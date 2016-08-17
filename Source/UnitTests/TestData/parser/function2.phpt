@@ -39,9 +39,11 @@ if ($a > $b)
                 "FormalParam":{"Name":"arg_n","PassedByRef":"True","IsVariadic":"False",
                   "InitValue":{"LongIntLiteral":{"Value":"1"}}}
               },
-              "Body":{
-                "EchoStmt":{"StringLiteral":{"Value":"Examplefunction."}},
-                "JumpStmt":{"Type":"Return","DirectVarUse":{"VarName":"retval"}}
+              "Body":{ 
+                "BlockStmt":{
+                  "EchoStmt":{"StringLiteral":{"Value":"Examplefunction."}},
+                  "JumpStmt":{"Type":"Return","DirectVarUse":{"VarName":"retval"}}
+                }
               }, 
               "ReturnType":{
                 "PrimitiveTypeRef":{"QualifiedName":"integer"}

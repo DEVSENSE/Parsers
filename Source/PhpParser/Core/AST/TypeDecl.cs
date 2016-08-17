@@ -90,7 +90,7 @@ namespace PHP.Core.AST
     /// <summary>
     /// Represents a class or an interface declaration.
     /// </summary>
-    public abstract class TypeDecl : Statement, IHasSourceUnit, IDeclarationElement
+    public abstract class TypeDecl : Statement, IHasSourceUnit
     {
         #region Properties
 
@@ -135,18 +135,11 @@ namespace PHP.Core.AST
             set { this.SetCustomAttributes(value); }
         }
 
-        /// <summary>
-        /// Position spanning over the entire declaration including the attributes.
-        /// Used for transformation to an eval and for VS integration.
-        /// </summary>
-        public Text.Span EntireDeclarationSpan { get { return entireDeclarationSpan; } }
-        private Text.Span entireDeclarationSpan;
+        public Text.Span HeadingSpan { get { return headingSpan; } }
+        private Text.Span headingSpan;
 
-        public int DeclarationBodyPosition { get { return declarationBodyPosition; } }
-        private int declarationBodyPosition;
-
-        private int headingEndPosition;
-        public int HeadingEndPosition { get { return headingEndPosition; } }
+        public Text.Span BodySpan { get { return bodySpan; } }
+        private Text.Span bodySpan;
 
         /// <summary>Indicates if type was decorated with partial keyword (Pure mode only).</summary>
         public bool PartialKeyword { get { return partialKeyword; } }
@@ -167,10 +160,10 @@ namespace PHP.Core.AST
         #region Construction
 
         public TypeDecl(SourceUnit/*!*/ sourceUnit,
-            Text.Span span, Text.Span entireDeclarationPosition, int headingEndPosition, int declarationBodyPosition,
+            Text.Span span, Text.Span headingSpan,
             bool isConditional, Scope scope, PhpMemberAttributes memberAttributes, bool isPartial,
             NamespaceDecl ns, List<FormalTypeParam>/*!*/ genericParams, TypeRef baseClass,
-            List<TypeRef>/*!*/ implementsList, List<TypeMemberDecl>/*!*/ elements,
+            List<TypeRef>/*!*/ implementsList, List<TypeMemberDecl>/*!*/ elements, Text.Span bodySpan,
             List<CustomAttribute> attributes)
             : base(span)
         {
@@ -200,9 +193,8 @@ namespace PHP.Core.AST
 
             if (attributes != null && attributes.Count != 0)
                 this.Attributes = new CustomAttributes(attributes);
-            this.entireDeclarationSpan = entireDeclarationPosition;
-            this.headingEndPosition = headingEndPosition;
-            this.declarationBodyPosition = declarationBodyPosition;
+            this.headingSpan = headingSpan;
+            this.bodySpan = bodySpan;
             this.partialKeyword = isPartial;
         }
 
@@ -249,13 +241,14 @@ namespace PHP.Core.AST
 		#region Construction
 
 		public NamedTypeDecl(SourceUnit/*!*/ sourceUnit,
-            Text.Span span, Text.Span entireDeclarationPosition, int headingEndPosition, int declarationBodyPosition,
-            bool isConditional, Scope scope, PhpMemberAttributes memberAttributes, bool isPartial, Name className, Text.Span classNamePosition,
+            Text.Span span, Text.Span headingSpan, bool isConditional, Scope scope, PhpMemberAttributes memberAttributes, bool isPartial, 
+            Name className, Text.Span classNamePosition,
             NamespaceDecl ns, List<FormalTypeParam>/*!*/ genericParams, TypeRef baseClass,
-            List<TypeRef>/*!*/ implementsList, List<TypeMemberDecl>/*!*/ elements,
-			List<CustomAttribute> attributes)
-            : base(sourceUnit, span, entireDeclarationPosition, headingEndPosition, declarationBodyPosition, isConditional, 
-                  scope, memberAttributes, isPartial, ns, genericParams, baseClass, implementsList, elements, attributes)
+            List<TypeRef>/*!*/ implementsList, List<TypeMemberDecl>/*!*/ elements, Text.Span bodySpan,
+
+            List<CustomAttribute> attributes)
+            : base(sourceUnit, span, headingSpan, isConditional, 
+                  scope, memberAttributes, isPartial, ns, genericParams, baseClass, implementsList, elements, bodySpan, attributes)
 		{
 			Debug.Assert(genericParams != null && implementsList != null && elements != null);
             Debug.Assert((memberAttributes & PhpMemberAttributes.Trait) == 0 || (memberAttributes & PhpMemberAttributes.Interface) == 0, "Interface cannot be a trait");
@@ -288,13 +281,13 @@ namespace PHP.Core.AST
         #region Construction
 
         public AnonymousTypeDecl(SourceUnit/*!*/ sourceUnit,
-            Text.Span span, Text.Span entireDeclarationPosition, int headingEndPosition, int declarationBodyPosition,
+            Text.Span span, Text.Span headingSpan,
             bool isConditional, Scope scope, PhpMemberAttributes memberAttributes, bool isPartial,
             NamespaceDecl ns, List<FormalTypeParam>/*!*/ genericParams, TypeRef baseClass,
-            List<TypeRef>/*!*/ implementsList, List<TypeMemberDecl>/*!*/ elements,
+            List<TypeRef>/*!*/ implementsList, List<TypeMemberDecl>/*!*/ elements, Text.Span bodySpan,
             List<CustomAttribute> attributes)
-            : base(sourceUnit, span, entireDeclarationPosition, headingEndPosition, declarationBodyPosition, isConditional,
-                  scope, memberAttributes, isPartial, ns, genericParams, baseClass, implementsList, elements, attributes)
+            : base(sourceUnit, span, headingSpan, isConditional,
+                  scope, memberAttributes, isPartial, ns, genericParams, baseClass, implementsList, elements, bodySpan, attributes)
         {
         }
 
@@ -317,15 +310,10 @@ namespace PHP.Core.AST
     /// <summary>
     /// Represents a member declaration.
     /// </summary>
-    public abstract class TypeMemberDecl : LangElement, IDeclarationElement
+    public abstract class TypeMemberDecl : LangElement
 	{
         public PhpMemberAttributes Modifiers { get { return modifiers; } }
 		protected PhpMemberAttributes modifiers;
-
-        /// <summary>
-        /// Gets extent of the entire declaration.
-        /// </summary>
-        public abstract Text.Span EntireDeclarationSpan { get; }
 
         /// <summary>
         /// Gets collection of CLR attributes annotating this statement.
@@ -371,23 +359,26 @@ namespace PHP.Core.AST
         public ActualParam[] BaseCtorParams { get { return baseCtorParams; } internal set { baseCtorParams = value; } }
 		private ActualParam[] baseCtorParams;
 
-        public override Text.Span EntireDeclarationSpan { get { return entireDeclarationSpan; } }
-        private Text.Span entireDeclarationSpan;
+        public Text.Span NameSpan { get { return nameSpan; } }
+        private Text.Span nameSpan;
 
-        public int HeadingEndPosition { get { return headingEndPosition; } }
-        private int headingEndPosition;
+        public Text.Span ParametersSpan { get { return parametersSpan; } }
+        private Text.Span parametersSpan;
 
-        public int DeclarationBodyPosition { get { return declarationBodyPosition; } }
-        private int declarationBodyPosition;
+        public Text.Span BodySpan { get { return bodySpan; } }
+        private Text.Span bodySpan;
+
+        public Text.Span HeadingSpan { get { return Text.Span.Combine(Span, parametersSpan); } }
 
         public TypeRef ReturnType { get { return returnType; } }
         private TypeRef returnType;
 
         #region Construction
 
-        public MethodDecl(Text.Span span, Text.Span entireDeclarationPosition, int headingEndPosition, int declarationBodyPosition, 
-			string name, bool aliasReturn, IList<FormalParam>/*!*/ formalParams, IList<FormalTypeParam>/*!*/ genericParams, 
-			IList<Statement> body, PhpMemberAttributes modifiers, IList<ActualParam> baseCtorParams, 
+        public MethodDecl(Text.Span span, int headingEndPosition, int declarationBodyPosition, 
+			string name, Text.Span nameSpan, bool aliasReturn, IList<FormalParam>/*!*/ formalParams, Text.Span paramsSpan,
+            IList<FormalTypeParam>/*!*/ genericParams,  IList<Statement> body, Text.Span bodySpan,
+            PhpMemberAttributes modifiers, IList<ActualParam> baseCtorParams, 
 			List<CustomAttribute> attributes, TypeRef returnType)
             : base(span, attributes)
         {
@@ -399,9 +390,9 @@ namespace PHP.Core.AST
             this.typeSignature = new TypeSignature(genericParams);
             this.body = (body != null) ? body.AsArray() : null;
             this.baseCtorParams = (baseCtorParams != null) ? baseCtorParams.AsArray() : null;
-            this.entireDeclarationSpan = entireDeclarationPosition;
-            this.headingEndPosition = headingEndPosition;
-            this.declarationBodyPosition = declarationBodyPosition;
+            this.nameSpan = nameSpan;
+            this.parametersSpan = paramsSpan;
+            this.bodySpan = bodySpan;
             this.returnType = returnType;
         }
 
@@ -442,8 +433,6 @@ namespace PHP.Core.AST
 		private readonly List<FieldDecl>/*!*/ fields;
         /// <summary>List of fields in this list</summary>
         public List<FieldDecl> Fields/*!*/ { get { return fields; } }
-
-        public override Text.Span EntireDeclarationSpan { get { return this.Span; } }
 
 		public FieldDeclList(Text.Span span, PhpMemberAttributes modifiers, List<FieldDecl>/*!*/ fields,
 			List<CustomAttribute> attributes)
@@ -541,8 +530,6 @@ namespace PHP.Core.AST
 		/// <summary>List of constants in this list</summary>
         public List<ClassConstantDecl>/*!*/ Constants { get { return constants; } }
         private readonly List<ClassConstantDecl>/*!*/ constants;
-
-        public override Text.Span EntireDeclarationSpan { get { return this.Span; } }
         
 		public ConstDeclList(Text.Span span, List<ClassConstantDecl>/*!*/ constants, List<CustomAttribute> attributes)
             : base(span, attributes)
@@ -702,8 +689,6 @@ namespace PHP.Core.AST
         /// </summary>
         public int HeadingEndPosition { get { return headingEndPosition; } }
         private readonly int headingEndPosition;
-
-        public override Text.Span EntireDeclarationSpan { get { return this.Span; } }
 
         public TraitsUse(Text.Span span, int headingEndPosition, List<QualifiedName>/*!*/traitsList, List<TraitAdaptation> traitAdaptationList)
             : base(span, null)

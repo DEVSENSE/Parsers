@@ -21,18 +21,22 @@ function foo(...$arg_1)
     "FormalParams":{
       "FormalParam":{"Name":"arg_1","PassedByRef":"False","IsVariadic":"True"}
     },
-    "Body":{
-      "FunctionDecl":{
-        "Name":"bar",
-        "IsConditional":"True",
-        "FormalParams":{
-          "FormalParam":{"Name":"arg_2","PassedByRef":"False","IsVariadic":"False"}
-        },
-        "Body":{
-          "JumpStmt":{"Type":"Return","DirectVarUse":{"VarName":"retval"}}
-        }
-      },      
-      "JumpStmt":{"Type":"Return","DirectVarUse":{"VarName":"retval"}}
+    "Body":{  
+      "BlockStmt":{
+        "FunctionDecl":{
+          "Name":"bar",
+          "IsConditional":"True",
+          "FormalParams":{
+            "FormalParam":{"Name":"arg_2","PassedByRef":"False","IsVariadic":"False"}
+          },
+          "Body":{ 
+            "BlockStmt":{
+              "JumpStmt":{"Type":"Return","DirectVarUse":{"VarName":"retval"}}
+            }
+          }
+        },      
+        "JumpStmt":{"Type":"Return","DirectVarUse":{"VarName":"retval"}}
+      }
     }
   }
 }

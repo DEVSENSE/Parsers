@@ -99,7 +99,6 @@
     <Compile Include="Parser\Parser.cs" />
     <None Include="Generators\generate.bat" />
     <None Include="packages.config" />
-    <None Include="Parser\Scanner.cs" />
     <Compile Include="Core\Text\ILineBreaks.cs" />
     <Compile Include="Core\Text\Span.cs" />
     <Compile Include="Core\Text\TextPoint.cs" />
@@ -116,8 +115,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Generators\OldLexer.lex" />
-    <None Include="Generators\OldParser.y" />
     <None Include="Generators\PhpLexer.lex" />
     <None Include="Generators\PhpParser.y" />
   </ItemGroup>

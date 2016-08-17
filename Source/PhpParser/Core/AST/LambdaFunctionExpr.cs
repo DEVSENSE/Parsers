@@ -13,7 +13,7 @@ namespace PHP.Core.AST
     /// <summary>
     /// Represents a function declaration.
     /// </summary>
-    public sealed class LambdaFunctionExpr : Expression, IHasSourceUnit, IDeclarationElement
+    public sealed class LambdaFunctionExpr : Expression, IHasSourceUnit
     {
         /// <summary>
         /// Gets namespace containing this lambda expression. Can be <c>null</c>.
@@ -45,18 +45,14 @@ namespace PHP.Core.AST
         private readonly List<FormalParam> useParams;
 
         //private readonly TypeSignature typeSignature;
-        public Statement[]/*!*/ Body { get { return body; } }
-        private readonly Statement[]/*!*/ body;
-        //private readonly CustomAttributes attributes;
+        public BlockStmt/*!*/ Body { get { return body; } }
+        private readonly BlockStmt/*!*/ body;
 
-        public Text.Span EntireDeclarationSpan { get { return entireDeclarationSpan; } }
-        private readonly Text.Span entireDeclarationSpan;
+        public Text.Span HeadingSpan { get { return headingSpan; } }
+        private Text.Span headingSpan;
 
-        public int HeadingEndPosition { get { return headingEndPosition; } }
-        private readonly int headingEndPosition;
-
-        public int DeclarationBodyPosition { get { return declarationBodyPosition; } }
-        private readonly int declarationBodyPosition;
+        public Text.Span ParametersSpan { get { return parametersSpan; } }
+        private Text.Span parametersSpan;
 
         /// <summary>
         /// Gets the source file <see cref="SourceUnit"/>. Cannot be <c>null</c>.
@@ -70,10 +66,10 @@ namespace PHP.Core.AST
         #region Construction
 
         public LambdaFunctionExpr(SourceUnit/*!*/ sourceUnit,
-            Text.Span span, Text.Span entireDeclarationPosition, int headingEndPosition, int declarationBodyPosition,
-            Scope scope, NamespaceDecl ns,
-            bool aliasReturn, List<FormalParam>/*!*/ formalParams, List<FormalParam> useParams,
-            IList<Statement>/*!*/ body, TypeRef returnType)
+            Text.Span span, Text.Span headingSpan,
+            Scope scope, NamespaceDecl ns, bool aliasReturn, List<FormalParam>/*!*/ formalParams, 
+            Text.Span paramSpan, List<FormalParam> useParams,
+            BlockStmt/*!*/ body, TypeRef returnType)
             : base(span)
         {
             Debug.Assert(formalParams != null && body != null);
@@ -86,10 +82,9 @@ namespace PHP.Core.AST
             this.useParams = useParams;
             //this.typeSignature = new TypeSignature(genericParams);
             //this.attributes = new CustomAttributes(attributes);
-            this.body = body.AsArray();
-            this.entireDeclarationSpan = entireDeclarationPosition;
-            this.headingEndPosition = headingEndPosition;
-            this.declarationBodyPosition = declarationBodyPosition;
+            this.body = body;
+            this.headingSpan = headingSpan;
+            this.parametersSpan = paramSpan;
             this.returnType = returnType;
         }
 

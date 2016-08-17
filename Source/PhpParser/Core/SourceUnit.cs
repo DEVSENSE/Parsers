@@ -255,7 +255,7 @@ namespace PHP.Syntax
         /// </summary>
         internal void SetEmptyAst()
         {
-            this.ast = new Core.AST.GlobalCode(new List<Core.AST.Statement>(), this);
+            this.ast = new Core.AST.GlobalCode(new Span(), new List<Core.AST.Statement>(), this);
         }
 
         public override string GetSourceCode(Core.Text.Span span)

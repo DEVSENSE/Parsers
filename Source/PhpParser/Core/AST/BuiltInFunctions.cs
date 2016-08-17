@@ -31,7 +31,7 @@ namespace PHP.Core.AST
 		/// <summary>
 		/// Whether the inclusion is conditional.
 		/// </summary>
-		public bool IsConditional { get { return isConditional; } }
+		public bool IsConditional { get { return isConditional; } internal set { isConditional = value; } }
 		private bool isConditional;
 
 		public SourceUnit/*!*/ SourceUnit { get { return sourceUnit; } }

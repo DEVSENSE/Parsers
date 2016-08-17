@@ -45,7 +45,7 @@ namespace PHP.Core.AST
     {
         public override Operations Operation { get { return Operations.DirectStaticFieldUse; } }
 
-        private VariableNode propertyName;
+        private VariableNameRef propertyName;
 
         /// <summary>Name of static field beign accessed</summary>
         public VariableName PropertyName => propertyName.Name;
@@ -58,7 +58,7 @@ namespace PHP.Core.AST
         public DirectStFldUse(Span span, TypeRef typeRef, VariableName propertyName, Span propertyNamePosition)
             : base(span, typeRef)
         {
-            this.propertyName = new VariableNode(propertyNamePosition, propertyName);
+            this.propertyName = new VariableNameRef(propertyNamePosition, propertyName);
         }
 
         internal DirectStFldUse(Text.Span span, GenericQualifiedName qualifiedName, Span qualifiedNameSpan, VariableName propertyName, Span propertyNameSpan)

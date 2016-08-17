@@ -21,13 +21,15 @@ endforeach;
     },
     "KeyVariable":{},
     "Body":{
-      "ValueAssignEx":{
-        "Operation":"AssignValue",
-        "DirectVarUse":{"VarName":"value"},
-        "BinaryEx":{
-          "Operation":"Mul",
+      "BlockStmt":{
+        "ValueAssignEx":{
+          "Operation":"AssignValue",
           "DirectVarUse":{"VarName":"value"},
-          "LongIntLiteral":{"Value":"2"}
+          "BinaryEx":{
+            "Operation":"Mul",
+            "DirectVarUse":{"VarName":"value"},
+            "LongIntLiteral":{"Value":"2"}
+          }
         }
       }
     }

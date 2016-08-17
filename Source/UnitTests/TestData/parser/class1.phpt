@@ -22,9 +22,17 @@ class SimpleClass
     "MemberAttributes":"Public",
     "IsConditional":"False",
     "PHPDoc":{"Comment":"class declaration"},
-    "FieldDecl":{"Name":"var","MemberAttributes":"Private","PHPDoc":{"Comment":"property declaration"},"StringLiteral":{"Value":"a default value"}}, 
-    "FieldDecl":{"Name":"vara","MemberAttributes":"Private","PHPDoc":{"Comment":"second doc"},"LongIntLiteral":{"Value":"10"}},
-    "FieldDecl":{"Name":"pvar","MemberAttributes":"Public","PHPDoc":{"Comment":"default property declaration"},"LongIntLiteral":{"Value":"1"}},
-    "ClassConstantDecl":{"Name":"cvar","MemberAttributes":"Public","PHPDoc":{"Comment":"constant declaration"},"LongIntLiteral":{"Value":"22"}}
+    "FieldDeclList":{
+      "FieldDecl":{"Name":"var","MemberAttributes":"Private","PHPDoc":{"Comment":"property declaration"},"StringLiteral":{"Value":"a default value"}}, 
+      "FieldDecl":{"Name":"vara","MemberAttributes":"Private","PHPDoc":{"Comment":"second doc"},"LongIntLiteral":{"Value":"10"}}
+    }, 
+    "FieldDeclList":{
+      "PHPDoc":{"Comment":"default property declaration"},
+      "FieldDecl":{"Name":"pvar","MemberAttributes":"Public","PHPDoc":{"Comment":"default property declaration"},"LongIntLiteral":{"Value":"1"}}
+    },
+    "ConstDeclList":{
+      "PHPDoc":{"Comment":"constant declaration"},
+      "ClassConstantDecl":{"Name":"cvar","MemberAttributes":"Public","PHPDoc":{"Comment":"constant declaration"},"LongIntLiteral":{"Value":"22"}}
+    }
   }  
 }

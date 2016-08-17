@@ -19,11 +19,13 @@ $greet = function($name)
       "FormalParams":{
         "FormalParam":{"Name":"name","PassedByRef":"False","IsVariadic":"False"}
       },
-      "Body":{
-        "UnaryEx" : {
-          "Operation" : "Print",
-          "StringLiteral" : {
-              "Value" : "Hello world"
+      "Body":{  
+        "BlockStmt":{
+          "UnaryEx" : {
+            "Operation" : "Print",
+            "StringLiteral" : {
+                "Value" : "Hello world"
+            }
           }
         }
       }

@@ -188,6 +188,7 @@ namespace PhpParser
         override public void VisitGlobalConstDeclList(GlobalConstDeclList x)
         {
             _serializer.StartSerialize(typeof(GlobalConstDeclList).Name, SerializeSpan(x.Span));
+            SerializePHPDoc(x.PHPDoc);
             base.VisitGlobalConstDeclList(x);
             _serializer.EndSerialize();
         }
@@ -549,7 +550,7 @@ namespace PhpParser
 
             _serializer.StartSerialize("Body");
             // function body
-            VisitStatements(x.Body);
+            VisitElement(x.Body);
             _serializer.EndSerialize();
             
             SerializeOptionalProperty("ReturnType", x.ReturnType);
@@ -578,7 +579,7 @@ namespace PhpParser
 
             _serializer.StartSerialize("Body");
             // function body
-            VisitStatements(x.Body);
+            VisitElement(x.Body);
             _serializer.EndSerialize();
 
             if (x.ReturnType != null)
@@ -643,8 +644,11 @@ namespace PhpParser
         }
         override public void VisitFieldDeclList(FieldDeclList x)
         {
+            _serializer.StartSerialize(typeof(FieldDeclList).Name, SerializeSpan(x.Span));
+            SerializePHPDoc(x.PHPDoc);
             foreach (FieldDecl f in x.Fields)
                 VisitFieldDecl(f, x.Modifiers);
+            _serializer.EndSerialize();
         }
         public void VisitFieldDecl(FieldDecl x, PhpMemberAttributes attributes)
         {
@@ -656,8 +660,11 @@ namespace PhpParser
         }
         override public void VisitConstDeclList(ConstDeclList x)
         {
+            _serializer.StartSerialize(typeof(ConstDeclList).Name, SerializeSpan(x.Span));
+            SerializePHPDoc(x.PHPDoc);
             foreach (ClassConstantDecl c in x.Constants)
                 VisitClassConstantDecl(c, x.Modifiers);
+            _serializer.EndSerialize();
         }
         public void VisitClassConstantDecl(ClassConstantDecl x, PhpMemberAttributes attributes)
         {
@@ -811,7 +818,9 @@ namespace PhpParser
 
         override public void VisitIncludingEx(IncludingEx x)
         {
-            _serializer.StartSerialize(typeof(IncludingEx).Name, SerializeSpan(x.Span), new NodeObj("InclusionType", x.InclusionType.ToString()));
+            _serializer.StartSerialize(typeof(IncludingEx).Name, SerializeSpan(x.Span), 
+                new NodeObj("InclusionType", x.InclusionType.ToString()), 
+                new NodeObj("IsConditional", x.IsConditional.ToString()));
             base.VisitIncludingEx(x);
             _serializer.EndSerialize();
         }

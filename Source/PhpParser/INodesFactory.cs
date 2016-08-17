@@ -104,8 +104,8 @@ namespace PhpParser
         /// <param name="lexicalVars">Variables from parent scope.</param>
         /// <param name="body">Lambda body.</param>
         /// <returns>Lambda node.</returns>
-        TNode Lambda(TSpan span, bool aliasReturn,
-            TypeRef returnType, TSpan returnTypeSpan, TSpan headSpan,
+        TNode Lambda(TSpan span, TSpan headingSpan, bool aliasReturn,
+            TypeRef returnType, TSpan returnTypeSpan,
             IEnumerable<FormalParam> formalParams, TSpan formalParamsSpan,
             IEnumerable<FormalParam> lexicalVars, TNode body);
 
@@ -134,12 +134,12 @@ namespace PhpParser
         /// <param name="members">Enumeration of type members.</param>
         /// <param name="blockSpan">Span of block enclosing members (including <c>{</c> and <c>}</c>.</param>
         /// <returns>Type node.</returns>
-        TNode NamedType(TSpan span,
+        TNode Type(TSpan span, Span headingSpan,
             bool conditional, PhpMemberAttributes attributes,
             Name name, TSpan nameSpan, IEnumerable<FormalTypeParam> typeParamsOpt,
             TypeRef baseClassOpt,
             IEnumerable<TypeRef> implements,
-            IEnumerable<TNode> members, TSpan blockSpan);
+            IEnumerable<TNode> members, TSpan bodySpan);
 
         /// <summary>
         /// Creates method declaration node.
@@ -163,7 +163,7 @@ namespace PhpParser
             TypeRef returnType, TSpan returnTypeSpan,
             Name name, TSpan nameSpan, IEnumerable<FormalTypeParam> typeParamsOpt,
             IEnumerable<FormalParam> formalParams, TSpan formalParamsSpan,
-            IEnumerable<ActualParam> baseCtorParams, TNode body);
+            IEnumerable<ActualParam> baseCtorParams, TNode body, Span bodySpan);
 
         /// <summary>
         /// Creates class trait use statement.
@@ -670,7 +670,7 @@ namespace PhpParser
         /// <param name="members">Enumeration of type members.</param>
         /// <param name="blockSpan">Span of block enclosing members (including <c>{</c> and <c>}</c>.</param>
         /// <returns>Type node.</returns>
-        TNode AnonymousTypeReference(TSpan span,
+        TNode AnonymousTypeReference(TSpan span, Span headingSpan,
             bool conditional, PhpMemberAttributes attributes,
             IEnumerable<FormalTypeParam> typeParamsOpt,
             TypeRef baseClassOpt,
