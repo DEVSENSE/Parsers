@@ -30,7 +30,7 @@ namespace UnitTests
             Parser parser = new Parser();
             using (StringReader source_reader = new StringReader(sourceTest[0]))
             {
-                Lexer lexer = new CompliantLexer(source_reader, sourceUnit, astFactory, LanguageFeatures.ShortOpenTags);
+                Lexer lexer = new Lexer(source_reader, sourceUnit, astFactory, LanguageFeatures.ShortOpenTags);
                 ast = (GlobalCode)parser.Parse(lexer, astFactory, LanguageFeatures.ShortOpenTags);
                 Assert.AreEqual(0, astFactory.Errors.Count);
             }

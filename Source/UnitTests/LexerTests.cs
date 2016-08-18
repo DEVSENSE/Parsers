@@ -101,6 +101,7 @@ namespace UnitTests
                 {
                     Assert.AreEqual(int.Parse(expectedToken[2]), lexer.TokenValue.Integer);
                 }
+                //lexer.RestoreCompressedState(lexer.GetCompressedState());
             }
             Assert.AreEqual(0, errorSink.Errors.Count);
         }

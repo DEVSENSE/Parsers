@@ -247,7 +247,7 @@ using Devsense.PHP.Errors;
 %token <Object> T_POW_EQUAL 270       //"**= (T_POW_EQUAL)"
 
 /* Token used to force a parse error from the lexer */
-%token T_ERROR
+%token T_ERROR 257
 
 %type <Object> top_statement namespace_name name statement function_declaration_statement
 %type <Object> class_declaration_statement trait_declaration_statement

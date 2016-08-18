@@ -5,64 +5,10 @@ using System.Globalization;
 
 using Devsense.PHP.Text;
 using Devsense.PHP.Errors;
+using System.Collections.Generic;
 
 namespace Devsense.PHP.Syntax
 {
-    /// <summary>
-    /// PHP lexer generated according to the PhpLexer.l grammar.
-    /// Special implementation of the PHP lexer that skips empty nodes (open tag, comment, etc.), which is required by the PHP grammar.
-    /// </summary>
-    public class CompliantLexer : Lexer
-    {
-        /// <summary>
-        /// Lexer constructor that initializes all the necessary members
-        /// </summary>
-        /// <param name="reader">Text reader containing the source code.</param>
-        /// <param name="sourceUnit">Source unit (file) associated with the <paramref name="reader"/>.</param>
-        /// <param name="errors">Error sink used to report lexical error, usually implemented by NodesFactory.</param>
-        /// <param name="features">Allow or disable short oppening tags for PHP.</param>
-        /// <param name="positionShift">Starting position of the first token, used during custom restart.</param>
-        /// <param name="initialState">Initial state of the lexer, used during custom restart.</param>
-        public CompliantLexer(System.IO.TextReader reader, SourceUnit sourceUnit, IErrorSink<Span> errors, LanguageFeatures features,
-            int positionShift = 0, LexicalStates initialState = LexicalStates.INITIAL)
-            : base(reader, sourceUnit, errors, features, positionShift, initialState)
-        {
-        }
-
-        /// <summary>
-        /// Get next token, store its actual position in the source unit and call the <see cref="NextTokenEvent"/>.
-        /// This implementation supports the functionality of zendlex, which skips empty nodes (open tag, comment, etc.).
-        /// </summary>
-        /// <returns>Next token.</returns>
-        override public int GetNextToken()
-        {
-            do
-            {
-                Tokens token = NextToken();
-                UpdateTokenPosition();
-
-                // origianl zendlex() functionality - skip open and close tags because they are not in the PHP grammar
-                switch (token)
-                {
-                    case Tokens.T_COMMENT:
-                    case Tokens.T_DOC_COMMENT:
-                    case Tokens.T_OPEN_TAG:
-                    case Tokens.T_WHITESPACE:
-                        continue;
-                    case Tokens.T_CLOSE_TAG:
-                        token = Tokens.T_SEMI; /* implicit ; */
-                        break;
-                    case Tokens.T_OPEN_TAG_WITH_ECHO:
-                        token = Tokens.T_ECHO;
-                        break;
-                }
-
-                CallNextTokenEvent(token);
-                return (int)token;
-            } while (true);
-        }
-    }
-
     /// <summary>
     /// Called by <see cref="Scanner"/> when new token is obtained from lexer.
     /// </summary>
@@ -162,7 +108,7 @@ namespace Devsense.PHP.Syntax
         /// <summary>
         /// Updates <see cref="charOffset"/> and <see cref="_tokenPosition"/>.
         /// </summary>
-        protected void UpdateTokenPosition()
+        public void UpdateTokenPosition()
         {
             int tokenLength = this.TokenLength;
 
@@ -848,5 +794,74 @@ namespace Devsense.PHP.Syntax
             _tokenSemantics.Object = f(label.Substring(0, label.Length - _hereDocLabel.Length));
             return (Tokens.T_ENCAPSED_AND_WHITESPACE);
         }
+
+        #region Compressed State
+
+        public struct CompressedState : IEquatable<CompressedState>
+        {
+            internal string HereDocLabel => _hereDocLabel;
+            private readonly string _hereDocLabel;
+
+            internal LexicalStates CurrentState => _currentState;
+            private readonly LexicalStates _currentState;
+
+            private readonly LexicalStates[]/*!*/ _stateStack;
+            
+            private PHPDocBlock _phpDoc;
+            public PHPDocBlock PhpDoc => _phpDoc;
+
+            public CompressedState(Lexer lexer)
+            {
+                this._hereDocLabel = lexer._hereDocLabel;
+                this._currentState = lexer.CurrentLexicalState;
+                this._stateStack = lexer.stateStack.ToArray();
+                this._phpDoc = lexer.DocBlock;
+            }
+
+            public override int GetHashCode()
+            {
+                unchecked
+                {
+                    int result = (_hereDocLabel != null) ? _hereDocLabel.GetHashCode() : 0x2312347;
+                    for (int i = 0; i < _stateStack.Length; i++)
+                        result ^= (int)_stateStack[i] << i;
+                    return result ^ ((int)_currentState << 7);
+                }
+            }
+
+            public bool Equals(CompressedState other)
+            {
+                if (_hereDocLabel != other._hereDocLabel) return false;
+                if (_stateStack.Length != other._stateStack.Length) return false;
+
+                for (int i = 0; i < _stateStack.Length; i++)
+                {
+                    if (_stateStack[i] != other._stateStack[i])
+                        return false;
+                }
+
+                return true;
+            }
+
+            public Stack<LexicalStates> GetStateStack()
+            {
+                return new Stack<LexicalStates>(_stateStack);
+            }
+        }
+
+        public CompressedState GetCompressedState()
+        {
+            return new CompressedState(this);
+        }
+
+        public void RestoreCompressedState(CompressedState state)
+        {
+            _hereDocLabel = state.HereDocLabel;
+            stateStack = state.GetStateStack();
+            CurrentLexicalState = state.CurrentState;
+            DocBlock = state.PhpDoc;
+        }
+
+        #endregion
     }
 }

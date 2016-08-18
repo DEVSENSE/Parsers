@@ -85,19 +85,21 @@
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Syntax\Convert.cs" />
+    <Compile Include="Syntax\Parsers\CompliantLexer.cs" />
+    <Compile Include="Syntax\Parsers\TokensUtils.cs" />
     <Compile Include="Syntax\PropertyCollection.cs" />
     <Compile Include="Serialization\INodeWriter.cs" />
     <Compile Include="Serialization\JsonNodeWriter.cs" />
     <Compile Include="Serialization\TreeSerializer.cs" />
     <Compile Include="Syntax\Generated\Lexer.cs" />
     <Compile Include="Syntax\Generated\Parser.cs" />
-    <Compile Include="Syntax\GPPG.cs" />
+    <Compile Include="Syntax\Parsers\GPPG.cs" />
     <Compile Include="Syntax\InclusionTypes.cs" />
     <Compile Include="Syntax\LanguageFeatures.cs" />
-    <Compile Include="Syntax\Lexer.cs" />
+    <Compile Include="Syntax\Parsers\Lexer.cs" />
     <Compile Include="Syntax\Members.cs" />
     <Compile Include="Syntax\Names.cs" />
-    <Compile Include="Syntax\Parser.cs" />
+    <Compile Include="Syntax\Parsers\Parser.cs" />
     <Compile Include="Syntax\PhpStringBuilder.cs" />
     <Compile Include="Syntax\PHPDocBlock.cs" />
     <Compile Include="Syntax\SourceUnit.cs" />
@@ -122,8 +124,8 @@
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
   <PropertyGroup>
-    <PreBuildEvent>"$(ProjectDir)Syntax\Generators\CsLex.exe" $(ProjectDir)Syntax\Generators\PhpLexer.lex $(ProjectDir)Syntax\Generated\Lexer.cs /version:2
-"$(ProjectDir)Syntax\Generators\gppg.exe" /l $(ProjectDir)Syntax\Generators\PhpParser.y $(ProjectDir)Syntax\Generated\Parser.cs</PreBuildEvent>
+    <PreBuildEvent>rem "$(ProjectDir)Syntax\Generators\CsLex.exe" $(ProjectDir)Syntax\Generators\PhpLexer.lex $(ProjectDir)Syntax\Generated\Lexer.cs /version:2
+rem "$(ProjectDir)Syntax\Generators\gppg.exe" /l $(ProjectDir)Syntax\Generators\PhpParser.y $(ProjectDir)Syntax\Generated\Parser.cs</PreBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

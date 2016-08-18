@@ -69,7 +69,9 @@ namespace gpcc
 			this.rootProduction = new Production(this.LookupNonTerminal("$accept"));
 			this.AddProduction(this.rootProduction);
 			this.rootProduction.rhs.Add(root);
-			this.rootProduction.rhs.Add(this.LookupTerminal(GrammarToken.Symbol, "EOF"));
+            Terminal terminal = this.LookupTerminal(GrammarToken.Symbol, "EOF");
+            terminal.SetValue(0);
+            this.rootProduction.rhs.Add(terminal);
 		}
 	}
 }

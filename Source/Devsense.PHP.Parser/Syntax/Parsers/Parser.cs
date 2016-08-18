@@ -59,7 +59,7 @@ namespace Devsense.PHP.Syntax
         {
             // initialization:
             this._features = features;
-            this._lexer = lexer;
+            this._lexer = new CompliantLexer(lexer);
             this._astFactory = astFactory;
             //InitializeFields();
 
