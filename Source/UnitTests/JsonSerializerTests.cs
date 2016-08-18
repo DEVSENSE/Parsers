@@ -1,12 +1,12 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using PHP.Core.AST;
-using PhpParser;
+using Devsense.PHP.Syntax.Ast;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UnitTests.TestImplementation;
+using Devsense.PHP.Syntax.Ast.Serialization;
 
 namespace UnitTests
 {
@@ -16,7 +16,7 @@ namespace UnitTests
         [TestMethod]
         public void ToStringTest()
         {
-            ISerializer serializer = new JsonSerializer();
+            INodeWriter serializer = new JsonNodeWriter();
             Assert.AreEqual(string.Empty, serializer.ToString());
             serializer.Serialize("hello", null);
             Assert.AreEqual("\"hello\" : {\n}", serializer.ToString());
@@ -25,11 +25,11 @@ namespace UnitTests
         [TestMethod]
         public void EndSerializeTest()
         {
-            ISerializer serializer = new JsonSerializer();
+            INodeWriter serializer = new JsonNodeWriter();
             serializer.EndSerialize(null);
             Assert.AreEqual("}", serializer.ToString());
 
-            serializer = new JsonSerializer();
+            serializer = new JsonNodeWriter();
             Assert.AreEqual(string.Empty, serializer.ToString());
             serializer.EndSerialize(new NodeObj("hello", "world"));
             Assert.AreEqual("\"hello\" : \"world\"\n}", serializer.ToString());
@@ -38,11 +38,11 @@ namespace UnitTests
         [TestMethod]
         public void SerializeTest()
         {
-            ISerializer serializer = new JsonSerializer();
+            INodeWriter serializer = new JsonNodeWriter();
             serializer.Serialize("hello", null);
             Assert.AreEqual("\"hello\" : {\n}", serializer.ToString());
 
-            serializer = new JsonSerializer();
+            serializer = new JsonNodeWriter();
             serializer.Serialize("hello", new NodeObj("hello", "world"));
             Assert.AreEqual("\"hello\" : {\n  \"hello\" : \"world\"\n}", serializer.ToString());
             serializer.Serialize("world", new NodeObj("hello", new NodeObj("hello", "world")));
@@ -52,11 +52,11 @@ namespace UnitTests
         [TestMethod]
         public void StartSerializeTest()
         {
-            ISerializer serializer = new JsonSerializer();
+            INodeWriter serializer = new JsonNodeWriter();
             serializer.StartSerialize("hello", null);
             Assert.AreEqual("\"hello\" : {", serializer.ToString());
 
-            serializer = new JsonSerializer();
+            serializer = new JsonNodeWriter();
             serializer.StartSerialize("hello", new NodeObj("hello", "world"));
             Assert.AreEqual("\"hello\" : {\n  \"hello\" : \"world\"", serializer.ToString());
             serializer.StartSerialize("world", new NodeObj("hello", "world"));

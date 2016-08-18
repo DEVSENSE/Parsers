@@ -1,16 +1,14 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using PhpParser.Parser;
 using System.IO;
-using PHP.Core.Text;
-using PHP.Syntax;
+using Devsense.PHP.Text;
 using System.Diagnostics;
 using System.Text;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using UnitTests.TestImplementation;
-using PhpParser;
+using Devsense.PHP.Syntax;
 
 namespace UnitTests
 {
@@ -51,7 +49,7 @@ namespace UnitTests
         {
             string path = (string)TestContext.DataRow["files"];
             SourceUnit sourceUnit = new CodeSourceUnit(File.ReadAllText(path), path, new System.Text.ASCIIEncoding(), Lexer.LexicalStates.INITIAL);
-            PhpParser.Parser.ITokenProvider<SemanticValueType, Span> lexer = new Lexer(new StreamReader(path), sourceUnit, new TestErrorSink(), 
+            ITokenProvider<SemanticValueType, Span> lexer = new Lexer(new StreamReader(path), sourceUnit, new TestErrorSink(), 
                 LanguageFeatures.ShortOpenTags, 0, Lexer.LexicalStates.INITIAL);
             Assert.AreNotEqual(null, lexer);
         }

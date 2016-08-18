@@ -1,0 +1,135 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <MinimumVisualStudioVersion>11.0</MinimumVisualStudioVersion>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{4F3BE9D7-1E3D-4BE4-999A-32CCE715AB40}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Devsense.PHP.Parser</RootNamespace>
+    <AssemblyName>Devsense.PHP.Parser</AssemblyName>
+    <DefaultLanguage>en-US</DefaultLanguage>
+    <FileAlignment>512</FileAlignment>
+    <ProjectTypeGuids>{786C830F-07A1-408B-BD7F-6EE04809D6DB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <TargetFrameworkProfile>Profile75</TargetFrameworkProfile>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <!-- A reference to the entire .NET Framework is automatically included -->
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Ast\ArrayEx.cs" />
+    <Compile Include="Ast\AssignEx.cs" />
+    <Compile Include="Ast\BasicNodesFactory.cs" />
+    <Compile Include="Ast\BinaryEx.cs" />
+    <Compile Include="Ast\BuiltInFunctions.cs" />
+    <Compile Include="Ast\CallSignature.cs" />
+    <Compile Include="Ast\ConcatEx.cs" />
+    <Compile Include="Ast\ConstantUse.cs" />
+    <Compile Include="Ast\CustomAttributes.cs" />
+    <Compile Include="Ast\DirectVariableUse.cs" />
+    <Compile Include="Ast\EchoStmt.cs" />
+    <Compile Include="Ast\Expression.cs" />
+    <Compile Include="Ast\FieldUse.cs" />
+    <Compile Include="Ast\FunctionCall.cs" />
+    <Compile Include="Ast\FunctionDecl.cs" />
+    <Compile Include="Ast\GlobalCode.cs" />
+    <Compile Include="Ast\HaltCompiler.cs" />
+    <Compile Include="Ast\IfStmt.cs" />
+    <Compile Include="Ast\IncDecEx.cs" />
+    <Compile Include="Ast\IndirectVariableUse.cs" />
+    <Compile Include="Ast\INodesFactory.cs" />
+    <Compile Include="Ast\ItemUse.cs" />
+    <Compile Include="Ast\JumpStmt.cs" />
+    <Compile Include="Ast\LambdaFunctionExpr.cs" />
+    <Compile Include="Ast\LangElement.cs" />
+    <Compile Include="Ast\ListEx.cs" />
+    <Compile Include="Ast\Literal.cs" />
+    <Compile Include="Ast\LoopStmt.cs" />
+    <Compile Include="Ast\NewAndInstanceof.cs" />
+    <Compile Include="Ast\ShellEx.cs" />
+    <Compile Include="Ast\Statement.cs" />
+    <Compile Include="Ast\SwitchStmt.cs" />
+    <Compile Include="Ast\TernaryEx.cs" />
+    <Compile Include="Ast\TryStmt.cs" />
+    <Compile Include="Ast\TypeDecl.cs" />
+    <Compile Include="Ast\TypeRef.cs" />
+    <Compile Include="Ast\UnaryEx.cs" />
+    <Compile Include="Ast\VariableUse.cs" />
+    <Compile Include="Ast\YieldEx.cs" />
+    <Compile Include="Errors\Errors.cs" />
+    <Compile Include="Errors\IErrorSink.cs" />
+    <Compile Include="Errors\Strings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Strings.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Syntax\Convert.cs" />
+    <Compile Include="Syntax\PropertyCollection.cs" />
+    <Compile Include="Serialization\INodeWriter.cs" />
+    <Compile Include="Serialization\JsonNodeWriter.cs" />
+    <Compile Include="Serialization\TreeSerializer.cs" />
+    <Compile Include="Syntax\Generated\Lexer.cs" />
+    <Compile Include="Syntax\Generated\Parser.cs" />
+    <Compile Include="Syntax\GPPG.cs" />
+    <Compile Include="Syntax\InclusionTypes.cs" />
+    <Compile Include="Syntax\LanguageFeatures.cs" />
+    <Compile Include="Syntax\Lexer.cs" />
+    <Compile Include="Syntax\Members.cs" />
+    <Compile Include="Syntax\Names.cs" />
+    <Compile Include="Syntax\Parser.cs" />
+    <Compile Include="Syntax\PhpStringBuilder.cs" />
+    <Compile Include="Syntax\PHPDocBlock.cs" />
+    <Compile Include="Syntax\SourceUnit.cs" />
+    <Compile Include="Syntax\TreeVisitor.cs" />
+    <Compile Include="Syntax\Utils.cs" />
+    <Compile Include="Text\ILineBreaks.cs" />
+    <Compile Include="Text\Span.cs" />
+    <Compile Include="Text\TextPoint.cs" />
+    <Compile Include="Text\TextSpan.cs" />
+    <Compile Include="Text\TextUtils.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Syntax\Generators\generate.bat" />
+    <None Include="Syntax\Generators\PhpLexer.lex" />
+    <None Include="Syntax\Generators\PhpParser.y" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Errors\Strings.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Strings.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
+  <PropertyGroup>
+    <PreBuildEvent>"$(ProjectDir)Syntax\Generators\CsLex.exe" $(ProjectDir)Syntax\Generators\PhpLexer.lex $(ProjectDir)Syntax\Generated\Lexer.cs /version:2
+"$(ProjectDir)Syntax\Generators\gppg.exe" /l $(ProjectDir)Syntax\Generators\PhpParser.y $(ProjectDir)Syntax\Generated\Parser.cs</PreBuildEvent>
+  </PropertyGroup>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

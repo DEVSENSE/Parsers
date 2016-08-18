@@ -1,11 +1,10 @@
-﻿using PHP.Core.Text;
-using PhpParser;
+﻿using Devsense.PHP.Text;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using PHP.Syntax;
+using Devsense.PHP.Errors;
 
 namespace UnitTests.TestImplementation
 {

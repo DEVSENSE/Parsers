@@ -1,11 +1,10 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using PHP.Syntax;
 using System.IO;
-using PhpParser.Parser;
-using PHP.Core.AST;
-using PhpParser;
+using Devsense.PHP.Syntax.Ast;
 using System.Text.RegularExpressions;
+using Devsense.PHP.Syntax.Ast.Serialization;
+using Devsense.PHP.Syntax;
 
 namespace UnitTests
 {
@@ -37,8 +36,8 @@ namespace UnitTests
             }
             Assert.AreEqual(0, astFactory.Errors.Count);
 
-            var serializer = new JsonSerializer();
-            SerializerTreeVisitor visitor = new SerializerTreeVisitor(serializer);
+            var serializer = new JsonNodeWriter();
+            TreeSerializer visitor = new TreeSerializer(serializer);
             ast.VisitMe(visitor);
 
             Regex rgx = new Regex("\"Span\"[^}]*},?"); // omit Span for more compact testing (position must be verified separately)

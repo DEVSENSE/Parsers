@@ -61,12 +61,11 @@
     <Compile Include="TestImplementation\TestErrorSink.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\PhpParser\PhpParser.csproj">
-      <Project>{81dce2b1-0568-4531-8e62-f247f636fd5e}</Project>
-      <Name>PhpParser</Name>
+    <ProjectReference Include="..\Devsense.PHP.Parser\Devsense.PHP.Parser.csproj">
+      <Project>{4f3be9d7-1e3d-4be4-999a-32cce715ab40}</Project>
+      <Name>Devsense.PHP.Parser</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
   <ItemGroup>
     <None Include="tokens.php" />
   </ItemGroup>

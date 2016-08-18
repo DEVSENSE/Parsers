@@ -3,9 +3,12 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.25123.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PhpParser", "PhpParser\PhpParser.csproj", "{81DCE2B1-0568-4531-8E62-F247F636FD5E}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTests", "UnitTests\UnitTests.csproj", "{7E0FDA11-5DC2-4D88-A670-A5D93C97421C}"
+	ProjectSection(ProjectDependencies) = postProject
+		{4F3BE9D7-1E3D-4BE4-999A-32CCE715AB40} = {4F3BE9D7-1E3D-4BE4-999A-32CCE715AB40}
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Devsense.PHP.Parser", "Devsense.PHP.Parser\Devsense.PHP.Parser.csproj", "{4F3BE9D7-1E3D-4BE4-999A-32CCE715AB40}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -13,14 +16,14 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{81DCE2B1-0568-4531-8E62-F247F636FD5E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{81DCE2B1-0568-4531-8E62-F247F636FD5E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{81DCE2B1-0568-4531-8E62-F247F636FD5E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{81DCE2B1-0568-4531-8E62-F247F636FD5E}.Release|Any CPU.Build.0 = Release|Any CPU
 		{7E0FDA11-5DC2-4D88-A670-A5D93C97421C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{7E0FDA11-5DC2-4D88-A670-A5D93C97421C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7E0FDA11-5DC2-4D88-A670-A5D93C97421C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7E0FDA11-5DC2-4D88-A670-A5D93C97421C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4F3BE9D7-1E3D-4BE4-999A-32CCE715AB40}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4F3BE9D7-1E3D-4BE4-999A-32CCE715AB40}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4F3BE9D7-1E3D-4BE4-999A-32CCE715AB40}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4F3BE9D7-1E3D-4BE4-999A-32CCE715AB40}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
