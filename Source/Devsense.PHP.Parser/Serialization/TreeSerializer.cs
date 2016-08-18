@@ -110,7 +110,7 @@ namespace Devsense.PHP.Syntax.Ast.Serialization
 
         override public void VisitDoubleLiteral(DoubleLiteral x)
         {
-            _serializer.Serialize(typeof(DoubleLiteral).Name, SerializeSpan(x.Span), new NodeObj("Value", x.Value.ToString()));
+            _serializer.Serialize(typeof(DoubleLiteral).Name, SerializeSpan(x.Span), new NodeObj("Value", x.Value.ToString(System.Globalization.NumberFormatInfo.InvariantInfo)));
         }
 
         override public void VisitStringLiteral(StringLiteral x)

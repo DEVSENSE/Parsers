@@ -95,7 +95,7 @@ namespace UnitTests
                 }
                 if (token == Tokens.T_DNUMBER)
                 {
-                    Assert.AreEqual(double.Parse(expectedToken[2]), lexer.TokenValue.Double);
+                    Assert.AreEqual(double.Parse(expectedToken[2], System.Globalization.NumberFormatInfo.InvariantInfo), lexer.TokenValue.Double);
                 }
                 if (token == Tokens.T_LNUMBER)
                 {
