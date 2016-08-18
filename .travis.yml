@@ -1,2 +1,2 @@
 language: csharp
-solution: Source\PhpParser.sln
+solution: ./Source/PhpParser.sln
