@@ -81,8 +81,8 @@ namespace PHP.Core.AST
         /// </summary>
         public readonly bool IsSimpleSyntax;
 
-        public QualifiedName QualifiedName { get { return this.qualifiedName; } }
-        private QualifiedName qualifiedName;
+        public TypeRef QualifiedName { get { return this.qualifiedName; } }
+        private TypeRef qualifiedName;
 
         /// <summary>
         /// Naming context defining aliases.
@@ -109,11 +109,11 @@ namespace PHP.Core.AST
             : base(p)
         {
             this.isAnonymous = true;
-            this.qualifiedName = new QualifiedName(Name.EmptyBaseName, Name.EmptyNames);
+            this.qualifiedName = new DirectTypeRef(Span.Invalid, new QualifiedName(Name.EmptyBaseName, Name.EmptyNames));
             this.IsSimpleSyntax = false;
         }
 
-        public NamespaceDecl(Text.Span p, QualifiedName name, bool simpleSyntax)
+        public NamespaceDecl(Text.Span p, TypeRef name, bool simpleSyntax)
             : base(p)
         {
             this.isAnonymous = false;

@@ -228,21 +228,16 @@ namespace PHP.Core.AST
 		/// <summary>
 		/// Name of the class.
 		/// </summary>
-		public Name Name { get { return name; } }
-		private readonly Name name;
-
-        /// <summary>
-        /// Position of <see cref="Name"/> in the source code.
-        /// </summary>
-        public Text.Span NamePosition { get; private set; }
+		public NameRef Name { get { return name; } }
+		private readonly NameRef name;
         
 		#endregion
 
 		#region Construction
 
 		public NamedTypeDecl(SourceUnit/*!*/ sourceUnit,
-            Text.Span span, Text.Span headingSpan, bool isConditional, Scope scope, PhpMemberAttributes memberAttributes, bool isPartial, 
-            Name className, Text.Span classNamePosition,
+            Text.Span span, Text.Span headingSpan, bool isConditional, Scope scope, PhpMemberAttributes memberAttributes, bool isPartial,
+            NameRef className,
             NamespaceDecl ns, List<FormalTypeParam>/*!*/ genericParams, TypeRef baseClass,
             List<TypeRef>/*!*/ implementsList, List<TypeMemberDecl>/*!*/ elements, Text.Span bodySpan,
 
@@ -254,7 +249,6 @@ namespace PHP.Core.AST
             Debug.Assert((memberAttributes & PhpMemberAttributes.Trait) == 0 || (memberAttributes & PhpMemberAttributes.Interface) == 0, "Interface cannot be a trait");
 
 			this.name = className;
-            this.NamePosition = classNamePosition;
 		}
 
         #endregion
@@ -344,8 +338,8 @@ namespace PHP.Core.AST
 		/// <summary>
 		/// Name of the method.
 		/// </summary>
-		public Name Name { get { return name; } }
-		private readonly Name name;
+		public NameRef Name { get { return name; } }
+		private readonly NameRef name;
 
 		public Signature Signature { get { return signature; } }
 		private readonly Signature signature;
@@ -353,20 +347,14 @@ namespace PHP.Core.AST
 		public TypeSignature TypeSignature { get { return typeSignature; } }
 		private readonly TypeSignature typeSignature;
 
-        public Statement[] Body { get { return body; } internal set { body = value; } }
-        private Statement[] body;
+        public BlockStmt Body { get { return body; } internal set { body = value; } }
+        private BlockStmt body;
 
         public ActualParam[] BaseCtorParams { get { return baseCtorParams; } internal set { baseCtorParams = value; } }
 		private ActualParam[] baseCtorParams;
 
-        public Text.Span NameSpan { get { return nameSpan; } }
-        private Text.Span nameSpan;
-
         public Text.Span ParametersSpan { get { return parametersSpan; } }
         private Text.Span parametersSpan;
-
-        public Text.Span BodySpan { get { return bodySpan; } }
-        private Text.Span bodySpan;
 
         public Text.Span HeadingSpan { get { return Text.Span.Combine(Span, parametersSpan); } }
 
@@ -376,8 +364,8 @@ namespace PHP.Core.AST
         #region Construction
 
         public MethodDecl(Text.Span span, int headingEndPosition, int declarationBodyPosition, 
-			string name, Text.Span nameSpan, bool aliasReturn, IList<FormalParam>/*!*/ formalParams, Text.Span paramsSpan,
-            IList<FormalTypeParam>/*!*/ genericParams,  IList<Statement> body, Text.Span bodySpan,
+			NameRef name, bool aliasReturn, IList<FormalParam>/*!*/ formalParams, Text.Span paramsSpan,
+            IList<FormalTypeParam>/*!*/ genericParams,  BlockStmt body,
             PhpMemberAttributes modifiers, IList<ActualParam> baseCtorParams, 
 			List<CustomAttribute> attributes, TypeRef returnType)
             : base(span, attributes)
@@ -385,14 +373,12 @@ namespace PHP.Core.AST
             Debug.Assert(genericParams != null && formalParams != null);
 
             this.modifiers = modifiers;
-            this.name = new Name(name);
+            this.name = name;
             this.signature = new Signature(aliasReturn, formalParams);
             this.typeSignature = new TypeSignature(genericParams);
-            this.body = (body != null) ? body.AsArray() : null;
+            this.body = body;
             this.baseCtorParams = (baseCtorParams != null) ? baseCtorParams.AsArray() : null;
-            this.nameSpan = nameSpan;
             this.parametersSpan = paramsSpan;
-            this.bodySpan = bodySpan;
             this.returnType = returnType;
         }
 

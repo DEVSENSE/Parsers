@@ -81,14 +81,14 @@ namespace PHP.Core.AST
         /// </summary>
         public Text.Span NamePosition => name.Span;
 
-        public ClassConstUse(Text.Span span, TypeRef/*!*/typeRef, string/*!*/ name, Text.Span namePosition)
+        public ClassConstUse(Text.Span span, TypeRef/*!*/typeRef, VariableNameRef/*!*/ name)
             : base(span)
         {
             Debug.Assert(typeRef != null);
-            Debug.Assert(!string.IsNullOrEmpty(name));
+            Debug.Assert(!string.IsNullOrEmpty(name.Name.Value));
 
             this.targetType = typeRef;
-			this.name = new VariableNameRef(namePosition, name);
+			this.name = name;
         }
 
 		/// <summary>
@@ -124,7 +124,7 @@ namespace PHP.Core.AST
 		}
 
         public PseudoClassConstUse(Text.Span span, TypeRef/*!*/typeRef, Types type, Text.Span namePosition)
-            : base(span, typeRef, type.ToString().ToLowerInvariant(), namePosition)
+            : base(span, typeRef, new VariableNameRef(namePosition, type.ToString().ToLowerInvariant()))
         {
             this.consttype = type;
         }

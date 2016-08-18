@@ -1942,11 +1942,11 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
                 QualifiedName name = new QualifiedName((List<string>)value_stack.array[value_stack.top-2].yyval.Object, false, true);
                 SetNamingContext(name.NamespacePhpName);
                 yyval.Object = _currentNamespace = (NamespaceDecl)_astFactory.Namespace(yypos, name, value_stack.array[value_stack.top-2].yypos, (List<LangElement>)null, _namingContext);
-				ResetDocComment(); 
+				ResetDocBlock(); 
 			}
         return;
       case 94: // @2 -> 
-{ ResetDocComment(); var list = (List<string>)value_stack.array[value_stack.top-1].yyval.Object; SetNamingContext((list != null && list.Count > 0)? string.Join(QualifiedName.Separator.ToString(), list): null); }
+{ ResetDocBlock(); var list = (List<string>)value_stack.array[value_stack.top-1].yyval.Object; SetNamingContext((list != null && list.Count > 0)? string.Join(QualifiedName.Separator.ToString(), list): null); }
         return;
       case 95: // top_statement -> T_NAMESPACE namespace_name @2 '{' top_statement_list '}' 
 { 
@@ -1955,7 +1955,7 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 			}
         return;
       case 96: // @3 -> 
-{ ResetDocComment(); SetNamingContext(null); }
+{ ResetDocBlock(); SetNamingContext(null); }
         return;
       case 97: // top_statement -> T_NAMESPACE @3 '{' top_statement_list '}' 
 { 
@@ -1979,7 +1979,7 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 {
 				yyval.Object = _astFactory.DeclList(yypos, PhpMemberAttributes.None, (List<LangElement>)value_stack.array[value_stack.top-2].yyval.Object); 
 				if(value_stack.array[value_stack.top-3].yyval.Object != null)
-					((GlobalConstDeclList)yyval.Object).PHPDoc = (PHPDocBlock)_astFactory.PHPDoc(value_stack.array[value_stack.top-3].yypos, (string)value_stack.array[value_stack.top-3].yyval.Object);
+					((GlobalConstDeclList)yyval.Object).PHPDoc = (PHPDocBlock)value_stack.array[value_stack.top-3].yyval.Object;
 			}
         return;
       case 103: // use_type -> T_FUNCTION 
@@ -2174,11 +2174,11 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 { yyval.Object = value_stack.array[value_stack.top-1].yyval.Object; }
         return;
       case 164: // function_declaration_statement -> function returns_ref T_STRING backup_doc_comment '(' parameter_list ')' return_type backup_fn_flags '{' inner_statement_list '}' backup_fn_flags 
-{ yyval.Object = _astFactory.Function(yypos, true, false, PhpMemberAttributes.None, (TypeRef)value_stack.array[value_stack.top-6].yyval.Object, value_stack.array[value_stack.top-6].yypos, 
+{ yyval.Object = _astFactory.Function(yypos, true, false, PhpMemberAttributes.None, (TypeRef)value_stack.array[value_stack.top-6].yyval.Object, 
 			new Name((string)value_stack.array[value_stack.top-11].yyval.Object), value_stack.array[value_stack.top-11].yypos, null, (List<FormalParam>)value_stack.array[value_stack.top-8].yyval.Object, CombineSpans(value_stack.array[value_stack.top-9].yypos, value_stack.array[value_stack.top-7].yypos), 
 			_astFactory.Block(value_stack.array[value_stack.top-3].yypos, (List<LangElement>)value_stack.array[value_stack.top-3].yyval.Object)); 
 		if(value_stack.array[value_stack.top-10].yyval.Object != null)
-			((FunctionDecl)yyval.Object).PHPDoc = (PHPDocBlock)_astFactory.PHPDoc(value_stack.array[value_stack.top-10].yypos, (string)value_stack.array[value_stack.top-10].yyval.Object);
+			((FunctionDecl)yyval.Object).PHPDoc = (PHPDocBlock)value_stack.array[value_stack.top-10].yyval.Object;
 		}
         return;
       case 165: // is_reference -> 
@@ -2197,14 +2197,14 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 { 
 				yyval.Object = _astFactory.Type(yypos, CombineSpans(value_stack.array[value_stack.top-9].yypos, value_stack.array[value_stack.top-8].yypos, value_stack.array[value_stack.top-7].yypos, value_stack.array[value_stack.top-6].yypos, value_stack.array[value_stack.top-5].yypos), true, (PhpMemberAttributes)value_stack.array[value_stack.top-9].yyval.Long, new Name((string)value_stack.array[value_stack.top-7].yyval.Object), value_stack.array[value_stack.top-7].yypos, null, 
 				(TypeRef)value_stack.array[value_stack.top-6].yyval.Object, (List<TypeRef>)value_stack.array[value_stack.top-5].yyval.Object, (List<LangElement>)value_stack.array[value_stack.top-2].yyval.Object, value_stack.array[value_stack.top-2].yypos); 
-				if(value_stack.array[value_stack.top-4].yyval.Object != null) ((TypeDecl)yyval.Object).PHPDoc = (PHPDocBlock)_astFactory.PHPDoc(value_stack.array[value_stack.top-4].yypos, (string)value_stack.array[value_stack.top-4].yyval.Object);
+				if(value_stack.array[value_stack.top-4].yyval.Object != null) ((TypeDecl)yyval.Object).PHPDoc = (PHPDocBlock)value_stack.array[value_stack.top-4].yyval.Object;
 			}
         return;
       case 170: // class_declaration_statement -> T_CLASS T_STRING extends_from implements_list backup_doc_comment '{' class_statement_list '}' 
 { 
 				yyval.Object = _astFactory.Type(yypos, CombineSpans(value_stack.array[value_stack.top-8].yypos, value_stack.array[value_stack.top-7].yypos, value_stack.array[value_stack.top-6].yypos, value_stack.array[value_stack.top-5].yypos), true, PhpMemberAttributes.None, new Name((string)value_stack.array[value_stack.top-7].yyval.Object), value_stack.array[value_stack.top-7].yypos, null, 
 				(TypeRef)value_stack.array[value_stack.top-6].yyval.Object, (List<TypeRef>)value_stack.array[value_stack.top-5].yyval.Object, (List<LangElement>)value_stack.array[value_stack.top-2].yyval.Object, value_stack.array[value_stack.top-2].yypos); 
-				if(value_stack.array[value_stack.top-4].yyval.Object != null) ((TypeDecl)yyval.Object).PHPDoc = (PHPDocBlock)_astFactory.PHPDoc(value_stack.array[value_stack.top-4].yypos, (string)value_stack.array[value_stack.top-4].yyval.Object);
+				if(value_stack.array[value_stack.top-4].yyval.Object != null) ((TypeDecl)yyval.Object).PHPDoc = (PHPDocBlock)value_stack.array[value_stack.top-4].yyval.Object;
 			}
         return;
       case 171: // class_modifiers -> class_modifier 
@@ -2223,14 +2223,14 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 { 
 				yyval.Object = _astFactory.Type(yypos, CombineSpans(value_stack.array[value_stack.top-6].yypos, value_stack.array[value_stack.top-5].yypos), true, PhpMemberAttributes.Trait, new Name((string)value_stack.array[value_stack.top-5].yyval.Object), value_stack.array[value_stack.top-5].yypos, null, 
 				null, null, (List<LangElement>)value_stack.array[value_stack.top-2].yyval.Object, value_stack.array[value_stack.top-2].yypos); 
-				if(value_stack.array[value_stack.top-4].yyval.Object != null) ((TypeDecl)yyval.Object).PHPDoc = (PHPDocBlock)_astFactory.PHPDoc(value_stack.array[value_stack.top-4].yypos, (string)value_stack.array[value_stack.top-4].yyval.Object);
+				if(value_stack.array[value_stack.top-4].yyval.Object != null) ((TypeDecl)yyval.Object).PHPDoc = (PHPDocBlock)value_stack.array[value_stack.top-4].yyval.Object;
 			}
         return;
       case 176: // interface_declaration_statement -> T_INTERFACE T_STRING interface_extends_list backup_doc_comment '{' class_statement_list '}' 
 { 
 				yyval.Object = _astFactory.Type(yypos, CombineSpans(value_stack.array[value_stack.top-7].yypos, value_stack.array[value_stack.top-6].yypos, value_stack.array[value_stack.top-5].yypos), true, PhpMemberAttributes.Interface, new Name((string)value_stack.array[value_stack.top-6].yyval.Object), value_stack.array[value_stack.top-6].yypos, null, 
 				null, (List<TypeRef>)value_stack.array[value_stack.top-5].yyval.Object, (List<LangElement>)value_stack.array[value_stack.top-2].yyval.Object, value_stack.array[value_stack.top-2].yypos); 
-				if(value_stack.array[value_stack.top-4].yyval.Object != null) ((TypeDecl)yyval.Object).PHPDoc = (PHPDocBlock)_astFactory.PHPDoc(value_stack.array[value_stack.top-4].yypos, (string)value_stack.array[value_stack.top-4].yyval.Object);
+				if(value_stack.array[value_stack.top-4].yyval.Object != null) ((TypeDecl)yyval.Object).PHPDoc = (PHPDocBlock)value_stack.array[value_stack.top-4].yyval.Object;
 			}
         return;
       case 177: // extends_from -> 
@@ -2438,14 +2438,14 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 { 
 				yyval.Object = _astFactory.DeclList(yypos, (PhpMemberAttributes)value_stack.array[value_stack.top-4].yyval.Long, (List<LangElement>)value_stack.array[value_stack.top-2].yyval.Object); 
 				if(value_stack.array[value_stack.top-3].yyval.Object != null)
-					((FieldDeclList)yyval.Object).PHPDoc = (PHPDocBlock)_astFactory.PHPDoc(value_stack.array[value_stack.top-3].yypos, (string)value_stack.array[value_stack.top-3].yyval.Object);
+					((FieldDeclList)yyval.Object).PHPDoc = (PHPDocBlock)value_stack.array[value_stack.top-3].yyval.Object;
 			}
         return;
       case 243: // class_statement -> method_modifiers T_CONST list_backup_doc_comment class_const_list ';' 
 { 
 				yyval.Object = _astFactory.DeclList(yypos, (PhpMemberAttributes)value_stack.array[value_stack.top-5].yyval.Long, (List<LangElement>)value_stack.array[value_stack.top-2].yyval.Object); 
 				if(value_stack.array[value_stack.top-3].yyval.Object != null)
-					((ConstDeclList)yyval.Object).PHPDoc = (PHPDocBlock)_astFactory.PHPDoc(value_stack.array[value_stack.top-3].yypos, (string)value_stack.array[value_stack.top-3].yyval.Object);
+					((ConstDeclList)yyval.Object).PHPDoc = (PHPDocBlock)value_stack.array[value_stack.top-3].yyval.Object;
 			}
         return;
       case 244: // class_statement -> T_USE name_list trait_adaptations 
@@ -2453,15 +2453,13 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
         return;
       case 245: // class_statement -> method_modifiers function returns_ref identifier backup_doc_comment '(' parameter_list ')' return_type backup_fn_flags method_body backup_fn_flags 
 { yyval.Object = _astFactory.Method(yypos, false, (PhpMemberAttributes)value_stack.array[value_stack.top-12].yyval.Long, 
-				(TypeRef)value_stack.array[value_stack.top-4].yyval.Object, value_stack.array[value_stack.top-4].yypos, 
-				new Name((string)value_stack.array[value_stack.top-9].yyval.Object), value_stack.array[value_stack.top-9].yypos, null, (List<FormalParam>)value_stack.array[value_stack.top-6].yyval.Object, value_stack.array[value_stack.top-5].yypos, 
-				null, _astFactory.Block(value_stack.array[value_stack.top-2].yypos, (List<LangElement>)value_stack.array[value_stack.top-2].yyval.Object), value_stack.array[value_stack.top-2].yypos); 
-			if(value_stack.array[value_stack.top-8].yyval.Object != null) ((MethodDecl)yyval.Object).PHPDoc = (PHPDocBlock)_astFactory.PHPDoc(value_stack.array[value_stack.top-8].yypos, (string)value_stack.array[value_stack.top-8].yyval.Object);
+				(TypeRef)value_stack.array[value_stack.top-4].yyval.Object, value_stack.array[value_stack.top-4].yypos, (string)value_stack.array[value_stack.top-9].yyval.Object, value_stack.array[value_stack.top-9].yypos, null, (List<FormalParam>)value_stack.array[value_stack.top-6].yyval.Object, value_stack.array[value_stack.top-5].yypos, 
+				null, _astFactory.Block(value_stack.array[value_stack.top-2].yypos, (List<LangElement>)value_stack.array[value_stack.top-2].yyval.Object)); 
+			if(value_stack.array[value_stack.top-8].yyval.Object != null) ((MethodDecl)yyval.Object).PHPDoc = (PHPDocBlock)value_stack.array[value_stack.top-8].yyval.Object;
 			}
         return;
       case 246: // name_list -> name 
-{ yyval.Object = new List<TypeRef>() { (TypeRef)value_stack.array[value_stack.top-1].yyval.Object };
- }
+{ yyval.Object = new List<TypeRef>() { (TypeRef)value_stack.array[value_stack.top-1].yyval.Object }; }
         return;
       case 247: // name_list -> name_list ',' name 
 { yyval.Object = AddToList<TypeRef>(value_stack.array[value_stack.top-3].yyval.Object, value_stack.array[value_stack.top-1].yyval.Object); }
@@ -2561,10 +2559,10 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 { yyval.Object = new List<LangElement>() { (LangElement)value_stack.array[value_stack.top-1].yyval.Object }; }
         return;
       case 279: // property -> T_VARIABLE backup_doc_comment 
-{ yyval.Object = _astFactory.FieldDecl(yypos, new VariableName((string)value_stack.array[value_stack.top-2].yyval.Object), null); if(value_stack.array[value_stack.top-1].yyval.Object != null) ((FieldDecl)yyval.Object).PHPDoc = (PHPDocBlock)_astFactory.PHPDoc(value_stack.array[value_stack.top-1].yypos, (string)value_stack.array[value_stack.top-1].yyval.Object); }
+{ yyval.Object = _astFactory.FieldDecl(yypos, new VariableName((string)value_stack.array[value_stack.top-2].yyval.Object), null); if(value_stack.array[value_stack.top-1].yyval.Object != null) ((FieldDecl)yyval.Object).PHPDoc = (PHPDocBlock)value_stack.array[value_stack.top-1].yyval.Object; }
         return;
       case 280: // property -> T_VARIABLE '=' expr backup_doc_comment 
-{ yyval.Object = _astFactory.FieldDecl(yypos, new VariableName((string)value_stack.array[value_stack.top-4].yyval.Object), (Expression)value_stack.array[value_stack.top-2].yyval.Object); if(value_stack.array[value_stack.top-1].yyval.Object != null) ((FieldDecl)yyval.Object).PHPDoc = (PHPDocBlock)_astFactory.PHPDoc(value_stack.array[value_stack.top-1].yypos, (string)value_stack.array[value_stack.top-1].yyval.Object); }
+{ yyval.Object = _astFactory.FieldDecl(yypos, new VariableName((string)value_stack.array[value_stack.top-4].yyval.Object), (Expression)value_stack.array[value_stack.top-2].yyval.Object); if(value_stack.array[value_stack.top-1].yyval.Object != null) ((FieldDecl)yyval.Object).PHPDoc = (PHPDocBlock)value_stack.array[value_stack.top-1].yyval.Object; }
         return;
       case 281: // class_const_list -> class_const_list ',' class_const_decl 
 { yyval.Object = AddToList<LangElement>(value_stack.array[value_stack.top-3].yyval.Object, value_stack.array[value_stack.top-1].yyval.Object); }
@@ -2574,11 +2572,11 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
         return;
       case 283: // class_const_decl -> identifier '=' expr backup_doc_comment 
 { yyval.Object = _astFactory.ClassConstDecl(yypos, new VariableName((string)value_stack.array[value_stack.top-4].yyval.Object), (LangElement)value_stack.array[value_stack.top-2].yyval.Object); 
-		if(value_stack.array[value_stack.top-1].yyval.Object != null) ((ClassConstantDecl)yyval.Object).PHPDoc = (PHPDocBlock)_astFactory.PHPDoc(value_stack.array[value_stack.top-1].yypos, (string)value_stack.array[value_stack.top-1].yyval.Object); }
+		if(value_stack.array[value_stack.top-1].yyval.Object != null) ((ClassConstantDecl)yyval.Object).PHPDoc = (PHPDocBlock)value_stack.array[value_stack.top-1].yyval.Object; }
         return;
       case 284: // const_decl -> T_STRING '=' expr backup_doc_comment 
 { yyval.Object = _astFactory.GlobalConstDecl(yypos, false, new VariableName((string)value_stack.array[value_stack.top-4].yyval.Object), (LangElement)value_stack.array[value_stack.top-2].yyval.Object); 
-		if(value_stack.array[value_stack.top-1].yyval.Object != null) ((GlobalConstantDecl)yyval.Object).PHPDoc = (PHPDocBlock)_astFactory.PHPDoc(value_stack.array[value_stack.top-1].yypos, (string)value_stack.array[value_stack.top-1].yyval.Object); }
+		if(value_stack.array[value_stack.top-1].yyval.Object != null) ((GlobalConstantDecl)yyval.Object).PHPDoc = (PHPDocBlock)value_stack.array[value_stack.top-1].yyval.Object; }
         return;
       case 285: // echo_expr_list -> echo_expr_list ',' echo_expr 
 { yyval.Object = AddToList<LangElement>(value_stack.array[value_stack.top-3].yyval.Object, value_stack.array[value_stack.top-1].yyval.Object); }
@@ -2606,7 +2604,7 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 			yyval.Object = new Tuple<TypeRef, List<ActualParam>>((TypeRef)_astFactory.AnonymousTypeReference(yypos, CombineSpans(value_stack.array[value_stack.top-8].yypos, value_stack.array[value_stack.top-7].yypos), true, PhpMemberAttributes.None, null, 
 				(TypeRef)value_stack.array[value_stack.top-6].yyval.Object, (List<TypeRef>)value_stack.array[value_stack.top-5].yyval.Object, (List<LangElement>)value_stack.array[value_stack.top-2].yyval.Object, value_stack.array[value_stack.top-2].yypos),
 				(List<ActualParam>)value_stack.array[value_stack.top-7].yyval.Object); 
-			if(value_stack.array[value_stack.top-4].yyval.Object != null) ((AnonymousTypeRef)((Tuple<TypeRef, List<ActualParam>>)yyval.Object).Item1).TypeDeclaration.PHPDoc = (PHPDocBlock)_astFactory.PHPDoc(value_stack.array[value_stack.top-4].yypos, (string)value_stack.array[value_stack.top-4].yyval.Object);
+			if(value_stack.array[value_stack.top-4].yyval.Object != null) ((AnonymousTypeRef)((Tuple<TypeRef, List<ActualParam>>)yyval.Object).Item1).TypeDeclaration.PHPDoc = (PHPDocBlock)value_stack.array[value_stack.top-4].yyval.Object;
 		}
         return;
       case 293: // new_expr -> T_NEW class_name_reference ctor_arguments 
@@ -2838,21 +2836,21 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 { yyval.Object = _astFactory.YieldFrom(yypos, (LangElement)value_stack.array[value_stack.top-1].yyval.Object); }
         return;
       case 369: // expr_without_variable -> function returns_ref backup_doc_comment '(' parameter_list ')' lexical_vars return_type backup_fn_flags '{' inner_statement_list '}' backup_fn_flags 
-{ yyval.Object = _astFactory.Lambda(yypos, CombineSpans(value_stack.array[value_stack.top-13].yypos, value_stack.array[value_stack.top-12].yypos, value_stack.array[value_stack.top-11].yypos, value_stack.array[value_stack.top-10].yypos, value_stack.array[value_stack.top-9].yypos, value_stack.array[value_stack.top-8].yypos, value_stack.array[value_stack.top-7].yypos, value_stack.array[value_stack.top-6].yypos), false, (TypeRef)value_stack.array[value_stack.top-6].yyval.Object, value_stack.array[value_stack.top-6].yypos, 
+{ yyval.Object = _astFactory.Lambda(yypos, CombineSpans(value_stack.array[value_stack.top-13].yypos, value_stack.array[value_stack.top-12].yypos, value_stack.array[value_stack.top-11].yypos, value_stack.array[value_stack.top-10].yypos, value_stack.array[value_stack.top-9].yypos, value_stack.array[value_stack.top-8].yypos, value_stack.array[value_stack.top-7].yypos, value_stack.array[value_stack.top-6].yypos), false, (TypeRef)value_stack.array[value_stack.top-6].yyval.Object, 
 				(List<FormalParam>)value_stack.array[value_stack.top-9].yyval.Object, CombineSpans(value_stack.array[value_stack.top-10].yypos, value_stack.array[value_stack.top-8].yypos), 
 				(List<FormalParam>)value_stack.array[value_stack.top-7].yyval.Object, _astFactory.Block(value_stack.array[value_stack.top-3].yypos, (List<LangElement>)value_stack.array[value_stack.top-3].yyval.Object)); 
-			if(value_stack.array[value_stack.top-11].yyval.Object != null) ((LambdaFunctionExpr)yyval.Object).PHPDoc = (PHPDocBlock)_astFactory.PHPDoc(value_stack.array[value_stack.top-11].yypos, (string)value_stack.array[value_stack.top-11].yyval.Object);
+			if(value_stack.array[value_stack.top-11].yyval.Object != null) ((LambdaFunctionExpr)yyval.Object).PHPDoc = (PHPDocBlock)value_stack.array[value_stack.top-11].yyval.Object;
 			}
         return;
       case 370: // expr_without_variable -> T_STATIC function returns_ref backup_doc_comment '(' parameter_list ')' lexical_vars return_type backup_fn_flags '{' inner_statement_list '}' backup_fn_flags 
-{ yyval.Object = _astFactory.Lambda(yypos, CombineSpans(value_stack.array[value_stack.top-14].yypos, value_stack.array[value_stack.top-13].yypos, value_stack.array[value_stack.top-12].yypos, value_stack.array[value_stack.top-11].yypos, value_stack.array[value_stack.top-10].yypos, value_stack.array[value_stack.top-9].yypos, value_stack.array[value_stack.top-8].yypos, value_stack.array[value_stack.top-7].yypos, value_stack.array[value_stack.top-6].yypos), false, (TypeRef)value_stack.array[value_stack.top-6].yyval.Object, value_stack.array[value_stack.top-6].yypos, 
+{ yyval.Object = _astFactory.Lambda(yypos, CombineSpans(value_stack.array[value_stack.top-14].yypos, value_stack.array[value_stack.top-13].yypos, value_stack.array[value_stack.top-12].yypos, value_stack.array[value_stack.top-11].yypos, value_stack.array[value_stack.top-10].yypos, value_stack.array[value_stack.top-9].yypos, value_stack.array[value_stack.top-8].yypos, value_stack.array[value_stack.top-7].yypos, value_stack.array[value_stack.top-6].yypos), false, (TypeRef)value_stack.array[value_stack.top-6].yyval.Object, 
 				(List<FormalParam>)value_stack.array[value_stack.top-9].yyval.Object, CombineSpans(value_stack.array[value_stack.top-10].yypos, value_stack.array[value_stack.top-8].yypos), 
 				(List<FormalParam>)value_stack.array[value_stack.top-7].yyval.Object, _astFactory.Block(value_stack.array[value_stack.top-3].yypos, (List<LangElement>)value_stack.array[value_stack.top-3].yyval.Object)); 
-			if(value_stack.array[value_stack.top-11].yyval.Object != null) ((LambdaFunctionExpr)yyval.Object).PHPDoc = (PHPDocBlock)_astFactory.PHPDoc(value_stack.array[value_stack.top-11].yypos, (string)value_stack.array[value_stack.top-11].yyval.Object);
+			if(value_stack.array[value_stack.top-11].yyval.Object != null) ((LambdaFunctionExpr)yyval.Object).PHPDoc = (PHPDocBlock)value_stack.array[value_stack.top-11].yyval.Object;
 			}
         return;
       case 372: // backup_doc_comment -> 
-{ yyval.Object = Scanner.DocBlock; Scanner.ResetDocBlock(); }
+{ yyval.Object = Scanner.DocBlock; ResetDocBlock(); }
         return;
       case 373: // list_backup_doc_comment -> 
 { yyval.Object = Scanner.DocBlock; }

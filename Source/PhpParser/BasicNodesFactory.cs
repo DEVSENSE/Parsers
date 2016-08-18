@@ -93,7 +93,7 @@ namespace PhpParser
 
         public LangElement Call(Span span, Name name, Span nameSpan, CallSignature signature, TypeRef typeRef)
         {
-            return new DirectStMtdCall(span, new ClassConstUse(span, typeRef, name.Value, nameSpan), signature.Parameters, signature.GenericParams);
+            return new DirectStMtdCall(span, new ClassConstUse(span, typeRef, new VariableNameRef(nameSpan, name.Value)), signature.Parameters, signature.GenericParams);
         }
 
         public LangElement Call(Span span, QualifiedName name, QualifiedName? nameFallback, Span nameSpan, CallSignature signature, LangElement memberOfOpt)
@@ -191,16 +191,16 @@ namespace PhpParser
             return new ForeachStmt(span, (Expression)enumeree, new ForeachVar(keyOpt, false), new ForeachVar(value, false), (Statement)body);
         }
 
-        public LangElement Function(Span span, bool conditional, bool aliasReturn, PhpMemberAttributes attributes, TypeRef returnType, Span returnTypeSpan, 
+        public LangElement Function(Span span, bool conditional, bool aliasReturn, PhpMemberAttributes attributes, TypeRef returnType, 
             Name name, Span nameSpan, IEnumerable<FormalTypeParam> typeParamsOpt, IEnumerable<FormalParam> formalParams, Span formalParamsSpan, LangElement body)
         {
             Debug.Assert(body is BlockStmt || body is Statement);
-            return new FunctionDecl(_sourceUnit, span, conditional, new Scope(), attributes, name.Value, nameSpan, null, aliasReturn,
+            return new FunctionDecl(_sourceUnit, span, conditional, new Scope(), attributes, new NameRef(nameSpan, name.Value), null, aliasReturn,
                 formalParams.ToList(), formalParamsSpan, (typeParamsOpt != null) ? typeParamsOpt.ToList() : FormalTypeParam.EmptyList,
                 (BlockStmt)body, null, returnType);
         }
 
-        public LangElement Lambda(Span span, Span headingSpan, bool aliasReturn, TypeRef returnType, Span returnTypeSpan, IEnumerable<FormalParam> formalParams, 
+        public LangElement Lambda(Span span, Span headingSpan, bool aliasReturn, TypeRef returnType, IEnumerable<FormalParam> formalParams, 
             Span formalParamsSpan, IEnumerable<FormalParam> lexicalVars, LangElement body)
         {
             Debug.Assert(body is BlockStmt || body is Statement);
@@ -227,7 +227,7 @@ namespace PhpParser
 
         public LangElement Goto(Span span, string label, Span labelSpan)
         {
-            return new GotoStmt(span, label, labelSpan);
+            return new GotoStmt(span, new VariableNameRef(labelSpan, label));
         }
 
         public LangElement HaltCompiler(Span span)
@@ -274,7 +274,7 @@ namespace PhpParser
 
         public LangElement Label(Span span, string label, Span labelSpan)
         {
-            return new LabelStmt(span, label, labelSpan);
+            return new LabelStmt(span, new VariableNameRef(labelSpan, label));
         }
 
         public LangElement LineComment(Span span, string content)
@@ -308,7 +308,7 @@ namespace PhpParser
 
         public LangElement Namespace(Span span, QualifiedName? name, Span nameSpan, IEnumerable<LangElement> statements, NamingContext context)
         {
-            NamespaceDecl space = new NamespaceDecl(span, name ?? new QualifiedName(Name.EmptyBaseName, Name.EmptyNames), true);
+            NamespaceDecl space = new NamespaceDecl(span, (TypeRef)TypeReference(nameSpan, name ?? new QualifiedName(Name.EmptyBaseName, Name.EmptyNames), false, TypeRef.EmptyList), true);
             space.Naming = context;
             space.Statements = (statements != null) ? ConvertList<Statement>(statements) : null;
             return space;
@@ -317,7 +317,7 @@ namespace PhpParser
         public LangElement Namespace(Span span, QualifiedName? name, Span nameSpan, LangElement block, NamingContext context)
         {
             Debug.Assert(block != null);
-            NamespaceDecl space = new NamespaceDecl(span, name ?? new QualifiedName(Name.EmptyBaseName, Name.EmptyNames), false);
+            NamespaceDecl space = new NamespaceDecl(span, (TypeRef)TypeReference(nameSpan, name ?? new QualifiedName(Name.EmptyBaseName, Name.EmptyNames), false, TypeRef.EmptyList), false);
             space.Naming = context;
             space.Statements = new List<Statement>() { (Statement)block };
             return space;
@@ -417,7 +417,7 @@ namespace PhpParser
 
             Debug.Assert(members != null && implements != null);
             return new NamedTypeDecl(_sourceUnit, span, headingSpan, conditional, new Scope(), attributes, false,
-                name, nameSpan, null, (typeParamsOpt != null) ? typeParamsOpt.ToList() : FormalTypeParam.EmptyList, baseClassOpt, implements.ToList(),
+                new NameRef(nameSpan, name), null, (typeParamsOpt != null) ? typeParamsOpt.ToList() : FormalTypeParam.EmptyList, baseClassOpt, implements.ToList(),
                 ConvertList<TypeMemberDecl>(members), bodySpan, null);
         }
 
@@ -431,14 +431,13 @@ namespace PhpParser
                 baseClassOpt, implements.ToList(), ConvertList<TypeMemberDecl>(members), bodySpan, null));
         }
 
-        public LangElement Method(Span span, bool aliasReturn, PhpMemberAttributes attributes, TypeRef returnType, Span returnTypeSpan, Name name, Span nameSpan, IEnumerable<FormalTypeParam> typeParamsOpt, IEnumerable<FormalParam> formalParams, Span formalParamsSpan, IEnumerable<ActualParam> baseCtorParams, LangElement body, Span bodySpan)
+        public LangElement Method(Span span, bool aliasReturn, PhpMemberAttributes attributes, TypeRef returnType, Span returnTypeSpan, string name, Span nameSpan, IEnumerable<FormalTypeParam> typeParamsOpt, IEnumerable<FormalParam> formalParams, Span formalParamsSpan, IEnumerable<ActualParam> baseCtorParams, LangElement body)
         {
             Debug.Assert(body is BlockStmt || body is Statement);
 
-            return new MethodDecl(span, formalParamsSpan.End, body.Span.Start, name.Value, nameSpan, aliasReturn, formalParams.ToList(),
+            return new MethodDecl(span, formalParamsSpan.End, body.Span.Start, new NameRef(nameSpan, name), aliasReturn, formalParams.ToList(),
                 formalParamsSpan, (typeParamsOpt != null) ? typeParamsOpt.ToList() : FormalTypeParam.EmptyList,
-                (body is BlockStmt) ? ((BlockStmt)body).Statements : new Statement[] { (Statement)body }, bodySpan,
-                attributes, (baseCtorParams != null) ? baseCtorParams.ToList() : new List<ActualParam>(), null, returnType);
+                (BlockStmt)body, attributes, (baseCtorParams != null) ? baseCtorParams.ToList() : new List<ActualParam>(), null, returnType);
         }
 
         public LangElement UnaryOperation(Span span, Operations operation, LangElement expression)
@@ -546,7 +545,7 @@ namespace PhpParser
 
         public LangElement ClassConstUse(Span span, TypeRef tref, Name name, Span nameSpan)
         {
-            return new ClassConstUse(span, tref, name.Value, nameSpan);
+            return new ClassConstUse(span, tref, new VariableNameRef(nameSpan, name.Value));
         }
 
         public LangElement ConditionalEx(Span span, LangElement condExpr, LangElement trueExpr, LangElement falseExpr)

@@ -220,7 +220,7 @@ using System.Collections.Generic;
 				case 13:
 					// #line 599
 					{
-						ResetDocComment();
+						ResetDocBlock();
 						if (!yy_pop_state()) 
 							return Tokens.T_ERROR; 
 						return (Tokens.T_RBRACE);
@@ -686,7 +686,7 @@ using System.Collections.Generic;
 					
 				case 76:
 					// #line 768
-					{ BEGIN(LexicalStates.ST_DOC_COMMENT); yymore(); ResetDocComment(); break; }
+					{ BEGIN(LexicalStates.ST_DOC_COMMENT); yymore(); ResetDocBlock(); break; }
 					break;
 					
 				case 77:
@@ -1377,7 +1377,7 @@ using System.Collections.Generic;
 					
 				case 162:
 					// #line 770
-					{ BEGIN(LexicalStates.ST_IN_SCRIPTING); SetDocComment(); return Tokens.T_DOC_COMMENT; }
+					{ BEGIN(LexicalStates.ST_IN_SCRIPTING); SetDocBlock(); return Tokens.T_DOC_COMMENT; }
 					break;
 					
 				case 163:

@@ -224,15 +224,11 @@ namespace PhpParser.Parser
             return list;
         }
 
-        private void ResetDocComment()
-        {
-            // reades and deletes the actual doc block
-            string doc = _lexer.DocBlock;
-        }
-
         private Span CombineSpans(params Span[] spans)
         {
             return new Span(spans.Min(s => s.Start), spans.Max(s => s.End));
         }
+
+        void ResetDocBlock() => Scanner.DocBlock = null;
     }
 }

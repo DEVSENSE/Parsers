@@ -203,9 +203,9 @@ namespace PHP.Core.AST
             // method parameters
             foreach (FormalParam p in x.Signature.FormalParams)
                 VisitElement(p);
-            
+
             // method body
-            VisitStatements(x.Body);
+            VisitElement(x.Body);
         }
 
         /// <summary>

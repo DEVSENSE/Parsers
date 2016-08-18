@@ -141,8 +141,8 @@ namespace PHP.Core.AST
 	{ 
 		internal override bool IsDeclaration { get { return true; } }
 
-		public Name Name { get { return name; } }
-		private readonly Name name;
+		public NameRef Name { get { return name; } }
+		private readonly NameRef name;
 
 		public NamespaceDecl Namespace { get { return ns; } }
 		private readonly NamespaceDecl ns;
@@ -178,9 +178,6 @@ namespace PHP.Core.AST
             set { this.SetCustomAttributes(value); }
         }
 
-        public Text.Span NameSpan { get { return nameSpan; } }
-        private Text.Span nameSpan;
-
         public Text.Span ParametersSpan { get { return parametersSpan; } }
         private Text.Span parametersSpan;
 
@@ -193,21 +190,20 @@ namespace PHP.Core.AST
 
         public FunctionDecl(SourceUnit/*!*/ sourceUnit,
             Text.Span span,
-			bool isConditional, Scope scope, PhpMemberAttributes memberAttributes, string/*!*/ name, Text.Span nameSpan, NamespaceDecl ns,
+			bool isConditional, Scope scope, PhpMemberAttributes memberAttributes, NameRef/*!*/ name, NamespaceDecl ns,
 			bool aliasReturn, List<FormalParam>/*!*/ formalParams, Text.Span paramsSpan, List<FormalTypeParam>/*!*/ genericParams,
             BlockStmt/*!*/ body, List<CustomAttribute> attributes, TypeRef returnType)
 			: base(span)
 		{
-			Debug.Assert(genericParams != null && name != null && formalParams != null && body != null);
+			Debug.Assert(genericParams != null && formalParams != null && body != null);
 
-			this.name = new Name(name);
+			this.name = name;
 			this.ns = ns;
 			this.signature = new Signature(aliasReturn, formalParams);
 			this.typeSignature = new TypeSignature(genericParams);
 			if (attributes != null && attributes.Count != 0)
                 this.Attributes = new CustomAttributes(attributes);
 			this.body = body;
-			this.nameSpan = nameSpan;
             this.parametersSpan = paramsSpan;
             this.IsConditional = isConditional;
             this.MemberAttributes = memberAttributes;

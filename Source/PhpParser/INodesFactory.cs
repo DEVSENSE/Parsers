@@ -86,7 +86,7 @@ namespace PhpParser
         /// <returns>Function node.</returns>
         TNode Function(TSpan span,
             bool conditional, bool aliasReturn, PhpMemberAttributes attributes,
-            TypeRef returnType, TSpan returnTypeSpan,
+            TypeRef returnType,
             Name name, TSpan nameSpan, IEnumerable<FormalTypeParam> typeParamsOpt,
             IEnumerable<FormalParam> formalParams, TSpan formalParamsSpan,
             TNode body);
@@ -105,7 +105,7 @@ namespace PhpParser
         /// <param name="body">Lambda body.</param>
         /// <returns>Lambda node.</returns>
         TNode Lambda(TSpan span, TSpan headingSpan, bool aliasReturn,
-            TypeRef returnType, TSpan returnTypeSpan,
+            TypeRef returnType,
             IEnumerable<FormalParam> formalParams, TSpan formalParamsSpan,
             IEnumerable<FormalParam> lexicalVars, TNode body);
 
@@ -161,9 +161,9 @@ namespace PhpParser
         TNode Method(TSpan span,
             bool aliasReturn, PhpMemberAttributes attributes,
             TypeRef returnType, TSpan returnTypeSpan,
-            Name name, TSpan nameSpan, IEnumerable<FormalTypeParam> typeParamsOpt,
+            string name, TSpan nameSpan, IEnumerable<FormalTypeParam> typeParamsOpt,
             IEnumerable<FormalParam> formalParams, TSpan formalParamsSpan,
-            IEnumerable<ActualParam> baseCtorParams, TNode body, Span bodySpan);
+            IEnumerable<ActualParam> baseCtorParams, TNode body);
 
         /// <summary>
         /// Creates class trait use statement.

@@ -597,7 +597,7 @@ NonVariableStart        [^a-zA-Z_{]
 
 
 <ST_IN_SCRIPTING>"}" {
-	ResetDocComment();
+	ResetDocBlock();
 	if (!yy_pop_state()) 
 		return Tokens.T_ERROR; 
 	return (Tokens.T_RBRACE);
@@ -765,9 +765,9 @@ NonVariableStart        [^a-zA-Z_{]
 <ST_COMMENT>"*/"        { BEGIN(LexicalStates.ST_IN_SCRIPTING); return Tokens.T_COMMENT; }
 <ST_COMMENT>"*"         { yymore(); break; }
 
-<ST_IN_SCRIPTING>"/**"{WHITESPACE} 	{ BEGIN(LexicalStates.ST_DOC_COMMENT); yymore(); ResetDocComment(); break; }
+<ST_IN_SCRIPTING>"/**"{WHITESPACE} 	{ BEGIN(LexicalStates.ST_DOC_COMMENT); yymore(); ResetDocBlock(); break; }
 <ST_DOC_COMMENT>[^*]+   { yymore(); break; }
-<ST_DOC_COMMENT>"*/"    { BEGIN(LexicalStates.ST_IN_SCRIPTING); SetDocComment(); return Tokens.T_DOC_COMMENT; }
+<ST_DOC_COMMENT>"*/"    { BEGIN(LexicalStates.ST_IN_SCRIPTING); SetDocBlock(); return Tokens.T_DOC_COMMENT; }
 <ST_DOC_COMMENT>"*"     { yymore(); break; }
 
 <ST_IN_SCRIPTING>"?>"{NEWLINE}? {

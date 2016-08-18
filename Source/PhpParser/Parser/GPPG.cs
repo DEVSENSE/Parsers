@@ -107,9 +107,7 @@ namespace PhpParser.Parser
 
 		void ReportError(string[] expectedTokens);
 
-        string DocBlock { get; }
-
-        string ResetDocBlock();
+        PHP.Syntax.PHPDocBlock DocBlock { get; set; }
     }
 
 	#endregion

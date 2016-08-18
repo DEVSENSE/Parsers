@@ -109,11 +109,6 @@ namespace PhpParser.Parser
         private int _charOffset = 0;
 
         /// <summary>
-        /// Last encountered documentation comment block
-        /// </summary>
-        private string _docBlock = null;
-
-        /// <summary>
         /// Last encountered heredoc or nowdoc label
         /// </summary>
         protected string _hereDocLabel = null;
@@ -131,9 +126,10 @@ namespace PhpParser.Parser
         /// <summary>
         /// Get actual doc comment.
         /// </summary>
-        public string DocBlock => _docBlock;
+        public PHPDocBlock DocBlock { get; set; }
 
-        public string ResetDocBlock() => _docBlock = null;
+        void SetDocBlock() => DocBlock = new PHPDocBlock(GetTokenString(), _tokenPosition);
+        void ResetDocBlock() => DocBlock = null;
 
         /// <summary>
         /// Call the <see cref="NextTokenEvent"/> event.
@@ -852,18 +848,6 @@ namespace PhpParser.Parser
             lookahead_index = token_end = lookahead_index - (TokenLength - label.Length) - 1;
             _tokenSemantics.Object = f(label.Substring(0, label.Length - _hereDocLabel.Length));
             return (Tokens.T_ENCAPSED_AND_WHITESPACE);
-        }
-
-
-        void ResetDocComment()
-        {
-            _docBlock = null;
-        }
-
-
-        void SetDocComment()
-        {
-            _docBlock = GetTokenString();
         }
     }
 }

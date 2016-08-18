@@ -84,7 +84,7 @@ namespace PhpParser
         void SerializePHPDoc(PHPDocBlock doc)
         {
             if (doc != null)
-                _serializer.Serialize("PHPDoc", new NodeObj("Comment", doc.ToString()));
+                _serializer.Serialize("PHPDoc", SerializeSpan(doc.Span), new NodeObj("Comment", doc.ToString()));
         }
 
         NodeObj SerializeSpan(Span span)
@@ -168,13 +168,13 @@ namespace PhpParser
         /// <param name="x"></param>
         override public void VisitNamespaceDecl(NamespaceDecl x)
         {
-            if (string.IsNullOrEmpty(x.QualifiedName.NamespacePhpName))
+            if (string.IsNullOrEmpty(x.QualifiedName.QualifiedName.Value.NamespacePhpName))
                 _serializer.StartSerialize(typeof(NamespaceDecl).Name, SerializeSpan(x.Span),
                     new NodeObj("SimpleSyntax", x.IsSimpleSyntax.ToString()),
                     SerializeNamingContext(x.Naming));
             else
                 _serializer.StartSerialize(typeof(NamespaceDecl).Name, SerializeSpan(x.Span),
-                    new NodeObj("Name", x.QualifiedName.NamespacePhpName),
+                    new NodeObj("Name", x.QualifiedName.QualifiedName.Value.NamespacePhpName),
                     new NodeObj("SimpleSyntax", x.IsSimpleSyntax.ToString()),
                     SerializeNamingContext(x.Naming));
             base.VisitNamespaceDecl(x);
@@ -526,11 +526,11 @@ namespace PhpParser
         }
         override public void VisitGotoStmt(GotoStmt x)
         {
-            _serializer.Serialize(typeof(GotoStmt).Name, SerializeSpan(x.Span), new NodeObj("LabelName", x.LabelName.Value));
+            _serializer.Serialize(typeof(GotoStmt).Name, SerializeSpan(x.Span), new NodeObj("LabelName", x.LabelName.Name.Value));
         }
         override public void VisitLabelStmt(LabelStmt x)
         {
-            _serializer.Serialize(typeof(LabelStmt).Name, SerializeSpan(x.Span), new NodeObj("Name", x.Name.Value));
+            _serializer.Serialize(typeof(LabelStmt).Name, SerializeSpan(x.Span), new NodeObj("Name", x.Name.Name.Value));
         }
         override public void VisitNewEx(NewEx x)
         {
@@ -540,7 +540,7 @@ namespace PhpParser
         }
         override public void VisitFunctionDecl(FunctionDecl x)
         {
-            _serializer.StartSerialize(typeof(FunctionDecl).Name, SerializeSpan(x.Span), new NodeObj("Name", x.Name.Value), new NodeObj("IsConditional", x.IsConditional.ToString()));
+            _serializer.StartSerialize(typeof(FunctionDecl).Name, SerializeSpan(x.Span), new NodeObj("Name", x.Name.Name.Value), new NodeObj("IsConditional", x.IsConditional.ToString()));
             SerializePHPDoc(x.PHPDoc);
             _serializer.StartSerialize("FormalParams");
             // function parameters
@@ -619,7 +619,7 @@ namespace PhpParser
         override public void VisitNamedTypeDecl(NamedTypeDecl x)
         {
             _serializer.StartSerialize(typeof(NamedTypeDecl).Name, SerializeSpan(x.Span), 
-                new NodeObj("Name", x.Name.Value), new NodeObj("MemberAttributes", MemberAttributesToString(x.MemberAttributes)),
+                new NodeObj("Name", x.Name.Name.Value), new NodeObj("MemberAttributes", MemberAttributesToString(x.MemberAttributes)),
                 new NodeObj("IsConditional", x.IsConditional.ToString()));
             if (x.BaseClass != null)
                 _serializer.Serialize("BaseClassName", new NodeObj("Name", x.BaseClass.QualifiedName.ToString()));
@@ -676,7 +676,7 @@ namespace PhpParser
         }
         override public void VisitMethodDecl(MethodDecl x)
         {
-            _serializer.StartSerialize(typeof(MethodDecl).Name, SerializeSpan(x.Span), new NodeObj("Name", x.Name.Value), 
+            _serializer.StartSerialize(typeof(MethodDecl).Name, SerializeSpan(x.Span), new NodeObj("Name", x.Name.Name.Value), 
                 new NodeObj("Modifiers", MemberAttributesToString(x.Modifiers)));
             SerializePHPDoc(x.PHPDoc);
             _serializer.StartSerialize("FormalParams");
@@ -687,7 +687,7 @@ namespace PhpParser
 
             _serializer.StartSerialize("Body");
             // method body
-            VisitStatements(x.Body);
+            VisitElement(x.Body);
             _serializer.EndSerialize();
 
             SerializeOptionalProperty("ReturnType", x.ReturnType);

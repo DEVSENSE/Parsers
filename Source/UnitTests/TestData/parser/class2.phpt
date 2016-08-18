@@ -26,10 +26,12 @@ class SimpleClass
           "TypeHint":{"PrimitiveTypeRef":{"QualifiedName":"boolean"}}}
       },
       "Body":{
-        "UnaryEx" : {
-          "Operation" : "Print",
-          "StringLiteral" : {
-              "Value" : "Inside `aMemberFunc()`"
+        "BlockStmt":{
+          "UnaryEx" : {
+            "Operation" : "Print",
+            "StringLiteral" : {
+                "Value" : "Inside `aMemberFunc()`"
+            }
           }
         }
       },

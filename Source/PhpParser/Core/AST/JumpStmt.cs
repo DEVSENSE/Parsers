@@ -55,22 +55,16 @@ namespace PHP.Core.AST
     public sealed class GotoStmt : Statement
 	{
 		/// <summary>Label that is target of goto statement</summary>
-        public VariableName LabelName { get { return _labelName; } }
-        private VariableName _labelName;
-
-        /// <summary>
-        /// Position of the <see cref="LabelName"/>.
-        /// </summary>
-        public Text.Span NameSpan { get { return _nameSpan; } }
-        private readonly Text.Span _nameSpan;
+        public VariableNameRef LabelName { get { return _labelName; } }
+        private VariableNameRef _labelName;
         
-		public GotoStmt(Text.Span span, string/*!*/labelName, Text.Span nameSpan)
+		public GotoStmt(Text.Span span, VariableNameRef/*!*/labelName)
 			: base(span)
 		{
-            Debug.Assert(!string.IsNullOrEmpty(labelName));
-			_labelName = new VariableName(labelName);
-            _nameSpan = nameSpan;
-		}
+            Debug.Assert(!string.IsNullOrEmpty(labelName.Name.Value));
+            _labelName = labelName;
+
+        }
 
 		/// <summary>
         /// Call the right Visit* method on the given Visitor object.
@@ -88,26 +82,19 @@ namespace PHP.Core.AST
 
     public sealed class LabelStmt : Statement
 	{
-        public VariableName Name { get { return _name; } }
-		private VariableName _name;
+        public VariableNameRef Name { get { return _name; } }
+		private VariableNameRef _name;
 
 		internal bool IsReferred { get { return isReferred; } set { isReferred = value; } }
 		private bool isReferred;
-
-        /// <summary>
-        /// Position of the <see cref="Name"/>.
-        /// </summary>
-        public Text.Span NameSpan { get { return _nameSpan; } }
-        private readonly Text.Span _nameSpan;
         
 
-		public LabelStmt(Text.Span span, string/*!*/name, Text.Span nameSpan)
+		public LabelStmt(Text.Span span, VariableNameRef/*!*/name)
 			: base(span)
 		{
-            Debug.Assert(!string.IsNullOrEmpty(name));
+            Debug.Assert(!string.IsNullOrEmpty(name.Name.Value));
 
-			_name = new VariableName(name);
-            _nameSpan = nameSpan;
+			_name = name;
 		}
 
 		/// <summary>

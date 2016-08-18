@@ -116,7 +116,7 @@ namespace PHP.Core.AST
         public abstract void VisitMe(TreeVisitor/*!*/visitor);
 	}
 
-    #region VariableNode
+    #region VariableNameRef
 
     /// <summary>
     /// Represents a variable name and its position within AST.
@@ -142,6 +142,74 @@ namespace PHP.Core.AST
         }
 
         public VariableNameRef(Span span, VariableName name)
+        {
+            _span = span;
+            _name = name;
+        }
+    }
+
+    #endregion
+
+    #region NameRef
+
+    /// <summary>
+    /// Represents a variable name and its position within AST.
+    /// </summary>
+    public struct NameRef
+    {
+        private readonly Span _span;
+        private readonly Name _name;
+
+        /// <summary>
+        /// Position of the name.
+        /// </summary>
+        public Span Span => _span;
+
+        /// <summary>
+        /// Variable name.
+        /// </summary>
+        public Name Name => _name;
+
+        public NameRef(Span span, string name)
+            : this(span, new Name(name))
+        {
+        }
+
+        public NameRef(Span span, Name name)
+        {
+            _span = span;
+            _name = name;
+        }
+    }
+
+    #endregion
+
+    #region NameRef
+
+    /// <summary>
+    /// Represents a variable name and its position within AST.
+    /// </summary>
+    public struct QualifiedNameRef
+    {
+        private readonly Span _span;
+        private readonly QualifiedName _name;
+
+        /// <summary>
+        /// Position of the name.
+        /// </summary>
+        public Span Span => _span;
+
+        /// <summary>
+        /// Variable name.
+        /// </summary>
+        public QualifiedName Name => _name;
+
+        public QualifiedNameRef(Span span, Name name, Name[] namespaces)
+            : this(span, new QualifiedName(name, namespaces))
+        {
+        }
+
+        public QualifiedNameRef(Span span, QualifiedName name)
         {
             _span = span;
             _name = name;

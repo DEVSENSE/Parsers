@@ -28,11 +28,13 @@ interface SimpleInterface extends SimpleInter1, SimpleInter2
         "FormalParams":{
           "FormalParam":{"Name":"arg_1","PassedByRef":"False","IsVariadic":"False"}
         },
-        "Body":{
-          "UnaryEx" : {
-            "Operation" : "Print",
-            "StringLiteral" : {
-                "Value" : "Inside `aMemberFunc()`"
+        "Body":{  
+          "BlockStmt":{
+            "UnaryEx" : {
+              "Operation" : "Print",
+              "StringLiteral" : {
+                  "Value" : "Inside `aMemberFunc()`"
+              }
             }
           }
         }
