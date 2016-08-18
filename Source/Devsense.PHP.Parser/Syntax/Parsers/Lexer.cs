@@ -10,15 +10,6 @@ using System.Collections.Generic;
 namespace Devsense.PHP.Syntax
 {
     /// <summary>
-    /// Called by <see cref="Scanner"/> when new token is obtained from lexer.
-    /// </summary>
-    /// <param name="token">Token.</param>
-    /// <param name="buffer">Internal text buffer.</param>
-    /// <param name="tokenStart">Position within <paramref name="buffer"/> where the token text starts.</param>
-    /// <param name="tokenLength">Length of the token text.</param>
-    public delegate void LexerEventHandler(Tokens token, char[] buffer, int tokenStart, int tokenLength);
-
-    /// <summary>
     /// PHP lexer generated according to the PhpLexer.l grammar.
     /// </summary>
     public partial class Lexer : ITokenProvider<SemanticValueType, Span>
@@ -64,27 +55,12 @@ namespace Devsense.PHP.Syntax
         private bool _inUnicodeString = false;
 
         /// <summary>
-        /// Event called every time a new token is processed by the <see cref="GetNextToken/> method.
-        /// </summary>
-        public event LexerEventHandler NextTokenEvent;
-
-        /// <summary>
         /// Get actual doc comment.
         /// </summary>
         public PHPDocBlock DocBlock { get; set; }
 
         void SetDocBlock() => DocBlock = new PHPDocBlock(GetTokenString(), _tokenPosition);
         void ResetDocBlock() => DocBlock = null;
-
-        /// <summary>
-        /// Call the <see cref="NextTokenEvent"/> event.
-        /// </summary>
-        /// <param name="token">The next token.</param>
-        protected void CallNextTokenEvent(Tokens token)
-        {
-            if (NextTokenEvent != null)
-                NextTokenEvent(token, buffer, token_start, TokenLength);
-        }
 
         /// <summary>
         /// Lexer constructor that initializes all the necessary members
@@ -131,7 +107,6 @@ namespace Devsense.PHP.Syntax
         {
             Tokens token = NextToken();
             UpdateTokenPosition();
-            CallNextTokenEvent(token);
             return (int)token;
         }
 
