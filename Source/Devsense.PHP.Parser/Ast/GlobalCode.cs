@@ -75,8 +75,8 @@ namespace Devsense.PHP.Syntax.Ast
         /// </summary>
         public readonly bool IsSimpleSyntax;
 
-        public TypeRef QualifiedName { get { return this.qualifiedName; } }
-        private TypeRef qualifiedName;
+        public QualifiedNameRef QualifiedName { get { return this.qualifiedName; } }
+        private QualifiedNameRef qualifiedName;
 
         /// <summary>
         /// Naming context defining aliases.
@@ -100,14 +100,14 @@ namespace Devsense.PHP.Syntax.Ast
         #region Construction
 
         public NamespaceDecl(Text.Span p)
-            : base(p)
+            : this(p, QualifiedNameRef.Invalid, false)
         {
             this.isAnonymous = true;
-            this.qualifiedName = new DirectTypeRef(Text.Span.Invalid, new QualifiedName(Name.EmptyBaseName, Name.EmptyNames));
+            this.qualifiedName = new QualifiedNameRef(Text.Span.Invalid, Name.EmptyBaseName, Name.EmptyNames);
             this.IsSimpleSyntax = false;
         }
 
-        public NamespaceDecl(Text.Span p, TypeRef name, bool simpleSyntax)
+        public NamespaceDecl(Text.Span p, QualifiedNameRef name, bool simpleSyntax)
             : base(p)
         {
             this.isAnonymous = false;
