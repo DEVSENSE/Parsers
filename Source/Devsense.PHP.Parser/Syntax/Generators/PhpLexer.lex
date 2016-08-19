@@ -861,26 +861,26 @@ NonVariableStart        [^a-zA-Z_{]
 
 <ST_HEREDOC>^{LABEL}(";")?{NEWLINE} {
     if(GetTokenString().Contains(this._hereDocLabel))
-		return ProcessEndNowDoc(s => (string)ProcessEscapedString(s, this._sourceUnit.Encoding, false));
+		return ProcessEndNowDoc(s => (string)ProcessEscapedString(s, _encoding, false));
     yymore(); break;
 }
 
 <ST_NOWDOC>{ANY_CHAR}         { yymore(); break; }
 
 <ST_DOUBLE_QUOTES>([^"\{$\\]*(\\.|\{[^$])?)* {
-    this._tokenSemantics.Object = ProcessEscapedString(GetTokenString(), this._sourceUnit.Encoding, false);
+    this._tokenSemantics.Object = ProcessEscapedString(GetTokenString(), _encoding, false);
     return (Tokens.T_ENCAPSED_AND_WHITESPACE);
 }
 
 <ST_BACKQUOTE>([^`\{$\\]*(\\.|\{[^$])?)* {
-    this._tokenSemantics.Object = ProcessEscapedString(GetTokenString(), this._sourceUnit.Encoding, false);
+    this._tokenSemantics.Object = ProcessEscapedString(GetTokenString(), _encoding, false);
     return (Tokens.T_ENCAPSED_AND_WHITESPACE);
 }
 
 <ST_HEREDOC>([^\n\r\x2028\x2029\{$\\]*(\\.|\{[^$])?)*{NEWLINE} { yymore(); break; }
 
 <ST_HEREDOC>([^\n\r\x2028\x2029\{$\\]*(\\.|\{[^$])?)* {
-    this._tokenSemantics.Object = ProcessEscapedString(GetTokenString(), this._sourceUnit.Encoding, false);
+    this._tokenSemantics.Object = ProcessEscapedString(GetTokenString(), _encoding, false);
     return (Tokens.T_ENCAPSED_AND_WHITESPACE);
 }
 

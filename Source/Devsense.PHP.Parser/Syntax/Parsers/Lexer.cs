@@ -30,9 +30,9 @@ namespace Devsense.PHP.Syntax
         private Span _tokenPosition;
 
         /// <summary>
-        /// Source unit (file) associated with the lexer
+        /// Enxoding used to converted between single-byte strings and Unicode strings.
         /// </summary>
-        private readonly SourceUnit/*!*/ _sourceUnit;
+        private readonly Encoding/*!*/ _encoding;
 
         /// <summary>
         /// Sink used to report lexical errors.
@@ -66,18 +66,24 @@ namespace Devsense.PHP.Syntax
         /// Lexer constructor that initializes all the necessary members
         /// </summary>
         /// <param name="reader">Text reader containing the source code.</param>
-        /// <param name="sourceUnit">Source unit (file) associated with the <paramref name="reader"/>.</param>
-        /// <param name="errors">Error sink used to report lexical error, usually implemented by NodesFactory.</param>
+        /// <param name="encoding">Source file encoding to convert UTF characters.</param>
+        /// <param name="errors">Error sink used to report lexical error.</param>
         /// <param name="features">Allow or disable short oppening tags for PHP.</param>
         /// <param name="positionShift">Starting position of the first token, used during custom restart.</param>
         /// <param name="initialState">Initial state of the lexer, used during custom restart.</param>
-        public Lexer(System.IO.TextReader reader, SourceUnit sourceUnit, IErrorSink<Span> errors, LanguageFeatures features,
-            int positionShift = 0, LexicalStates initialState = LexicalStates.INITIAL)
+        public Lexer(
+            System.IO.TextReader reader,
+            Encoding encoding,
+            IErrorSink<Span> errors = null,
+            LanguageFeatures features = LanguageFeatures.Basic,
+            int positionShift = 0,
+            LexicalStates initialState = LexicalStates.INITIAL)
         {
-            this._sourceUnit = sourceUnit;
-            this._errors = errors;
-            this._charOffset = positionShift;
-            this._allowShortTags = features == LanguageFeatures.ShortOpenTags;
+            _encoding = encoding ?? Encoding.UTF8;
+            _errors = errors ?? new EmptyErrorSink<Span>();
+            _charOffset = positionShift;
+            _allowShortTags = (features & LanguageFeatures.ShortOpenTags) != 0;
+
             Initialize(reader, initialState);
         }
 
@@ -718,7 +724,7 @@ namespace Devsense.PHP.Syntax
         {
             bool forceBinaryString = GetTokenChar(0) == 'b';
 
-            _tokenSemantics.Object = GetTokenAsSinglyQuotedString(forceBinaryString ? 1 : 0, this._sourceUnit.Encoding, forceBinaryString);
+            _tokenSemantics.Object = GetTokenAsSinglyQuotedString(forceBinaryString ? 1 : 0, _encoding, forceBinaryString);
             return Tokens.T_CONSTANT_ENCAPSED_STRING;
         }
 
@@ -726,7 +732,7 @@ namespace Devsense.PHP.Syntax
         {
             bool forceBinaryString = GetTokenChar(0) == 'b';
 
-            _tokenSemantics.Object = GetTokenAsDoublyQuotedString(forceBinaryString ? 1 : 0, this._sourceUnit.Encoding, forceBinaryString);
+            _tokenSemantics.Object = GetTokenAsDoublyQuotedString(forceBinaryString ? 1 : 0, _encoding, forceBinaryString);
             return Tokens.T_CONSTANT_ENCAPSED_STRING;
         }
 

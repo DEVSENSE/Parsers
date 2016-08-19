@@ -1220,7 +1220,7 @@ using System.Collections.Generic;
 				case 142:
 					// #line 870
 					{
-					    this._tokenSemantics.Object = ProcessEscapedString(GetTokenString(), this._sourceUnit.Encoding, false);
+					    this._tokenSemantics.Object = ProcessEscapedString(GetTokenString(), _encoding, false);
 					    return (Tokens.T_ENCAPSED_AND_WHITESPACE);
 					}
 					break;
@@ -1282,7 +1282,7 @@ using System.Collections.Generic;
 				case 150:
 					// #line 875
 					{
-					    this._tokenSemantics.Object = ProcessEscapedString(GetTokenString(), this._sourceUnit.Encoding, false);
+					    this._tokenSemantics.Object = ProcessEscapedString(GetTokenString(), _encoding, false);
 					    return (Tokens.T_ENCAPSED_AND_WHITESPACE);
 					}
 					break;
@@ -1298,7 +1298,7 @@ using System.Collections.Generic;
 				case 152:
 					// #line 882
 					{
-					    this._tokenSemantics.Object = ProcessEscapedString(GetTokenString(), this._sourceUnit.Encoding, false);
+					    this._tokenSemantics.Object = ProcessEscapedString(GetTokenString(), _encoding, false);
 					    return (Tokens.T_ENCAPSED_AND_WHITESPACE);
 					}
 					break;
@@ -1312,7 +1312,7 @@ using System.Collections.Generic;
 					// #line 862
 					{
 					    if(GetTokenString().Contains(this._hereDocLabel))
-							return ProcessEndNowDoc(s => (string)ProcessEscapedString(s, this._sourceUnit.Encoding, false));
+							return ProcessEndNowDoc(s => (string)ProcessEscapedString(s, _encoding, false));
 					    yymore(); break;
 					}
 					break;
