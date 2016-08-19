@@ -1,17 +1,21 @@
 <?xml version="1.0"?>
 <package >
   <metadata>
-    <id>$id$</id>
-    <version>$version$</version>
-    <title>$description$</title>
-    <description>$description$</description>
-    <authors>$author$</authors>
-    <owners>$author$</owners>
+    <id>Devsense.Php.Parser</id>
+    <version>1.0.0</version>
+    <title>PHP Tokenizer and Parser for .NET</title>
+    <description>.NET implementation of PHP tokenizer and parser.</description>
+    <authors>Michal Brabec, Jakub Misek</authors>
+    <owners>Devsense</owners>
   	<licenseUrl>https://raw.githubusercontent.com/DEVSENSE/Parsers/master/LICENSE</licenseUrl>
   	<projectUrl>https://github.com/DEVSENSE/Parsers</projectUrl>
   	<requireLicenseAcceptance>false</requireLicenseAcceptance>
   	<releaseNotes>.NET implementation of PHP tokenizer and parser.</releaseNotes>
-  	<copyright>Copyright 2016</copyright>
+  	<copyright>Copyright (c) Devsense 2016</copyright>
   	<tags>Devsense Php Parser Ast</tags>
   </metadata>
+  <files>
+    <file src="bin/Release/Devsense.PHP.Parser.dll" target="lib/netcore45" /> 
+	<file src="bin/Release/Devsense.PHP.Parser.dll" target="lib/net45" /> 
+  </files>
 </package>
