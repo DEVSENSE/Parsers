@@ -1,6 +1,9 @@
 ﻿
 namespace Devsense.PHP.Syntax
 {
+    /// <summary>
+    /// A token category.
+    /// </summary>
     public enum TokenCategory
     {
         Comment,
@@ -21,19 +24,25 @@ namespace Devsense.PHP.Syntax
         Html
     }
 
-    internal static class TokensUtils
+    /// <summary>
+    /// Extension methods for <see cref="Tokens"/>.
+    /// </summary>
+    public static class TokensExtension
     {
+        /// <summary>
+        /// Gets category of a token in given lexical context.
+        /// </summary>
+        /// <param name="token">Token.</param>
+        /// <param name="CurrentLexicalState">Current lexical state.</param>
+        /// <returns>A token category.</returns>
         public static TokenCategory GetTokenCategory(this Tokens token, Lexer.LexicalStates CurrentLexicalState)
         {
             bool inString = CurrentLexicalState == Lexer.LexicalStates.ST_DOUBLE_QUOTES || 
                 CurrentLexicalState == Lexer.LexicalStates.ST_BACKQUOTE || 
                 CurrentLexicalState == Lexer.LexicalStates.ST_HEREDOC;
+
             switch (token)
             {
-                case Tokens.EOF:
-                case Tokens.T_ERROR:
-                    return TokenCategory.Unknown;
-
                 #region Special Keywords
 
                 case Tokens.T_GOTO:

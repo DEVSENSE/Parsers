@@ -30,6 +30,11 @@ namespace Devsense.PHP.Syntax
         private Span _tokenPosition;
 
         /// <summary>
+        /// Token string, updated lazily by <see cref="TokenText"/>.
+        /// </summary>
+        private string _tokenText;
+
+        /// <summary>
         /// Enxoding used to converted between single-byte strings and Unicode strings.
         /// </summary>
         private readonly Encoding/*!*/ _encoding;
@@ -105,15 +110,16 @@ namespace Devsense.PHP.Syntax
             _errors.Error(_tokenPosition, FatalErrors.SyntaxError, CoreResources.GetString("unexpected_token", GetTokenString()));
         }
 
+        int ITokenProvider<SemanticValueType, Span>.GetNextToken() => (int)GetNextToken();
+
         /// <summary>
-        /// Get next token, store its actual position in the source unit and call the <see cref="NextTokenEvent"/>.
+        /// Gets next token and updates position within the source.
         /// </summary>
-        /// <returns>Next token.</returns>
-        virtual public int GetNextToken()
+        public Tokens GetNextToken()
         {
             Tokens token = NextToken();
             UpdateTokenPosition();
-            return (int)token;
+            return token;
         }
 
         protected void _yymore() { yymore(); }
@@ -655,22 +661,23 @@ namespace Devsense.PHP.Syntax
             return (c > SByte.MaxValue) ? 'a' : c;
         }
 
-        public SemanticValueType TokenValue
-        {
-            get
-            {
-                return _tokenSemantics;
-            }
-        }
+        public SemanticValueType TokenValue => _tokenSemantics;
 
-        public Span TokenPosition
-        {
-            get
-            {
-                return _tokenPosition;
-            }
-        }
+        /// <summary>
+        /// Gets span of the current token.
+        /// </summary>
+        public Span TokenSpan => TokenPosition;
 
+        /// <summary>
+        /// Alias to <see cref="TokenSpan"/>.
+        /// </summary>
+        public Span TokenPosition => _tokenPosition;
+
+        /// <summary>
+        /// Gets source text of the current token.
+        /// </summary>
+        public string TokenText => _tokenText ?? (_tokenText = GetTokenString());
+        
         Tokens ProcessBinaryNumber()
         {
             // parse binary number value
