@@ -6,7 +6,7 @@
     <title>PHP Tokenizer and Parser for .NET</title>
     <description>.NET implementation of PHP tokenizer and parser.</description>
     <authors>Michal Brabec, Jakub Misek</authors>
-    <owners>Devsense</owners>
+    <owners>devsense jmisek</owners>
   	<licenseUrl>https://raw.githubusercontent.com/DEVSENSE/Parsers/master/LICENSE</licenseUrl>
   	<projectUrl>https://github.com/DEVSENSE/Parsers</projectUrl>
   	<requireLicenseAcceptance>false</requireLicenseAcceptance>
