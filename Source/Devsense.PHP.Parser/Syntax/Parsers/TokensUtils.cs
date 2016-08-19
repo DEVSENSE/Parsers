@@ -1,9 +1,5 @@
-﻿using System;
-
-using Devsense.PHP.Syntax;
-using System.Diagnostics;
-
-namespace Devsense.PHP.Parser.Syntax.Parsers
+﻿
+namespace Devsense.PHP.Syntax
 {
     public enum TokenCategory
     {
