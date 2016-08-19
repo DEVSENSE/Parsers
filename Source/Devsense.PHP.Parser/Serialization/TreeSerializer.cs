@@ -766,10 +766,11 @@ namespace Devsense.PHP.Syntax.Ast.Serialization
         override public void VisitListEx(ListEx x)
         {
             _serializer.StartSerialize(typeof(ListEx).Name, SerializeSpan(x.Span));
-            foreach (var item in x.LValues)
+            foreach (var item in x.Items)
                 if (item is ValueItem)
                     SerializeItem((ValueItem)item);
-                else SerializeItem((RefItem)item);
+                else
+                    SerializeItem((RefItem)item);
             _serializer.EndSerialize();
         }
 
