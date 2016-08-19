@@ -2208,12 +2208,12 @@ namespace Devsense.PHP.Syntax
     {
         internal static string GetString(string messageId)
         {
-            return Devsense.PHP.Parser.Errors.Strings.ResourceManager.GetString(messageId);
+            return Errors.Strings.ResourceManager.GetString(messageId);
         }
 
         internal static string GetString(string messageId, params string[] args)
         {
-            return string.Format(Devsense.PHP.Parser.Errors.Strings.ResourceManager.GetString(messageId), args);
+            return string.Format(Errors.Strings.ResourceManager.GetString(messageId), args);
         }
     }
 
