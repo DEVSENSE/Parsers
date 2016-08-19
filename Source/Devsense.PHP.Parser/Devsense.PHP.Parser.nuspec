@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>$id$</id>
+    <version>$version$</version>
+    <title>$description$</title>
+    <description>$description$</description>
+    <authors>$author$</authors>
+    <owners>$author$</owners>
+  	<licenseUrl>https://raw.githubusercontent.com/DEVSENSE/Parsers/master/LICENSE</licenseUrl>
+  	<projectUrl>https://github.com/DEVSENSE/Parsers</projectUrl>
+  	<requireLicenseAcceptance>false</requireLicenseAcceptance>
+  	<releaseNotes>.NET implementation of PHP tokenizer and parser.</releaseNotes>
+  	<copyright>Copyright 2016</copyright>
+  	<tags>Devsense Php Parser Ast</tags>
+  </metadata>
+</package>
