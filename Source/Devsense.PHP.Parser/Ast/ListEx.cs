@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 
 namespace Devsense.PHP.Syntax.Ast
 {
@@ -11,25 +12,24 @@ namespace Devsense.PHP.Syntax.Ast
 	{
         public override Operations Operation { get { return Operations.List; } }
 
-		/// <summary>
+        /// <summary>
         /// Elements of this list are VarLikeConstructUse, ListEx and null.
         /// Null represents empty expression - for example next piece of code is ok: 
         /// list(, $value) = each ($arr)
         /// </summary>
-        public List<Item>/*!*/LValues { get; private set; }
-        /// <summary>Array being assigned</summary>
-        public Expression RValue { get; internal set; }
+        public Item[]/*!*/ Items => _items;
+        private readonly Item[]/*!*/_items;
 
-        public ListEx(Text.Span p, List<Item>/*!*/ lvalues)
+        public ListEx(Text.Span p, IList<Item>/*!*/lvalues)
             : base(p)
         {
             Debug.Assert(lvalues != null);
-            //Debug.Assert(lvalues.TrueForAll(delegate(Expression lvalue)
-            //{
-            //    return lvalue. == null || lvalue is VarLikeConstructUse || lvalue is ListEx;
-            //}));
+            Debug.Assert(lvalues.All(item => item is ValueItem && (
+                ((ValueItem)item).ValueExpr == null ||
+                ((ValueItem)item).ValueExpr is VarLikeConstructUse ||
+                ((ValueItem)item).ValueExpr is ListEx)));
 
-            this.LValues = lvalues;
+            _items = lvalues.AsArray();
         }
 
         /// <summary>

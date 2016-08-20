@@ -1046,7 +1046,7 @@ expr_without_variable:
 	|	expr T_COALESCE expr
 			{ $$ = _astFactory.BinaryOperation(@$, Operations.Coalesce, (LangElement)$1, (LangElement)$3); }
 	|	internal_functions_in_yacc { $$ = $1; }
-	|	T_INT_CAST expr		{ $$ = _astFactory.UnaryOperation(@$, Operations.LongCast,   (Expression)$2); }
+	|	T_INT_CAST expr		{ $$ = _astFactory.UnaryOperation(@$, Operations.Int64Cast,   (Expression)$2); }
 	|	T_DOUBLE_CAST expr	{ $$ = _astFactory.UnaryOperation(@$, Operations.DoubleCast, (Expression)$2); }
 	|	T_STRING_CAST expr	{ $$ = _astFactory.UnaryOperation(@$, Operations.StringCast, (Expression)$2); }
 	|	T_ARRAY_CAST expr	{ $$ = _astFactory.UnaryOperation(@$, Operations.ArrayCast,  (Expression)$2); } 

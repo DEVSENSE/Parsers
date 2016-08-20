@@ -1164,7 +1164,7 @@ namespace Devsense.PHP.Syntax
 
             if (result == null)
             {
-                if (list.Any())
+                if (list != null && list.Count != 0)
                 {
                     result = new T[list.Count];
                     list.CopyTo(result, 0);

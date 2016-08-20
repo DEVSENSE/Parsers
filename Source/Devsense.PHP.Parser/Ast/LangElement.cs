@@ -152,7 +152,7 @@ namespace Devsense.PHP.Syntax.Ast
     #region NameRef
 
     /// <summary>
-    /// Represents a variable name and its position within AST.
+    /// Represents a variable name and its position.
     /// </summary>
     public struct NameRef
     {
@@ -169,6 +169,16 @@ namespace Devsense.PHP.Syntax.Ast
         /// </summary>
         public Name Name => _name;
 
+        /// <summary>
+        /// Gets value indicating the name is not empty.
+        /// </summary>
+        public bool HasValue => !string.IsNullOrEmpty(_name.Value);
+
+        /// <summary>
+        /// An empty name.
+        /// </summary>
+        public static NameRef Invalid => new NameRef(Span.Invalid, Name.EmptyBaseName);
+
         public NameRef(Span span, string name)
             : this(span, new Name(name))
         {
@@ -183,10 +193,10 @@ namespace Devsense.PHP.Syntax.Ast
 
     #endregion
 
-    #region NameRef
+    #region QualifiedNameRef
 
     /// <summary>
-    /// Represents a variable name and its position within AST.
+    /// Represents a qualified name and its position.
     /// </summary>
     public struct QualifiedNameRef
     {
@@ -201,7 +211,31 @@ namespace Devsense.PHP.Syntax.Ast
         /// <summary>
         /// Variable name.
         /// </summary>
-        public QualifiedName Name => _name;
+        public QualifiedName QualifiedName => _name;
+
+        /// <summary>
+        /// Gets value indicating the qualified name is not empty.
+        /// </summary>
+        public bool HasValue => _name.Namespaces != null && _name.Namespaces.Length != 0;
+
+        internal static QualifiedNameRef FromTypeRef(TypeRef tref)
+        {
+            if (tref is DirectTypeRef)
+            {
+                return new QualifiedNameRef(tref.Span, ((DirectTypeRef)tref).ClassName);
+            }
+            else if (tref == null)
+            {
+                return QualifiedNameRef.Invalid;
+            }
+
+            throw new ArgumentException();
+        }
+
+        /// <summary>
+        /// Empty name.
+        /// </summary>
+        public static QualifiedNameRef Invalid => new QualifiedNameRef(Span.Invalid, Syntax.Name.EmptyBaseName, Syntax.Name.EmptyNames);
 
         public QualifiedNameRef(Span span, Name name, Name[] namespaces)
             : this(span, new QualifiedName(name, namespaces))

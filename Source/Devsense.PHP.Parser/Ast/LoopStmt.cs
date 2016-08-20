@@ -140,8 +140,7 @@ namespace Devsense.PHP.Syntax.Ast
         public ForeachVar(ListEx/*!*/list)
         {
             Debug.Assert(list != null);
-            Debug.Assert(list.RValue == null);
-
+            
             this.expr = list;
             this.alias = false;
         }

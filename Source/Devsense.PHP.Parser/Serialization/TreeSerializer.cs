@@ -163,13 +163,13 @@ namespace Devsense.PHP.Syntax.Ast.Serialization
         /// <param name="x"></param>
         override public void VisitNamespaceDecl(NamespaceDecl x)
         {
-            if (string.IsNullOrEmpty(x.QualifiedName.QualifiedName.Value.NamespacePhpName))
+            if (string.IsNullOrEmpty(x.QualifiedName.QualifiedName.NamespacePhpName))
                 _serializer.StartSerialize(typeof(NamespaceDecl).Name, SerializeSpan(x.Span),
                     new NodeObj("SimpleSyntax", x.IsSimpleSyntax.ToString()),
                     SerializeNamingContext(x.Naming));
             else
                 _serializer.StartSerialize(typeof(NamespaceDecl).Name, SerializeSpan(x.Span),
-                    new NodeObj("Name", x.QualifiedName.QualifiedName.Value.NamespacePhpName),
+                    new NodeObj("Name", x.QualifiedName.QualifiedName.NamespacePhpName),
                     new NodeObj("SimpleSyntax", x.IsSimpleSyntax.ToString()),
                     SerializeNamingContext(x.Naming));
             base.VisitNamespaceDecl(x);
@@ -616,7 +616,7 @@ namespace Devsense.PHP.Syntax.Ast.Serialization
             _serializer.StartSerialize(typeof(NamedTypeDecl).Name, SerializeSpan(x.Span), 
                 new NodeObj("Name", x.Name.Name.Value), new NodeObj("MemberAttributes", MemberAttributesToString(x.MemberAttributes)),
                 new NodeObj("IsConditional", x.IsConditional.ToString()));
-            if (x.BaseClass != null)
+            if (x.BaseClass.HasValue)
                 _serializer.Serialize("BaseClassName", new NodeObj("Name", x.BaseClass.QualifiedName.ToString()));
             if (x.ImplementsList != null && x.ImplementsList.Length > 0)
                 _serializer.Serialize("ImplementsList", x.ImplementsList.Select(n => new NodeObj("Name", n.QualifiedName.ToString())).ToArray());
@@ -629,7 +629,7 @@ namespace Devsense.PHP.Syntax.Ast.Serialization
             _serializer.StartSerialize(typeof(AnonymousTypeDecl).Name, SerializeSpan(x.Span),
                 new NodeObj("MemberAttributes", MemberAttributesToString(x.MemberAttributes)),
                 new NodeObj("IsConditional", x.IsConditional.ToString()));
-            if (x.BaseClass != null)
+            if (x.BaseClass.HasValue)
                 _serializer.Serialize("BaseClassName", new NodeObj("Name", x.BaseClass.QualifiedName.ToString()));
             if (x.ImplementsList != null && x.ImplementsList.Length > 0)
                 _serializer.Serialize("ImplementsList", x.ImplementsList.Select(n => new NodeObj("Name", n.QualifiedName.ToString())).ToArray());
@@ -766,10 +766,11 @@ namespace Devsense.PHP.Syntax.Ast.Serialization
         override public void VisitListEx(ListEx x)
         {
             _serializer.StartSerialize(typeof(ListEx).Name, SerializeSpan(x.Span));
-            foreach (var item in x.LValues)
+            foreach (var item in x.Items)
                 if (item is ValueItem)
                     SerializeItem((ValueItem)item);
-                else SerializeItem((RefItem)item);
+                else
+                    SerializeItem((RefItem)item);
             _serializer.EndSerialize();
         }
 

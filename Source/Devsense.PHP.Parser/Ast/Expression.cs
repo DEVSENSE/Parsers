@@ -25,7 +25,6 @@ namespace Devsense.PHP.Syntax.Ast
 		UInt16Cast,
 		UInt32Cast,
 		UInt64Cast,
-        LongCast = Int64Cast,
         DoubleCast,
 		FloatCast,
 		DecimalCast,
@@ -127,6 +126,11 @@ namespace Devsense.PHP.Syntax.Ast
 		public abstract Operations Operation { get; }
 
         protected Expression(Text.Span span) : base(span) { }
+
+        /// <summary>
+        /// Compressed type information used by eventual type analysis.
+        /// </summary>
+        public ulong TypeInfoValue { get; set; }
 
         /// <summary>
         /// Whether the expression is allowed to be passed by reference to a routine.

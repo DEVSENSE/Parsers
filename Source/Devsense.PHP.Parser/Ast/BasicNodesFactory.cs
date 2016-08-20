@@ -304,7 +304,8 @@ namespace Devsense.PHP.Syntax.Ast
 
         public LangElement Namespace(Span span, QualifiedName? name, Span nameSpan, IEnumerable<LangElement> statements, NamingContext context)
         {
-            NamespaceDecl space = new NamespaceDecl(span, (TypeRef)TypeReference(nameSpan, name ?? new QualifiedName(Name.EmptyBaseName, Name.EmptyNames), false, TypeRef.EmptyList), true);
+            var qname = name.HasValue ? new QualifiedNameRef(nameSpan, name.Value) : QualifiedNameRef.Invalid;
+            NamespaceDecl space = new NamespaceDecl(span, qname, true);
             space.Naming = context;
             space.Statements = (statements != null) ? ConvertList<Statement>(statements) : null;
             return space;
@@ -313,7 +314,8 @@ namespace Devsense.PHP.Syntax.Ast
         public LangElement Namespace(Span span, QualifiedName? name, Span nameSpan, LangElement block, NamingContext context)
         {
             Debug.Assert(block != null);
-            NamespaceDecl space = new NamespaceDecl(span, (TypeRef)TypeReference(nameSpan, name ?? new QualifiedName(Name.EmptyBaseName, Name.EmptyNames), false, TypeRef.EmptyList), false);
+            var qname = name.HasValue ? new QualifiedNameRef(nameSpan, name.Value) : QualifiedNameRef.Invalid;
+            NamespaceDecl space = new NamespaceDecl(span, qname, false);
             space.Naming = context;
             space.Statements = new List<Statement>() { (Statement)block };
             return space;
@@ -413,7 +415,8 @@ namespace Devsense.PHP.Syntax.Ast
 
             Debug.Assert(members != null && implements != null);
             return new NamedTypeDecl(_sourceUnit, span, headingSpan, conditional, new Scope(), attributes, false,
-                new NameRef(nameSpan, name), null, (typeParamsOpt != null) ? typeParamsOpt.ToList() : FormalTypeParam.EmptyList, baseClassOpt, implements.ToList(),
+                new NameRef(nameSpan, name), null, (typeParamsOpt != null) ? typeParamsOpt.ToList() : FormalTypeParam.EmptyList,
+                QualifiedNameRef.FromTypeRef(baseClassOpt), implements.Select(QualifiedNameRef.FromTypeRef).ToList(),
                 ConvertList<TypeMemberDecl>(members), bodySpan, null);
         }
 
@@ -424,7 +427,7 @@ namespace Devsense.PHP.Syntax.Ast
             Debug.Assert(members != null && implements != null);
             return new AnonymousTypeRef(span, new AnonymousTypeDecl(_sourceUnit, span, headingSpan,
                 conditional, new Scope(), attributes, false, null, (typeParamsOpt != null) ? typeParamsOpt.ToList() : FormalTypeParam.EmptyList,
-                baseClassOpt, implements.ToList(), ConvertList<TypeMemberDecl>(members), bodySpan, null));
+                QualifiedNameRef.FromTypeRef(baseClassOpt), implements.Select(QualifiedNameRef.FromTypeRef).ToList(), ConvertList<TypeMemberDecl>(members), bodySpan, null));
         }
 
         public LangElement Method(Span span, bool aliasReturn, PhpMemberAttributes attributes, TypeRef returnType, Span returnTypeSpan, string name, Span nameSpan, IEnumerable<FormalTypeParam> typeParamsOpt, IEnumerable<FormalParam> formalParams, Span formalParamsSpan, IEnumerable<ActualParam> baseCtorParams, LangElement body)

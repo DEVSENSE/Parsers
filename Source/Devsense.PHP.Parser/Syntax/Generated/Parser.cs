@@ -2786,7 +2786,7 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 { yyval.Object = value_stack.array[value_stack.top-1].yyval.Object; }
         return;
       case 353: // expr_without_variable -> T_INT_CAST expr 
-{ yyval.Object = _astFactory.UnaryOperation(yypos, Operations.LongCast,   (Expression)value_stack.array[value_stack.top-1].yyval.Object); }
+{ yyval.Object = _astFactory.UnaryOperation(yypos, Operations.Int64Cast,   (Expression)value_stack.array[value_stack.top-1].yyval.Object); }
         return;
       case 354: // expr_without_variable -> T_DOUBLE_CAST expr 
 { yyval.Object = _astFactory.UnaryOperation(yypos, Operations.DoubleCast, (Expression)value_stack.array[value_stack.top-1].yyval.Object); }

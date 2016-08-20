@@ -97,16 +97,21 @@ namespace Devsense.PHP.Syntax.Ast
         private readonly NamespaceDecl ns;
 
         /// <summary>
+        /// Type name or empty name in case of anonymous type.
+        /// </summary>
+        public abstract NameRef Name { get; }
+
+        /// <summary>
 		/// Name of the base class.
 		/// </summary>
-		private readonly TypeRef baseClass;
+		private readonly QualifiedNameRef baseClass;
         /// <summary>Name of the base class.</summary>
-        public TypeRef BaseClass { get { return baseClass; } }
+        public QualifiedNameRef BaseClass { get { return baseClass; } }
 
         public PhpMemberAttributes MemberAttributes { get; private set; }
 
         /// <summary>Implemented interface name indices. </summary>
-        public TypeRef[]/*!!*/ ImplementsList { get; private set; }
+        public QualifiedNameRef[]/*!!*/ ImplementsList { get; private set; }
 
         /// <summary>
         /// Type parameters.
@@ -156,8 +161,8 @@ namespace Devsense.PHP.Syntax.Ast
         public TypeDecl(SourceUnit/*!*/ sourceUnit,
             Text.Span span, Text.Span headingSpan,
             bool isConditional, Scope scope, PhpMemberAttributes memberAttributes, bool isPartial,
-            NamespaceDecl ns, List<FormalTypeParam>/*!*/ genericParams, TypeRef baseClass,
-            List<TypeRef>/*!*/ implementsList, List<TypeMemberDecl>/*!*/ elements, Text.Span bodySpan,
+            NamespaceDecl ns, List<FormalTypeParam>/*!*/ genericParams, QualifiedNameRef baseClass,
+            List<QualifiedNameRef>/*!*/ implementsList, List<TypeMemberDecl>/*!*/ elements, Text.Span bodySpan,
             List<CustomAttribute> attributes)
             : base(span)
         {
@@ -166,22 +171,12 @@ namespace Devsense.PHP.Syntax.Ast
             
             this.ns = ns;
             this.typeSignature = new TypeSignature(genericParams);
-            if (baseClass != null)
-            {
-                this.baseClass = baseClass;
-            }
+            this.baseClass = baseClass;
             this.MemberAttributes = memberAttributes;
             this.Scope = scope;
             this.SourceUnit = sourceUnit;
             this.IsConditional = isConditional;
-            if (implementsList == null || implementsList.Count == 0)
-            {
-                this.ImplementsList = EmptyArray<TypeRef>.Instance;
-            }
-            else
-            {
-                this.ImplementsList = implementsList.ToArray();
-            }
+            this.ImplementsList = implementsList.AsArray();
             this.members = elements;
             this.members.TrimExcess();
 
@@ -222,7 +217,7 @@ namespace Devsense.PHP.Syntax.Ast
 		/// <summary>
 		/// Name of the class.
 		/// </summary>
-		public NameRef Name { get { return name; } }
+		public override NameRef Name { get { return name; } }
 		private readonly NameRef name;
         
 		#endregion
@@ -232,8 +227,8 @@ namespace Devsense.PHP.Syntax.Ast
 		public NamedTypeDecl(SourceUnit/*!*/ sourceUnit,
             Text.Span span, Text.Span headingSpan, bool isConditional, Scope scope, PhpMemberAttributes memberAttributes, bool isPartial,
             NameRef className,
-            NamespaceDecl ns, List<FormalTypeParam>/*!*/ genericParams, TypeRef baseClass,
-            List<TypeRef>/*!*/ implementsList, List<TypeMemberDecl>/*!*/ elements, Text.Span bodySpan,
+            NamespaceDecl ns, List<FormalTypeParam>/*!*/ genericParams, QualifiedNameRef baseClass,
+            List<QualifiedNameRef>/*!*/ implementsList, List<TypeMemberDecl>/*!*/ elements, Text.Span bodySpan,
 
             List<CustomAttribute> attributes)
             : base(sourceUnit, span, headingSpan, isConditional, 
@@ -264,6 +259,11 @@ namespace Devsense.PHP.Syntax.Ast
     {
         #region Properties
 
+        /// <summary>
+        /// Always empty.
+        /// </summary>
+        public override NameRef Name => NameRef.Invalid;
+
         #endregion
 
         #region Construction
@@ -271,8 +271,8 @@ namespace Devsense.PHP.Syntax.Ast
         public AnonymousTypeDecl(SourceUnit/*!*/ sourceUnit,
             Text.Span span, Text.Span headingSpan,
             bool isConditional, Scope scope, PhpMemberAttributes memberAttributes, bool isPartial,
-            NamespaceDecl ns, List<FormalTypeParam>/*!*/ genericParams, TypeRef baseClass,
-            List<TypeRef>/*!*/ implementsList, List<TypeMemberDecl>/*!*/ elements, Text.Span bodySpan,
+            NamespaceDecl ns, List<FormalTypeParam>/*!*/ genericParams, QualifiedNameRef baseClass,
+            List<QualifiedNameRef>/*!*/ implementsList, List<TypeMemberDecl>/*!*/ elements, Text.Span bodySpan,
             List<CustomAttribute> attributes)
             : base(sourceUnit, span, headingSpan, isConditional,
                   scope, memberAttributes, isPartial, ns, genericParams, baseClass, implementsList, elements, bodySpan, attributes)
