@@ -273,7 +273,7 @@ namespace Devsense.PHP.Syntax
         /// </summary>
         /// <param name="code">Source code to be parsed.</param>
         /// <param name="filePath">Source file used for error reporting.</param>
-        /// <param name="errors">Errors sink.</param>
+        /// <param name="factory">Nodes factory and error sink.</param>
         /// <param name="reductionsSink">Reduction sink. Can be <c>null</c>.</param>
         /// <param name="features">Optional. Language features.</param>
         /// <param name="initialState">
@@ -281,13 +281,20 @@ namespace Devsense.PHP.Syntax
         /// This allows e.g. to parse PHP code without encapsulating the code into opening and closing tags.</param>
         /// <returns></returns>
         public static SourceUnit/*!*/ParseCode(string code, string filePath,
-            ITokenProvider<SemanticValueType, Span> lexer, 
-            INodesFactory<LangElement, Span> astFactory,
+            INodesFactory<LangElement, Span> factory = null,
             LanguageFeatures features = LanguageFeatures.Basic,
             Lexer.LexicalStates initialState = Lexer.LexicalStates.INITIAL)
         {
-            var/*!*/unit = new CodeSourceUnit(code, filePath, Encoding.UTF8, initialState);
-            unit.Parse(lexer, astFactory, features);
+            var unit = new CodeSourceUnit(code, filePath, Encoding.UTF8, initialState);
+
+            if (factory == null)
+            {
+                factory = new BasicNodesFactory(unit);
+            }
+
+            var lexer = new Lexer(new StringReader(code), Encoding.UTF8, factory, features, 0, initialState);
+
+            unit.Parse(lexer, factory, features);
             unit.Close();
 
             //

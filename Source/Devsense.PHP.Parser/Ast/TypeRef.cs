@@ -23,6 +23,11 @@ namespace Devsense.PHP.Syntax.Ast
         /// </summary>
         public abstract QualifiedName? QualifiedName { get; }
 
+        /// <summary>
+        /// Gets textual representation of the type name.
+        /// </summary>
+        public override abstract string ToString();
+
         protected TypeRef(Span span)
             : base(span)
         {
@@ -51,6 +56,81 @@ namespace Devsense.PHP.Syntax.Ast
             if (obj is TypeRef) return (TypeRef)obj;
 
             throw new ArgumentException("obj");
+        }
+
+        /// <summary>
+        /// Creates direct type reference from a string.
+        /// </summary>
+        /// <param name="span">Position of the name.</param>
+        /// <param name="name">Input string, primitive type name or a class name.</param>
+        /// <param name="naming">Optional the naming context. The name will be translated.</param>
+        /// <returns>Type reference. Cannot be <c>null</c>.</returns>
+        public static TypeRef FromString(Span span, string name, NamingContext naming = null)
+        {
+            if (string.IsNullOrEmpty(name))
+            {
+                throw new ArgumentException(nameof(name));
+            }
+
+            // multiple types
+            var sepindex = name.IndexOf(PHPDocBlock.TypeVarDescTag.TypeNamesSeparator);
+            if (sepindex >= 0)
+            {
+                var names = name.Split(new char[] { PHPDocBlock.TypeVarDescTag.TypeNamesSeparator });
+                Debug.Assert(names.Length > 1);
+                var trefs = new TypeRef[names.Length];
+                int offset = 0;
+                for (int i = 0; i < names.Length; i++)
+                {
+                    var str = names[i];
+                    trefs[i] = FromString(new Span(span.Start + offset, str.Length), str, naming);
+                    offset += str.Length + 1; // + separator
+                }
+                return new MultipleTypeRef(span, trefs);
+            }
+
+            // nullable
+            if (name.EndsWith("?", StringComparison.Ordinal))
+            {
+                return new NullableTypeRef(span, FromString(new Span(span.Start, span.Length - 1), name.Remove(name.Length - 1), naming));
+            }
+
+            // type names
+            switch (name.ToLowerInvariant())
+            {
+                // primitive types
+
+                case "bool":
+                case "boolean":
+                    return new PrimitiveTypeRef(span, new PrimitiveTypeName(Syntax.QualifiedName.Boolean));
+                case "int":
+                case "integer":
+                    return new PrimitiveTypeRef(span, new PrimitiveTypeName(Syntax.QualifiedName.Integer));
+                case "long":
+                    return new PrimitiveTypeRef(span, new PrimitiveTypeName(Syntax.QualifiedName.LongInteger));
+                case "float":
+                case "double":
+                    return new PrimitiveTypeRef(span, new PrimitiveTypeName(Syntax.QualifiedName.Double));
+                case "string":
+                    return new PrimitiveTypeRef(span, new PrimitiveTypeName(Syntax.QualifiedName.String));
+                case "resource":
+                    return new PrimitiveTypeRef(span, new PrimitiveTypeName(Syntax.QualifiedName.Resource));
+                case "callable":
+                    return new PrimitiveTypeRef(span, new PrimitiveTypeName(Syntax.QualifiedName.Callable));
+                case "array":
+                    return new PrimitiveTypeRef(span, new PrimitiveTypeName(Syntax.QualifiedName.Array));
+
+                // direct types
+
+                default:
+                    var qname = Syntax.QualifiedName.Parse(name, false);
+                    if (naming != null)
+                    {
+                        qname = Syntax.QualifiedName.TranslateAlias(qname, naming.Aliases, naming.CurrentNamespace);
+                    }
+                    return new DirectTypeRef(span, qname);
+
+            }
         }
 
         #endregion
@@ -85,6 +165,8 @@ namespace Devsense.PHP.Syntax.Ast
         public override void VisitMe(TreeVisitor visitor) => visitor.VisitPrimitiveTypeRef(this);
 
         public override QualifiedName? QualifiedName => _typeName.QualifiedName;
+
+        public override string ToString() => _typeName.QualifiedName.ToString();
     }
 
     #endregion
@@ -116,6 +198,8 @@ namespace Devsense.PHP.Syntax.Ast
         /// </summary>
         /// <param name="visitor">Visitor to be called.</param>
         public override void VisitMe(TreeVisitor visitor) => visitor.VisitDirectTypeRef(this);
+
+        public override string ToString() => _className.ToString();
 
         #region IEquatable
 
@@ -152,6 +236,8 @@ namespace Devsense.PHP.Syntax.Ast
             _classNameVar = classNameVar;
         }
 
+        public override string ToString() => string.Empty;
+
         /// <summary>
         /// Call the right Visit* method on the given Visitor object.
         /// </summary>
@@ -185,6 +271,8 @@ namespace Devsense.PHP.Syntax.Ast
             _targetType = targetType;
         }
 
+        public override string ToString() => _targetType.ToString() + "?";
+
         /// <summary>
         /// Call the right Visit* method on the given Visitor object.
         /// </summary>
@@ -217,6 +305,8 @@ namespace Devsense.PHP.Syntax.Ast
 
             this._types = multipleTypes;
         }
+
+        public override string ToString() => string.Join(PHPDocBlock.TypeVarDescTag.TypeNamesSeparator.ToString(), _types);
 
         /// <summary>
         /// Call the right Visit* method on the given Visitor object.
@@ -335,10 +425,12 @@ namespace Devsense.PHP.Syntax.Ast
         /// <summary>
         /// List of types represented by this reference.
         /// </summary>
-        public TypeRef TargetType =>this._targetType;
+        public TypeRef TargetType => this._targetType;
         private readonly TypeRef _targetType;
 
         public override QualifiedName? QualifiedName => _targetType.QualifiedName;
+
+        public override string ToString() => $"{_targetType}<:{string.Join(",", _genericArgs)}:>";
 
         /// <summary>
         /// Gets generic qualified name if all the components are resolved.
@@ -389,6 +481,8 @@ namespace Devsense.PHP.Syntax.Ast
         {
             _typeDeclaration = typeDeclaration;
         }
+
+        public override string ToString() => "anonymous class";
 
         /// <summary>
         /// Call the right Visit* method on the given Visitor object.

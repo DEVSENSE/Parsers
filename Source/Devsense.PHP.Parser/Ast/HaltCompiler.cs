@@ -2,19 +2,14 @@
 
 namespace Devsense.PHP.Syntax.Ast
 {
-    /// <summary>
-    /// Represents PHP <c> __halt_compiler</c> construct.
-    /// </summary>
-    public sealed class HaltCompiler : Statement
+    public sealed class HaltCompiler : LangElement
     {
-        public HaltCompiler(Text.Span span)
-            : base(span)
+        public HaltCompiler(Text.Span span) : base(span)
         {
         }
 
         public override void VisitMe(TreeVisitor visitor)
         {
-            visitor.VisitHaltCompiler(this);
         }
     }
 }

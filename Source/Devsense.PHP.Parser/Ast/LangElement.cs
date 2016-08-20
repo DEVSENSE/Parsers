@@ -216,7 +216,7 @@ namespace Devsense.PHP.Syntax.Ast
         /// <summary>
         /// Gets value indicating the qualified name is not empty.
         /// </summary>
-        public bool HasValue => _name.Namespaces != null && _name.Namespaces.Length != 0;
+        public bool HasValue => !string.IsNullOrEmpty(_name.Name.Value) || (_name.Namespaces != null && _name.Namespaces.Length != 0);
 
         internal static QualifiedNameRef FromTypeRef(TypeRef tref)
         {

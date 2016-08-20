@@ -24,10 +24,10 @@ namespace Devsense.PHP.Syntax.Ast
             : base(p)
         {
             Debug.Assert(lvalues != null);
-            Debug.Assert(lvalues.All(item => item is ValueItem && (
-                ((ValueItem)item).ValueExpr == null ||
-                ((ValueItem)item).ValueExpr is VarLikeConstructUse ||
-                ((ValueItem)item).ValueExpr is ListEx)));
+            //Debug.Assert(lvalues.All(item => item is ValueItem && (
+            //    ((ValueItem)item).ValueExpr == null ||
+            //    ((ValueItem)item).ValueExpr is VarLikeConstructUse ||
+            //    ((ValueItem)item).ValueExpr is ListEx)));
 
             _items = lvalues.AsArray();
         }

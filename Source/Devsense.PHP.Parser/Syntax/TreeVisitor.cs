@@ -298,14 +298,6 @@ namespace Devsense.PHP.Syntax
         }
 
         /// <summary>
-        /// <c> __halt_compiler</c>.
-        /// </summary>
-        virtual public void VisitHaltCompiler(HaltCompiler x)
-        {
-
-        }
-
-        /// <summary>
         /// Visit all statements in the given list.
         /// </summary>
         /// <param name="statements">Collection of statements to visit.</param>

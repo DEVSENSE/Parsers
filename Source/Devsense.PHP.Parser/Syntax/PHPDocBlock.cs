@@ -1540,7 +1540,7 @@ namespace Devsense.PHP.Syntax
                     // [type]
                     if (word.Length > 0 && word[0] != '$')
                     {
-                        typehint = new DirectTypeRef(new Span(i - word.Length, word.Length), new QualifiedName(new Name(word)));
+                        typehint = TypeRef.FromString(new Span(i - word.Length, word.Length), word);    // TODO: naming
                         word = NextWord(paramDecl, ref i);
                     }
 

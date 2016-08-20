@@ -15,12 +15,12 @@ namespace Devsense.PHP.Syntax.Ast
     {
         readonly SourceUnit _sourceUnit;
 
-        public List<Tuple<Span, ErrorInfo, string[]>> Errors { get { return _errors; } }
-        readonly List<Tuple<Span, ErrorInfo, string[]>> _errors = new List<Tuple<Span, ErrorInfo, string[]>>();
+        public List<Tuple<Span, ErrorInfo, string[]>> Errors => _errors;
+        protected readonly List<Tuple<Span, ErrorInfo, string[]>> _errors = new List<Tuple<Span, ErrorInfo, string[]>>();
 
-        public void Error(Span span, ErrorInfo info, params string[] argsOpt)
+        public virtual void Error(Span span, ErrorInfo info, params string[] argsOpt)
         {
-            Errors.Add(new Tuple<Span, ErrorInfo, string[]>(span, info, argsOpt));
+            _errors.Add(new Tuple<Span, ErrorInfo, string[]>(span, info, argsOpt));
         }
 
         List<T> ConvertList<T>(IEnumerable<LangElement> list) where T : LangElement
@@ -304,8 +304,7 @@ namespace Devsense.PHP.Syntax.Ast
 
         public LangElement Namespace(Span span, QualifiedName? name, Span nameSpan, IEnumerable<LangElement> statements, NamingContext context)
         {
-            var qname = name.HasValue ? new QualifiedNameRef(nameSpan, name.Value) : QualifiedNameRef.Invalid;
-            NamespaceDecl space = new NamespaceDecl(span, qname, true);
+            NamespaceDecl space = new NamespaceDecl(span, name.HasValue ? new QualifiedNameRef(nameSpan, name.Value) : QualifiedNameRef.Invalid, true);
             space.Naming = context;
             space.Statements = (statements != null) ? ConvertList<Statement>(statements) : null;
             return space;
@@ -314,8 +313,7 @@ namespace Devsense.PHP.Syntax.Ast
         public LangElement Namespace(Span span, QualifiedName? name, Span nameSpan, LangElement block, NamingContext context)
         {
             Debug.Assert(block != null);
-            var qname = name.HasValue ? new QualifiedNameRef(nameSpan, name.Value) : QualifiedNameRef.Invalid;
-            NamespaceDecl space = new NamespaceDecl(span, qname, false);
+            NamespaceDecl space = new NamespaceDecl(span, name.HasValue ? new QualifiedNameRef(nameSpan, name.Value) : QualifiedNameRef.Invalid, false);
             space.Naming = context;
             space.Statements = new List<Statement>() { (Statement)block };
             return space;

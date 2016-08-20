@@ -638,77 +638,52 @@ namespace Devsense.PHP.Syntax
             this.isFullyQualifiedName = namespaceName.IsFullyQualifiedName;
 		}
 
-        //internal static QualifiedName Parse(string/*!*/ buffer, int startIndex, int length, bool hasBaseName)
-        //{
-        //    Debug.Assert(buffer != null && startIndex >= 0 && startIndex <= buffer.Length - length);
+        /// <summary>
+        /// Make QualifiedName from the string like AAA\BBB\XXX
+        /// </summary>
+        /// <returns>Qualified name.</returns>
+        public static QualifiedName Parse(string name, bool fullyQualified)
+        {
+            name = (name == null) ? string.Empty : name.Trim();
+            if (name.Length == 0)
+                return new QualifiedName(Name.EmptyBaseName);
 
-        //    QualifiedName result = new QualifiedName();
+            // fully qualified
+            if (name[0] == Separator)
+            {
+                name = name.Substring(1);
+                fullyQualified = true;
+            }
 
-        //    // handle fully qualified namespace name:
-        //    if (length > 0 && buffer[startIndex] == Separator)
-        //    {
-        //        result.isFullyQualifiedName = true;
-        //        startIndex++;
-        //        length--;
-        //    }
+            // parse name
+            Name[] namespaces;
 
-        //    // names separated by Separator:
-        //    int slash_count = 0;
-        //    for (int i = startIndex; i < startIndex + length; i++)
-        //        if (buffer[i] == Separator) slash_count++;
+            int lastNameStart = name.LastIndexOf(Separator) + 1;
+            if (lastNameStart == 0)
+            {
+                namespaces = Name.EmptyNames;
+            }
+            else
+            {
+                int from = 0, to;
+                List<Name> namespacesList = new List<Name>(4);
+                while ((to = name.IndexOf(Separator, from)) != -1)
+                {
+                    if (from < to)
+                    {
+                        string part = name.Substring(from, to - from);
+                        namespacesList.Add(new Name(part));
+                    }
+                    from = to + 1;
+                }
 
-        //    int separator_count = slash_count;// / Separator.ToString().Length;
+                name = name.Substring(lastNameStart);
+                namespaces = namespacesList.ToArray();
+            }
 
-        //    //Debug.Assert(slash_count % Separator.Length == 0);
-
-        //    if (separator_count == 0)
-        //    {
-        //        Name entire_name = new Name(buffer.Substring(startIndex, length));
-
-        //        if (hasBaseName)
-        //        {
-        //            result.namespaces = Name.EmptyNames;
-        //            result.name = entire_name;
-        //        }
-        //        else
-        //        {
-        //            result.namespaces = new Name[] { entire_name };
-        //            result.name = Name.EmptyBaseName;
-        //        }
-        //    }
-        //    else
-        //    {
-        //        result.namespaces = new Name[separator_count + (hasBaseName ? 0 : 1)];
-
-        //        int current_name = startIndex;
-        //        int next_separator = startIndex;
-        //        int i = 0;
-        //        do
-        //        {
-        //            while (buffer[next_separator] != Separator)
-        //                next_separator++;
-
-        //            result.namespaces[i++] = new Name(buffer.Substring(current_name, next_separator - current_name));
-        //            next_separator += Separator.ToString().Length;
-        //            current_name = next_separator;
-        //        }
-        //        while (i < separator_count);
-
-        //        Name base_name = new Name(buffer.Substring(current_name, length - current_name));
-
-        //        if (hasBaseName)
-        //        {
-        //            result.name = base_name;
-        //        }
-        //        else
-        //        {
-        //            result.namespaces[separator_count] = base_name;
-        //            result.name = Name.EmptyBaseName;
-        //        }
-        //    }
-
-        //    return result;
-        //}
+            // create QualifiedName
+            return new QualifiedName(new Name(name), namespaces, fullyQualified);
+        }
 
         /// <summary>
         /// Builds <see cref="QualifiedName"/> with first element aliased if posible.

@@ -5,6 +5,7 @@ using Devsense.PHP.Syntax.Ast;
 using System.Text.RegularExpressions;
 using Devsense.PHP.Syntax.Ast.Serialization;
 using Devsense.PHP.Syntax;
+using System.Text;
 
 namespace UnitTests
 {
@@ -19,8 +20,7 @@ namespace UnitTests
         public void ParserParseTest()
         {
             string path = (string)TestContext.DataRow["files"];
-            SourceUnit sourceUnit = new CodeSourceUnit(File.ReadAllText(path), path, new System.Text.ASCIIEncoding(), Lexer.LexicalStates.INITIAL);
-
+            SourceUnit sourceUnit = new CodeSourceUnit(File.ReadAllText(path), path, Encoding.UTF8, Lexer.LexicalStates.INITIAL);
             GlobalCode ast = null;
             string source = File.ReadAllText(path);
             string[] sourceTest = source.Split(new string[] { "<<<TEST>>>" }, StringSplitOptions.RemoveEmptyEntries);
@@ -30,7 +30,7 @@ namespace UnitTests
             Parser parser = new Parser();
             using (StringReader source_reader = new StringReader(sourceTest[0]))
             {
-                Lexer lexer = new Lexer(source_reader, sourceUnit, astFactory, LanguageFeatures.ShortOpenTags);
+                Lexer lexer = new Lexer(source_reader, Encoding.UTF8, astFactory, LanguageFeatures.ShortOpenTags);
                 ast = (GlobalCode)parser.Parse(lexer, astFactory, LanguageFeatures.ShortOpenTags);
                 Assert.AreEqual(0, astFactory.Errors.Count);
             }
