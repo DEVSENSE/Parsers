@@ -20,18 +20,21 @@ namespace UnitTests
         public void ParserParseTest()
         {
             string path = (string)TestContext.DataRow["files"];
-            SourceUnit sourceUnit = new CodeSourceUnit(File.ReadAllText(path), path, Encoding.UTF8, Lexer.LexicalStates.INITIAL);
-            GlobalCode ast = null;
-            string source = File.ReadAllText(path);
-            string[] sourceTest = source.Split(new string[] { "<<<TEST>>>" }, StringSplitOptions.RemoveEmptyEntries);
-            Assert.IsTrue(sourceTest.Length >= 2);
+            string testcontent = File.ReadAllText(path);
 
+            string[] testparts = testcontent.Split(new string[] { "<<<TEST>>>" }, StringSplitOptions.RemoveEmptyEntries);
+            Assert.IsTrue(testparts.Length >= 2);
+
+            var sourceUnit = new CodeSourceUnit(testparts[1], path, Encoding.UTF8, Lexer.LexicalStates.INITIAL);
             BasicNodesFactory astFactory = new BasicNodesFactory(sourceUnit);
+            GlobalCode ast = null;
+            
             Parser parser = new Parser();
-            using (StringReader source_reader = new StringReader(sourceTest[0]))
+            using (StringReader source_reader = new StringReader(testparts[0]))
             {
                 Lexer lexer = new Lexer(source_reader, Encoding.UTF8, astFactory, LanguageFeatures.ShortOpenTags);
-                ast = (GlobalCode)parser.Parse(lexer, astFactory, LanguageFeatures.ShortOpenTags);
+                sourceUnit.Parse(lexer, astFactory, LanguageFeatures.ShortOpenTags);
+                ast = sourceUnit.Ast;
                 Assert.AreEqual(0, astFactory.Errors.Count);
             }
             Assert.AreEqual(0, astFactory.Errors.Count);
@@ -42,7 +45,7 @@ namespace UnitTests
 
             Regex rgx = new Regex("\"Span\"[^}]*},?"); // omit Span for more compact testing (position must be verified separately)
             // Regex rgx = new Regex(""); // for testing position
-            string expected = rgx.Replace(sourceTest[1].Trim().Replace("\r", string.Empty).Replace("\n", string.Empty).Replace(" ", string.Empty), string.Empty);
+            string expected = rgx.Replace(testparts[1].Trim().Replace("\r", string.Empty).Replace("\n", string.Empty).Replace(" ", string.Empty), string.Empty);
             string actual = rgx.Replace(serializer.ToString().Replace("\r", string.Empty).Replace("\n", string.Empty).Replace(" ", string.Empty), string.Empty);
 
             //Assert.AreEqual(expected.Length, actual.Length);

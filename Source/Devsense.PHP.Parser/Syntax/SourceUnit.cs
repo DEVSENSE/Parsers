@@ -103,7 +103,7 @@ namespace Devsense.PHP.Syntax
         #region Abstract Methods
 
         public abstract void Parse(
-            ITokenProvider<SemanticValueType, Span> lexer, INodesFactory<LangElement, Span> astFactory,
+            ITokenProvider<SemanticValueType, Span> lexer, INodesFactory<LangElement, Span> factory,
             LanguageFeatures features);
 
         public abstract void Close();
@@ -236,14 +236,9 @@ namespace Devsense.PHP.Syntax
             this.initialState = initialState;
         }
 
-        public override void Parse(ITokenProvider<SemanticValueType, Span> lexer, INodesFactory<LangElement, Span> astFactory, LanguageFeatures features)
+        public override void Parse(ITokenProvider<SemanticValueType, Span> lexer, INodesFactory<LangElement, Span> factory, LanguageFeatures features)
         {
-            Parser parser = new Parser();
-
-            using (StringReader source_reader = new StringReader(code))
-            {
-                ast = parser.Parse(lexer, astFactory, features);
-            }
+            ast = new Parser().Parse(lexer, factory, features);
         }
 
         /// <summary>
