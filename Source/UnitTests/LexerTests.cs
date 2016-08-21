@@ -41,7 +41,7 @@ namespace UnitTests
         public void LexerConstructorTest()
         {
             string path = (string)TestContext.DataRow["files"];
-            SourceUnit sourceUnit = new CodeSourceUnit(File.ReadAllText(path), path, Encoding.UTF8, Lexer.LexicalStates.INITIAL);
+            SourceUnit sourceUnit = new CodeSourceUnit(File.ReadAllText(path), path, Encoding.UTF8, Lexer.LexicalStates.INITIAL, LanguageFeatures.Basic);
             ITokenProvider<SemanticValueType, Span> lexer = new Lexer(new StreamReader(path), Encoding.UTF8, new TestErrorSink(), 
                 LanguageFeatures.ShortOpenTags, 0, Lexer.LexicalStates.INITIAL);
             Assert.AreNotEqual(null, lexer);
@@ -54,7 +54,7 @@ namespace UnitTests
             string path = (string)TestContext.DataRow["files"];
 
             TestErrorSink errorSink = new TestErrorSink();
-            SourceUnit sourceUnit = new CodeSourceUnit(File.ReadAllText(path), path, Encoding.UTF8, Lexer.LexicalStates.INITIAL);
+            SourceUnit sourceUnit = new CodeSourceUnit(File.ReadAllText(path), path, Encoding.UTF8, Lexer.LexicalStates.INITIAL, LanguageFeatures.Basic);
             Lexer lexer = new Lexer(new StreamReader(path), Encoding.UTF8, errorSink, 
                 LanguageFeatures.ShortOpenTags, 0, Lexer.LexicalStates.INITIAL);
 

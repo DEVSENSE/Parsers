@@ -6,6 +6,8 @@ using System.Text.RegularExpressions;
 using Devsense.PHP.Syntax.Ast.Serialization;
 using Devsense.PHP.Syntax;
 using System.Text;
+using Devsense.PHP.Errors;
+using Devsense.PHP.Text;
 
 namespace UnitTests
 {
@@ -25,19 +27,19 @@ namespace UnitTests
             string[] testparts = testcontent.Split(new string[] { "<<<TEST>>>" }, StringSplitOptions.RemoveEmptyEntries);
             Assert.IsTrue(testparts.Length >= 2);
 
-            var sourceUnit = new CodeSourceUnit(testparts[1], path, Encoding.UTF8, Lexer.LexicalStates.INITIAL);
-            BasicNodesFactory astFactory = new BasicNodesFactory(sourceUnit);
+            var sourceUnit = new CodeSourceUnit(testparts[0], path, Encoding.UTF8, Lexer.LexicalStates.INITIAL, LanguageFeatures.Basic);
+            var factory = new BasicNodesFactory(sourceUnit);
+
             GlobalCode ast = null;
             
             Parser parser = new Parser();
             using (StringReader source_reader = new StringReader(testparts[0]))
             {
-                Lexer lexer = new Lexer(source_reader, Encoding.UTF8, astFactory, LanguageFeatures.ShortOpenTags);
-                sourceUnit.Parse(lexer, astFactory, LanguageFeatures.ShortOpenTags);
+                sourceUnit.Parse(factory, (IErrorSink<Span>)factory);
                 ast = sourceUnit.Ast;
-                Assert.AreEqual(0, astFactory.Errors.Count);
+                Assert.AreEqual(0, factory.Errors.Count);
             }
-            Assert.AreEqual(0, astFactory.Errors.Count);
+            Assert.AreEqual(0, factory.Errors.Count);
 
             var serializer = new JsonNodeWriter();
             TreeSerializer visitor = new TreeSerializer(serializer);

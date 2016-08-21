@@ -13,7 +13,7 @@ namespace Devsense.PHP.Syntax.Ast
     /// </summary>
     /// <typeparam name="TNode">Type of root node.</typeparam>
     /// <typeparam name="TSpan">Type of position object.</typeparam>
-    public interface INodesFactory<TNode, TSpan> : IErrorSink<TSpan>
+    public interface INodesFactory<TNode, TSpan>
     {
         #region GlobalCode
 

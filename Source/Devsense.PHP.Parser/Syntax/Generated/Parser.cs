@@ -2064,7 +2064,7 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
       case 130: // inner_statement -> T_HALT_COMPILER '(' ')' ';' 
 { 
 				yyval.Object = null; 
-				_astFactory.Error(yypos, FatalErrors.InternalError, "__HALT_COMPILER() can only be used from the outermost scope"); 
+				_errors.Error(yypos, FatalErrors.InternalError, "__HALT_COMPILER() can only be used from the outermost scope"); 
 			}
         return;
       case 131: // statement -> '{' inner_statement_list '}' 

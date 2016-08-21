@@ -25,8 +25,8 @@ namespace Devsense.PHP.Syntax
         public string/*!*/ FilePath { get { return _filePath; } }
         readonly string/*!*/ _filePath;
 
-        public Devsense.PHP.Syntax.Ast.GlobalCode Ast { get { return (GlobalCode)ast; } }
-        protected Devsense.PHP.Syntax.Ast.LangElement ast;
+        public GlobalCode Ast { get { return (GlobalCode)ast; } }
+        protected AstNode ast;
 
         /// <summary>
         /// Set of object properties.
@@ -102,13 +102,11 @@ namespace Devsense.PHP.Syntax
 
         #region Abstract Methods
 
-        public abstract void Parse(
-            ITokenProvider<SemanticValueType, Span> lexer, INodesFactory<LangElement, Span> factory,
-            LanguageFeatures features);
+        public abstract void Parse(INodesFactory<LangElement, Span> factory, Errors.IErrorSink<Span> errors);
 
         public abstract void Close();
 
-        public abstract string GetSourceCode(Devsense.PHP.Text.Span span);
+        public abstract string GetSourceCode(Span span);
 
         #endregion
 
@@ -224,21 +222,30 @@ namespace Devsense.PHP.Syntax
 
         public Lexer.LexicalStates/*!*/ InitialState { get { return initialState; } }
 
+        readonly LanguageFeatures features;
+
         #endregion
 
         #region SourceUnit
 
         public CodeSourceUnit(string/*!*/ code, string/*!*/ filePath,
-            Encoding/*!*/ encoding, Lexer.LexicalStates initialState)
-            : base(filePath, encoding, Devsense.PHP.Text.LineBreaks.Create(code))
+            Encoding/*!*/ encoding,
+            Lexer.LexicalStates initialState = Lexer.LexicalStates.INITIAL,
+            LanguageFeatures features = LanguageFeatures.Basic)
+            : base(filePath, encoding, Text.LineBreaks.Create(code))
         {
             this.code = code;
             this.initialState = initialState;
+            this.features = features;
         }
 
-        public override void Parse(ITokenProvider<SemanticValueType, Span> lexer, INodesFactory<LangElement, Span> factory, LanguageFeatures features)
+        public override void Parse(INodesFactory<LangElement, Span> factory, Errors.IErrorSink<Span> errors)
         {
-            ast = new Parser().Parse(lexer, factory, features);
+            using (var source = new StringReader(this.Code))
+            {
+                var lexer = new Lexer(source, Encoding.UTF8, errors, features, 0, initialState);
+                ast = new Parser().Parse(lexer, factory, errors);
+            }
         }
 
         /// <summary>
@@ -277,19 +284,25 @@ namespace Devsense.PHP.Syntax
         /// <returns></returns>
         public static SourceUnit/*!*/ParseCode(string code, string filePath,
             INodesFactory<LangElement, Span> factory = null,
+            Errors.IErrorSink<Span> errors = null,
             LanguageFeatures features = LanguageFeatures.Basic,
             Lexer.LexicalStates initialState = Lexer.LexicalStates.INITIAL)
         {
-            var unit = new CodeSourceUnit(code, filePath, Encoding.UTF8, initialState);
+            var unit = new CodeSourceUnit(code, filePath, Encoding.UTF8, initialState, features);
 
             if (factory == null)
             {
                 factory = new BasicNodesFactory(unit);
             }
 
-            var lexer = new Lexer(new StringReader(code), Encoding.UTF8, factory, features, 0, initialState);
+            if (errors == null)
+            {
+                errors = (factory as Errors.IErrorSink<Span>) ?? new EmptyErrorSink<Span>();
+            }
 
-            unit.Parse(lexer, factory, features);
+            var lexer = new Lexer(new StringReader(code), Encoding.UTF8, errors, features, 0, initialState);
+
+            unit.Parse(factory, errors);
             unit.Close();
 
             //

@@ -11,10 +11,17 @@ namespace Devsense.PHP.Syntax.Ast
     /// <summary>
     /// Nodes factory used by <see cref="Parser.Parser"/>.
     /// </summary>
-    public class BasicNodesFactory : INodesFactory<LangElement, Span>
+    public class BasicNodesFactory : INodesFactory<LangElement, Span>, IErrorSink<Span>
     {
+        /// <summary>
+        /// Gets associated source unit.
+        /// </summary>
+        public SourceUnit SourceUnit => _sourceUnit;
         readonly SourceUnit _sourceUnit;
 
+        /// <summary>
+        /// Gets list of collected errors.
+        /// </summary>
         public List<Tuple<Span, ErrorInfo, string[]>> Errors => _errors;
         protected readonly List<Tuple<Span, ErrorInfo, string[]>> _errors = new List<Tuple<Span, ErrorInfo, string[]>>();
 

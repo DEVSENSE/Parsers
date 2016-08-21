@@ -457,7 +457,7 @@ inner_statement:
 	|	T_HALT_COMPILER '(' ')' ';'
 			{ 
 				$$ = null; 
-				_astFactory.Error(@$, FatalErrors.InternalError, "__HALT_COMPILER() can only be used from the outermost scope"); 
+				_errors.Error(@$, FatalErrors.InternalError, "__HALT_COMPILER() can only be used from the outermost scope"); 
 			}
 ;
 

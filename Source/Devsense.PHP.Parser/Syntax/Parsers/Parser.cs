@@ -13,9 +13,9 @@ namespace Devsense.PHP.Syntax
 
     public partial class Parser
     {
-        LanguageFeatures _features;
         ITokenProvider<SemanticValueType, Span> _lexer;
         INodesFactory<LangElement, Span> _astFactory;
+        IErrorSink<Span> _errors;
         Scope _currentScope;
         NamespaceDecl _currentNamespace = null;
         List<NamingContext> _context = new List<NamingContext>();
@@ -54,18 +54,26 @@ namespace Devsense.PHP.Syntax
         //$$ = new List<LangElement>() { (LangElement)$1 };
 
         public LangElement Parse(
-                ITokenProvider<SemanticValueType, Span> lexer, INodesFactory<LangElement, Span> astFactory,
-                LanguageFeatures features, int positionShift = 0)
+                ITokenProvider<SemanticValueType, Span> lexer,
+                INodesFactory<LangElement, Span> astFactory,
+                IErrorSink<Span> errors = null,
+                int positionShift = 0)
         {
+            if (lexer == null)
+                throw new ArgumentNullException(nameof(lexer));
+
+            if (astFactory == null)
+                throw new ArgumentNullException(nameof(astFactory));
+
             // initialization:
-            this._features = features;
-            this._lexer = new CompliantLexer(lexer);
-            this._astFactory = astFactory;
+            _lexer = new CompliantLexer(lexer);
+            _astFactory = astFactory;
+            _errors = errors ?? new EmptyErrorSink<Span>();
             //InitializeFields();
 
-            this._currentScope = new Scope(1); // starts assigning scopes from 2 (1 is reserved for prepended inclusion)
+            _currentScope = new Scope(1); // starts assigning scopes from 2 (1 is reserved for prepended inclusion)
 
-            base.Scanner = this._lexer;
+            base.Scanner = _lexer;
             bool accept = base.Parse();
             Debug.Assert(accept, "Parser rejected the source code.");
 
@@ -103,8 +111,8 @@ namespace Devsense.PHP.Syntax
             if (statements.Count > 0 &&
                     statements.Any(s => s is NamespaceDecl && ((NamespaceDecl)s).IsSimpleSyntax) &&
                     statements.Any(s => s is NamespaceDecl && !((NamespaceDecl)s).IsSimpleSyntax))
-                _astFactory.Error(Span.Combine(statements.First(s => s != null).Span, statements.Last(s => s != null).Span),
-                    new ErrorInfo(9999, "Cannot mix bracketed namespace declarations with unbracketed namespace declarations", ErrorSeverity.Error),
+                _errors.Error(Span.Combine(statements.First(s => s != null).Span, statements.Last(s => s != null).Span),
+                    new ErrorInfo(9999, "Cannot mix bracketed namespace declarations with unbracketed namespace declarations", ErrorSeverity.Error),    // TODO: ErrorInfo, resources!!
                     null);
             List<LangElement> namespaces = new List<LangElement>();
             int i = 0;
@@ -185,7 +193,7 @@ namespace Devsense.PHP.Syntax
 
         private LangElement StatementsToBlock(Span span, object statements, Tokens endToken)
         {
-            Debug.Assert(statements is List<LangElement>); 
+            Debug.Assert(statements is List<LangElement>);
             return StatementsToBlock(span, (List<LangElement>)statements, endToken);
         }
 
