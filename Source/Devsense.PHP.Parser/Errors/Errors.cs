@@ -71,7 +71,7 @@ namespace Devsense.PHP.Errors
 
     #region Warnings, Errors, Fatal Errors
 
-    internal static class Warnings
+    public static class Warnings
     {
         //public static readonly ErrorInfo RelatedLocation = new ErrorInfo(-1, "__related_location", ErrorSeverity.Warning);
         //public static readonly ErrorInfo None = new ErrorInfo_(-2, "", ErrorSeverity.Warning);
@@ -154,7 +154,7 @@ namespace Devsense.PHP.Errors
     }
 
     // 1000+
-    internal static class Errors
+    public static class Errors
     {
         public static readonly ErrorInfo RelatedLocation = new ErrorInfo_(-1, "__related_location", ErrorSeverity.Error);
 
@@ -340,7 +340,7 @@ namespace Devsense.PHP.Errors
     }
 
     // 2000+
-    internal static class FatalErrors
+    public static class FatalErrors
     {
         public static readonly ErrorInfo RelatedLocation = new ErrorInfo_(-1, "__related_location", ErrorSeverity.Error);
 
