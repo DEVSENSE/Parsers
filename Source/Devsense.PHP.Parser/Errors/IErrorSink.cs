@@ -2,14 +2,18 @@
 
 namespace Devsense.PHP.Errors
 {
+    /// <summary>
+    /// Provides error sink to report errors into.
+    /// </summary>
+    /// <typeparam name="TSpan">Type of position.</typeparam>
     public interface IErrorSink<TSpan>
     {
         /// <summary>
-        /// Report error. TODO
+        /// Reports an error to the sink.
         /// </summary>
-        /// <param name="span">Entire element span.</param>
-        /// <param name="info">Error type.</param>
-        /// <param name="argsOpt">Additional error informatin</param>
+        /// <param name="span">Error position.</param>
+        /// <param name="info">Error descriptor.</param>
+        /// <param name="argsOpt">Error message arguments.</param>
         void Error(TSpan span, ErrorInfo info, params string[] argsOpt);
     }
 }

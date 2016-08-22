@@ -90,12 +90,12 @@ namespace Devsense.PHP.Syntax.Ast
         public bool IsAnonymous { get { return this.isAnonymous; } }
         private readonly bool isAnonymous;
 
-        public List<Statement>/*!*/ Statements
+        public IList<Statement>/*!*/ Statements
         {
             get { return this.statements; }
             internal /* friend Parser */ set { this.statements = value; }
         }
-        private List<Statement>/*!*/ statements = null;
+        private IList<Statement>/*!*/ statements = null;
 
         #region Construction
 

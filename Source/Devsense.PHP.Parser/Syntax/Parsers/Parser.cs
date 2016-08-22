@@ -27,6 +27,11 @@ namespace Devsense.PHP.Syntax
         /// </summary>
         private LangElement _astRoot;
 
+        /// <summary>
+        /// Gets parser error sink. Cannot be <c>null</c>.
+        /// </summary>
+        public IErrorSink<Span> ErrorSink => _errors;
+
         protected sealed override int EofToken
         {
             get { return (int)Tokens.END; }
@@ -108,24 +113,76 @@ namespace Devsense.PHP.Syntax
         void AssignStatements(List<LangElement> statements)
         {
             Debug.Assert(statements.All(s => s == null || s is Statement), "Code contains an invalid statement.");
-            if (statements.Count > 0 &&
-                    statements.Any(s => s is NamespaceDecl && ((NamespaceDecl)s).IsSimpleSyntax) &&
-                    statements.Any(s => s is NamespaceDecl && !((NamespaceDecl)s).IsSimpleSyntax))
-                _errors.Error(Span.Combine(statements.First(s => s != null).Span, statements.Last(s => s != null).Span),
-                    new ErrorInfo(9999, "Cannot mix bracketed namespace declarations with unbracketed namespace declarations", ErrorSeverity.Error),    // TODO: ErrorInfo, resources!!
-                    null);
-            List<LangElement> namespaces = new List<LangElement>();
-            int i = 0;
-            while ((i = statements.FindLastIndex(s => s is NamespaceDecl && ((NamespaceDecl)s).IsSimpleSyntax)) != -1)
+
+            bool hasNsSimple = false, hasNsBracket = false, hasStmt = false;
+
+            for (int i = 0; i < statements.Count; i++)
             {
-                int count = statements.Count - i;
-                namespaces.Add(statements[i]);
-                // add all the subsequent statements except the NamespaceDecl itself
-                ((NamespaceDecl)statements[i]).Statements = statements.GetRange(i + 1, count - 1).Select(s => (Statement)s).ToList();
-                statements.RemoveRange(i, count);
+                var stmt = (Statement)statements[i];
+                if (stmt == null)
+                {
+                    statements.RemoveAt(i);
+                    i--;
+                    continue;
+                }
+
+                // Debug.Assert(statements[i] != null); // TODO (T_USE returns null)
+
+                var ns = stmt as NamespaceDecl;
+                if (ns != null)
+                {
+                    if (hasStmt)
+                    {
+                        // TODO: Error, all statements must be in a namespace
+                    }
+
+                    if (ns.IsSimpleSyntax)
+                    {
+                        hasNsSimple = true;
+
+                        if (i + 1 < statements.Count)
+                        {
+                            // find next namespace declaration
+                            var next_ns_index = statements.FindIndex(i + 1, x => x is NamespaceDecl);
+                            if (next_ns_index < 0)
+                            {
+                                next_ns_index = statements.Count;
+                            }
+
+                            // copy following statements into the namespace declaration
+                            var count = next_ns_index - i - 1;
+                            if (count != 0)
+                            {
+                                var newcontaining = new Statement[count];
+                                for (int j = 0; j < count; j++)
+                                {
+                                    newcontaining[j] = (Statement)statements[j + i + 1];
+                                }
+
+                                statements.RemoveRange(i + 1, count);
+                                ns.Statements = newcontaining;
+                            }
+                            else
+                            {
+                                ns.Statements = EmptyArray<Statement>.Instance;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        hasNsBracket = true;
+                    }
+
+                    if (hasNsSimple && hasNsBracket)
+                    {
+                        this.ErrorSink.Error(ns.QualifiedName.Span, FatalErrors.MixedNamespacedeclarations);
+                    }
+                }
+                else
+                {
+                    hasStmt = true;
+                }
             }
-            namespaces.Reverse(); // keep the original order
-            statements.AddRange(namespaces);
         }
 
         private void AddAlias(Tuple<List<string>, string> alias)

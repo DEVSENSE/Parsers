@@ -354,6 +354,13 @@ namespace Devsense.PHP.Syntax.Ast
         /// <returns>StaticVarDecl statement.</returns>
         TNode StaticVarDecl(Span span, VariableName name, LangElement initializerOpt);
 
+        /// <summary>
+        /// An empty statement (<c>;</c>).
+        /// </summary>
+        /// <param name="span">Semicolon position.</param>
+        /// <returns>Empty statement.</returns>
+        TNode EmptyStmt(Span span);
+
         #endregion
 
         #region Loops, Branching

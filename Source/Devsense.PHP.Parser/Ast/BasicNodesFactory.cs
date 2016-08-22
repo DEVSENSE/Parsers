@@ -173,6 +173,13 @@ namespace Devsense.PHP.Syntax.Ast
             return new EmptyEx(span, (Expression)code);
         }
 
+        /// <summary>
+        /// An empty statement (<c>;</c>).
+        /// </summary>
+        /// <param name="span">Semicolon position.</param>
+        /// <returns>Empty statement.</returns>
+        public LangElement EmptyStmt(Span span) => new EmptyStmt(span);
+
         public LangElement Isset(Span span, IEnumerable<LangElement> variables)
         {
             return new IssetEx(span, ConvertList<VariableUse>(variables));

@@ -33,6 +33,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <DocumentationFile>bin\Release\Devsense.PHP.Parser.xml</DocumentationFile>
+    <NoWarn>1591</NoWarn>
   </PropertyGroup>
   <PropertyGroup>
     <SignAssembly>true</SignAssembly>
@@ -84,6 +85,7 @@
     <Compile Include="Ast\UpdateParentVisitor.cs" />
     <Compile Include="Ast\VariableUse.cs" />
     <Compile Include="Ast\YieldEx.cs" />
+    <Compile Include="Errors\ErrorInfo.cs" />
     <Compile Include="Errors\Errors.cs" />
     <Compile Include="Errors\IErrorSink.cs" />
     <Compile Include="Errors\Strings.Designer.cs">
@@ -130,6 +132,7 @@
     <EmbeddedResource Include="Errors\Strings.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Strings.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />

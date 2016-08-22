@@ -2125,7 +2125,7 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 { yyval.Object = _astFactory.Declare(yypos, (LangElement)value_stack.array[value_stack.top-1].yyval.Object); }
         return;
       case 150: // statement -> ';' 
-{ yyval.Object = null; }
+{ yyval.Object = _astFactory.EmptyStmt(yypos); }
         return;
       case 151: // statement -> T_TRY '{' inner_statement_list '}' catch_list finally_statement 
 { yyval.Object = _astFactory.TryCatch(yypos, _astFactory.Block(value_stack.array[value_stack.top-4].yypos, (List<LangElement>)value_stack.array[value_stack.top-4].yyval.Object), (List<CatchItem>)value_stack.array[value_stack.top-2].yyval.Object, (LangElement)value_stack.array[value_stack.top-1].yyval.Object); }

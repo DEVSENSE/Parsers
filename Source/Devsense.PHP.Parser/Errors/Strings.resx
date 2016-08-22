@@ -2089,4 +2089,7 @@ non-infringement.
   <data name="try_without_catch_or_finally" xml:space="preserve">
     <value>Cannot use try without catch or finally</value>
   </data>
+  <data name="mixed_namespace_declaration" xml:space="preserve">
+    <value>Cannot mix bracketed namespace declarations with unbracketed namespace declarations.</value>
+  </data>
 </root>

@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>Devsense.Php.Parser</id>
-    <version>1.0.9</version>
+    <version>1.0.10</version>
     <title>PHP Tokenizer and Parser for .NET</title>
     <description>.NET implementation of PHP tokenizer and parser.</description>
     <authors>Michal Brabec, Jakub Misek</authors>

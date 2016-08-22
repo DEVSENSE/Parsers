@@ -488,7 +488,7 @@ statement:
 			{ $$ = _astFactory.Foreach(@$, (LangElement)$3, (VariableUse)$5, (VariableUse)$7, (LangElement)$9); }
 	|	T_DECLARE '(' const_list ')' declare_statement
 			{ $$ = _astFactory.Declare(@$, (LangElement)$5); }
-	|	';'	/* empty statement */ { $$ = null; }
+	|	';'	/* empty statement */ { $$ = _astFactory.EmptyStmt(@$); }
 	|	T_TRY '{' inner_statement_list '}' catch_list finally_statement
 			{ $$ = _astFactory.TryCatch(@$, _astFactory.Block(@3, (List<LangElement>)$3), (List<CatchItem>)$5, (LangElement)$6); }
 	|	T_THROW expr ';' { $$ = _astFactory.Throw(@$, (LangElement)$2); }
