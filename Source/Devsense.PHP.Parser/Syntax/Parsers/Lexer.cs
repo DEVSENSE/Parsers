@@ -107,6 +107,7 @@ namespace Devsense.PHP.Syntax
         void ITokenProvider<SemanticValueType, Span>.ReportError(string[] expectedTerminals)
         {
             // TODO (expected tokens....)
+            _errors.Error(_tokenPosition, FatalErrors.SyntaxError, string.Format(Strings.unexpected_token, GetTokenString()));
         }
 
         int ITokenProvider<SemanticValueType, Span>.GetNextToken() => (int)GetNextToken();
