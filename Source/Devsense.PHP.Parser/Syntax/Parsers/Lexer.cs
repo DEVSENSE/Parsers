@@ -64,7 +64,7 @@ namespace Devsense.PHP.Syntax
         /// </summary>
         public PHPDocBlock DocBlock { get; set; }
 
-        void SetDocBlock() => DocBlock = new PHPDocBlock(GetTokenString(), new Span(_charOffset, this.TokenLength));    // TokenPosition is not updated yet
+        void SetDocBlock() => DocBlock = new PHPDocBlock(GetTokenString(), new Span(_charOffset, this.TokenLength));    // TokenPosition is not updated yet ta this point
         void ResetDocBlock() => DocBlock = null;
 
         /// <summary>
@@ -93,7 +93,16 @@ namespace Devsense.PHP.Syntax
         }
 
         /// <summary>
-        /// Updates <see cref="charOffset"/> and <see cref="_tokenPosition"/>.
+        /// Override of <c>Initialize</c> resetting <see cref="_charOffset"/> so <see cref="TokenPosition"/> is correctly shifted.
+        /// </summary>
+        public void Initialize(System.IO.TextReader reader, LexicalStates lexicalState, bool atBol, int positionShift)
+        {
+            Initialize(reader, lexicalState, atBol);
+            _charOffset = positionShift;
+        }
+
+        /// <summary>
+        /// Updates <see cref="_charOffset"/> and <see cref="_tokenPosition"/>.
         /// </summary>
         public void UpdateTokenPosition()
         {
