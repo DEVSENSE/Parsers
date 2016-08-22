@@ -11,25 +11,27 @@ namespace Devsense.PHP.Syntax
     /// </summary>
     internal class CompliantLexer : ITokenProvider<SemanticValueType, Span>
     {
-        ITokenProvider<SemanticValueType, Span> fullProvider;
+        ITokenProvider<SemanticValueType, Span> _provider;
 
         /// <summary>
         /// Lexer constructor that initializes all the necessary members
         /// </summary>
-        /// <param name="reader">Text reader containing the source code.</param>
-        public CompliantLexer(ITokenProvider<SemanticValueType, Span> fullProvider)
+        /// <param name="provider">Underlaying tokens provider.</param>
+        public CompliantLexer(ITokenProvider<SemanticValueType, Span> provider)
         {
-            this.fullProvider = fullProvider;
+            _provider = provider;
         }
 
-        public PHPDocBlock DocBlock { get { return fullProvider.DocBlock; } set { fullProvider.DocBlock = value; } }
+        public PHPDocBlock DocBlock { get { return _provider.DocBlock; } set { _provider.DocBlock = value; } }
 
-        public Span TokenPosition => fullProvider.TokenPosition;
+        public Span TokenPosition => _provider.TokenPosition;
 
-        public SemanticValueType TokenValue => fullProvider.TokenValue;
+        public string TokenText => _provider.TokenText;
+
+        public SemanticValueType TokenValue => _provider.TokenValue;
 
         /// <summary>
-        /// Get next token, store its actual position in the source unit and call the <see cref="NextTokenEvent"/>.
+        /// Get next token and store its actual position in the source unit.
         /// This implementation supports the functionality of zendlex, which skips empty nodes (open tag, comment, etc.).
         /// </summary>
         /// <returns>Next token.</returns>
@@ -37,7 +39,7 @@ namespace Devsense.PHP.Syntax
         {
             do
             {
-                Tokens token = (Tokens)fullProvider.GetNextToken();
+                Tokens token = (Tokens)_provider.GetNextToken();
 
                 // origianl zendlex() functionality - skip open and close tags because they are not in the PHP grammar
                 switch (token)
@@ -61,7 +63,7 @@ namespace Devsense.PHP.Syntax
 
         public void ReportError(string[] expectedTokens)
         {
-            fullProvider.ReportError(expectedTokens);
+            _provider.ReportError(expectedTokens);
         }
     }
 }

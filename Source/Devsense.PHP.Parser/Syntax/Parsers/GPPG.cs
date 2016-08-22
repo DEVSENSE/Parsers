@@ -98,14 +98,32 @@ namespace Devsense.PHP.Syntax
 
 	public interface ITokenProvider<ValueType, PositionType>
     {
+        /// <summary>
+        /// Gets current token semantic value.
+        /// </summary>
 		ValueType TokenValue { get; }
 
+        /// <summary>
+        /// Gets current token position.
+        /// </summary>
 		PositionType TokenPosition { get; }
 
+        /// <summary>
+        /// Gets current token text.
+        /// </summary>
+        string TokenText { get; }
+
+        /// <summary>
+        /// Proceeds to the next token and returns its identifier.
+        /// </summary>
+        /// <returns></returns>
 		int GetNextToken();
 
 		void ReportError(string[] expectedTokens);
 
+        /// <summary>
+        /// Gets current DOC block that will be assigned to the next declaration.
+        /// </summary>
         PHPDocBlock DocBlock { get; set; }
     }
 

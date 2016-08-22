@@ -64,7 +64,7 @@ namespace Devsense.PHP.Syntax
         /// </summary>
         public PHPDocBlock DocBlock { get; set; }
 
-        void SetDocBlock() => DocBlock = new PHPDocBlock(GetTokenString(), _tokenPosition);
+        void SetDocBlock() => DocBlock = new PHPDocBlock(GetTokenString(), new Span(_charOffset, this.TokenLength));    // TokenPosition is not updated yet
         void ResetDocBlock() => DocBlock = null;
 
         /// <summary>
