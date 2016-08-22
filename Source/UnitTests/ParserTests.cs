@@ -31,7 +31,7 @@ namespace UnitTests
             var factory = new BasicNodesFactory(sourceUnit);
 
             GlobalCode ast = null;
-            
+
             Parser parser = new Parser();
             using (StringReader source_reader = new StringReader(testparts[0]))
             {
@@ -54,6 +54,26 @@ namespace UnitTests
             //for (int i = 0; i < expected.Length; i++)
             //    Assert.AreEqual(expected[i], actual[i], "difference at " + i.ToString());
             Assert.AreEqual(expected, actual);
+
+            // check every node has a parent
+            var checker = new ContainingElementCheck();
+            checker.VisitGlobalCode(ast);
+        }
+
+        /// <summary>
+        /// Helper visitor checking every node has a containing element.
+        /// </summary>
+        sealed class ContainingElementCheck : TreeVisitor
+        {
+            public override void VisitElement(LangElement element)
+            {
+                if (element != null)
+                {
+                    Assert.IsNotNull(element.ContainingElement);
+
+                    base.VisitElement(element);
+                }
+            }
         }
     }
 }

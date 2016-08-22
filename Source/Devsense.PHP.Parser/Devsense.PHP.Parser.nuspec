@@ -2,20 +2,24 @@
 <package >
   <metadata>
     <id>Devsense.Php.Parser</id>
-    <version>1.0.8</version>
+    <version>1.0.9</version>
     <title>PHP Tokenizer and Parser for .NET</title>
     <description>.NET implementation of PHP tokenizer and parser.</description>
     <authors>Michal Brabec, Jakub Misek</authors>
     <owners>devsense jmisek</owners>
-  	<licenseUrl>https://raw.githubusercontent.com/DEVSENSE/Parsers/master/LICENSE</licenseUrl>
-  	<projectUrl>https://github.com/DEVSENSE/Parsers</projectUrl>
-  	<requireLicenseAcceptance>false</requireLicenseAcceptance>
-  	<releaseNotes>.NET implementation of PHP tokenizer and parser.</releaseNotes>
-  	<copyright>Copyright (c) Devsense 2016</copyright>
-  	<tags>Devsense Php Parser Ast</tags>
+    <licenseUrl>https://raw.githubusercontent.com/DEVSENSE/Parsers/master/LICENSE</licenseUrl>
+    <projectUrl>https://github.com/DEVSENSE/Parsers</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <releaseNotes>.NET implementation of PHP tokenizer and parser.</releaseNotes>
+    <copyright>Copyright (c) Devsense 2016</copyright>
+    <tags>Devsense Php Parser Ast</tags>
   </metadata>
   <files>
-    <file src="bin/Release/Devsense.PHP.Parser.dll" target="lib/netcore45" /> 
-	<file src="bin/Release/Devsense.PHP.Parser.dll" target="lib/net45" /> 
+    <!--netcore45-->
+    <file src="bin/Release/Devsense.PHP.Parser.dll" target="lib/netcore45" />
+    <file src="bin/Release/Devsense.PHP.Parser.xml" target="lib/netcore45" />
+    <!--net45-->
+    <file src="bin/Release/Devsense.PHP.Parser.dll" target="lib/net45" />
+    <file src="bin/Release/Devsense.PHP.Parser.xml" target="lib/net45" />
   </files>
 </package>

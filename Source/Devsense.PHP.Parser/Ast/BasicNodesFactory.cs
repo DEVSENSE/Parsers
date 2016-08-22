@@ -220,7 +220,13 @@ namespace Devsense.PHP.Syntax.Ast
         public LangElement GlobalCode(Span span, IEnumerable<LangElement> statements, NamingContext context)
         {
             _sourceUnit.Naming = context;
-            return new GlobalCode(span, ConvertList<Statement>(statements), _sourceUnit);
+            var ast =  new GlobalCode(span, ConvertList<Statement>(statements), _sourceUnit);
+
+            // link to parent nodes
+            UpdateParentVisitor.UpdateParents(ast);
+
+            //
+            return ast;
         }
 
         public LangElement GlobalConstDecl(Span span, bool conditional, VariableName name, LangElement initializer)

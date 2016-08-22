@@ -32,6 +32,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\Release\Devsense.PHP.Parser.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup>
     <SignAssembly>true</SignAssembly>
@@ -80,6 +81,7 @@
     <Compile Include="Ast\TypeDecl.cs" />
     <Compile Include="Ast\TypeRef.cs" />
     <Compile Include="Ast\UnaryEx.cs" />
+    <Compile Include="Ast\UpdateParentVisitor.cs" />
     <Compile Include="Ast\VariableUse.cs" />
     <Compile Include="Ast\YieldEx.cs" />
     <Compile Include="Errors\Errors.cs" />

@@ -94,9 +94,51 @@ namespace Devsense.PHP.Syntax.Ast
 	/// </summary>
 	public abstract class LangElement : AstNode
 	{
-		/// <summary>
-		/// Position of element in source file.
-		/// </summary>
+        #region ContainingElement
+
+        /// <summary>
+        /// Gets the parent symbol in the AST hierarchy.
+        /// </summary>
+        public virtual LangElement ContainingElement { get; set; }
+
+        /// <summary>
+        /// Gets reference to containing namespace scope or <c>null</c> in case of global namespace.
+        /// </summary>
+        public NamespaceDecl ContainingNamespace => LookupContainingElement<NamespaceDecl>();
+
+        /// <summary>
+        /// Gets reference to containing type declaration.
+        /// </summary>
+        public TypeDecl ContainingType => LookupContainingElement<TypeDecl>();
+
+        /// <summary>
+        /// Gets reference to containing source unit.
+        /// </summary>
+        public SourceUnit ContainingSourceUnit => LookupContainingElement<GlobalCode>()?.SourceUnit;
+
+        /// <summary>
+        /// Iterates through containing elements to find closest element of type <typeparamref name="T"/>.
+        /// </summary>
+        /// <typeparam name="T">Type of element to look for.</typeparam>
+        /// <returns>Reference to element of type <typeparamref name="T"/> or <c>null</c> is not containing.</returns>
+        protected T LookupContainingElement<T>() where T : LangElement
+        {
+            for (var x = this.ContainingElement; x != null; x = x.ContainingElement)
+            {
+                if (x is T)
+                {
+                    return (T)x;
+                }
+            }
+
+            return null;
+        }
+
+        #endregion
+
+        /// <summary>
+        /// Position of element in source file.
+        /// </summary>
         public Span Span { get; protected set; }
 		
 		/// <summary>
