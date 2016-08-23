@@ -2128,7 +2128,7 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 { yyval.Object = _astFactory.EmptyStmt(yypos); }
         return;
       case 151: // statement -> T_TRY '{' inner_statement_list '}' catch_list finally_statement 
-{ yyval.Object = _astFactory.TryCatch(yypos, _astFactory.Block(value_stack.array[value_stack.top-4].yypos, (List<LangElement>)value_stack.array[value_stack.top-4].yyval.Object), (List<CatchItem>)value_stack.array[value_stack.top-2].yyval.Object, (LangElement)value_stack.array[value_stack.top-1].yyval.Object); }
+{ yyval.Object = _astFactory.TryCatch(yypos, _astFactory.Block(CombineSpans(value_stack.array[value_stack.top-5].yypos, value_stack.array[value_stack.top-3].yypos), (List<LangElement>)value_stack.array[value_stack.top-4].yyval.Object), (List<CatchItem>)value_stack.array[value_stack.top-2].yyval.Object, (LangElement)value_stack.array[value_stack.top-1].yyval.Object); }
         return;
       case 152: // statement -> T_THROW expr ';' 
 { yyval.Object = _astFactory.Throw(yypos, (LangElement)value_stack.array[value_stack.top-2].yyval.Object); }
@@ -3157,7 +3157,7 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 { yyval.Object = AddToList<LangElement>(value_stack.array[value_stack.top-2].yyval.Object, _astFactory.Literal(value_stack.array[value_stack.top-1].yypos, value_stack.array[value_stack.top-1].yyval.Object)); }
         return;
       case 470: // encaps_list -> encaps_var 
-{ yyval.Object = new List<LangElement>() { _astFactory.Variable(yypos, new VariableName((string)value_stack.array[value_stack.top-1].yyval.Object), (LangElement)null) }; }
+{ yyval.Object = new List<LangElement>() { (LangElement)value_stack.array[value_stack.top-1].yyval.Object }; }
         return;
       case 471: // encaps_list -> T_ENCAPSED_AND_WHITESPACE encaps_var 
 { yyval.Object = new List<LangElement>() { _astFactory.Literal(value_stack.array[value_stack.top-2].yypos, value_stack.array[value_stack.top-2].yyval.Object), _astFactory.Variable(value_stack.array[value_stack.top-1].yypos, new VariableName((string)value_stack.array[value_stack.top-1].yyval.Object), (LangElement)null) }; }

@@ -10,11 +10,10 @@ namespace Devsense.PHP.Syntax.Ast
     public sealed class TryStmt : Statement
     {
         /// <summary>
-        /// A list of statements contained in the try-block.
+        /// A block containing the list of statements contained in the try-block.
         /// </summary>
-        private readonly Statement[]/*!*/ statements;
-        /// <summary>A list of statements contained in the try-block.</summary>
-        public Statement[]/*!*/ Statements { get { return statements; } }
+        public BlockStmt/*!*/ Body { get { return body; } }
+        private readonly BlockStmt/*!*/ body;
 
         /// <summary>
         /// A list of catch statements catching exceptions thrown inside the try block. Can be a <c>null</c> reference.
@@ -32,12 +31,12 @@ namespace Devsense.PHP.Syntax.Ast
         public FinallyItem FinallyItem { get { return finallyItem; } }
         internal bool HasFinallyStatements { get { return finallyItem != null && finallyItem.Statements.Length != 0; } }
 
-        public TryStmt(Text.Span p, IList<Statement>/*!*/ statements, List<CatchItem> catches, FinallyItem finallyItem)
+        public TryStmt(Text.Span p, BlockStmt/*!*/ body, List<CatchItem> catches, FinallyItem finallyItem)
             : base(p)
         {
-            Debug.Assert(statements != null);
+            Debug.Assert(body != null);
 
-            this.statements = statements.AsArray();
+            this.body = body;
             this.catches = catches.AsArray();
             this.finallyItem = finallyItem;
         }

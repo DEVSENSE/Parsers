@@ -10,9 +10,11 @@ try {
 "GlobalCode" : {
   "NamingContext":{},
   "TryStmt":{
-    "Statements":{
-      "EchoStmt":{
-        "StringLiteral":{"Value":"hello"}
+    "Body":{
+      "BlockStmt":{
+        "EchoStmt":{
+          "StringLiteral":{"Value":"hello"}
+        }
       }
     },
     "Catches":{

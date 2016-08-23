@@ -490,7 +490,7 @@ statement:
 			{ $$ = _astFactory.Declare(@$, (LangElement)$5); }
 	|	';'	/* empty statement */ { $$ = _astFactory.EmptyStmt(@$); }
 	|	T_TRY '{' inner_statement_list '}' catch_list finally_statement
-			{ $$ = _astFactory.TryCatch(@$, _astFactory.Block(@3, (List<LangElement>)$3), (List<CatchItem>)$5, (LangElement)$6); }
+			{ $$ = _astFactory.TryCatch(@$, _astFactory.Block(CombineSpans(@2, @4), (List<LangElement>)$3), (List<CatchItem>)$5, (LangElement)$6); }
 	|	T_THROW expr ';' { $$ = _astFactory.Throw(@$, (LangElement)$2); }
 	|	T_GOTO T_STRING ';' { $$ = _astFactory.Goto(@$, (string)$2, @2); }
 	|	T_STRING ':' { $$ = _astFactory.Label(@$, (string)$1, @1); }
@@ -1331,7 +1331,7 @@ encaps_list:
 	|	encaps_list T_ENCAPSED_AND_WHITESPACE
 			{ $$ = AddToList<LangElement>($1, _astFactory.Literal(@2, $2)); }
 	|	encaps_var
-			{ $$ = new List<LangElement>() { _astFactory.Variable(@$, new VariableName((string)$1), (LangElement)null) }; }
+			{ $$ = new List<LangElement>() { (LangElement)$1 }; }
 	|	T_ENCAPSED_AND_WHITESPACE encaps_var
 			{ $$ = new List<LangElement>() { _astFactory.Literal(@1, $1), _astFactory.Variable(@2, new VariableName((string)$2), (LangElement)null) }; }
 ;

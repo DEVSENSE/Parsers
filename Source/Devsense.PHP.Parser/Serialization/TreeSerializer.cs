@@ -443,10 +443,7 @@ namespace Devsense.PHP.Syntax.Ast.Serialization
         override public void VisitTryStmt(TryStmt x)
         {
             _serializer.StartSerialize(typeof(TryStmt).Name, SerializeSpan(x.Span));
-            _serializer.StartSerialize("Statements");
-            // visit statements
-            VisitList(x.Statements);
-            _serializer.EndSerialize();
+            SerializeOptionalProperty("Body", x.Body);
 
             _serializer.StartSerialize("Catches");
             // visit catch blocks

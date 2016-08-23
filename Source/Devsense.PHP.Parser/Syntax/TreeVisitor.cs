@@ -39,8 +39,8 @@ namespace Devsense.PHP.Syntax
         /// <param name="x"></param>
         virtual public void VisitTryStmt(TryStmt x)
         {
-            // visit statements
-            VisitList(x.Statements);
+            // try body
+            VisitElement(x.Body);
 
             // visit catch blocks
             VisitList(x.Catches);

@@ -395,7 +395,7 @@ namespace Devsense.PHP.Syntax.Ast
         public virtual LangElement TryCatch(Span span, LangElement body, IEnumerable<CatchItem> catches, LangElement finallyBlockOpt)
         {
             Debug.Assert(body is BlockStmt);
-            return new TryStmt(span, ((BlockStmt)body).Statements, catches.ToList(), (FinallyItem)finallyBlockOpt);
+            return new TryStmt(span, (BlockStmt)body, catches.ToList(), (FinallyItem)finallyBlockOpt);
         }
 
         public virtual LangElement Catch(Span span, TypeRef typeOpt, DirectVarUse variable, LangElement block)
