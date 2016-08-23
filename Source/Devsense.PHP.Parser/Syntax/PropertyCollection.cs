@@ -234,11 +234,13 @@ namespace Devsense.PHP.Syntax
                 {
                     Debug.Assert(o is DictionaryNode);
                     for (var node = (DictionaryNode)o; node != null; node = node.next)
+                    {
                         if (object.Equals(node.key, key))
                         {
                             value = node.value;
                             return true;
                         }
+                    }
                 }
                 else if (object.ReferenceEquals(p, TypeHashtable))
                 {

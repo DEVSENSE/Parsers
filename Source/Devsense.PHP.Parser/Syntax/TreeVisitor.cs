@@ -16,8 +16,10 @@ namespace Devsense.PHP.Syntax
         /// <param name="element">Any LanguageElement. Can be null.</param>
         public virtual void VisitElement(LangElement element)
         {
-            if ( element != null )
+            if (element != null)
+            {
                 element.VisitMe(this);
+            }
         }
 
         /// <summary>
@@ -26,7 +28,7 @@ namespace Devsense.PHP.Syntax
         /// <param name="x">GlobalCode.</param>
         public virtual void VisitGlobalCode(GlobalCode x)
         {
-            VisitStatements(x.Statements);
+            VisitList(x.Statements);
         }
 
         #region Statements
@@ -38,12 +40,10 @@ namespace Devsense.PHP.Syntax
         virtual public void VisitTryStmt(TryStmt x)
         {
             // visit statements
-            VisitStatements(x.Statements);
+            VisitList(x.Statements);
 
             // visit catch blocks
-            if (x.Catches != null)
-                foreach (CatchItem c in x.Catches)
-                    VisitElement(c);
+            VisitList(x.Catches);
 
             // visit finally block
             VisitElement(x.FinallyItem);
@@ -64,7 +64,7 @@ namespace Devsense.PHP.Syntax
         /// <param name="x"></param>
         virtual public void VisitNamespaceDecl(NamespaceDecl x)
         {
-            VisitStatements(x.Statements);
+            VisitList(x.Statements);
         }
 
         /// <summary>
@@ -73,8 +73,7 @@ namespace Devsense.PHP.Syntax
         /// <param name="x"></param>
         virtual public void VisitGlobalConstDeclList(GlobalConstDeclList x)
         {
-            foreach (GlobalConstantDecl c in x.Constants)
-                VisitElement(c);
+            VisitList(x.Constants);
         }
 
         virtual public void VisitGlobalConstantDecl(GlobalConstantDecl x)
@@ -88,7 +87,7 @@ namespace Devsense.PHP.Syntax
         /// <param name="x">Block statement.</param>
         virtual public void VisitBlockStmt(BlockStmt x)
         {
-            VisitStatements(x.Statements);
+            VisitList(x.Statements);
         }
 
         /// <summary>
@@ -111,8 +110,7 @@ namespace Devsense.PHP.Syntax
         /// <param name="x"></param>
         virtual public void VisitUnsetStmt(UnsetStmt x)
         {
-            foreach (VariableUse v in x.VarList)
-                VisitElement(v);
+            VisitList(x.VarList);
         }
 
         /// <summary>
@@ -121,8 +119,7 @@ namespace Devsense.PHP.Syntax
         /// <param name="x"></param>
         virtual public void VisitGlobalStmt(GlobalStmt x)
         {
-            foreach (SimpleVarUse v in x.VarList)
-                VisitElement(v);
+            VisitList(x.VarList);
         }
 
         /// <summary>
@@ -131,8 +128,7 @@ namespace Devsense.PHP.Syntax
         /// <param name="x"></param>
         virtual public void VisitStaticStmt(StaticStmt x)
         {
-            foreach (StaticVarDecl v in x.StVarList)
-                VisitElement(v);
+            VisitList(x.StVarList);
         }
 
         /// <summary>
@@ -147,22 +143,17 @@ namespace Devsense.PHP.Syntax
         /// Visit all conditional statements.
         /// See VisitConditionalStmt(ConditionalStmt x).
         /// </summary>
-        /// <param name="x"></param>
         virtual public void VisitIfStmt(IfStmt x)
         {
-            foreach (ConditionalStmt c in x.Conditions)
-                VisitConditionalStmt(c);
+            x.Conditions.Foreach(VisitConditionalStmt);
         }
 
         /// <summary>
-        /// Visit condition (if ConditionalStmt does not represent else).
-        /// Visit statements in ConditionalStmt.
+        /// Visits condition and statement.
         /// </summary>
-        /// <param name="x"></param>
         virtual public void VisitConditionalStmt(ConditionalStmt x)
         {
-            if (x.Condition != null) VisitElement(x.Condition);
-
+            VisitElement(x.Condition);
             VisitElement(x.Statement);
         }
 
@@ -172,8 +163,7 @@ namespace Devsense.PHP.Syntax
         /// <param name="x"></param>
         virtual public void VisitTypeDecl(TypeDecl x)
         {
-            foreach (TypeMemberDecl t in x.Members)
-                VisitElement(t);
+            VisitList(x.Members);
         }
 
         /// <summary>
@@ -200,11 +190,13 @@ namespace Devsense.PHP.Syntax
         /// <param name="x"></param>
         virtual public void VisitMethodDecl(MethodDecl x)
         {
-            // method parameters
-            foreach (FormalParam p in x.Signature.FormalParams)
-                VisitElement(p);
+            // function parameters
+            VisitList(x.Signature.FormalParams);
 
-            // method body
+            // function return type
+            VisitElement(x.ReturnType);
+
+            // function body
             VisitElement(x.Body);
         }
 
@@ -214,8 +206,7 @@ namespace Devsense.PHP.Syntax
         /// <param name="x"></param>
         virtual public void VisitFieldDeclList(FieldDeclList x)
         {
-            foreach (FieldDecl f in x.Fields)
-                VisitElement(f);
+            VisitList(x.Fields);
         }
 
         /// <summary>
@@ -233,8 +224,7 @@ namespace Devsense.PHP.Syntax
         /// <param name="x"></param>
         virtual public void VisitConstDeclList(ConstDeclList x)
         {
-            foreach (ClassConstantDecl c in x.Constants)
-                VisitElement(c);
+            VisitList(x.Constants);
         }
 
         /// <summary>
@@ -262,8 +252,10 @@ namespace Devsense.PHP.Syntax
         virtual public void VisitFunctionDecl(FunctionDecl x)
         {
             // function parameters
-            foreach (FormalParam p in x.Signature.FormalParams)
-                VisitElement(p);
+            VisitList(x.Signature.FormalParams);
+
+            // function return type
+            VisitElement(x.ReturnType);
 
             // function body
             VisitElement(x.Body);
@@ -272,10 +264,7 @@ namespace Devsense.PHP.Syntax
         virtual public void VisitTraitsUse(TraitsUse x)
         {
             // visits adaptation list
-            var list = x.TraitAdaptationList;
-            if (list != null && list.Any())
-                foreach(Devsense.PHP.Syntax.Ast.TraitsUse.TraitAdaptation t in list)
-                    VisitElement(t);
+            VisitList(x.TraitAdaptationList);
         }
 
         virtual public void VisitTraitAdaptationPrecedence(TraitsUse.TraitAdaptationPrecedence x)
@@ -294,29 +283,19 @@ namespace Devsense.PHP.Syntax
         /// <param name="x"></param>
         virtual public void VisitEchoStmt(EchoStmt x)
         {
-            VisitExpressions(x.Parameters);
+            VisitList(x.Parameters);
         }
 
         /// <summary>
-        /// Visit all statements in the given list.
+        /// Visit all elements in the given list.
         /// </summary>
-        /// <param name="statements">Collection of statements to visit.</param>
-        protected void VisitStatements(IList<Statement> statements)
+        /// <param name="items">Collection of elements to visit.</param>
+        protected void VisitList<T>(IList<T> items) where T : LangElement
         {
-            if (statements != null)
-                foreach (Statement s in statements)
-                    VisitElement(s);
-        }
-
-        /// <summary>
-        /// Visit all expressions in the given list.
-        /// </summary>
-        /// <param name="expressions"></param>
-        protected void VisitExpressions(ICollection<Expression> expressions)
-        {
-            if (expressions != null && expressions.Any())
-                foreach (Expression e in expressions)
-                    VisitElement(e);
+            if (items != null)
+            {
+                items.Foreach(VisitElement);
+            }
         }
 
         #endregion
@@ -330,9 +309,7 @@ namespace Devsense.PHP.Syntax
         virtual public void VisitSwitchStmt(SwitchStmt x)
         {
             VisitElement(x.SwitchValue);
-
-            foreach (SwitchItem item in x.SwitchItems)
-                VisitElement(item);
+            VisitList(x.SwitchItems);
         }
 
         /// <summary>
@@ -343,7 +320,6 @@ namespace Devsense.PHP.Syntax
         virtual public void VisitCaseItem(CaseItem x)
         {
             VisitElement(x.CaseVal);
-
             VisitSwitchItem(x);
         }
 
@@ -364,7 +340,7 @@ namespace Devsense.PHP.Syntax
         /// <param name="x">SwitchItem, CaseItem or DefaultItem.</param>
         virtual public void VisitSwitchItem(SwitchItem x)
         {
-            VisitStatements(x.Statements);
+            VisitList(x.Statements);
         }
 
         #endregion
@@ -383,7 +359,7 @@ namespace Devsense.PHP.Syntax
         {
             // x.Name
         }
-        
+
         #endregion
 
         #region  Cycle statements
@@ -405,9 +381,9 @@ namespace Devsense.PHP.Syntax
         /// <param name="x"></param>
         virtual public void VisitForStmt(ForStmt x)
         {
-            VisitExpressions(x.InitExList);
-            VisitExpressions(x.CondExList);
-            VisitExpressions(x.ActionExList);
+            VisitList(x.InitExList);
+            VisitList(x.CondExList);
+            VisitList(x.ActionExList);
 
             VisitElement(x.Body);
         }
@@ -491,8 +467,7 @@ namespace Devsense.PHP.Syntax
         /// <param name="x"></param>
         virtual public void VisitIssetEx(IssetEx x)
         {
-            foreach (VariableUse v in x.VarList)
-                VisitElement(v);
+            VisitList(x.VarList);
         }
 
         /// <summary>
@@ -545,12 +520,11 @@ namespace Devsense.PHP.Syntax
         /// Visit item use index (if not null) and array.
         /// </summary>
         /// <param name="x"></param>
-        virtual public void VisitItemUse(ItemUse x) 
+        virtual public void VisitItemUse(ItemUse x)
         {
+            VisitVarLikeConstructUse(x);
             VisitElement(x.Index);
             VisitElement(x.Array);
-
-            VisitVarLikeConstructUse(x);
         }
 
         /// <summary>
@@ -589,9 +563,7 @@ namespace Devsense.PHP.Syntax
         virtual public void VisitFunctionCall(FunctionCall x)
         {
             VisitVarLikeConstructUse(x);
-
-            foreach (ActualParam p in x.CallSignature.Parameters)
-                VisitElement(p);
+            VisitList(x.CallSignature.Parameters);
         }
 
         /// <summary>
@@ -619,7 +591,7 @@ namespace Devsense.PHP.Syntax
         /// <param name="x"></param>
         virtual public void VisitDirectStMtdCall(DirectStMtdCall x)
         {
-            VisitElement(x.TargetType);            
+            VisitElement(x.TargetType);
             VisitFunctionCall(x);
         }
 
@@ -629,7 +601,7 @@ namespace Devsense.PHP.Syntax
         /// <param name="x"></param>
         virtual public void VisitIndirectStMtdCall(IndirectStMtdCall x)
         {
-            VisitElement(x.TargetType);            
+            VisitElement(x.TargetType);
             VisitElement(x.MethodNameVar);
             VisitFunctionCall(x);
         }
@@ -638,9 +610,9 @@ namespace Devsense.PHP.Syntax
             VisitElement(x.TargetType);
         }
         virtual public void VisitIndirectStFldUse(IndirectStFldUse x)
-        {     
+        {
             VisitElement(x.FieldNameExpr);
-            VisitElement(x.TargetType);       
+            VisitElement(x.TargetType);
         }
 
         /// <summary>
@@ -649,8 +621,7 @@ namespace Devsense.PHP.Syntax
         /// <param name="x"></param>
         virtual public void VisitArrayEx(ArrayEx x)
         {
-            foreach (Item item in x.Items)
-                VisitArrayItem(item);
+            x.Items.Foreach(VisitArrayItem);
         }
 
         virtual public void VisitArrayItem(Item item)
@@ -730,9 +701,7 @@ namespace Devsense.PHP.Syntax
         virtual public void VisitNewEx(NewEx x)
         {
             VisitElement(x.ClassNameRef);
-
-            foreach (ActualParam p in x.CallSignature.Parameters)
-                VisitElement(p);
+            VisitList(x.CallSignature.Parameters);
         }
 
         /// <summary>
@@ -760,7 +729,7 @@ namespace Devsense.PHP.Syntax
         /// <param name="x"></param>
         virtual public void VisitConcatEx(ConcatEx x)
         {
-            VisitExpressions(x.Expressions);
+            VisitList(x.Expressions);
         }
 
         /// <summary>
@@ -769,7 +738,7 @@ namespace Devsense.PHP.Syntax
         /// <param name="x"></param>
         virtual public void VisitListEx(ListEx x)
         {
-            //VisitExpressions(x.LValues);
+            x.Items.Foreach(VisitArrayItem);
         }
 
         /// <summary>
@@ -777,14 +746,14 @@ namespace Devsense.PHP.Syntax
         /// </summary>
         virtual public void VisitLambdaFunctionExpr(LambdaFunctionExpr x)
         {
-            // use parameters
-            if (x.UseParams != null)
-                foreach (var p in x.UseParams)
-                    VisitElement(p);
-
             // function parameters
-            foreach (var p in x.Signature.FormalParams)
-                VisitElement(p);
+            VisitList(x.Signature.FormalParams);
+
+            // use parameters
+            VisitList(x.UseParams);
+
+            // function return type
+            VisitElement(x.ReturnType);
 
             // function body
             VisitElement(x.Body);
@@ -798,7 +767,6 @@ namespace Devsense.PHP.Syntax
             VisitElement(x.KeyExpr);
             VisitElement(x.ValueExpr);
         }
-
 
         /// <summary>
         /// Visit <see cref="YieldFromEx"/> expression.
@@ -853,7 +821,7 @@ namespace Devsense.PHP.Syntax
         {
             VisitElement(x.TypeRef);
             VisitElement(x.Variable);
-            VisitStatements(x.Statements);
+            VisitList(x.Statements);
         }
 
         /// <summary>
@@ -861,7 +829,7 @@ namespace Devsense.PHP.Syntax
         /// </summary>
         virtual public void VisitFinallyItem(FinallyItem x)
         {
-            VisitStatements(x.Statements);
+            VisitList(x.Statements);
         }
 
         /// <summary>
@@ -885,8 +853,7 @@ namespace Devsense.PHP.Syntax
         /// <param name="x"></param>
         virtual public void VisitCustomAttribute(CustomAttribute x)
         {
-            foreach (NamedActualParam p in x.NamedParameters)
-                VisitElement(p);
+            VisitList(x.NamedParameters);
         }
 
         /// <summary>
@@ -895,8 +862,7 @@ namespace Devsense.PHP.Syntax
         /// <param name="x"></param>
         virtual public void VisitFormalParam(FormalParam x)
         {
-            if (x.InitValue != null)
-                VisitElement(x.InitValue);
+            VisitElement(x.InitValue);
         }
 
         /// <summary>
@@ -935,12 +901,11 @@ namespace Devsense.PHP.Syntax
         }
         virtual public void VisitMultipleTypeRef(MultipleTypeRef x)
         {
-            foreach (TypeRef p in x.MultipleTypes)
-                VisitElement(p);
+            VisitList(x.MultipleTypes);
         }
         virtual public void VisitGenericTypeRef(GenericTypeRef x)
         {
-            // nothing
+            VisitElement(x.TargetType);
         }
         virtual public void VisitAnonymousTypeRef(AnonymousTypeRef x)
         {
@@ -949,9 +914,13 @@ namespace Devsense.PHP.Syntax
         virtual public void VisitAssertEx(AssertEx x)
         {
             VisitElement(x.CodeEx);
+            // TODO: x.DescriptionEx
         }
 
-        virtual public void VisitPHPDocStmt(PHPDocStmt x) { }
+        virtual public void VisitPHPDocBlock(PHPDocBlock x)
+        {
+
+        }
 
         #endregion
     }

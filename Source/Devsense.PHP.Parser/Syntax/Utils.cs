@@ -1097,6 +1097,20 @@ namespace Devsense.PHP.Syntax
         {
             return list != null && list.Count != 0;
         }
+
+        /// <summary>
+        /// Calls <paramref name="action"/> for each item in <paramref name="enumerable"/>.
+        /// </summary>
+        /// <typeparam name="T">Item type.</typeparam>
+        /// <param name="enumerable">Enumeration of items.</param>
+        /// <param name="action">Action to be called for each item.</param>
+        public static void Foreach<T>(this IEnumerable<T> enumerable, Action<T> action)
+        {
+            foreach (var x in enumerable)
+            {
+                action(x);
+            }
+        }
     }
 
     /// <summary>
@@ -1176,6 +1190,20 @@ namespace Devsense.PHP.Syntax
             }
 
             return result;
+        }
+
+        /// <summary>
+        /// Calls <paramref name="action"/> for each item in <paramref name="list"/>.
+        /// </summary>
+        /// <typeparam name="T">Item type.</typeparam>
+        /// <param name="list">Enumeration of items.</param>
+        /// <param name="action">Action to be called for each item.</param>
+        public static void Foreach<T>(this IList<T> list, Action<T> action)
+        {
+            for (int i = 0; i < list.Count; i++)
+            {
+                action(list[i]);
+            }
         }
     }
 

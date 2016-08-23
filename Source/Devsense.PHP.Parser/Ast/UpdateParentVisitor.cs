@@ -44,6 +44,7 @@ namespace Devsense.PHP.Syntax.Ast
 
                 _parents.AddFirst(element);
 
+                base.VisitElement(element.GetPHPDoc());
                 base.VisitElement(element);
 
                 _parents.RemoveFirst();

@@ -1951,7 +1951,7 @@ namespace Devsense.PHP.Syntax
 
         public override void VisitMe(TreeVisitor visitor)
         {
-            throw new NotImplementedException();
+            visitor.VisitPHPDocBlock(this);
         }
 
         #endregion

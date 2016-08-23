@@ -352,13 +352,13 @@ namespace Devsense.PHP.Syntax.Ast.Serialization
         {
             _serializer.StartSerialize(typeof(WhileStmt).Name, SerializeSpan(x.Span));
             _serializer.StartSerialize("InitExList");
-            VisitExpressions(x.InitExList);
+            VisitList(x.InitExList);
             _serializer.EndSerialize();
             _serializer.StartSerialize("CondExList");
-            VisitExpressions(x.CondExList);
+            VisitList(x.CondExList);
             _serializer.EndSerialize();
             _serializer.StartSerialize("ActionExList");
-            VisitExpressions(x.ActionExList);
+            VisitList(x.ActionExList);
             _serializer.EndSerialize();
             _serializer.StartSerialize("Body");
             VisitElement(x.Body);
@@ -445,7 +445,7 @@ namespace Devsense.PHP.Syntax.Ast.Serialization
             _serializer.StartSerialize(typeof(TryStmt).Name, SerializeSpan(x.Span));
             _serializer.StartSerialize("Statements");
             // visit statements
-            VisitStatements(x.Statements);
+            VisitList(x.Statements);
             _serializer.EndSerialize();
 
             _serializer.StartSerialize("Catches");
@@ -471,7 +471,7 @@ namespace Devsense.PHP.Syntax.Ast.Serialization
             VisitElement(x.Variable);
             _serializer.EndSerialize();
             _serializer.StartSerialize("Statements");
-            VisitStatements(x.Statements);
+            VisitList(x.Statements);
             _serializer.EndSerialize();
             _serializer.EndSerialize();
         }
