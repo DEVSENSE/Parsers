@@ -191,7 +191,7 @@ namespace Devsense.PHP.Syntax.Ast.Serialization
         override public void VisitGlobalConstantDecl(GlobalConstantDecl x)
         {
             _serializer.StartSerialize(typeof(GlobalConstantDecl).Name, SerializeSpan(x.Span),
-                new NodeObj("NameIsConditional", x.IsConditional.ToString()), new NodeObj("Name", x.Name.Value));
+                new NodeObj("NameIsConditional", x.IsConditional.ToString()), new NodeObj("Name", x.Name.Name.Value));
             SerializePHPDoc(x.PHPDoc);
             VisitElement(x.Initializer);
             _serializer.EndSerialize();
@@ -258,7 +258,7 @@ namespace Devsense.PHP.Syntax.Ast.Serialization
         {
             _serializer.StartSerialize(typeof(DirectStMtdCall).Name, SerializeSpan(x.Span),
                 new NodeObj("ClassName", x.TargetType.QualifiedName.ToString()),
-                new NodeObj("MethodName", x.MethodName.Value));
+                new NodeObj("MethodName", x.MethodName.Name.Value));
             base.VisitDirectStMtdCall(x);
             _serializer.EndSerialize();
         }
@@ -664,7 +664,7 @@ namespace Devsense.PHP.Syntax.Ast.Serialization
         public void VisitClassConstantDecl(ClassConstantDecl x, PhpMemberAttributes attributes)
         {
             _serializer.StartSerialize(typeof(ClassConstantDecl).Name, SerializeSpan(x.Span),
-                new NodeObj("Name", x.Name.Value), new NodeObj("MemberAttributes", MemberAttributesToString(attributes)));
+                new NodeObj("Name", x.Name.Name.Value), new NodeObj("MemberAttributes", MemberAttributesToString(attributes)));
             SerializePHPDoc(x.PHPDoc);
             VisitElement(x.Initializer);
             _serializer.EndSerialize();

@@ -69,6 +69,7 @@ namespace Devsense.PHP.Syntax.Ast
         /// Creates function declaration node.
         /// </summary>
         /// <param name="span">Entire element span.</param>
+        /// <param name="headingSpan">Heading span - ends after return type.</param>
         /// <param name="conditional"><c>True</c> whether the declaration is conditional.</param>
         /// <param name="aliasReturn">Whether the function returns an aliased value.</param>
         /// <param name="attributes">Declaration attributes in case of a type member.</param>
@@ -81,7 +82,7 @@ namespace Devsense.PHP.Syntax.Ast
         /// <param name="formalParamsSpan">Parameters enclosing parenthesis span.</param>
         /// <param name="body">Function body.</param>
         /// <returns>Function node.</returns>
-        TNode Function(TSpan span,
+        TNode Function(TSpan span, Span headingSpan,
             bool conditional, bool aliasReturn, PhpMemberAttributes attributes,
             TypeRef returnType,
             Name name, TSpan nameSpan, IEnumerable<FormalTypeParam> typeParamsOpt,
@@ -92,10 +93,10 @@ namespace Devsense.PHP.Syntax.Ast
         /// Creates a lambda declaration node.
         /// </summary>
         /// <param name="span">Entire element span.</param>
+        /// <param name="headingSpan">Heading span - ends after return type.</param>
         /// <param name="aliasReturn">Whether the function returns an aliased value.</param>
         /// <param name="returnType">Optional. Function return type.</param>
         /// <param name="returnTypeSpan"><paramref name="returnType"/> span, in case function has a return type</param>
-        /// <param name="headSpan">Lambda head span - ends before paramter list.</param>
         /// <param name="formalParams">Lambda parameters.</param>
         /// <param name="formalParamsSpan">Parameters enclosing parenthesis span.</param>
         /// <param name="lexicalVars">Variables from parent scope.</param>
@@ -121,6 +122,7 @@ namespace Devsense.PHP.Syntax.Ast
         /// Creates type declaration node.
         /// </summary>
         /// <param name="span">Entire element span.</param>
+        /// <param name="headingSpan">Heading span - ends after implements list.</param>
         /// <param name="conditional">Whether the declaration is conditional.</param>
         /// <param name="attributes">Type attributes.</param>
         /// <param name="name">Type name.</param>
@@ -142,6 +144,7 @@ namespace Devsense.PHP.Syntax.Ast
         /// Creates method declaration node.
         /// </summary>
         /// <param name="span">Entire element span.</param>
+        /// <param name="headingSpan">Heading span - ends after return type.</param>
         /// <param name="conditional"><c>True</c> whether the declaration is conditional.</param>
         /// <param name="aliasReturn">Whether the function returns an aliased value.</param>
         /// <param name="attributes">Declaration attributes in case of a type member.</param>
@@ -155,7 +158,7 @@ namespace Devsense.PHP.Syntax.Ast
         /// <param name="baseCtorParams">Actual paramters of base constructor call.</param>
         /// <param name="body">Method body.</param>
         /// <returns>Method node.</returns>
-        TNode Method(TSpan span,
+        TNode Method(TSpan span, Span headingSpan,
             bool aliasReturn, PhpMemberAttributes attributes,
             TypeRef returnType, TSpan returnTypeSpan,
             string name, TSpan nameSpan, IEnumerable<FormalTypeParam> typeParamsOpt,
@@ -225,9 +228,10 @@ namespace Devsense.PHP.Syntax.Ast
         /// </summary>
         /// <param name="span">Entire element span.</param>
         /// <param name="name">Constant name.</param>
+        /// <param name="nameSpan">Complete name span.</param>
         /// <param name="initializer">Constant value expression.</param>
         /// <returns>Class constant declaration.</returns>
-        TNode ClassConstDecl(TSpan span, VariableName name, TNode initializer);
+        TNode ClassConstDecl(TSpan span, VariableName name, TSpan nameSpan, TNode initializer);
 
         /// <summary>
         /// Creates global constant declaration.
@@ -235,11 +239,12 @@ namespace Devsense.PHP.Syntax.Ast
         /// <param name="span">Entire element span.</param>
         /// <param name="conditional">Whether the declaration is conditional.</param>
         /// <param name="name">Constant name.</param>
+        /// <param name="nameSpan">Complete name span.</param>
         /// <param name="initializer">Constant value expression.</param>
         /// <returns>Global constant declaration.</returns>
         TNode GlobalConstDecl(TSpan span,
             bool conditional,
-            VariableName name, TNode initializer);
+            VariableName name, TSpan nameSpan, TNode initializer);
 
         /// <summary>
         /// Creates block of code enclosed in braces (<c>{</c> ... <c>}</c>).

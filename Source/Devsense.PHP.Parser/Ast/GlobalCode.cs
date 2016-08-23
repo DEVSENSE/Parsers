@@ -210,8 +210,8 @@ namespace Devsense.PHP.Syntax.Ast
         internal SourceUnit SourceUnit { get; private set; }
 
         public GlobalConstantDecl(SourceUnit/*!*/ sourceUnit, Text.Span span, bool isConditional, 
-            string/*!*/ name, Expression/*!*/ initializer)
-            : base(span, name, initializer)
+            string/*!*/ name, Text.Span namePos, Expression/*!*/ initializer)
+            : base(span, name, namePos, initializer)
         {
             this.IsConditional = IsConditional;
             this.SourceUnit = sourceUnit;

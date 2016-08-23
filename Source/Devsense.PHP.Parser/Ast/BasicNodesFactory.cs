@@ -101,10 +101,10 @@ namespace Devsense.PHP.Syntax.Ast
             return new ActualParam(span, (Expression)expr, flags);
         }
 
-        public virtual LangElement ClassConstDecl(Span span, VariableName name, LangElement initializer)
+        public virtual LangElement ClassConstDecl(Span span, VariableName name, Span nameSpan, LangElement initializer)
         {
             Debug.Assert(initializer == null || initializer is Expression);
-            return new ClassConstantDecl(span, name.Value, (Expression)initializer);
+            return new ClassConstantDecl(span, name.Value, nameSpan, (Expression)initializer);
         }
 
         public virtual LangElement ColonBlock(Span span, IEnumerable<LangElement> statements, Tokens endToken)
@@ -190,11 +190,11 @@ namespace Devsense.PHP.Syntax.Ast
             return new ForeachStmt(span, (Expression)enumeree, new ForeachVar(keyOpt, false), new ForeachVar(value, false), (Statement)body);
         }
 
-        public virtual LangElement Function(Span span, bool conditional, bool aliasReturn, PhpMemberAttributes attributes, TypeRef returnType, 
+        public virtual LangElement Function(Span span, Span headingSpan, bool conditional, bool aliasReturn, PhpMemberAttributes attributes, TypeRef returnType, 
             Name name, Span nameSpan, IEnumerable<FormalTypeParam> typeParamsOpt, IEnumerable<FormalParam> formalParams, Span formalParamsSpan, LangElement body)
         {
             Debug.Assert(body is BlockStmt || body is Statement);
-            return new FunctionDecl(_sourceUnit, span, conditional, new Scope(), attributes, new NameRef(nameSpan, name.Value), null, aliasReturn,
+            return new FunctionDecl(_sourceUnit, span, headingSpan, conditional, new Scope(), attributes, new NameRef(nameSpan, name.Value), null, aliasReturn,
                 formalParams.ToList(), formalParamsSpan, (typeParamsOpt != null) ? typeParamsOpt.ToList() : FormalTypeParam.EmptyList,
                 (BlockStmt)body, null, returnType);
         }
@@ -225,9 +225,9 @@ namespace Devsense.PHP.Syntax.Ast
             return ast;
         }
 
-        public virtual LangElement GlobalConstDecl(Span span, bool conditional, VariableName name, LangElement initializer)
+        public virtual LangElement GlobalConstDecl(Span span, bool conditional, VariableName name, Span nameSpan, LangElement initializer)
         {
-            return new GlobalConstantDecl(_sourceUnit, span, conditional, name.Value, (Expression)initializer);
+            return new GlobalConstantDecl(_sourceUnit, span, conditional, name.Value, nameSpan, (Expression)initializer);
         }
 
         public virtual LangElement Goto(Span span, string label, Span labelSpan)
@@ -437,11 +437,11 @@ namespace Devsense.PHP.Syntax.Ast
                 QualifiedNameRef.FromTypeRef(baseClassOpt), implements.Select(QualifiedNameRef.FromTypeRef).ToList(), ConvertList<TypeMemberDecl>(members), bodySpan, null));
         }
 
-        public virtual LangElement Method(Span span, bool aliasReturn, PhpMemberAttributes attributes, TypeRef returnType, Span returnTypeSpan, string name, Span nameSpan, IEnumerable<FormalTypeParam> typeParamsOpt, IEnumerable<FormalParam> formalParams, Span formalParamsSpan, IEnumerable<ActualParam> baseCtorParams, LangElement body)
+        public virtual LangElement Method(Span span, Span headingSpan, bool aliasReturn, PhpMemberAttributes attributes, TypeRef returnType, Span returnTypeSpan, string name, Span nameSpan, IEnumerable<FormalTypeParam> typeParamsOpt, IEnumerable<FormalParam> formalParams, Span formalParamsSpan, IEnumerable<ActualParam> baseCtorParams, LangElement body)
         {
             Debug.Assert(body is BlockStmt || body is Statement);
 
-            return new MethodDecl(span, formalParamsSpan.End, body.Span.Start, new NameRef(nameSpan, name), aliasReturn, formalParams.ToList(),
+            return new MethodDecl(span, headingSpan, new NameRef(nameSpan, name), aliasReturn, formalParams.ToList(),
                 formalParamsSpan, (typeParamsOpt != null) ? typeParamsOpt.ToList() : FormalTypeParam.EmptyList,
                 (BlockStmt)body, attributes, (baseCtorParams != null) ? baseCtorParams.ToList() : new List<ActualParam>(), null, returnType);
         }
@@ -476,9 +476,7 @@ namespace Devsense.PHP.Syntax.Ast
         public virtual LangElement TypeReference(Span span, QualifiedName className, bool isNullable, List<TypeRef> genericParamsOpt)
         {
             TypeRef type = null;
-            if (className == QualifiedName.Boolean || className == QualifiedName.Integer ||
-                className == QualifiedName.Float || className == QualifiedName.String ||
-                className == QualifiedName.Null || className == QualifiedName.Resource)
+            if (className.IsPrimitiveTypeName)
                 type = new PrimitiveTypeRef(span, new PrimitiveTypeName(className));
             else
                 type = new DirectTypeRef(span, className);

@@ -42,6 +42,8 @@ namespace Devsense.PHP.Syntax
             get { return (int)Tokens.T_ERROR; }
         }
 
+        protected override Span InvalidPosition => Span.Invalid;
+
         protected override Span CombinePositions(Span first, Span last)
         {
             if (last.IsValid)
@@ -288,7 +290,8 @@ namespace Devsense.PHP.Syntax
 
         private Span CombineSpans(params Span[] spans)
         {
-            return new Span(spans.Min(s => s.Start), spans.Max(s => s.End));
+            var validSpans = spans.Where(s => s.IsValid);
+            return Span.FromBounds(validSpans.Min(s => s.Start), validSpans.Max(s => s.End));
         }
 
         void ResetDocBlock() => Scanner.DocBlock = null;

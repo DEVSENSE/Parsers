@@ -149,16 +149,16 @@ namespace Devsense.PHP.Syntax.Ast
 
     public abstract class ConstantDecl : LangElement
 	{
-		public VariableName Name { get { return name; } }
-		protected VariableName name;
+		public VariableNameRef Name { get { return name; } }
+		protected VariableNameRef name;
 
         public Expression/*!*/ Initializer { get { return initializer; } internal set { initializer = value; } }
 		private Expression/*!*/ initializer;
 
-		public ConstantDecl(Text.Span span, string/*!*/ name, Expression/*!*/ initializer)
+		public ConstantDecl(Text.Span span, string/*!*/ name, Text.Span namePos, Expression/*!*/ initializer)
 			: base(span)
 		{
-			this.name = new VariableName(name);
+			this.name = new VariableNameRef(namePos, name);
 			this.initializer = initializer;
 		}
 	}

@@ -227,7 +227,7 @@ namespace Devsense.PHP.Syntax
 		protected abstract int ErrorToken { get; }
 		protected abstract int EofToken { get; }
         
-		protected virtual PositionType InvalidPosition { get { return default(PositionType); } } 
+		protected abstract PositionType InvalidPosition { get; } 
 		protected abstract PositionType CombinePositions(PositionType first, PositionType last);
 
 		private readonly string[] nonTerminals;

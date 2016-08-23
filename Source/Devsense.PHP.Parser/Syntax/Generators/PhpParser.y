@@ -456,7 +456,7 @@ inner_statement:
 	|	interface_declaration_statement			{ $$ = $1; }
 	|	T_HALT_COMPILER '(' ')' ';'
 			{ 
-				$$ = null; 
+				$$ = _astFactory.HaltCompiler(@$); 
 				_errors.Error(@$, FatalErrors.InternalError, "__HALT_COMPILER() can only be used from the outermost scope"); 
 			}
 ;
@@ -530,9 +530,9 @@ unset_variable:
 function_declaration_statement:
 	function returns_ref T_STRING backup_doc_comment '(' parameter_list ')' return_type
 	backup_fn_flags '{' inner_statement_list '}' backup_fn_flags
-		{ $$ = _astFactory.Function(@$, true, false, PhpMemberAttributes.None, (TypeRef)$8, 
+		{ $$ = _astFactory.Function(@$, CombineSpans(@1, @2, @3, @4, @5, @6, @7, @8, @9), true, false, PhpMemberAttributes.None, (TypeRef)$8, 
 			new Name((string)$3), @3, null, (List<FormalParam>)$6, CombineSpans(@5, @7), 
-			_astFactory.Block(@11, (List<LangElement>)$11)); 
+			_astFactory.Block(CombineSpans(@10, @11, @12), (List<LangElement>)$11)); 
 		if($4 != null)
 			((FunctionDecl)$$).PHPDoc = (PHPDocBlock)$4;
 		}
@@ -552,13 +552,13 @@ class_declaration_statement:
 		class_modifiers T_CLASS T_STRING extends_from implements_list backup_doc_comment '{' class_statement_list '}'
 			{ 
 				$$ = _astFactory.Type(@$, CombineSpans(@1, @2, @3, @4, @5), true, (PhpMemberAttributes)$1, new Name((string)$3), @3, null, 
-				(TypeRef)$4, (List<TypeRef>)$5, (List<LangElement>)$8, @8); 
+				(TypeRef)$4, (List<TypeRef>)$5, (List<LangElement>)$8, CombineSpans(@7, @8, @9)); 
 				if($6 != null) ((TypeDecl)$$).PHPDoc = (PHPDocBlock)$6;
 			}
 	|	T_CLASS T_STRING extends_from implements_list backup_doc_comment '{' class_statement_list '}'
 			{ 
 				$$ = _astFactory.Type(@$, CombineSpans(@1, @2, @3, @4), true, PhpMemberAttributes.None, new Name((string)$2), @2, null, 
-				(TypeRef)$3, (List<TypeRef>)$4, (List<LangElement>)$7, @7); 
+				(TypeRef)$3, (List<TypeRef>)$4, (List<LangElement>)$7, CombineSpans(@6, @7, @8)); 
 				if($5 != null) ((TypeDecl)$$).PHPDoc = (PHPDocBlock)$5;
 			}
 ;
@@ -577,7 +577,7 @@ trait_declaration_statement:
 		T_TRAIT T_STRING backup_doc_comment '{' class_statement_list '}'
 			{ 
 				$$ = _astFactory.Type(@$, CombineSpans(@1, @2), true, PhpMemberAttributes.Trait, new Name((string)$2), @2, null, 
-				null, null, (List<LangElement>)$5, @5); 
+				null, null, (List<LangElement>)$5, CombineSpans(@4, @5, @6)); 
 				if($3 != null) ((TypeDecl)$$).PHPDoc = (PHPDocBlock)$3;
 			}
 ;
@@ -586,7 +586,7 @@ interface_declaration_statement:
 		T_INTERFACE T_STRING interface_extends_list backup_doc_comment '{' class_statement_list '}'
 			{ 
 				$$ = _astFactory.Type(@$, CombineSpans(@1, @2, @3), true, PhpMemberAttributes.Interface, new Name((string)$2), @2, null, 
-				null, (List<TypeRef>)$3, (List<LangElement>)$6, @6); 
+				null, (List<TypeRef>)$3, (List<LangElement>)$6, CombineSpans(@5, @6, @7)); 
 				if($4 != null) ((TypeDecl)$$).PHPDoc = (PHPDocBlock)$4;
 			}
 ;
@@ -802,9 +802,9 @@ class_statement:
 			{ $$ = _astFactory.TraitUse(@$, ((List<TypeRef>)$2).Select(t => t.QualifiedName.Value), (List<TraitsUse.TraitAdaptation>)$3); }
 	|	method_modifiers function returns_ref identifier backup_doc_comment '(' parameter_list ')'
 		return_type backup_fn_flags method_body backup_fn_flags
-			{ $$ = _astFactory.Method(@$, false, (PhpMemberAttributes)$1, 
+			{ $$ = _astFactory.Method(@$, CombineSpans(@1, @2, @3, @4, @5, @6, @7, @8, @9, @10), false, (PhpMemberAttributes)$1, 
 				(TypeRef)$9, @9, (string)$4, @4, null, (List<FormalParam>)$7, @8, 
-				null, _astFactory.Block(@11, (List<LangElement>)$11)); 
+				null, _astFactory.Block(CombineSpans(@10, @11, @12), (List<LangElement>)$11)); 
 			if($5 != null) ((MethodDecl)$$).PHPDoc = (PHPDocBlock)$5;
 			}
 ;
@@ -909,12 +909,12 @@ class_const_list:
 ;
 
 class_const_decl:
-	identifier '=' expr backup_doc_comment { $$ = _astFactory.ClassConstDecl(@$, new VariableName((string)$1), (LangElement)$3); 
+	identifier '=' expr backup_doc_comment { $$ = _astFactory.ClassConstDecl(@$, new VariableName((string)$1), @1, (LangElement)$3); 
 		if($4 != null) ((ClassConstantDecl)$$).PHPDoc = (PHPDocBlock)$4; }
 ;
 
 const_decl:
-	T_STRING '=' expr backup_doc_comment { $$ = _astFactory.GlobalConstDecl(@$, false, new VariableName((string)$1), (LangElement)$3); 
+	T_STRING '=' expr backup_doc_comment { $$ = _astFactory.GlobalConstDecl(@$, false, new VariableName((string)$1), @1, (LangElement)$3); 
 		if($4 != null) ((GlobalConstantDecl)$$).PHPDoc = (PHPDocBlock)$4; }
 ;
 
@@ -1066,14 +1066,14 @@ expr_without_variable:
 		backup_fn_flags '{' inner_statement_list '}' backup_fn_flags
 			{ $$ = _astFactory.Lambda(@$, CombineSpans(@1, @2, @3, @4, @5, @6, @7, @8), false, (TypeRef)$8, 
 				(List<FormalParam>)$5, CombineSpans(@4, @6), 
-				(List<FormalParam>)$7, _astFactory.Block(@11, (List<LangElement>)$11)); 
+				(List<FormalParam>)$7, _astFactory.Block(CombineSpans(@10, @11, @12), (List<LangElement>)$11)); 
 			if($3 != null) ((LambdaFunctionExpr)$$).PHPDoc = (PHPDocBlock)$3;
 			}
 	|	T_STATIC function returns_ref backup_doc_comment '(' parameter_list ')' lexical_vars
 		return_type backup_fn_flags '{' inner_statement_list '}' backup_fn_flags
 			{ $$ = _astFactory.Lambda(@$, CombineSpans(@1, @2, @3, @4, @5, @6, @7, @8, @9), false, (TypeRef)$9, 
 				(List<FormalParam>)$6, CombineSpans(@5, @7), 
-				(List<FormalParam>)$8, _astFactory.Block(@12, (List<LangElement>)$12)); 
+				(List<FormalParam>)$8, _astFactory.Block(CombineSpans(@11, @12, @13), (List<LangElement>)$12)); 
 			if($4 != null) ((LambdaFunctionExpr)$$).PHPDoc = (PHPDocBlock)$4;
 			}
 ;

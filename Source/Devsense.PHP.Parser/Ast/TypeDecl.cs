@@ -350,14 +350,15 @@ namespace Devsense.PHP.Syntax.Ast
         public Text.Span ParametersSpan { get { return parametersSpan; } }
         private Text.Span parametersSpan;
 
-        public Text.Span HeadingSpan { get { return Text.Span.Combine(Span, parametersSpan); } }
+        public Text.Span HeadingSpan { get { return headingSpan; } }
+        private Text.Span headingSpan;
 
         public TypeRef ReturnType { get { return returnType; } }
         private TypeRef returnType;
 
         #region Construction
 
-        public MethodDecl(Text.Span span, int headingEndPosition, int declarationBodyPosition, 
+        public MethodDecl(Text.Span span, Text.Span headingSpan, 
 			NameRef name, bool aliasReturn, IList<FormalParam>/*!*/ formalParams, Text.Span paramsSpan,
             IList<FormalTypeParam>/*!*/ genericParams,  BlockStmt body,
             PhpMemberAttributes modifiers, IList<ActualParam> baseCtorParams, 
@@ -368,6 +369,7 @@ namespace Devsense.PHP.Syntax.Ast
 
             this.modifiers = modifiers;
             this.name = name;
+            this.headingSpan = headingSpan;
             this.signature = new Signature(aliasReturn, formalParams);
             this.typeSignature = new TypeSignature(genericParams);
             this.body = body;
@@ -543,8 +545,8 @@ namespace Devsense.PHP.Syntax.Ast
 
 	public sealed class ClassConstantDecl : ConstantDecl
 	{
-        public ClassConstantDecl(Text.Span span, string/*!*/ name, Expression/*!*/ initializer)
-            : base(span, name, initializer)
+        public ClassConstantDecl(Text.Span span, string/*!*/ name, Text.Span namePos, Expression/*!*/ initializer)
+            : base(span, name, namePos, initializer)
 		{
 		}
 

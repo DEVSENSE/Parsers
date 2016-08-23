@@ -126,22 +126,22 @@ namespace Devsense.PHP.Syntax.Ast
 	{
         public override Operations Operation { get { return Operations.DirectStaticCall; } }
 
-		private Name methodName;
-        public Name MethodName { get { return methodName; } }
+		private NameRef methodName;
+        public NameRef MethodName { get { return methodName; } }
 		
 		public DirectStMtdCall(Text.Span span, ClassConstUse/*!*/ classConstant,
             IList<ActualParam>/*!*/ parameters, IList<TypeRef>/*!*/ genericParams)
 			: base(span, classConstant.NamePosition, classConstant.TargetType, parameters, genericParams)
 		{
-			this.methodName = new Name(classConstant.Name.Value);
+			this.methodName = new NameRef(classConstant.NamePosition, classConstant.Name.Value);
 		}
 
         public DirectStMtdCall(Text.Span span, GenericQualifiedName className, Text.Span classNamePosition,
             Name methodName, Text.Span methodNamePosition, IList<ActualParam> parameters, IList<TypeRef> genericParams)
 			: base(span, methodNamePosition, className, classNamePosition, parameters, genericParams)
 		{
-			this.methodName = methodName;
-		}
+            this.methodName = new NameRef(methodNamePosition, methodName);
+        }
 
 		/// <summary>
         /// Call the right Visit* method on the given Visitor object.
