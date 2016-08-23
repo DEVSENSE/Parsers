@@ -69,7 +69,6 @@ namespace Devsense.PHP.Syntax.Ast
         /// Creates function declaration node.
         /// </summary>
         /// <param name="span">Entire element span.</param>
-        /// <param name="headingSpan">Heading span - ends after return type.</param>
         /// <param name="conditional"><c>True</c> whether the declaration is conditional.</param>
         /// <param name="aliasReturn">Whether the function returns an aliased value.</param>
         /// <param name="attributes">Declaration attributes in case of a type member.</param>
@@ -82,7 +81,7 @@ namespace Devsense.PHP.Syntax.Ast
         /// <param name="formalParamsSpan">Parameters enclosing parenthesis span.</param>
         /// <param name="body">Function body.</param>
         /// <returns>Function node.</returns>
-        TNode Function(TSpan span, Span headingSpan,
+        TNode Function(TSpan span,
             bool conditional, bool aliasReturn, PhpMemberAttributes attributes,
             TypeRef returnType,
             Name name, TSpan nameSpan, IEnumerable<FormalTypeParam> typeParamsOpt,
@@ -144,7 +143,6 @@ namespace Devsense.PHP.Syntax.Ast
         /// Creates method declaration node.
         /// </summary>
         /// <param name="span">Entire element span.</param>
-        /// <param name="headingSpan">Heading span - ends after return type.</param>
         /// <param name="conditional"><c>True</c> whether the declaration is conditional.</param>
         /// <param name="aliasReturn">Whether the function returns an aliased value.</param>
         /// <param name="attributes">Declaration attributes in case of a type member.</param>
@@ -158,7 +156,7 @@ namespace Devsense.PHP.Syntax.Ast
         /// <param name="baseCtorParams">Actual paramters of base constructor call.</param>
         /// <param name="body">Method body.</param>
         /// <returns>Method node.</returns>
-        TNode Method(TSpan span, Span headingSpan,
+        TNode Method(TSpan span,
             bool aliasReturn, PhpMemberAttributes attributes,
             TypeRef returnType, TSpan returnTypeSpan,
             string name, TSpan nameSpan, IEnumerable<FormalTypeParam> typeParamsOpt,

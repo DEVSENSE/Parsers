@@ -2172,9 +2172,9 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 { yyval.Object = value_stack.array[value_stack.top-1].yyval.Object; }
         return;
       case 164: // function_declaration_statement -> function returns_ref T_STRING backup_doc_comment '(' parameter_list ')' return_type backup_fn_flags '{' inner_statement_list '}' backup_fn_flags 
-{ yyval.Object = _astFactory.Function(yypos, CombineSpans(value_stack.array[value_stack.top-13].yypos, value_stack.array[value_stack.top-12].yypos, value_stack.array[value_stack.top-11].yypos, value_stack.array[value_stack.top-10].yypos, value_stack.array[value_stack.top-9].yypos, value_stack.array[value_stack.top-8].yypos, value_stack.array[value_stack.top-7].yypos, value_stack.array[value_stack.top-6].yypos, value_stack.array[value_stack.top-5].yypos), true, false, PhpMemberAttributes.None, (TypeRef)value_stack.array[value_stack.top-6].yyval.Object, 
+{ yyval.Object = _astFactory.Function(yypos, true, false, PhpMemberAttributes.None, (TypeRef)value_stack.array[value_stack.top-6].yyval.Object, 
 			new Name((string)value_stack.array[value_stack.top-11].yyval.Object), value_stack.array[value_stack.top-11].yypos, null, (List<FormalParam>)value_stack.array[value_stack.top-8].yyval.Object, CombineSpans(value_stack.array[value_stack.top-9].yypos, value_stack.array[value_stack.top-7].yypos), 
-			_astFactory.Block(CombineSpans(value_stack.array[value_stack.top-4].yypos, value_stack.array[value_stack.top-3].yypos, value_stack.array[value_stack.top-2].yypos), (List<LangElement>)value_stack.array[value_stack.top-3].yyval.Object)); 
+			_astFactory.Block(CombineSpans(value_stack.array[value_stack.top-4].yypos, value_stack.array[value_stack.top-2].yypos), (List<LangElement>)value_stack.array[value_stack.top-3].yyval.Object)); 
 		if(value_stack.array[value_stack.top-10].yyval.Object != null)
 			((FunctionDecl)yyval.Object).PHPDoc = (PHPDocBlock)value_stack.array[value_stack.top-10].yyval.Object;
 		}
@@ -2450,9 +2450,9 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 { yyval.Object = _astFactory.TraitUse(yypos, ((List<TypeRef>)value_stack.array[value_stack.top-2].yyval.Object).Select(t => t.QualifiedName.Value), (List<TraitsUse.TraitAdaptation>)value_stack.array[value_stack.top-1].yyval.Object); }
         return;
       case 245: // class_statement -> method_modifiers function returns_ref identifier backup_doc_comment '(' parameter_list ')' return_type backup_fn_flags method_body backup_fn_flags 
-{ yyval.Object = _astFactory.Method(yypos, CombineSpans(value_stack.array[value_stack.top-12].yypos, value_stack.array[value_stack.top-11].yypos, value_stack.array[value_stack.top-10].yypos, value_stack.array[value_stack.top-9].yypos, value_stack.array[value_stack.top-8].yypos, value_stack.array[value_stack.top-7].yypos, value_stack.array[value_stack.top-6].yypos, value_stack.array[value_stack.top-5].yypos, value_stack.array[value_stack.top-4].yypos, value_stack.array[value_stack.top-3].yypos), false, (PhpMemberAttributes)value_stack.array[value_stack.top-12].yyval.Long, 
+{ yyval.Object = _astFactory.Method(yypos, false, (PhpMemberAttributes)value_stack.array[value_stack.top-12].yyval.Long, 
 				(TypeRef)value_stack.array[value_stack.top-4].yyval.Object, value_stack.array[value_stack.top-4].yypos, (string)value_stack.array[value_stack.top-9].yyval.Object, value_stack.array[value_stack.top-9].yypos, null, (List<FormalParam>)value_stack.array[value_stack.top-6].yyval.Object, value_stack.array[value_stack.top-5].yypos, 
-				null, _astFactory.Block(CombineSpans(value_stack.array[value_stack.top-3].yypos, value_stack.array[value_stack.top-2].yypos, value_stack.array[value_stack.top-1].yypos), (List<LangElement>)value_stack.array[value_stack.top-2].yyval.Object)); 
+				null, (LangElement)value_stack.array[value_stack.top-2].yyval.Object); 
 			if(value_stack.array[value_stack.top-8].yyval.Object != null) ((MethodDecl)yyval.Object).PHPDoc = (PHPDocBlock)value_stack.array[value_stack.top-8].yyval.Object;
 			}
         return;
@@ -2512,7 +2512,7 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 { yyval.Object = null; }
         return;
       case 264: // method_body -> '{' inner_statement_list '}' 
-{ yyval.Object = value_stack.array[value_stack.top-2].yyval.Object; }
+{ yyval.Object = _astFactory.Block(CombineSpans(value_stack.array[value_stack.top-3].yypos, value_stack.array[value_stack.top-1].yypos), (List<LangElement>)value_stack.array[value_stack.top-2].yyval.Object); }
         return;
       case 265: // variable_modifiers -> non_empty_member_modifiers 
 { yyval.Long = value_stack.array[value_stack.top-1].yyval.Long; }

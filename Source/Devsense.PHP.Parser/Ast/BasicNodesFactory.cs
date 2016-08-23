@@ -190,11 +190,11 @@ namespace Devsense.PHP.Syntax.Ast
             return new ForeachStmt(span, (Expression)enumeree, new ForeachVar(keyOpt, false), new ForeachVar(value, false), (Statement)body);
         }
 
-        public virtual LangElement Function(Span span, Span headingSpan, bool conditional, bool aliasReturn, PhpMemberAttributes attributes, TypeRef returnType, 
+        public virtual LangElement Function(Span span, bool conditional, bool aliasReturn, PhpMemberAttributes attributes, TypeRef returnType, 
             Name name, Span nameSpan, IEnumerable<FormalTypeParam> typeParamsOpt, IEnumerable<FormalParam> formalParams, Span formalParamsSpan, LangElement body)
         {
             Debug.Assert(body is BlockStmt || body is Statement);
-            return new FunctionDecl(_sourceUnit, span, headingSpan, conditional, new Scope(), attributes, new NameRef(nameSpan, name.Value), null, aliasReturn,
+            return new FunctionDecl(_sourceUnit, span, Span.FromBounds(span.Start, ((returnType != null) ? returnType.Span : formalParamsSpan).End), conditional, new Scope(), attributes, new NameRef(nameSpan, name.Value), null, aliasReturn,
                 formalParams.ToList(), formalParamsSpan, (typeParamsOpt != null) ? typeParamsOpt.ToList() : FormalTypeParam.EmptyList,
                 (BlockStmt)body, null, returnType);
         }
@@ -437,11 +437,9 @@ namespace Devsense.PHP.Syntax.Ast
                 QualifiedNameRef.FromTypeRef(baseClassOpt), implements.Select(QualifiedNameRef.FromTypeRef).ToList(), ConvertList<TypeMemberDecl>(members), bodySpan, null));
         }
 
-        public virtual LangElement Method(Span span, Span headingSpan, bool aliasReturn, PhpMemberAttributes attributes, TypeRef returnType, Span returnTypeSpan, string name, Span nameSpan, IEnumerable<FormalTypeParam> typeParamsOpt, IEnumerable<FormalParam> formalParams, Span formalParamsSpan, IEnumerable<ActualParam> baseCtorParams, LangElement body)
+        public virtual LangElement Method(Span span, bool aliasReturn, PhpMemberAttributes attributes, TypeRef returnType, Span returnTypeSpan, string name, Span nameSpan, IEnumerable<FormalTypeParam> typeParamsOpt, IEnumerable<FormalParam> formalParams, Span formalParamsSpan, IEnumerable<ActualParam> baseCtorParams, LangElement body)
         {
-            Debug.Assert(body is BlockStmt || body is Statement);
-
-            return new MethodDecl(span, headingSpan, new NameRef(nameSpan, name), aliasReturn, formalParams.ToList(),
+            return new MethodDecl(span, Span.FromBounds(span.Start, ((returnType != null)? returnType.Span: formalParamsSpan).End), new NameRef(nameSpan, name), aliasReturn, formalParams.ToList(),
                 formalParamsSpan, (typeParamsOpt != null) ? typeParamsOpt.ToList() : FormalTypeParam.EmptyList,
                 (BlockStmt)body, attributes, (baseCtorParams != null) ? baseCtorParams.ToList() : new List<ActualParam>(), null, returnType);
         }

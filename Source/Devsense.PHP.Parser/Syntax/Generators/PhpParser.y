@@ -530,9 +530,9 @@ unset_variable:
 function_declaration_statement:
 	function returns_ref T_STRING backup_doc_comment '(' parameter_list ')' return_type
 	backup_fn_flags '{' inner_statement_list '}' backup_fn_flags
-		{ $$ = _astFactory.Function(@$, CombineSpans(@1, @2, @3, @4, @5, @6, @7, @8, @9), true, false, PhpMemberAttributes.None, (TypeRef)$8, 
+		{ $$ = _astFactory.Function(@$, true, false, PhpMemberAttributes.None, (TypeRef)$8, 
 			new Name((string)$3), @3, null, (List<FormalParam>)$6, CombineSpans(@5, @7), 
-			_astFactory.Block(CombineSpans(@10, @11, @12), (List<LangElement>)$11)); 
+			_astFactory.Block(CombineSpans(@10, @12), (List<LangElement>)$11)); 
 		if($4 != null)
 			((FunctionDecl)$$).PHPDoc = (PHPDocBlock)$4;
 		}
@@ -802,9 +802,9 @@ class_statement:
 			{ $$ = _astFactory.TraitUse(@$, ((List<TypeRef>)$2).Select(t => t.QualifiedName.Value), (List<TraitsUse.TraitAdaptation>)$3); }
 	|	method_modifiers function returns_ref identifier backup_doc_comment '(' parameter_list ')'
 		return_type backup_fn_flags method_body backup_fn_flags
-			{ $$ = _astFactory.Method(@$, CombineSpans(@1, @2, @3, @4, @5, @6, @7, @8, @9, @10), false, (PhpMemberAttributes)$1, 
+			{ $$ = _astFactory.Method(@$, false, (PhpMemberAttributes)$1, 
 				(TypeRef)$9, @9, (string)$4, @4, null, (List<FormalParam>)$7, @8, 
-				null, _astFactory.Block(CombineSpans(@10, @11, @12), (List<LangElement>)$11)); 
+				null, (LangElement)$11); 
 			if($5 != null) ((MethodDecl)$$).PHPDoc = (PHPDocBlock)$5;
 			}
 ;
@@ -862,7 +862,7 @@ absolute_trait_method_reference:
 
 method_body:
 		';' /* abstract method */		{ $$ = null; }
-	|	'{' inner_statement_list '}'	{ $$ = $2; }
+	|	'{' inner_statement_list '}'	{ $$ = _astFactory.Block(CombineSpans(@1, @3), (List<LangElement>)$2); }
 ;
 
 variable_modifiers:

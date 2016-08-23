@@ -679,11 +679,8 @@ namespace Devsense.PHP.Syntax.Ast.Serialization
             foreach (FormalParam p in x.Signature.FormalParams)
                 VisitElement(p);
             _serializer.EndSerialize();
-
-            _serializer.StartSerialize("Body");
-            // method body
-            VisitElement(x.Body);
-            _serializer.EndSerialize();
+            
+            SerializeOptionalProperty("Body", x.Body);
 
             SerializeOptionalProperty("ReturnType", x.ReturnType);
             _serializer.EndSerialize();
