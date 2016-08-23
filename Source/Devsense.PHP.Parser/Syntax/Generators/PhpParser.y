@@ -276,7 +276,7 @@ using Devsense.PHP.Errors;
 %type <Object> lexical_var_list encaps_list
 %type <Object> array_pair non_empty_array_pair_list array_pair_list possible_array_pair
 %type <Object> isset_variable type return_type type_expr
-%type <Object> identifier
+%type <Object> identifier semi_reserved reserved_non_modifiers
 
 %type <Long> returns_ref function is_reference is_variadic variable_modifiers
 %type <Long> method_modifiers non_empty_member_modifiers member_modifier
@@ -357,13 +357,13 @@ top_statement:
 	|	T_NAMESPACE namespace_name { ResetDocBlock(); var list = (List<string>)$2; SetNamingContext((list != null && list.Count > 0)? string.Join(QualifiedName.Separator.ToString(), list): null); }
 		'{' top_statement_list '}'
 			{ 
-				$$ = _astFactory.Namespace(@$, new QualifiedName((List<string>)$2, false, true), @2, _astFactory.Block(@5, (List<LangElement>)$5), _namingContext); 
+				$$ = _astFactory.Namespace(@$, new QualifiedName((List<string>)$2, false, true), @2, _astFactory.Block(CombineSpans(@4, @6), (List<LangElement>)$5), _namingContext); 
 				ResetNamingContext(); 
 			}
 	|	T_NAMESPACE { ResetDocBlock(); SetNamingContext(null); }
 		'{' top_statement_list '}'
 			{ 
-				$$ = _astFactory.Namespace(@$, null, @$, _astFactory.Block(@4, (List<LangElement>)$4), _namingContext); 
+				$$ = _astFactory.Namespace(@$, null, @$, _astFactory.Block(CombineSpans(@3, @5), (List<LangElement>)$4), _namingContext); 
 				ResetNamingContext(); 
 			}
 	|	T_USE mixed_group_use_declaration ';'		{ _contextType = ContextType.Class; }
@@ -711,9 +711,9 @@ non_empty_parameter_list:
 
 parameter:
 		optional_type is_reference is_variadic T_VARIABLE
-			{ $$ = _astFactory.Parameter(@$, (string)$4, (TypeRef)$1, (FormalParam.Flags)$2|(FormalParam.Flags)$3, null); }
+			{ $$ = _astFactory.Parameter(CombineSpans(@1, @2, @3, @4), (string)$4, @4, (TypeRef)$1, (FormalParam.Flags)$2|(FormalParam.Flags)$3, null); /* Important - @$ is invalid when optional_type is empty */ }
 	|	optional_type is_reference is_variadic T_VARIABLE '=' expr
-			{ $$ = _astFactory.Parameter(@$, (string)$4, (TypeRef)$1, (FormalParam.Flags)$2|(FormalParam.Flags)$3|FormalParam.Flags.Default, (Expression)$6); }
+			{ $$ = _astFactory.Parameter(CombineSpans(@1, @2, @3, @4), (string)$4, @4, (TypeRef)$1, (FormalParam.Flags)$2|(FormalParam.Flags)$3|FormalParam.Flags.Default, (Expression)$6); /* Important - @$ is invalid when optional_type is empty */ }
 ;
 
 
@@ -842,7 +842,7 @@ trait_alias:
 		trait_method_reference T_AS T_STRING
 			{ $$ = _astFactory.TraitAdaptationAlias(@$, (Tuple<QualifiedName?, Name>)$1, (string)$3, null); }
 	|	trait_method_reference T_AS reserved_non_modifiers
-			{ $$ = _astFactory.TraitAdaptationAlias(@$, (Tuple<QualifiedName?, Name>)$1, (string)$3.Object, null); }
+			{ $$ = _astFactory.TraitAdaptationAlias(@$, (Tuple<QualifiedName?, Name>)$1, (string)$3, null); }
 	|	trait_method_reference T_AS member_modifier identifier
 			{ $$ = _astFactory.TraitAdaptationAlias(@$, (Tuple<QualifiedName?, Name>)$1, (string)$4, (PhpMemberAttributes)$3); }
 	|	trait_method_reference T_AS member_modifier
@@ -1110,8 +1110,8 @@ lexical_var_list:
 ;
 
 lexical_var:
-		T_VARIABLE		{ $$ = _astFactory.Parameter(@$, (string)$1, null, FormalParam.Flags.Default, null); }
-	|	'&' T_VARIABLE	{ $$ = _astFactory.Parameter(@$, (string)$2, null, FormalParam.Flags.IsByRef, null); }
+		T_VARIABLE		{ $$ = _astFactory.Parameter(@$, (string)$1, @1, null, FormalParam.Flags.Default, null); }
+	|	'&' T_VARIABLE	{ $$ = _astFactory.Parameter(@$, (string)$2, @2, null, FormalParam.Flags.IsByRef, null); }
 ;
 
 function_call:

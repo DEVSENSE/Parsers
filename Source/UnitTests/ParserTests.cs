@@ -92,6 +92,7 @@ namespace UnitTests
             {
                 if (element != null)
                 {
+                    Assert.IsTrue(element.Span.IsValid);
                     if (element is FunctionDecl)
                         CheckFunctionDecl((FunctionDecl)element);
                     else if (element is MethodDecl)
@@ -114,6 +115,8 @@ namespace UnitTests
                 Assert.IsTrue(func.HeadingSpan.Contains(func.ParametersSpan));
                 Assert.IsTrue(func.HeadingSpan.End <= func.Body.Span.Start);
                 Assert.IsTrue(func.Name.Span.End <= func.ParametersSpan.Start);
+                foreach(var param in func.Signature.FormalParams)
+                    Assert.IsTrue(param.Span.Contains(param.Name.Span));
             }
 
             void CheckMethodDecl(MethodDecl method)

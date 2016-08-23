@@ -235,11 +235,6 @@ namespace Devsense.PHP.Syntax
             return first.Concat(second).ToList();
         }
 
-        private IList<T> JoinLists<T>(object first, object second)
-        {
-            return JoinLists((List<T>)first, (List<T>)second);
-        }
-
         private Tuple<T1, T2, T3> JoinTuples<T1, T2, T3>(Tuple<T1, T2> first, T3 second)
         {
             return new Tuple<T1, T2, T3>(first.Item1, first.Item2, second);

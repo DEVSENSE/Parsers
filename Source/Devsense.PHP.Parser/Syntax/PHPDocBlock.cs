@@ -1556,7 +1556,7 @@ namespace Devsense.PHP.Syntax
                 }
 
                 return new FormalParam(
-                    Span.Invalid, paramname, typehint,
+                    Span.Invalid, paramname, new Span(i - word.Length, word.Length), typehint,
                     byref ? FormalParam.Flags.IsByRef : FormalParam.Flags.Default,
                     null, null);
             }

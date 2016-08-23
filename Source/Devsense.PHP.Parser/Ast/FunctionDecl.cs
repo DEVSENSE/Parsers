@@ -28,8 +28,8 @@ namespace Devsense.PHP.Syntax.Ast
 		/// <summary>
 		/// Name of the argument.
 		/// </summary>
-		public VariableName Name { get { return name; } }
-		private VariableName name;
+		public VariableNameRef Name { get { return name; } }
+		private VariableNameRef name;
 
 		/// <summary>
 		/// Whether the parameter is &amp;-modified.
@@ -80,11 +80,11 @@ namespace Devsense.PHP.Syntax.Ast
 
         #region Construction
 
-        public FormalParam(Text.Span span, string/*!*/ name, TypeRef typeHint, Flags flags,
+        public FormalParam(Text.Span span, string/*!*/ name, Text.Span nameSpan, TypeRef typeHint, Flags flags,
 				Expression initValue, List<CustomAttribute> attributes)
             : base(span)
 		{
-			this.name = new VariableName(name);
+			this.name = new VariableNameRef(nameSpan, name);
 			this.typeHint = typeHint;
             this._flags = flags;
 			this.initValue = initValue;

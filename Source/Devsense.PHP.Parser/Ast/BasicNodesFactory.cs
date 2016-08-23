@@ -208,9 +208,9 @@ namespace Devsense.PHP.Syntax.Ast
                 (BlockStmt)body, returnType);
         }
 
-        public virtual LangElement Parameter(Span span, string name, TypeRef typeOpt, FormalParam.Flags flags, Expression initValue)
+        public virtual LangElement Parameter(Span span, string name, Span nameSpan, TypeRef typeOpt, FormalParam.Flags flags, Expression initValue)
         {
-            return new FormalParam(span, name, typeOpt, flags, initValue, null);
+            return new FormalParam(span, name, nameSpan, typeOpt, flags, initValue, null);
         }
 
         public virtual LangElement GlobalCode(Span span, IEnumerable<LangElement> statements, NamingContext context)
@@ -447,7 +447,7 @@ namespace Devsense.PHP.Syntax.Ast
         public virtual LangElement UnaryOperation(Span span, Operations operation, LangElement expression)
         {
             Debug.Assert(expression is Expression);
-            return new UnaryEx(operation, (Expression)expression);
+            return new UnaryEx(span, operation, (Expression)expression);
         }
 
         public virtual LangElement Variable(Span span, LangElement nameExpr, TypeRef typeRef)

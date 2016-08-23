@@ -584,7 +584,7 @@ namespace Devsense.PHP.Syntax.Ast.Serialization
         }
         override public void VisitFormalParam(FormalParam x)
         {
-            _serializer.StartSerialize(typeof(FormalParam).Name, SerializeSpan(x.Span), new NodeObj("Name", x.Name.Value), 
+            _serializer.StartSerialize(typeof(FormalParam).Name, SerializeSpan(x.Span), new NodeObj("Name", x.Name.Name.Value), 
                 new NodeObj("PassedByRef", x.PassedByRef.ToString()), new NodeObj("IsVariadic", x.IsVariadic.ToString()));
             SerializeOptionalProperty("TypeHint", x.TypeHint);
             SerializeOptionalProperty("InitValue", x.InitValue);

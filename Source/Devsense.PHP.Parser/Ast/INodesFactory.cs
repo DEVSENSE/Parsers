@@ -110,12 +110,13 @@ namespace Devsense.PHP.Syntax.Ast
         /// Creates <c>FormalParam</c> for a function of method declaration.
         /// </summary>
         /// <param name="span">Entire element span.</param>
-        /// <param name="name">Parameter name.</param>
+        /// <param name="name">Parameter name.</param
+        /// <param name="nameSpan">Parameter name span.</param>
         /// <param name="typeOpt">Parameter type.</param>
         /// <param name="flags">Parameter flags.</param>
         /// <param name="initValue">Default value expression.</param>
         /// <returns></returns>
-        TNode Parameter(Span span, string name, TypeRef typeOpt, FormalParam.Flags flags, Expression initValue);
+        TNode Parameter(Span span, string name, Span nameSpan, TypeRef typeOpt, FormalParam.Flags flags, Expression initValue);
 
         /// <summary>
         /// Creates type declaration node.
