@@ -522,7 +522,7 @@ namespace Devsense.PHP.Syntax.Ast
 
         public virtual LangElement PseudoConstUse(Span span, PseudoConstUse.Types type)
         {
-            return PseudoConstUse(span, type);
+            return new PseudoConstUse(span, type);
         }
 
         public virtual LangElement ExpressionStmt(Span span, LangElement expression)
