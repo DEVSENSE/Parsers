@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -81,7 +82,12 @@ namespace Devsense.PHP.Errors
 
         public ErrorInfo_(int id, string messageid, ErrorSeverity severity)
         {
+            Debug.Assert(messageid != null);
+            Debug.Assert(Strings.ResourceManager.GetString(messageid) != null, $"String '{messageid}' could not be found in resources!");
 
+            _id = id;
+            _messageid = messageid;
+            _severity = severity;
         }
 
         public override string FormatString => Strings.ResourceManager.GetString(_messageid);
