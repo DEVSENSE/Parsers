@@ -111,6 +111,7 @@ namespace Devsense.PHP.Syntax
             // update token position info:
             _tokenPosition = new Span(_charOffset, tokenLength);
             _charOffset += tokenLength;
+            _tokenText = null;
         }
 
         void ITokenProvider<SemanticValueType, Span>.ReportError(string[] expectedTerminals)
