@@ -626,14 +626,17 @@ namespace Devsense.PHP.Syntax
 
         virtual public void VisitArrayItem(Item item)
         {
-            // key
-            VisitElement(item.Index);
+            if (item != null)   // list() may have 'null' items
+            {
+                // key
+                VisitElement(item.Index);
 
-            // value
-            if (item is ValueItem)
-                VisitElement(((ValueItem)item).ValueExpr);
-            else
-                VisitElement(((RefItem)item).RefToGet);
+                // value
+                if (item is ValueItem)
+                    VisitElement(((ValueItem)item).ValueExpr);
+                else
+                    VisitElement(((RefItem)item).RefToGet);
+            }
         }
 
         /// <summary>
