@@ -176,8 +176,7 @@ namespace Devsense.PHP.Syntax.Ast
         public Text.Span ParametersSpan { get { return parametersSpan; } }
         private Text.Span parametersSpan;
 
-        public Text.Span HeadingSpan { get { return headingSpan; } }
-        private Text.Span headingSpan;
+        public Text.Span HeadingSpan => Text.Span.FromBounds(Span.Start, ((returnType != null) ? returnType.Span : ParametersSpan).End);
 
         public TypeRef ReturnType { get { return returnType; } }
         private TypeRef returnType;
@@ -185,7 +184,7 @@ namespace Devsense.PHP.Syntax.Ast
         #region Construction
 
         public FunctionDecl(SourceUnit/*!*/ sourceUnit,
-            Text.Span span, Text.Span headingSpan,
+            Text.Span span,
 			bool isConditional, Scope scope, PhpMemberAttributes memberAttributes, NameRef/*!*/ name, NamespaceDecl ns,
 			bool aliasReturn, List<FormalParam>/*!*/ formalParams, Text.Span paramsSpan, List<FormalTypeParam>/*!*/ genericParams,
             BlockStmt/*!*/ body, List<CustomAttribute> attributes, TypeRef returnType)
@@ -194,7 +193,6 @@ namespace Devsense.PHP.Syntax.Ast
 			Debug.Assert(genericParams != null && formalParams != null && body != null);
 
 			this.name = name;
-            this.headingSpan = headingSpan;
 			this.ns = ns;
 			this.signature = new Signature(aliasReturn, formalParams);
 			this.typeSignature = new TypeSignature(genericParams);

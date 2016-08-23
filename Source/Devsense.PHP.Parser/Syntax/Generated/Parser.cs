@@ -2312,7 +2312,7 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 			}
         return;
       case 205: // if_stmt_without_else -> if_stmt_without_else T_ELSEIF '(' expr ')' statement 
-{ yyval.Object = AddToList<LangElement>(value_stack.array[value_stack.top-6].yyval.Object, 
+{ yyval.Object = AddToList<Tuple<LangElement, LangElement>>(value_stack.array[value_stack.top-6].yyval.Object, 
 				new Tuple<LangElement, LangElement>((LangElement)value_stack.array[value_stack.top-3].yyval.Object, (LangElement)value_stack.array[value_stack.top-1].yyval.Object)); 
 			}
         return;
@@ -2330,7 +2330,7 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 			}
         return;
       case 209: // alt_if_stmt_without_else -> alt_if_stmt_without_else T_ELSEIF '(' expr ')' ':' inner_statement_list 
-{ yyval.Object = AddToList<LangElement>(value_stack.array[value_stack.top-7].yyval.Object, 
+{ yyval.Object = AddToList<Tuple<LangElement, LangElement>>(value_stack.array[value_stack.top-7].yyval.Object, 
 				new Tuple<LangElement, LangElement>((LangElement)value_stack.array[value_stack.top-4].yyval.Object, StatementsToBlock(CombineSpans(value_stack.array[value_stack.top-2].yypos, value_stack.array[value_stack.top-1].yypos), value_stack.array[value_stack.top-1].yyval.Object, Tokens.END))); 
 			}
         return;

@@ -8,13 +8,28 @@ using Devsense.PHP.Errors;
 
 namespace UnitTests.TestImplementation
 {
-    internal class TestErrorSink : IErrorSink<Span>
+
+    sealed internal class TestErrorSink : IErrorSink<Span>
     {
-        public List<Tuple<Span, ErrorInfo, string[]>> Errors = new List<Tuple<Span, ErrorInfo, string[]>>();
+        public class ErrorInstance
+        {
+            public Span Span;
+            public ErrorInfo Error;
+            public string[] Args;
+        }
+
+        public readonly List<ErrorInstance> Errors = new List<ErrorInstance>();
+
+        public int Count => this.Errors.Count;
 
         public void Error(Span span, ErrorInfo info, params string[] argsOpt)
         {
-            Errors.Add(new Tuple<Span, ErrorInfo, string[]>(span, info, argsOpt));
+            Errors.Add(new ErrorInstance()
+            {
+                Span = span,
+                Error = info,
+                Args = argsOpt,
+            });
         }
     }
 }

@@ -350,15 +350,14 @@ namespace Devsense.PHP.Syntax.Ast
         public Text.Span ParametersSpan { get { return parametersSpan; } }
         private Text.Span parametersSpan;
 
-        public Text.Span HeadingSpan { get { return headingSpan; } }
-        private Text.Span headingSpan;
+        public Text.Span HeadingSpan => Text.Span.FromBounds(Span.Start, ((returnType != null) ? returnType.Span : ParametersSpan).End);
 
         public TypeRef ReturnType { get { return returnType; } }
         private TypeRef returnType;
 
         #region Construction
 
-        public MethodDecl(Text.Span span, Text.Span headingSpan, 
+        public MethodDecl(Text.Span span, 
 			NameRef name, bool aliasReturn, IList<FormalParam>/*!*/ formalParams, Text.Span paramsSpan,
             IList<FormalTypeParam>/*!*/ genericParams,  BlockStmt body,
             PhpMemberAttributes modifiers, IList<ActualParam> baseCtorParams, 
@@ -369,7 +368,6 @@ namespace Devsense.PHP.Syntax.Ast
 
             this.modifiers = modifiers;
             this.name = name;
-            this.headingSpan = headingSpan;
             this.signature = new Signature(aliasReturn, formalParams);
             this.typeSignature = new TypeSignature(genericParams);
             this.body = body;

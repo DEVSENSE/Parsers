@@ -661,7 +661,7 @@ if_stmt_without_else:
 				new Tuple<LangElement, LangElement>((LangElement)$3, (LangElement)$5) }; 
 			}
 	|	if_stmt_without_else T_ELSEIF '(' expr ')' statement
-			{ $$ = AddToList<LangElement>($1, 
+			{ $$ = AddToList<Tuple<LangElement, LangElement>>($1, 
 				new Tuple<LangElement, LangElement>((LangElement)$4, (LangElement)$6)); 
 			}
 ;
@@ -682,7 +682,7 @@ alt_if_stmt_without_else:
 			}
 			
 	|	alt_if_stmt_without_else T_ELSEIF '(' expr ')' ':' inner_statement_list
-			{ $$ = AddToList<LangElement>($1, 
+			{ $$ = AddToList<Tuple<LangElement, LangElement>>($1, 
 				new Tuple<LangElement, LangElement>((LangElement)$4, StatementsToBlock(CombineSpans(@6, @7), $7, Tokens.END))); 
 			}
 ;
