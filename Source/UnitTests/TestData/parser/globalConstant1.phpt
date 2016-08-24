@@ -62,41 +62,45 @@ const constC = 'World', ConstD = 11;
     "NamingContext" : {
       "Namespace" : "MyProject"
     },
-    "GlobalConstDeclList" : {
-      "Span" : {
-        "start" : "74",
-        "end" : "110"
-      },     
-      "PHPDoc":{"Comment":"global const"},
-      "GlobalConstantDecl" : {
-        "Span" : {
-          "start" : "80",
-          "end" : "96"
-        },
-        "NameIsConditional" : "False",
-        "Name" : "constC",
-        "PHPDoc":{"Comment":"global const"},
-        "StringLiteral" : {
+    "Body":{
+      "BlockStmt":{
+        "GlobalConstDeclList" : {
           "Span" : {
-            "start" : "89",
-            "end" : "96"
+            "start" : "74",
+            "end" : "110"
+          },     
+          "PHPDoc":{"Comment":"global const"},
+          "GlobalConstantDecl" : {
+            "Span" : {
+              "start" : "80",
+              "end" : "96"
+            },
+            "NameIsConditional" : "False",
+            "Name" : "constC",
+            "PHPDoc":{"Comment":"global const"},
+            "StringLiteral" : {
+              "Span" : {
+                "start" : "89",
+                "end" : "96"
+              },
+              "Value" : "World"
+            }
           },
-          "Value" : "World"
-        }
-      },
-      "GlobalConstantDecl" : {
-        "Span" : {
-          "start" : "98",
-          "end" : "109"
-        },
-        "NameIsConditional" : "False",
-        "Name" : "ConstD",
-        "LongIntLiteral" : {
-          "Span" : {
-            "start" : "107",
-            "end" : "109"
-          },
-          "Value" : "11"
+          "GlobalConstantDecl" : {
+            "Span" : {
+              "start" : "98",
+              "end" : "109"
+            },
+            "NameIsConditional" : "False",
+            "Name" : "ConstD",
+            "LongIntLiteral" : {
+              "Span" : {
+                "start" : "107",
+                "end" : "109"
+              },
+              "Value" : "11"
+            }
+          }
         }
       }
     }

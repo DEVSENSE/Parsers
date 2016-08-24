@@ -80,7 +80,7 @@ class Obj
     var $__FILE__ = '__FILE__';
     var $__DIR__ = '__DIR__';
     var $__NAMESPACE__ = '__NAMESPACE__';
-    var $__halt_compiler = '__halt_compiler';
+    var $__halt_compiler = '__halt_compiler()';
 }
 
 $obj = new Obj;

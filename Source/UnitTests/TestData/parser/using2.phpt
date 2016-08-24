@@ -19,6 +19,9 @@ use function My\Full\functionName as func;
 
 // importing a constant (PHP 5.6+)
 use const My\Full\CONSTANT;
+
+use MyX, \My\MyY;
+
 ?>
 <<<TEST>>>
 
@@ -44,7 +47,9 @@ use const My\Full\CONSTANT;
       "Aliases" : {
         "Another" : "My\Full\Classname",
         "NSname" : "My\Full\NSname",
-        "ArrayObject" : "ArrayObject"
+        "ArrayObject" : "ArrayObject",
+        "MyX" : "MyX",
+        "MyY" : "My\MyY"
       },
       "ConstantAliases" : {
         "CONSTANT" : "My\Full\CONSTANT"
@@ -53,6 +58,9 @@ use const My\Full\CONSTANT;
         "functionName" : "My\Full\functionName",
         "func" : "My\Full\functionName"
       }
+    },
+    "Body":{
+      "BlockStmt":{}
     }
   }
 }

@@ -127,9 +127,11 @@ namespace Devsense.PHP.Syntax
                     i--;
                     continue;
                 }
+            }
 
-                // Debug.Assert(statements[i] != null); // TODO (T_USE returns null)
-
+            for (int i = 0; i < statements.Count; i++)
+            {
+                var stmt = (Statement)statements[i];
                 var ns = stmt as NamespaceDecl;
                 if (ns != null)
                 {
@@ -162,11 +164,12 @@ namespace Devsense.PHP.Syntax
                                 }
 
                                 statements.RemoveRange(i + 1, count);
-                                ns.Statements = newcontaining;
+                                Span newSpan = newcontaining.Length > 0 ? CombineSpans(newcontaining.First().Span, newcontaining.Last().Span) : new Span(ns.Span.End, 0);
+                                ns.Body = (BlockStmt)_astFactory.SimpleBlock(newSpan, newcontaining);
                             }
                             else
                             {
-                                ns.Statements = EmptyArray<Statement>.Instance;
+                                ns.Body = (BlockStmt)_astFactory.SimpleBlock(new Span(ns.Span.End, 0), EmptyArray<Statement>.Instance);
                             }
                         }
                     }

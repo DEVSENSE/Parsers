@@ -15,28 +15,31 @@ namespace MyProject
   "Span" : {
     "start" : "0",
     "end" : "0"
-  }, 
+  },
   "NamingContext" : {},
   "NamespaceDecl" : {
     "Span" : {
       "start" : "7",
       "end" : "39"
-    },
+    },         
+    "Name":"", 
     "SimpleSyntax" : "False",
     "NamingContext" : {
-    },
-    "BlockStmt" : {
-      "EchoStmt" : {
-        "Span" : {
-          "start" : "23",
-          "end" : "36"
-        },
-        "StringLiteral" : {
+    },    
+    "Body":{ 
+      "BlockStmt" : {
+        "EchoStmt" : {
           "Span" : {
-            "start" : "28",
-            "end" : "35"
+            "start" : "23",
+            "end" : "36"
           },
-          "Value" : "hello"
+          "StringLiteral" : {
+            "Span" : {
+              "start" : "28",
+              "end" : "35"
+            },
+            "Value" : "hello"
+          }
         }
       }
     }
@@ -51,18 +54,20 @@ namespace MyProject
     "NamingContext" : {
       "Namespace" : "MyProject"
     },  
-    "BlockStmt" : {
-      "EchoStmt" : {
-        "Span" : {
-          "start" : "69",
-          "end" : "82"
-        },
-        "StringLiteral" : {
+    "Body":{ 
+      "BlockStmt" : {
+        "EchoStmt" : {
           "Span" : {
-            "start" : "74",
-            "end" : "81"
+            "start" : "69",
+            "end" : "82"
           },
-          "Value" : "world"
+          "StringLiteral" : {
+            "Span" : {
+              "start" : "74",
+              "end" : "81"
+            },
+            "Value" : "world"
+          }
         }
       }
     }

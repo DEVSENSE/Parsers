@@ -111,6 +111,10 @@ namespace Devsense.PHP.Syntax.Ast
         {
             return Block(span, statements);
         }
+        public virtual LangElement SimpleBlock(Span span, IEnumerable<LangElement> statements)
+        {
+            return Block(span, statements);
+        }
 
         public virtual LangElement Concat(Span span, IEnumerable<LangElement> expressions)
         {
@@ -185,9 +189,10 @@ namespace Devsense.PHP.Syntax.Ast
             return new ForStmt(span, ConvertList<Expression>(init), ConvertList<Expression>(cond), ConvertList<Expression>(action), (Statement)body);
         }
 
-        public virtual LangElement Foreach(Span span, LangElement enumeree, VariableUse keyOpt, VariableUse value, LangElement body)
+        public virtual LangElement Foreach(Span span, LangElement enumeree, LangElement keyOpt, LangElement value, LangElement body)
         {
-            return new ForeachStmt(span, (Expression)enumeree, new ForeachVar(keyOpt, false), new ForeachVar(value, false), (Statement)body);
+            ForeachVar val = value is VariableUse ? new ForeachVar((VariableUse)value, false) : new ForeachVar((ListEx)value);
+            return new ForeachStmt(span, (Expression)enumeree, new ForeachVar((VariableUse)keyOpt, false), val, (Statement)body);
         }
 
         public virtual LangElement Function(Span span, bool conditional, bool aliasReturn, PhpMemberAttributes attributes, TypeRef returnType, 
@@ -311,11 +316,10 @@ namespace Devsense.PHP.Syntax.Ast
             throw new ArgumentException("Value does not have supported type.");
         }
 
-        public virtual LangElement Namespace(Span span, QualifiedName? name, Span nameSpan, IEnumerable<LangElement> statements, NamingContext context)
+        public virtual LangElement Namespace(Span span, QualifiedName? name, Span nameSpan, NamingContext context)
         {
             NamespaceDecl space = new NamespaceDecl(span, name.HasValue ? new QualifiedNameRef(nameSpan, name.Value) : QualifiedNameRef.Invalid, true);
             space.Naming = context;
-            space.Statements = (statements != null) ? ConvertList<Statement>(statements) : null;
             return space;
         }
 
@@ -324,7 +328,7 @@ namespace Devsense.PHP.Syntax.Ast
             Debug.Assert(block != null);
             NamespaceDecl space = new NamespaceDecl(span, name.HasValue ? new QualifiedNameRef(nameSpan, name.Value) : QualifiedNameRef.Invalid, false);
             space.Naming = context;
-            space.Statements = new List<Statement>() { (Statement)block };
+            space.Body = (BlockStmt)block;
             return space;
         }
 

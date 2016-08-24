@@ -27,17 +27,21 @@ echo "world";
     "NamingContext" : {
       "Namespace" : "MyProject"
     },
-    "EchoStmt" : {
-      "Span" : {
-        "start" : "31",
-        "end" : "44"
-      },
-      "StringLiteral" : {
-        "Span" : {
-          "start" : "36",
-          "end" : "43"
-        },
-        "Value" : "hello"
+    "Body":{
+      "BlockStmt":{
+        "EchoStmt" : {
+          "Span" : {
+            "start" : "31",
+            "end" : "44"
+          },
+          "StringLiteral" : {
+            "Span" : {
+              "start" : "36",
+              "end" : "43"
+            },
+            "Value" : "hello"
+          }
+        }
       }
     }
   },
@@ -53,18 +57,22 @@ echo "world";
       "Aliases" : {
           "cls" : "My\ClassA"
       }
-    },
-    "EchoStmt" : {
-      "Span" : {
-        "start" : "110",
-        "end" : "123"
-      },
-      "StringLiteral" : {
-        "Span" : {
-          "start" : "115",
-          "end" : "122"
-        },
-        "Value" : "world"
+    },  
+    "Body":{
+      "BlockStmt":{
+        "EchoStmt" : {
+          "Span" : {
+            "start" : "110",
+            "end" : "123"
+          },
+          "StringLiteral" : {
+            "Span" : {
+              "start" : "115",
+              "end" : "122"
+            },
+            "Value" : "world"
+          }
+        }
       }
     }
   }

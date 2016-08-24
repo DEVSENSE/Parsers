@@ -18,6 +18,9 @@ namespace MyProject;
     "SimpleSyntax" : "True",
     "NamingContext" : {
       "Namespace" : "MyProject"
+    },
+    "Body":{
+      "BlockStmt":{}
     }
   }
 }

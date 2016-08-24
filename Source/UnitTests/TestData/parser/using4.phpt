@@ -1,7 +1,9 @@
 <?php
 // PHP 7+ code
 use My\Full\{ClassA, function fn_a, const ConstA, 
-ClassB as B, function fn_b as fB, const ConstB as cB};
+ClassB as B, function fn_b as fB, const ConstB as cB};  
+  
+use \My\Full\{MyX, function MyY, const MyZ};
 ?>
 <<<TEST>>>
 
@@ -13,15 +15,18 @@ ClassB as B, function fn_b as fB, const ConstB as cB};
   "NamingContext" : {
     "Aliases" : {
         "ClassA" : "My\Full\ClassA",
-        "B" : "My\Full\ClassB"
+        "B" : "My\Full\ClassB",
+        "MyX" : "My\Full\MyX"
     },
     "ConstantAliases" : {
         "ConstA" : "My\Full\ConstA",
-        "cB" : "My\Full\ConstB"
+        "cB" : "My\Full\ConstB",
+        "MyZ" : "My\Full\MyZ"
     },
     "FunctionAliases" : {
         "fn_a" : "My\Full\fn_a",
-        "fB" : "My\Full\fn_b" 
+        "fB" : "My\Full\fn_b",
+        "MyY" : "My\Full\MyY" 
     }
   }
 }

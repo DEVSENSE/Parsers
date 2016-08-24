@@ -2,7 +2,7 @@
 
 namespace Devsense.PHP.Syntax.Ast
 {
-    public sealed class HaltCompiler : LangElement
+    public sealed class HaltCompiler : Statement
     {
         public HaltCompiler(Text.Span span) : base(span)
         {
@@ -10,6 +10,7 @@ namespace Devsense.PHP.Syntax.Ast
 
         public override void VisitMe(TreeVisitor visitor)
         {
+            visitor.VisitHaltCompiler(this);
         }
     }
 }

@@ -44,7 +44,7 @@ namespace Devsense.PHP.Syntax.Ast
 
         private VariableNameRef propertyName;
 
-        /// <summary>Name of static field beign accessed</summary>
+        /// <summary>Name of static field being accessed</summary>
         public VariableName PropertyName => propertyName.Name;
 
         /// <summary>

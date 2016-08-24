@@ -329,8 +329,8 @@ namespace_name:
 
 name:
 		namespace_name								{ $$ = _astFactory.TypeReference(@$, new QualifiedName((List<string>)$1, true, false), false, TypeRef.EmptyList); }
-	|	T_NAMESPACE T_NS_SEPARATOR namespace_name	{ $$ = _astFactory.TypeReference(@$, new QualifiedName((List<string>)$3, false, false), false, TypeRef.EmptyList); }
-	|	T_NS_SEPARATOR namespace_name				{ $$ = _astFactory.TypeReference(@$, new QualifiedName((List<string>)$2, true, true), false, TypeRef.EmptyList);  }
+	|	T_NAMESPACE T_NS_SEPARATOR namespace_name	{ $$ = _astFactory.TypeReference(@$, new QualifiedName((List<string>)$3, true,  true), false, TypeRef.EmptyList); }
+	|	T_NS_SEPARATOR namespace_name				{ $$ = _astFactory.TypeReference(@$, new QualifiedName((List<string>)$2, true,  true), false, TypeRef.EmptyList); }
 ;
 
 top_statement:
@@ -351,7 +351,7 @@ top_statement:
 				AssignNamingContext();
                 QualifiedName name = new QualifiedName((List<string>)$2, false, true);
                 SetNamingContext(name.NamespacePhpName);
-                $$ = _currentNamespace = (NamespaceDecl)_astFactory.Namespace(@$, name, @2, (List<LangElement>)null, _namingContext);
+                $$ = _currentNamespace = (NamespaceDecl)_astFactory.Namespace(@$, name, @2, _namingContext);
 				ResetDocBlock(); 
 			}
 	|	T_NAMESPACE namespace_name { ResetDocBlock(); var list = (List<string>)$2; SetNamingContext((list != null && list.Count > 0)? string.Join(QualifiedName.Separator.ToString(), list): null); }
@@ -413,7 +413,7 @@ unprefixed_use_declarations:
 
 use_declarations:
 		use_declarations ',' use_declaration
-			{ AddAlias((Tuple<List<string>, string>)$1); }
+			{ AddAlias((Tuple<List<string>, string>)$3); }
 	|	use_declaration
 			{ AddAlias((Tuple<List<string>, string>)$1); }
 ;
@@ -457,7 +457,7 @@ inner_statement:
 	|	T_HALT_COMPILER '(' ')' ';'
 			{ 
 				$$ = _astFactory.HaltCompiler(@$); 
-				_errors.Error(@$, FatalErrors.InternalError, "__HALT_COMPILER() can only be used from the outermost scope"); 
+				_errors.Error(@$, FatalErrors.InvalidHaltCompiler); 
 			}
 ;
 
@@ -483,9 +483,9 @@ statement:
 	|	expr ';' { $$ = _astFactory.ExpressionStmt(@$, (LangElement)$1); }
 	|	T_UNSET '(' unset_variables ')' ';' { $$ = _astFactory.Unset(@$, (List<LangElement>)$3); }
 	|	T_FOREACH '(' expr T_AS foreach_variable ')' foreach_statement
-			{ $$ = _astFactory.Foreach(@$, (LangElement)$3, null, (VariableUse)$5, (LangElement)$7); }
+			{ $$ = _astFactory.Foreach(@$, (LangElement)$3, null, (LangElement)$5, (LangElement)$7); }
 	|	T_FOREACH '(' expr T_AS foreach_variable T_DOUBLE_ARROW foreach_variable ')' foreach_statement
-			{ $$ = _astFactory.Foreach(@$, (LangElement)$3, (VariableUse)$5, (VariableUse)$7, (LangElement)$9); }
+			{ $$ = _astFactory.Foreach(@$, (LangElement)$3, (LangElement)$5, (LangElement)$7, (LangElement)$9); }
 	|	T_DECLARE '(' const_list ')' declare_statement
 			{ $$ = _astFactory.Declare(@$, (LangElement)$5); }
 	|	';'	/* empty statement */ { $$ = _astFactory.EmptyStmt(@$); }
@@ -610,7 +610,7 @@ foreach_variable:
 		variable			{ $$ = $1; }
 	|	'&' variable		{ $$ = _astFactory.Variable(@$, (LangElement)$2, (LangElement)null); }
 	|	T_LIST '(' array_pair_list ')' { $$ = _astFactory.List(@$, (List<Item>)$3); }
-	|	'[' array_pair_list ']' { $$ = _astFactory.NewArray(@$, (List<Item>)$2); }
+	|	'[' array_pair_list ']' { $$ = _astFactory.List(@$, (List<Item>)$2); }
 ;
 
 for_statement:
@@ -1256,7 +1256,7 @@ variable:
 simple_variable:
 		T_VARIABLE			{ $$ = _astFactory.Variable(@$, new VariableName((string)$1), (LangElement)null); }
 	|	'$' '{' expr '}'	{ $$ = _astFactory.Variable(@$, (LangElement)$3, (LangElement)null); }
-	|	'$' simple_variable	{ $$ = $2; }
+	|	'$' simple_variable	{ $$ = _astFactory.Variable(@$, ((DirectVarUse)$2).VarName, (LangElement)null); }
 ;
 
 static_member:
@@ -1333,12 +1333,12 @@ encaps_list:
 	|	encaps_var
 			{ $$ = new List<LangElement>() { (LangElement)$1 }; }
 	|	T_ENCAPSED_AND_WHITESPACE encaps_var
-			{ $$ = new List<LangElement>() { _astFactory.Literal(@1, $1), _astFactory.Variable(@2, new VariableName((string)$2), (LangElement)null) }; }
+			{ $$ = new List<LangElement>() { _astFactory.Literal(@1, $1), (LangElement)$2 }; }
 ;
 
 encaps_var:
 		T_VARIABLE
-			{ _astFactory.Variable(@$, new VariableName((string)$1), (LangElement)null); }
+			{ $$ = _astFactory.Variable(@$, new VariableName((string)$1), (LangElement)null); }
 	|	T_VARIABLE '[' encaps_var_offset ']'
 			{ $$ = _astFactory.ArrayItem(@$, 
 					_astFactory.Variable(@1, new VariableName((string)$1), (LangElement)null), (LangElement)$3); }

@@ -145,6 +145,10 @@ namespace Devsense.PHP.Syntax.Ast.Serialization
             base.VisitEchoStmt(x);
             _serializer.EndSerialize();
         }
+        override public void VisitHaltCompiler(HaltCompiler x)
+        {
+            _serializer.Serialize(typeof(HaltCompiler).Name, SerializeSpan(x.Span));
+        }
 
         /// <summary>
         /// Visit global scope element and all children.
@@ -163,16 +167,11 @@ namespace Devsense.PHP.Syntax.Ast.Serialization
         /// <param name="x"></param>
         override public void VisitNamespaceDecl(NamespaceDecl x)
         {
-            if (string.IsNullOrEmpty(x.QualifiedName.QualifiedName.NamespacePhpName))
-                _serializer.StartSerialize(typeof(NamespaceDecl).Name, SerializeSpan(x.Span),
-                    new NodeObj("SimpleSyntax", x.IsSimpleSyntax.ToString()),
-                    SerializeNamingContext(x.Naming));
-            else
-                _serializer.StartSerialize(typeof(NamespaceDecl).Name, SerializeSpan(x.Span),
-                    new NodeObj("Name", x.QualifiedName.QualifiedName.NamespacePhpName),
-                    new NodeObj("SimpleSyntax", x.IsSimpleSyntax.ToString()),
-                    SerializeNamingContext(x.Naming));
-            base.VisitNamespaceDecl(x);
+            _serializer.StartSerialize(typeof(NamespaceDecl).Name, SerializeSpan(x.Span),
+                new NodeObj("Name", x.QualifiedName.QualifiedName.NamespacePhpName),
+                new NodeObj("SimpleSyntax", x.IsSimpleSyntax.ToString()),
+                SerializeNamingContext(x.Naming));
+            SerializeOptionalProperty("Body", x.Body);
             _serializer.EndSerialize();
         }
 
@@ -296,9 +295,7 @@ namespace Devsense.PHP.Syntax.Ast.Serialization
             _serializer.StartSerialize("CondExpr");
             VisitElement(x.CondExpr);
             _serializer.EndSerialize();
-            _serializer.StartSerialize("Body");
-            VisitElement(x.Body);
-            _serializer.EndSerialize();
+            SerializeOptionalProperty("Body", x.Body);
             _serializer.EndSerialize();
         }
 
@@ -360,9 +357,7 @@ namespace Devsense.PHP.Syntax.Ast.Serialization
             _serializer.StartSerialize("ActionExList");
             VisitList(x.ActionExList);
             _serializer.EndSerialize();
-            _serializer.StartSerialize("Body");
-            VisitElement(x.Body);
-            _serializer.EndSerialize();
+            SerializeOptionalProperty("Body", x.Body);
             _serializer.EndSerialize();
         }
         override public void VisitIfStmt(IfStmt x)
@@ -389,16 +384,10 @@ namespace Devsense.PHP.Syntax.Ast.Serialization
         override public void VisitForeachStmt(ForeachStmt x)
         {
             _serializer.StartSerialize(typeof(ForeachStmt).Name, SerializeSpan(x.Span));
-            _serializer.StartSerialize("Enumeree");
-            VisitElement(x.Enumeree);
-            _serializer.EndSerialize();
-            _serializer.StartSerialize("KeyVariable");
-            if (x.KeyVariable != null)
-                VisitElement(x.KeyVariable.Variable);
-            _serializer.EndSerialize();
-            _serializer.StartSerialize("Body");
-            VisitElement(x.Body);
-            _serializer.EndSerialize();
+            SerializeOptionalProperty("Enumeree", x.Enumeree);
+            SerializeOptionalProperty("KeyVariable", x.KeyVariable.Variable);
+            SerializeOptionalProperty("ValueVariable", x.ValueVariable.Target);
+            SerializeOptionalProperty("Body", x.Body);
             _serializer.EndSerialize();
         }
         override public void VisitSwitchStmt(SwitchStmt x)
@@ -539,12 +528,9 @@ namespace Devsense.PHP.Syntax.Ast.Serialization
             foreach (FormalParam p in x.Signature.FormalParams)
                 VisitElement(p);
             _serializer.EndSerialize();
-
-            _serializer.StartSerialize("Body");
-            // function body
-            VisitElement(x.Body);
-            _serializer.EndSerialize();
             
+            SerializeOptionalProperty("Body", x.Body);
+
             SerializeOptionalProperty("ReturnType", x.ReturnType);
             _serializer.EndSerialize();
         }

@@ -18,7 +18,13 @@ foreach ($arr as $key => $value) {
         "VarName":"arr"
       }
     },
-    "KeyVariable":{},
+    "ValueVariable":{
+      "IndirectVarUse":{
+        "DirectVarUse":{
+          "VarName":"value"
+        }
+      }
+    },
     "Body":{
       "ValueAssignEx":{
         "Operation":"AssignValue",
@@ -40,6 +46,11 @@ foreach ($arr as $key => $value) {
     "KeyVariable":{
       "DirectVarUse":{
         "VarName":"key"
+      }
+    }, 
+    "ValueVariable":{
+      "DirectVarUse":{
+        "VarName":"value"
       }
     },
     "Body":{

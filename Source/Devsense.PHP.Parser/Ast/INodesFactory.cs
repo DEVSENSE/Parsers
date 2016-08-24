@@ -55,7 +55,7 @@ namespace Devsense.PHP.Syntax.Ast
         /// <param name="nameSpan">Name span. Can be <c>Invalid</c> in case the name is empty.</param>
         /// <param name="statements">List of statements within the namespace.</param>
         /// <returns>Namespace node.</returns>
-        TNode Namespace(TSpan span, QualifiedName? name, TSpan nameSpan, IEnumerable<TNode> statements, NamingContext context);
+        TNode Namespace(TSpan span, QualifiedName? name, TSpan nameSpan, NamingContext context);
 
         /// <summary>
         /// Create declare statement.
@@ -262,8 +262,16 @@ namespace Devsense.PHP.Syntax.Ast
         /// <param name="span">Entire element span including initial <c>:</c> and ending token and semicolon.</param>
         /// <param name="statements">Containing statements.</param>
         /// <param name="endToken">Ending token.</param>
-        /// <returns>Block statement.</returns>
+        /// <returns>Colon block statement.</returns>
         TNode ColonBlock(TSpan span, IEnumerable<TNode> statements, Tokens endToken);
+
+        /// <summary>
+        /// Creates block of code assigned to a simple declaration of a namespace (without explicit {} block)
+        /// </summary>
+        /// <param name="span">Entire element span starting with the first statement and ending with the last</param>
+        /// <param name="statements">Containing statements.</param>
+        /// <returns>Simple block statement.</returns>
+        TNode SimpleBlock(TSpan span, IEnumerable<TNode> statements);
 
         /// <summary>
         /// Creates <c>echo</c> statement.
@@ -407,7 +415,7 @@ namespace Devsense.PHP.Syntax.Ast
         /// <param name="value">The value variable.</param>
         /// <param name="body">Loop body.</param>
         /// <returns>Foreach statement.</returns>
-        TNode Foreach(TSpan span, TNode enumeree, VariableUse keyOpt, VariableUse value, TNode body);
+        TNode Foreach(TSpan span, TNode enumeree, LangElement keyOpt, LangElement value, TNode body);
 
         /// <summary>
         /// Creates <c>if</c> statement.

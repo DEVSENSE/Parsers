@@ -2092,4 +2092,7 @@ non-infringement.
   <data name="mixed_namespace_declaration" xml:space="preserve">
     <value>Cannot mix bracketed namespace declarations with unbracketed namespace declarations.</value>
   </data>
+  <data name="invalid_halt_compiler" xml:space="preserve">
+    <value>__HALT_COMPILER() can only be used from the outermost scope</value>
+  </data>
 </root>

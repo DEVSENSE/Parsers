@@ -24,18 +24,22 @@ use My\Full\Classname as Another;
       "Aliases" : {
         "Another" : "My\Full\Classname"
       }
-    },
-    "EchoStmt" : {
-      "Span" : {
-        "start" : "64",
-        "end" : "66"
-      },
-      "StringLiteral" : {
-        "Span" : {
-          "start" : "64",
-          "end" : "66"
-        },
-        "Value" : ""
+    },  
+    "Body":{
+      "BlockStmt":{
+        "EchoStmt" : {
+          "Span" : {
+            "start" : "64",
+            "end" : "66"
+          },
+          "StringLiteral" : {
+            "Span" : {
+              "start" : "64",
+              "end" : "66"
+            },
+            "Value" : ""
+          }
+        }
       }
     }
   }

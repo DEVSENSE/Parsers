@@ -20,6 +20,9 @@ namespace MyProject\AnotherProject;
     "SimpleSyntax" : "True",
     "NamingContext" : {
       "Namespace" : "MyProject"
+    },
+    "Body":{
+      "BlockStmt":{}
     }
   },
   "NamespaceDecl" : {
@@ -31,6 +34,9 @@ namespace MyProject\AnotherProject;
     "SimpleSyntax" : "True",
     "NamingContext" : {
       "Namespace" : "MyProject\AnotherProject"
+    },
+    "Body":{
+      "BlockStmt":{}
     }
   }
 }

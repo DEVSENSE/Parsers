@@ -1,6 +1,7 @@
 <?php
 foreach ($arr as &$value):
     $value = $value * 2;
+    continue;
 endforeach;
 
 foreach ($arr as $key => $value):
@@ -19,7 +20,13 @@ endforeach;
         "VarName":"arr"
       }
     },
-    "KeyVariable":{},
+    "ValueVariable":{
+      "IndirectVarUse":{
+        "DirectVarUse":{
+          "VarName":"value"
+        }
+      }
+    },
     "Body":{
       "BlockStmt":{
         "ValueAssignEx":{
@@ -30,6 +37,9 @@ endforeach;
             "DirectVarUse":{"VarName":"value"},
             "LongIntLiteral":{"Value":"2"}
           }
+        },
+        "JumpStmt":{
+          "Type":"Continue"
         }
       }
     }
@@ -43,6 +53,11 @@ endforeach;
     "KeyVariable":{
       "DirectVarUse":{
         "VarName":"key"
+      }
+    },
+    "ValueVariable":{
+      "DirectVarUse":{
+        "VarName":"value"
       }
     },
     "Body":{

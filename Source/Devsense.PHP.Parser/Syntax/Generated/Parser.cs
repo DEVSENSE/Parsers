@@ -1907,10 +1907,10 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 { yyval.Object = _astFactory.TypeReference(yypos, new QualifiedName((List<string>)value_stack.array[value_stack.top-1].yyval.Object, true, false), false, TypeRef.EmptyList); }
         return;
       case 85: // name -> T_NAMESPACE T_NS_SEPARATOR namespace_name 
-{ yyval.Object = _astFactory.TypeReference(yypos, new QualifiedName((List<string>)value_stack.array[value_stack.top-1].yyval.Object, false, false), false, TypeRef.EmptyList); }
+{ yyval.Object = _astFactory.TypeReference(yypos, new QualifiedName((List<string>)value_stack.array[value_stack.top-1].yyval.Object, true,  true), false, TypeRef.EmptyList); }
         return;
       case 86: // name -> T_NS_SEPARATOR namespace_name 
-{ yyval.Object = _astFactory.TypeReference(yypos, new QualifiedName((List<string>)value_stack.array[value_stack.top-1].yyval.Object, true, true), false, TypeRef.EmptyList);  }
+{ yyval.Object = _astFactory.TypeReference(yypos, new QualifiedName((List<string>)value_stack.array[value_stack.top-1].yyval.Object, true,  true), false, TypeRef.EmptyList); }
         return;
       case 87: // top_statement -> statement 
 { 
@@ -1939,7 +1939,7 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 				AssignNamingContext();
                 QualifiedName name = new QualifiedName((List<string>)value_stack.array[value_stack.top-2].yyval.Object, false, true);
                 SetNamingContext(name.NamespacePhpName);
-                yyval.Object = _currentNamespace = (NamespaceDecl)_astFactory.Namespace(yypos, name, value_stack.array[value_stack.top-2].yypos, (List<LangElement>)null, _namingContext);
+                yyval.Object = _currentNamespace = (NamespaceDecl)_astFactory.Namespace(yypos, name, value_stack.array[value_stack.top-2].yypos, _namingContext);
 				ResetDocBlock(); 
 			}
         return;
@@ -2011,7 +2011,7 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 { yyval.Object = new List<Tuple<List<string>, string>>() { (Tuple<List<string>, string>)value_stack.array[value_stack.top-1].yyval.Object }; }
         return;
       case 113: // use_declarations -> use_declarations ',' use_declaration 
-{ AddAlias((Tuple<List<string>, string>)value_stack.array[value_stack.top-3].yyval.Object); }
+{ AddAlias((Tuple<List<string>, string>)value_stack.array[value_stack.top-1].yyval.Object); }
         return;
       case 114: // use_declarations -> use_declaration 
 { AddAlias((Tuple<List<string>, string>)value_stack.array[value_stack.top-1].yyval.Object); }
@@ -2064,7 +2064,7 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
       case 130: // inner_statement -> T_HALT_COMPILER '(' ')' ';' 
 { 
 				yyval.Object = _astFactory.HaltCompiler(yypos); 
-				_errors.Error(yypos, FatalErrors.InternalError, "__HALT_COMPILER() can only be used from the outermost scope"); 
+				_errors.Error(yypos, FatalErrors.InvalidHaltCompiler); 
 			}
         return;
       case 131: // statement -> '{' inner_statement_list '}' 
@@ -2116,10 +2116,10 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 { yyval.Object = _astFactory.Unset(yypos, (List<LangElement>)value_stack.array[value_stack.top-3].yyval.Object); }
         return;
       case 147: // statement -> T_FOREACH '(' expr T_AS foreach_variable ')' foreach_statement 
-{ yyval.Object = _astFactory.Foreach(yypos, (LangElement)value_stack.array[value_stack.top-5].yyval.Object, null, (VariableUse)value_stack.array[value_stack.top-3].yyval.Object, (LangElement)value_stack.array[value_stack.top-1].yyval.Object); }
+{ yyval.Object = _astFactory.Foreach(yypos, (LangElement)value_stack.array[value_stack.top-5].yyval.Object, null, (LangElement)value_stack.array[value_stack.top-3].yyval.Object, (LangElement)value_stack.array[value_stack.top-1].yyval.Object); }
         return;
       case 148: // statement -> T_FOREACH '(' expr T_AS foreach_variable T_DOUBLE_ARROW foreach_variable ')' foreach_statement 
-{ yyval.Object = _astFactory.Foreach(yypos, (LangElement)value_stack.array[value_stack.top-7].yyval.Object, (VariableUse)value_stack.array[value_stack.top-5].yyval.Object, (VariableUse)value_stack.array[value_stack.top-3].yyval.Object, (LangElement)value_stack.array[value_stack.top-1].yyval.Object); }
+{ yyval.Object = _astFactory.Foreach(yypos, (LangElement)value_stack.array[value_stack.top-7].yyval.Object, (LangElement)value_stack.array[value_stack.top-5].yyval.Object, (LangElement)value_stack.array[value_stack.top-3].yyval.Object, (LangElement)value_stack.array[value_stack.top-1].yyval.Object); }
         return;
       case 149: // statement -> T_DECLARE '(' const_list ')' declare_statement 
 { yyval.Object = _astFactory.Declare(yypos, (LangElement)value_stack.array[value_stack.top-1].yyval.Object); }
@@ -2259,7 +2259,7 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 { yyval.Object = _astFactory.List(yypos, (List<Item>)value_stack.array[value_stack.top-2].yyval.Object); }
         return;
       case 186: // foreach_variable -> '[' array_pair_list ']' 
-{ yyval.Object = _astFactory.NewArray(yypos, (List<Item>)value_stack.array[value_stack.top-2].yyval.Object); }
+{ yyval.Object = _astFactory.List(yypos, (List<Item>)value_stack.array[value_stack.top-2].yyval.Object); }
         return;
       case 187: // for_statement -> statement 
 { yyval.Object = value_stack.array[value_stack.top-1].yyval.Object; }
@@ -3073,7 +3073,7 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 { yyval.Object = _astFactory.Variable(yypos, (LangElement)value_stack.array[value_stack.top-2].yyval.Object, (LangElement)null); }
         return;
       case 442: // simple_variable -> '$' simple_variable 
-{ yyval.Object = value_stack.array[value_stack.top-1].yyval.Object; }
+{ yyval.Object = _astFactory.Variable(yypos, ((DirectVarUse)value_stack.array[value_stack.top-1].yyval.Object).VarName, (LangElement)null); }
         return;
       case 443: // static_member -> class_name T_DOUBLE_COLON simple_variable 
 { yyval.Object = CreateStaticProperty(yypos, (TypeRef)value_stack.array[value_stack.top-3].yyval.Object, value_stack.array[value_stack.top-3].yypos, (LangElement)value_stack.array[value_stack.top-1].yyval.Object); }
@@ -3160,10 +3160,10 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 { yyval.Object = new List<LangElement>() { (LangElement)value_stack.array[value_stack.top-1].yyval.Object }; }
         return;
       case 471: // encaps_list -> T_ENCAPSED_AND_WHITESPACE encaps_var 
-{ yyval.Object = new List<LangElement>() { _astFactory.Literal(value_stack.array[value_stack.top-2].yypos, value_stack.array[value_stack.top-2].yyval.Object), _astFactory.Variable(value_stack.array[value_stack.top-1].yypos, new VariableName((string)value_stack.array[value_stack.top-1].yyval.Object), (LangElement)null) }; }
+{ yyval.Object = new List<LangElement>() { _astFactory.Literal(value_stack.array[value_stack.top-2].yypos, value_stack.array[value_stack.top-2].yyval.Object), (LangElement)value_stack.array[value_stack.top-1].yyval.Object }; }
         return;
       case 472: // encaps_var -> T_VARIABLE 
-{ _astFactory.Variable(yypos, new VariableName((string)value_stack.array[value_stack.top-1].yyval.Object), (LangElement)null); }
+{ yyval.Object = _astFactory.Variable(yypos, new VariableName((string)value_stack.array[value_stack.top-1].yyval.Object), (LangElement)null); }
         return;
       case 473: // encaps_var -> T_VARIABLE '[' encaps_var_offset ']' 
 { yyval.Object = _astFactory.ArrayItem(yypos, 

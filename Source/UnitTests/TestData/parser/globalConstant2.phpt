@@ -32,20 +32,24 @@ define("constB", 0);
     "NamingContext" : {
       "Namespace" : "MyProject"
     },
-    "DirectFcnCall" : {
-      "Name" : "define",
-      "ActualParam" : {    
-        "IsUnpack":"False",
-        "StringLiteral" : {
-          "Value" : "constB"
+    "Body":{
+      "BlockStmt":{
+        "DirectFcnCall" : {
+          "Name" : "define",
+          "ActualParam" : {    
+            "IsUnpack":"False",
+            "StringLiteral" : {
+              "Value" : "constB"
+            }
+          },       
+          "ActualParam" : {    
+            "IsUnpack":"False",
+            "LongIntLiteral" : {
+              "Value" : "0" 
+            }
+          } 
         }
-      },       
-      "ActualParam" : {    
-        "IsUnpack":"False",
-        "LongIntLiteral" : {
-          "Value" : "0" 
-        }
-      } 
+      }
     }
   }
 }

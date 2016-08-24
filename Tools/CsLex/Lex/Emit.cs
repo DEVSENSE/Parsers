@@ -687,11 +687,11 @@ protected static bool IsNewLineCharacter(char ch)
 			string arg = this.spec.integer_type ? "int" : this.spec.TokenTypeName;
 			if (this.spec.SemanticValueType != null)
 			{
-				this.outstream.WriteLine("public {0} {1}(out {2} value)", arg, this.spec.FunctionName, this.spec.SemanticValueType);
+				this.outstream.WriteLine("private {0} {1}(out {2} value)", arg, this.spec.FunctionName, this.spec.SemanticValueType);
 			}
 			else
 			{
-				this.outstream.WriteLine("public {0} {1}()", arg, this.spec.FunctionName);
+				this.outstream.WriteLine("private {0} {1}()", arg, this.spec.FunctionName);
 			}
 			this.outstream.WriteLine("{");
 			this.outstream.Indent++;

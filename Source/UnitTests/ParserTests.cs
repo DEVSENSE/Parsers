@@ -56,7 +56,7 @@ namespace UnitTests
             //Assert.AreEqual(expected.Length, actual.Length);
             //for (int i = 0; i < expected.Length; i++)
             //    Assert.AreEqual(expected[i], actual[i], "difference at " + i.ToString());
-            Assert.AreEqual(expected, actual);
+            Assert.AreEqual(expected, actual, path);
 
             // check every node has a parent
             var parentChecker = new ContainingElementCheck();

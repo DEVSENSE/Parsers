@@ -80,7 +80,7 @@ class Obj
     static $__FILE__ = '__FILE__';
     static $__DIR__ = '__DIR__';
     static $__NAMESPACE__ = '__NAMESPACE__';
-    static $__halt_compiler = '__halt_compiler';
+    static $__halt_compiler = '__halt_compiler();';
 }
 
 echo Obj::$empty, PHP_EOL;

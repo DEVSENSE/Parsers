@@ -355,6 +355,8 @@ namespace Devsense.PHP.Errors
         public static readonly ErrorInfo ErrorCreatingFile = new ErrorInfo_(2006, "error_creating_file", ErrorSeverity.FatalError);
         public static readonly ErrorInfo InternalError = new ErrorInfo_(2007, "internal_error", ErrorSeverity.FatalError);
 
+        public static readonly ErrorInfo InvalidHaltCompiler = new ErrorInfo_(2008, "invalid_halt_compiler", ErrorSeverity.FatalError);
+
 
         //public static readonly ErrorInfo RedeclaredByInclusion = new ErrorInfo_(2005, "redeclared_by_inclusion", ErrorSeverity.FatalError);
 

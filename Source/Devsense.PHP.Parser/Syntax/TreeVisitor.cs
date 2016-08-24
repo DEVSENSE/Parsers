@@ -32,6 +32,9 @@ namespace Devsense.PHP.Syntax
         }
 
         #region Statements
+        public virtual void VisitHaltCompiler(HaltCompiler x)
+        {
+        }
 
         /// <summary>
         /// Visit statements and catches.
@@ -64,7 +67,7 @@ namespace Devsense.PHP.Syntax
         /// <param name="x"></param>
         virtual public void VisitNamespaceDecl(NamespaceDecl x)
         {
-            VisitList(x.Statements);
+            VisitElement(x.Body);
         }
 
         /// <summary>

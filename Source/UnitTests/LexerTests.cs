@@ -79,7 +79,7 @@ namespace UnitTests
             foreach (var expectedToken in expectedTokens)
             {
                 Tokens token = (Tokens)lexer.GetNextToken();
-                Assert.AreEqual(int.Parse(expectedToken[0]), (int)token);
+                Assert.AreEqual(int.Parse(expectedToken[0]), (int)token, path);
                 if (token == Tokens.T_VARIABLE || token == Tokens.T_STRING || token == Tokens.T_END_HEREDOC)
                 {
                     Assert.AreEqual(expectedToken[2].TrimStart('$'), lexer.TokenValue.Object.ToString());
