@@ -3073,7 +3073,7 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 { yyval.Object = _astFactory.Variable(yypos, (LangElement)value_stack.array[value_stack.top-2].yyval.Object, (LangElement)null); }
         return;
       case 442: // simple_variable -> '$' simple_variable 
-{ yyval.Object = _astFactory.Variable(yypos, ((DirectVarUse)value_stack.array[value_stack.top-1].yyval.Object).VarName, (LangElement)null); }
+{ yyval.Object = _astFactory.Variable(yypos, (LangElement)value_stack.array[value_stack.top-1].yyval.Object, (LangElement)null); }
         return;
       case 443: // static_member -> class_name T_DOUBLE_COLON simple_variable 
 { yyval.Object = CreateStaticProperty(yypos, (TypeRef)value_stack.array[value_stack.top-3].yyval.Object, value_stack.array[value_stack.top-3].yypos, (LangElement)value_stack.array[value_stack.top-1].yyval.Object); }

@@ -35,12 +35,12 @@ using System.Collections.Generic;
 %x ST_NEWDOC
 %x ST_LOOKING_FOR_PROPERTY
 %x ST_LOOKING_FOR_VARNAME
+%x ST_DOC_COMMENT
+%x ST_COMMENT
+%x ST_ONE_LINE_COMMENT
 %x ST_VAR_OFFSET
 %x ST_END_HEREDOC
 %x ST_NOWDOC
-%x ST_HALT_COMPILER1
-%x ST_HALT_COMPILER2
-%x ST_HALT_COMPILER3
 
 re2c:yyfill:check = 0;
 LNUM	[0-9]+
@@ -54,7 +54,6 @@ TABS_AND_SPACES [ \t]*
 TOKENS [;:,.\[\]()|^&+-/*=%!~$<>?@]
 ANY_CHAR [^]
 NEWLINE ("\r"|"\n"|"\r\n"|\x2028|\x2029)
-NEG_NEWLINE [^\r\n\x2028\x2029]
 
 NonVariableStart        [^a-zA-Z_{]
 
@@ -402,43 +401,8 @@ NonVariableStart        [^a-zA-Z_{]
 	return (Tokens.T_EMPTY);
 }
 
-<ST_HALT_COMPILER1>"(" {
-	BEGIN(LexicalStates.ST_HALT_COMPILER2);
-	return (Tokens)GetTokenChar(0);
-}
-
-<ST_HALT_COMPILER2>")" {
-	BEGIN(LexicalStates.ST_HALT_COMPILER3);
-	return (Tokens)GetTokenChar(0);
-}
-
-<ST_HALT_COMPILER3>";" {
-	BEGIN(LexicalStates.INITIAL);
-	return (Tokens)GetTokenChar(0);
-}
-
 <ST_IN_SCRIPTING>"__halt_compiler" {
-	// IMPORTANT - Added because PHP lexer explicitly checks halt compiler syntax and reverts to initial state after semicolon
-	yy_push_state(LexicalStates.ST_HALT_COMPILER1); 
 	return (Tokens.T_HALT_COMPILER);
-}
-
-<ST_HALT_COMPILER1,ST_HALT_COMPILER2,ST_HALT_COMPILER3>{WHITESPACE}+ {
-	return (Tokens.T_WHITESPACE);
-}
-
-<ST_HALT_COMPILER1,ST_HALT_COMPILER2,ST_HALT_COMPILER3>"/**"[^\*]*"*/" {
-	SetDocBlock(); 
-	return Tokens.T_DOC_COMMENT;
-}
-
-<ST_HALT_COMPILER1,ST_HALT_COMPILER2,ST_HALT_COMPILER3>("/*"[^\*]*"*/")|("//"{NEG_NEWLINE}*{NEWLINE}) {
-	return (Tokens.T_COMMENT);
-}
-
-<ST_HALT_COMPILER1,ST_HALT_COMPILER2,ST_HALT_COMPILER3>{ANY_CHAR} {
-	yy_pop_state();
-	yymore(); break;
 }
 
 <ST_IN_SCRIPTING>"static" {
@@ -785,10 +749,22 @@ NonVariableStart        [^a-zA-Z_{]
 	return ProcessLabel();
 }
 
-<ST_IN_SCRIPTING>"/**"[^\*]*"*/" { SetDocBlock();  return Tokens.T_DOC_COMMENT; }
-<ST_IN_SCRIPTING>"/*"[^\*]*"*/" { return (Tokens.T_COMMENT); }
-<ST_IN_SCRIPTING>"//"{NEG_NEWLINE}*{NEWLINE} { return (Tokens.T_COMMENT); }
-<ST_IN_SCRIPTING>"#"{NEG_NEWLINE}*{NEWLINE}  { return (Tokens.T_COMMENT); }
+
+<ST_IN_SCRIPTING>"#"|"//" {
+	BEGIN(LexicalStates.ST_ONE_LINE_COMMENT); 
+	yymore(); 
+	break;
+}
+
+<ST_IN_SCRIPTING>"/*"              	{ BEGIN(LexicalStates.ST_COMMENT); yymore(); break; }
+<ST_COMMENT>[^*]+       { yymore(); break; }
+<ST_COMMENT>"*/"        { BEGIN(LexicalStates.ST_IN_SCRIPTING); return Tokens.T_COMMENT; }
+<ST_COMMENT>"*"         { yymore(); break; }
+
+<ST_IN_SCRIPTING>"/**"{WHITESPACE} 	{ BEGIN(LexicalStates.ST_DOC_COMMENT); yymore(); ResetDocBlock(); break; }
+<ST_DOC_COMMENT>[^*]+   { yymore(); break; }
+<ST_DOC_COMMENT>"*/"    { BEGIN(LexicalStates.ST_IN_SCRIPTING); SetDocBlock(); return Tokens.T_DOC_COMMENT; }
+<ST_DOC_COMMENT>"*"     { yymore(); break; }
 
 <ST_IN_SCRIPTING>"?>"{NEWLINE}? {
 	BEGIN(LexicalStates.INITIAL);
@@ -913,3 +889,10 @@ NonVariableStart        [^a-zA-Z_{]
 	//zend_error(E_COMPILE_WARNING,"Unexpected character in input:  '%c' (ASCII=%d) state=%d", yytext[0], yytext[0], YYSTATE);
 	return Tokens.T_ERROR;
 }
+
+
+<ST_ONE_LINE_COMMENT>"?"|"%"|">" { yymore(); break; }
+<ST_ONE_LINE_COMMENT>[^\n\r?%>]+ { yymore(); break; }
+<ST_ONE_LINE_COMMENT>{NEWLINE}   { BEGIN(LexicalStates.ST_IN_SCRIPTING); return Tokens.T_COMMENT; }
+
+<ST_ONE_LINE_COMMENT>"?>"|"%>"   { yymore(); break; }

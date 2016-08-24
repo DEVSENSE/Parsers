@@ -1256,7 +1256,7 @@ variable:
 simple_variable:
 		T_VARIABLE			{ $$ = _astFactory.Variable(@$, new VariableName((string)$1), (LangElement)null); }
 	|	'$' '{' expr '}'	{ $$ = _astFactory.Variable(@$, (LangElement)$3, (LangElement)null); }
-	|	'$' simple_variable	{ $$ = _astFactory.Variable(@$, ((DirectVarUse)$2).VarName, (LangElement)null); }
+	|	'$' simple_variable	{ $$ = _astFactory.Variable(@$, (LangElement)$2, (LangElement)null); }
 ;
 
 static_member:

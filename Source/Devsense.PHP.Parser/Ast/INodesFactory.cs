@@ -364,7 +364,7 @@ namespace Devsense.PHP.Syntax.Ast
         /// <param name="name">Variable naem.</param>
         /// <param name="initializerOpt">Variable initializer.</param>
         /// <returns>StaticVarDecl statement.</returns>
-        TNode StaticVarDecl(Span span, VariableName name, LangElement initializerOpt);
+        TNode StaticVarDecl(Span span, VariableName name, TNode initializerOpt);
 
         /// <summary>
         /// An empty statement (<c>;</c>).
@@ -415,7 +415,7 @@ namespace Devsense.PHP.Syntax.Ast
         /// <param name="value">The value variable.</param>
         /// <param name="body">Loop body.</param>
         /// <returns>Foreach statement.</returns>
-        TNode Foreach(TSpan span, TNode enumeree, LangElement keyOpt, LangElement value, TNode body);
+        TNode Foreach(TSpan span, TNode enumeree, TNode keyOpt, TNode value, TNode body);
 
         /// <summary>
         /// Creates <c>if</c> statement.
@@ -444,7 +444,7 @@ namespace Devsense.PHP.Syntax.Ast
         /// <param name="valueOpt">Case value expression, <c>null</c> for default.</param>
         /// <param name="block">Block of statements.</param>
         /// <returns>SwitchItem statement.</returns>
-        TNode Case(Span span, LangElement valueOpt, TNode block);
+        TNode Case(Span span, TNode valueOpt, TNode block);
 
         /// <summary>
         /// Creates a jump statement (<c>return</c>, <c>break</c> or <c>continue</c>);
