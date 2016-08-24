@@ -927,7 +927,7 @@ echo_expr:
 ;
 
 for_exprs:
-		/* empty */			{ $$ = null; }
+		/* empty */			{ $$ = Expression.EmptyList; }
 	|	non_empty_for_exprs	{ $$ = $1; }
 ;
 

@@ -2,7 +2,7 @@
 if ($a > $b)
 {
   /** function doc */
-  function foo(MyClass $arg_1, integer $arg_2 = 4, &$arg_n = 1): integer
+  function foo(MyClass $arg_1, ?integer $arg_2 = 4, &$arg_n = 1, callable $a): array
   {
       echo "Example function.\n";
       return $retval;
@@ -34,10 +34,12 @@ if ($a > $b)
                 "FormalParam":{"Name":"arg_1","PassedByRef":"False","IsVariadic":"False",
                   "TypeHint":{"DirectTypeRef":{"ClassName":"MyClass"}}},
                 "FormalParam":{"Name":"arg_2","PassedByRef":"False","IsVariadic":"False",
-                  "TypeHint":{"PrimitiveTypeRef":{"QualifiedName":"integer"}},
+                  "TypeHint":{"NullableTypeRef":{"PrimitiveTypeRef":{"QualifiedName":"integer"}}},
                   "InitValue":{"LongIntLiteral":{"Value":"4"}}},
                 "FormalParam":{"Name":"arg_n","PassedByRef":"True","IsVariadic":"False",
-                  "InitValue":{"LongIntLiteral":{"Value":"1"}}}
+                  "InitValue":{"LongIntLiteral":{"Value":"1"}}}, 
+                "FormalParam":{"Name":"a","PassedByRef":"False","IsVariadic":"False",  
+                  "TypeHint":{"PrimitiveTypeRef":{"QualifiedName":"callable"}}}
               },
               "Body":{ 
                 "BlockStmt":{
@@ -46,7 +48,7 @@ if ($a > $b)
                 }
               }, 
               "ReturnType":{
-                "PrimitiveTypeRef":{"QualifiedName":"integer"}
+                "PrimitiveTypeRef":{"QualifiedName":"array"}
               }
             }
           }

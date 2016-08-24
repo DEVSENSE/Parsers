@@ -2586,7 +2586,7 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 { yyval.Object = value_stack.array[value_stack.top-1].yyval.Object; }
         return;
       case 288: // for_exprs -> 
-{ yyval.Object = null; }
+{ yyval.Object = Expression.EmptyList; }
         return;
       case 289: // for_exprs -> non_empty_for_exprs 
 { yyval.Object = value_stack.array[value_stack.top-1].yyval.Object; }

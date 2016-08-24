@@ -21,6 +21,7 @@ namespace Devsense.PHP.Syntax.Ast
 
         List<T> ConvertList<T>(IEnumerable<LangElement> list) where T : LangElement
         {
+            if (list == null) return null;
             Debug.Assert(list.All(s => s == null || s is T), "List of LangELements contains node that is not valid!");
             return list.Cast<T>().ToList();
         }
