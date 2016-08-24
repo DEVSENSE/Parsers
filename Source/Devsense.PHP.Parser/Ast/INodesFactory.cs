@@ -22,6 +22,7 @@ namespace Devsense.PHP.Syntax.Ast
         /// </summary>
         /// <param name="span">Entire element span.</param>
         /// <param name="statements">Top statements.</param>
+        /// <param name="context">Global code naming context.</param>
         /// <returns>Global code node.</returns>
         TNode GlobalCode(TSpan span, IEnumerable<TNode> statements, NamingContext context);
 
@@ -40,6 +41,7 @@ namespace Devsense.PHP.Syntax.Ast
         /// <param name="name">Name of the namespace. Can be an empty name.</param>
         /// <param name="nameSpan">Name span. Can be <c>Invalid</c> in case the name is empty.</param>
         /// <param name="block">Block of code enclosed in brackets.</param>
+        /// <param name="context">Namespace naming context.</param>
         /// <returns>Namespace node.</returns>
         TNode Namespace(TSpan span, QualifiedName? name, TSpan nameSpan, TNode block, NamingContext context);
 
@@ -54,6 +56,7 @@ namespace Devsense.PHP.Syntax.Ast
         /// <param name="name">Name of the namespace. Can be an empty name.</param>
         /// <param name="nameSpan">Name span. Can be <c>Invalid</c> in case the name is empty.</param>
         /// <param name="statements">List of statements within the namespace.</param>
+        /// <param name="context">Namespace naming context.</param>
         /// <returns>Namespace node.</returns>
         TNode Namespace(TSpan span, QualifiedName? name, TSpan nameSpan, IEnumerable<TNode> statements, NamingContext context);
 
@@ -73,7 +76,6 @@ namespace Devsense.PHP.Syntax.Ast
         /// <param name="aliasReturn">Whether the function returns an aliased value.</param>
         /// <param name="attributes">Declaration attributes in case of a type member.</param>
         /// <param name="returnType">Optional. Function return type.</param>
-        /// <param name="returnTypeSpan"><paramref name="returnType"/> span, in case function has a return type</param>
         /// <param name="name">Function name.</param>
         /// <param name="nameSpan">Function name span.</param>
         /// <param name="typeParamsOpt">Optional. Generic type parameters.</param>
@@ -95,7 +97,6 @@ namespace Devsense.PHP.Syntax.Ast
         /// <param name="headingSpan">Heading span - ends after return type.</param>
         /// <param name="aliasReturn">Whether the function returns an aliased value.</param>
         /// <param name="returnType">Optional. Function return type.</param>
-        /// <param name="returnTypeSpan"><paramref name="returnType"/> span, in case function has a return type</param>
         /// <param name="formalParams">Lambda parameters.</param>
         /// <param name="formalParamsSpan">Parameters enclosing parenthesis span.</param>
         /// <param name="lexicalVars">Variables from parent scope.</param>
@@ -110,7 +111,7 @@ namespace Devsense.PHP.Syntax.Ast
         /// Creates <c>FormalParam</c> for a function of method declaration.
         /// </summary>
         /// <param name="span">Entire element span.</param>
-        /// <param name="name">Parameter name.</param
+        /// <param name="name">Parameter name.</param>
         /// <param name="nameSpan">Parameter name span.</param>
         /// <param name="typeOpt">Parameter type.</param>
         /// <param name="flags">Parameter flags.</param>
@@ -131,7 +132,7 @@ namespace Devsense.PHP.Syntax.Ast
         /// <param name="baseClassOpt">Base class name if any.</param>
         /// <param name="implements">Enumeration of interfaces implemented by this type.</param>
         /// <param name="members">Enumeration of type members.</param>
-        /// <param name="blockSpan">Span of block enclosing members (including <c>{</c> and <c>}</c>.</param>
+        /// <param name="bodySpan">Span of block enclosing members (including <c>{</c> and <c>}</c>.</param>
         /// <returns>Type node.</returns>
         TNode Type(TSpan span, Span headingSpan,
             bool conditional, PhpMemberAttributes attributes,
@@ -144,7 +145,6 @@ namespace Devsense.PHP.Syntax.Ast
         /// Creates method declaration node.
         /// </summary>
         /// <param name="span">Entire element span.</param>
-        /// <param name="conditional"><c>True</c> whether the declaration is conditional.</param>
         /// <param name="aliasReturn">Whether the function returns an aliased value.</param>
         /// <param name="attributes">Declaration attributes in case of a type member.</param>
         /// <param name="returnType">Optional. Function return type.</param>
@@ -277,7 +277,7 @@ namespace Devsense.PHP.Syntax.Ast
         /// Creates <c>unset</c> statement.
         /// </summary>
         /// <param name="span">Entire element span.</param>
-        /// <param name="parameters">Variables to be unset.</param>
+        /// <param name="variables">Variables to be unset.</param>
         /// <returns>Unset statement.</returns>
         TNode Unset(Span span, IEnumerable<TNode> variables);
 
@@ -435,7 +435,7 @@ namespace Devsense.PHP.Syntax.Ast
         /// <param name="span">Entire element span.</param>
         /// <param name="valueOpt">Case value expression, <c>null</c> for default.</param>
         /// <param name="block">Block of statements.</param>
-        /// <returns>SwitchItem statement.</</returns>
+        /// <returns>SwitchItem statement.</returns>
         TNode Case(Span span, LangElement valueOpt, TNode block);
 
         /// <summary>
@@ -531,7 +531,7 @@ namespace Devsense.PHP.Syntax.Ast
         /// Creates assertion expression.
         /// </summary>
         /// <param name="span">Entire element span.</param>
-        /// <param name="assertion">Parameters evaluated by the assert.</param>
+        /// <param name="signature">Parameters evaluated by the assert.</param>
         /// <returns>Assertion expression.</returns>
         TNode Assert(TSpan span, CallSignature signature);
 
@@ -584,6 +584,7 @@ namespace Devsense.PHP.Syntax.Ast
 
         /// <summary>
         /// Creates conditional expression.
+        /// </summary>
         /// <param name="span">Entire element span.</param>
         /// <param name="condExpr">Condition expression.</param>
         /// <param name="trueExpr">True expression.</param>
@@ -661,7 +662,6 @@ namespace Devsense.PHP.Syntax.Ast
         /// </summary>
         /// <param name="span">Entire element span.</param>
         /// <param name="varName">Indirect name.</param>
-        /// <param name="isNullable">Indicates if the type is nullable.</param>
         /// <param name="genericParamsOpt">Actual generic parameters</param>
         /// <returns>Type reference.</returns>
         TNode TypeReference(TSpan span, TNode varName, List<TypeRef> genericParamsOpt);
@@ -670,6 +670,7 @@ namespace Devsense.PHP.Syntax.Ast
         /// Creates anonymous type reference node.
         /// </summary>
         /// <param name="span">Entire element span.</param>
+        /// <param name="headingSpan">Span of the type header.</param>
         /// <param name="conditional">Whether the declaration is conditional.</param>
         /// <param name="attributes">Type attributes.</param>
         /// <param name="typeParamsOpt">Optional. Generic type parameters.</param>
@@ -768,14 +769,12 @@ namespace Devsense.PHP.Syntax.Ast
         TNode Call(TSpan span, TNode nameExpr, CallSignature signature, TypeRef typeRef);
 
         /// <summary>
-        /// Creates <c>FormalParam</c> for a function of method declaration.
+        /// Creates <c>FormalParam</c> for a function or method declaration.
         /// </summary>
         /// <param name="span">Entire element span.</param>
-        /// <param name="name">Parameter name.</param>
-        /// <param name="typeOpt">Parameter type.</param>
+        /// <param name="expr">Argument expression.</param>
         /// <param name="flags">Parameter flags.</param>
-        /// <param name="initValue">Default value expression.</param>
-        /// <returns></returns>
+        /// <returns>Function call argument.</returns>
         TNode ActualParameter(Span span, TNode expr, ActualParam.Flags flags);
 
         /// <summary>
