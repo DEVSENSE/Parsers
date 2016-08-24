@@ -469,12 +469,12 @@ namespace Devsense.PHP.Syntax.Ast
         public virtual LangElement Variable(Span span, VariableName name, TypeRef typeRef)
         {
             Debug.Assert(typeRef != null);
-            return new DirectStFldUse(span, typeRef, name, new Span(span.End - name.Value.Length, name.Value.Length));
+            return new DirectStFldUse(span, typeRef, name, new Span(span.End - name.Value.Length - 1, name.Value.Length + 1));
         }
 
         public virtual LangElement Variable(Span span, VariableName name, LangElement memberOfOpt)
         {
-            return new DirectVarUse(span, name) { IsMemberOf = (VarLikeConstructUse)memberOfOpt };
+            return new DirectVarUse(new Span(span.End - name.Value.Length - 1, name.Value.Length + 1), name) { IsMemberOf = (VarLikeConstructUse)memberOfOpt };
         }
         public virtual LangElement TypeReference(Span span, QualifiedName className, bool isNullable, List<TypeRef> genericParamsOpt)
         {
