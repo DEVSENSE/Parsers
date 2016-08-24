@@ -95,6 +95,7 @@
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Syntax\Convert.cs" />
+    <Compile Include="Syntax\NamesRef.cs" />
     <Compile Include="Syntax\Parsers\CompliantLexer.cs" />
     <Compile Include="Syntax\Parsers\EmptyErrorSink.cs" />
     <Compile Include="Syntax\Parsers\TokensUtils.cs" />

@@ -819,7 +819,7 @@ namespace Devsense.PHP.Syntax
 		public override string ToString()
 		{
             var ns = this.namespaces;
-            if (ns.Length == 0)
+            if (ns == null || ns.Length == 0)
             {
                 return this.Name.Value;
             }
@@ -1110,5 +1110,5 @@ namespace Devsense.PHP.Syntax
         #endregion
     }
 
-	#endregion
+    #endregion
 }
