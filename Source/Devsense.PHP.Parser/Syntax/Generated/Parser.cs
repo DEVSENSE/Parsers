@@ -2083,7 +2083,7 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 { yyval.Object = _astFactory.Do(yypos, (LangElement)value_stack.array[value_stack.top-6].yyval.Object, (LangElement)value_stack.array[value_stack.top-3].yyval.Object); }
         return;
       case 136: // statement -> T_FOR '(' for_exprs ';' for_exprs ';' for_exprs ')' for_statement 
-{ yyval.Object = _astFactory.For(yypos, (List<LangElement>)value_stack.array[value_stack.top-7].yyval.Object, (List<LangElement>)value_stack.array[value_stack.top-5].yyval.Object, (List<LangElement>)value_stack.array[value_stack.top-3].yyval.Object, (LangElement)value_stack.array[value_stack.top-1].yyval.Object); }
+{ yyval.Object = _astFactory.For(yypos, (List<Expression>)value_stack.array[value_stack.top-7].yyval.Object, (List<Expression>)value_stack.array[value_stack.top-5].yyval.Object, (List<Expression>)value_stack.array[value_stack.top-3].yyval.Object, (LangElement)value_stack.array[value_stack.top-1].yyval.Object); }
         return;
       case 137: // statement -> T_SWITCH '(' expr ')' switch_case_list 
 { yyval.Object = _astFactory.Switch(yypos, (LangElement)value_stack.array[value_stack.top-3].yyval.Object, (List<LangElement>)value_stack.array[value_stack.top-1].yyval.Object); }
@@ -2592,10 +2592,10 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 { yyval.Object = value_stack.array[value_stack.top-1].yyval.Object; }
         return;
       case 290: // non_empty_for_exprs -> non_empty_for_exprs ',' expr 
-{ yyval.Object = AddToList<LangElement>(value_stack.array[value_stack.top-3].yyval.Object, value_stack.array[value_stack.top-1].yyval.Object); }
+{ yyval.Object = AddToList<Expression>(value_stack.array[value_stack.top-3].yyval.Object, value_stack.array[value_stack.top-1].yyval.Object); }
         return;
       case 291: // non_empty_for_exprs -> expr 
-{ yyval.Object = new List<LangElement>() { (LangElement)value_stack.array[value_stack.top-1].yyval.Object }; }
+{ yyval.Object = new List<Expression>() { (Expression)value_stack.array[value_stack.top-1].yyval.Object }; }
         return;
       case 292: // anonymous_class -> T_CLASS ctor_arguments extends_from implements_list backup_doc_comment '{' class_statement_list '}' 
 {

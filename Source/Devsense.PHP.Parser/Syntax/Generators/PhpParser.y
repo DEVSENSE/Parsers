@@ -470,7 +470,7 @@ statement:
 	|	T_DO statement T_WHILE '(' expr ')' ';'
 			{ $$ = _astFactory.Do(@$, (LangElement)$2, (LangElement)$5); }
 	|	T_FOR '(' for_exprs ';' for_exprs ';' for_exprs ')' for_statement
-			{ $$ = _astFactory.For(@$, (List<LangElement>)$3, (List<LangElement>)$5, (List<LangElement>)$7, (LangElement)$9); }
+			{ $$ = _astFactory.For(@$, (List<Expression>)$3, (List<Expression>)$5, (List<Expression>)$7, (LangElement)$9); }
 	|	T_SWITCH '(' expr ')' switch_case_list
 			{ $$ = _astFactory.Switch(@$, (LangElement)$3, (List<LangElement>)$5); }
 	|	T_BREAK optional_expr ';'		{ $$ = _astFactory.Jump(@$, JumpStmt.Types.Break, (LangElement)$2);}
@@ -932,8 +932,8 @@ for_exprs:
 ;
 
 non_empty_for_exprs:
-		non_empty_for_exprs ',' expr { $$ = AddToList<LangElement>($1, $3); }
-	|	expr { $$ = new List<LangElement>() { (LangElement)$1 }; }
+		non_empty_for_exprs ',' expr { $$ = AddToList<Expression>($1, $3); }
+	|	expr { $$ = new List<Expression>() { (Expression)$1 }; }
 ;
 
 anonymous_class:

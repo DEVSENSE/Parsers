@@ -3,7 +3,7 @@
 function foo($arg_1)
 {
   global $a, $b;
-  static $x, $y;
+  static $x, $y = 0;
 }
 
 ?>
@@ -21,7 +21,7 @@ function foo($arg_1)
     "Body":{  
       "BlockStmt":{
         "GlobalStmt":{"DirectVarUse":{"VarName":"a"},"DirectVarUse":{"VarName":"b"}},
-        "StaticStmt":{"StaticVarDecl":{"Name":"x"},"StaticVarDecl":{"Name":"y"}}
+        "StaticStmt":{"StaticVarDecl":{"Name":"x"},"StaticVarDecl":{"Name":"y","LongIntLiteral":{"Value":"0"}}}
       }
     }
   }
