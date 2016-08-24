@@ -191,8 +191,9 @@ namespace Devsense.PHP.Syntax.Ast
 
         public virtual LangElement Foreach(Span span, LangElement enumeree, LangElement keyOpt, LangElement value, LangElement body)
         {
+            ForeachVar key = keyOpt == null? null: (keyOpt is VariableUse ? new ForeachVar((VariableUse)keyOpt, false) : new ForeachVar((ListEx)keyOpt));
             ForeachVar val = value is VariableUse ? new ForeachVar((VariableUse)value, false) : new ForeachVar((ListEx)value);
-            return new ForeachStmt(span, (Expression)enumeree, new ForeachVar((VariableUse)keyOpt, false), val, (Statement)body);
+            return new ForeachStmt(span, (Expression)enumeree, key, val, (Statement)body);
         }
 
         public virtual LangElement Function(Span span, bool conditional, bool aliasReturn, PhpMemberAttributes attributes, TypeRef returnType, 
@@ -556,7 +557,6 @@ namespace Devsense.PHP.Syntax.Ast
 
         public virtual LangElement ConditionalEx(Span span, LangElement condExpr, LangElement trueExpr, LangElement falseExpr)
         {
-            Debug.Assert(condExpr is Expression && trueExpr is Expression && falseExpr is Expression);
             return new ConditionalEx(span, (Expression)condExpr, (Expression)trueExpr, (Expression)falseExpr);
         }
     }

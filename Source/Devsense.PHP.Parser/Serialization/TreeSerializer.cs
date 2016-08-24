@@ -385,7 +385,7 @@ namespace Devsense.PHP.Syntax.Ast.Serialization
         {
             _serializer.StartSerialize(typeof(ForeachStmt).Name, SerializeSpan(x.Span));
             SerializeOptionalProperty("Enumeree", x.Enumeree);
-            SerializeOptionalProperty("KeyVariable", x.KeyVariable.Variable);
+            if(x.KeyVariable != null) SerializeOptionalProperty("KeyVariable", x.KeyVariable.Target);
             SerializeOptionalProperty("ValueVariable", x.ValueVariable.Target);
             SerializeOptionalProperty("Body", x.Body);
             _serializer.EndSerialize();
@@ -805,6 +805,12 @@ namespace Devsense.PHP.Syntax.Ast.Serialization
         {
             _serializer.StartSerialize(typeof(AssertEx).Name, SerializeSpan(x.Span));
             base.VisitAssertEx(x);
+            _serializer.EndSerialize();
+        }
+        override public void VisitInstanceOfEx(InstanceOfEx x)
+        {
+            _serializer.StartSerialize(typeof(InstanceOfEx).Name, SerializeSpan(x.Span));
+            base.VisitInstanceOfEx(x);
             _serializer.EndSerialize();
         }
     }

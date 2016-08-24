@@ -42,7 +42,7 @@ namespace UnitTests
                 sourceUnit.Parse(factory, errors);
                 ast = sourceUnit.Ast;
             }
-            Assert.AreEqual(0, errors.Count);
+            Assert.AreEqual(0, errors.Count, path);
 
             var serializer = new JsonNodeWriter();
             TreeSerializer visitor = new TreeSerializer(serializer);

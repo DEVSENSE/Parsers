@@ -2,7 +2,7 @@
 /** function doc */
 function foo(...$arg_1)
 {
-    function bar($arg_2)
+    function bar()
     {
         return $retval;
     }
@@ -26,9 +26,7 @@ function foo(...$arg_1)
         "FunctionDecl":{
           "Name":"bar",
           "IsConditional":"True",
-          "FormalParams":{
-            "FormalParam":{"Name":"arg_2","PassedByRef":"False","IsVariadic":"False"}
-          },
+          "FormalParams":{},
           "Body":{ 
             "BlockStmt":{
               "JumpStmt":{"Type":"Return","DirectVarUse":{"VarName":"retval"}}
