@@ -59,8 +59,6 @@ namespace Devsense.PHP.Syntax
         /// </summary>
         private bool _inUnicodeString = false;
 
-        private byte _haltCompilerCounter = 0;
-
         /// <summary>
         /// Get actual doc comment.
         /// </summary>
@@ -810,16 +808,12 @@ namespace Devsense.PHP.Syntax
             private PHPDocBlock _phpDoc;
             public PHPDocBlock PhpDoc => _phpDoc;
 
-            private byte _haltCompilerCounter;
-            public byte HaltCompilerCounter => _haltCompilerCounter;
-
             public CompressedState(Lexer lexer)
             {
                 this._hereDocLabel = lexer._hereDocLabel;
                 this._currentState = lexer.CurrentLexicalState;
                 this._stateStack = lexer.stateStack.ToArray();
                 this._phpDoc = lexer.DocBlock;
-                this._haltCompilerCounter = lexer._haltCompilerCounter;
             }
 
             public override int GetHashCode()
@@ -864,7 +858,6 @@ namespace Devsense.PHP.Syntax
             stateStack = state.GetStateStack();
             CurrentLexicalState = state.CurrentState;
             DocBlock = state.PhpDoc;
-            _haltCompilerCounter = state.HaltCompilerCounter;
         }
 
         #endregion

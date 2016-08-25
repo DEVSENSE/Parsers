@@ -41,6 +41,9 @@ using System.Collections.Generic;
 %x ST_VAR_OFFSET
 %x ST_END_HEREDOC
 %x ST_NOWDOC
+%x ST_HALT_COMPILER1
+%x ST_HALT_COMPILER2
+%x ST_HALT_COMPILER3
 
 re2c:yyfill:check = 0;
 LNUM	[0-9]+
@@ -401,8 +404,36 @@ NonVariableStart        [^a-zA-Z_{]
 	return (Tokens.T_EMPTY);
 }
 
+<ST_HALT_COMPILER1>"(" {
+	BEGIN(LexicalStates.ST_HALT_COMPILER2);
+	return (Tokens)GetTokenChar(0);
+}
+
+<ST_HALT_COMPILER2>")" {
+	BEGIN(LexicalStates.ST_HALT_COMPILER3);
+	return (Tokens)GetTokenChar(0);
+}
+
+<ST_HALT_COMPILER3>";" {
+	BEGIN(LexicalStates.INITIAL);
+	return (Tokens)GetTokenChar(0);
+}
+
 <ST_IN_SCRIPTING>"__halt_compiler" {
+	// IMPORTANT - Added because PHP lexer explicitly checks halt compiler syntax and reverts to initial state after semicolon
+	yy_push_state(LexicalStates.ST_HALT_COMPILER1); 
 	return (Tokens.T_HALT_COMPILER);
+}
+
+<ST_HALT_COMPILER1,ST_HALT_COMPILER2,ST_HALT_COMPILER3>{WHITESPACE}+ { return (Tokens.T_WHITESPACE); }
+
+<ST_HALT_COMPILER1,ST_HALT_COMPILER2,ST_HALT_COMPILER3>"/**"{WHITESPACE} 	{ yy_push_state(LexicalStates.ST_DOC_COMMENT); yymore(); ResetDocBlock(); break; }
+<ST_HALT_COMPILER1,ST_HALT_COMPILER2,ST_HALT_COMPILER3>"#"|"//" { yy_push_state(LexicalStates.ST_ONE_LINE_COMMENT); yymore(); break; }
+<ST_HALT_COMPILER1,ST_HALT_COMPILER2,ST_HALT_COMPILER3>"/*" { yy_push_state(LexicalStates.ST_COMMENT); yymore(); break; }
+
+<ST_HALT_COMPILER1,ST_HALT_COMPILER2,ST_HALT_COMPILER3>{ANY_CHAR} {
+	yy_pop_state();
+	yymore(); break;
 }
 
 <ST_IN_SCRIPTING>"static" {
@@ -749,21 +780,20 @@ NonVariableStart        [^a-zA-Z_{]
 	return ProcessLabel();
 }
 
-
 <ST_IN_SCRIPTING>"#"|"//" {
-	BEGIN(LexicalStates.ST_ONE_LINE_COMMENT); 
+	yy_push_state(LexicalStates.ST_ONE_LINE_COMMENT); 
 	yymore(); 
 	break;
 }
 
-<ST_IN_SCRIPTING>"/*"              	{ BEGIN(LexicalStates.ST_COMMENT); yymore(); break; }
+<ST_IN_SCRIPTING>"/*"              	{ yy_push_state(LexicalStates.ST_COMMENT); yymore(); break; }
 <ST_COMMENT>[^*]+       { yymore(); break; }
-<ST_COMMENT>"*/"        { BEGIN(LexicalStates.ST_IN_SCRIPTING); return Tokens.T_COMMENT; }
+<ST_COMMENT>"*/"        { yy_pop_state(); return Tokens.T_COMMENT; }
 <ST_COMMENT>"*"         { yymore(); break; }
 
-<ST_IN_SCRIPTING>"/**"{WHITESPACE} 	{ BEGIN(LexicalStates.ST_DOC_COMMENT); yymore(); ResetDocBlock(); break; }
+<ST_IN_SCRIPTING>"/**"{WHITESPACE} 	{ yy_push_state(LexicalStates.ST_DOC_COMMENT); yymore(); ResetDocBlock(); break; }
 <ST_DOC_COMMENT>[^*]+   { yymore(); break; }
-<ST_DOC_COMMENT>"*/"    { BEGIN(LexicalStates.ST_IN_SCRIPTING); SetDocBlock(); return Tokens.T_DOC_COMMENT; }
+<ST_DOC_COMMENT>"*/"    { yy_pop_state(); SetDocBlock(); return Tokens.T_DOC_COMMENT; }
 <ST_DOC_COMMENT>"*"     { yymore(); break; }
 
 <ST_IN_SCRIPTING>"?>"{NEWLINE}? {
@@ -893,6 +923,6 @@ NonVariableStart        [^a-zA-Z_{]
 
 <ST_ONE_LINE_COMMENT>"?"|"%"|">" { yymore(); break; }
 <ST_ONE_LINE_COMMENT>[^\n\r?%>]+ { yymore(); break; }
-<ST_ONE_LINE_COMMENT>{NEWLINE}   { BEGIN(LexicalStates.ST_IN_SCRIPTING); return Tokens.T_COMMENT; }
+<ST_ONE_LINE_COMMENT>{NEWLINE}   { yy_pop_state(); return Tokens.T_COMMENT; }
 
 <ST_ONE_LINE_COMMENT>"?>"|"%>"   { yymore(); break; }
