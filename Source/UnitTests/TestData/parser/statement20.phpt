@@ -13,7 +13,7 @@ ${x}::${stat};
   "NamingContext":{},
   "DirectStFldUse":{"PropertyName":"stat","DirectTypeRef":{"ClassName":"X"}},
   "DirectStFldUse":{"PropertyName":"stat","IndirectTypeRef":{"DirectVarUse":{"VarName":"x"}}},
-  "IndirectStFldUse":{"GlobalConstUse":{"Name":"stat"},"DirectTypeRef":{"ClassName":"X"}},
-  "IndirectStFldUse":{"GlobalConstUse":{"Name":"stat"},"IndirectTypeRef":{"DirectVarUse":{"VarName":"x"}}},
-  "IndirectStFldUse":{"GlobalConstUse":{"Name":"stat"},"IndirectTypeRef":{"IndirectVarUse":{"GlobalConstUse":{"Name":"x"}}}}
+  "IndirectStFldUse":{"GlobalConstUse":{"Name":"stat","FallbackName":""},"DirectTypeRef":{"ClassName":"X"}},
+  "IndirectStFldUse":{"GlobalConstUse":{"Name":"stat","FallbackName":""},"IndirectTypeRef":{"DirectVarUse":{"VarName":"x"}}},
+  "IndirectStFldUse":{"GlobalConstUse":{"Name":"stat","FallbackName":""},"IndirectTypeRef":{"IndirectVarUse":{"GlobalConstUse":{"Name":"x","FallbackName":""}}}}
 }

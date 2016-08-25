@@ -68,7 +68,8 @@ endforeach;
           }
         },
         "DirectFcnCall" : {
-          "Name" : "print_r", 
+          "Name" : "print_r",
+          "FallbackQualifiedName":"", 
           "ActualParam" : {   
             "IsUnpack":"True",
             "DirectVarUse":{

@@ -2887,7 +2887,12 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 { yyval.Object = _astFactory.Parameter(yypos, (string)value_stack.array[value_stack.top-1].yyval.Object, value_stack.array[value_stack.top-1].yypos, null, FormalParam.Flags.IsByRef, null); }
         return;
       case 383: // function_call -> name argument_list 
-{ yyval.Object = _astFactory.Call(yypos, ((TypeRef)value_stack.array[value_stack.top-2].yyval.Object).QualifiedName.Value, null, value_stack.array[value_stack.top-2].yypos, new CallSignature((List<ActualParam>)value_stack.array[value_stack.top-1].yyval.Object), null); }
+{ 
+				var qname = ((TypeRef)value_stack.array[value_stack.top-2].yyval.Object).QualifiedName.Value;
+                QualifiedName? fallbackQName;
+                TranslateFallbackQualifiedName(ref qname, out fallbackQName, this._namingContext.FunctionAliases);
+				yyval.Object = _astFactory.Call(yypos, qname, fallbackQName, value_stack.array[value_stack.top-2].yypos, new CallSignature((List<ActualParam>)value_stack.array[value_stack.top-1].yyval.Object), null); 
+			}
         return;
       case 384: // function_call -> class_name T_DOUBLE_COLON member_name argument_list 
 {
@@ -2999,7 +3004,18 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 { yyval.Object = value_stack.array[value_stack.top-1].yyval.Object; }
         return;
       case 417: // constant -> name 
-{ yyval.Object = _astFactory.ConstUse(yypos, ((TypeRef)value_stack.array[value_stack.top-1].yyval.Object).QualifiedName.Value, null); }
+{ 
+				var qname = ((TypeRef)value_stack.array[value_stack.top-1].yyval.Object).QualifiedName.Value;
+                QualifiedName? fallbackQName;
+				if (qname.IsSimpleName && (qname == QualifiedName.Null || qname == QualifiedName.True || qname == QualifiedName.False))
+				{
+					// special global consts
+					fallbackQName = null;
+					qname.IsFullyQualifiedName = true;
+				}
+				else TranslateFallbackQualifiedName(ref qname, out fallbackQName, this._namingContext.ConstantAliases);
+				yyval.Object = _astFactory.ConstUse(yypos, qname, fallbackQName); 
+			}
         return;
       case 418: // constant -> class_name T_DOUBLE_COLON identifier 
 { yyval.Object = _astFactory.ClassConstUse(yypos, (TypeRef)value_stack.array[value_stack.top-3].yyval.Object, new Name((string)value_stack.array[value_stack.top-1].yyval.Object), value_stack.array[value_stack.top-1].yypos); }

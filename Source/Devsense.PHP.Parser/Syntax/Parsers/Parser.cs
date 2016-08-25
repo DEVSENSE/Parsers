@@ -292,6 +292,51 @@ namespace Devsense.PHP.Syntax
             return Span.FromBounds(validSpans.Min(s => s.Start), validSpans.Max(s => s.End));
         }
 
+        private void TranslateFallbackQualifiedName(ref QualifiedName qname, out QualifiedName? fallbackQName, Dictionary<string, QualifiedName> aliases)
+        {
+            // aliasing
+            QualifiedName tmp;
+            if (qname.IsSimpleName && aliases != null && aliases.TryGetValue(qname.Name.Value, out tmp))
+            {
+                qname = tmp;
+                fallbackQName = null;
+                return;
+            }
+
+            //
+            qname = TranslateNamespace(qname);
+
+            if (!qname.IsFullyQualifiedName && qname.IsSimpleName &&
+                !IsInGlobalNamespace/* && !sourceUnit.HasImportedNamespaces &&
+                !reservedTypeNames.Contains(qname.Name.Value)*/)
+            {
+                // "\foo"
+                fallbackQName = new QualifiedName(qname.Name) { IsFullyQualifiedName = true };
+                // "namespace\foo"
+                qname = new QualifiedName(qname.Name, _namingContext.CurrentNamespace.Value.Namespaces) { IsFullyQualifiedName = true };
+            }
+            else
+            {
+                fallbackQName = null;
+                qname.IsFullyQualifiedName = true;  // just ensure
+            }
+        }
+
+        private QualifiedName TranslateNamespace(QualifiedName qname)
+        {
+            return qname.IsFullyQualifiedName || qname.IsSimpleName? qname: TranslateAlias(qname);
+        }
+
+        private QualifiedName TranslateAlias(QualifiedName qname)
+        {
+            Debug.Assert(!qname.IsFullyQualifiedName);
+            // do not use current namespace, if there are imported namespace ... will be resolved later
+            return QualifiedName.TranslateAlias(qname, this._namingContext.Aliases,
+                (IsInGlobalNamespace/* || sourceUnit.HasImportedNamespaces*/) ? (QualifiedName?)null : _namingContext.CurrentNamespace.Value);  
+        }
+
+        private bool IsInGlobalNamespace => _namingContext.CurrentNamespace == null || _namingContext.CurrentNamespace.Value.Namespaces.Length == 0;
+
         private Span CombineSpans(Span a, Span b) => a.IsValid ? (b.IsValid ? Span.Combine(a, b) : a) : b;
 
         void ResetDocBlock() => Scanner.DocBlock = null;

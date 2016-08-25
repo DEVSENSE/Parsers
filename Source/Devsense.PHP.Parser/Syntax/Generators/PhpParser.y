@@ -1122,7 +1122,12 @@ lexical_var:
 
 function_call:
 		name argument_list
-			{ $$ = _astFactory.Call(@$, ((TypeRef)$1).QualifiedName.Value, null, @1, new CallSignature((List<ActualParam>)$2), null); }
+			{ 
+				var qname = ((TypeRef)$1).QualifiedName.Value;
+                QualifiedName? fallbackQName;
+                TranslateFallbackQualifiedName(ref qname, out fallbackQName, this._namingContext.FunctionAliases);
+				$$ = _astFactory.Call(@$, qname, fallbackQName, @1, new CallSignature((List<ActualParam>)$2), null); 
+			}
 	|	class_name T_DOUBLE_COLON member_name argument_list
 			{
 				if($3 is Name)
@@ -1196,7 +1201,19 @@ scalar:
 ;
 
 constant:
-		name { $$ = _astFactory.ConstUse(@$, ((TypeRef)$1).QualifiedName.Value, null); }
+		name 
+			{ 
+				var qname = ((TypeRef)$1).QualifiedName.Value;
+                QualifiedName? fallbackQName;
+				if (qname.IsSimpleName && (qname == QualifiedName.Null || qname == QualifiedName.True || qname == QualifiedName.False))
+				{
+					// special global consts
+					fallbackQName = null;
+					qname.IsFullyQualifiedName = true;
+				}
+				else TranslateFallbackQualifiedName(ref qname, out fallbackQName, this._namingContext.ConstantAliases);
+				$$ = _astFactory.ConstUse(@$, qname, fallbackQName); 
+			}
 	|	class_name T_DOUBLE_COLON identifier
 			{ $$ = _astFactory.ClassConstUse(@$, (TypeRef)$1, new Name((string)$3), @3); }
 	|	variable_class_name T_DOUBLE_COLON identifier

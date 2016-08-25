@@ -15,7 +15,7 @@ $x[0][];
     "Array":{"DirectVarUse":{"VarName":"x"}}
   },
   "ItemUse":{
-    "Array":{"GlobalConstUse":{"Name":"x"}},
+    "Array":{"GlobalConstUse":{"Name":"x","FallbackName":""}},
     "Index":{"LongIntLiteral":{"Value":"0"}}
   },
   "ItemUse":{
