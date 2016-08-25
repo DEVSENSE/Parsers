@@ -7,13 +7,8 @@ assert();
 ?>
 <<<TEST>>>
 
-"GlobalCode" : {
-  "NamingContext" : {},
-  "AssertEx" : {
-    "StringLiteral" : {
-      "Value" : "hello"
-    }
-  },
-  "AssertEx" : {
-  }
+"GlobalCode":{
+  "NamingContext":{},
+  "DirectFcnCall":{"Name":"assert","ActualParam":{"IsUnpack":"False","StringLiteral":{"Value":"hello"}}},
+  "DirectFcnCall":{"Name":"assert"}
 }

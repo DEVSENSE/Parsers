@@ -1,9 +1,10 @@
 <?php
+/** namespace1 */
 namespace
 {
   echo "hello";
 }
-
+/** namespace2 */
 namespace MyProject
 {
   echo "world";
@@ -25,7 +26,8 @@ namespace MyProject
     "Name":"", 
     "SimpleSyntax" : "False",
     "NamingContext" : {
-    },    
+    },  
+    "PHPDoc":{"Comment":"namespace1"},  
     "Body":{ 
       "BlockStmt" : {
         "EchoStmt" : {
@@ -53,7 +55,8 @@ namespace MyProject
     "SimpleSyntax" : "False",
     "NamingContext" : {
       "Namespace" : "MyProject"
-    },  
+    }, 
+    "PHPDoc":{"Comment":"namespace2"}, 
     "Body":{ 
       "BlockStmt" : {
         "EchoStmt" : {

@@ -4,7 +4,7 @@ if ($a > $b)
   /** function doc */
   function foo(MyClass $arg_1, ?integer $arg_2 = 4, &$arg_n = 1, callable $a): array
   {
-      echo "Example function.\n";
+      echo "Example function.\n", "hello";
       return $retval;
   }
 }
@@ -43,7 +43,7 @@ if ($a > $b)
               },
               "Body":{ 
                 "BlockStmt":{
-                  "EchoStmt":{"StringLiteral":{"Value":"Examplefunction."}},
+                  "EchoStmt":{"StringLiteral":{"Value":"Example function."},"StringLiteral":{"Value":"hello"}},
                   "JumpStmt":{"Type":"Return","DirectVarUse":{"VarName":"retval"}}
                 }
               }, 

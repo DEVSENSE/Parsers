@@ -8,7 +8,7 @@ do {
 
 /* example 2 */
 
-for ($i = 0; $i <= 10; $i++, $i+= 2):
+for ( ; $i <= 10; $i++, $i+= 2):
     echo $i;
     break;
 endfor; 
@@ -54,13 +54,7 @@ endfor;
     }
   },
   "WhileStmt":{
-    "InitExList":{
-      "ValueAssignEx":{
-        "Operation":"AssignValue",
-        "DirectVarUse":{"VarName":"i"},
-        "LongIntLiteral":{"Value":"0"}
-      }
-    },
+    "InitExList":{},
     "CondExList":{
       "BinaryEx":{
         "Operation":"LessThanOrEqual",

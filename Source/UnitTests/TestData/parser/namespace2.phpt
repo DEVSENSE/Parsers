@@ -9,21 +9,20 @@ namespace MyProject\AnotherProject;
 
 "GlobalCode":{
   "NamingContext":{},
-  "PHPDocBlockStatement":{"PHPDoc":{"Comment":"namespace1"}},
   "NamespaceDecl":{
     "Name":"MyProject",
     "SimpleSyntax":"True",
     "NamingContext":{"Namespace":"MyProject"},
+    "PHPDoc":{"Comment":"namespace1"},
     "Body":{
-      "BlockStmt":{
-        "PHPDocBlockStatement":{"PHPDoc":{"Comment":"namespace2"}}
-      }
+      "BlockStmt":{}
     }
   },
   "NamespaceDecl":{
     "Name":"MyProject\AnotherProject",
     "SimpleSyntax":"True",
     "NamingContext":{"Namespace":"MyProject\AnotherProject"},
+    "PHPDoc":{"Comment":"namespace2"},
     "Body":{
       "BlockStmt":{}
     }

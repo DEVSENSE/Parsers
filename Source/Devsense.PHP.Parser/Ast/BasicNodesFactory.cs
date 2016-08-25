@@ -44,11 +44,6 @@ namespace Devsense.PHP.Syntax.Ast
             return new RefItem((Expression)indexOpt, (VariableUse)variable);
         }
 
-        public virtual LangElement Assert(Span span, CallSignature signature)
-        {
-            return new AssertEx(span, signature);
-        }
-
         public virtual LangElement Assignment(Span span, LangElement target, LangElement value, Operations assignOp)
         {
             if (assignOp == Operations.AssignRef)
@@ -92,8 +87,6 @@ namespace Devsense.PHP.Syntax.Ast
         public virtual LangElement Call(Span span, QualifiedName name, QualifiedName? nameFallback, Span nameSpan, CallSignature signature, LangElement memberOfOpt)
         {
             Debug.Assert(memberOfOpt == null || memberOfOpt is VarLikeConstructUse);
-            if (name == QualifiedName.Assert)
-                return Assert(span, signature);
             return new DirectFcnCall(span, name, nameFallback, nameSpan, signature.Parameters, signature.GenericParams) { IsMemberOf = (VarLikeConstructUse)memberOfOpt };
         }
         public virtual LangElement ActualParameter(Span span, LangElement expr, ActualParam.Flags flags)
@@ -352,7 +345,7 @@ namespace Devsense.PHP.Syntax.Ast
 
         public virtual LangElement PHPDoc(Span span, LangElement block)
         {
-            return new PHPDocBlockStatement((PHPDocBlock)block);
+            throw new NotImplementedException();
         }
 
         public virtual LangElement Shell(Span span, LangElement command)

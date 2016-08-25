@@ -17,7 +17,7 @@ class foo
         $this->bar = array('Bar1', 'Bar2', 'Bar3');
     }
 }
-
+        
 $foo = new foo();
 $name = 'MyName';
 

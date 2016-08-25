@@ -233,11 +233,6 @@ namespace Devsense.PHP.Syntax
             return AddToList((List<T>)list, (T)item);
         }
 
-        private IList<T> AddToList<T>(object list, object item1, object item2)
-        {
-            return AddToList(AddToList((List<T>)list, (T)item1), (T)item2);
-        }
-
         private IList<T> JoinLists<T>(IList<T> first, IList<T> second)
         {
             return first.Concat(second).ToList();

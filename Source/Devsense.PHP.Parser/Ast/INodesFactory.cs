@@ -536,14 +536,6 @@ namespace Devsense.PHP.Syntax.Ast
         TNode Isset(TSpan span, IEnumerable<TNode> variables);
 
         /// <summary>
-        /// Creates assertion expression.
-        /// </summary>
-        /// <param name="span">Entire element span.</param>
-        /// <param name="signature">Parameters evaluated by the assert.</param>
-        /// <returns>Assertion expression.</returns>
-        TNode Assert(TSpan span, CallSignature signature);
-
-        /// <summary>
         /// Creates inclusion (<c>include</c>, <c>require</c>, <c>include_once</c>, <c>require_once</c>) expression.
         /// </summary>
         /// <param name="span">Entire element span.</param>

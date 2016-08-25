@@ -181,10 +181,10 @@ namespace Devsense.PHP.Syntax.Ast
         public AssertEx(Text.Span span, CallSignature callsignature)
             : base(span)
         {
-            //Debug.Assert(callsignature.Parameters.Any());
+            Debug.Assert(callsignature.Parameters.Any());
             Debug.Assert(callsignature.GenericParams.Empty());
 
-            this.CodeEx = callsignature.Parameters.Length > 0? callsignature.Parameters[0].Expression: null;
+            this.CodeEx = callsignature.Parameters[0].Expression;
         }
 
         public override void VisitMe(TreeVisitor visitor)

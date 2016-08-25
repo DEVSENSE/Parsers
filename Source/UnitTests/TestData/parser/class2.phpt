@@ -3,7 +3,7 @@
 class SimpleClass
 {
     /** method comment */
-    function aMemberFunc(boolean $arg_1): int { 
+    protected function aMemberFunc(boolean $arg_1): int { 
         print 'Inside `aMemberFunc()`'; 
     } 
 }
@@ -19,7 +19,7 @@ class SimpleClass
     "PHPDoc":{"Comment":"class declaration"},
     "MethodDecl":{
       "Name":"aMemberFunc",
-      "Modifiers":"Public",
+      "Modifiers":"Protected",
       "PHPDoc":{"Comment":"method comment"},
       "FormalParams":{
         "FormalParam":{"Name":"arg_1","PassedByRef":"False","IsVariadic":"False",

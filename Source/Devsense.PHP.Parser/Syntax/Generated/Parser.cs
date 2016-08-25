@@ -1892,15 +1892,7 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 { yyval.Object = value_stack.array[value_stack.top-1].yyval.Object; }
         return;
       case 80: // top_statement_list -> top_statement_list top_statement 
-{ 
-				if(value_stack.array[value_stack.top-1].yyval.Object is LangElement || value_stack.array[value_stack.top-1].yyval.Object == null)
-					yyval.Object = AddToList<LangElement>(value_stack.array[value_stack.top-2].yyval.Object, value_stack.array[value_stack.top-1].yyval.Object); 
-				else
-				{
-					Tuple<LangElement, PHPDocBlock> namespaceDoc = (Tuple<LangElement, PHPDocBlock>)value_stack.array[value_stack.top-1].yyval.Object;
-					yyval.Object = AddToList<LangElement>(value_stack.array[value_stack.top-2].yyval.Object, namespaceDoc.Item2 == null? null: _astFactory.PHPDoc(namespaceDoc.Item2.Span, namespaceDoc.Item2), namespaceDoc.Item1); 
-				}
-			}
+{ yyval.Object = AddToList<LangElement>(value_stack.array[value_stack.top-2].yyval.Object, value_stack.array[value_stack.top-1].yyval.Object); }
         return;
       case 81: // top_statement_list -> 
 { yyval.Object = new List<LangElement>(); }
@@ -1947,8 +1939,9 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 				AssignNamingContext();
                 QualifiedName name = new QualifiedName((List<string>)value_stack.array[value_stack.top-2].yyval.Object, false, true);
                 SetNamingContext(name.NamespacePhpName);
-                _currentNamespace = (NamespaceDecl)_astFactory.Namespace(yypos, name, value_stack.array[value_stack.top-2].yypos, _namingContext);
-				yyval.Object = new Tuple<LangElement, PHPDocBlock>(_currentNamespace, Scanner.DocBlock);
+                yyval.Object = _currentNamespace = (NamespaceDecl)_astFactory.Namespace(yypos, name, value_stack.array[value_stack.top-2].yypos, _namingContext);
+				if(Scanner.DocBlock != null)
+					((NamespaceDecl)yyval.Object).PHPDoc = Scanner.DocBlock;
 				ResetDocBlock(); 
 			}
         return;
@@ -1957,7 +1950,9 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
         return;
       case 95: // top_statement -> T_NAMESPACE namespace_name @2 '{' top_statement_list '}' 
 { 
-				yyval.Object = new Tuple<LangElement, PHPDocBlock>(_astFactory.Namespace(yypos, new QualifiedName((List<string>)value_stack.array[value_stack.top-5].yyval.Object, false, true), value_stack.array[value_stack.top-5].yypos, _astFactory.Block(CombineSpans(value_stack.array[value_stack.top-3].yypos, value_stack.array[value_stack.top-1].yypos), (List<LangElement>)value_stack.array[value_stack.top-2].yyval.Object), _namingContext), (PHPDocBlock)value_stack.array[value_stack.top-4].yyval.Object); 
+				yyval.Object = _astFactory.Namespace(yypos, new QualifiedName((List<string>)value_stack.array[value_stack.top-5].yyval.Object, false, true), value_stack.array[value_stack.top-5].yypos, _astFactory.Block(CombineSpans(value_stack.array[value_stack.top-3].yypos, value_stack.array[value_stack.top-1].yypos), (List<LangElement>)value_stack.array[value_stack.top-2].yyval.Object), _namingContext); 
+				if(value_stack.array[value_stack.top-4].yyval.Object != null)
+					((NamespaceDecl)yyval.Object).PHPDoc = (PHPDocBlock)value_stack.array[value_stack.top-4].yyval.Object;
 				ResetNamingContext(); 
 			}
         return;
@@ -1966,7 +1961,9 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
         return;
       case 97: // top_statement -> T_NAMESPACE @3 '{' top_statement_list '}' 
 { 
-				yyval.Object = new Tuple<LangElement, PHPDocBlock>(_astFactory.Namespace(yypos, null, yypos, _astFactory.Block(CombineSpans(value_stack.array[value_stack.top-3].yypos, value_stack.array[value_stack.top-1].yypos), (List<LangElement>)value_stack.array[value_stack.top-2].yyval.Object), _namingContext), (PHPDocBlock)value_stack.array[value_stack.top-4].yyval.Object);  
+				yyval.Object = _astFactory.Namespace(yypos, null, yypos, _astFactory.Block(CombineSpans(value_stack.array[value_stack.top-3].yypos, value_stack.array[value_stack.top-1].yypos), (List<LangElement>)value_stack.array[value_stack.top-2].yyval.Object), _namingContext); 
+				if(value_stack.array[value_stack.top-4].yyval.Object != null)
+					((NamespaceDecl)yyval.Object).PHPDoc = (PHPDocBlock)value_stack.array[value_stack.top-4].yyval.Object; 
 				ResetNamingContext(); 
 			}
         return;
@@ -2472,10 +2469,10 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 { yyval.Object = AddToList<TypeRef>(value_stack.array[value_stack.top-3].yyval.Object, value_stack.array[value_stack.top-1].yyval.Object); }
         return;
       case 248: // trait_adaptations -> ';' 
-{ yyval.Object = null; }
+{ yyval.Object = new List<TraitsUse.TraitAdaptation>(); }
         return;
       case 249: // trait_adaptations -> '{' '}' 
-{ yyval.Object = null; }
+{ yyval.Object = new List<TraitsUse.TraitAdaptation>(); }
         return;
       case 250: // trait_adaptations -> '{' trait_adaptation_list '}' 
 { yyval.Object = value_stack.array[value_stack.top-2].yyval.Object; }

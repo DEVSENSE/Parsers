@@ -171,6 +171,7 @@ namespace Devsense.PHP.Syntax.Ast.Serialization
                 new NodeObj("Name", x.QualifiedName.QualifiedName.NamespacePhpName),
                 new NodeObj("SimpleSyntax", x.IsSimpleSyntax.ToString()),
                 SerializeNamingContext(x.Naming));
+            SerializePHPDoc(x.PHPDoc);
             SerializeOptionalProperty("Body", x.Body);
             _serializer.EndSerialize();
         }
@@ -811,14 +812,6 @@ namespace Devsense.PHP.Syntax.Ast.Serialization
         {
             _serializer.StartSerialize(typeof(InstanceOfEx).Name, SerializeSpan(x.Span));
             base.VisitInstanceOfEx(x);
-            _serializer.EndSerialize();
-        }
-
-        override public void VisitPHPDocBlockStatement(PHPDocBlockStatement x)
-        {
-            _serializer.StartSerialize(typeof(PHPDocBlockStatement).Name, SerializeSpan(x.Span));
-            SerializePHPDoc(x.PHPDoc);
-            base.VisitPHPDocBlockStatement(x);
             _serializer.EndSerialize();
         }
     }
