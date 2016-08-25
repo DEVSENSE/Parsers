@@ -335,6 +335,28 @@ namespace Devsense.PHP.Syntax
                 (IsInGlobalNamespace/* || sourceUnit.HasImportedNamespaces*/) ? (QualifiedName?)null : _namingContext.CurrentNamespace.Value);  
         }
 
+        private QualifiedName TranslateAny(QualifiedName qname)
+        {
+            if (qname.IsFullyQualifiedName) return qname;
+
+            // skip special names:
+            if (qname.IsSimpleName)
+            {
+                if (reservedTypeNames.Contains(qname.Name.Value))
+                    return qname;
+            }
+
+            // return the alias if found:
+            return TranslateAlias(qname);
+        }
+
+        private readonly HashSet<string>/*!*/reservedTypeNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+        {
+            Name.SelfClassName.Value,
+            Name.StaticClassName.Value,
+            Name.ParentClassName.Value,
+        };
+
         private bool IsInGlobalNamespace => _namingContext.CurrentNamespace == null || _namingContext.CurrentNamespace.Value.Namespaces.Length == 0;
 
         private Span CombineSpans(Span a, Span b) => a.IsValid ? (b.IsValid ? Span.Combine(a, b) : a) : b;

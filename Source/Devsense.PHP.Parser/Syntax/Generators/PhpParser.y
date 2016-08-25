@@ -515,8 +515,8 @@ catch_list:
 ;
 
 catch_name_list:
-		name { $$ = new List<TypeRef>() { (TypeRef)$1 }; }
-	|	catch_name_list '|' name { $$ = AddToList<TypeRef>($1, $3); }
+		name { $$ = new List<TypeRef>() { (TypeRef)_astFactory.TypeReference(@1, TranslateAny(((TypeRef)$1).QualifiedName.Value), false, TypeRef.EmptyList) }; }
+	|	catch_name_list '|' name { $$ = AddToList<TypeRef>($1, _astFactory.TypeReference(@3, TranslateAny(((TypeRef)$3).QualifiedName.Value), false, TypeRef.EmptyList)); }
 ;
 
 finally_statement:
@@ -729,8 +729,8 @@ optional_type:
 ;
 
 type_expr:
-		type		{ $$ = _astFactory.TypeReference(@$, (QualifiedName)$1, false, null); }
-	|	'?' type	{ $$ = _astFactory.TypeReference(@$, (QualifiedName)$2, true, null); }
+		type		{ $$ = _astFactory.TypeReference(@$, TranslateAny((QualifiedName)$1), false, null); }
+	|	'?' type	{ $$ = _astFactory.TypeReference(@$, TranslateAny((QualifiedName)$2), true, null); }
 ;
 
 type:
@@ -816,8 +816,8 @@ class_statement:
 ;
 
 name_list:
-		name { $$ = new List<TypeRef>() { (TypeRef)$1 }; }
-	|	name_list ',' name { $$ = AddToList<TypeRef>($1, $3); }
+		name { $$ = new List<TypeRef>() { (TypeRef)_astFactory.TypeReference(@1, TranslateAny(((TypeRef)$1).QualifiedName.Value), false, TypeRef.EmptyList) }; }
+	|	name_list ',' name { $$ = AddToList<TypeRef>($1, _astFactory.TypeReference(@3, TranslateAny(((TypeRef)$3).QualifiedName.Value), false, TypeRef.EmptyList)); }
 ;
 
 trait_adaptations:
@@ -1131,7 +1131,7 @@ function_call:
 	|	class_name T_DOUBLE_COLON member_name argument_list
 			{
 				if($3 is Name)
-					$$ = _astFactory.Call(@$, (Name)$3, @3, new CallSignature((List<ActualParam>)$4), (TypeRef)_astFactory.TypeReference(@1, ((TypeRef)$1).QualifiedName.Value, false, null)); 
+					$$ = _astFactory.Call(@$, (Name)$3, @3, new CallSignature((List<ActualParam>)$4), (TypeRef)_astFactory.TypeReference(@1, TranslateAny(((TypeRef)$1).QualifiedName.Value), false, null)); 
 				else
 					$$ = _astFactory.Call(@$, (LangElement)$3, new CallSignature((List<ActualParam>)$4), (TypeRef)_astFactory.TypeReference(@1, ((TypeRef)$1).QualifiedName.Value, false, null)); 
 			}
@@ -1149,7 +1149,7 @@ function_call:
 class_name:
 		T_STATIC
 			{ $$ = _astFactory.TypeReference(@$, new QualifiedName(Name.StaticClassName), false, null); }
-	|	name { $$ = $1; }
+	|	name { $$ = _astFactory.TypeReference(@$, TranslateAny(((TypeRef)$1).QualifiedName.Value), false, TypeRef.EmptyList); }
 ;
 
 class_name_reference:

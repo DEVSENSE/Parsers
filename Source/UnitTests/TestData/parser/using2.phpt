@@ -11,6 +11,10 @@ namespace test{
   new Y();  
   lconst;
   clsconst;
+  
+  class A implements Y
+  {
+  }
 }
 ?>
 <<<TEST>>>
@@ -30,11 +34,14 @@ namespace test{
       "BlockStmt":{
         "DirectFcnCall":{"Name":"MySpace\bar","FallbackQualifiedName":""},
         "DirectFcnCall":{"Name":"test\define","FallbackQualifiedName":"define"},
-        "NewEx":{"DirectTypeRef":{"ClassName":"Y"}},
+        "NewEx":{"DirectTypeRef":{"ClassName":"MySpace\X"}},
         "GlobalConstUse":{"Name":"MySpace\gconst","FallbackName":""},
-        "GlobalConstUse":{"Name":"test\clsconst","FallbackName":"clsconst"}
+        "GlobalConstUse":{"Name":"test\clsconst","FallbackName":"clsconst"},
+        "NamedTypeDecl":{"Name":"A","MemberAttributes":"Public","IsConditional":"False","ImplementsList":{"Name":"MySpace\X"}}
       }
     }
   }
 }
+
+
 
