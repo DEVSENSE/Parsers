@@ -327,7 +327,7 @@ namespace_name:
 	|	namespace_name T_NS_SEPARATOR T_STRING	{ $$ = AddToList<string>($1, $3); }
 ;
 
-name:
+name:	// TODO: return QualifiedName
 		namespace_name								{ $$ = _astFactory.TypeReference(@$, new QualifiedName((List<string>)$1, true, false), false, TypeRef.EmptyList); }
 	|	T_NAMESPACE T_NS_SEPARATOR namespace_name	{ $$ = _astFactory.TypeReference(@$, new QualifiedName((List<string>)$3, true,  true), false, TypeRef.EmptyList); }
 	|	T_NS_SEPARATOR namespace_name				{ $$ = _astFactory.TypeReference(@$, new QualifiedName((List<string>)$2, true,  true), false, TypeRef.EmptyList); }
@@ -515,8 +515,8 @@ catch_list:
 ;
 
 catch_name_list:
-		name { $$ = new List<TypeRef>() { (TypeRef)_astFactory.TypeReference(@1, TranslateAny(((TypeRef)$1).QualifiedName.Value), false, TypeRef.EmptyList) }; }
-	|	catch_name_list '|' name { $$ = AddToList<TypeRef>($1, _astFactory.TypeReference(@3, TranslateAny(((TypeRef)$3).QualifiedName.Value), false, TypeRef.EmptyList)); }
+		name { $$ = new List<TypeRef>() { Translate((TypeRef)$1) }; }
+	|	catch_name_list '|' name { $$ = AddToList<TypeRef>($1, Translate((TypeRef)$3)); }
 ;
 
 finally_statement:
@@ -599,7 +599,7 @@ interface_declaration_statement:
 
 extends_from:
 		/* empty */		{ $$ = null; }
-	|	T_EXTENDS name	{ $$ = $2; }
+	|	T_EXTENDS name	{ $$ = Translate((TypeRef)$2); }
 ;
 
 interface_extends_list:
@@ -816,8 +816,8 @@ class_statement:
 ;
 
 name_list:
-		name { $$ = new List<TypeRef>() { (TypeRef)_astFactory.TypeReference(@1, TranslateAny(((TypeRef)$1).QualifiedName.Value), false, TypeRef.EmptyList) }; }
-	|	name_list ',' name { $$ = AddToList<TypeRef>($1, _astFactory.TypeReference(@3, TranslateAny(((TypeRef)$3).QualifiedName.Value), false, TypeRef.EmptyList)); }
+		name { $$ = new List<TypeRef>() { Translate((TypeRef)$1) }; }
+	|	name_list ',' name { $$ = AddToList<TypeRef>($1, Translate((TypeRef)$3)); }
 ;
 
 trait_adaptations:
@@ -1131,9 +1131,9 @@ function_call:
 	|	class_name T_DOUBLE_COLON member_name argument_list
 			{
 				if($3 is Name)
-					$$ = _astFactory.Call(@$, (Name)$3, @3, new CallSignature((List<ActualParam>)$4), (TypeRef)_astFactory.TypeReference(@1, TranslateAny(((TypeRef)$1).QualifiedName.Value), false, null)); 
+					$$ = _astFactory.Call(@$, (Name)$3, @3, new CallSignature((List<ActualParam>)$4), Translate((TypeRef)$1)); 
 				else
-					$$ = _astFactory.Call(@$, (LangElement)$3, new CallSignature((List<ActualParam>)$4), (TypeRef)_astFactory.TypeReference(@1, ((TypeRef)$1).QualifiedName.Value, false, null)); 
+					$$ = _astFactory.Call(@$, (LangElement)$3, new CallSignature((List<ActualParam>)$4), Translate((TypeRef)$1)); 
 			}
 	|	variable_class_name T_DOUBLE_COLON member_name argument_list
 			{
@@ -1147,9 +1147,8 @@ function_call:
 ;
 
 class_name:
-		T_STATIC
-			{ $$ = _astFactory.TypeReference(@$, new QualifiedName(Name.StaticClassName), false, null); }
-	|	name { $$ = _astFactory.TypeReference(@$, TranslateAny(((TypeRef)$1).QualifiedName.Value), false, TypeRef.EmptyList); }
+		T_STATIC { $$ = _astFactory.TypeReference(@$, new QualifiedName(Name.StaticClassName), false, null); }
+	|	name { $$ = Translate((TypeRef)$1); }
 ;
 
 class_name_reference:
