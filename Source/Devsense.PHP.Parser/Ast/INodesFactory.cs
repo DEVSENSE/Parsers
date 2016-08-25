@@ -867,7 +867,7 @@ namespace Devsense.PHP.Syntax.Ast
         /// <param name="span">Entire element span.</param>
         /// <param name="content">Content of the comment including leading <c>/**</c> and trailing <c>*/</c>.</param>
         /// <returns>PHPDoc comment element.</returns>
-        TNode PHPDoc(TSpan span, string content);
+        TNode PHPDoc(TSpan span, TNode content);
 
         /// <summary>
         /// Creates line comment.

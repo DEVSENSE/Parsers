@@ -1,40 +1,29 @@
-<?php
+<?php     
+/** namespace1 */
 namespace MyProject;  
-
+                    
+/** namespace2 */
 namespace MyProject\AnotherProject;
 ?>
 <<<TEST>>>
 
-"GlobalCode" : {
-  "Span" : {
-    "start" : "0",
-    "end" : "0"
-  },      
-  "NamingContext" : {},
-  "NamespaceDecl" : {
-    "Span" : {
-      "start" : "7",
-      "end" : "27"
-    },
-    "Name" : "MyProject",
-    "SimpleSyntax" : "True",
-    "NamingContext" : {
-      "Namespace" : "MyProject"
-    },
+"GlobalCode":{
+  "NamingContext":{},
+  "PHPDocBlockStatement":{"PHPDoc":{"Comment":"namespace1"}},
+  "NamespaceDecl":{
+    "Name":"MyProject",
+    "SimpleSyntax":"True",
+    "NamingContext":{"Namespace":"MyProject"},
     "Body":{
-      "BlockStmt":{}
+      "BlockStmt":{
+        "PHPDocBlockStatement":{"PHPDoc":{"Comment":"namespace2"}}
+      }
     }
   },
-  "NamespaceDecl" : {
-    "Span" : {
-      "start" : "33",
-      "end" : "68"
-    },
-    "Name" : "MyProject\AnotherProject",
-    "SimpleSyntax" : "True",
-    "NamingContext" : {
-      "Namespace" : "MyProject\AnotherProject"
-    },
+  "NamespaceDecl":{
+    "Name":"MyProject\AnotherProject",
+    "SimpleSyntax":"True",
+    "NamingContext":{"Namespace":"MyProject\AnotherProject"},
     "Body":{
       "BlockStmt":{}
     }

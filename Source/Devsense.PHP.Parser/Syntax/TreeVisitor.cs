@@ -928,6 +928,11 @@ namespace Devsense.PHP.Syntax
 
         }
 
+        virtual public void VisitPHPDocBlockStatement(PHPDocBlockStatement x)
+        {
+            VisitElement(x.PHPDoc);
+        }
+
         #endregion
     }
 }

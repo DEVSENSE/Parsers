@@ -318,7 +318,16 @@ identifier:
 ;
 
 top_statement_list:
-		top_statement_list top_statement { $$ = AddToList<LangElement>($1, $2); }
+		top_statement_list top_statement 
+			{ 
+				if($2 is LangElement || $2 == null)
+					$$ = AddToList<LangElement>($1, $2); 
+				else
+				{
+					Tuple<LangElement, PHPDocBlock> namespaceDoc = (Tuple<LangElement, PHPDocBlock>)$2;
+					$$ = AddToList<LangElement>($1, namespaceDoc.Item2 == null? null: _astFactory.PHPDoc(namespaceDoc.Item2.Span, namespaceDoc.Item2), namespaceDoc.Item1); 
+				}
+			}
 	|	/* empty */ { $$ = new List<LangElement>(); }
 ;
 
@@ -351,19 +360,20 @@ top_statement:
 				AssignNamingContext();
                 QualifiedName name = new QualifiedName((List<string>)$2, false, true);
                 SetNamingContext(name.NamespacePhpName);
-                $$ = _currentNamespace = (NamespaceDecl)_astFactory.Namespace(@$, name, @2, _namingContext);
+                _currentNamespace = (NamespaceDecl)_astFactory.Namespace(@$, name, @2, _namingContext);
+				$$ = new Tuple<LangElement, PHPDocBlock>(_currentNamespace, Scanner.DocBlock);
 				ResetDocBlock(); 
 			}
-	|	T_NAMESPACE namespace_name { ResetDocBlock(); var list = (List<string>)$2; SetNamingContext((list != null && list.Count > 0)? string.Join(QualifiedName.Separator.ToString(), list): null); }
+	|	T_NAMESPACE namespace_name { $$ = Scanner.DocBlock; ResetDocBlock(); var list = (List<string>)$2; SetNamingContext((list != null && list.Count > 0)? string.Join(QualifiedName.Separator.ToString(), list): null); }
 		'{' top_statement_list '}'
 			{ 
-				$$ = _astFactory.Namespace(@$, new QualifiedName((List<string>)$2, false, true), @2, _astFactory.Block(CombineSpans(@4, @6), (List<LangElement>)$5), _namingContext); 
+				$$ = new Tuple<LangElement, PHPDocBlock>(_astFactory.Namespace(@$, new QualifiedName((List<string>)$2, false, true), @2, _astFactory.Block(CombineSpans(@4, @6), (List<LangElement>)$5), _namingContext), (PHPDocBlock)$3.Object); 
 				ResetNamingContext(); 
 			}
-	|	T_NAMESPACE { ResetDocBlock(); SetNamingContext(null); }
+	|	T_NAMESPACE { $$ = Scanner.DocBlock; ResetDocBlock(); SetNamingContext(null); }
 		'{' top_statement_list '}'
 			{ 
-				$$ = _astFactory.Namespace(@$, null, @$, _astFactory.Block(CombineSpans(@3, @5), (List<LangElement>)$4), _namingContext); 
+				$$ = new Tuple<LangElement, PHPDocBlock>(_astFactory.Namespace(@$, null, @$, _astFactory.Block(CombineSpans(@3, @5), (List<LangElement>)$4), _namingContext), (PHPDocBlock)$2.Object);  
 				ResetNamingContext(); 
 			}
 	|	T_USE mixed_group_use_declaration ';'		{ _contextType = ContextType.Class; }

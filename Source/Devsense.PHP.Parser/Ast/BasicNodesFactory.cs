@@ -350,9 +350,9 @@ namespace Devsense.PHP.Syntax.Ast
             return new ArrayEx(span, itemsOpt.ToList());
         }
 
-        public virtual LangElement PHPDoc(Span span, string content)
+        public virtual LangElement PHPDoc(Span span, LangElement block)
         {
-            return new PHPDocBlock(content, span);
+            return new PHPDocBlockStatement((PHPDocBlock)block);
         }
 
         public virtual LangElement Shell(Span span, LangElement command)

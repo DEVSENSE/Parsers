@@ -178,17 +178,13 @@ namespace Devsense.PHP.Syntax.Ast
         /// <summary>Expression containing source code to be evaluated.</summary>
         public Expression /*!*/ CodeEx { get; internal set; }
 
-        ///// <summary>Description para,eter.</summary>
-        //public Expression DescriptionEx { get; internal set; }
-
         public AssertEx(Text.Span span, CallSignature callsignature)
             : base(span)
         {
-            Debug.Assert(callsignature.Parameters.Any());
+            //Debug.Assert(callsignature.Parameters.Any());
             Debug.Assert(callsignature.GenericParams.Empty());
 
-            this.CodeEx = callsignature.Parameters[0].Expression;
-            //this.DescriptionEx = description;
+            this.CodeEx = callsignature.Parameters.Length > 0? callsignature.Parameters[0].Expression: null;
         }
 
         public override void VisitMe(TreeVisitor visitor)

@@ -1892,7 +1892,15 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 { yyval.Object = value_stack.array[value_stack.top-1].yyval.Object; }
         return;
       case 80: // top_statement_list -> top_statement_list top_statement 
-{ yyval.Object = AddToList<LangElement>(value_stack.array[value_stack.top-2].yyval.Object, value_stack.array[value_stack.top-1].yyval.Object); }
+{ 
+				if(value_stack.array[value_stack.top-1].yyval.Object is LangElement || value_stack.array[value_stack.top-1].yyval.Object == null)
+					yyval.Object = AddToList<LangElement>(value_stack.array[value_stack.top-2].yyval.Object, value_stack.array[value_stack.top-1].yyval.Object); 
+				else
+				{
+					Tuple<LangElement, PHPDocBlock> namespaceDoc = (Tuple<LangElement, PHPDocBlock>)value_stack.array[value_stack.top-1].yyval.Object;
+					yyval.Object = AddToList<LangElement>(value_stack.array[value_stack.top-2].yyval.Object, namespaceDoc.Item2 == null? null: _astFactory.PHPDoc(namespaceDoc.Item2.Span, namespaceDoc.Item2), namespaceDoc.Item1); 
+				}
+			}
         return;
       case 81: // top_statement_list -> 
 { yyval.Object = new List<LangElement>(); }
@@ -1939,25 +1947,26 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 				AssignNamingContext();
                 QualifiedName name = new QualifiedName((List<string>)value_stack.array[value_stack.top-2].yyval.Object, false, true);
                 SetNamingContext(name.NamespacePhpName);
-                yyval.Object = _currentNamespace = (NamespaceDecl)_astFactory.Namespace(yypos, name, value_stack.array[value_stack.top-2].yypos, _namingContext);
+                _currentNamespace = (NamespaceDecl)_astFactory.Namespace(yypos, name, value_stack.array[value_stack.top-2].yypos, _namingContext);
+				yyval.Object = new Tuple<LangElement, PHPDocBlock>(_currentNamespace, Scanner.DocBlock);
 				ResetDocBlock(); 
 			}
         return;
       case 94: // @2 -> 
-{ ResetDocBlock(); var list = (List<string>)value_stack.array[value_stack.top-1].yyval.Object; SetNamingContext((list != null && list.Count > 0)? string.Join(QualifiedName.Separator.ToString(), list): null); }
+{ yyval.Object = Scanner.DocBlock; ResetDocBlock(); var list = (List<string>)value_stack.array[value_stack.top-1].yyval.Object; SetNamingContext((list != null && list.Count > 0)? string.Join(QualifiedName.Separator.ToString(), list): null); }
         return;
       case 95: // top_statement -> T_NAMESPACE namespace_name @2 '{' top_statement_list '}' 
 { 
-				yyval.Object = _astFactory.Namespace(yypos, new QualifiedName((List<string>)value_stack.array[value_stack.top-5].yyval.Object, false, true), value_stack.array[value_stack.top-5].yypos, _astFactory.Block(CombineSpans(value_stack.array[value_stack.top-3].yypos, value_stack.array[value_stack.top-1].yypos), (List<LangElement>)value_stack.array[value_stack.top-2].yyval.Object), _namingContext); 
+				yyval.Object = new Tuple<LangElement, PHPDocBlock>(_astFactory.Namespace(yypos, new QualifiedName((List<string>)value_stack.array[value_stack.top-5].yyval.Object, false, true), value_stack.array[value_stack.top-5].yypos, _astFactory.Block(CombineSpans(value_stack.array[value_stack.top-3].yypos, value_stack.array[value_stack.top-1].yypos), (List<LangElement>)value_stack.array[value_stack.top-2].yyval.Object), _namingContext), (PHPDocBlock)value_stack.array[value_stack.top-4].yyval.Object); 
 				ResetNamingContext(); 
 			}
         return;
       case 96: // @3 -> 
-{ ResetDocBlock(); SetNamingContext(null); }
+{ yyval.Object = Scanner.DocBlock; ResetDocBlock(); SetNamingContext(null); }
         return;
       case 97: // top_statement -> T_NAMESPACE @3 '{' top_statement_list '}' 
 { 
-				yyval.Object = _astFactory.Namespace(yypos, null, yypos, _astFactory.Block(CombineSpans(value_stack.array[value_stack.top-3].yypos, value_stack.array[value_stack.top-1].yypos), (List<LangElement>)value_stack.array[value_stack.top-2].yyval.Object), _namingContext); 
+				yyval.Object = new Tuple<LangElement, PHPDocBlock>(_astFactory.Namespace(yypos, null, yypos, _astFactory.Block(CombineSpans(value_stack.array[value_stack.top-3].yypos, value_stack.array[value_stack.top-1].yypos), (List<LangElement>)value_stack.array[value_stack.top-2].yyval.Object), _namingContext), (PHPDocBlock)value_stack.array[value_stack.top-4].yyval.Object);  
 				ResetNamingContext(); 
 			}
         return;

@@ -1,6 +1,8 @@
 <?php
 
 assert("hello");
+  
+assert();
 
 ?>
 <<<TEST>>>
@@ -11,5 +13,7 @@ assert("hello");
     "StringLiteral" : {
       "Value" : "hello"
     }
+  },
+  "AssertEx" : {
   }
 }

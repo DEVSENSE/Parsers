@@ -1957,6 +1957,27 @@ namespace Devsense.PHP.Syntax
         #endregion
     }
 
+    public sealed class PHPDocBlockStatement : Statement
+    {
+        readonly PHPDocBlock _docBlock;
+        public PHPDocBlock PHPDoc => _docBlock;
+
+        public PHPDocBlockStatement(PHPDocBlock block)
+            : base(block.Span)
+        {
+            _docBlock = block;
+        }
+
+        #region LangElement
+
+        public override void VisitMe(TreeVisitor visitor)
+        {
+            visitor.VisitPHPDocBlockStatement(this);
+        }
+
+        #endregion
+    }
+
     internal static class PHPDocBlockHelper
     {
         /// <summary>
