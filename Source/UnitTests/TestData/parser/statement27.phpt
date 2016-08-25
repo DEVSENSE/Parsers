@@ -1,6 +1,6 @@
 <?php
        
-"hello $wrold $what[a] $nice->day ${$to + 1} ${be} ${alive[$and]} {$Well}"
+"hello $wrold $what[a] $what[0] $what[$a] $nice->day ${$to + 1} ${be} ${alive[$and]} {$Well}"
 
 
 ?>
@@ -12,7 +12,11 @@
     "StringLiteral":{"Value":"hello"},
     "DirectVarUse":{"VarName":"wrold"},
     "StringLiteral":{"Value":""},
-    "ItemUse":{"Array":{"DirectVarUse":{"VarName":"what"}},"Index":{"StringLiteral":{"Value":"a"}}},
+    "ItemUse":{"Array":{"DirectVarUse":{"VarName":"what"}},"Index":{"StringLiteral":{"Value":"a"}}}, 
+    "StringLiteral":{"Value":""}, 
+    "ItemUse":{"Array":{"DirectVarUse":{"VarName":"what"}},"Index":{"DoubleLiteral":{"Value":"0"}}},
+    "StringLiteral":{"Value":""},  
+    "ItemUse":{"Array":{"DirectVarUse":{"VarName":"what"}},"Index":{"DirectVarUse":{"VarName":"a"}}},  
     "StringLiteral":{"Value":""},
     "DirectVarUse":{"VarName":"day","IsMemberOf":{"DirectVarUse":{"VarName":"nice"}}},
     "StringLiteral":{"Value":""},

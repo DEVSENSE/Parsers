@@ -536,7 +536,7 @@ unset_variable:
 function_declaration_statement:
 	function returns_ref T_STRING backup_doc_comment '(' parameter_list ')' return_type
 	backup_fn_flags '{' inner_statement_list '}' backup_fn_flags
-		{ $$ = _astFactory.Function(@$, true, false, PhpMemberAttributes.None, (TypeRef)$8, 
+		{ $$ = _astFactory.Function(@$, true, $2 == (long)FormalParam.Flags.IsByRef, PhpMemberAttributes.None, (TypeRef)$8, 
 			new Name((string)$3), @3, null, (List<FormalParam>)$6, CombineSpans(@5, @7), 
 			_astFactory.Block(CombineSpans(@10, @12), (List<LangElement>)$11)); 
 		if($4 != null)
@@ -808,7 +808,7 @@ class_statement:
 			{ $$ = _astFactory.TraitUse(@$, ((List<TypeRef>)$2).Select(t => t.QualifiedName.Value), (List<TraitsUse.TraitAdaptation>)$3); }
 	|	method_modifiers function returns_ref identifier backup_doc_comment '(' parameter_list ')'
 		return_type backup_fn_flags method_body backup_fn_flags
-			{ $$ = _astFactory.Method(@$, false, (PhpMemberAttributes)$1, 
+			{ $$ = _astFactory.Method(@$, $3 == (long)FormalParam.Flags.IsByRef, (PhpMemberAttributes)$1, 
 				(TypeRef)$9, @9, (string)$4, @4, null, (List<FormalParam>)$7, @8, 
 				null, (LangElement)$11); 
 			if($5 != null) ((MethodDecl)$$).PHPDoc = (PHPDocBlock)$5;
@@ -1062,7 +1062,7 @@ expr_without_variable:
 	|	T_EXIT exit_expr	{ $$ = _astFactory.Exit(@$, (Expression)$2); }
 	|	'@' expr			{ $$ = _astFactory.UnaryOperation(@$, Operations.AtSign,     (Expression)$2); }
 	|	scalar { $$ = $1; }
-	|	'`' backticks_expr '`' { $$ = _astFactory.Shell(@$, (LangElement)$2); }
+	|	'`' backticks_expr '`' { $$ = _astFactory.Shell(@$, $2 == null? _astFactory.Literal(new Span(@1.End, 0), string.Empty): (LangElement)$2); }
 	|	T_PRINT expr { $$ = _astFactory.UnaryOperation(@$, Operations.Print, (Expression)$2); }
 	|	T_YIELD { $$ = _astFactory.Yield(@$, null, null); }
 	|	T_YIELD expr { $$ = _astFactory.Yield(@$, null, (LangElement)$2); }
@@ -1070,14 +1070,14 @@ expr_without_variable:
 	|	T_YIELD_FROM expr { $$ = _astFactory.YieldFrom(@$, (LangElement)$2); }
 	|	function returns_ref backup_doc_comment '(' parameter_list ')' lexical_vars return_type
 		backup_fn_flags '{' inner_statement_list '}' backup_fn_flags
-			{ $$ = _astFactory.Lambda(@$, CombineSpans(@1, @2, @3, @4, @5, @6, @7, @8), false, (TypeRef)$8, 
+			{ $$ = _astFactory.Lambda(@$, CombineSpans(@1, @2, @3, @4, @5, @6, @7, @8), $2 == (long)FormalParam.Flags.IsByRef, (TypeRef)$8, 
 				(List<FormalParam>)$5, CombineSpans(@4, @6), 
 				(List<FormalParam>)$7, _astFactory.Block(CombineSpans(@10, @11, @12), (List<LangElement>)$11)); 
 			if($3 != null) ((LambdaFunctionExpr)$$).PHPDoc = (PHPDocBlock)$3;
 			}
 	|	T_STATIC function returns_ref backup_doc_comment '(' parameter_list ')' lexical_vars
 		return_type backup_fn_flags '{' inner_statement_list '}' backup_fn_flags
-			{ $$ = _astFactory.Lambda(@$, CombineSpans(@1, @2, @3, @4, @5, @6, @7, @8, @9), false, (TypeRef)$9, 
+			{ $$ = _astFactory.Lambda(@$, CombineSpans(@1, @2, @3, @4, @5, @6, @7, @8, @9), $3 == (long)FormalParam.Flags.IsByRef, (TypeRef)$9, 
 				(List<FormalParam>)$6, CombineSpans(@5, @7), 
 				(List<FormalParam>)$8, _astFactory.Block(CombineSpans(@11, @12, @13), (List<LangElement>)$12)); 
 			if($4 != null) ((LambdaFunctionExpr)$$).PHPDoc = (PHPDocBlock)$4;
@@ -1158,10 +1158,9 @@ exit_expr:
 ;
 
 backticks_expr:
-		/* empty */
-			{ $$ = _astFactory.Literal(@$, string.Empty); }
+		/* empty */ { $$ = null; }
 	|	T_ENCAPSED_AND_WHITESPACE { $$ = _astFactory.Literal(@$, $1); }
-	|	encaps_list { $$ = $1; }
+	|	encaps_list { $$ = _astFactory.Concat(@$, (List<LangElement>)$1); }
 ;
 
 
@@ -1189,8 +1188,7 @@ scalar:
 	|	T_NS_C		{ $$ = _astFactory.PseudoConstUse(@$, PseudoConstUse.Types.Namespace); }
 	|	T_CLASS_C	{ $$ = _astFactory.PseudoConstUse(@$, PseudoConstUse.Types.Class); }    
 	|	T_START_HEREDOC T_ENCAPSED_AND_WHITESPACE T_END_HEREDOC { $$ = _astFactory.Literal(@$, $2); }
-	|	T_START_HEREDOC T_END_HEREDOC
-			{ $$ = string.Empty; }
+	|	T_START_HEREDOC T_END_HEREDOC { $$ = _astFactory.Literal(new Span(@1.End, 0), string.Empty); }
 	|	'"' encaps_list '"' 	{ $$ = _astFactory.Concat(@$, (List<LangElement>)$2); }
 	|	T_START_HEREDOC encaps_list T_END_HEREDOC { $$ = _astFactory.Concat(@$, (List<LangElement>)$2); }
 	|	dereferencable_scalar	{ $$ = $1; }
@@ -1221,8 +1219,8 @@ variable_class_name:
 
 dereferencable:
 		variable				{ $$ = $1; }
-	|	'(' expr ')'			{ $$ = $2; }
-	|	dereferencable_scalar	{ $$ = $1; }
+	|	'(' expr ')'			{ $$ = _astFactory.Variable(@$, (LangElement)$2, (LangElement)null); }
+	|	dereferencable_scalar	{ $$ = _astFactory.Variable(@$, (LangElement)$1, (LangElement)null); }
 ;
 
 callable_expr:

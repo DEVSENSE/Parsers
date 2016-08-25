@@ -782,15 +782,15 @@ namespace Devsense.PHP.Syntax
             return (Tokens.T_NUM_STRING);
         }
 
-        Tokens ProcessEndNowDoc(Func<string, string> f)
+        bool ProcessEndNowDoc(Func<string, string> f)
         {
             BEGIN(LexicalStates.ST_END_HEREDOC);
             string label = GetTokenString();
-            label = label.TrimEnd(new char[] { '\r', '\n', ';' });
+            label = label.TrimEnd(new char[] { ' ', '\t', '\r', '\n', ';' });
             // move back at the end of the heredoc label - yyless does not work properly (requires additional condition for the optional ';')
             lookahead_index = token_end = lookahead_index - (TokenLength - label.Length) - 1;
             _tokenSemantics.Object = f(label.Substring(0, label.Length - _hereDocLabel.Length));
-            return (Tokens.T_ENCAPSED_AND_WHITESPACE);
+            return label.Length - _hereDocLabel.Length > 0;
         }
 
         #region Compressed State

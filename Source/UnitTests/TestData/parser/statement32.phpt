@@ -1,6 +1,6 @@
 <?php
 
-X::include;
+static::include;
 
 ?>
 <<<TEST>>>
@@ -9,6 +9,6 @@ X::include;
   "NamingContext":{},
   "ClassConstUse":{
   "Name":"include",
-    "DirectTypeRef":{"ClassName":"X"}
+    "DirectTypeRef":{"ClassName":"static"}
   }
 }

@@ -53,6 +53,7 @@ HNUM	"0x"[0-9a-fA-F]+
 BNUM	"0b"[01]+
 LABEL	[a-zA-Z_][a-zA-Z0-9_]* //[a-zA-Z_\x80-\xff][a-zA-Z0-9_\x80-\xff]* // support of unicode
 WHITESPACE [ \n\r\t]+
+JUSTWHITESPACE [ \t]+
 TABS_AND_SPACES [ \t]*
 TOKENS [;:,.\[\]()|^&+-/*=%!~$<>?@]
 ANY_CHAR [^]
@@ -885,13 +886,19 @@ NonVariableStart        [^a-zA-Z_{]
 
 <ST_NOWDOC>^{LABEL}(";")?{NEWLINE} {
     if(GetTokenString().Contains(this._hereDocLabel))
-		return ProcessEndNowDoc(s => s);
+	{
+		BEGIN(LexicalStates.ST_END_HEREDOC); 
+		if( ProcessEndNowDoc(s => s) ) return (Tokens.T_ENCAPSED_AND_WHITESPACE);
+	}
     yymore(); break;
 }
 
 <ST_HEREDOC>^{LABEL}(";")?{NEWLINE} {
     if(GetTokenString().Contains(this._hereDocLabel))
-		return ProcessEndNowDoc(s => (string)ProcessEscapedString(s, _encoding, false));
+	{
+		BEGIN(LexicalStates.ST_END_HEREDOC); 
+		if( ProcessEndNowDoc(s => (string)ProcessEscapedString(s, _encoding, false)) ) return (Tokens.T_ENCAPSED_AND_WHITESPACE);
+	}
     yymore(); break;
 }
 

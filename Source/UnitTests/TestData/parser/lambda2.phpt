@@ -1,6 +1,6 @@
 <?php
 /** lambda doc */
-$greet = static function(string $name) use($x, $y): integer
+$greet = static function(string $name) use($x, &$y): integer
 {
     print("Hello world");
 };
@@ -17,7 +17,7 @@ $greet = static function(string $name) use($x, $y): integer
       "PHPDoc":{"Comment":"lambda doc"},
       "UseParams":{
         "FormalParam":{"Name":"x","PassedByRef":"False","IsVariadic":"False"},
-        "FormalParam":{"Name":"y","PassedByRef":"False","IsVariadic":"False"}
+        "FormalParam":{"Name":"y","PassedByRef":"True","IsVariadic":"False"}
       },
       "FormalParams":{
         "FormalParam":{"Name":"name","PassedByRef":"False","IsVariadic":"False",

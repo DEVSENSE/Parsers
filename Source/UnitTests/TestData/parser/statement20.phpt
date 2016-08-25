@@ -3,7 +3,8 @@
 X::$stat;
 $x::$stat; 
 X::${stat};    
-$x::${stat};
+$x::${stat};   
+${x}::${stat};
 
 ?>
 <<<TEST>>>
@@ -13,5 +14,6 @@ $x::${stat};
   "DirectStFldUse":{"PropertyName":"stat","DirectTypeRef":{"ClassName":"X"}},
   "DirectStFldUse":{"PropertyName":"stat","IndirectTypeRef":{"DirectVarUse":{"VarName":"x"}}},
   "IndirectStFldUse":{"GlobalConstUse":{"Name":"stat"},"DirectTypeRef":{"ClassName":"X"}},
-  "IndirectStFldUse":{"GlobalConstUse":{"Name":"stat"},"IndirectTypeRef":{"DirectVarUse":{"VarName":"x"}}}
+  "IndirectStFldUse":{"GlobalConstUse":{"Name":"stat"},"IndirectTypeRef":{"DirectVarUse":{"VarName":"x"}}},
+  "IndirectStFldUse":{"GlobalConstUse":{"Name":"stat"},"IndirectTypeRef":{"IndirectVarUse":{"GlobalConstUse":{"Name":"x"}}}}
 }

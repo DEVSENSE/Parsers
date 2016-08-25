@@ -2,7 +2,7 @@
 if ($a > $b)
 {
   /** function doc */
-  function foo(MyClass $arg_1, ?integer $arg_2 = 4, &$arg_n = 1, callable $a): array
+  function & foo(MyClass $arg_1, ?integer $arg_2 = 4, &$arg_n = 1, callable $a): array
   {
       echo "Example function.\n", "hello";
       return $retval;
