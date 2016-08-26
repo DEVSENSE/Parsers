@@ -2897,9 +2897,9 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
       case 384: // function_call -> class_name T_DOUBLE_COLON member_name argument_list 
 {
 				if(value_stack.array[value_stack.top-2].yyval.Object is Name)
-					yyval.Object = _astFactory.Call(yypos, (Name)value_stack.array[value_stack.top-2].yyval.Object, value_stack.array[value_stack.top-2].yypos, new CallSignature((List<ActualParam>)value_stack.array[value_stack.top-1].yyval.Object), (TypeRef)_astFactory.TypeReference(value_stack.array[value_stack.top-4].yypos, TranslateAny(((TypeRef)value_stack.array[value_stack.top-4].yyval.Object).QualifiedName.Value), false, null)); 
+					yyval.Object = _astFactory.Call(yypos, (Name)value_stack.array[value_stack.top-2].yyval.Object, value_stack.array[value_stack.top-2].yypos, new CallSignature((List<ActualParam>)value_stack.array[value_stack.top-1].yyval.Object), Translate((TypeRef)value_stack.array[value_stack.top-4].yyval.Object)); 
 				else
-					yyval.Object = _astFactory.Call(yypos, (LangElement)value_stack.array[value_stack.top-2].yyval.Object, new CallSignature((List<ActualParam>)value_stack.array[value_stack.top-1].yyval.Object), (TypeRef)_astFactory.TypeReference(value_stack.array[value_stack.top-4].yypos, ((TypeRef)value_stack.array[value_stack.top-4].yyval.Object).QualifiedName.Value, false, null)); 
+					yyval.Object = _astFactory.Call(yypos, (LangElement)value_stack.array[value_stack.top-2].yyval.Object, new CallSignature((List<ActualParam>)value_stack.array[value_stack.top-1].yyval.Object), Translate((TypeRef)value_stack.array[value_stack.top-4].yyval.Object)); 
 			}
         return;
       case 385: // function_call -> variable_class_name T_DOUBLE_COLON member_name argument_list 
