@@ -1904,13 +1904,13 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 { yyval.Object = AddToList<string>(value_stack.array[value_stack.top-3].yyval.Object, value_stack.array[value_stack.top-1].yyval.Object); }
         return;
       case 84: // name -> namespace_name 
-{ yyval.Object = _astFactory.TypeReference(yypos, new QualifiedName((List<string>)value_stack.array[value_stack.top-1].yyval.Object, true, false), false, TypeRef.EmptyList); }
+{ yyval.Object = new QualifiedNameRef(yypos, new QualifiedName((List<string>)value_stack.array[value_stack.top-1].yyval.Object, true, false)); }
         return;
       case 85: // name -> T_NAMESPACE T_NS_SEPARATOR namespace_name 
-{ yyval.Object = _astFactory.TypeReference(yypos, new QualifiedName((List<string>)value_stack.array[value_stack.top-1].yyval.Object, true,  true), false, TypeRef.EmptyList); }
+{ yyval.Object = new QualifiedNameRef(yypos, new QualifiedName((List<string>)value_stack.array[value_stack.top-1].yyval.Object, true,  true)); }
         return;
       case 86: // name -> T_NS_SEPARATOR namespace_name 
-{ yyval.Object = _astFactory.TypeReference(yypos, new QualifiedName((List<string>)value_stack.array[value_stack.top-1].yyval.Object, true,  true), false, TypeRef.EmptyList); }
+{ yyval.Object = new QualifiedNameRef(yypos, new QualifiedName((List<string>)value_stack.array[value_stack.top-1].yyval.Object, true,  true)); }
         return;
       case 87: // top_statement -> statement 
 { 
@@ -2153,20 +2153,20 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 				yyval.Object = AddToList<CatchItem>(value_stack.array[value_stack.top-9].yyval.Object, _astFactory.Catch(yypos, 
 					(TypeRef)_astFactory.TypeReference(value_stack.array[value_stack.top-6].yypos, (List<TypeRef>)value_stack.array[value_stack.top-6].yyval.Object, null), 
 					(DirectVarUse)_astFactory.Variable(value_stack.array[value_stack.top-5].yypos, new VariableName((string)value_stack.array[value_stack.top-5].yyval.Object), (LangElement)null), 
-					_astFactory.Block(value_stack.array[value_stack.top-2].yypos, (List<LangElement>)value_stack.array[value_stack.top-2].yyval.Object))); 
+					_astFactory.Block(CombineSpans(value_stack.array[value_stack.top-3].yypos, value_stack.array[value_stack.top-1].yypos), (List<LangElement>)value_stack.array[value_stack.top-2].yyval.Object))); 
 			}
         return;
       case 157: // catch_name_list -> name 
-{ yyval.Object = new List<TypeRef>() { (TypeRef)_astFactory.TypeReference(value_stack.array[value_stack.top-1].yypos, TranslateAny(((TypeRef)value_stack.array[value_stack.top-1].yyval.Object).QualifiedName.Value), false, TypeRef.EmptyList) }; }
+{ yyval.Object = new List<TypeRef>() { (TypeRef)_astFactory.TypeReference(((QualifiedNameRef)value_stack.array[value_stack.top-1].yyval.Object).Span, TranslateAny(((QualifiedNameRef)value_stack.array[value_stack.top-1].yyval.Object).QualifiedName), false, TypeRef.EmptyList) }; }
         return;
       case 158: // catch_name_list -> catch_name_list '|' name 
-{ yyval.Object = AddToList<TypeRef>(value_stack.array[value_stack.top-3].yyval.Object, _astFactory.TypeReference(value_stack.array[value_stack.top-1].yypos, TranslateAny(((TypeRef)value_stack.array[value_stack.top-1].yyval.Object).QualifiedName.Value), false, TypeRef.EmptyList)); }
+{ yyval.Object = AddToList<TypeRef>(value_stack.array[value_stack.top-3].yyval.Object, _astFactory.TypeReference(((QualifiedNameRef)value_stack.array[value_stack.top-1].yyval.Object).Span, TranslateAny(((QualifiedNameRef)value_stack.array[value_stack.top-1].yyval.Object).QualifiedName), false, TypeRef.EmptyList)); }
         return;
       case 159: // finally_statement -> 
 { yyval.Object = null; }
         return;
       case 160: // finally_statement -> T_FINALLY '{' inner_statement_list '}' 
-{ yyval.Object =_astFactory.Finally(yypos, _astFactory.Block(value_stack.array[value_stack.top-2].yypos, (List<LangElement>)value_stack.array[value_stack.top-2].yyval.Object)); }
+{ yyval.Object =_astFactory.Finally(yypos, _astFactory.Block(CombineSpans(value_stack.array[value_stack.top-3].yypos, value_stack.array[value_stack.top-1].yypos), (List<LangElement>)value_stack.array[value_stack.top-2].yyval.Object)); }
         return;
       case 161: // unset_variables -> unset_variable 
 { yyval.Object = new List<LangElement>() { (LangElement)value_stack.array[value_stack.top-1].yyval.Object }; }
@@ -2241,7 +2241,7 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 { yyval.Object = null; }
         return;
       case 178: // extends_from -> T_EXTENDS name 
-{ yyval.Object = value_stack.array[value_stack.top-1].yyval.Object; }
+{ yyval.Object = (TypeRef)_astFactory.TypeReference(((QualifiedNameRef)value_stack.array[value_stack.top-1].yyval.Object).Span, TranslateAny(((QualifiedNameRef)value_stack.array[value_stack.top-1].yyval.Object).QualifiedName), false, TypeRef.EmptyList); }
         return;
       case 179: // interface_extends_list -> 
 { yyval.Object = null; }
@@ -2385,7 +2385,7 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 { yyval.Object = QualifiedName.Callable; }
         return;
       case 224: // type -> name 
-{ yyval.Object = ((TypeRef)value_stack.array[value_stack.top-1].yyval.Object).QualifiedName.Value; }
+{ yyval.Object = ((QualifiedNameRef)value_stack.array[value_stack.top-1].yyval.Object).QualifiedName; }
         return;
       case 225: // return_type -> 
 { yyval.Object = null; }
@@ -2463,10 +2463,10 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 			}
         return;
       case 246: // name_list -> name 
-{ yyval.Object = new List<TypeRef>() { (TypeRef)_astFactory.TypeReference(value_stack.array[value_stack.top-1].yypos, TranslateAny(((TypeRef)value_stack.array[value_stack.top-1].yyval.Object).QualifiedName.Value), false, TypeRef.EmptyList) }; }
+{ yyval.Object = new List<TypeRef>() { (TypeRef)_astFactory.TypeReference(((QualifiedNameRef)value_stack.array[value_stack.top-1].yyval.Object).Span, TranslateAny(((QualifiedNameRef)value_stack.array[value_stack.top-1].yyval.Object).QualifiedName), false, TypeRef.EmptyList) }; }
         return;
       case 247: // name_list -> name_list ',' name 
-{ yyval.Object = AddToList<TypeRef>(value_stack.array[value_stack.top-3].yyval.Object, _astFactory.TypeReference(value_stack.array[value_stack.top-1].yypos, TranslateAny(((TypeRef)value_stack.array[value_stack.top-1].yyval.Object).QualifiedName.Value), false, TypeRef.EmptyList)); }
+{ yyval.Object = AddToList<TypeRef>(value_stack.array[value_stack.top-3].yyval.Object, _astFactory.TypeReference(((QualifiedNameRef)value_stack.array[value_stack.top-1].yyval.Object).Span, TranslateAny(((QualifiedNameRef)value_stack.array[value_stack.top-1].yyval.Object).QualifiedName), false, TypeRef.EmptyList)); }
         return;
       case 248: // trait_adaptations -> ';' 
 { yyval.Object = new List<TraitsUse.TraitAdaptation>(); }
@@ -2512,7 +2512,7 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 { yyval.Object = value_stack.array[value_stack.top-1].yyval.Object; }
         return;
       case 262: // absolute_trait_method_reference -> name T_DOUBLE_COLON identifier 
-{ yyval.Object = new Tuple<QualifiedName?,Name>(((TypeRef)value_stack.array[value_stack.top-3].yyval.Object).QualifiedName.Value, new Name((string)value_stack.array[value_stack.top-1].yyval.Object)); }
+{ yyval.Object = new Tuple<QualifiedName?,Name>(((QualifiedNameRef)value_stack.array[value_stack.top-3].yyval.Object).QualifiedName, new Name((string)value_stack.array[value_stack.top-1].yyval.Object)); }
         return;
       case 263: // method_body -> ';' 
 { yyval.Object = null; }
@@ -2888,7 +2888,7 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
         return;
       case 383: // function_call -> name argument_list 
 { 
-				var qname = ((TypeRef)value_stack.array[value_stack.top-2].yyval.Object).QualifiedName.Value;
+				var qname = ((QualifiedNameRef)value_stack.array[value_stack.top-2].yyval.Object).QualifiedName;
                 QualifiedName? fallbackQName;
                 TranslateFallbackQualifiedName(ref qname, out fallbackQName, this._namingContext.FunctionAliases);
 				yyval.Object = _astFactory.Call(yypos, qname, fallbackQName, value_stack.array[value_stack.top-2].yypos, new CallSignature((List<ActualParam>)value_stack.array[value_stack.top-1].yyval.Object), null); 
@@ -2917,7 +2917,7 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 { yyval.Object = _astFactory.TypeReference(yypos, new QualifiedName(Name.StaticClassName), false, null); }
         return;
       case 388: // class_name -> name 
-{ yyval.Object = _astFactory.TypeReference(yypos, TranslateAny(((TypeRef)value_stack.array[value_stack.top-1].yyval.Object).QualifiedName.Value), false, TypeRef.EmptyList); }
+{ yyval.Object = _astFactory.TypeReference(yypos, TranslateAny(((QualifiedNameRef)value_stack.array[value_stack.top-1].yyval.Object).QualifiedName), false, TypeRef.EmptyList); }
         return;
       case 389: // class_name_reference -> class_name 
 { yyval.Object = value_stack.array[value_stack.top-1].yyval.Object; }
@@ -3005,7 +3005,7 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
         return;
       case 417: // constant -> name 
 { 
-				var qname = ((TypeRef)value_stack.array[value_stack.top-1].yyval.Object).QualifiedName.Value;
+				var qname = ((QualifiedNameRef)value_stack.array[value_stack.top-1].yyval.Object).QualifiedName;
                 QualifiedName? fallbackQName;
 				if (qname.IsSimpleName && (qname == QualifiedName.Null || qname == QualifiedName.True || qname == QualifiedName.False))
 				{

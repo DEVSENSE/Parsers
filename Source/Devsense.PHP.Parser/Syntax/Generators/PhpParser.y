@@ -328,9 +328,9 @@ namespace_name:
 ;
 
 name:
-		namespace_name								{ $$ = _astFactory.TypeReference(@$, new QualifiedName((List<string>)$1, true, false), false, TypeRef.EmptyList); }
-	|	T_NAMESPACE T_NS_SEPARATOR namespace_name	{ $$ = _astFactory.TypeReference(@$, new QualifiedName((List<string>)$3, true,  true), false, TypeRef.EmptyList); }
-	|	T_NS_SEPARATOR namespace_name				{ $$ = _astFactory.TypeReference(@$, new QualifiedName((List<string>)$2, true,  true), false, TypeRef.EmptyList); }
+		namespace_name								{ $$ = new QualifiedNameRef(@$, new QualifiedName((List<string>)$1, true, false)); }
+	|	T_NAMESPACE T_NS_SEPARATOR namespace_name	{ $$ = new QualifiedNameRef(@$, new QualifiedName((List<string>)$3, true,  true)); }
+	|	T_NS_SEPARATOR namespace_name				{ $$ = new QualifiedNameRef(@$, new QualifiedName((List<string>)$2, true,  true)); }
 ;
 
 top_statement:
@@ -510,18 +510,18 @@ catch_list:
 				$$ = AddToList<CatchItem>($1, _astFactory.Catch(@$, 
 					(TypeRef)_astFactory.TypeReference(@4, (List<TypeRef>)$4, null), 
 					(DirectVarUse)_astFactory.Variable(@5, new VariableName((string)$5), (LangElement)null), 
-					_astFactory.Block(@8, (List<LangElement>)$8))); 
+					_astFactory.Block(CombineSpans(@7, @9), (List<LangElement>)$8))); 
 			}
 ;
 
 catch_name_list:
-		name { $$ = new List<TypeRef>() { (TypeRef)_astFactory.TypeReference(@1, TranslateAny(((TypeRef)$1).QualifiedName.Value), false, TypeRef.EmptyList) }; }
-	|	catch_name_list '|' name { $$ = AddToList<TypeRef>($1, _astFactory.TypeReference(@3, TranslateAny(((TypeRef)$3).QualifiedName.Value), false, TypeRef.EmptyList)); }
+		name { $$ = new List<TypeRef>() { (TypeRef)_astFactory.TypeReference(((QualifiedNameRef)$1).Span, TranslateAny(((QualifiedNameRef)$1).QualifiedName), false, TypeRef.EmptyList) }; }
+	|	catch_name_list '|' name { $$ = AddToList<TypeRef>($1, _astFactory.TypeReference(((QualifiedNameRef)$3).Span, TranslateAny(((QualifiedNameRef)$3).QualifiedName), false, TypeRef.EmptyList)); }
 ;
 
 finally_statement:
 		/* empty */ { $$ = null; }
-	|	T_FINALLY '{' inner_statement_list '}' { $$ =_astFactory.Finally(@$, _astFactory.Block(@3, (List<LangElement>)$3)); }
+	|	T_FINALLY '{' inner_statement_list '}' { $$ =_astFactory.Finally(@$, _astFactory.Block(CombineSpans(@2, @4), (List<LangElement>)$3)); }
 ;
 
 unset_variables:
@@ -599,7 +599,7 @@ interface_declaration_statement:
 
 extends_from:
 		/* empty */		{ $$ = null; }
-	|	T_EXTENDS name	{ $$ = $2; }
+	|	T_EXTENDS name	{ $$ = (TypeRef)_astFactory.TypeReference(((QualifiedNameRef)$2).Span, TranslateAny(((QualifiedNameRef)$2).QualifiedName), false, TypeRef.EmptyList); }
 ;
 
 interface_extends_list:
@@ -736,7 +736,7 @@ type_expr:
 type:
 		T_ARRAY		{ $$ = QualifiedName.Array; }
 	|	T_CALLABLE	{ $$ = QualifiedName.Callable; }
-	|	name		{ $$ = ((TypeRef)$1).QualifiedName.Value; }
+	|	name		{ $$ = ((QualifiedNameRef)$1).QualifiedName; }
 ;
 
 return_type:
@@ -816,8 +816,8 @@ class_statement:
 ;
 
 name_list:
-		name { $$ = new List<TypeRef>() { (TypeRef)_astFactory.TypeReference(@1, TranslateAny(((TypeRef)$1).QualifiedName.Value), false, TypeRef.EmptyList) }; }
-	|	name_list ',' name { $$ = AddToList<TypeRef>($1, _astFactory.TypeReference(@3, TranslateAny(((TypeRef)$3).QualifiedName.Value), false, TypeRef.EmptyList)); }
+		name { $$ = new List<TypeRef>() { (TypeRef)_astFactory.TypeReference(((QualifiedNameRef)$1).Span, TranslateAny(((QualifiedNameRef)$1).QualifiedName), false, TypeRef.EmptyList) }; }
+	|	name_list ',' name { $$ = AddToList<TypeRef>($1, _astFactory.TypeReference(((QualifiedNameRef)$3).Span, TranslateAny(((QualifiedNameRef)$3).QualifiedName), false, TypeRef.EmptyList)); }
 ;
 
 trait_adaptations:
@@ -863,7 +863,7 @@ trait_method_reference:
 
 absolute_trait_method_reference:
 	name T_DOUBLE_COLON identifier
-		{ $$ = new Tuple<QualifiedName?,Name>(((TypeRef)$1).QualifiedName.Value, new Name((string)$3)); }
+		{ $$ = new Tuple<QualifiedName?,Name>(((QualifiedNameRef)$1).QualifiedName, new Name((string)$3)); }
 ;
 
 method_body:
@@ -1123,7 +1123,7 @@ lexical_var:
 function_call:
 		name argument_list
 			{ 
-				var qname = ((TypeRef)$1).QualifiedName.Value;
+				var qname = ((QualifiedNameRef)$1).QualifiedName;
                 QualifiedName? fallbackQName;
                 TranslateFallbackQualifiedName(ref qname, out fallbackQName, this._namingContext.FunctionAliases);
 				$$ = _astFactory.Call(@$, qname, fallbackQName, @1, new CallSignature((List<ActualParam>)$2), null); 
@@ -1149,7 +1149,7 @@ function_call:
 class_name:
 		T_STATIC
 			{ $$ = _astFactory.TypeReference(@$, new QualifiedName(Name.StaticClassName), false, null); }
-	|	name { $$ = _astFactory.TypeReference(@$, TranslateAny(((TypeRef)$1).QualifiedName.Value), false, TypeRef.EmptyList); }
+	|	name { $$ = _astFactory.TypeReference(@$, TranslateAny(((QualifiedNameRef)$1).QualifiedName), false, TypeRef.EmptyList); }
 ;
 
 class_name_reference:
@@ -1203,7 +1203,7 @@ scalar:
 constant:
 		name 
 			{ 
-				var qname = ((TypeRef)$1).QualifiedName.Value;
+				var qname = ((QualifiedNameRef)$1).QualifiedName;
                 QualifiedName? fallbackQName;
 				if (qname.IsSimpleName && (qname == QualifiedName.Null || qname == QualifiedName.True || qname == QualifiedName.False))
 				{

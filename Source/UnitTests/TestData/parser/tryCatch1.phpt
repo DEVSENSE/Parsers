@@ -36,9 +36,11 @@ try {
         "Variable":{
           "DirectVarUse":{"VarName":"e"}
         },
-        "Statements":{
-          "EchoStmt":{
-            "StringLiteral":{"Value":"world"}
+        "Body":{
+          "BlockStmt":{
+            "EchoStmt":{
+              "StringLiteral":{"Value":"world"}
+            }
           }
         }
       },
@@ -51,16 +53,22 @@ try {
         "Variable":{
           "DirectVarUse":{"VarName":"e"}
         },
-        "Statements":{
-          "EchoStmt":{
-            "StringLiteral":{"Value":"all"}
+        "Body":{
+          "BlockStmt":{
+            "EchoStmt":{
+              "StringLiteral":{"Value":"all"}
+            }
           }
         }
       }
     },
     "FinallyItem":{
-      "EchoStmt":{
-        "StringLiteral":{"Value":"finally"}
+      "Body":{
+        "BlockStmt":{
+          "EchoStmt":{
+            "StringLiteral":{"Value":"finally"}
+          }
+        }
       }
     } 
   }

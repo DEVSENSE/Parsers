@@ -400,13 +400,13 @@ namespace Devsense.PHP.Syntax.Ast
         public virtual LangElement Catch(Span span, TypeRef typeOpt, DirectVarUse variable, LangElement block)
         {
             Debug.Assert(block is BlockStmt && typeOpt != null);
-            return new CatchItem(span, typeOpt, variable, ((BlockStmt)block).Statements);
+            return new CatchItem(span, typeOpt, variable, (BlockStmt)block);
         }
 
         public virtual LangElement Finally(Span span, LangElement block)
         {
             Debug.Assert(block is BlockStmt);
-            return new FinallyItem(span, ((BlockStmt)block).Statements);
+            return new FinallyItem(span, (BlockStmt)block);
         }
 
         public virtual LangElement Throw(Span span, LangElement expression)

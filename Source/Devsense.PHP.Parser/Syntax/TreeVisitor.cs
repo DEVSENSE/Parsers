@@ -827,7 +827,7 @@ namespace Devsense.PHP.Syntax
         {
             VisitElement(x.TypeRef);
             VisitElement(x.Variable);
-            VisitList(x.Statements);
+            VisitElement(x.Body);
         }
 
         /// <summary>
@@ -835,7 +835,7 @@ namespace Devsense.PHP.Syntax
         /// </summary>
         virtual public void VisitFinallyItem(FinallyItem x)
         {
-            VisitList(x.Statements);
+            VisitElement(x.Body);
         }
 
         /// <summary>

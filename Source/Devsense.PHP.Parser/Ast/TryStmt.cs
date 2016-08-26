@@ -29,7 +29,7 @@ namespace Devsense.PHP.Syntax.Ast
         private readonly FinallyItem finallyItem;
         /// <summary>A list of statements contained in the finally-block. Can be a <c>null</c> reference.</summary>
         public FinallyItem FinallyItem { get { return finallyItem; } }
-        internal bool HasFinallyStatements { get { return finallyItem != null && finallyItem.Statements.Length != 0; } }
+        internal bool HasFinallyStatements { get { return finallyItem != null && finallyItem.Body.Statements.Length != 0; } }
 
         public TryStmt(Text.Span p, BlockStmt/*!*/ body, List<CatchItem> catches, FinallyItem finallyItem)
             : base(p)
@@ -57,11 +57,10 @@ namespace Devsense.PHP.Syntax.Ast
     public sealed class CatchItem : LangElement
     {
         /// <summary>
-        /// A list of statements contained in the catch-block.
+        /// A block containing the list of statements contained in the catch-block.
         /// </summary>
-        private readonly Statement[]/*!*/ statements;
-        /// <summary>A list of statements contained in the catch-block.</summary>
-        public Statement[]/*!*/ Statements { get { return statements; } }
+        public BlockStmt/*!*/ Body { get { return body; } }
+        private readonly BlockStmt/*!*/ body;
 
         /// <summary>
         /// A variable where an exception is assigned in.
@@ -84,14 +83,14 @@ namespace Devsense.PHP.Syntax.Ast
         public TypeRef TypeRef { get { return tref; } }
 
         public CatchItem(Text.Span p, TypeRef tref, DirectVarUse/*!*/ variable,
-            IList<Statement>/*!*/ statements)
+            BlockStmt body)
             : base(p)
         {
-            Debug.Assert(variable != null && statements != null);
+            Debug.Assert(variable != null && body != null);
 
             this.tref = tref;
             this.variable = variable;
-            this.statements = statements.AsArray();
+            this.body = body;
         }
 
         /// <summary>
@@ -110,16 +109,15 @@ namespace Devsense.PHP.Syntax.Ast
     public sealed class FinallyItem : LangElement
     {
         /// <summary>
-        /// A list of statements contained in the finally-block.
+        /// Statements in the finally block
         /// </summary>
-        private readonly Statement[]/*!*/statements;
-        /// <summary>A list of statements contained in the try-block.</summary>
-        public Statement[]/*!*/Statements { get { return statements; } }
+        public BlockStmt/*!*/ Body { get { return body; } }
+        private readonly BlockStmt/*!*/ body;
 
-        public FinallyItem(Text.Span span, IList<Statement>/*!*/statements)
+        public FinallyItem(Text.Span span, BlockStmt body)
             : base(span)
         {
-            this.statements = statements.AsArray();
+            this.body = body;
         }
 
         public override void VisitMe(TreeVisitor visitor)

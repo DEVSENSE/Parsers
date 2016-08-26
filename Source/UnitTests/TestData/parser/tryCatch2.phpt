@@ -27,13 +27,14 @@ try {
         "Variable":{
           "DirectVarUse":{"VarName":"e"}
         },
-        "Statements":{
-          "EchoStmt":{
-            "StringLiteral":{"Value":"world"}
+        "Body":{
+          "BlockStmt":{
+            "EchoStmt":{
+              "StringLiteral":{"Value":"world"}
+            }
           }
         }
       }
-    },
-    "FinallyItem":{} 
+    }
   }
 }

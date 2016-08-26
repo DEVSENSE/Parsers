@@ -436,30 +436,25 @@ namespace Devsense.PHP.Syntax.Ast.Serialization
             SerializeOptionalProperty("Body", x.Body);
 
             _serializer.StartSerialize("Catches");
-            // visit catch blocks
             if (x.Catches != null)
                 foreach (CatchItem c in x.Catches)
                     VisitElement(c);
             _serializer.EndSerialize();
-
-            _serializer.StartSerialize("FinallyItem");
-            // visit finally block
             VisitElement(x.FinallyItem);
-            _serializer.EndSerialize();
             _serializer.EndSerialize();
         }
         override public void VisitCatchItem(CatchItem x)
         {
             _serializer.StartSerialize(typeof(CatchItem).Name, SerializeSpan(x.Span));
-            _serializer.StartSerialize("TypeRef");
-            VisitElement(x.TypeRef);
+            SerializeOptionalProperty("TypeRef", x.TypeRef);
+            SerializeOptionalProperty("Variable", x.Variable);
+            SerializeOptionalProperty("Body", x.Body);
             _serializer.EndSerialize();
-            _serializer.StartSerialize("Variable");
-            VisitElement(x.Variable);
-            _serializer.EndSerialize();
-            _serializer.StartSerialize("Statements");
-            VisitList(x.Statements);
-            _serializer.EndSerialize();
+        }
+        override public void VisitFinallyItem(FinallyItem x)
+        {
+            _serializer.StartSerialize(typeof(FinallyItem).Name, SerializeSpan(x.Span));
+            SerializeOptionalProperty("Body", x.Body);
             _serializer.EndSerialize();
         }
         override public void VisitDirectTypeRef(DirectTypeRef x)
