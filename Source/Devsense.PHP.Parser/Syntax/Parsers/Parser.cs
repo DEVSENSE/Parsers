@@ -292,6 +292,30 @@ namespace Devsense.PHP.Syntax
             return Span.FromBounds(validSpans.Min(s => s.Start), validSpans.Max(s => s.End));
         }
 
+        #region Aliasing
+
+        /// <summary>
+        /// Translates given type reference according to current <see cref="_namingContext"/>.
+        /// </summary>
+        /// <param name="tref"></param>
+        /// <returns></returns>
+        TypeRef Translate(TypeRef/*!*/tref)
+        {
+            Debug.Assert(tref != null);
+
+            if (tref is DirectTypeRef) return new DirectTypeRef(tref.Span, TranslateAny(((DirectTypeRef)tref).ClassName));
+            if (tref is NullableTypeRef) return new NullableTypeRef(tref.Span, Translate(((NullableTypeRef)tref).TargetType));
+            if (tref is MultipleTypeRef) return new MultipleTypeRef(tref.Span, ((MultipleTypeRef)tref).MultipleTypes.Select(Translate).ToList());
+            if (tref is GenericTypeRef) throw new NotImplementedException();
+            // PrimitiveTypeRef is not translated
+            // IndirectTypeRef is not translated
+            
+            //
+            return tref;
+        }
+
+        #endregion
+
         private void TranslateFallbackQualifiedName(ref QualifiedName qname, out QualifiedName? fallbackQName, Dictionary<string, QualifiedName> aliases)
         {
             // aliasing
@@ -324,7 +348,7 @@ namespace Devsense.PHP.Syntax
 
         private QualifiedName TranslateNamespace(QualifiedName qname)
         {
-            return qname.IsFullyQualifiedName || qname.IsSimpleName? qname: TranslateAlias(qname);
+            return qname.IsFullyQualifiedName || qname.IsSimpleName ? qname : TranslateAlias(qname);
         }
 
         private QualifiedName TranslateAlias(QualifiedName qname)
@@ -332,7 +356,7 @@ namespace Devsense.PHP.Syntax
             Debug.Assert(!qname.IsFullyQualifiedName);
             // do not use current namespace, if there are imported namespace ... will be resolved later
             return QualifiedName.TranslateAlias(qname, this._namingContext.Aliases,
-                (IsInGlobalNamespace/* || sourceUnit.HasImportedNamespaces*/) ? (QualifiedName?)null : _namingContext.CurrentNamespace.Value);  
+                (IsInGlobalNamespace/* || sourceUnit.HasImportedNamespaces*/) ? (QualifiedName?)null : _namingContext.CurrentNamespace.Value);
         }
 
         private QualifiedName TranslateAny(QualifiedName qname)

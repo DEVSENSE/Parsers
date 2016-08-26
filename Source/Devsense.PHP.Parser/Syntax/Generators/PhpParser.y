@@ -1131,9 +1131,9 @@ function_call:
 	|	class_name T_DOUBLE_COLON member_name argument_list
 			{
 				if($3 is Name)
-					$$ = _astFactory.Call(@$, (Name)$3, @3, new CallSignature((List<ActualParam>)$4), (TypeRef)_astFactory.TypeReference(@1, TranslateAny(((TypeRef)$1).QualifiedName.Value), false, null)); 
+					$$ = _astFactory.Call(@$, (Name)$3, @3, new CallSignature((List<ActualParam>)$4), Translate((TypeRef)$1)); 
 				else
-					$$ = _astFactory.Call(@$, (LangElement)$3, new CallSignature((List<ActualParam>)$4), (TypeRef)_astFactory.TypeReference(@1, ((TypeRef)$1).QualifiedName.Value, false, null)); 
+					$$ = _astFactory.Call(@$, (LangElement)$3, new CallSignature((List<ActualParam>)$4), Translate((TypeRef)$1)); 
 			}
 	|	variable_class_name T_DOUBLE_COLON member_name argument_list
 			{

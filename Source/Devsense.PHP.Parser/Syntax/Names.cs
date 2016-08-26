@@ -686,13 +686,26 @@ namespace Devsense.PHP.Syntax
         }
 
         /// <summary>
+        /// Translates <see cref="QualifiedName"/> according to given naming.
+        /// </summary>
+        public static QualifiedName TranslateAlias(QualifiedName qname, NamingContext naming)
+        {
+            if (naming != null)
+            {
+                qname = TranslateAlias(qname, naming.Aliases, naming.CurrentNamespace);
+            }
+
+            return qname;
+        }
+
+        /// <summary>
         /// Builds <see cref="QualifiedName"/> with first element aliased if posible.
         /// </summary>
         /// <param name="qname">Qualified name to translate.</param>
         /// <param name="aliases">Enumeration of aliases.</param>
-        /// <param name="currentNamespace">Current namespace to be prepended if no alias if found.</param>
+        /// <param name="currentNamespace">Current namespace to be prepended if no alias is found.</param>
         /// <returns>Qualified name that has been tralated according to given naming context.</returns>
-        public static QualifiedName TranslateAlias(QualifiedName qname, Dictionary<string, QualifiedName>/*!*/aliases, QualifiedName? currentNamespace)
+        public static QualifiedName TranslateAlias(QualifiedName qname, Dictionary<string, QualifiedName> aliases, QualifiedName? currentNamespace)
         {
             if (!qname.IsFullyQualifiedName)
             {
