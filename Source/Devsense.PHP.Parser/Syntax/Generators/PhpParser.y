@@ -289,7 +289,10 @@ using Devsense.PHP.Errors;
 %% /* Rules */
 
 start:
-    { SetNamingContext(null); } top_statement_list
+    {
+		SetNamingContext(null);
+	}
+	top_statement_list
 	{ 
 		AssignNamingContext(); 
 		AssignStatements((List<LangElement>)$2);
@@ -352,24 +355,21 @@ top_statement:
                 QualifiedName name = new QualifiedName((List<string>)$2, false, true);
                 SetNamingContext(name.NamespacePhpName);
                 $$ = _currentNamespace = (NamespaceDecl)_astFactory.Namespace(@$, name, @2, _namingContext);
-				if(Scanner.DocBlock != null)
-					((NamespaceDecl)$$).PHPDoc = Scanner.DocBlock;
+				if(Scanner.DocBlock != null) ((NamespaceDecl)$$).PHPDoc = Scanner.DocBlock; // TODO: SetDoc($$, Scanner.DocBlock);
 				ResetDocBlock(); 
 			}
 	|	T_NAMESPACE namespace_name { $$ = Scanner.DocBlock; ResetDocBlock(); var list = (List<string>)$2; SetNamingContext((list != null && list.Count > 0)? string.Join(QualifiedName.Separator.ToString(), list): null); }
 		'{' top_statement_list '}'
 			{ 
 				$$ = _astFactory.Namespace(@$, new QualifiedName((List<string>)$2, false, true), @2, _astFactory.Block(CombineSpans(@4, @6), (List<LangElement>)$5), _namingContext); 
-				if($3.Object != null)
-					((NamespaceDecl)$$).PHPDoc = (PHPDocBlock)$3.Object;
+				if($3.Object != null) ((NamespaceDecl)$$).PHPDoc = (PHPDocBlock)$3.Object;// TODO: SetDoc($$, $3.Object);
 				ResetNamingContext(); 
 			}
 	|	T_NAMESPACE { $$ = Scanner.DocBlock; ResetDocBlock(); SetNamingContext(null); }
 		'{' top_statement_list '}'
 			{ 
 				$$ = _astFactory.Namespace(@$, null, @$, _astFactory.Block(CombineSpans(@3, @5), (List<LangElement>)$4), _namingContext); 
-				if($2.Object != null)
-					((NamespaceDecl)$$).PHPDoc = (PHPDocBlock)$2.Object; 
+				if($2.Object != null) ((NamespaceDecl)$$).PHPDoc = (PHPDocBlock)$2.Object;  // TODO: SetDoc($$, $2.DocBlock);
 				ResetNamingContext(); 
 			}
 	|	T_USE mixed_group_use_declaration ';'		{ _contextType = ContextType.Class; }
@@ -379,8 +379,7 @@ top_statement:
 	|	T_CONST list_backup_doc_comment const_list ';'	
 			{
 				$$ = _astFactory.DeclList(@$, PhpMemberAttributes.None, (List<LangElement>)$3); 
-				if($2 != null)
-					((GlobalConstDeclList)$$).PHPDoc = (PHPDocBlock)$2;
+				if($2 != null) ((GlobalConstDeclList)$$).PHPDoc = (PHPDocBlock)$2; // TODO: SetDoc($$, $2);
 			}
 ;
 
@@ -514,7 +513,7 @@ catch_list:
 			}
 ;
 
-catch_name_list:
+catch_name_list: // TODO: helper method Translate(QualifiedNameRef), TODO: catch_name_list -> List<QualifiedNameRef>
 		name { $$ = new List<TypeRef>() { (TypeRef)_astFactory.TypeReference(((QualifiedNameRef)$1).Span, TranslateAny(((QualifiedNameRef)$1).QualifiedName), false, TypeRef.EmptyList) }; }
 	|	catch_name_list '|' name { $$ = AddToList<TypeRef>($1, _astFactory.TypeReference(((QualifiedNameRef)$3).Span, TranslateAny(((QualifiedNameRef)$3).QualifiedName), false, TypeRef.EmptyList)); }
 ;
@@ -540,7 +539,7 @@ function_declaration_statement:
 			new Name((string)$3), @3, null, (List<FormalParam>)$6, CombineSpans(@5, @7), 
 			_astFactory.Block(CombineSpans(@10, @12), (List<LangElement>)$11)); 
 		if($4 != null)
-			((FunctionDecl)$$).PHPDoc = (PHPDocBlock)$4;
+			((FunctionDecl)$$).PHPDoc = (PHPDocBlock)$4;// TODO: SetDoc($$, $4);
 		}
 ;
 
@@ -559,13 +558,13 @@ class_declaration_statement:
 			{ 
 				$$ = _astFactory.Type(@$, CombineSpans(@1, @2, @3, @4, @5), true, (PhpMemberAttributes)$1, new Name((string)$3), @3, null, 
 				(TypeRef)$4, (List<TypeRef>)$5, (List<LangElement>)$8, CombineSpans(@7, @8, @9)); 
-				if($6 != null) ((TypeDecl)$$).PHPDoc = (PHPDocBlock)$6;
+				if($6 != null) ((TypeDecl)$$).PHPDoc = (PHPDocBlock)$6;// TODO: SetDoc($$, $6);
 			}
 	|	T_CLASS T_STRING extends_from implements_list backup_doc_comment '{' class_statement_list '}'
 			{ 
 				$$ = _astFactory.Type(@$, CombineSpans(@1, @2, @3, @4), true, PhpMemberAttributes.None, new Name((string)$2), @2, null, 
 				(TypeRef)$3, (List<TypeRef>)$4, (List<LangElement>)$7, CombineSpans(@6, @7, @8)); 
-				if($5 != null) ((TypeDecl)$$).PHPDoc = (PHPDocBlock)$5;
+				if($5 != null) ((TypeDecl)$$).PHPDoc = (PHPDocBlock)$5;// TODO: SetDoc($$, $5);
 			}
 ;
 
@@ -795,14 +794,13 @@ class_statement:
 		variable_modifiers list_backup_doc_comment property_list ';'
 			{ 
 				$$ = _astFactory.DeclList(@$, (PhpMemberAttributes)$1, (List<LangElement>)$3); 
-				if($2 != null)
-					((FieldDeclList)$$).PHPDoc = (PHPDocBlock)$2;
+				if($2 != null) ((FieldDeclList)$$).PHPDoc = (PHPDocBlock)$2; // TODO: SetDoc($$, $2);
 			}
 	|	method_modifiers T_CONST list_backup_doc_comment class_const_list ';'
 			{ 
 				$$ = _astFactory.DeclList(@$, (PhpMemberAttributes)$1, (List<LangElement>)$4); 
 				if($3 != null)
-					((ConstDeclList)$$).PHPDoc = (PHPDocBlock)$3;
+					((ConstDeclList)$$).PHPDoc = (PHPDocBlock)$3;// TODO: SetDoc($$, $3);
 			}
 	|	T_USE name_list trait_adaptations
 			{ $$ = _astFactory.TraitUse(@$, ((List<TypeRef>)$2).Select(t => t.QualifiedName.Value), (List<TraitsUse.TraitAdaptation>)$3); }
@@ -811,11 +809,11 @@ class_statement:
 			{ $$ = _astFactory.Method(@$, $3 == (long)FormalParam.Flags.IsByRef, (PhpMemberAttributes)$1, 
 				(TypeRef)$9, @9, (string)$4, @4, null, (List<FormalParam>)$7, @8, 
 				null, (LangElement)$11); 
-			if($5 != null) ((MethodDecl)$$).PHPDoc = (PHPDocBlock)$5;
+			if($5 != null) ((MethodDecl)$$).PHPDoc = (PHPDocBlock)$5;	// TODO: SetDoc($$, $5);
 			}
 ;
 
-name_list:
+name_list: // TOOD: List<QualifiedNameRef>
 		name { $$ = new List<TypeRef>() { (TypeRef)_astFactory.TypeReference(((QualifiedNameRef)$1).Span, TranslateAny(((QualifiedNameRef)$1).QualifiedName), false, TypeRef.EmptyList) }; }
 	|	name_list ',' name { $$ = AddToList<TypeRef>($1, _astFactory.TypeReference(((QualifiedNameRef)$3).Span, TranslateAny(((QualifiedNameRef)$3).QualifiedName), false, TypeRef.EmptyList)); }
 ;
@@ -904,9 +902,9 @@ property_list:
 
 property:
 		T_VARIABLE backup_doc_comment
-			{ $$ = _astFactory.FieldDecl(@$, new VariableName((string)$1), null); if($2 != null) ((FieldDecl)$$).PHPDoc = (PHPDocBlock)$2; }
+			{ $$ = _astFactory.FieldDecl(@$, new VariableName((string)$1), null); if($2 != null) ((FieldDecl)$$).PHPDoc = (PHPDocBlock)$2; }	// TODO: ((FieldDecl)$$).PHPDoc -> SetDoc($$, $2);
 	|	T_VARIABLE '=' expr backup_doc_comment
-			{ $$ = _astFactory.FieldDecl(@$, new VariableName((string)$1), (Expression)$3); if($4 != null) ((FieldDecl)$$).PHPDoc = (PHPDocBlock)$4; }
+			{ $$ = _astFactory.FieldDecl(@$, new VariableName((string)$1), (Expression)$3); if($4 != null) ((FieldDecl)$$).PHPDoc = (PHPDocBlock)$4; }	// TODO: ((FieldDecl)$$).PHPDoc -> SetDoc($$, $2);
 ;
 
 class_const_list:
@@ -916,12 +914,12 @@ class_const_list:
 
 class_const_decl:
 	identifier '=' expr backup_doc_comment { $$ = _astFactory.ClassConstDecl(@$, new VariableName((string)$1), @1, (LangElement)$3); 
-		if($4 != null) ((ClassConstantDecl)$$).PHPDoc = (PHPDocBlock)$4; }
+		if($4 != null) ((ClassConstantDecl)$$).PHPDoc = (PHPDocBlock)$4; } // TODO: ((ClassConstantDecl)$$).PHPDoc -> SetDoc($$, $2);
 ;
 
 const_decl:
 	T_STRING '=' expr backup_doc_comment { $$ = _astFactory.GlobalConstDecl(@$, false, new VariableName((string)$1), @1, (LangElement)$3); 
-		if($4 != null) ((GlobalConstantDecl)$$).PHPDoc = (PHPDocBlock)$4; }
+		if($4 != null) ((GlobalConstantDecl)$$).PHPDoc = (PHPDocBlock)$4; } // TOOD: ((ClassConstantDecl)$$).PHPDoc -> SetDoc($$, $2);
 ;
 
 echo_expr_list:
@@ -945,6 +943,7 @@ non_empty_for_exprs:
 anonymous_class:
         T_CLASS ctor_arguments
 		extends_from implements_list backup_doc_comment '{' class_statement_list '}' {
+			// TODO: var tref = ...; SetDoc(tref, $5); $$ = Tuple(tref, (List<ActualParam>)$2);
 			$$ = new Tuple<TypeRef, List<ActualParam>>((TypeRef)_astFactory.AnonymousTypeReference(@$, CombineSpans(@1, @2), true, PhpMemberAttributes.None, null, 
 				(TypeRef)$3, (List<TypeRef>)$4, (List<LangElement>)$7, @7),
 				(List<ActualParam>)$2); 
@@ -1073,14 +1072,14 @@ expr_without_variable:
 			{ $$ = _astFactory.Lambda(@$, CombineSpans(@1, @2, @3, @4, @5, @6, @7, @8), $2 == (long)FormalParam.Flags.IsByRef, (TypeRef)$8, 
 				(List<FormalParam>)$5, CombineSpans(@4, @6), 
 				(List<FormalParam>)$7, _astFactory.Block(CombineSpans(@10, @11, @12), (List<LangElement>)$11)); 
-			if($3 != null) ((LambdaFunctionExpr)$$).PHPDoc = (PHPDocBlock)$3;
+			if($3 != null) ((LambdaFunctionExpr)$$).PHPDoc = (PHPDocBlock)$3;// TODO: SetDoc($$, $3);
 			}
 	|	T_STATIC function returns_ref backup_doc_comment '(' parameter_list ')' lexical_vars
 		return_type backup_fn_flags '{' inner_statement_list '}' backup_fn_flags
 			{ $$ = _astFactory.Lambda(@$, CombineSpans(@1, @2, @3, @4, @5, @6, @7, @8, @9), $3 == (long)FormalParam.Flags.IsByRef, (TypeRef)$9, 
 				(List<FormalParam>)$6, CombineSpans(@5, @7), 
 				(List<FormalParam>)$8, _astFactory.Block(CombineSpans(@11, @12, @13), (List<LangElement>)$12)); 
-			if($4 != null) ((LambdaFunctionExpr)$$).PHPDoc = (PHPDocBlock)$4;
+			if($4 != null) ((LambdaFunctionExpr)$$).PHPDoc = (PHPDocBlock)$4;// TODO: SetDoc($$, $4);
 			}
 ;
 
@@ -1149,7 +1148,7 @@ function_call:
 class_name:
 		T_STATIC
 			{ $$ = _astFactory.TypeReference(@$, new QualifiedName(Name.StaticClassName), false, null); }
-	|	name { $$ = _astFactory.TypeReference(@$, TranslateAny(((QualifiedNameRef)$1).QualifiedName), false, TypeRef.EmptyList); }
+	|	name { $$ = _astFactory.TypeReference(@$, TranslateAny(((QualifiedNameRef)$1).QualifiedName), false, TypeRef.EmptyList); }	// TODO: Translate! class_name must be returned translated, remove ALL unnecesary Translate when using class_name
 ;
 
 class_name_reference:
