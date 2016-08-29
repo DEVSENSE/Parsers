@@ -95,7 +95,7 @@ namespace Devsense.PHP.Syntax
             _filePath = filePath;
             _encoding = encoding;
             _innerLineBreaks = lineBreaks;
-            _naming = new NamingContext(null, null);
+            _naming = new NamingContext(null);
         }
 
         #endregion

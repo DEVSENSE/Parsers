@@ -16,10 +16,10 @@ namespace Devsense.PHP.Syntax
         ITokenProvider<SemanticValueType, Span> _lexer;
         INodesFactory<LangElement, Span> _astFactory;
         IErrorSink<Span> _errors;
-        Scope _currentScope;
+        Scope _currentScope;    // TODO: remove or maintain
         NamespaceDecl _currentNamespace = null;
-        List<NamingContext> _context = new List<NamingContext>();
-        NamingContext _namingContext { get { return _context.Last(); } }
+        readonly Stack<NamingContext> _context = new Stack<NamingContext>();
+        NamingContext _namingContext => _context.Peek();    // TODO: property without _ prefix
         ContextType _contextType = ContextType.Class;
 
         /// <summary>
@@ -92,14 +92,18 @@ namespace Devsense.PHP.Syntax
             return result;
         }
 
-        void SetNamingContext(string nameSpace)
+        void SetNamingContext(List<string> ns)
         {
-            _context.Add(new NamingContext(nameSpace, 1));
+            var qname = (ns != null && ns.Count != 0)
+                ? (QualifiedName?)new QualifiedName(ns, false, true)
+                : null;
+
+            _context.Push(new NamingContext(qname));
         }
 
         void ResetNamingContext()
         {
-            _context.RemoveLast();
+            _context.Pop();
         }
 
         void AssignNamingContext()

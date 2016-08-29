@@ -1030,36 +1030,13 @@ namespace Devsense.PHP.Syntax
         #region Construction
 
         /// <summary>
-        /// Initialize new instance of <see cref="NamingContext"/>.
-        /// </summary>
-        /// <param name="currentNamespace">Current namespace. Can be null. Not starting with <see cref="QualifiedName.Separator"/>.</param>
-        /// <param name="aliases">Amount of aliases. <c>0</c> means the <see cref="Aliases"/> property will be null.</param>
-        public NamingContext(string currentNamespace, int aliases)
-        {
-            // current namespace:
-            if (string.IsNullOrEmpty(currentNamespace))
-            {
-                this.CurrentNamespace = null;
-            }
-            else
-            {
-                Debug.Assert(currentNamespace[0] != QualifiedName.Separator);   // not starting with separator
-                this.CurrentNamespace = new QualifiedName(currentNamespace.Split(QualifiedName.Separator), false, true);
-            }
-
-            // aliases (just initialize dictionary, items added later):
-            _aliases = (aliases > 0) ? new Dictionary<string, QualifiedName>(aliases, StringComparer.OrdinalIgnoreCase) : null;
-        }
-
-        /// <summary>
         /// Initializes new instance of <see cref="NamingContext"/>
         /// </summary>
-        public NamingContext(QualifiedName? currentNamespace, Dictionary<string, QualifiedName> aliases)
+        public NamingContext(QualifiedName? currentNamespace)
         {
-            Debug.Assert(!currentNamespace.HasValue || string.IsNullOrEmpty(currentNamespace.Value.Name.Value));
+            Debug.Assert(!currentNamespace.HasValue || string.IsNullOrEmpty(currentNamespace.Value.Name.Value), "Valid namespace QualifiedName has no base name.");
 
             this.CurrentNamespace = currentNamespace;
-            _aliases = aliases;
         }
 
         /// <summary>
