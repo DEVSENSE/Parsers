@@ -2182,16 +2182,16 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
       case 156: // catch_list -> catch_list T_CATCH '(' catch_name_list T_VARIABLE ')' '{' inner_statement_list '}' 
 { 
 				yyval.Object = AddToList<CatchItem>(value_stack.array[value_stack.top-9].yyval.Object, _astFactory.Catch(yypos, 
-					(TypeRef)_astFactory.TypeReference(value_stack.array[value_stack.top-6].yypos, TypeListFromNameList(value_stack.array[value_stack.top-6].yyval.Object), null), 
+					(TypeRef)_astFactory.TypeReference(value_stack.array[value_stack.top-6].yypos, TypeRefListFromTranslatedQNRList(value_stack.array[value_stack.top-6].yyval.Object), null), 
 					(DirectVarUse)_astFactory.Variable(value_stack.array[value_stack.top-5].yypos, new VariableName((string)value_stack.array[value_stack.top-5].yyval.Object), (LangElement)null), 
 					_astFactory.Block(CombineSpans(value_stack.array[value_stack.top-3].yypos, value_stack.array[value_stack.top-1].yypos), (List<LangElement>)value_stack.array[value_stack.top-2].yyval.Object))); 
 			}
         return;
       case 157: // catch_name_list -> name 
-{ yyval.Object = new List<QualifiedNameRef>() { TranslateType(value_stack.array[value_stack.top-1].yyval.Object) }; }
+{ yyval.Object = new List<QualifiedNameRef>() { TranslateQNR(value_stack.array[value_stack.top-1].yyval.Object) }; }
         return;
       case 158: // catch_name_list -> catch_name_list '|' name 
-{ yyval.Object = AddToList<QualifiedNameRef>(value_stack.array[value_stack.top-3].yyval.Object, TranslateType(value_stack.array[value_stack.top-1].yyval.Object)); }
+{ yyval.Object = AddToList<QualifiedNameRef>(value_stack.array[value_stack.top-3].yyval.Object, TranslateQNR(value_stack.array[value_stack.top-1].yyval.Object)); }
         return;
       case 159: // finally_statement -> 
 { yyval.Object = null; }
@@ -2230,14 +2230,14 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
       case 169: // class_declaration_statement -> class_modifiers T_CLASS T_STRING extends_from implements_list backup_doc_comment enter_scope '{' class_statement_list '}' exit_scope 
 { 
 				yyval.Object = _astFactory.Type(yypos, CombineSpans(value_stack.array[value_stack.top-11].yypos, value_stack.array[value_stack.top-10].yypos, value_stack.array[value_stack.top-9].yypos, value_stack.array[value_stack.top-8].yypos, value_stack.array[value_stack.top-7].yypos), isConditional, (PhpMemberAttributes)value_stack.array[value_stack.top-11].yyval.Long, new Name((string)value_stack.array[value_stack.top-9].yyval.Object), value_stack.array[value_stack.top-9].yypos, null, 
-				(TypeRef)value_stack.array[value_stack.top-8].yyval.Object, (List<TypeRef>)value_stack.array[value_stack.top-7].yyval.Object, (List<LangElement>)value_stack.array[value_stack.top-3].yyval.Object, CombineSpans(value_stack.array[value_stack.top-4].yypos, value_stack.array[value_stack.top-2].yypos)); 
+				(TypeRef)value_stack.array[value_stack.top-8].yyval.Object, (IEnumerable<TypeRef>)value_stack.array[value_stack.top-7].yyval.Object, (List<LangElement>)value_stack.array[value_stack.top-3].yyval.Object, CombineSpans(value_stack.array[value_stack.top-4].yypos, value_stack.array[value_stack.top-2].yypos)); 
 				SetDoc(yyval.Object, value_stack.array[value_stack.top-6].yyval.Object);
 			}
         return;
       case 170: // class_declaration_statement -> T_CLASS T_STRING extends_from implements_list backup_doc_comment enter_scope '{' class_statement_list '}' exit_scope 
 { 
 				yyval.Object = _astFactory.Type(yypos, CombineSpans(value_stack.array[value_stack.top-10].yypos, value_stack.array[value_stack.top-9].yypos, value_stack.array[value_stack.top-8].yypos, value_stack.array[value_stack.top-7].yypos), isConditional, PhpMemberAttributes.None, new Name((string)value_stack.array[value_stack.top-9].yyval.Object), value_stack.array[value_stack.top-9].yypos, null, 
-				(TypeRef)value_stack.array[value_stack.top-8].yyval.Object, (List<TypeRef>)value_stack.array[value_stack.top-7].yyval.Object, (List<LangElement>)value_stack.array[value_stack.top-3].yyval.Object, CombineSpans(value_stack.array[value_stack.top-4].yypos, value_stack.array[value_stack.top-2].yypos)); 
+				(TypeRef)value_stack.array[value_stack.top-8].yyval.Object, (IEnumerable<TypeRef>)value_stack.array[value_stack.top-7].yyval.Object, (List<LangElement>)value_stack.array[value_stack.top-3].yyval.Object, CombineSpans(value_stack.array[value_stack.top-4].yypos, value_stack.array[value_stack.top-2].yypos)); 
 				SetDoc(yyval.Object, value_stack.array[value_stack.top-6].yyval.Object);
 			}
         return;
@@ -2263,7 +2263,7 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
       case 176: // interface_declaration_statement -> T_INTERFACE T_STRING interface_extends_list backup_doc_comment enter_scope '{' class_statement_list '}' exit_scope 
 { 
 				yyval.Object = _astFactory.Type(yypos, CombineSpans(value_stack.array[value_stack.top-9].yypos, value_stack.array[value_stack.top-8].yypos, value_stack.array[value_stack.top-7].yypos), isConditional, PhpMemberAttributes.Interface, new Name((string)value_stack.array[value_stack.top-8].yyval.Object), value_stack.array[value_stack.top-8].yypos, null, 
-					null, (List<TypeRef>)value_stack.array[value_stack.top-7].yyval.Object, (List<LangElement>)value_stack.array[value_stack.top-3].yyval.Object, CombineSpans(value_stack.array[value_stack.top-4].yypos, value_stack.array[value_stack.top-2].yypos)); 
+					null, (IEnumerable<TypeRef>)value_stack.array[value_stack.top-7].yyval.Object, (List<LangElement>)value_stack.array[value_stack.top-3].yyval.Object, CombineSpans(value_stack.array[value_stack.top-4].yypos, value_stack.array[value_stack.top-2].yypos)); 
 				SetDoc(yyval.Object, value_stack.array[value_stack.top-6].yyval.Object);
 			}
         return;
@@ -2271,19 +2271,19 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 { yyval.Object = null; }
         return;
       case 178: // extends_from -> T_EXTENDS name 
-{ yyval.Object = (TypeRef)_astFactory.TypeReference(((QualifiedNameRef)value_stack.array[value_stack.top-1].yyval.Object).Span, TranslateAny(((QualifiedNameRef)value_stack.array[value_stack.top-1].yyval.Object).QualifiedName), false, TypeRef.EmptyList); }
+{ yyval.Object = TypeRefFromName(TranslateQNR(value_stack.array[value_stack.top-1].yyval.Object)); }
         return;
       case 179: // interface_extends_list -> 
 { yyval.Object = null; }
         return;
       case 180: // interface_extends_list -> T_EXTENDS name_list 
-{ yyval.Object = value_stack.array[value_stack.top-1].yyval.Object; }
+{ yyval.Object = TypeRefListFromQNRList(value_stack.array[value_stack.top-1].yyval.Object); }
         return;
       case 181: // implements_list -> 
 { yyval.Object = null; }
         return;
       case 182: // implements_list -> T_IMPLEMENTS name_list 
-{ yyval.Object = value_stack.array[value_stack.top-1].yyval.Object; }
+{ yyval.Object = TypeRefListFromQNRList(value_stack.array[value_stack.top-1].yyval.Object); }
         return;
       case 183: // foreach_variable -> variable 
 { yyval.Object = value_stack.array[value_stack.top-1].yyval.Object; }
@@ -2403,19 +2403,19 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 { yyval.Object = value_stack.array[value_stack.top-1].yyval.Object; }
         return;
       case 220: // type_expr -> type 
-{ yyval.Object = _astFactory.TypeReference(yypos, TranslateAny((QualifiedName)value_stack.array[value_stack.top-1].yyval.Object), false, null); }
+{ yyval.Object = TypeRefFromName(TranslateQNR(value_stack.array[value_stack.top-1].yyval.Object), false); }
         return;
       case 221: // type_expr -> '?' type 
-{ yyval.Object = _astFactory.TypeReference(yypos, TranslateAny((QualifiedName)value_stack.array[value_stack.top-1].yyval.Object), true, null); }
+{ yyval.Object = TypeRefFromName(TranslateQNR(value_stack.array[value_stack.top-1].yyval.Object), true); }
         return;
       case 222: // type -> T_ARRAY 
-{ yyval.Object = QualifiedName.Array; }
+{ yyval.Object = new QualifiedNameRef(yypos, QualifiedName.Array); }
         return;
       case 223: // type -> T_CALLABLE 
-{ yyval.Object = QualifiedName.Callable; }
+{ yyval.Object = new QualifiedNameRef(yypos, QualifiedName.Callable); }
         return;
       case 224: // type -> name 
-{ yyval.Object = ((QualifiedNameRef)value_stack.array[value_stack.top-1].yyval.Object).QualifiedName; }
+{ yyval.Object = value_stack.array[value_stack.top-1].yyval.Object; }
         return;
       case 225: // return_type -> 
 { yyval.Object = null; }
@@ -2481,7 +2481,7 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 			}
         return;
       case 244: // class_statement -> T_USE name_list trait_adaptations 
-{ yyval.Object = _astFactory.TraitUse(yypos, ((List<TypeRef>)value_stack.array[value_stack.top-2].yyval.Object).Select(t => t.QualifiedName.Value), (List<TraitsUse.TraitAdaptation>)value_stack.array[value_stack.top-1].yyval.Object); }
+{ yyval.Object = _astFactory.TraitUse(yypos, (List<QualifiedNameRef>)value_stack.array[value_stack.top-2].yyval.Object, (List<TraitsUse.TraitAdaptation>)value_stack.array[value_stack.top-1].yyval.Object); }
         return;
       case 245: // class_statement -> method_modifiers function returns_ref identifier backup_doc_comment '(' parameter_list ')' return_type backup_fn_flags method_body backup_fn_flags 
 { yyval.Object = _astFactory.Method(yypos, value_stack.array[value_stack.top-10].yyval.Long == (long)FormalParam.Flags.IsByRef, (PhpMemberAttributes)value_stack.array[value_stack.top-12].yyval.Long, 
@@ -2491,10 +2491,10 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 			}
         return;
       case 246: // name_list -> name 
-{ yyval.Object = new List<TypeRef>() { (TypeRef)_astFactory.TypeReference(((QualifiedNameRef)value_stack.array[value_stack.top-1].yyval.Object).Span, TranslateAny(((QualifiedNameRef)value_stack.array[value_stack.top-1].yyval.Object).QualifiedName), false, TypeRef.EmptyList) }; }
+{ yyval.Object = new List<QualifiedNameRef>() { (QualifiedNameRef)value_stack.array[value_stack.top-1].yyval.Object }; }
         return;
       case 247: // name_list -> name_list ',' name 
-{ yyval.Object = AddToList<TypeRef>(value_stack.array[value_stack.top-3].yyval.Object, _astFactory.TypeReference(((QualifiedNameRef)value_stack.array[value_stack.top-1].yyval.Object).Span, TranslateAny(((QualifiedNameRef)value_stack.array[value_stack.top-1].yyval.Object).QualifiedName), false, TypeRef.EmptyList)); }
+{ yyval.Object = AddToList<QualifiedNameRef>(value_stack.array[value_stack.top-3].yyval.Object,(QualifiedNameRef)value_stack.array[value_stack.top-1].yyval.Object); }
         return;
       case 248: // trait_adaptations -> ';' 
 { yyval.Object = new List<TraitsUse.TraitAdaptation>(); }
@@ -2519,28 +2519,28 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 { yyval.Object = value_stack.array[value_stack.top-2].yyval.Object; }
         return;
       case 255: // trait_precedence -> absolute_trait_method_reference T_INSTEADOF name_list 
-{ yyval.Object = _astFactory.TraitAdaptationPrecedence(yypos, (Tuple<QualifiedName?,Name>)value_stack.array[value_stack.top-3].yyval.Object, ((List<TypeRef>)value_stack.array[value_stack.top-1].yyval.Object).Select(t => t.QualifiedName.Value)); }
+{ yyval.Object = _astFactory.TraitAdaptationPrecedence(yypos, (Tuple<QualifiedNameRef?,NameRef>)value_stack.array[value_stack.top-3].yyval.Object, (List<QualifiedNameRef>)value_stack.array[value_stack.top-1].yyval.Object); }
         return;
       case 256: // trait_alias -> trait_method_reference T_AS T_STRING 
-{ yyval.Object = _astFactory.TraitAdaptationAlias(yypos, (Tuple<QualifiedName?, Name>)value_stack.array[value_stack.top-3].yyval.Object, (string)value_stack.array[value_stack.top-1].yyval.Object, null); }
+{ yyval.Object = _astFactory.TraitAdaptationAlias(yypos, (Tuple<QualifiedNameRef?, NameRef>)value_stack.array[value_stack.top-3].yyval.Object, new NameRef(value_stack.array[value_stack.top-1].yypos, (string)value_stack.array[value_stack.top-1].yyval.Object), null); }
         return;
       case 257: // trait_alias -> trait_method_reference T_AS reserved_non_modifiers 
-{ yyval.Object = _astFactory.TraitAdaptationAlias(yypos, (Tuple<QualifiedName?, Name>)value_stack.array[value_stack.top-3].yyval.Object, (string)value_stack.array[value_stack.top-1].yyval.Object, null); }
+{ yyval.Object = _astFactory.TraitAdaptationAlias(yypos, (Tuple<QualifiedNameRef?, NameRef>)value_stack.array[value_stack.top-3].yyval.Object, new NameRef(value_stack.array[value_stack.top-1].yypos, (string)value_stack.array[value_stack.top-1].yyval.Object), null); }
         return;
       case 258: // trait_alias -> trait_method_reference T_AS member_modifier identifier 
-{ yyval.Object = _astFactory.TraitAdaptationAlias(yypos, (Tuple<QualifiedName?, Name>)value_stack.array[value_stack.top-4].yyval.Object, (string)value_stack.array[value_stack.top-1].yyval.Object, (PhpMemberAttributes)value_stack.array[value_stack.top-2].yyval.Long); }
+{ yyval.Object = _astFactory.TraitAdaptationAlias(yypos, (Tuple<QualifiedNameRef?, NameRef>)value_stack.array[value_stack.top-4].yyval.Object, new NameRef(value_stack.array[value_stack.top-1].yypos, (string)value_stack.array[value_stack.top-1].yyval.Object), (PhpMemberAttributes)value_stack.array[value_stack.top-2].yyval.Long); }
         return;
       case 259: // trait_alias -> trait_method_reference T_AS member_modifier 
-{ yyval.Object = _astFactory.TraitAdaptationAlias(yypos, (Tuple<QualifiedName?, Name>)value_stack.array[value_stack.top-3].yyval.Object, null, (PhpMemberAttributes)value_stack.array[value_stack.top-1].yyval.Long); }
+{ yyval.Object = _astFactory.TraitAdaptationAlias(yypos, (Tuple<QualifiedNameRef?, NameRef>)value_stack.array[value_stack.top-3].yyval.Object, null, (PhpMemberAttributes)value_stack.array[value_stack.top-1].yyval.Long); }
         return;
       case 260: // trait_method_reference -> identifier 
-{ yyval.Object = new Tuple<QualifiedName?,Name>(null, new Name((string)value_stack.array[value_stack.top-1].yyval.Object)); }
+{ yyval.Object = new Tuple<QualifiedNameRef?,NameRef>(null, new NameRef(value_stack.array[value_stack.top-1].yypos, (string)value_stack.array[value_stack.top-1].yyval.Object)); }
         return;
       case 261: // trait_method_reference -> absolute_trait_method_reference 
 { yyval.Object = value_stack.array[value_stack.top-1].yyval.Object; }
         return;
       case 262: // absolute_trait_method_reference -> name T_DOUBLE_COLON identifier 
-{ yyval.Object = new Tuple<QualifiedName?,Name>(((QualifiedNameRef)value_stack.array[value_stack.top-3].yyval.Object).QualifiedName, new Name((string)value_stack.array[value_stack.top-1].yyval.Object)); }
+{ yyval.Object = new Tuple<QualifiedNameRef?,NameRef>((QualifiedNameRef)value_stack.array[value_stack.top-3].yyval.Object, new NameRef(value_stack.array[value_stack.top-1].yypos, (string)value_stack.array[value_stack.top-1].yyval.Object)); }
         return;
       case 263: // method_body -> ';' 
 { yyval.Object = null; }
@@ -2924,18 +2924,16 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
         return;
       case 385: // function_call -> name argument_list 
 { 
-				var qname = ((QualifiedNameRef)value_stack.array[value_stack.top-2].yyval.Object).QualifiedName;
-                QualifiedName? fallbackQName;
-                TranslateFallbackQualifiedName(ref qname, out fallbackQName, this.namingContext.FunctionAliases);
-				yyval.Object = _astFactory.Call(yypos, qname, fallbackQName, value_stack.array[value_stack.top-2].yypos, new CallSignature((List<ActualParam>)value_stack.array[value_stack.top-1].yyval.Object), null); 
+				var name = TranslateQNRFunction(value_stack.array[value_stack.top-2].yyval.Object);
+				yyval.Object = _astFactory.Call(yypos, name.Item1, name.Item2, value_stack.array[value_stack.top-2].yypos, new CallSignature((List<ActualParam>)value_stack.array[value_stack.top-1].yyval.Object), null); 
 			}
         return;
       case 386: // function_call -> class_name T_DOUBLE_COLON member_name argument_list 
 {
 				if(value_stack.array[value_stack.top-2].yyval.Object is Name)
-					yyval.Object = _astFactory.Call(yypos, (Name)value_stack.array[value_stack.top-2].yyval.Object, value_stack.array[value_stack.top-2].yypos, new CallSignature((List<ActualParam>)value_stack.array[value_stack.top-1].yyval.Object), Translate((TypeRef)value_stack.array[value_stack.top-4].yyval.Object)); 
+					yyval.Object = _astFactory.Call(yypos, (Name)value_stack.array[value_stack.top-2].yyval.Object, value_stack.array[value_stack.top-2].yypos, new CallSignature((List<ActualParam>)value_stack.array[value_stack.top-1].yyval.Object), (TypeRef)value_stack.array[value_stack.top-4].yyval.Object); 
 				else
-					yyval.Object = _astFactory.Call(yypos, (LangElement)value_stack.array[value_stack.top-2].yyval.Object, new CallSignature((List<ActualParam>)value_stack.array[value_stack.top-1].yyval.Object), Translate((TypeRef)value_stack.array[value_stack.top-4].yyval.Object)); 
+					yyval.Object = _astFactory.Call(yypos, (LangElement)value_stack.array[value_stack.top-2].yyval.Object, new CallSignature((List<ActualParam>)value_stack.array[value_stack.top-1].yyval.Object), (TypeRef)value_stack.array[value_stack.top-4].yyval.Object); 
 			}
         return;
       case 387: // function_call -> variable_class_name T_DOUBLE_COLON member_name argument_list 
@@ -2953,7 +2951,7 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 { yyval.Object = _astFactory.TypeReference(yypos, new QualifiedName(Name.StaticClassName), false, null); }
         return;
       case 390: // class_name -> name 
-{ yyval.Object = _astFactory.TypeReference(yypos, TranslateAny(((QualifiedNameRef)value_stack.array[value_stack.top-1].yyval.Object).QualifiedName), false, TypeRef.EmptyList); }
+{ yyval.Object = TypeRefFromName(TranslateQNR(value_stack.array[value_stack.top-1].yyval.Object)); }
         return;
       case 391: // class_name_reference -> class_name 
 { yyval.Object = value_stack.array[value_stack.top-1].yyval.Object; }
@@ -3041,16 +3039,8 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
         return;
       case 419: // constant -> name 
 { 
-				var qname = ((QualifiedNameRef)value_stack.array[value_stack.top-1].yyval.Object).QualifiedName;
-                QualifiedName? fallbackQName;
-				if (qname.IsSimpleName && (qname == QualifiedName.Null || qname == QualifiedName.True || qname == QualifiedName.False))
-				{
-					// special exit_scope consts
-					fallbackQName = null;
-					qname.IsFullyQualifiedName = true;
-				}
-				else TranslateFallbackQualifiedName(ref qname, out fallbackQName, this.namingContext.ConstantAliases);
-				yyval.Object = _astFactory.ConstUse(yypos, qname, fallbackQName); 
+				var name = TranslateQNRConstant(value_stack.array[value_stack.top-1].yyval.Object);
+				yyval.Object = _astFactory.ConstUse(yypos, name.Item1, name.Item2); 
 			}
         return;
       case 420: // constant -> class_name T_DOUBLE_COLON identifier 

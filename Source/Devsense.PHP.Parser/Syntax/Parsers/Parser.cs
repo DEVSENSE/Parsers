@@ -294,16 +294,22 @@ namespace Devsense.PHP.Syntax
             return Span.FromBounds(validSpans.Min(s => s.Start), validSpans.Max(s => s.End));
         }
 
-        TypeRef TypeFromName(object nref, bool isNullable = false)
+        TypeRef TypeRefFromName(object nref, bool isNullable = false)
         {
             var name = (QualifiedNameRef)nref;
             return (TypeRef)_astFactory.TypeReference(name.Span, name.QualifiedName, isNullable, TypeRef.EmptyList);
         }
 
-        List<TypeRef> TypeListFromNameList(object nrefList)
+        IEnumerable<TypeRef> TypeRefListFromTranslatedQNRList(object nrefList)
         {
             var list = (IList<QualifiedNameRef>)nrefList;
-            return list.Select(n => TypeFromName(n)).ToList();
+            return list.Select(n => TypeRefFromName(n));
+        }
+
+        IEnumerable<TypeRef> TypeRefListFromQNRList(object nrefList)
+        {
+            var list = (IList<QualifiedNameRef>)nrefList;
+            return list.Select(n => TypeRefFromName(TranslateQNR(n)));
         }
 
         #region Aliasing
@@ -323,15 +329,37 @@ namespace Devsense.PHP.Syntax
             if (tref is GenericTypeRef) throw new NotImplementedException();
             // PrimitiveTypeRef is not translated
             // IndirectTypeRef is not translated
-
-            //
             return tref;
         }
 
-        QualifiedNameRef TranslateType(object nref)
+        QualifiedNameRef TranslateQNR(object nref)
         {
             var name = (QualifiedNameRef)nref;
             return new QualifiedNameRef(name.Span, TranslateAny(name.QualifiedName));
+        }
+
+
+        Tuple<QualifiedName, QualifiedName?> TranslateQNRFunction(object nref)
+        {
+            var qname = ((QualifiedNameRef)nref).QualifiedName;
+            QualifiedName? fallbackQName;
+            TranslateFallbackQualifiedName(ref qname, out fallbackQName, this.namingContext.FunctionAliases);
+            return new Tuple<QualifiedName, QualifiedName?>(qname, fallbackQName);
+        }
+
+
+        Tuple<QualifiedName, QualifiedName?> TranslateQNRConstant(object nref)
+        {
+            var qname = ((QualifiedNameRef)nref).QualifiedName;
+            QualifiedName? fallbackQName;
+            if (qname.IsSimpleName && (qname == QualifiedName.Null || qname == QualifiedName.True || qname == QualifiedName.False))
+            {
+                // special exit_scope consts
+                fallbackQName = null;
+                qname.IsFullyQualifiedName = true;
+            }
+            else TranslateFallbackQualifiedName(ref qname, out fallbackQName, this.namingContext.ConstantAliases);
+            return new Tuple<QualifiedName, QualifiedName?>(qname, fallbackQName);
         }
 
         #endregion
@@ -350,9 +378,7 @@ namespace Devsense.PHP.Syntax
             //
             qname = TranslateNamespace(qname);
 
-            if (!qname.IsFullyQualifiedName && qname.IsSimpleName &&
-                !IsInGlobalNamespace/* && !sourceUnit.HasImportedNamespaces &&
-                !reservedTypeNames.Contains(qname.Name.Value)*/)
+            if (!qname.IsFullyQualifiedName && qname.IsSimpleName && !IsInGlobalNamespace)
             {
                 // "\foo"
                 fallbackQName = new QualifiedName(qname.Name) { IsFullyQualifiedName = true };
@@ -366,17 +392,14 @@ namespace Devsense.PHP.Syntax
             }
         }
 
-        private QualifiedName TranslateNamespace(QualifiedName qname)
-        {
-            return qname.IsFullyQualifiedName || qname.IsSimpleName ? qname : TranslateAlias(qname);
-        }
+        private QualifiedName TranslateNamespace(QualifiedName qname) => qname.IsFullyQualifiedName || qname.IsSimpleName ? qname : TranslateAlias(qname);
 
         private QualifiedName TranslateAlias(QualifiedName qname)
         {
             Debug.Assert(!qname.IsFullyQualifiedName);
             // do not use current namespace, if there are imported namespace ... will be resolved later
             return QualifiedName.TranslateAlias(qname, this.namingContext.Aliases,
-                (IsInGlobalNamespace/* || sourceUnit.HasImportedNamespaces*/) ? (QualifiedName?)null : namingContext.CurrentNamespace.Value);
+                (IsInGlobalNamespace) ? (QualifiedName?)null : namingContext.CurrentNamespace.Value);
         }
 
         private QualifiedName TranslateAny(QualifiedName qname)

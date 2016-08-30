@@ -572,9 +572,9 @@ namespace Devsense.PHP.Syntax.Ast
             /// <summary>
             /// Name of existing trait member. Its qualified name is optional.
             /// </summary>
-            public Tuple<QualifiedName?, Name> TraitMemberName { get; private set; }
+            public Tuple<QualifiedNameRef?, NameRef> TraitMemberName { get; private set; }
 
-            public TraitAdaptation(Text.Span span, Tuple<QualifiedName?, Name> traitMemberName)
+            public TraitAdaptation(Text.Span span, Tuple<QualifiedNameRef?, NameRef> traitMemberName)
                 : base(span)
             {
                 this.TraitMemberName = traitMemberName;                
@@ -589,9 +589,9 @@ namespace Devsense.PHP.Syntax.Ast
             /// <summary>
             /// List of types which member <see cref="TraitAdaptation.TraitMemberName"/>.<c>Item2</c> will be ignored.
             /// </summary>
-            public List<QualifiedName>/*!*/IgnoredTypes { get; private set; }
+            public List<QualifiedNameRef>/*!*/IgnoredTypes { get; private set; }
 
-            public TraitAdaptationPrecedence(Text.Span span, Tuple<QualifiedName?, Name> traitMemberName, List<QualifiedName>/*!*/ignoredTypes)
+            public TraitAdaptationPrecedence(Text.Span span, Tuple<QualifiedNameRef?, NameRef> traitMemberName, List<QualifiedNameRef>/*!*/ignoredTypes)
                 : base(span, traitMemberName)
             {
                 this.IgnoredTypes = ignoredTypes;
@@ -616,9 +616,9 @@ namespace Devsense.PHP.Syntax.Ast
             /// <summary>
             /// Optionally new member name. Can be <c>null</c>.
             /// </summary>
-            public string NewName { get; private set; }
+            public NameRef? NewName { get; private set; }
 
-            public TraitAdaptationAlias(Text.Span span, Tuple<QualifiedName?, Name>/*!*/oldname, string newname, PhpMemberAttributes? newmodifier)
+            public TraitAdaptationAlias(Text.Span span, Tuple<QualifiedNameRef?, NameRef>/*!*/oldname, NameRef? newname, PhpMemberAttributes? newmodifier)
                 : base(span, oldname)
             {
                 if (oldname == null)
@@ -639,8 +639,8 @@ namespace Devsense.PHP.Syntax.Ast
         /// <summary>
         /// List of trait types to be used.
         /// </summary>
-        public List<QualifiedName>/*!*/TraitsList { get { return traitsList; } }
-        private readonly List<QualifiedName>/*!*/traitsList;
+        public List<QualifiedNameRef>/*!*/TraitsList { get { return traitsList; } }
+        private readonly List<QualifiedNameRef>/*!*/traitsList;
 
         /// <summary>
         /// List of trait adaptations modifying names of trait members. Can be <c>null</c> reference.
@@ -659,7 +659,7 @@ namespace Devsense.PHP.Syntax.Ast
         public int HeadingEndPosition { get { return headingEndPosition; } }
         private readonly int headingEndPosition;
 
-        public TraitsUse(Text.Span span, int headingEndPosition, List<QualifiedName>/*!*/traitsList, List<TraitAdaptation> traitAdaptationList)
+        public TraitsUse(Text.Span span, int headingEndPosition, List<QualifiedNameRef>/*!*/traitsList, List<TraitAdaptation> traitAdaptationList)
             : base(span, null)
         {
             if (traitsList == null)

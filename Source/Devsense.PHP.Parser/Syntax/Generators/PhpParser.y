@@ -500,15 +500,15 @@ catch_list:
 	|	catch_list T_CATCH '(' catch_name_list T_VARIABLE ')' '{' inner_statement_list '}'
 			{ 
 				$$ = AddToList<CatchItem>($1, _astFactory.Catch(@$, 
-					(TypeRef)_astFactory.TypeReference(@4, TypeListFromNameList($4), null), 
+					(TypeRef)_astFactory.TypeReference(@4, TypeRefListFromTranslatedQNRList($4), null), 
 					(DirectVarUse)_astFactory.Variable(@5, new VariableName((string)$5), (LangElement)null), 
 					_astFactory.Block(CombineSpans(@7, @9), (List<LangElement>)$8))); 
 			}
 ;
 
 catch_name_list:
-		name { $$ = new List<QualifiedNameRef>() { TranslateType($1) }; }
-	|	catch_name_list '|' name { $$ = AddToList<QualifiedNameRef>($1, TranslateType($3)); }
+		name { $$ = new List<QualifiedNameRef>() { TranslateQNR($1) }; }
+	|	catch_name_list '|' name { $$ = AddToList<QualifiedNameRef>($1, TranslateQNR($3)); }
 ;
 
 finally_statement:
@@ -549,13 +549,13 @@ class_declaration_statement:
 		class_modifiers T_CLASS T_STRING extends_from implements_list backup_doc_comment enter_scope '{' class_statement_list '}' exit_scope
 			{ 
 				$$ = _astFactory.Type(@$, CombineSpans(@1, @2, @3, @4, @5), isConditional, (PhpMemberAttributes)$1, new Name((string)$3), @3, null, 
-				(TypeRef)$4, (List<TypeRef>)$5, (List<LangElement>)$9, CombineSpans(@8, @10)); 
+				(TypeRef)$4, (IEnumerable<TypeRef>)$5, (List<LangElement>)$9, CombineSpans(@8, @10)); 
 				SetDoc($$, $6);
 			}
 	|	T_CLASS T_STRING extends_from implements_list backup_doc_comment enter_scope '{' class_statement_list '}' exit_scope
 			{ 
 				$$ = _astFactory.Type(@$, CombineSpans(@1, @2, @3, @4), isConditional, PhpMemberAttributes.None, new Name((string)$2), @2, null, 
-				(TypeRef)$3, (List<TypeRef>)$4, (List<LangElement>)$8, CombineSpans(@7, @9)); 
+				(TypeRef)$3, (IEnumerable<TypeRef>)$4, (List<LangElement>)$8, CombineSpans(@7, @9)); 
 				SetDoc($$, $5);
 			}
 ;
@@ -583,24 +583,24 @@ interface_declaration_statement:
 		T_INTERFACE T_STRING interface_extends_list backup_doc_comment enter_scope '{' class_statement_list '}' exit_scope
 			{ 
 				$$ = _astFactory.Type(@$, CombineSpans(@1, @2, @3), isConditional, PhpMemberAttributes.Interface, new Name((string)$2), @2, null, 
-					null, (List<TypeRef>)$3, (List<LangElement>)$7, CombineSpans(@6, @8)); 
+					null, (IEnumerable<TypeRef>)$3, (List<LangElement>)$7, CombineSpans(@6, @8)); 
 				SetDoc($$, $4);
 			}
 ;
 
 extends_from:
 		/* empty */		{ $$ = null; }
-	|	T_EXTENDS name	{ $$ = (TypeRef)_astFactory.TypeReference(((QualifiedNameRef)$2).Span, TranslateAny(((QualifiedNameRef)$2).QualifiedName), false, TypeRef.EmptyList); }
+	|	T_EXTENDS name	{ $$ = TypeRefFromName(TranslateQNR($2)); }
 ;
 
 interface_extends_list:
 		/* empty */			{ $$ = null; }
-	|	T_EXTENDS name_list { $$ = $2; }
+	|	T_EXTENDS name_list { $$ = TypeRefListFromQNRList($2); }
 ;
 
 implements_list:
 		/* empty */				{ $$ = null; }
-	|	T_IMPLEMENTS name_list	{ $$ = $2; }
+	|	T_IMPLEMENTS name_list	{ $$ = TypeRefListFromQNRList($2); }
 ;
 
 foreach_variable:
@@ -720,14 +720,14 @@ optional_type:
 ;
 
 type_expr:
-		type		{ $$ = _astFactory.TypeReference(@$, TranslateAny((QualifiedName)$1), false, null); }
-	|	'?' type	{ $$ = _astFactory.TypeReference(@$, TranslateAny((QualifiedName)$2), true, null); }
+		type		{ $$ = TypeRefFromName(TranslateQNR($1), false); }
+	|	'?' type	{ $$ = TypeRefFromName(TranslateQNR($2), true); }
 ;
 
 type:
-		T_ARRAY		{ $$ = QualifiedName.Array; }
-	|	T_CALLABLE	{ $$ = QualifiedName.Callable; }
-	|	name		{ $$ = ((QualifiedNameRef)$1).QualifiedName; }
+		T_ARRAY		{ $$ = new QualifiedNameRef(@$, QualifiedName.Array); }
+	|	T_CALLABLE	{ $$ = new QualifiedNameRef(@$, QualifiedName.Callable); }
+	|	name		{ $$ = $1; }
 ;
 
 return_type:
@@ -794,7 +794,7 @@ class_statement:
 				SetDoc($$, $3);
 			}
 	|	T_USE name_list trait_adaptations
-			{ $$ = _astFactory.TraitUse(@$, ((List<TypeRef>)$2).Select(t => t.QualifiedName.Value), (List<TraitsUse.TraitAdaptation>)$3); }
+			{ $$ = _astFactory.TraitUse(@$, (List<QualifiedNameRef>)$2, (List<TraitsUse.TraitAdaptation>)$3); }
 	|	method_modifiers function returns_ref identifier backup_doc_comment '(' parameter_list ')'
 		return_type backup_fn_flags method_body backup_fn_flags
 			{ $$ = _astFactory.Method(@$, $3 == (long)FormalParam.Flags.IsByRef, (PhpMemberAttributes)$1, 
@@ -804,9 +804,9 @@ class_statement:
 			}
 ;
 
-name_list: // TOOD: List<QualifiedNameRef>
-		name { $$ = new List<TypeRef>() { (TypeRef)_astFactory.TypeReference(((QualifiedNameRef)$1).Span, TranslateAny(((QualifiedNameRef)$1).QualifiedName), false, TypeRef.EmptyList) }; }
-	|	name_list ',' name { $$ = AddToList<TypeRef>($1, _astFactory.TypeReference(((QualifiedNameRef)$3).Span, TranslateAny(((QualifiedNameRef)$3).QualifiedName), false, TypeRef.EmptyList)); }
+name_list:
+		name { $$ = new List<QualifiedNameRef>() { (QualifiedNameRef)$1 }; }
+	|	name_list ',' name { $$ = AddToList<QualifiedNameRef>($1,(QualifiedNameRef)$3); }
 ;
 
 trait_adaptations:
@@ -830,29 +830,29 @@ trait_adaptation:
 
 trait_precedence:
 	absolute_trait_method_reference T_INSTEADOF name_list
-		{ $$ = _astFactory.TraitAdaptationPrecedence(@$, (Tuple<QualifiedName?,Name>)$1, ((List<TypeRef>)$3).Select(t => t.QualifiedName.Value)); }
+		{ $$ = _astFactory.TraitAdaptationPrecedence(@$, (Tuple<QualifiedNameRef?,NameRef>)$1, (List<QualifiedNameRef>)$3); }
 ;
 
 trait_alias:
 		trait_method_reference T_AS T_STRING
-			{ $$ = _astFactory.TraitAdaptationAlias(@$, (Tuple<QualifiedName?, Name>)$1, (string)$3, null); }
+			{ $$ = _astFactory.TraitAdaptationAlias(@$, (Tuple<QualifiedNameRef?, NameRef>)$1, new NameRef(@3, (string)$3), null); }
 	|	trait_method_reference T_AS reserved_non_modifiers
-			{ $$ = _astFactory.TraitAdaptationAlias(@$, (Tuple<QualifiedName?, Name>)$1, (string)$3, null); }
+			{ $$ = _astFactory.TraitAdaptationAlias(@$, (Tuple<QualifiedNameRef?, NameRef>)$1, new NameRef(@3, (string)$3), null); }
 	|	trait_method_reference T_AS member_modifier identifier
-			{ $$ = _astFactory.TraitAdaptationAlias(@$, (Tuple<QualifiedName?, Name>)$1, (string)$4, (PhpMemberAttributes)$3); }
+			{ $$ = _astFactory.TraitAdaptationAlias(@$, (Tuple<QualifiedNameRef?, NameRef>)$1, new NameRef(@4, (string)$4), (PhpMemberAttributes)$3); }
 	|	trait_method_reference T_AS member_modifier
-			{ $$ = _astFactory.TraitAdaptationAlias(@$, (Tuple<QualifiedName?, Name>)$1, null, (PhpMemberAttributes)$3); }
+			{ $$ = _astFactory.TraitAdaptationAlias(@$, (Tuple<QualifiedNameRef?, NameRef>)$1, null, (PhpMemberAttributes)$3); }
 ;
 
 trait_method_reference:
 		identifier
-			{ $$ = new Tuple<QualifiedName?,Name>(null, new Name((string)$1)); }
+			{ $$ = new Tuple<QualifiedNameRef?,NameRef>(null, new NameRef(@1, (string)$1)); }
 	|	absolute_trait_method_reference { $$ = $1; }
 ;
 
 absolute_trait_method_reference:
 	name T_DOUBLE_COLON identifier
-		{ $$ = new Tuple<QualifiedName?,Name>(((QualifiedNameRef)$1).QualifiedName, new Name((string)$3)); }
+		{ $$ = new Tuple<QualifiedNameRef?,NameRef>((QualifiedNameRef)$1, new NameRef(@3, (string)$3)); }
 ;
 
 method_body:
@@ -1120,17 +1120,15 @@ lexical_var:
 function_call:
 		name argument_list
 			{ 
-				var qname = ((QualifiedNameRef)$1).QualifiedName;
-                QualifiedName? fallbackQName;
-                TranslateFallbackQualifiedName(ref qname, out fallbackQName, this.namingContext.FunctionAliases);
-				$$ = _astFactory.Call(@$, qname, fallbackQName, @1, new CallSignature((List<ActualParam>)$2), null); 
+				var name = TranslateQNRFunction($1);
+				$$ = _astFactory.Call(@$, name.Item1, name.Item2, @1, new CallSignature((List<ActualParam>)$2), null); 
 			}
 	|	class_name T_DOUBLE_COLON member_name argument_list
 			{
 				if($3 is Name)
-					$$ = _astFactory.Call(@$, (Name)$3, @3, new CallSignature((List<ActualParam>)$4), Translate((TypeRef)$1)); 
+					$$ = _astFactory.Call(@$, (Name)$3, @3, new CallSignature((List<ActualParam>)$4), (TypeRef)$1); 
 				else
-					$$ = _astFactory.Call(@$, (LangElement)$3, new CallSignature((List<ActualParam>)$4), Translate((TypeRef)$1)); 
+					$$ = _astFactory.Call(@$, (LangElement)$3, new CallSignature((List<ActualParam>)$4), (TypeRef)$1); 
 			}
 	|	variable_class_name T_DOUBLE_COLON member_name argument_list
 			{
@@ -1143,10 +1141,9 @@ function_call:
 			{ $$ = _astFactory.Call(@$, (LangElement)$1, new CallSignature((List<ActualParam>)$2), (LangElement)null);}
 ;
 
-class_name:	// TODO: Translate! class_name must be returned translated, remove ALL unnecesary Translate when using class_name
-		T_STATIC
-			{ $$ = _astFactory.TypeReference(@$, new QualifiedName(Name.StaticClassName), false, null); }
-	|	name { $$ = _astFactory.TypeReference(@$, TranslateAny(((QualifiedNameRef)$1).QualifiedName), false, TypeRef.EmptyList); }
+class_name:
+		T_STATIC	{ $$ = _astFactory.TypeReference(@$, new QualifiedName(Name.StaticClassName), false, null); }
+	|	name		{ $$ = TypeRefFromName(TranslateQNR($1)); }
 ;
 
 class_name_reference:
@@ -1200,16 +1197,8 @@ scalar:
 constant:
 		name 
 			{ 
-				var qname = ((QualifiedNameRef)$1).QualifiedName;
-                QualifiedName? fallbackQName;
-				if (qname.IsSimpleName && (qname == QualifiedName.Null || qname == QualifiedName.True || qname == QualifiedName.False))
-				{
-					// special exit_scope consts
-					fallbackQName = null;
-					qname.IsFullyQualifiedName = true;
-				}
-				else TranslateFallbackQualifiedName(ref qname, out fallbackQName, this.namingContext.ConstantAliases);
-				$$ = _astFactory.ConstUse(@$, qname, fallbackQName); 
+				var name = TranslateQNRConstant($1);
+				$$ = _astFactory.ConstUse(@$, name.Item1, name.Item2); 
 			}
 	|	class_name T_DOUBLE_COLON identifier
 			{ $$ = _astFactory.ClassConstUse(@$, (TypeRef)$1, new Name((string)$3), @3); }

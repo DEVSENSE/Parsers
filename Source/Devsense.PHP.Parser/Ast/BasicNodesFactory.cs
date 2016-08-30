@@ -366,21 +366,21 @@ namespace Devsense.PHP.Syntax.Ast
                 return new DefaultItem(span, ((BlockStmt)block).Statements);
         }
 
-        public virtual LangElement TraitUse(Span span, IEnumerable<QualifiedName> traits, IEnumerable<LangElement> adaptations)
+        public virtual LangElement TraitUse(Span span, IEnumerable<QualifiedNameRef> traits, IEnumerable<LangElement> adaptations)
         {
             Debug.Assert(traits != null);
             return new TraitsUse(span, 0, traits.ToList(), (adaptations != null) ? ConvertList<TraitsUse.TraitAdaptation>(adaptations) : null);
         }
 
-        public virtual LangElement TraitAdaptationPrecedence(Span span, Tuple<QualifiedName?, Name> name, IEnumerable<QualifiedName> precedences)
+        public virtual LangElement TraitAdaptationPrecedence(Span span, Tuple<QualifiedNameRef?, NameRef> name, IEnumerable<QualifiedNameRef> precedences)
         {
             Debug.Assert(precedences != null);
             return new TraitsUse.TraitAdaptationPrecedence(span, name, precedences.ToList());
         }
 
-        public virtual LangElement TraitAdaptationAlias(Span span, Tuple<QualifiedName?, Name> name, string identifierOpt, PhpMemberAttributes? attributeOpt)
+        public virtual LangElement TraitAdaptationAlias(Span span, Tuple<QualifiedNameRef?, NameRef> name, NameRef? identifierOpt, PhpMemberAttributes? attributeOpt)
         {
-            Debug.Assert(!string.IsNullOrEmpty(identifierOpt) || attributeOpt != null);
+            Debug.Assert(identifierOpt != null || attributeOpt != null);
             return new TraitsUse.TraitAdaptationAlias(span, name, identifierOpt, attributeOpt);
         }
 

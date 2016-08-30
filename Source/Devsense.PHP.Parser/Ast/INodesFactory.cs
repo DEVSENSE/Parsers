@@ -171,7 +171,7 @@ namespace Devsense.PHP.Syntax.Ast
         /// <param name="traits">Enumeration of traits.</param>
         /// <param name="adaptations">Enumeration of trait adaptations.</param>
         /// <returns>Trait use type member.</returns>
-        TNode TraitUse(TSpan span, IEnumerable<QualifiedName> traits, IEnumerable<TNode> adaptations);
+        TNode TraitUse(TSpan span, IEnumerable<QualifiedNameRef> traits, IEnumerable<TNode> adaptations);
 
         /// <summary>
         /// Create <c>TraitAdaptationPrecedence</c> expression.
@@ -180,7 +180,7 @@ namespace Devsense.PHP.Syntax.Ast
         /// <param name="name">Member affected by the precedence.</param>
         /// <param name="precedences">The renamed types and members.</param>
         /// <returns>TraitAdaptationPrecedence expression</returns>
-        TNode TraitAdaptationPrecedence(TSpan span, Tuple<QualifiedName?, Name> name, IEnumerable<QualifiedName> precedences);
+        TNode TraitAdaptationPrecedence(TSpan span, Tuple<QualifiedNameRef?, NameRef> name, IEnumerable<QualifiedNameRef> precedences);
 
         /// <summary>
         /// Create <c>TraitAdaptationAlias</c> expression.
@@ -190,7 +190,7 @@ namespace Devsense.PHP.Syntax.Ast
         /// <param name="identifierOpt">New name assigned by the alias.</param>
         /// <param name="attributeOpt">New accessibility modifier.</param>
         /// <returns>TraitAdaptationAlias expression</returns>
-        TNode TraitAdaptationAlias(TSpan span, Tuple<QualifiedName?, Name> name, string identifierOpt, PhpMemberAttributes? attributeOpt);
+        TNode TraitAdaptationAlias(TSpan span, Tuple<QualifiedNameRef?, NameRef> name, NameRef? identifierOpt, PhpMemberAttributes? attributeOpt);
 
         /// <summary>
         /// Create global declaration statement.

@@ -682,7 +682,7 @@ namespace Devsense.PHP.Syntax.Ast.Serialization
         override public void VisitTraitAdaptationPrecedence(TraitsUse.TraitAdaptationPrecedence x)
         {
             _serializer.StartSerialize(typeof(TraitsUse.TraitAdaptationPrecedence).Name, SerializeSpan(x.Span), 
-                new NodeObj("TraitMemberName", (x.TraitMemberName.Item1.HasValue? x.TraitMemberName.Item1.Value.ToString() + "::": string.Empty) + x.TraitMemberName.Item2.Value));
+                new NodeObj("TraitMemberName", (x.TraitMemberName.Item1.HasValue? x.TraitMemberName.Item1.Value.ToString() + "::": string.Empty) + x.TraitMemberName.Item2.Name.Value));
             _serializer.Serialize("IgnoredTypes", x.IgnoredTypes.Select(t => new NodeObj("IgnoredType", t.ToString())).ToArray());
             _serializer.EndSerialize();
         }
@@ -690,8 +690,8 @@ namespace Devsense.PHP.Syntax.Ast.Serialization
         override public void VisitTraitAdaptationAlias(TraitsUse.TraitAdaptationAlias x)
         {
             _serializer.StartSerialize(typeof(TraitsUse.TraitAdaptationAlias).Name, SerializeSpan(x.Span),
-                new NodeObj("TraitMemberName", (x.TraitMemberName.Item1.HasValue ? x.TraitMemberName.Item1.Value.ToString() + "::" : string.Empty) + x.TraitMemberName.Item2.Value),
-                new NodeObj("NewName", x.NewName ?? string.Empty), new NodeObj("NewModifier", MemberAttributesToString(x.NewModifier ?? PhpMemberAttributes.None)));
+                new NodeObj("TraitMemberName", (x.TraitMemberName.Item1.HasValue ? x.TraitMemberName.Item1.Value.ToString() + "::" : string.Empty) + x.TraitMemberName.Item2.Name.Value),
+                new NodeObj("NewName", x.NewName != null? x.NewName.Value.Name.Value: string.Empty), new NodeObj("NewModifier", MemberAttributesToString(x.NewModifier ?? PhpMemberAttributes.None)));
             _serializer.EndSerialize();
         }
         override public void VisitGlobalStmt(GlobalStmt x)
