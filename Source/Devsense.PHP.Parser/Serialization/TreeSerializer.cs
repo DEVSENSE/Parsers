@@ -156,7 +156,7 @@ namespace Devsense.PHP.Syntax.Ast.Serialization
         /// <param name="x">GlobalCode.</param>
         override public void VisitGlobalCode(GlobalCode x)
         {
-            _serializer.StartSerialize(typeof(GlobalCode).Name, SerializeSpan(x.Span), SerializeNamingContext(x.SourceUnit.Naming));
+            _serializer.StartSerialize(typeof(GlobalCode).Name, SerializeSpan(x.Span), SerializeNamingContext(x.ContainingSourceUnit.Naming));
             base.VisitGlobalCode(x);
             _serializer.EndSerialize();
         }

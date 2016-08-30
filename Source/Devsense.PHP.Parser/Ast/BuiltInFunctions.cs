@@ -31,10 +31,7 @@ namespace Devsense.PHP.Syntax.Ast
 		public bool IsConditional { get { return isConditional; } internal set { isConditional = value; } }
 		private bool isConditional;
 
-		public SourceUnit/*!*/ SourceUnit { get { return sourceUnit; } }
-		private SourceUnit/*!*/ sourceUnit;
-
-		public IncludingEx(SourceUnit/*!*/ sourceUnit, bool isConditional, Text.Span span,
+		public IncludingEx(bool isConditional, Text.Span span,
 			InclusionTypes inclusionType, Expression/*!*/ fileName)
             : base(span)
 		{
@@ -43,7 +40,6 @@ namespace Devsense.PHP.Syntax.Ast
 			this.inclusionType = inclusionType;
 			this.fileNameEx = fileName;
 			this.isConditional = isConditional;
-			this.sourceUnit = sourceUnit;
 		}
 
 		/// <summary>

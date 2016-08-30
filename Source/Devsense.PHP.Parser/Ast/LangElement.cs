@@ -109,12 +109,12 @@ namespace Devsense.PHP.Syntax.Ast
         /// <summary>
         /// Gets reference to containing type declaration.
         /// </summary>
-        public TypeDecl ContainingType => LookupContainingElement<TypeDecl>();
+        public TypeDecl ContainingType => ContainingElement.LookupContainingElement<TypeDecl>();
 
         /// <summary>
         /// Gets reference to containing source unit.
         /// </summary>
-        public SourceUnit ContainingSourceUnit => LookupContainingElement<GlobalCode>()?.SourceUnit;
+        public virtual SourceUnit ContainingSourceUnit => LookupContainingElement<GlobalCode>()?.ContainingSourceUnit;
 
         /// <summary>
         /// Iterates through containing elements to find closest element of type <typeparamref name="T"/>.
@@ -123,7 +123,7 @@ namespace Devsense.PHP.Syntax.Ast
         /// <returns>Reference to element of type <typeparamref name="T"/> or <c>null</c> is not containing.</returns>
         protected T LookupContainingElement<T>() where T : LangElement
         {
-            for (var x = this.ContainingElement; x != null; x = x.ContainingElement)
+            for (var x = this; x != null; x = x.ContainingElement)
             {
                 if (x is T)
                 {
@@ -203,21 +203,6 @@ namespace Devsense.PHP.Syntax.Ast
         {
             return start.ToString();
         }
-    }
-
-    #endregion
-
-    #region IHasSourceUnit
-
-    /// <summary>
-    /// Annotates AST nodes having reference to containing source unit.
-    /// </summary>
-    public interface IHasSourceUnit
-    {
-        /// <summary>
-        /// Gets source unit of the containing source file.
-        /// </summary>
-        SourceUnit SourceUnit { get; }
     }
 
     #endregion

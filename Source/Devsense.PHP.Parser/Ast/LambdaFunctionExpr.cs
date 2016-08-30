@@ -9,14 +9,8 @@ namespace Devsense.PHP.Syntax.Ast
     /// <summary>
     /// Represents a function declaration.
     /// </summary>
-    public sealed class LambdaFunctionExpr : Expression, IHasSourceUnit
+    public sealed class LambdaFunctionExpr : Expression
     {
-        /// <summary>
-        /// Gets namespace containing this lambda expression. Can be <c>null</c>.
-        /// </summary>
-        public NamespaceDecl Namespace { get { return ns; } }
-        private readonly NamespaceDecl ns;
-
         public override Operations Operation
         {
             get { return Operations.Closure; }
@@ -50,30 +44,20 @@ namespace Devsense.PHP.Syntax.Ast
         public Text.Span ParametersSpan { get { return parametersSpan; } }
         private Text.Span parametersSpan;
 
-        /// <summary>
-        /// Gets the source file <see cref="SourceUnit"/>. Cannot be <c>null</c>.
-        /// </summary>
-        public SourceUnit/*!*/SourceUnit { get { return this.sourceUnit; } }
-        private readonly SourceUnit/*!*/sourceUnit;
-
         public TypeRef ReturnType { get { return returnType; } }
         private TypeRef returnType;
 
         #region Construction
 
-        public LambdaFunctionExpr(SourceUnit/*!*/ sourceUnit,
+        public LambdaFunctionExpr(
             Text.Span span, Text.Span headingSpan,
-            Scope scope, NamespaceDecl ns, bool aliasReturn, List<FormalParam>/*!*/ formalParams, 
+            Scope scope, bool aliasReturn, List<FormalParam>/*!*/ formalParams, 
             Text.Span paramSpan, List<FormalParam> useParams,
             BlockStmt/*!*/ body, TypeRef returnType)
             : base(span)
         {
             Debug.Assert(formalParams != null && body != null);
-            Debug.Assert(sourceUnit != null);
-
-            this.sourceUnit = sourceUnit;
             
-            this.ns = ns;
             this.signature = new Signature(aliasReturn, formalParams);
             this.useParams = useParams;
             //this.typeSignature = new TypeSignature(genericParams);

@@ -294,9 +294,16 @@ namespace Devsense.PHP.Syntax
             return Span.FromBounds(validSpans.Min(s => s.Start), validSpans.Max(s => s.End));
         }
 
-        TypeRef TypeFromQNR(QualifiedNameRef qnr, bool isNullable)
+        TypeRef TypeFromName(object nref, bool isNullable = false)
         {
-            return (TypeRef)_astFactory.TypeReference(qnr.Span, qnr.QualifiedName, isNullable, TypeRef.EmptyList);
+            var name = (QualifiedNameRef)nref;
+            return (TypeRef)_astFactory.TypeReference(name.Span, name.QualifiedName, isNullable, TypeRef.EmptyList);
+        }
+
+        List<TypeRef> TypeListFromNameList(object nrefList)
+        {
+            var list = (IList<QualifiedNameRef>)nrefList;
+            return list.Select(n => TypeFromName(n)).ToList();
         }
 
         #region Aliasing
@@ -316,9 +323,15 @@ namespace Devsense.PHP.Syntax
             if (tref is GenericTypeRef) throw new NotImplementedException();
             // PrimitiveTypeRef is not translated
             // IndirectTypeRef is not translated
-            
+
             //
             return tref;
+        }
+
+        QualifiedNameRef TranslateType(object nref)
+        {
+            var name = (QualifiedNameRef)nref;
+            return new QualifiedNameRef(name.Span, TranslateAny(name.QualifiedName));
         }
 
         #endregion

@@ -132,15 +132,12 @@ namespace Devsense.PHP.Syntax.Ast
 	/// <summary>
 	/// Represents a function declaration.
 	/// </summary>
-    public sealed class FunctionDecl : Statement, IHasSourceUnit
+    public sealed class FunctionDecl : Statement
 	{ 
 		internal override bool IsDeclaration { get { return true; } }
 
 		public NameRef Name { get { return name; } }
 		private readonly NameRef name;
-
-		public NamespaceDecl Namespace { get { return ns; } }
-		private readonly NamespaceDecl ns;
 
         public Signature Signature { get { return signature; } }
         private readonly Signature signature;
@@ -160,9 +157,6 @@ namespace Devsense.PHP.Syntax.Ast
         /// Gets function declaration attributes.
         /// </summary>
         public PhpMemberAttributes MemberAttributes { get; private set; }
-
-        internal Scope Scope { get; private set; }
-        public SourceUnit/*!*/ SourceUnit { get; private set; }
         
         /// <summary>
         /// Gets collection of CLR attributes annotating this statement.
@@ -183,9 +177,9 @@ namespace Devsense.PHP.Syntax.Ast
 
         #region Construction
 
-        public FunctionDecl(SourceUnit/*!*/ sourceUnit,
+        public FunctionDecl(
             Text.Span span,
-			bool isConditional, Scope scope, PhpMemberAttributes memberAttributes, NameRef/*!*/ name, NamespaceDecl ns,
+			bool isConditional, PhpMemberAttributes memberAttributes, NameRef/*!*/ name,
 			bool aliasReturn, List<FormalParam>/*!*/ formalParams, Text.Span paramsSpan, List<FormalTypeParam>/*!*/ genericParams,
             BlockStmt/*!*/ body, List<CustomAttribute> attributes, TypeRef returnType)
 			: base(span)
@@ -193,7 +187,6 @@ namespace Devsense.PHP.Syntax.Ast
 			Debug.Assert(genericParams != null && formalParams != null && body != null);
 
 			this.name = name;
-			this.ns = ns;
 			this.signature = new Signature(aliasReturn, formalParams);
 			this.typeSignature = new TypeSignature(genericParams);
 			if (attributes != null && attributes.Count != 0)
@@ -202,8 +195,6 @@ namespace Devsense.PHP.Syntax.Ast
             this.parametersSpan = paramsSpan;
             this.IsConditional = isConditional;
             this.MemberAttributes = memberAttributes;
-            this.Scope = scope;
-            this.SourceUnit = sourceUnit;
             this.returnType = returnType;
 		}
 

@@ -193,7 +193,7 @@ namespace Devsense.PHP.Syntax.Ast
         public virtual LangElement Function(Span span, bool conditional, bool aliasReturn, PhpMemberAttributes attributes, TypeRef returnType, 
             Name name, Span nameSpan, IEnumerable<FormalTypeParam> typeParamsOpt, IEnumerable<FormalParam> formalParams, Span formalParamsSpan, LangElement body)
         {
-            return new FunctionDecl(_sourceUnit, span, conditional, new Scope(), attributes, new NameRef(nameSpan, name.Value), null, aliasReturn,
+            return new FunctionDecl(span, conditional, attributes, new NameRef(nameSpan, name.Value), aliasReturn,
                 formalParams.ToList(), formalParamsSpan, (typeParamsOpt != null) ? typeParamsOpt.ToList() : FormalTypeParam.EmptyList,
                 (BlockStmt)body, null, returnType);
         }
@@ -201,8 +201,8 @@ namespace Devsense.PHP.Syntax.Ast
         public virtual LangElement Lambda(Span span, Span headingSpan, bool aliasReturn, TypeRef returnType, IEnumerable<FormalParam> formalParams, 
             Span formalParamsSpan, IEnumerable<FormalParam> lexicalVars, LangElement body)
         {
-            return new LambdaFunctionExpr(_sourceUnit, span, headingSpan,
-                new Scope(), null, false, formalParams.ToList(), formalParamsSpan, lexicalVars.ToList(),
+            return new LambdaFunctionExpr(span, headingSpan,
+                new Scope(), false, formalParams.ToList(), formalParamsSpan, lexicalVars.ToList(),
                 (BlockStmt)body, returnType);
         }
 
@@ -225,7 +225,7 @@ namespace Devsense.PHP.Syntax.Ast
 
         public virtual LangElement GlobalConstDecl(Span span, bool conditional, VariableName name, Span nameSpan, LangElement initializer)
         {
-            return new GlobalConstantDecl(_sourceUnit, span, conditional, name.Value, nameSpan, (Expression)initializer);
+            return new GlobalConstantDecl(span, conditional, name.Value, nameSpan, (Expression)initializer);
         }
 
         public virtual LangElement Goto(Span span, string label, Span labelSpan)
@@ -252,7 +252,7 @@ namespace Devsense.PHP.Syntax.Ast
 
         public virtual LangElement Inclusion(Span span, bool conditional, InclusionTypes type, LangElement fileNameExpression)
         {
-            return new IncludingEx(_sourceUnit, conditional, span, type, (Expression)fileNameExpression);
+            return new IncludingEx(conditional, span, type, (Expression)fileNameExpression);
         }
 
         public virtual LangElement IncrementDecrement(Span span, LangElement refexpression, bool inc, bool post)
@@ -418,8 +418,8 @@ namespace Devsense.PHP.Syntax.Ast
             if (implements == null) implements = TypeRef.EmptyList;
 
             Debug.Assert(members != null && implements != null);
-            return new NamedTypeDecl(_sourceUnit, span, headingSpan, conditional, new Scope(), attributes, false,
-                new NameRef(nameSpan, name), null, (typeParamsOpt != null) ? typeParamsOpt.ToList() : FormalTypeParam.EmptyList,
+            return new NamedTypeDecl(span, headingSpan, conditional, new Scope(), attributes, false,
+                new NameRef(nameSpan, name), (typeParamsOpt != null) ? typeParamsOpt.ToList() : FormalTypeParam.EmptyList,
                 QualifiedNameRef.FromTypeRef(baseClassOpt), implements.Select(QualifiedNameRef.FromTypeRef).ToList(),
                 ConvertList<TypeMemberDecl>(members), bodySpan, null);
         }
@@ -429,8 +429,8 @@ namespace Devsense.PHP.Syntax.Ast
             if (implements == null) implements = TypeRef.EmptyList;
 
             Debug.Assert(members != null && implements != null);
-            return new AnonymousTypeRef(span, new AnonymousTypeDecl(_sourceUnit, span, headingSpan,
-                conditional, new Scope(), attributes, false, null, (typeParamsOpt != null) ? typeParamsOpt.ToList() : FormalTypeParam.EmptyList,
+            return new AnonymousTypeRef(span, new AnonymousTypeDecl(span, headingSpan,
+                conditional, new Scope(), attributes, false, (typeParamsOpt != null) ? typeParamsOpt.ToList() : FormalTypeParam.EmptyList,
                 QualifiedNameRef.FromTypeRef(baseClassOpt), implements.Select(QualifiedNameRef.FromTypeRef).ToList(), ConvertList<TypeMemberDecl>(members), bodySpan, null));
         }
 

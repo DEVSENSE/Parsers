@@ -84,17 +84,11 @@ namespace Devsense.PHP.Syntax.Ast
     /// <summary>
     /// Represents a class or an interface declaration.
     /// </summary>
-    public abstract class TypeDecl : Statement, IHasSourceUnit
+    public abstract class TypeDecl : Statement
     {
         #region Properties
 
         internal override bool IsDeclaration { get { return true; } }
-
-        /// <summary>
-        /// Namespace where the class is declared in.
-        /// </summary>
-        public NamespaceDecl Namespace { get { return ns; } }
-        private readonly NamespaceDecl ns;
 
         /// <summary>
         /// Type name or empty name in case of anonymous type.
@@ -152,16 +146,14 @@ namespace Devsense.PHP.Syntax.Ast
         /// </summary>
         public bool IsConditional { get; internal set; }
 
-        public SourceUnit SourceUnit { get; private set; }
-
         #endregion
 
         #region Construction
 
-        public TypeDecl(SourceUnit/*!*/ sourceUnit,
+        public TypeDecl(
             Text.Span span, Text.Span headingSpan,
             bool isConditional, Scope scope, PhpMemberAttributes memberAttributes, bool isPartial,
-            NamespaceDecl ns, List<FormalTypeParam>/*!*/ genericParams, QualifiedNameRef baseClass,
+            List<FormalTypeParam>/*!*/ genericParams, QualifiedNameRef baseClass,
             List<QualifiedNameRef>/*!*/ implementsList, List<TypeMemberDecl>/*!*/ elements, Text.Span bodySpan,
             List<CustomAttribute> attributes)
             : base(span)
@@ -169,12 +161,10 @@ namespace Devsense.PHP.Syntax.Ast
             Debug.Assert(genericParams != null && implementsList != null && elements != null);
             Debug.Assert((memberAttributes & PhpMemberAttributes.Trait) == 0 || (memberAttributes & PhpMemberAttributes.Interface) == 0, "Interface cannot be a trait");
             
-            this.ns = ns;
             this.typeSignature = new TypeSignature(genericParams);
             this.baseClass = baseClass;
             this.MemberAttributes = memberAttributes;
             this.Scope = scope;
-            this.SourceUnit = sourceUnit;
             this.IsConditional = isConditional;
             this.ImplementsList = implementsList.AsArray();
             this.members = elements;
@@ -224,15 +214,14 @@ namespace Devsense.PHP.Syntax.Ast
 
 		#region Construction
 
-		public NamedTypeDecl(SourceUnit/*!*/ sourceUnit,
+		public NamedTypeDecl(
             Text.Span span, Text.Span headingSpan, bool isConditional, Scope scope, PhpMemberAttributes memberAttributes, bool isPartial,
-            NameRef className,
-            NamespaceDecl ns, List<FormalTypeParam>/*!*/ genericParams, QualifiedNameRef baseClass,
+            NameRef className, List<FormalTypeParam>/*!*/ genericParams, QualifiedNameRef baseClass,
             List<QualifiedNameRef>/*!*/ implementsList, List<TypeMemberDecl>/*!*/ elements, Text.Span bodySpan,
 
             List<CustomAttribute> attributes)
-            : base(sourceUnit, span, headingSpan, isConditional, 
-                  scope, memberAttributes, isPartial, ns, genericParams, baseClass, implementsList, elements, bodySpan, attributes)
+            : base(span, headingSpan, isConditional, 
+                  scope, memberAttributes, isPartial, genericParams, baseClass, implementsList, elements, bodySpan, attributes)
 		{
 			Debug.Assert(genericParams != null && implementsList != null && elements != null);
             Debug.Assert((memberAttributes & PhpMemberAttributes.Trait) == 0 || (memberAttributes & PhpMemberAttributes.Interface) == 0, "Interface cannot be a trait");
@@ -268,14 +257,14 @@ namespace Devsense.PHP.Syntax.Ast
 
         #region Construction
 
-        public AnonymousTypeDecl(SourceUnit/*!*/ sourceUnit,
+        public AnonymousTypeDecl(
             Text.Span span, Text.Span headingSpan,
             bool isConditional, Scope scope, PhpMemberAttributes memberAttributes, bool isPartial,
-            NamespaceDecl ns, List<FormalTypeParam>/*!*/ genericParams, QualifiedNameRef baseClass,
+            List<FormalTypeParam>/*!*/ genericParams, QualifiedNameRef baseClass,
             List<QualifiedNameRef>/*!*/ implementsList, List<TypeMemberDecl>/*!*/ elements, Text.Span bodySpan,
             List<CustomAttribute> attributes)
-            : base(sourceUnit, span, headingSpan, isConditional,
-                  scope, memberAttributes, isPartial, ns, genericParams, baseClass, implementsList, elements, bodySpan, attributes)
+            : base(span, headingSpan, isConditional,
+                  scope, memberAttributes, isPartial, genericParams, baseClass, implementsList, elements, bodySpan, attributes)
         {
         }
 

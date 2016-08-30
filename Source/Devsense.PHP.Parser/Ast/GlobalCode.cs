@@ -14,7 +14,7 @@ namespace Devsense.PHP.Syntax.Ast
     /// by GlobalCode node. Finally, it is emitted into Main() method of concrete PHPPage 
     /// class. The sample code below illustrates a part of PHP global code
     /// </remarks>
-    public sealed class GlobalCode : LangElement, IHasSourceUnit
+    public sealed class GlobalCode : LangElement
     {
         /// <summary>
         /// Array of nodes representing statements in PHP global code
@@ -22,11 +22,12 @@ namespace Devsense.PHP.Syntax.Ast
         public Statement[]/*!*/ Statements { get { return statements; } internal set { statements = value; } }
         private Statement[]/*!*/ statements;
 
+        private readonly SourceUnit/*!*/ sourceUnit;
+
         /// <summary>
         /// Represented source unit.
         /// </summary>
-        public SourceUnit/*!*/ SourceUnit { get { return sourceUnit; } }
-        private readonly SourceUnit/*!*/ sourceUnit;
+        public override SourceUnit ContainingSourceUnit => sourceUnit;
 
         #region Constructors
 
@@ -200,17 +201,11 @@ namespace Devsense.PHP.Syntax.Ast
         /// </summary>
         public bool IsConditional { get; private set; }
 
-        /// <summary>
-        /// Source unit.
-        /// </summary>
-        internal SourceUnit SourceUnit { get; private set; }
-
-        public GlobalConstantDecl(SourceUnit/*!*/ sourceUnit, Text.Span span, bool isConditional, 
+        public GlobalConstantDecl(Text.Span span, bool isConditional, 
             string/*!*/ name, Text.Span namePos, Expression/*!*/ initializer)
             : base(span, name, namePos, initializer)
         {
             this.IsConditional = IsConditional;
-            this.SourceUnit = sourceUnit;
         }
 
         /// <summary>

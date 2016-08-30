@@ -2182,16 +2182,16 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
       case 156: // catch_list -> catch_list T_CATCH '(' catch_name_list T_VARIABLE ')' '{' inner_statement_list '}' 
 { 
 				yyval.Object = AddToList<CatchItem>(value_stack.array[value_stack.top-9].yyval.Object, _astFactory.Catch(yypos, 
-					(TypeRef)_astFactory.TypeReference(value_stack.array[value_stack.top-6].yypos, (List<TypeRef>)value_stack.array[value_stack.top-6].yyval.Object, null), 
+					(TypeRef)_astFactory.TypeReference(value_stack.array[value_stack.top-6].yypos, TypeListFromNameList(value_stack.array[value_stack.top-6].yyval.Object), null), 
 					(DirectVarUse)_astFactory.Variable(value_stack.array[value_stack.top-5].yypos, new VariableName((string)value_stack.array[value_stack.top-5].yyval.Object), (LangElement)null), 
 					_astFactory.Block(CombineSpans(value_stack.array[value_stack.top-3].yypos, value_stack.array[value_stack.top-1].yypos), (List<LangElement>)value_stack.array[value_stack.top-2].yyval.Object))); 
 			}
         return;
       case 157: // catch_name_list -> name 
-{ yyval.Object = new List<TypeRef>() { (TypeRef)_astFactory.TypeReference(((QualifiedNameRef)value_stack.array[value_stack.top-1].yyval.Object).Span, TranslateAny(((QualifiedNameRef)value_stack.array[value_stack.top-1].yyval.Object).QualifiedName), false, TypeRef.EmptyList) }; }
+{ yyval.Object = new List<QualifiedNameRef>() { TranslateType(value_stack.array[value_stack.top-1].yyval.Object) }; }
         return;
       case 158: // catch_name_list -> catch_name_list '|' name 
-{ yyval.Object = AddToList<TypeRef>(value_stack.array[value_stack.top-3].yyval.Object, _astFactory.TypeReference(((QualifiedNameRef)value_stack.array[value_stack.top-1].yyval.Object).Span, TranslateAny(((QualifiedNameRef)value_stack.array[value_stack.top-1].yyval.Object).QualifiedName), false, TypeRef.EmptyList)); }
+{ yyval.Object = AddToList<QualifiedNameRef>(value_stack.array[value_stack.top-3].yyval.Object, TranslateType(value_stack.array[value_stack.top-1].yyval.Object)); }
         return;
       case 159: // finally_statement -> 
 { yyval.Object = null; }

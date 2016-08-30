@@ -500,15 +500,15 @@ catch_list:
 	|	catch_list T_CATCH '(' catch_name_list T_VARIABLE ')' '{' inner_statement_list '}'
 			{ 
 				$$ = AddToList<CatchItem>($1, _astFactory.Catch(@$, 
-					(TypeRef)_astFactory.TypeReference(@4, (List<TypeRef>)$4, null), 
+					(TypeRef)_astFactory.TypeReference(@4, TypeListFromNameList($4), null), 
 					(DirectVarUse)_astFactory.Variable(@5, new VariableName((string)$5), (LangElement)null), 
 					_astFactory.Block(CombineSpans(@7, @9), (List<LangElement>)$8))); 
 			}
 ;
 
-catch_name_list: // TODO: helper method Translate(QualifiedNameRef), TODO: catch_name_list -> List<QualifiedNameRef>
-		name { $$ = new List<TypeRef>() { (TypeRef)_astFactory.TypeReference(((QualifiedNameRef)$1).Span, TranslateAny(((QualifiedNameRef)$1).QualifiedName), false, TypeRef.EmptyList) }; }
-	|	catch_name_list '|' name { $$ = AddToList<TypeRef>($1, _astFactory.TypeReference(((QualifiedNameRef)$3).Span, TranslateAny(((QualifiedNameRef)$3).QualifiedName), false, TypeRef.EmptyList)); }
+catch_name_list:
+		name { $$ = new List<QualifiedNameRef>() { TranslateType($1) }; }
+	|	catch_name_list '|' name { $$ = AddToList<QualifiedNameRef>($1, TranslateType($3)); }
 ;
 
 finally_statement:
