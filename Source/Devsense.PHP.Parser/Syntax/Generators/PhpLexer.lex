@@ -815,7 +815,7 @@ NonVariableStart        [^a-zA-Z_{]
 <ST_SINGLE_QUOTES>([^'\\]|("\\".)|("\\"{NEWLINE}))+ { yymore(); break; }
 <ST_SINGLE_QUOTES>"'"                               { BEGIN(LexicalStates.ST_IN_SCRIPTING); return ProcessSingleQuotedString(); }
 
-<ST_IN_SCRIPTING>b?["]([^"\{$\\]*(\\.|\{[^$])?)*["] {
+<ST_IN_SCRIPTING>b?["]({WHITESPACE}?[^\r\n"\{$\\]*([$][^a-zA-Z_\{]|\\.|\{[^$\\])?|\{\\.)*["] {
 	return ProcessDoubleQuotedString();
 }
 
@@ -904,19 +904,19 @@ NonVariableStart        [^a-zA-Z_{]
 
 <ST_NOWDOC>{ANY_CHAR}         { yymore(); break; }
 
-<ST_DOUBLE_QUOTES>([^"\{$\\]*(\\.|\{[^$])?)* {
+<ST_DOUBLE_QUOTES>([^"\{$\\]*([$][^a-zA-Z_\{]|\\.|\{[^$])?)* {
     this._tokenSemantics.Object = ProcessEscapedString(GetTokenString(), _encoding, false);
     return (Tokens.T_ENCAPSED_AND_WHITESPACE);
 }
 
-<ST_BACKQUOTE>([^`\{$\\]*(\\.|\{[^$])?)* {
+<ST_BACKQUOTE>([^`\{$\\]*([$][^a-zA-Z_\{]|\\.|\{[^$])?)* {
     this._tokenSemantics.Object = ProcessEscapedString(GetTokenString(), _encoding, false);
     return (Tokens.T_ENCAPSED_AND_WHITESPACE);
 }
 
-<ST_HEREDOC>([^\n\r\x2028\x2029\{$\\]*(\\.|\{[^$])?)*{NEWLINE} { yymore(); break; }
+<ST_HEREDOC>([^\n\r\{$\\]*([$][^a-zA-Z_\{]|\\.|\{[^$])?)*{NEWLINE} { yymore(); break; }
 
-<ST_HEREDOC>([^\n\r\x2028\x2029\{$\\]*(\\.|\{[^$])?)* {
+<ST_HEREDOC>([^\n\r\{$\\]*([$][^a-zA-Z_\{]|\\.|\{[^$])?)* {
     this._tokenSemantics.Object = ProcessEscapedString(GetTokenString(), _encoding, false);
     return (Tokens.T_ENCAPSED_AND_WHITESPACE);
 }
