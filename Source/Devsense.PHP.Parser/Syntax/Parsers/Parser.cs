@@ -272,13 +272,8 @@ namespace Devsense.PHP.Syntax
                 return _astFactory.Variable(span, ((IndirectVarUse)name).VarNameEx, objectName);
         }
 
-        private LangElement CreateStaticProperty(Span span, LangElement objectExpr, Span objectNamePos, object name)
-        {
-            if (name is DirectVarUse)
-                return _astFactory.Variable(span, ((DirectVarUse)name).VarName, (TypeRef)_astFactory.TypeReference(objectNamePos, objectExpr, null));
-            else
-                return _astFactory.Variable(span, ((IndirectVarUse)name).VarNameEx, (TypeRef)_astFactory.TypeReference(objectNamePos, objectExpr, null));
-        }
+        private LangElement CreateStaticProperty(Span span, LangElement objectExpr, Span objectNamePos, object name) =>
+            CreateStaticProperty(span, (TypeRef)_astFactory.TypeReference(objectNamePos, objectExpr, null), objectNamePos, name);
 
         private List<T> RightTrimList<T>(List<T> list)
         {
