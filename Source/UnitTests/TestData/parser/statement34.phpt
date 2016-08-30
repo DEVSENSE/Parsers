@@ -27,9 +27,9 @@
 "GlobalCode":{
   "NamingContext":{},
   "BlockStmt":{
-    "NamedTypeDecl":{"Name":"MyClass","MemberAttributes":"Final","IsConditional":"True","PHPDoc":{"Comment":"final class"}},
-    "NamedTypeDecl":{"Name":"MyClass","MemberAttributes":"Error","IsConditional":"True","PHPDoc":{"Comment":"final abstract class"}},
-    "NamedTypeDecl":{"Name":"MyInterface","MemberAttributes":"Interface","IsConditional":"True"},
-    "NamedTypeDecl":{"Name":"MyTrait","MemberAttributes":"Trait","IsConditional":"True"}
+    "NamedTypeDecl":{"Name":"MyClass","MemberAttributes":"Final","IsConditional":"False","PHPDoc":{"Comment":"final class"}},
+    "NamedTypeDecl":{"Name":"MyClass","MemberAttributes":"Error","IsConditional":"False","PHPDoc":{"Comment":"final abstract class"}},
+    "NamedTypeDecl":{"Name":"MyInterface","MemberAttributes":"Interface","IsConditional":"False"},
+    "NamedTypeDecl":{"Name":"MyTrait","MemberAttributes":"Trait","IsConditional":"False"}
   }
 }

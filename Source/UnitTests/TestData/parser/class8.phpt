@@ -33,8 +33,8 @@ $x = new class(1, "world")
     "NewEx":{
       "AnonymousTypeDecl":{
         "MemberAttributes":"Public",
-        "IsConditional":"True",
-        "PHPDoc":{"Comment":"classdeclaration"},
+        "IsConditional":"False",
+        "PHPDoc":{"Comment":"class declaration"},
         "FieldDeclList":{
           "FieldDecl":{"Name":"var","MemberAttributes":"Error","PHPDoc":{"Comment":"propertydeclaration"},"StringLiteral":{"Value":"adefaultvalue"}},
           "FieldDecl":{"Name":"vara","MemberAttributes":"Error","PHPDoc":{"Comment":"seconddoc"},"LongIntLiteral":{"Value":"10"}}

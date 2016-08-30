@@ -193,7 +193,6 @@ namespace Devsense.PHP.Syntax.Ast
         public virtual LangElement Function(Span span, bool conditional, bool aliasReturn, PhpMemberAttributes attributes, TypeRef returnType, 
             Name name, Span nameSpan, IEnumerable<FormalTypeParam> typeParamsOpt, IEnumerable<FormalParam> formalParams, Span formalParamsSpan, LangElement body)
         {
-            Debug.Assert(body is BlockStmt || body is Statement);
             return new FunctionDecl(_sourceUnit, span, conditional, new Scope(), attributes, new NameRef(nameSpan, name.Value), null, aliasReturn,
                 formalParams.ToList(), formalParamsSpan, (typeParamsOpt != null) ? typeParamsOpt.ToList() : FormalTypeParam.EmptyList,
                 (BlockStmt)body, null, returnType);
@@ -202,7 +201,6 @@ namespace Devsense.PHP.Syntax.Ast
         public virtual LangElement Lambda(Span span, Span headingSpan, bool aliasReturn, TypeRef returnType, IEnumerable<FormalParam> formalParams, 
             Span formalParamsSpan, IEnumerable<FormalParam> lexicalVars, LangElement body)
         {
-            Debug.Assert(body is BlockStmt || body is Statement);
             return new LambdaFunctionExpr(_sourceUnit, span, headingSpan,
                 new Scope(), null, false, formalParams.ToList(), formalParamsSpan, lexicalVars.ToList(),
                 (BlockStmt)body, returnType);

@@ -198,7 +198,7 @@ using Devsense.PHP.Errors;
 %token <Object> T_THROW 352     //"throw (T_THROW)"
 %token <Object> T_USE 353       //"use (T_USE)"
 %token <Object> T_INSTEADOF 354  //"insteadof (T_INSTEADOF)"
-%token <Object> T_GLOBAL 355    //"global (T_GLOBAL)"
+%token <Object> T_GLOBAL 355    //"exit_scope (T_GLOBAL)"
 %token <Object> T_STATIC 316    //"static (T_STATIC)"
 %token <Object> T_ABSTRACT 315  //"abstract (T_ABSTRACT)"
 %token <Object> T_FINAL 314     //"final (T_FINAL)"
@@ -282,7 +282,7 @@ using Devsense.PHP.Errors;
 %type <Long> method_modifiers non_empty_member_modifiers member_modifier
 %type <Long> class_modifiers class_modifier use_type backup_fn_flags
 
-%type <Object> backup_doc_comment list_backup_doc_comment
+%type <Object> backup_doc_comment list_backup_doc_comment enter_scope exit_scope
 
 %type <Object> inline_html                     // Expression
 
@@ -296,7 +296,7 @@ start:
 	{ 
 		AssignNamingContext(); 
 		AssignStatements((List<LangElement>)$2);
-		_astRoot = _astFactory.GlobalCode(@$, (List<LangElement>)$2, _namingContext); 
+		_astRoot = _astFactory.GlobalCode(@$, (List<LangElement>)$2, namingContext); 
 		ResetNamingContext(); 
 	}
 ;
@@ -337,50 +337,33 @@ name:
 ;
 
 top_statement:
-		statement							
-			{ 
-				$$ = $1; 
-				if($$ is ExpressionStmt && ((ExpressionStmt)$$).Expression is IncludingEx) 
-					((IncludingEx)((ExpressionStmt)$$).Expression).IsConditional = false;	 // TODO: use Scope, this is incorrect e.g. "echo include 'a.php';"
-			}
-	|	function_declaration_statement		{ $$ = $1; ((FunctionDecl)$$).IsConditional = false; /*TODO: use Scope, this is ugly*/ }
-	|	class_declaration_statement			{ $$ = $1; ((TypeDecl)$$).IsConditional = false; }
-	|	trait_declaration_statement			{ $$ = $1; ((TypeDecl)$$).IsConditional = false; }
-	|	interface_declaration_statement		{ $$ = $1; ((TypeDecl)$$).IsConditional = false; }
+		statement							{ $$ = $1; }
+	|	function_declaration_statement		{ $$ = $1; }
+	|	class_declaration_statement			{ $$ = $1; }
+	|	trait_declaration_statement			{ $$ = $1; }
+	|	interface_declaration_statement		{ $$ = $1; }
 	|	T_HALT_COMPILER '(' ')' ';'			{ $$ = _astFactory.HaltCompiler(@$); }
 	|	T_NAMESPACE namespace_name ';'
 		{
 			AssignNamingContext();
             SetNamingContext((List<string>)$2);
             SetDoc(
-				$$ = _currentNamespace = (NamespaceDecl)_astFactory.Namespace(@$, _namingContext.CurrentNamespace, @2, _namingContext),
+				$$ = _currentNamespace = (NamespaceDecl)_astFactory.Namespace(@$, namingContext.CurrentNamespace, @2, namingContext),
 				Scanner.DocBlock);
 			ResetDocBlock(); 
 		}
-	|	T_NAMESPACE namespace_name
-		{
-			$$ = Scanner.DocBlock;
-			ResetDocBlock();
-			SetNamingContext((List<string>)$2);
-		}
+	|	T_NAMESPACE namespace_name backup_doc_comment { SetNamingContext((List<string>)$2); }
 		'{' top_statement_list '}'
 		{ 
-			SetDoc(
-				$$ = _astFactory.Namespace(@$, _namingContext.CurrentNamespace, @2, _astFactory.Block(CombineSpans(@4, @6), (List<LangElement>)$5), _namingContext),
-				$3.Object);
+			$$ = _astFactory.Namespace(@$, namingContext.CurrentNamespace, @2, _astFactory.Block(CombineSpans(@5, @7), (List<LangElement>)$6), namingContext);
+			SetDoc($$, $3);
 			ResetNamingContext(); 
 		}
-	|	T_NAMESPACE
-		{
-			$$ = Scanner.DocBlock;
-			ResetDocBlock();
-			SetNamingContext(null);
-		}
+	|	T_NAMESPACE backup_doc_comment { SetNamingContext(null); }
 		'{' top_statement_list '}'
 		{ 
-			SetDoc(
-				$$ = _astFactory.Namespace(@$, null, @$, _astFactory.Block(CombineSpans(@3, @5), (List<LangElement>)$4), _namingContext),
-				$2.Object);
+			$$ = _astFactory.Namespace(@$, null, @$, _astFactory.Block(CombineSpans(@4, @6), (List<LangElement>)$5), namingContext);
+			SetDoc($$, $2);
 			ResetNamingContext(); 
 		}
 	|	T_USE mixed_group_use_declaration ';'		{ _contextType = ContextType.Class; }
@@ -478,16 +461,16 @@ inner_statement:
 
 statement:
 		'{' inner_statement_list '}' { $$ = _astFactory.Block(@$, (List<LangElement>)$2); }
-	|	if_stmt { $$ = $1; }
-	|	alt_if_stmt { $$ = $1; }
-	|	T_WHILE '(' expr ')' while_statement
-			{ $$ = _astFactory.While(@$, (LangElement)$3, (LangElement)$5); }
-	|	T_DO statement T_WHILE '(' expr ')' ';'
-			{ $$ = _astFactory.Do(@$, (LangElement)$2, (LangElement)$5); }
-	|	T_FOR '(' for_exprs ';' for_exprs ';' for_exprs ')' for_statement
-			{ $$ = _astFactory.For(@$, (List<Expression>)$3, (List<Expression>)$5, (List<Expression>)$7, (LangElement)$9); }
-	|	T_SWITCH '(' expr ')' switch_case_list
-			{ $$ = _astFactory.Switch(@$, (LangElement)$3, (List<LangElement>)$5); }
+	|	enter_scope if_stmt exit_scope { $$ = $2; }
+	|	enter_scope alt_if_stmt exit_scope { $$ = $2; }
+	|	T_WHILE '(' expr ')' enter_scope while_statement exit_scope
+			{ $$ = _astFactory.While(@$, (LangElement)$3, (LangElement)$6); }
+	|	T_DO enter_scope statement T_WHILE '(' expr ')' ';' exit_scope
+			{ $$ = _astFactory.Do(@$, (LangElement)$3, (LangElement)$6); }
+	|	T_FOR '(' for_exprs ';' for_exprs ';' for_exprs ')' enter_scope for_statement exit_scope
+			{ $$ = _astFactory.For(@$, (List<Expression>)$3, (List<Expression>)$5, (List<Expression>)$7, (LangElement)$10); }
+	|	T_SWITCH '(' expr ')' enter_scope switch_case_list exit_scope
+			{ $$ = _astFactory.Switch(@$, (LangElement)$3, (List<LangElement>)$6); }
 	|	T_BREAK optional_expr ';'		{ $$ = _astFactory.Jump(@$, JumpStmt.Types.Break, (LangElement)$2);}
 	|	T_CONTINUE optional_expr ';'	{ $$ = _astFactory.Jump(@$, JumpStmt.Types.Continue, (LangElement)$2); }
 	|	T_RETURN optional_expr ';'		{ $$ = _astFactory.Jump(@$, JumpStmt.Types.Return, (LangElement)$2); }
@@ -497,15 +480,15 @@ statement:
 	|	T_INLINE_HTML { $$ = _astFactory.InlineHtml(@$, (string)$1); }
 	|	expr ';' { $$ = _astFactory.ExpressionStmt(@$, (LangElement)$1); }
 	|	T_UNSET '(' unset_variables ')' ';' { $$ = _astFactory.Unset(@$, (List<LangElement>)$3); }
-	|	T_FOREACH '(' expr T_AS foreach_variable ')' foreach_statement
-			{ $$ = _astFactory.Foreach(@$, (LangElement)$3, null, (LangElement)$5, (LangElement)$7); }
-	|	T_FOREACH '(' expr T_AS foreach_variable T_DOUBLE_ARROW foreach_variable ')' foreach_statement
-			{ $$ = _astFactory.Foreach(@$, (LangElement)$3, (LangElement)$5, (LangElement)$7, (LangElement)$9); }
+	|	T_FOREACH '(' expr T_AS foreach_variable ')' enter_scope foreach_statement exit_scope
+			{ $$ = _astFactory.Foreach(@$, (LangElement)$3, null, (LangElement)$5, (LangElement)$8); }
+	|	T_FOREACH '(' expr T_AS foreach_variable T_DOUBLE_ARROW foreach_variable ')' enter_scope foreach_statement exit_scope
+			{ $$ = _astFactory.Foreach(@$, (LangElement)$3, (LangElement)$5, (LangElement)$7, (LangElement)$10); }
 	|	T_DECLARE '(' const_list ')' declare_statement
 			{ $$ = _astFactory.Declare(@$, (LangElement)$5); }
 	|	';'	/* empty statement */ { $$ = _astFactory.EmptyStmt(@$); }
-	|	T_TRY '{' inner_statement_list '}' catch_list finally_statement
-			{ $$ = _astFactory.TryCatch(@$, _astFactory.Block(CombineSpans(@2, @4), (List<LangElement>)$3), (List<CatchItem>)$5, (LangElement)$6); }
+	|	T_TRY '{' inner_statement_list '}' enter_scope catch_list finally_statement exit_scope
+			{ $$ = _astFactory.TryCatch(@$, _astFactory.Block(CombineSpans(@2, @4), (List<LangElement>)$3), (List<CatchItem>)$6, (LangElement)$7); }
 	|	T_THROW expr ';' { $$ = _astFactory.Throw(@$, (LangElement)$2); }
 	|	T_GOTO T_STRING ';' { $$ = _astFactory.Goto(@$, (string)$2, @2); }
 	|	T_STRING ':' { $$ = _astFactory.Label(@$, (string)$1, @1); }
@@ -544,12 +527,11 @@ unset_variable:
 
 function_declaration_statement:
 	function returns_ref T_STRING backup_doc_comment '(' parameter_list ')' return_type
-	backup_fn_flags '{' inner_statement_list '}' backup_fn_flags
-		{ $$ = _astFactory.Function(@$, true, $2 == (long)FormalParam.Flags.IsByRef, PhpMemberAttributes.None, (TypeRef)$8, 
+	backup_fn_flags enter_scope '{' inner_statement_list '}' exit_scope backup_fn_flags
+		{ $$ = _astFactory.Function(@$, isConditional, $2 == (long)FormalParam.Flags.IsByRef, PhpMemberAttributes.None, (TypeRef)$8, 
 			new Name((string)$3), @3, null, (List<FormalParam>)$6, CombineSpans(@5, @7), 
-			_astFactory.Block(CombineSpans(@10, @12), (List<LangElement>)$11)); 
-		if($4 != null)
-			((FunctionDecl)$$).PHPDoc = (PHPDocBlock)$4;// TODO: SetDoc($$, $4);
+			_astFactory.Block(CombineSpans(@11, @13), (List<LangElement>)$12)); 
+			SetDoc($$, $4);
 		}
 ;
 
@@ -564,17 +546,17 @@ is_variadic:
 ;
 
 class_declaration_statement:
-		class_modifiers T_CLASS T_STRING extends_from implements_list backup_doc_comment '{' class_statement_list '}'
+		class_modifiers T_CLASS T_STRING extends_from implements_list backup_doc_comment enter_scope '{' class_statement_list '}' exit_scope
 			{ 
-				$$ = _astFactory.Type(@$, CombineSpans(@1, @2, @3, @4, @5), true, (PhpMemberAttributes)$1, new Name((string)$3), @3, null, 
-				(TypeRef)$4, (List<TypeRef>)$5, (List<LangElement>)$8, CombineSpans(@7, @8, @9)); 
-				if($6 != null) ((TypeDecl)$$).PHPDoc = (PHPDocBlock)$6;// TODO: SetDoc($$, $6);
+				$$ = _astFactory.Type(@$, CombineSpans(@1, @2, @3, @4, @5), isConditional, (PhpMemberAttributes)$1, new Name((string)$3), @3, null, 
+				(TypeRef)$4, (List<TypeRef>)$5, (List<LangElement>)$9, CombineSpans(@8, @10)); 
+				SetDoc($$, $6);
 			}
-	|	T_CLASS T_STRING extends_from implements_list backup_doc_comment '{' class_statement_list '}'
+	|	T_CLASS T_STRING extends_from implements_list backup_doc_comment enter_scope '{' class_statement_list '}' exit_scope
 			{ 
-				$$ = _astFactory.Type(@$, CombineSpans(@1, @2, @3, @4), true, PhpMemberAttributes.None, new Name((string)$2), @2, null, 
-				(TypeRef)$3, (List<TypeRef>)$4, (List<LangElement>)$7, CombineSpans(@6, @7, @8)); 
-				if($5 != null) ((TypeDecl)$$).PHPDoc = (PHPDocBlock)$5;// TODO: SetDoc($$, $5);
+				$$ = _astFactory.Type(@$, CombineSpans(@1, @2, @3, @4), isConditional, PhpMemberAttributes.None, new Name((string)$2), @2, null, 
+				(TypeRef)$3, (List<TypeRef>)$4, (List<LangElement>)$8, CombineSpans(@7, @9)); 
+				SetDoc($$, $5);
 			}
 ;
 
@@ -589,20 +571,20 @@ class_modifier:
 ;
 
 trait_declaration_statement:
-		T_TRAIT T_STRING backup_doc_comment '{' class_statement_list '}'
+		T_TRAIT T_STRING backup_doc_comment enter_scope '{' class_statement_list '}' exit_scope
 			{ 
-				$$ = _astFactory.Type(@$, CombineSpans(@1, @2), true, PhpMemberAttributes.Trait, new Name((string)$2), @2, null, 
-				null, null, (List<LangElement>)$5, CombineSpans(@4, @5, @6)); 
-				if($3 != null) ((TypeDecl)$$).PHPDoc = (PHPDocBlock)$3;
+				$$ = _astFactory.Type(@$, CombineSpans(@1, @2), isConditional, PhpMemberAttributes.Trait, new Name((string)$2), @2, null, 
+					null, null, (List<LangElement>)$6, CombineSpans(@5, @7)); 
+				SetDoc($$, $3);
 			}
 ;
 
 interface_declaration_statement:
-		T_INTERFACE T_STRING interface_extends_list backup_doc_comment '{' class_statement_list '}'
+		T_INTERFACE T_STRING interface_extends_list backup_doc_comment enter_scope '{' class_statement_list '}' exit_scope
 			{ 
-				$$ = _astFactory.Type(@$, CombineSpans(@1, @2, @3), true, PhpMemberAttributes.Interface, new Name((string)$2), @2, null, 
-				null, (List<TypeRef>)$3, (List<LangElement>)$6, CombineSpans(@5, @6, @7)); 
-				if($4 != null) ((TypeDecl)$$).PHPDoc = (PHPDocBlock)$4;
+				$$ = _astFactory.Type(@$, CombineSpans(@1, @2, @3), isConditional, PhpMemberAttributes.Interface, new Name((string)$2), @2, null, 
+					null, (List<TypeRef>)$3, (List<LangElement>)$7, CombineSpans(@6, @8)); 
+				SetDoc($$, $4);
 			}
 ;
 
@@ -804,13 +786,12 @@ class_statement:
 		variable_modifiers list_backup_doc_comment property_list ';'
 			{ 
 				$$ = _astFactory.DeclList(@$, (PhpMemberAttributes)$1, (List<LangElement>)$3); 
-				if($2 != null) ((FieldDeclList)$$).PHPDoc = (PHPDocBlock)$2; // TODO: SetDoc($$, $2);
+				SetDoc($$, $2);
 			}
 	|	method_modifiers T_CONST list_backup_doc_comment class_const_list ';'
 			{ 
 				$$ = _astFactory.DeclList(@$, (PhpMemberAttributes)$1, (List<LangElement>)$4); 
-				if($3 != null)
-					((ConstDeclList)$$).PHPDoc = (PHPDocBlock)$3;// TODO: SetDoc($$, $3);
+				SetDoc($$, $3);
 			}
 	|	T_USE name_list trait_adaptations
 			{ $$ = _astFactory.TraitUse(@$, ((List<TypeRef>)$2).Select(t => t.QualifiedName.Value), (List<TraitsUse.TraitAdaptation>)$3); }
@@ -819,7 +800,7 @@ class_statement:
 			{ $$ = _astFactory.Method(@$, $3 == (long)FormalParam.Flags.IsByRef, (PhpMemberAttributes)$1, 
 				(TypeRef)$9, @9, (string)$4, @4, null, (List<FormalParam>)$7, @8, 
 				null, (LangElement)$11); 
-			if($5 != null) ((MethodDecl)$$).PHPDoc = (PHPDocBlock)$5;	// TODO: SetDoc($$, $5);
+			SetDoc($$, $5);
 			}
 ;
 
@@ -953,12 +934,10 @@ non_empty_for_exprs:
 
 anonymous_class:
         T_CLASS ctor_arguments
-		extends_from implements_list backup_doc_comment '{' class_statement_list '}' {
-			// TODO: var tref = ...; SetDoc(tref, $5); $$ = Tuple(tref, (List<ActualParam>)$2);
-			$$ = new Tuple<TypeRef, List<ActualParam>>((TypeRef)_astFactory.AnonymousTypeReference(@$, CombineSpans(@1, @2), true, PhpMemberAttributes.None, null, 
-				(TypeRef)$3, (List<TypeRef>)$4, (List<LangElement>)$7, @7),
-				(List<ActualParam>)$2); 
-			if($5 != null) ((AnonymousTypeRef)((Tuple<TypeRef, List<ActualParam>>)$$).Item1).TypeDeclaration.PHPDoc = (PHPDocBlock)$5;
+		extends_from implements_list backup_doc_comment enter_scope '{' class_statement_list '}' exit_scope {
+			var typeRef = (TypeRef)_astFactory.AnonymousTypeReference(@$, CombineSpans(@1, @2), isConditional, PhpMemberAttributes.None, null, (TypeRef)$3, (List<TypeRef>)$4, (List<LangElement>)$8, CombineSpans(@7, @9));
+			SetDoc(((AnonymousTypeRef)typeRef).TypeDeclaration, $5);
+			$$ = new Tuple<TypeRef, List<ActualParam>>(typeRef, (List<ActualParam>)$2); 
 		}
 ;
 
@@ -1079,18 +1058,18 @@ expr_without_variable:
 	|	T_YIELD expr T_DOUBLE_ARROW expr { $$ = _astFactory.Yield(@$, (LangElement)$2, (LangElement)$4); }
 	|	T_YIELD_FROM expr { $$ = _astFactory.YieldFrom(@$, (LangElement)$2); }
 	|	function returns_ref backup_doc_comment '(' parameter_list ')' lexical_vars return_type
-		backup_fn_flags '{' inner_statement_list '}' backup_fn_flags
-			{ $$ = _astFactory.Lambda(@$, CombineSpans(@1, @2, @3, @4, @5, @6, @7, @8), $2 == (long)FormalParam.Flags.IsByRef, (TypeRef)$8, 
+		backup_fn_flags enter_scope '{' inner_statement_list '}' exit_scope backup_fn_flags
+			{ $$ = _astFactory.Lambda(@$, CombineSpans(@1, @6, @7, @8), $2 == (long)FormalParam.Flags.IsByRef, (TypeRef)$8, 
 				(List<FormalParam>)$5, CombineSpans(@4, @6), 
-				(List<FormalParam>)$7, _astFactory.Block(CombineSpans(@10, @11, @12), (List<LangElement>)$11)); 
-			if($3 != null) ((LambdaFunctionExpr)$$).PHPDoc = (PHPDocBlock)$3;// TODO: SetDoc($$, $3);
+				(List<FormalParam>)$7, _astFactory.Block(CombineSpans(@11, @13), (List<LangElement>)$12)); 
+				SetDoc($$, $3);
 			}
 	|	T_STATIC function returns_ref backup_doc_comment '(' parameter_list ')' lexical_vars
-		return_type backup_fn_flags '{' inner_statement_list '}' backup_fn_flags
-			{ $$ = _astFactory.Lambda(@$, CombineSpans(@1, @2, @3, @4, @5, @6, @7, @8, @9), $3 == (long)FormalParam.Flags.IsByRef, (TypeRef)$9, 
+		return_type backup_fn_flags enter_scope '{' inner_statement_list '}' exit_scope backup_fn_flags
+			{ $$ = _astFactory.Lambda(@$, CombineSpans(@1, @7, @8, @9), $3 == (long)FormalParam.Flags.IsByRef, (TypeRef)$9, 
 				(List<FormalParam>)$6, CombineSpans(@5, @7), 
-				(List<FormalParam>)$8, _astFactory.Block(CombineSpans(@11, @12, @13), (List<LangElement>)$12)); 
-			if($4 != null) ((LambdaFunctionExpr)$$).PHPDoc = (PHPDocBlock)$4;// TODO: SetDoc($$, $4);
+				(List<FormalParam>)$8, _astFactory.Block(CombineSpans(@12, @14), (List<LangElement>)$13)); 
+				SetDoc($$, $4);
 			}
 ;
 
@@ -1104,6 +1083,14 @@ backup_doc_comment:
 
 list_backup_doc_comment:
 	/* empty */ { $$ = Scanner.DocBlock; }
+;
+
+enter_scope:
+	/* empty */ { _currentScope.Increment(); }
+;
+
+exit_scope:
+	/* empty */ { _currentScope.Decrement(); }
 ;
 
 backup_fn_flags:
@@ -1135,7 +1122,7 @@ function_call:
 			{ 
 				var qname = ((QualifiedNameRef)$1).QualifiedName;
                 QualifiedName? fallbackQName;
-                TranslateFallbackQualifiedName(ref qname, out fallbackQName, this._namingContext.FunctionAliases);
+                TranslateFallbackQualifiedName(ref qname, out fallbackQName, this.namingContext.FunctionAliases);
 				$$ = _astFactory.Call(@$, qname, fallbackQName, @1, new CallSignature((List<ActualParam>)$2), null); 
 			}
 	|	class_name T_DOUBLE_COLON member_name argument_list
@@ -1217,11 +1204,11 @@ constant:
                 QualifiedName? fallbackQName;
 				if (qname.IsSimpleName && (qname == QualifiedName.Null || qname == QualifiedName.True || qname == QualifiedName.False))
 				{
-					// special global consts
+					// special exit_scope consts
 					fallbackQName = null;
 					qname.IsFullyQualifiedName = true;
 				}
-				else TranslateFallbackQualifiedName(ref qname, out fallbackQName, this._namingContext.ConstantAliases);
+				else TranslateFallbackQualifiedName(ref qname, out fallbackQName, this.namingContext.ConstantAliases);
 				$$ = _astFactory.ConstUse(@$, qname, fallbackQName); 
 			}
 	|	class_name T_DOUBLE_COLON identifier
@@ -1396,15 +1383,15 @@ internal_functions_in_yacc:
 		T_ISSET '(' isset_variables ')' { $$ = _astFactory.Isset(@$, (List<LangElement>)$3); }
 	|	T_EMPTY '(' expr ')' { $$ = _astFactory.Empty(@$, (LangElement)$3);}
 	|	T_INCLUDE expr
-			{ $$ = _astFactory.Inclusion(@$, true, InclusionTypes.Include, (LangElement)$2); }
+			{ $$ = _astFactory.Inclusion(@$, isConditional, InclusionTypes.Include, (LangElement)$2); }
 	|	T_INCLUDE_ONCE expr
-			{ $$ = _astFactory.Inclusion(@$, true, InclusionTypes.IncludeOnce, (LangElement)$2); }
+			{ $$ = _astFactory.Inclusion(@$, isConditional, InclusionTypes.IncludeOnce, (LangElement)$2); }
 	|	T_EVAL '(' expr ')'
 			{ $$ = _astFactory.Eval(@$, (LangElement)$3); }
 	|	T_REQUIRE expr
-			{ $$ = _astFactory.Inclusion(@$, true, InclusionTypes.Require, (LangElement)$2); }
+			{ $$ = _astFactory.Inclusion(@$, isConditional, InclusionTypes.Require, (LangElement)$2); }
 	|	T_REQUIRE_ONCE expr
-			{ $$ = _astFactory.Inclusion(@$, true, InclusionTypes.RequireOnce, (LangElement)$2); }
+			{ $$ = _astFactory.Inclusion(@$, isConditional, InclusionTypes.RequireOnce, (LangElement)$2); }
 ;
 
 isset_variables:

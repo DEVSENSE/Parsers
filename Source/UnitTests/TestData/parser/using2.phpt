@@ -12,9 +12,7 @@ namespace test{
   lconst;
   clsconst;
   
-  class A implements Y
-  {
-  }
+  class A extends Y implements Y,\Y {}
 }
 ?>
 <<<TEST>>>
@@ -37,7 +35,7 @@ namespace test{
         "NewEx":{"DirectTypeRef":{"ClassName":"MySpace\X"}},
         "GlobalConstUse":{"Name":"MySpace\gconst","FallbackName":""},
         "GlobalConstUse":{"Name":"test\clsconst","FallbackName":"clsconst"},
-        "NamedTypeDecl":{"Name":"A","MemberAttributes":"Public","IsConditional":"False","ImplementsList":{"Name":"MySpace\X"}}
+        "NamedTypeDecl":{"Name":"A","MemberAttributes":"Public","IsConditional":"False","BaseClassName":{"Name":"MySpace\X"},"ImplementsList":{"Name":"MySpace\X","Name":"Y"}}
       }
     }
   }

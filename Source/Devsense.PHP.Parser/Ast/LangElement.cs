@@ -194,6 +194,11 @@ namespace Devsense.PHP.Syntax.Ast
             start++;
         }
 
+        public void Decrement()
+        {
+            start--;
+        }
+
         public override string ToString()
         {
             return start.ToString();

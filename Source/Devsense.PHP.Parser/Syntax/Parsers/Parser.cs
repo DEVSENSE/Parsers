@@ -16,10 +16,11 @@ namespace Devsense.PHP.Syntax
         ITokenProvider<SemanticValueType, Span> _lexer;
         INodesFactory<LangElement, Span> _astFactory;
         IErrorSink<Span> _errors;
-        Scope _currentScope;    // TODO: remove or maintain
+        Scope _currentScope;
+        bool isConditional => !_currentScope.IsGlobal;
         NamespaceDecl _currentNamespace = null;
         readonly Stack<NamingContext> _context = new Stack<NamingContext>();
-        NamingContext _namingContext => _context.Peek();    // TODO: property without _ prefix
+        NamingContext namingContext => _context.Peek();
         ContextType _contextType = ContextType.Class;
 
         /// <summary>
@@ -57,9 +58,6 @@ namespace Devsense.PHP.Syntax
                 return first;
         }
 
-        //$$ = AddToList<LangElement>($1, $3);
-        //$$ = new List<LangElement>() { (LangElement)$1 };
-
         public LangElement Parse(
                 ITokenProvider<SemanticValueType, Span> lexer,
                 INodesFactory<LangElement, Span> astFactory,
@@ -78,7 +76,7 @@ namespace Devsense.PHP.Syntax
             _errors = errors ?? new EmptyErrorSink<Span>();
             //InitializeFields();
 
-            _currentScope = new Scope(1); // starts assigning scopes from 2 (1 is reserved for prepended inclusion)
+            _currentScope = new Scope(0);
 
             base.Scanner = _lexer;
             bool accept = base.Parse();
@@ -111,7 +109,7 @@ namespace Devsense.PHP.Syntax
             if (_currentNamespace != null)
             {
                 Debug.Assert(_context.Count == 2);
-                Debug.Assert(_currentNamespace.Naming == _namingContext);
+                Debug.Assert(_currentNamespace.Naming == namingContext);
                 ResetNamingContext();
             }
         }
@@ -205,13 +203,13 @@ namespace Devsense.PHP.Syntax
             switch (contextType)
             {
                 case ContextType.Class:
-                    _namingContext.AddAlias(aliasName, new QualifiedName(alias.Item1, true, true));
+                    namingContext.AddAlias(aliasName, new QualifiedName(alias.Item1, true, true));
                     break;
                 case ContextType.Function:
-                    _namingContext.AddFunctionAlias(aliasName, new QualifiedName(alias.Item1, true, true));
+                    namingContext.AddFunctionAlias(aliasName, new QualifiedName(alias.Item1, true, true));
                     break;
                 case ContextType.Constant:
-                    _namingContext.AddConstantAlias(aliasName, new QualifiedName(alias.Item1, true, true));
+                    namingContext.AddConstantAlias(aliasName, new QualifiedName(alias.Item1, true, true));
                     break;
             }
         }
@@ -296,10 +294,15 @@ namespace Devsense.PHP.Syntax
             return Span.FromBounds(validSpans.Min(s => s.Start), validSpans.Max(s => s.End));
         }
 
+        TypeRef TypeFromQNR(QualifiedNameRef qnr, bool isNullable)
+        {
+            return (TypeRef)_astFactory.TypeReference(qnr.Span, qnr.QualifiedName, isNullable, TypeRef.EmptyList);
+        }
+
         #region Aliasing
 
         /// <summary>
-        /// Translates given type reference according to current <see cref="_namingContext"/>.
+        /// Translates given type reference according to current <see cref="namingContext"/>.
         /// </summary>
         /// <param name="tref"></param>
         /// <returns></returns>
@@ -341,7 +344,7 @@ namespace Devsense.PHP.Syntax
                 // "\foo"
                 fallbackQName = new QualifiedName(qname.Name) { IsFullyQualifiedName = true };
                 // "namespace\foo"
-                qname = new QualifiedName(qname.Name, _namingContext.CurrentNamespace.Value.Namespaces) { IsFullyQualifiedName = true };
+                qname = new QualifiedName(qname.Name, namingContext.CurrentNamespace.Value.Namespaces) { IsFullyQualifiedName = true };
             }
             else
             {
@@ -359,8 +362,8 @@ namespace Devsense.PHP.Syntax
         {
             Debug.Assert(!qname.IsFullyQualifiedName);
             // do not use current namespace, if there are imported namespace ... will be resolved later
-            return QualifiedName.TranslateAlias(qname, this._namingContext.Aliases,
-                (IsInGlobalNamespace/* || sourceUnit.HasImportedNamespaces*/) ? (QualifiedName?)null : _namingContext.CurrentNamespace.Value);
+            return QualifiedName.TranslateAlias(qname, this.namingContext.Aliases,
+                (IsInGlobalNamespace/* || sourceUnit.HasImportedNamespaces*/) ? (QualifiedName?)null : namingContext.CurrentNamespace.Value);
         }
 
         private QualifiedName TranslateAny(QualifiedName qname)
@@ -385,7 +388,7 @@ namespace Devsense.PHP.Syntax
             Name.ParentClassName.Value,
         };
 
-        private bool IsInGlobalNamespace => _namingContext.CurrentNamespace == null || _namingContext.CurrentNamespace.Value.Namespaces.Length == 0;
+        private bool IsInGlobalNamespace => namingContext.CurrentNamespace == null || namingContext.CurrentNamespace.Value.Namespaces.Length == 0;
 
         private Span CombineSpans(Span a, Span b) => a.IsValid ? (b.IsValid ? Span.Combine(a, b) : a) : b;
 
