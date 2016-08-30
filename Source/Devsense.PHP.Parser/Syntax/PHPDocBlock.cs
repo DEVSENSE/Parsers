@@ -1530,7 +1530,8 @@ namespace Devsense.PHP.Syntax
                 Debug.Assert(!string.IsNullOrEmpty(paramDecl));
 
                 TypeRef typehint = null;
-                string paramname = null;
+                string paramname = string.Empty;
+                Span paramnamespan = Span.Invalid;
                 bool byref = false;
 
                 int i = 0;
@@ -1540,7 +1541,7 @@ namespace Devsense.PHP.Syntax
                     // [type]
                     if (word.Length > 0 && word[0] != '$')
                     {
-                        typehint = TypeRef.FromString(new Span(i - word.Length, word.Length), word);    // TODO: naming
+                        typehint = TypeRef.FromString(new Span(i - word.Length, word.Length), word);    // TODO: naming, Span
                         word = NextWord(paramDecl, ref i);
                     }
 
@@ -1556,7 +1557,7 @@ namespace Devsense.PHP.Syntax
                 }
 
                 return new FormalParam(
-                    Span.Invalid, paramname, new Span(i - word.Length, word.Length), typehint,
+                    Span.Invalid, paramname, paramnamespan, typehint,
                     byref ? FormalParam.Flags.IsByRef : FormalParam.Flags.Default,
                     null, null);
             }
