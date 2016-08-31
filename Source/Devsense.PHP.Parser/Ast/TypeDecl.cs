@@ -661,10 +661,9 @@ namespace Devsense.PHP.Syntax.Ast
         /// <summary>
         /// Position where traits list ends.
         /// </summary>
-        public int HeadingEndPosition { get { return headingEndPosition; } }
-        private readonly int headingEndPosition;
+        public int HeadingEndPosition => traitsList.Last().Span.End;
 
-        public TraitsUse(Text.Span span, int headingEndPosition, List<QualifiedNameRef>/*!*/traitsList, List<TraitAdaptation> traitAdaptationList)
+        public TraitsUse(Text.Span span, List<QualifiedNameRef>/*!*/traitsList, List<TraitAdaptation> traitAdaptationList)
             : base(span, null)
         {
             if (traitsList == null)
@@ -672,7 +671,6 @@ namespace Devsense.PHP.Syntax.Ast
 
             this.traitsList = traitsList;
             this.traitAdaptationList = traitAdaptationList;
-            this.headingEndPosition = headingEndPosition;
         }
 
         public override void VisitMe(TreeVisitor visitor)

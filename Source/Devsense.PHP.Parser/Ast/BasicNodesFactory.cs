@@ -369,7 +369,7 @@ namespace Devsense.PHP.Syntax.Ast
         public virtual LangElement TraitUse(Span span, IEnumerable<QualifiedNameRef> traits, IEnumerable<LangElement> adaptations)
         {
             Debug.Assert(traits != null);
-            return new TraitsUse(span, 0, traits.ToList(), (adaptations != null) ? ConvertList<TraitsUse.TraitAdaptation>(adaptations) : null);
+            return new TraitsUse(span, traits.ToList(), (adaptations != null) ? ConvertList<TraitsUse.TraitAdaptation>(adaptations) : null);
         }
 
         public virtual LangElement TraitAdaptationPrecedence(Span span, Tuple<QualifiedNameRef, NameRef> name, IEnumerable<QualifiedNameRef> precedences)
