@@ -80,7 +80,6 @@ namespace Devsense.PHP.Syntax
 
             base.Scanner = _lexer;
             bool accept = base.Parse();
-            Debug.Assert(accept, "Parser rejected the source code.");
 
             LangElement result = _astRoot;
 
