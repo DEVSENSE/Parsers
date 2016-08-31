@@ -123,10 +123,11 @@ namespace Devsense.PHP.Syntax
         /// </summary>
         /// <param name="encoding"></param>
         /// <param name="binary"></param>
-        /// <param name="initialLength"></param>
-        public PhpStringBuilder(Encoding/*!*/encoding, bool binary, int initialLength)
+        /// <param name="maxLength"></param>
+        public PhpStringBuilder(Encoding/*!*/encoding, bool binary, int maxLength)
         {
             Debug.Assert(encoding != null);
+            Debug.Assert(maxLength != 0);
 
             this.encoding = encoding;
             this.span = Span.Invalid;
@@ -134,7 +135,7 @@ namespace Devsense.PHP.Syntax
             //if (binary)
             //    _binaryBuilder = new List<byte>(initialLength);
             //else
-            _unicodeBuilder = new StringBuilder(initialLength);
+            _unicodeBuilder = new StringBuilder(maxLength, maxLength);
         }
 
         public PhpStringBuilder(Encoding/*!*/encoding, string/*!*/value, Span span)

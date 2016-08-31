@@ -830,29 +830,29 @@ trait_adaptation:
 
 trait_precedence:
 	absolute_trait_method_reference T_INSTEADOF name_list
-		{ $$ = _astFactory.TraitAdaptationPrecedence(@$, (Tuple<QualifiedNameRef?,NameRef>)$1, (List<QualifiedNameRef>)$3); }
+		{ $$ = _astFactory.TraitAdaptationPrecedence(@$, (Tuple<QualifiedNameRef,NameRef>)$1, (List<QualifiedNameRef>)$3); }
 ;
 
 trait_alias:
 		trait_method_reference T_AS T_STRING
-			{ $$ = _astFactory.TraitAdaptationAlias(@$, (Tuple<QualifiedNameRef?, NameRef>)$1, new NameRef(@3, (string)$3), null); }
+			{ $$ = _astFactory.TraitAdaptationAlias(@$, (Tuple<QualifiedNameRef, NameRef>)$1, new NameRef(@3, (string)$3), null); }
 	|	trait_method_reference T_AS reserved_non_modifiers
-			{ $$ = _astFactory.TraitAdaptationAlias(@$, (Tuple<QualifiedNameRef?, NameRef>)$1, new NameRef(@3, (string)$3), null); }
+			{ $$ = _astFactory.TraitAdaptationAlias(@$, (Tuple<QualifiedNameRef, NameRef>)$1, new NameRef(@3, (string)$3), null); }
 	|	trait_method_reference T_AS member_modifier identifier
-			{ $$ = _astFactory.TraitAdaptationAlias(@$, (Tuple<QualifiedNameRef?, NameRef>)$1, new NameRef(@4, (string)$4), (PhpMemberAttributes)$3); }
+			{ $$ = _astFactory.TraitAdaptationAlias(@$, (Tuple<QualifiedNameRef, NameRef>)$1, new NameRef(@4, (string)$4), (PhpMemberAttributes)$3); }
 	|	trait_method_reference T_AS member_modifier
-			{ $$ = _astFactory.TraitAdaptationAlias(@$, (Tuple<QualifiedNameRef?, NameRef>)$1, null, (PhpMemberAttributes)$3); }
+			{ $$ = _astFactory.TraitAdaptationAlias(@$, (Tuple<QualifiedNameRef, NameRef>)$1, NameRef.Invalid, (PhpMemberAttributes)$3); }
 ;
 
 trait_method_reference:
 		identifier
-			{ $$ = new Tuple<QualifiedNameRef?,NameRef>(null, new NameRef(@1, (string)$1)); }
+			{ $$ = new Tuple<QualifiedNameRef,NameRef>(QualifiedNameRef.Invalid, new NameRef(@1, (string)$1)); }
 	|	absolute_trait_method_reference { $$ = $1; }
 ;
 
 absolute_trait_method_reference:
 	name T_DOUBLE_COLON identifier
-		{ $$ = new Tuple<QualifiedNameRef?,NameRef>((QualifiedNameRef)$1, new NameRef(@3, (string)$3)); }
+		{ $$ = new Tuple<QualifiedNameRef,NameRef>((QualifiedNameRef)$1, new NameRef(@3, (string)$3)); }
 ;
 
 method_body:

@@ -572,9 +572,9 @@ namespace Devsense.PHP.Syntax.Ast
             /// <summary>
             /// Name of existing trait member. Its qualified name is optional.
             /// </summary>
-            public Tuple<QualifiedNameRef?, NameRef> TraitMemberName { get; private set; }
+            public Tuple<QualifiedNameRef, NameRef> TraitMemberName { get; private set; }
 
-            public TraitAdaptation(Text.Span span, Tuple<QualifiedNameRef?, NameRef> traitMemberName)
+            public TraitAdaptation(Text.Span span, Tuple<QualifiedNameRef, NameRef> traitMemberName)
                 : base(span)
             {
                 this.TraitMemberName = traitMemberName;                
@@ -591,7 +591,7 @@ namespace Devsense.PHP.Syntax.Ast
             /// </summary>
             public List<QualifiedNameRef>/*!*/IgnoredTypes { get; private set; }
 
-            public TraitAdaptationPrecedence(Text.Span span, Tuple<QualifiedNameRef?, NameRef> traitMemberName, List<QualifiedNameRef>/*!*/ignoredTypes)
+            public TraitAdaptationPrecedence(Text.Span span, Tuple<QualifiedNameRef, NameRef> traitMemberName, List<QualifiedNameRef>/*!*/ignoredTypes)
                 : base(span, traitMemberName)
             {
                 this.IgnoredTypes = ignoredTypes;
@@ -614,11 +614,11 @@ namespace Devsense.PHP.Syntax.Ast
             public PhpMemberAttributes? NewModifier { get; private set; }
 
             /// <summary>
-            /// Optionally new member name. Can be <c>null</c>.
+            /// Optionally new member name. Can be <c>NameRef.Invalid</c>.
             /// </summary>
-            public NameRef? NewName { get; private set; }
+            public NameRef NewName { get; private set; }
 
-            public TraitAdaptationAlias(Text.Span span, Tuple<QualifiedNameRef?, NameRef>/*!*/oldname, NameRef? newname, PhpMemberAttributes? newmodifier)
+            public TraitAdaptationAlias(Text.Span span, Tuple<QualifiedNameRef, NameRef>/*!*/oldname, NameRef newname, PhpMemberAttributes? newmodifier)
                 : base(span, oldname)
             {
                 if (oldname == null)

@@ -2519,28 +2519,28 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 { yyval.Object = value_stack.array[value_stack.top-2].yyval.Object; }
         return;
       case 255: // trait_precedence -> absolute_trait_method_reference T_INSTEADOF name_list 
-{ yyval.Object = _astFactory.TraitAdaptationPrecedence(yypos, (Tuple<QualifiedNameRef?,NameRef>)value_stack.array[value_stack.top-3].yyval.Object, (List<QualifiedNameRef>)value_stack.array[value_stack.top-1].yyval.Object); }
+{ yyval.Object = _astFactory.TraitAdaptationPrecedence(yypos, (Tuple<QualifiedNameRef,NameRef>)value_stack.array[value_stack.top-3].yyval.Object, (List<QualifiedNameRef>)value_stack.array[value_stack.top-1].yyval.Object); }
         return;
       case 256: // trait_alias -> trait_method_reference T_AS T_STRING 
-{ yyval.Object = _astFactory.TraitAdaptationAlias(yypos, (Tuple<QualifiedNameRef?, NameRef>)value_stack.array[value_stack.top-3].yyval.Object, new NameRef(value_stack.array[value_stack.top-1].yypos, (string)value_stack.array[value_stack.top-1].yyval.Object), null); }
+{ yyval.Object = _astFactory.TraitAdaptationAlias(yypos, (Tuple<QualifiedNameRef, NameRef>)value_stack.array[value_stack.top-3].yyval.Object, new NameRef(value_stack.array[value_stack.top-1].yypos, (string)value_stack.array[value_stack.top-1].yyval.Object), null); }
         return;
       case 257: // trait_alias -> trait_method_reference T_AS reserved_non_modifiers 
-{ yyval.Object = _astFactory.TraitAdaptationAlias(yypos, (Tuple<QualifiedNameRef?, NameRef>)value_stack.array[value_stack.top-3].yyval.Object, new NameRef(value_stack.array[value_stack.top-1].yypos, (string)value_stack.array[value_stack.top-1].yyval.Object), null); }
+{ yyval.Object = _astFactory.TraitAdaptationAlias(yypos, (Tuple<QualifiedNameRef, NameRef>)value_stack.array[value_stack.top-3].yyval.Object, new NameRef(value_stack.array[value_stack.top-1].yypos, (string)value_stack.array[value_stack.top-1].yyval.Object), null); }
         return;
       case 258: // trait_alias -> trait_method_reference T_AS member_modifier identifier 
-{ yyval.Object = _astFactory.TraitAdaptationAlias(yypos, (Tuple<QualifiedNameRef?, NameRef>)value_stack.array[value_stack.top-4].yyval.Object, new NameRef(value_stack.array[value_stack.top-1].yypos, (string)value_stack.array[value_stack.top-1].yyval.Object), (PhpMemberAttributes)value_stack.array[value_stack.top-2].yyval.Long); }
+{ yyval.Object = _astFactory.TraitAdaptationAlias(yypos, (Tuple<QualifiedNameRef, NameRef>)value_stack.array[value_stack.top-4].yyval.Object, new NameRef(value_stack.array[value_stack.top-1].yypos, (string)value_stack.array[value_stack.top-1].yyval.Object), (PhpMemberAttributes)value_stack.array[value_stack.top-2].yyval.Long); }
         return;
       case 259: // trait_alias -> trait_method_reference T_AS member_modifier 
-{ yyval.Object = _astFactory.TraitAdaptationAlias(yypos, (Tuple<QualifiedNameRef?, NameRef>)value_stack.array[value_stack.top-3].yyval.Object, null, (PhpMemberAttributes)value_stack.array[value_stack.top-1].yyval.Long); }
+{ yyval.Object = _astFactory.TraitAdaptationAlias(yypos, (Tuple<QualifiedNameRef, NameRef>)value_stack.array[value_stack.top-3].yyval.Object, NameRef.Invalid, (PhpMemberAttributes)value_stack.array[value_stack.top-1].yyval.Long); }
         return;
       case 260: // trait_method_reference -> identifier 
-{ yyval.Object = new Tuple<QualifiedNameRef?,NameRef>(null, new NameRef(value_stack.array[value_stack.top-1].yypos, (string)value_stack.array[value_stack.top-1].yyval.Object)); }
+{ yyval.Object = new Tuple<QualifiedNameRef,NameRef>(QualifiedNameRef.Invalid, new NameRef(value_stack.array[value_stack.top-1].yypos, (string)value_stack.array[value_stack.top-1].yyval.Object)); }
         return;
       case 261: // trait_method_reference -> absolute_trait_method_reference 
 { yyval.Object = value_stack.array[value_stack.top-1].yyval.Object; }
         return;
       case 262: // absolute_trait_method_reference -> name T_DOUBLE_COLON identifier 
-{ yyval.Object = new Tuple<QualifiedNameRef?,NameRef>((QualifiedNameRef)value_stack.array[value_stack.top-3].yyval.Object, new NameRef(value_stack.array[value_stack.top-1].yypos, (string)value_stack.array[value_stack.top-1].yyval.Object)); }
+{ yyval.Object = new Tuple<QualifiedNameRef,NameRef>((QualifiedNameRef)value_stack.array[value_stack.top-3].yyval.Object, new NameRef(value_stack.array[value_stack.top-1].yypos, (string)value_stack.array[value_stack.top-1].yyval.Object)); }
         return;
       case 263: // method_body -> ';' 
 { yyval.Object = null; }

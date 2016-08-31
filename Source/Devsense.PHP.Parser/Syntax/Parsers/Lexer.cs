@@ -445,11 +445,14 @@ namespace Devsense.PHP.Syntax
 
         protected object ProcessEscapedString(string text, Encoding/*!*/ encoding, bool forceBinaryString)
         {
+            if (text.Length == 0)
+            {
+                return string.Empty;
+            }
+
             PhpStringBuilder result = new PhpStringBuilder(encoding, forceBinaryString, text.Length);
 
             int pos = 0;
-
-            //StringBuilder result = new StringBuilder(TokenLength);
 
             char c;
             while (pos < text.Length)

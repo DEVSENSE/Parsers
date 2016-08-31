@@ -372,15 +372,14 @@ namespace Devsense.PHP.Syntax.Ast
             return new TraitsUse(span, 0, traits.ToList(), (adaptations != null) ? ConvertList<TraitsUse.TraitAdaptation>(adaptations) : null);
         }
 
-        public virtual LangElement TraitAdaptationPrecedence(Span span, Tuple<QualifiedNameRef?, NameRef> name, IEnumerable<QualifiedNameRef> precedences)
+        public virtual LangElement TraitAdaptationPrecedence(Span span, Tuple<QualifiedNameRef, NameRef> name, IEnumerable<QualifiedNameRef> precedences)
         {
             Debug.Assert(precedences != null);
             return new TraitsUse.TraitAdaptationPrecedence(span, name, precedences.ToList());
         }
 
-        public virtual LangElement TraitAdaptationAlias(Span span, Tuple<QualifiedNameRef?, NameRef> name, NameRef? identifierOpt, PhpMemberAttributes? attributeOpt)
+        public virtual LangElement TraitAdaptationAlias(Span span, Tuple<QualifiedNameRef, NameRef> name, NameRef identifierOpt, PhpMemberAttributes? attributeOpt)
         {
-            Debug.Assert(identifierOpt != null || attributeOpt != null);
             return new TraitsUse.TraitAdaptationAlias(span, name, identifierOpt, attributeOpt);
         }
 
