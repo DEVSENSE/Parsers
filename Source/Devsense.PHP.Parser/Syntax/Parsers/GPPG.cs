@@ -1,4 +1,4 @@
-/*
+ï»¿/*
  Copyright 2005 Queensland University of Technology (QUT). All rights reserved. Modified and improved by Tomas Matousek.
 
  Redistribution and use in source and binary forms, with or without modification are permitted provided 
@@ -10,7 +10,7 @@
  Redistributions in binary form must reproduce the above copyright notice, this list of conditions 
  and the following disclaimer in the documentation and/or other materials with the distribution. 
 
- This software is provided by the GPPG project “as is” and any express or implied warranties, 
+ This software is provided by the GPPG project ï¿½as isï¿½ and any express or implied warranties, 
  including, but not limited to the implied warranties of merchantability and fitness for 
  a particular purpose are hereby disclaimed. In no event shall the GPPG project or QUT be liable 
  for any direct, indirect, incidental, special, exemplary, or consequential damages 
