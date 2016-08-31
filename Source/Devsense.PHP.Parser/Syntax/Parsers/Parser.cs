@@ -259,7 +259,7 @@ namespace Devsense.PHP.Syntax
         private LangElement CreateProperty(Span span, LangElement objectExpr, object name)
         {
             if (name is Name)
-                return _astFactory.Variable(span, new VariableName(((Name)name).Value), objectExpr);
+                return _astFactory.Variable(span, ((Name)name).Value, objectExpr);
             else
                 return _astFactory.Variable(span, (LangElement)name, objectExpr);
         }
@@ -267,7 +267,7 @@ namespace Devsense.PHP.Syntax
         private LangElement CreateStaticProperty(Span span, TypeRef objectName, Span objectNamePos, object name)
         {
             if (name is DirectVarUse)
-                return _astFactory.Variable(span, ((DirectVarUse)name).VarName, objectName);
+                return _astFactory.Variable(span, ((DirectVarUse)name).VarName.Value, objectName);
             else
                 return _astFactory.Variable(span, ((IndirectVarUse)name).VarNameEx, objectName);
         }

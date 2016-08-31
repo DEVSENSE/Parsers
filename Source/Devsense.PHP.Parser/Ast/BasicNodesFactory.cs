@@ -457,15 +457,16 @@ namespace Devsense.PHP.Syntax.Ast
             return new IndirectVarUse(span, 1, (Expression)nameExpr) { IsMemberOf = (VarLikeConstructUse)memberOfOpt };
         }
 
-        public virtual LangElement Variable(Span span, VariableName name, TypeRef typeRef)
+        public virtual LangElement Variable(Span span, string name, TypeRef typeRef)
         {
             Debug.Assert(typeRef != null);
-            return new DirectStFldUse(span, typeRef, name, new Span(span.End - name.Value.Length - 1, name.Value.Length + 1));
+            return new DirectStFldUse(span, typeRef, new VariableName(name), new Span(span.End - name.Length - 1, name.Length + 1));
         }
 
-        public virtual LangElement Variable(Span span, VariableName name, LangElement memberOfOpt)
+        public virtual LangElement Variable(Span span, string name, LangElement memberOfOpt)
         {
-            return new DirectVarUse(new Span(span.End - name.Value.Length - 1, name.Value.Length + 1), name) { IsMemberOf = (VarLikeConstructUse)memberOfOpt };
+            int nameLength = name.Length + (memberOfOpt == null ? 1 : 0);
+            return new DirectVarUse(new Span(span.End - nameLength, nameLength), name) { IsMemberOf = (VarLikeConstructUse)memberOfOpt };
         }
         public virtual LangElement TypeReference(Span span, QualifiedName className, bool isNullable, List<TypeRef> genericParamsOpt)
         {

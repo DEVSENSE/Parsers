@@ -443,6 +443,11 @@ namespace Devsense.PHP.Syntax.Ast
 		public VariableName Name { get { return name; } }
 		private VariableName name;
 
+        /// <summary>
+        /// Span of the property name.
+        /// </summary>
+        public Text.Span NameSpan => new Text.Span(Span.Start, name.Value.Length + 1);
+
 		/// <summary>
 		/// Initial value of the field represented by compile time evaluated expression.
 		/// After analysis represented by Literal or ConstantUse or ArrayEx with constant parameters.

@@ -2183,7 +2183,7 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 { 
 				yyval.Object = AddToList<CatchItem>(value_stack.array[value_stack.top-9].yyval.Object, _astFactory.Catch(yypos, 
 					(TypeRef)_astFactory.TypeReference(value_stack.array[value_stack.top-6].yypos, TypeRefListFromTranslatedQNRList(value_stack.array[value_stack.top-6].yyval.Object), null), 
-					(DirectVarUse)_astFactory.Variable(value_stack.array[value_stack.top-5].yypos, new VariableName((string)value_stack.array[value_stack.top-5].yyval.Object), (LangElement)null), 
+					(DirectVarUse)_astFactory.Variable(value_stack.array[value_stack.top-5].yypos, (string)value_stack.array[value_stack.top-5].yyval.Object, (LangElement)null), 
 					_astFactory.Block(CombineSpans(value_stack.array[value_stack.top-3].yypos, value_stack.array[value_stack.top-1].yypos), (List<LangElement>)value_stack.array[value_stack.top-2].yyval.Object))); 
 			}
         return;
@@ -3115,7 +3115,7 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 { yyval.Object = CreateProperty(yypos, (LangElement)value_stack.array[value_stack.top-3].yyval.Object, value_stack.array[value_stack.top-1].yyval.Object); }
         return;
       case 442: // simple_variable -> T_VARIABLE 
-{ yyval.Object = _astFactory.Variable(yypos, new VariableName((string)value_stack.array[value_stack.top-1].yyval.Object), (LangElement)null); }
+{ yyval.Object = _astFactory.Variable(yypos, (string)value_stack.array[value_stack.top-1].yyval.Object,		 (LangElement)null); }
         return;
       case 443: // simple_variable -> '$' '{' expr '}' 
 { yyval.Object = _astFactory.Variable(yypos, (LangElement)value_stack.array[value_stack.top-2].yyval.Object, (LangElement)null); }
@@ -3211,24 +3211,24 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 { yyval.Object = new List<LangElement>() { _astFactory.Literal(value_stack.array[value_stack.top-2].yypos, value_stack.array[value_stack.top-2].yyval.Object), (LangElement)value_stack.array[value_stack.top-1].yyval.Object }; }
         return;
       case 474: // encaps_var -> T_VARIABLE 
-{ yyval.Object = _astFactory.Variable(yypos, new VariableName((string)value_stack.array[value_stack.top-1].yyval.Object), (LangElement)null); }
+{ yyval.Object = _astFactory.Variable(yypos, (string)value_stack.array[value_stack.top-1].yyval.Object, (LangElement)null); }
         return;
       case 475: // encaps_var -> T_VARIABLE '[' encaps_var_offset ']' 
 { yyval.Object = _astFactory.ArrayItem(yypos, 
-					_astFactory.Variable(value_stack.array[value_stack.top-4].yypos, new VariableName((string)value_stack.array[value_stack.top-4].yyval.Object), (LangElement)null), (LangElement)value_stack.array[value_stack.top-2].yyval.Object); }
+					_astFactory.Variable(value_stack.array[value_stack.top-4].yypos, (string)value_stack.array[value_stack.top-4].yyval.Object, (LangElement)null), (LangElement)value_stack.array[value_stack.top-2].yyval.Object); }
         return;
       case 476: // encaps_var -> T_VARIABLE T_OBJECT_OPERATOR T_STRING 
-{ yyval.Object = CreateProperty(yypos, _astFactory.Variable(value_stack.array[value_stack.top-3].yypos, new VariableName((string)value_stack.array[value_stack.top-3].yyval.Object), (LangElement)null), new Name((string)value_stack.array[value_stack.top-1].yyval.Object)); }
+{ yyval.Object = CreateProperty(yypos, _astFactory.Variable(value_stack.array[value_stack.top-3].yypos, (string)value_stack.array[value_stack.top-3].yyval.Object, (LangElement)null), new Name((string)value_stack.array[value_stack.top-1].yyval.Object)); }
         return;
       case 477: // encaps_var -> T_DOLLAR_OPEN_CURLY_BRACES expr '}' 
 { yyval.Object = _astFactory.Variable(yypos, (LangElement)value_stack.array[value_stack.top-2].yyval.Object, (LangElement)null); }
         return;
       case 478: // encaps_var -> T_DOLLAR_OPEN_CURLY_BRACES T_STRING_VARNAME '}' 
-{ yyval.Object = _astFactory.Variable(yypos, new VariableName((string)value_stack.array[value_stack.top-2].yyval.Object), (LangElement)null); }
+{ yyval.Object = _astFactory.Variable(yypos, (string)value_stack.array[value_stack.top-2].yyval.Object, (LangElement)null); }
         return;
       case 479: // encaps_var -> T_DOLLAR_OPEN_CURLY_BRACES T_STRING_VARNAME '[' expr ']' '}' 
 { yyval.Object = _astFactory.ArrayItem(yypos, 
-					_astFactory.Variable(value_stack.array[value_stack.top-5].yypos, new VariableName((string)value_stack.array[value_stack.top-5].yyval.Object), (LangElement)null), (LangElement)value_stack.array[value_stack.top-3].yyval.Object); }
+					_astFactory.Variable(value_stack.array[value_stack.top-5].yypos, (string)value_stack.array[value_stack.top-5].yyval.Object, (LangElement)null), (LangElement)value_stack.array[value_stack.top-3].yyval.Object); }
         return;
       case 480: // encaps_var -> T_CURLY_OPEN variable '}' 
 { yyval.Object = value_stack.array[value_stack.top-2].yyval.Object; }
@@ -3240,7 +3240,7 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 { yyval.Object = _astFactory.Literal(yypos, value_stack.array[value_stack.top-1].yyval.Double); }
         return;
       case 483: // encaps_var_offset -> T_VARIABLE 
-{ yyval.Object = _astFactory.Variable(yypos, new VariableName((string)value_stack.array[value_stack.top-1].yyval.Object), (LangElement)null); }
+{ yyval.Object = _astFactory.Variable(yypos, (string)value_stack.array[value_stack.top-1].yyval.Object, (LangElement)null); }
         return;
       case 484: // internal_functions_in_yacc -> T_ISSET '(' isset_variables ')' 
 { yyval.Object = _astFactory.Isset(yypos, (List<LangElement>)value_stack.array[value_stack.top-2].yyval.Object); }

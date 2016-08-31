@@ -618,7 +618,7 @@ namespace Devsense.PHP.Syntax.Ast
         /// <param name="name">Variable or field name.</param>
         /// <param name="memberOfOpt">Optional. In case of a field, expression representing instance.</param>
         /// <returns>Direct variable access expression.</returns>
-        TNode Variable(TSpan span, VariableName name, TNode memberOfOpt);
+        TNode Variable(TSpan span, string name, TNode memberOfOpt);
 
         /// <summary>
         /// Direct static field.
@@ -627,7 +627,7 @@ namespace Devsense.PHP.Syntax.Ast
         /// <param name="name">Field name.</param>
         /// <param name="typeRef">Field containing type.</param>
         /// <returns>Direct static field access expression.</returns>
-        TNode Variable(TSpan span, VariableName name, TypeRef typeRef);
+        TNode Variable(TSpan span, string name, TypeRef typeRef);
 
         /// <summary>
         /// Indirect variable or field.

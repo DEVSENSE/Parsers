@@ -501,7 +501,7 @@ catch_list:
 			{ 
 				$$ = AddToList<CatchItem>($1, _astFactory.Catch(@$, 
 					(TypeRef)_astFactory.TypeReference(@4, TypeRefListFromTranslatedQNRList($4), null), 
-					(DirectVarUse)_astFactory.Variable(@5, new VariableName((string)$5), (LangElement)null), 
+					(DirectVarUse)_astFactory.Variable(@5, (string)$5, (LangElement)null), 
 					_astFactory.Block(CombineSpans(@7, @9), (List<LangElement>)$8))); 
 			}
 ;
@@ -1261,7 +1261,7 @@ variable:
 ;
 
 simple_variable:
-		T_VARIABLE			{ $$ = _astFactory.Variable(@$, new VariableName((string)$1), (LangElement)null); }
+		T_VARIABLE			{ $$ = _astFactory.Variable(@$, (string)$1,		 (LangElement)null); }
 	|	'$' '{' expr '}'	{ $$ = _astFactory.Variable(@$, (LangElement)$3, (LangElement)null); }
 	|	'$' simple_variable	{ $$ = _astFactory.Variable(@$, (LangElement)$2, (LangElement)null); }
 ;
@@ -1345,26 +1345,26 @@ encaps_list:
 
 encaps_var:
 		T_VARIABLE
-			{ $$ = _astFactory.Variable(@$, new VariableName((string)$1), (LangElement)null); }
+			{ $$ = _astFactory.Variable(@$, (string)$1, (LangElement)null); }
 	|	T_VARIABLE '[' encaps_var_offset ']'
 			{ $$ = _astFactory.ArrayItem(@$, 
-					_astFactory.Variable(@1, new VariableName((string)$1), (LangElement)null), (LangElement)$3); }
+					_astFactory.Variable(@1, (string)$1, (LangElement)null), (LangElement)$3); }
 	|	T_VARIABLE T_OBJECT_OPERATOR T_STRING
-			{ $$ = CreateProperty(@$, _astFactory.Variable(@1, new VariableName((string)$1), (LangElement)null), new Name((string)$3)); }
+			{ $$ = CreateProperty(@$, _astFactory.Variable(@1, (string)$1, (LangElement)null), new Name((string)$3)); }
 	|	T_DOLLAR_OPEN_CURLY_BRACES expr '}'
 			{ $$ = _astFactory.Variable(@$, (LangElement)$2, (LangElement)null); }
 	|	T_DOLLAR_OPEN_CURLY_BRACES T_STRING_VARNAME '}'
-			{ $$ = _astFactory.Variable(@$, new VariableName((string)$2), (LangElement)null); }
+			{ $$ = _astFactory.Variable(@$, (string)$2, (LangElement)null); }
 	|	T_DOLLAR_OPEN_CURLY_BRACES T_STRING_VARNAME '[' expr ']' '}'
 			{ $$ = _astFactory.ArrayItem(@$, 
-					_astFactory.Variable(@2, new VariableName((string)$2), (LangElement)null), (LangElement)$4); }
+					_astFactory.Variable(@2, (string)$2, (LangElement)null), (LangElement)$4); }
 	|	T_CURLY_OPEN variable '}' { $$ = $2; }
 ;
 
 encaps_var_offset:
 		T_STRING		{ $$ = _astFactory.Literal(@$, $1); }
 	|	T_NUM_STRING	{ $$ = _astFactory.Literal(@$, $1); }
-	|	T_VARIABLE		{ $$ = _astFactory.Variable(@$, new VariableName((string)$1), (LangElement)null); }
+	|	T_VARIABLE		{ $$ = _astFactory.Variable(@$, (string)$1, (LangElement)null); }
 ;
 
 
