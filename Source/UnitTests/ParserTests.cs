@@ -48,17 +48,16 @@ namespace UnitTests
             TreeSerializer visitor = new TreeSerializer(serializer);
             ast.VisitMe(visitor);
 
-            Regex rgx = new Regex(@"""Span""[^}]*},?\s*\n?"); // omit Span for more compact testing (position must be verified separately)
+            Regex rgx = new Regex("\"Span\"[^}]*},?"); // omit Span for more compact testing (position must be verified separately)
+            // Regex rgx = new Regex(""); // for testing position
             string expected = rgx.Replace(testparts[1].Trim().Replace("\r", string.Empty).Replace("\n", string.Empty).Replace(" ", string.Empty), string.Empty);
             string actual = rgx.Replace(serializer.ToString().Replace("\r", string.Empty).Replace("\n", string.Empty).Replace(" ", string.Empty), string.Empty);
 
-
-            if (testparts[1].Trim() != "<<<IGNORE>>>")
-            {
-                // IMPORTANT - Uncomment to regenerate test data
-                //File.WriteAllText(path, testparts[0] + "\n<<<TEST>>>\n" + rgx.Replace(serializer.ToString(), string.Empty));
+            //Assert.AreEqual(expected.Length, actual.Length);
+            //for (int i = 0; i < expected.Length; i++)
+            //    Assert.AreEqual(expected[i], actual[i], "difference at " + i.ToString());
+            if(testparts[1].Trim() != "<<<IGNORE>>>")
                 Assert.AreEqual(expected, actual, path);
-            }
 
             // check every node has a parent
             var parentChecker = new ContainingElementCheck();
