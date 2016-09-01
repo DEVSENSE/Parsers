@@ -6,28 +6,41 @@ class SimpleClass
     abstract function aMemberFunc(boolean $arg_1): int;
 }
 ?>
-<<<TEST>>>
 
+<<<TEST>>>
 "GlobalCode" : {
-  "NamingContext" : {},
-  "NamedTypeDecl":{
-    "Name":"SimpleClass",
-    "MemberAttributes":"Public",
-    "IsConditional":"False",
-    "PHPDoc":{"Comment":"class declaration"},
-    "MethodDecl":{
-      "Name":"aMemberFunc",
-      "Modifiers":"Abstract",
-      "PHPDoc":{"Comment":"method comment"},
-      "FormalParams":{
-        "FormalParam":{"Name":"arg_1","PassedByRef":"False","IsVariadic":"False",
-          "TypeHint":{"PrimitiveTypeRef":{"QualifiedName":"boolean"}}}
+  "NamingContext" : {
+  },
+  "NamedTypeDecl" : {
+    "Name" : "SimpleClass",
+    "MemberAttributes" : "Public",
+    "IsConditional" : "False",
+    "PHPDoc" : {
+      "Comment" : "class declaration"
+    },
+    "MethodDecl" : {
+      "Name" : "aMemberFunc",
+      "Modifiers" : "Abstract",
+      "PHPDoc" : {
+        "Comment" : "method comment"
       },
-      "ReturnType":{
-        "DirectTypeRef":{
-          "ClassName":"int"
+      "FormalParams" : {
+        "FormalParam" : {
+          "Name" : "arg_1",
+          "PassedByRef" : "False",
+          "IsVariadic" : "False",
+          "TypeHint" : {
+            "DirectTypeRef" : {
+              "ClassName" : "boolean"
+            }
+          }
         }
-      } 
+      },
+      "ReturnType" : {
+        "PrimitiveTypeRef" : {
+          "QualifiedName" : "int"
+        }
+      }
     }
-  }  
+  }
 }

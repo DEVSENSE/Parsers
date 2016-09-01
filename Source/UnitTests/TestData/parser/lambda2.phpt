@@ -6,36 +6,59 @@ $greet = static function(string $name) use($x, &$y): integer
 };
                                              
 ?>
-<<<TEST>>>
 
+<<<TEST>>>
 "GlobalCode" : {
-  "NamingContext" : {},
+  "NamingContext" : {
+  },
   "ValueAssignEx" : {
     "Operation" : "AssignValue",
-    "DirectVarUse" : {"VarName" : "greet"},
-    "LambdaFunctionExpr":{
-      "PHPDoc":{"Comment":"lambda doc"},
-      "UseParams":{
-        "FormalParam":{"Name":"x","PassedByRef":"False","IsVariadic":"False"},
-        "FormalParam":{"Name":"y","PassedByRef":"True","IsVariadic":"False"}
+    "DirectVarUse" : {
+      "VarName" : "greet"
+    },
+    "LambdaFunctionExpr" : {
+      "PHPDoc" : {
+        "Comment" : "lambda doc"
       },
-      "FormalParams":{
-        "FormalParam":{"Name":"name","PassedByRef":"False","IsVariadic":"False",
-          "TypeHint":{"PrimitiveTypeRef":{"QualifiedName":"string"}}}
+      "UseParams" : {
+        "FormalParam" : {
+          "Name" : "x",
+          "PassedByRef" : "False",
+          "IsVariadic" : "False"
+        },
+        "FormalParam" : {
+          "Name" : "y",
+          "PassedByRef" : "True",
+          "IsVariadic" : "False"
+        }
       },
-      "Body":{  
-        "BlockStmt":{
-          "UnaryEx" : {
-            "Operation" : "Print",
-            "StringLiteral" : {
-                "Value" : "Hello world"
+      "FormalParams" : {
+        "FormalParam" : {
+          "Name" : "name",
+          "PassedByRef" : "False",
+          "IsVariadic" : "False",
+          "TypeHint" : {
+            "PrimitiveTypeRef" : {
+              "QualifiedName" : "string"
             }
           }
         }
       },
-      "ReturnType":{
-        "PrimitiveTypeRef":{"QualifiedName":"integer"}
-      }      
+      "Body" : {
+        "BlockStmt" : {
+          "UnaryEx" : {
+            "Operation" : "Print",
+            "StringLiteral" : {
+              "Value" : "Hello world"
+            }
+          }
+        }
+      },
+      "ReturnType" : {
+        "DirectTypeRef" : {
+          "ClassName" : "integer"
+        }
+      }
     }
-  }  
+  }
 }
