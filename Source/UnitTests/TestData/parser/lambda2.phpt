@@ -6,7 +6,6 @@ $greet = static function(string $name) use($x, &$y): integer
 };
                                              
 ?>
-
 <<<TEST>>>
 "GlobalCode" : {
   "NamingContext" : {

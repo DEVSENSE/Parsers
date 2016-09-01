@@ -8,7 +8,6 @@ class SimpleClass
     } 
 }
 ?>
-
 <<<TEST>>>
 "GlobalCode" : {
   "NamingContext" : {

@@ -10,7 +10,6 @@ if ($a > $b)
 }
 
 ?>
-
 <<<TEST>>>
 "GlobalCode" : {
   "NamingContext" : {

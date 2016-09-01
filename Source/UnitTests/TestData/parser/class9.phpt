@@ -6,7 +6,6 @@ class SimpleClass
     abstract function aMemberFunc(boolean $arg_1): int;
 }
 ?>
-
 <<<TEST>>>
 "GlobalCode" : {
   "NamingContext" : {
