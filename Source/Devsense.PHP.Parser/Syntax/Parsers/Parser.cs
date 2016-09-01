@@ -264,10 +264,19 @@ namespace Devsense.PHP.Syntax
             return _astFactory.ColonBlock(span, statements, endToken);
         }
 
-        private LangElement StatementsToBlock(Span span, object statements, Tokens endToken)
+        private LangElement StatementsToBlock(Span span, Span endSpan, object statements, Tokens endToken)
         {
             Debug.Assert(statements is List<LangElement>);
-            return StatementsToBlock(span, (List<LangElement>)statements, endToken);
+            var statemenList = (List<LangElement>)statements;
+            return StatementsToBlock(Span.FromBounds(span.Start, endSpan.End), statemenList, endToken);
+        }
+
+        void RebuildLast(object condList, Span end, Tokens token)
+        {
+            var ifList = ((List<Tuple<LangElement, LangElement>>)condList);
+            var block = ifList.Last();
+            ifList.Remove(block);
+            ifList.Add(new Tuple<LangElement, LangElement>(block.Item1, StatementsToBlock(block.Item2.Span, end, ((BlockStmt)block.Item2).Statements.Select(s => (LangElement)s).ToList(), token)));
         }
 
         private LangElement CreateProperty(Span span, LangElement objectExpr, object name)
@@ -413,7 +422,7 @@ namespace Devsense.PHP.Syntax
         }
 
         private QualifiedName TranslateAny(QualifiedName qname)
-        {            
+        {
             if (qname.IsFullyQualifiedName ||   // already translated
                 qname.IsReservedClassName ||    // special names (self, parent, static)
                 qname.IsPrimitiveTypeName)      // primitive type name

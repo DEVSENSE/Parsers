@@ -618,17 +618,17 @@ foreach_variable:
 
 for_statement:
 		statement { $$ = $1; }
-	|	':' inner_statement_list T_ENDFOR ';' { $$ = StatementsToBlock(@$, $2, Tokens.T_ENDFOR); }
+	|	':' inner_statement_list T_ENDFOR ';' { $$ = StatementsToBlock(@1, @3, $2, Tokens.T_ENDFOR); }
 ;
 
 foreach_statement:
 		statement { $$ = $1; }
-	|	':' inner_statement_list T_ENDFOREACH ';' { $$ = StatementsToBlock(@$, $2, Tokens.T_ENDFOREACH); }
+	|	':' inner_statement_list T_ENDFOREACH ';' { $$ = StatementsToBlock(@1, @3, $2, Tokens.T_ENDFOREACH); }
 ;
 
 declare_statement:
 		statement { $$ = $1; }
-	|	':' inner_statement_list T_ENDDECLARE ';' { $$ = StatementsToBlock(@$, $2, Tokens.T_ENDDECLARE); }
+	|	':' inner_statement_list T_ENDDECLARE ';' { $$ = StatementsToBlock(@1, @3, $2, Tokens.T_ENDDECLARE); }
 ;
 
 switch_case_list:
@@ -654,7 +654,7 @@ case_separator:
 
 while_statement:
 		statement { $$ = $1; }
-	|	':' inner_statement_list T_ENDWHILE ';' { $$ = StatementsToBlock(@$, $2, Tokens.T_ENDWHILE); }
+	|	':' inner_statement_list T_ENDWHILE ';' { $$ = StatementsToBlock(@1, @3, $2, Tokens.T_ENDWHILE); }
 ;
 
 
@@ -680,22 +680,27 @@ if_stmt:
 
 alt_if_stmt_without_else:
 		T_IF '(' expr ')' ':' inner_statement_list
-			{ $$ = new List<Tuple<LangElement, LangElement>>() { 
-				new Tuple<LangElement, LangElement>((LangElement)$3, StatementsToBlock(CombineSpans(@5, @6), $6, Tokens.END)) }; 
+			{ 
+				$$ = new List<Tuple<LangElement, LangElement>>() { 
+					new Tuple<LangElement, LangElement>((LangElement)$3, StatementsToBlock(@5, @5, $6, Tokens.END)) }; 
 			}
 			
 	|	alt_if_stmt_without_else T_ELSEIF '(' expr ')' ':' inner_statement_list
-			{ $$ = AddToList<Tuple<LangElement, LangElement>>($1, 
-				new Tuple<LangElement, LangElement>((LangElement)$4, StatementsToBlock(CombineSpans(@6, @7), $7, Tokens.END))); 
+			{ 
+				RebuildLast($1, @2, Tokens.T_ELSEIF);
+				$$ = AddToList<Tuple<LangElement, LangElement>>($1, 
+					new Tuple<LangElement, LangElement>((LangElement)$4, StatementsToBlock(@6, @6, $7, Tokens.END))); 
 			}
 ;
 
 alt_if_stmt:
 		alt_if_stmt_without_else T_ENDIF ';' 
-			{ ((List<Tuple<LangElement, LangElement>>)$1).Reverse(); $$ = null; 
+			{ RebuildLast($1, @2, Tokens.T_ENDIF);
+			 ((List<Tuple<LangElement, LangElement>>)$1).Reverse(); $$ = null; 
 			foreach (var item in (List<Tuple<LangElement, LangElement>>)$1) $$ = _astFactory.If(@$, item.Item1, item.Item2, (LangElement)$$); }
 	|	alt_if_stmt_without_else T_ELSE ':' inner_statement_list T_ENDIF ';'
-			{ ((List<Tuple<LangElement, LangElement>>)$1).Reverse(); $$ = _astFactory.If(@$, null, StatementsToBlock(CombineSpans(@3, @5), $4, Tokens.T_ENDIF), null); 
+			{ RebuildLast($1, @2, Tokens.T_ELSE);
+			((List<Tuple<LangElement, LangElement>>)$1).Reverse(); $$ = _astFactory.If(@$, null, StatementsToBlock(@3, @5, $4, Tokens.T_ENDIF), null); 
 			foreach (var item in (List<Tuple<LangElement, LangElement>>)$1) $$ = _astFactory.If(@$, item.Item1, item.Item2, (LangElement)$$); }
 ;
 

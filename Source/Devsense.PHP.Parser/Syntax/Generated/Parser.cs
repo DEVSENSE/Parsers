@@ -2307,19 +2307,19 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 { yyval.Object = value_stack.array[value_stack.top-1].yyval.Object; }
         return;
       case 188: // for_statement -> ':' inner_statement_list T_ENDFOR ';' 
-{ yyval.Object = StatementsToBlock(yypos, value_stack.array[value_stack.top-3].yyval.Object, Tokens.T_ENDFOR); }
+{ yyval.Object = StatementsToBlock(value_stack.array[value_stack.top-4].yypos, value_stack.array[value_stack.top-2].yypos, value_stack.array[value_stack.top-3].yyval.Object, Tokens.T_ENDFOR); }
         return;
       case 189: // foreach_statement -> statement 
 { yyval.Object = value_stack.array[value_stack.top-1].yyval.Object; }
         return;
       case 190: // foreach_statement -> ':' inner_statement_list T_ENDFOREACH ';' 
-{ yyval.Object = StatementsToBlock(yypos, value_stack.array[value_stack.top-3].yyval.Object, Tokens.T_ENDFOREACH); }
+{ yyval.Object = StatementsToBlock(value_stack.array[value_stack.top-4].yypos, value_stack.array[value_stack.top-2].yypos, value_stack.array[value_stack.top-3].yyval.Object, Tokens.T_ENDFOREACH); }
         return;
       case 191: // declare_statement -> statement 
 { yyval.Object = value_stack.array[value_stack.top-1].yyval.Object; }
         return;
       case 192: // declare_statement -> ':' inner_statement_list T_ENDDECLARE ';' 
-{ yyval.Object = StatementsToBlock(yypos, value_stack.array[value_stack.top-3].yyval.Object, Tokens.T_ENDDECLARE); }
+{ yyval.Object = StatementsToBlock(value_stack.array[value_stack.top-4].yypos, value_stack.array[value_stack.top-2].yypos, value_stack.array[value_stack.top-3].yyval.Object, Tokens.T_ENDDECLARE); }
         return;
       case 193: // switch_case_list -> '{' case_list '}' 
 { yyval.Object = value_stack.array[value_stack.top-2].yyval.Object; }
@@ -2346,7 +2346,7 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 { yyval.Object = value_stack.array[value_stack.top-1].yyval.Object; }
         return;
       case 203: // while_statement -> ':' inner_statement_list T_ENDWHILE ';' 
-{ yyval.Object = StatementsToBlock(yypos, value_stack.array[value_stack.top-3].yyval.Object, Tokens.T_ENDWHILE); }
+{ yyval.Object = StatementsToBlock(value_stack.array[value_stack.top-4].yypos, value_stack.array[value_stack.top-2].yypos, value_stack.array[value_stack.top-3].yyval.Object, Tokens.T_ENDWHILE); }
         return;
       case 204: // if_stmt_without_else -> T_IF '(' expr ')' statement 
 { yyval.Object = new List<Tuple<LangElement, LangElement>>() { 
@@ -2367,21 +2367,26 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 			foreach (var item in (List<Tuple<LangElement, LangElement>>)value_stack.array[value_stack.top-3].yyval.Object) yyval.Object = _astFactory.If(yypos, item.Item1, item.Item2, (LangElement)yyval.Object); }
         return;
       case 208: // alt_if_stmt_without_else -> T_IF '(' expr ')' ':' inner_statement_list 
-{ yyval.Object = new List<Tuple<LangElement, LangElement>>() { 
-				new Tuple<LangElement, LangElement>((LangElement)value_stack.array[value_stack.top-4].yyval.Object, StatementsToBlock(CombineSpans(value_stack.array[value_stack.top-2].yypos, value_stack.array[value_stack.top-1].yypos), value_stack.array[value_stack.top-1].yyval.Object, Tokens.END)) }; 
+{ 
+				yyval.Object = new List<Tuple<LangElement, LangElement>>() { 
+					new Tuple<LangElement, LangElement>((LangElement)value_stack.array[value_stack.top-4].yyval.Object, StatementsToBlock(value_stack.array[value_stack.top-2].yypos, value_stack.array[value_stack.top-2].yypos, value_stack.array[value_stack.top-1].yyval.Object, Tokens.END)) }; 
 			}
         return;
       case 209: // alt_if_stmt_without_else -> alt_if_stmt_without_else T_ELSEIF '(' expr ')' ':' inner_statement_list 
-{ yyval.Object = AddToList<Tuple<LangElement, LangElement>>(value_stack.array[value_stack.top-7].yyval.Object, 
-				new Tuple<LangElement, LangElement>((LangElement)value_stack.array[value_stack.top-4].yyval.Object, StatementsToBlock(CombineSpans(value_stack.array[value_stack.top-2].yypos, value_stack.array[value_stack.top-1].yypos), value_stack.array[value_stack.top-1].yyval.Object, Tokens.END))); 
+{ 
+				RebuildLast(value_stack.array[value_stack.top-7].yyval.Object, value_stack.array[value_stack.top-6].yypos, Tokens.T_ELSEIF);
+				yyval.Object = AddToList<Tuple<LangElement, LangElement>>(value_stack.array[value_stack.top-7].yyval.Object, 
+					new Tuple<LangElement, LangElement>((LangElement)value_stack.array[value_stack.top-4].yyval.Object, StatementsToBlock(value_stack.array[value_stack.top-2].yypos, value_stack.array[value_stack.top-2].yypos, value_stack.array[value_stack.top-1].yyval.Object, Tokens.END))); 
 			}
         return;
       case 210: // alt_if_stmt -> alt_if_stmt_without_else T_ENDIF ';' 
-{ ((List<Tuple<LangElement, LangElement>>)value_stack.array[value_stack.top-3].yyval.Object).Reverse(); yyval.Object = null; 
+{ RebuildLast(value_stack.array[value_stack.top-3].yyval.Object, value_stack.array[value_stack.top-2].yypos, Tokens.T_ENDIF);
+			 ((List<Tuple<LangElement, LangElement>>)value_stack.array[value_stack.top-3].yyval.Object).Reverse(); yyval.Object = null; 
 			foreach (var item in (List<Tuple<LangElement, LangElement>>)value_stack.array[value_stack.top-3].yyval.Object) yyval.Object = _astFactory.If(yypos, item.Item1, item.Item2, (LangElement)yyval.Object); }
         return;
       case 211: // alt_if_stmt -> alt_if_stmt_without_else T_ELSE ':' inner_statement_list T_ENDIF ';' 
-{ ((List<Tuple<LangElement, LangElement>>)value_stack.array[value_stack.top-6].yyval.Object).Reverse(); yyval.Object = _astFactory.If(yypos, null, StatementsToBlock(CombineSpans(value_stack.array[value_stack.top-4].yypos, value_stack.array[value_stack.top-2].yypos), value_stack.array[value_stack.top-3].yyval.Object, Tokens.T_ENDIF), null); 
+{ RebuildLast(value_stack.array[value_stack.top-6].yyval.Object, value_stack.array[value_stack.top-5].yypos, Tokens.T_ELSE);
+			((List<Tuple<LangElement, LangElement>>)value_stack.array[value_stack.top-6].yyval.Object).Reverse(); yyval.Object = _astFactory.If(yypos, null, StatementsToBlock(value_stack.array[value_stack.top-4].yypos, value_stack.array[value_stack.top-2].yypos, value_stack.array[value_stack.top-3].yyval.Object, Tokens.T_ENDIF), null); 
 			foreach (var item in (List<Tuple<LangElement, LangElement>>)value_stack.array[value_stack.top-6].yyval.Object) yyval.Object = _astFactory.If(yypos, item.Item1, item.Item2, (LangElement)yyval.Object); }
         return;
       case 212: // parameter_list -> non_empty_parameter_list 
