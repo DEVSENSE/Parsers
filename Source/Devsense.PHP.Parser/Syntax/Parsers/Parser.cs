@@ -347,7 +347,6 @@ namespace Devsense.PHP.Syntax
             return new QualifiedNameRef(name.Span, TranslateAny(name.QualifiedName));
         }
 
-
         Tuple<QualifiedName, QualifiedName?> TranslateQNRFunction(object nref)
         {
             var qname = ((QualifiedNameRef)nref).QualifiedName;
@@ -355,7 +354,6 @@ namespace Devsense.PHP.Syntax
             TranslateFallbackQualifiedName(ref qname, out fallbackQName, this.namingContext.FunctionAliases);
             return new Tuple<QualifiedName, QualifiedName?>(qname, fallbackQName);
         }
-
 
         Tuple<QualifiedName, QualifiedName?> TranslateQNRConstant(object nref)
         {
@@ -406,34 +404,28 @@ namespace Devsense.PHP.Syntax
         private QualifiedName TranslateAlias(QualifiedName qname)
         {
             Debug.Assert(!qname.IsFullyQualifiedName);
+            Debug.Assert(!qname.IsPrimitiveTypeName);
+            Debug.Assert(!qname.IsReservedClassName);
+
             // do not use current namespace, if there are imported namespace ... will be resolved later
             return QualifiedName.TranslateAlias(qname, this.namingContext.Aliases,
                 (IsInGlobalNamespace) ? (QualifiedName?)null : namingContext.CurrentNamespace.Value);
         }
 
         private QualifiedName TranslateAny(QualifiedName qname)
-        {
-            if (qname.IsFullyQualifiedName) return qname;
-
-            // skip special names:
-            if (qname.IsSimpleName)
+        {            
+            if (qname.IsFullyQualifiedName ||   // already translated
+                qname.IsReservedClassName ||    // special names (self, parent, static)
+                qname.IsPrimitiveTypeName)      // primitive type name
             {
-                if (reservedTypeNames.Contains(qname.Name.Value))
-                    return qname;
+                return qname;
             }
 
             // return the alias if found:
             return TranslateAlias(qname);
         }
 
-        private readonly HashSet<string>/*!*/reservedTypeNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
-        {
-            Name.SelfClassName.Value,
-            Name.StaticClassName.Value,
-            Name.ParentClassName.Value,
-        };
-
-        private bool IsInGlobalNamespace => namingContext.CurrentNamespace == null || namingContext.CurrentNamespace.Value.Namespaces.Length == 0;
+        private bool IsInGlobalNamespace => !namingContext.CurrentNamespace.HasValue || namingContext.CurrentNamespace.Value.Namespaces.Length == 0;
 
         private Span CombineSpans(Span a, Span b) => a.IsValid ? (b.IsValid ? Span.Combine(a, b) : a) : b;
 

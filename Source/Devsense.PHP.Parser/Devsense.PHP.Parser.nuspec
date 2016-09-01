@@ -2,9 +2,9 @@
 <package >
   <metadata>
     <id>Devsense.Php.Parser</id>
-    <version>1.0.28</version>
-    <title>PHP Tokenizer and Parser for .NET</title>
-    <description>.NET implementation of PHP tokenizer and parser.</description>
+    <version>1.0.30</version>
+    <title>PHP Syntax for .NET</title>
+    <description>.NET implementation of PHP syntax.</description>
     <authors>Michal Brabec, Jakub Misek</authors>
     <owners>devsense jmisek</owners>
     <licenseUrl>https://raw.githubusercontent.com/DEVSENSE/Parsers/master/LICENSE</licenseUrl>
