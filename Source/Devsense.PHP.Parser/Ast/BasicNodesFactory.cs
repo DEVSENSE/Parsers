@@ -485,15 +485,23 @@ namespace Devsense.PHP.Syntax.Ast
         }
         public virtual LangElement TypeReference(Span span, QualifiedName className, bool isNullable, List<TypeRef> genericParamsOpt)
         {
-            TypeRef type = null;
-            if (className.IsPrimitiveTypeName)
-                type = new PrimitiveTypeRef(span, new PrimitiveTypeName(className));
-            else
-                type = new DirectTypeRef(span, className);
-            if (isNullable)
-                type = new NullableTypeRef(span, type);
-            if (genericParamsOpt != null && genericParamsOpt != GenericTypeRef.EmptyList)
+            var type = className.IsPrimitiveTypeName
+                ? (TypeRef)new PrimitiveTypeRef(span, new PrimitiveTypeName(className))
+                : (TypeRef)new DirectTypeRef(span, className);
+
+            //
+            if (genericParamsOpt != null && genericParamsOpt.Count != 0)
+            {
                 type = new GenericTypeRef(span, type, genericParamsOpt);
+            }
+
+            //
+            if (isNullable)
+            {
+                type = new NullableTypeRef(span, type);
+            }
+
+            //
             return type;
         }
         public virtual LangElement TypeReference(Span span, LangElement varName, List<TypeRef> genericParamsOpt)

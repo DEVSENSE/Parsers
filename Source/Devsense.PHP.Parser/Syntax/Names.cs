@@ -460,15 +460,16 @@ namespace Devsense.PHP.Syntax
 		public static readonly QualifiedName False = new QualifiedName(new Name("false"), Name.EmptyNames);
 		public static readonly QualifiedName Array = new QualifiedName(new Name("array"), Name.EmptyNames);
 		public static readonly QualifiedName Object = new QualifiedName(new Name("object"), Name.EmptyNames);
-		public static readonly QualifiedName Integer = new QualifiedName(new Name("integer"), Name.EmptyNames);
+        public static readonly QualifiedName Int = new QualifiedName(new Name("int"), Name.EmptyNames);
+        public static readonly QualifiedName Integer = new QualifiedName(new Name("integer"), Name.EmptyNames);
 		public static readonly QualifiedName LongInteger = new QualifiedName(new Name("int64"), Name.EmptyNames);
 		public static readonly QualifiedName String = new QualifiedName(new Name("string"), Name.EmptyNames);
-		public static readonly QualifiedName Boolean = new QualifiedName(new Name("boolean"), Name.EmptyNames);
-		public static readonly QualifiedName Double = new QualifiedName(new Name("double"), Name.EmptyNames);
+        public static readonly QualifiedName Boolean = new QualifiedName(new Name("boolean"), Name.EmptyNames);
+        public static readonly QualifiedName Bool = new QualifiedName(new Name("bool"), Name.EmptyNames);
+        public static readonly QualifiedName Double = new QualifiedName(new Name("double"), Name.EmptyNames);
         public static readonly QualifiedName Float = new QualifiedName(new Name("float"), Name.EmptyNames);
         public static readonly QualifiedName Resource = new QualifiedName(new Name("resource"), Name.EmptyNames);
-		public static readonly QualifiedName SystemObject = new QualifiedName(new Name("Object"), new Name[] { new Name("System") });
-        public static readonly QualifiedName Callable = new QualifiedName(new Name("callable"), Name.EmptyNames);
+		public static readonly QualifiedName Callable = new QualifiedName(new Name("callable"), Name.EmptyNames);
 
         public bool IsSimpleName
         {
@@ -485,15 +486,12 @@ namespace Devsense.PHP.Syntax
         {
             get
             {
-                return IsSimpleName &&
-                    (   Equals(Array) ||
-                        Equals(Object) ||
-                        Equals(Integer) ||
-                        Equals(LongInteger) ||
+                return IsSimpleName && (
+                        Equals(Int) ||
+                        Equals(Float) ||
                         Equals(String) ||
-                        Equals(Boolean) ||
-                        Equals(Double) ||
-                        Equals(Resource) ||
+                        Equals(Bool) ||
+                        Equals(Array) ||
                         Equals(Callable));
             }
         }

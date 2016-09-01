@@ -205,6 +205,7 @@ namespace Devsense.PHP.Syntax.Ast
         public DirectTypeRef(Span span, QualifiedName className)
             : base(span)
         {
+            Debug.Assert(!className.IsPrimitiveTypeName);
             _className = className;
         }
 
