@@ -61,6 +61,7 @@ TABS_AND_SPACES [ \t]*
 TOKENS [;:,.\[\]()|^&+-/*=%!~$<>?@]
 ANY_CHAR [^]
 NEWLINE ("\r"|"\n"|"\r\n"|\x2028|\x2029)
+EOF [\x81]
 
 NonVariableStart        [^a-zA-Z_{]
 
@@ -68,6 +69,24 @@ NonVariableStart        [^a-zA-Z_{]
 <!*> := yyleng = YYCURSOR - SCNG(yy_text);
 
 %%
+
+<INITIAL,ST_IN_SCRIPTING,ST_DOUBLE_QUOTES,ST_BACKQUOTE,ST_NEWDOC,ST_LOOKING_FOR_PROPERTY,
+ST_LOOKING_FOR_VARNAME,ST_ONE_LINE_COMMENT,ST_VAR_OFFSET,ST_END_HEREDOC,
+ST_HALT_COMPILER1,ST_HALT_COMPILER2,ST_HALT_COMPILER3>{EOF} {
+	return Tokens.EOF;
+}
+<ST_HEREDOC,ST_NOWDOC,ST_SINGLE_QUOTES>{EOF} {
+	if(!string.IsNullOrEmpty(GetTokenString()))
+	{
+		yyless(1);
+		_tokenSemantics.Object = GetTokenString(); 
+		return (Tokens.T_ENCAPSED_AND_WHITESPACE);
+	}
+	return Tokens.EOF;
+}
+
+<ST_COMMENT>{EOF} { return Tokens.T_COMMENT; }
+<ST_DOC_COMMENT>{EOF} { SetDocBlock(); return Tokens.T_DOC_COMMENT; }
 
 <ST_IN_SCRIPTING>"exit" { 
 	this._tokenSemantics.Object = GetTokenString();
@@ -936,3 +955,4 @@ NonVariableStart        [^a-zA-Z_{]
 <ST_ONE_LINE_COMMENT>{NEWLINE}   { yy_pop_state(); return Tokens.T_COMMENT; }
 
 <ST_ONE_LINE_COMMENT>"?>"|"%>"   { yymore(); break; }
+
