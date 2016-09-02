@@ -105,46 +105,28 @@ namespace Devsense.PHP.Syntax.Ast
             }
 
             // nullable
-            if (name.EndsWith("?", StringComparison.Ordinal))
+            if (name[0] == '?')
             {
-                return new NullableTypeRef(span, FromString(new Span(span.Start, span.Length - 1), name.Remove(name.Length - 1), naming));
+                return new NullableTypeRef(span, FromString(new Span(span.Start + 1, span.Length - 1), name.Substring(1), naming));
             }
 
-            // type names
-            switch (name.ToLowerInvariant())
-            {
-                // primitive types
+            //
+            var qname = Syntax.QualifiedName.Parse(name, false);
 
-                case "bool":
-                case "boolean":
-                    return new PrimitiveTypeRef(span, new PrimitiveTypeName(Syntax.QualifiedName.Boolean));
-                case "int":
-                case "integer":
-                    return new PrimitiveTypeRef(span, new PrimitiveTypeName(Syntax.QualifiedName.Integer));
-                case "long":
-                    return new PrimitiveTypeRef(span, new PrimitiveTypeName(Syntax.QualifiedName.LongInteger));
-                case "float":
-                case "double":
-                    return new PrimitiveTypeRef(span, new PrimitiveTypeName(Syntax.QualifiedName.Double));
-                case "string":
-                    return new PrimitiveTypeRef(span, new PrimitiveTypeName(Syntax.QualifiedName.String));
-                case "resource":
-                    return new PrimitiveTypeRef(span, new PrimitiveTypeName(Syntax.QualifiedName.Resource));
-                case "callable":
-                    return new PrimitiveTypeRef(span, new PrimitiveTypeName(Syntax.QualifiedName.Callable));
-                case "array":
-                    return new PrimitiveTypeRef(span, new PrimitiveTypeName(Syntax.QualifiedName.Array));
+            // primitive types
+            if (qname.IsPrimitiveTypeName)
+            {
+                return new PrimitiveTypeRef(span, new PrimitiveTypeName(qname));
+            }
+            else
+            {
+                if (naming != null && !qname.IsReservedClassName)
+                {
+                    qname = Syntax.QualifiedName.TranslateAlias(qname, naming.Aliases, naming.CurrentNamespace);
+                }
 
                 // direct types
-
-                default:
-                    var qname = Syntax.QualifiedName.Parse(name, false);
-                    if (naming != null)
-                    {
-                        qname = Syntax.QualifiedName.TranslateAlias(qname, naming.Aliases, naming.CurrentNamespace);
-                    }
-                    return new DirectTypeRef(span, qname);
-
+                return new DirectTypeRef(span, qname);
             }
         }
 
