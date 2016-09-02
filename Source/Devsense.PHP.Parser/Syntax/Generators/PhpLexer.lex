@@ -78,15 +78,25 @@ ST_HALT_COMPILER1,ST_HALT_COMPILER2,ST_HALT_COMPILER3>{EOF} {
 <ST_HEREDOC,ST_NOWDOC,ST_SINGLE_QUOTES>{EOF} {
 	if(!string.IsNullOrEmpty(GetTokenString()))
 	{
-		yyless(1);
 		_tokenSemantics.Object = GetTokenString(); 
 		return (Tokens.T_ENCAPSED_AND_WHITESPACE);
 	}
 	return Tokens.EOF;
 }
 
-<ST_COMMENT>{EOF} { return Tokens.T_COMMENT; }
-<ST_DOC_COMMENT>{EOF} { SetDocBlock(); return Tokens.T_DOC_COMMENT; }
+<ST_COMMENT>{EOF} { 
+	if(!string.IsNullOrEmpty(GetTokenString()))
+		return Tokens.T_COMMENT; 
+	return Tokens.EOF;
+}
+<ST_DOC_COMMENT>{EOF} {
+	if(!string.IsNullOrEmpty(GetTokenString()))
+	{
+		SetDocBlock(); 
+		return Tokens.T_DOC_COMMENT; 
+	}
+	return Tokens.EOF;
+}
 
 <ST_IN_SCRIPTING>"exit" { 
 	this._tokenSemantics.Object = GetTokenString();

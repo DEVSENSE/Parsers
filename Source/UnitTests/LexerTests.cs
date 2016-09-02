@@ -94,6 +94,10 @@ namespace UnitTests
                 }
                 //lexer.RestoreCompressedState(lexer.GetCompressedState());
             }
+            while (Tokens.EOF != lexer.GetNextToken()) ;
+            Assert.AreEqual(Tokens.EOF, lexer.GetNextToken(), path);
+            Assert.AreEqual(Tokens.EOF, lexer.GetNextToken(), path);
+            Assert.AreEqual(Tokens.EOF, lexer.GetNextToken(), path);
             Assert.AreEqual(0, errorSink.Errors.Count);
         }
     }

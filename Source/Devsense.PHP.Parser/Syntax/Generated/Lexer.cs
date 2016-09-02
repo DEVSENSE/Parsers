@@ -143,7 +143,7 @@ using System.Collections.Generic;
 					break;
 					
 				case 3:
-					// #line 737
+					// #line 747
 					{ 
 					    this._tokenSemantics.Object = GetTokenString();
 						return Tokens.T_INLINE_HTML; 
@@ -151,7 +151,7 @@ using System.Collections.Generic;
 					break;
 					
 				case 4:
-					// #line 755
+					// #line 765
 					{
 						if (this._allowShortTags) {
 							BEGIN(LexicalStates.ST_IN_SCRIPTING);
@@ -163,7 +163,7 @@ using System.Collections.Generic;
 					break;
 					
 				case 5:
-					// #line 742
+					// #line 752
 					{
 						BEGIN(LexicalStates.ST_IN_SCRIPTING);
 						return (Tokens.T_OPEN_TAG_WITH_ECHO);
@@ -171,7 +171,7 @@ using System.Collections.Generic;
 					break;
 					
 				case 6:
-					// #line 748
+					// #line 758
 					{
 						//HANDLE_NEWLINE(yytext[yyleng-1]);
 						BEGIN(LexicalStates.ST_IN_SCRIPTING);
@@ -180,14 +180,14 @@ using System.Collections.Generic;
 					break;
 					
 				case 7:
-					// #line 802
+					// #line 812
 					{
 						return ProcessLabel();
 					}
 					break;
 					
 				case 8:
-					// #line 296
+					// #line 306
 					{
 						//HANDLE_NEWLINES(yytext, yyleng);
 						return (Tokens.T_WHITESPACE);
@@ -195,21 +195,21 @@ using System.Collections.Generic;
 					break;
 					
 				case 9:
-					// #line 632
+					// #line 642
 					{
 						return (Tokens)GetTokenChar(0);
 					}
 					break;
 					
 				case 10:
-					// #line 677
+					// #line 687
 					{
 						return ProcessDecimalNumber();
 					}
 					break;
 					
 				case 11:
-					// #line 947
+					// #line 957
 					{
 						//zend_error(E_COMPILE_WARNING,"Unexpected character in input:  '%c' (ASCII=%d) state=%d", yytext[0], yytext[0], YYSTATE);
 						return Tokens.T_ERROR;
@@ -217,14 +217,14 @@ using System.Collections.Generic;
 					break;
 					
 				case 12:
-					// #line 320
+					// #line 330
 					{
 						return (Tokens.T_NS_SEPARATOR);
 					}
 					break;
 					
 				case 13:
-					// #line 806
+					// #line 816
 					{
 						yy_push_state(LexicalStates.ST_ONE_LINE_COMMENT); 
 						yymore(); 
@@ -233,7 +233,7 @@ using System.Collections.Generic;
 					break;
 					
 				case 14:
-					// #line 637
+					// #line 647
 					{
 						yy_push_state(LexicalStates.ST_IN_SCRIPTING); 
 						return (Tokens.T_LBRACE);
@@ -241,7 +241,7 @@ using System.Collections.Generic;
 					break;
 					
 				case 15:
-					// #line 649
+					// #line 659
 					{
 						ResetDocBlock();
 						if (!yy_pop_state()) 
@@ -251,7 +251,7 @@ using System.Collections.Generic;
 					break;
 					
 				case 16:
-					// #line 844
+					// #line 854
 					{
 						BEGIN(LexicalStates.ST_DOUBLE_QUOTES);
 						return (Tokens.T_DOUBLE_QUOTES);
@@ -259,7 +259,7 @@ using System.Collections.Generic;
 					break;
 					
 				case 17:
-					// #line 829
+					// #line 839
 					{ 
 						// Gets here only in the case of unterminated singly-quoted string. That leads usually to an error token,
 						// however when the source code is parsed per-line (as in Visual Studio colorizer) it is important to remember
@@ -271,7 +271,7 @@ using System.Collections.Generic;
 					break;
 					
 				case 18:
-					// #line 877
+					// #line 887
 					{
 						BEGIN(LexicalStates.ST_BACKQUOTE); 
 						return (Tokens.T_BACKQUOTE);
@@ -279,7 +279,7 @@ using System.Collections.Generic;
 					break;
 					
 				case 19:
-					// #line 146
+					// #line 156
 					{
 						this._tokenSemantics.Object = GetTokenString();
 						return (Tokens.T_IF);
@@ -287,7 +287,7 @@ using System.Collections.Generic;
 					break;
 					
 				case 20:
-					// #line 176
+					// #line 186
 					{
 						this._tokenSemantics.Object = GetTokenString();
 						return (Tokens.T_DO);
@@ -295,14 +295,14 @@ using System.Collections.Generic;
 					break;
 					
 				case 21:
-					// #line 612
+					// #line 622
 					{
 						return (Tokens.T_LOGICAL_OR);
 					}
 					break;
 					
 				case 22:
-					// #line 216
+					// #line 226
 					{
 						this._tokenSemantics.Object = GetTokenString();
 						return (Tokens.T_AS);
@@ -310,14 +310,14 @@ using System.Collections.Generic;
 					break;
 					
 				case 23:
-					// #line 520
+					// #line 530
 					{
 						return (Tokens.T_DEC);
 					}
 					break;
 					
 				case 24:
-					// #line 291
+					// #line 301
 					{
 						yy_push_state(LexicalStates.ST_LOOKING_FOR_PROPERTY);
 						return (Tokens.T_OBJECT_OPERATOR);
@@ -325,49 +325,49 @@ using System.Collections.Generic;
 					break;
 					
 				case 25:
-					// #line 556
+					// #line 566
 					{
 						return (Tokens.T_MINUS_EQUAL);
 					}
 					break;
 					
 				case 26:
-					// #line 628
+					// #line 638
 					{
 						return (Tokens.T_SR);
 					}
 					break;
 					
 				case 27:
-					// #line 548
+					// #line 558
 					{
 						return (Tokens.T_IS_GREATER_OR_EQUAL);
 					}
 					break;
 					
 				case 28:
-					// #line 693
+					// #line 703
 					{
 						return ProcessRealNumber();
 					}
 					break;
 					
 				case 29:
-					// #line 316
+					// #line 326
 					{
 						return (Tokens.T_DOUBLE_COLON);
 					}
 					break;
 					
 				case 30:
-					// #line 576
+					// #line 586
 					{
 						return (Tokens.T_CONCAT_EQUAL);
 					}
 					break;
 					
 				case 31:
-					// #line 822
+					// #line 832
 					{
 						BEGIN(LexicalStates.INITIAL);
 						return (Tokens.T_CLOSE_TAG);  /* implicit ';' at php-end tag */
@@ -375,157 +375,157 @@ using System.Collections.Generic;
 					break;
 					
 				case 32:
-					// #line 328
+					// #line 338
 					{
 						return (Tokens.T_COALESCE);
 					}
 					break;
 					
 				case 33:
-					// #line 812
+					// #line 822
 					{ yy_push_state(LexicalStates.ST_COMMENT); yymore(); break; }
 					break;
 					
 				case 34:
-					// #line 572
+					// #line 582
 					{
 						return (Tokens.T_DIV_EQUAL);
 					}
 					break;
 					
 				case 35:
-					// #line 564
+					// #line 574
 					{
 						return (Tokens.T_POW);
 					}
 					break;
 					
 				case 36:
-					// #line 560
+					// #line 570
 					{
 						return (Tokens.T_MUL_EQUAL);
 					}
 					break;
 					
 				case 37:
-					// #line 497
+					// #line 507
 					{
 						return (Tokens.T_DOUBLE_ARROW);
 					}
 					break;
 					
 				case 38:
-					// #line 532
+					// #line 542
 					{
 						return (Tokens.T_IS_EQUAL);
 					}
 					break;
 					
 				case 39:
-					// #line 552
+					// #line 562
 					{
 						return (Tokens.T_PLUS_EQUAL);
 					}
 					break;
 					
 				case 40:
-					// #line 516
+					// #line 526
 					{
 						return (Tokens.T_INC);
 					}
 					break;
 					
 				case 41:
-					// #line 536
+					// #line 546
 					{
 						return (Tokens.T_IS_NOT_EQUAL);
 					}
 					break;
 					
 				case 42:
-					// #line 544
+					// #line 554
 					{
 						return (Tokens.T_IS_SMALLER_OR_EQUAL);
 					}
 					break;
 					
 				case 43:
-					// #line 624
+					// #line 634
 					{
 						return (Tokens.T_SL);
 					}
 					break;
 					
 				case 44:
-					// #line 580
+					// #line 590
 					{
 						return (Tokens.T_MOD_EQUAL);
 					}
 					break;
 					
 				case 45:
-					// #line 592
+					// #line 602
 					{
 						return (Tokens.T_AND_EQUAL);
 					}
 					break;
 					
 				case 46:
-					// #line 608
+					// #line 618
 					{
 						return (Tokens.T_BOOLEAN_AND);
 					}
 					break;
 					
 				case 47:
-					// #line 596
+					// #line 606
 					{
 						return (Tokens.T_OR_EQUAL);
 					}
 					break;
 					
 				case 48:
-					// #line 604
+					// #line 614
 					{
 						return (Tokens.T_BOOLEAN_OR);
 					}
 					break;
 					
 				case 49:
-					// #line 600
+					// #line 610
 					{
 						return (Tokens.T_XOR_EQUAL);
 					}
 					break;
 					
 				case 50:
-					// #line 781
+					// #line 791
 					{
 						return ProcessVariable();
 					}
 					break;
 					
 				case 51:
-					// #line 840
+					// #line 850
 					{
 						return ProcessDoubleQuotedString();
 					}
 					break;
 					
 				case 52:
-					// #line 827
+					// #line 837
 					{ return ProcessSingleQuotedString(); }
 					break;
 					
 				case 53:
-					// #line 620
+					// #line 630
 					{
 						return (Tokens.T_LOGICAL_XOR);
 					}
 					break;
 					
 				case 54:
-					// #line 126
+					// #line 136
 					{
 						this._tokenSemantics.Object = GetTokenString();
 						return (Tokens.T_TRY);
@@ -533,7 +533,7 @@ using System.Collections.Generic;
 					break;
 					
 				case 55:
-					// #line 96
+					// #line 106
 					{
 						this._tokenSemantics.Object = GetTokenString();
 						return (Tokens.T_EXIT);
@@ -541,7 +541,7 @@ using System.Collections.Generic;
 					break;
 					
 				case 56:
-					// #line 181
+					// #line 191
 					{
 						this._tokenSemantics.Object = GetTokenString();
 						return (Tokens.T_FOR);
@@ -549,7 +549,7 @@ using System.Collections.Generic;
 					break;
 					
 				case 57:
-					// #line 405
+					// #line 415
 					{
 						this._tokenSemantics.Object = GetTokenString();
 						return (Tokens.T_USE);
@@ -557,7 +557,7 @@ using System.Collections.Generic;
 					break;
 					
 				case 58:
-					// #line 332
+					// #line 342
 					{
 						this._tokenSemantics.Object = GetTokenString();
 						return (Tokens.T_NEW);
@@ -565,28 +565,28 @@ using System.Collections.Generic;
 					break;
 					
 				case 59:
-					// #line 616
+					// #line 626
 					{
 						return (Tokens.T_LOGICAL_AND);
 					}
 					break;
 					
 				case 60:
-					// #line 588
+					// #line 598
 					{
 						return (Tokens.T_SR_EQUAL);
 					}
 					break;
 					
 				case 61:
-					// #line 324
+					// #line 334
 					{
 						return (Tokens.T_ELLIPSIS);
 					}
 					break;
 					
 				case 62:
-					// #line 342
+					// #line 352
 					{
 						this._tokenSemantics.Object = GetTokenString();
 						return (Tokens.T_VAR);
@@ -594,56 +594,56 @@ using System.Collections.Generic;
 					break;
 					
 				case 63:
-					// #line 568
+					// #line 578
 					{
 						return (Tokens.T_POW_EQUAL);
 					}
 					break;
 					
 				case 64:
-					// #line 524
+					// #line 534
 					{
 						return (Tokens.T_IS_IDENTICAL);
 					}
 					break;
 					
 				case 65:
-					// #line 528
+					// #line 538
 					{
 						return (Tokens.T_IS_NOT_IDENTICAL);
 					}
 					break;
 					
 				case 66:
-					// #line 540
+					// #line 550
 					{
 						return (Tokens.T_SPACESHIP);
 					}
 					break;
 					
 				case 67:
-					// #line 584
+					// #line 594
 					{
 						return (Tokens.T_SL_EQUAL);
 					}
 					break;
 					
 				case 68:
-					// #line 681
+					// #line 691
 					{
 						return ProcessHexadecimalNumber();
 					}
 					break;
 					
 				case 69:
-					// #line 673
+					// #line 683
 					{
 						return ProcessBinaryNumber();
 					}
 					break;
 					
 				case 70:
-					// #line 91
+					// #line 101
 					{ 
 						this._tokenSemantics.Object = GetTokenString();
 						return (Tokens.T_EXIT); 
@@ -651,7 +651,7 @@ using System.Collections.Generic;
 					break;
 					
 				case 71:
-					// #line 256
+					// #line 266
 					{
 						this._tokenSemantics.Object = GetTokenString();
 						return (Tokens.T_ECHO);
@@ -659,7 +659,7 @@ using System.Collections.Generic;
 					break;
 					
 				case 72:
-					// #line 161
+					// #line 171
 					{
 						this._tokenSemantics.Object = GetTokenString();
 						return (Tokens.T_ELSE);
@@ -667,7 +667,7 @@ using System.Collections.Generic;
 					break;
 					
 				case 73:
-					// #line 375
+					// #line 385
 					{
 						this._tokenSemantics.Object = GetTokenString();
 						return (Tokens.T_EVAL);
@@ -675,7 +675,7 @@ using System.Collections.Generic;
 					break;
 					
 				case 74:
-					// #line 231
+					// #line 241
 					{
 						this._tokenSemantics.Object = GetTokenString();
 						return (Tokens.T_CASE);
@@ -683,7 +683,7 @@ using System.Collections.Generic;
 					break;
 					
 				case 75:
-					// #line 501
+					// #line 511
 					{
 						this._tokenSemantics.Object = GetTokenString();
 						return (Tokens.T_LIST);
@@ -691,7 +691,7 @@ using System.Collections.Generic;
 					break;
 					
 				case 76:
-					// #line 251
+					// #line 261
 					{
 						this._tokenSemantics.Object = GetTokenString();
 						return (Tokens.T_GOTO);
@@ -699,12 +699,12 @@ using System.Collections.Generic;
 					break;
 					
 				case 77:
-					// #line 817
+					// #line 827
 					{ yy_push_state(LexicalStates.ST_DOC_COMMENT); yymore(); ResetDocBlock(); break; }
 					break;
 					
 				case 78:
-					// #line 156
+					// #line 166
 					{
 						this._tokenSemantics.Object = GetTokenString();
 						return (Tokens.T_ENDIF);
@@ -712,7 +712,7 @@ using System.Collections.Generic;
 					break;
 					
 				case 79:
-					// #line 425
+					// #line 435
 					{
 						this._tokenSemantics.Object = GetTokenString();
 						return (Tokens.T_EMPTY);
@@ -720,7 +720,7 @@ using System.Collections.Generic;
 					break;
 					
 				case 80:
-					// #line 420
+					// #line 430
 					{
 						this._tokenSemantics.Object = GetTokenString();
 						return (Tokens.T_ISSET);
@@ -728,7 +728,7 @@ using System.Collections.Generic;
 					break;
 					
 				case 81:
-					// #line 276
+					// #line 286
 					{
 						this._tokenSemantics.Object = GetTokenString();
 						return (Tokens.T_TRAIT);
@@ -736,7 +736,7 @@ using System.Collections.Generic;
 					break;
 					
 				case 82:
-					// #line 141
+					// #line 151
 					{
 						this._tokenSemantics.Object = GetTokenString();
 						return (Tokens.T_THROW);
@@ -744,7 +744,7 @@ using System.Collections.Generic;
 					break;
 					
 				case 83:
-					// #line 472
+					// #line 482
 					{
 						this._tokenSemantics.Object = GetTokenString();
 						return (Tokens.T_FINAL);
@@ -752,7 +752,7 @@ using System.Collections.Generic;
 					break;
 					
 				case 84:
-					// #line 492
+					// #line 502
 					{
 						this._tokenSemantics.Object = GetTokenString();
 						return (Tokens.T_UNSET);
@@ -760,7 +760,7 @@ using System.Collections.Generic;
 					break;
 					
 				case 85:
-					// #line 106
+					// #line 116
 					{
 						this._tokenSemantics.Object = GetTokenString();
 						return (Tokens.T_CONST);
@@ -768,7 +768,7 @@ using System.Collections.Generic;
 					break;
 					
 				case 86:
-					// #line 337
+					// #line 347
 					{
 						this._tokenSemantics.Object = GetTokenString();
 						return (Tokens.T_CLONE);
@@ -776,7 +776,7 @@ using System.Collections.Generic;
 					break;
 					
 				case 87:
-					// #line 266
+					// #line 276
 					{
 						this._tokenSemantics.Object = GetTokenString();
 						return (Tokens.T_CLASS);
@@ -784,7 +784,7 @@ using System.Collections.Generic;
 					break;
 					
 				case 88:
-					// #line 131
+					// #line 141
 					{
 						this._tokenSemantics.Object = GetTokenString();
 						return (Tokens.T_CATCH);
@@ -792,7 +792,7 @@ using System.Collections.Generic;
 					break;
 					
 				case 89:
-					// #line 121
+					// #line 131
 					{
 						this._tokenSemantics.Object = GetTokenString();
 						return (Tokens.T_YIELD);
@@ -800,7 +800,7 @@ using System.Collections.Generic;
 					break;
 					
 				case 90:
-					// #line 506
+					// #line 516
 					{
 						this._tokenSemantics.Object = GetTokenString();
 						return (Tokens.T_ARRAY);
@@ -808,7 +808,7 @@ using System.Collections.Generic;
 					break;
 					
 				case 91:
-					// #line 166
+					// #line 176
 					{
 						this._tokenSemantics.Object = GetTokenString();
 						return (Tokens.T_WHILE);
@@ -816,7 +816,7 @@ using System.Collections.Generic;
 					break;
 					
 				case 92:
-					// #line 241
+					// #line 251
 					{
 						this._tokenSemantics.Object = GetTokenString();
 						return (Tokens.T_BREAK);
@@ -824,7 +824,7 @@ using System.Collections.Generic;
 					break;
 					
 				case 93:
-					// #line 261
+					// #line 271
 					{
 						this._tokenSemantics.Object = GetTokenString();
 						return (Tokens.T_PRINT);
@@ -832,14 +832,14 @@ using System.Collections.Generic;
 					break;
 					
 				case 94:
-					// #line 347
+					// #line 357
 					{
 						return (Tokens.T_INT_CAST);
 					}
 					break;
 					
 				case 95:
-					// #line 850
+					// #line 860
 					{
 						int bprefix = (GetTokenChar(0) != '<') ? 1 : 0;
 						int s = bprefix + 3;
@@ -866,7 +866,7 @@ using System.Collections.Generic;
 					break;
 					
 				case 96:
-					// #line 186
+					// #line 196
 					{
 						this._tokenSemantics.Object = GetTokenString();
 						return (Tokens.T_ENDFOR);
@@ -874,7 +874,7 @@ using System.Collections.Generic;
 					break;
 					
 				case 97:
-					// #line 151
+					// #line 161
 					{
 						this._tokenSemantics.Object = GetTokenString();
 						return (Tokens.T_ELSEIF);
@@ -882,7 +882,7 @@ using System.Collections.Generic;
 					break;
 					
 				case 98:
-					// #line 462
+					// #line 472
 					{
 						this._tokenSemantics.Object = GetTokenString();
 						return (Tokens.T_STATIC);
@@ -890,7 +890,7 @@ using System.Collections.Generic;
 					break;
 					
 				case 99:
-					// #line 221
+					// #line 231
 					{
 						this._tokenSemantics.Object = GetTokenString();
 						return (Tokens.T_SWITCH);
@@ -898,7 +898,7 @@ using System.Collections.Generic;
 					break;
 					
 				case 100:
-					// #line 111
+					// #line 121
 					{
 						this._tokenSemantics.Object = GetTokenString();
 						return (Tokens.T_RETURN);
@@ -906,7 +906,7 @@ using System.Collections.Generic;
 					break;
 					
 				case 101:
-					// #line 415
+					// #line 425
 					{
 						this._tokenSemantics.Object = GetTokenString();
 						return (Tokens.T_GLOBAL);
@@ -914,7 +914,7 @@ using System.Collections.Generic;
 					break;
 					
 				case 102:
-					// #line 487
+					// #line 497
 					{
 						this._tokenSemantics.Object = GetTokenString();
 						return (Tokens.T_PUBLIC);
@@ -922,21 +922,21 @@ using System.Collections.Generic;
 					break;
 					
 				case 103:
-					// #line 351
+					// #line 361
 					{
 						return (Tokens.T_DOUBLE_CAST);
 					}
 					break;
 					
 				case 104:
-					// #line 367
+					// #line 377
 					{
 						return (Tokens.T_BOOL_CAST);
 					}
 					break;
 					
 				case 105:
-					// #line 281
+					// #line 291
 					{
 						this._tokenSemantics.Object = GetTokenString();
 						return (Tokens.T_EXTENDS);
@@ -944,7 +944,7 @@ using System.Collections.Generic;
 					break;
 					
 				case 106:
-					// #line 380
+					// #line 390
 					{
 						this._tokenSemantics.Object = GetTokenString();
 						return (Tokens.T_INCLUDE);
@@ -952,7 +952,7 @@ using System.Collections.Generic;
 					break;
 					
 				case 107:
-					// #line 236
+					// #line 246
 					{
 						this._tokenSemantics.Object = GetTokenString();
 						return (Tokens.T_DEFAULT);
@@ -960,7 +960,7 @@ using System.Collections.Generic;
 					break;
 					
 				case 108:
-					// #line 201
+					// #line 211
 					{
 						this._tokenSemantics.Object = GetTokenString();
 						return (Tokens.T_DECLARE);
@@ -968,7 +968,7 @@ using System.Collections.Generic;
 					break;
 					
 				case 109:
-					// #line 136
+					// #line 146
 					{
 						this._tokenSemantics.Object = GetTokenString();
 						return (Tokens.T_FINALLY);
@@ -976,7 +976,7 @@ using System.Collections.Generic;
 					break;
 					
 				case 110:
-					// #line 191
+					// #line 201
 					{
 						this._tokenSemantics.Object = GetTokenString();
 						return (Tokens.T_FOREACH);
@@ -984,7 +984,7 @@ using System.Collections.Generic;
 					break;
 					
 				case 111:
-					// #line 390
+					// #line 400
 					{
 						this._tokenSemantics.Object = GetTokenString();
 						return (Tokens.T_REQUIRE);
@@ -992,7 +992,7 @@ using System.Collections.Generic;
 					break;
 					
 				case 112:
-					// #line 477
+					// #line 487
 					{
 						this._tokenSemantics.Object = GetTokenString();
 						return (Tokens.T_PRIVATE);
@@ -1000,21 +1000,21 @@ using System.Collections.Generic;
 					break;
 					
 				case 113:
-					// #line 371
+					// #line 381
 					{
 						return (Tokens.T_UNSET_CAST);
 					}
 					break;
 					
 				case 114:
-					// #line 359
+					// #line 369
 					{
 						return (Tokens.T_ARRAY_CAST);
 					}
 					break;
 					
 				case 115:
-					// #line 727
+					// #line 737
 					{
 						this._tokenSemantics.Object = GetTokenString();
 						return (Tokens.T_DIR);
@@ -1022,7 +1022,7 @@ using System.Collections.Generic;
 					break;
 					
 				case 116:
-					// #line 171
+					// #line 181
 					{
 						this._tokenSemantics.Object = GetTokenString();
 						return (Tokens.T_ENDWHILE);
@@ -1030,7 +1030,7 @@ using System.Collections.Generic;
 					break;
 					
 				case 117:
-					// #line 101
+					// #line 111
 					{
 						this._tokenSemantics.Object = GetTokenString();
 						return (Tokens.T_FUNCTION);
@@ -1038,7 +1038,7 @@ using System.Collections.Generic;
 					break;
 					
 				case 118:
-					// #line 246
+					// #line 256
 					{
 						this._tokenSemantics.Object = GetTokenString();
 						return (Tokens.T_CONTINUE);
@@ -1046,7 +1046,7 @@ using System.Collections.Generic;
 					break;
 					
 				case 119:
-					// #line 511
+					// #line 521
 					{
 						this._tokenSemantics.Object = GetTokenString();
 						return (Tokens.T_CALLABLE);
@@ -1054,7 +1054,7 @@ using System.Collections.Generic;
 					break;
 					
 				case 120:
-					// #line 467
+					// #line 477
 					{
 						this._tokenSemantics.Object = GetTokenString();
 						return (Tokens.T_ABSTRACT);
@@ -1062,21 +1062,21 @@ using System.Collections.Generic;
 					break;
 					
 				case 121:
-					// #line 363
+					// #line 373
 					{
 						return (Tokens.T_OBJECT_CAST);
 					}
 					break;
 					
 				case 122:
-					// #line 355
+					// #line 365
 					{
 						return (Tokens.T_STRING_CAST);
 					}
 					break;
 					
 				case 123:
-					// #line 722
+					// #line 732
 					{
 						this._tokenSemantics.Object = GetTokenString();
 						return (Tokens.T_FILE);
@@ -1084,7 +1084,7 @@ using System.Collections.Generic;
 					break;
 					
 				case 124:
-					// #line 717
+					// #line 727
 					{
 						this._tokenSemantics.Object = GetTokenString();
 						return (Tokens.T_LINE);
@@ -1092,7 +1092,7 @@ using System.Collections.Generic;
 					break;
 					
 				case 125:
-					// #line 226
+					// #line 236
 					{
 						this._tokenSemantics.Object = GetTokenString();
 						return (Tokens.T_ENDSWITCH);
@@ -1100,7 +1100,7 @@ using System.Collections.Generic;
 					break;
 					
 				case 126:
-					// #line 271
+					// #line 281
 					{
 						this._tokenSemantics.Object = GetTokenString();
 						return (Tokens.T_INTERFACE);
@@ -1108,7 +1108,7 @@ using System.Collections.Generic;
 					break;
 					
 				case 127:
-					// #line 410
+					// #line 420
 					{
 						this._tokenSemantics.Object = GetTokenString();
 					    return (Tokens.T_INSTEADOF);
@@ -1116,7 +1116,7 @@ using System.Collections.Generic;
 					break;
 					
 				case 128:
-					// #line 400
+					// #line 410
 					{
 						this._tokenSemantics.Object = GetTokenString();
 						return (Tokens.T_NAMESPACE);
@@ -1124,7 +1124,7 @@ using System.Collections.Generic;
 					break;
 					
 				case 129:
-					// #line 482
+					// #line 492
 					{
 						this._tokenSemantics.Object = GetTokenString();
 						return (Tokens.T_PROTECTED);
@@ -1132,7 +1132,7 @@ using System.Collections.Generic;
 					break;
 					
 				case 130:
-					// #line 702
+					// #line 712
 					{
 						this._tokenSemantics.Object = GetTokenString();
 						return (Tokens.T_TRAIT_C);
@@ -1140,7 +1140,7 @@ using System.Collections.Generic;
 					break;
 					
 				case 131:
-					// #line 697
+					// #line 707
 					{
 						this._tokenSemantics.Object = GetTokenString();
 						return (Tokens.T_CLASS_C);
@@ -1148,7 +1148,7 @@ using System.Collections.Generic;
 					break;
 					
 				case 132:
-					// #line 206
+					// #line 216
 					{
 						this._tokenSemantics.Object = GetTokenString();
 						return (Tokens.T_ENDDECLARE);
@@ -1156,7 +1156,7 @@ using System.Collections.Generic;
 					break;
 					
 				case 133:
-					// #line 196
+					// #line 206
 					{
 						this._tokenSemantics.Object = GetTokenString();
 						return (Tokens.T_ENDFOREACH);
@@ -1164,7 +1164,7 @@ using System.Collections.Generic;
 					break;
 					
 				case 134:
-					// #line 211
+					// #line 221
 					{
 						this._tokenSemantics.Object = GetTokenString();
 						return (Tokens.T_INSTANCEOF);
@@ -1172,7 +1172,7 @@ using System.Collections.Generic;
 					break;
 					
 				case 135:
-					// #line 286
+					// #line 296
 					{
 						this._tokenSemantics.Object = GetTokenString();
 						return (Tokens.T_IMPLEMENTS);
@@ -1180,7 +1180,7 @@ using System.Collections.Generic;
 					break;
 					
 				case 136:
-					// #line 116
+					// #line 126
 					{
 						//HANDLE_NEWLINES(yytext, yyleng);
 						return (Tokens.T_YIELD_FROM);
@@ -1188,7 +1188,7 @@ using System.Collections.Generic;
 					break;
 					
 				case 137:
-					// #line 712
+					// #line 722
 					{
 						this._tokenSemantics.Object = GetTokenString();
 						return (Tokens.T_METHOD_C);
@@ -1196,7 +1196,7 @@ using System.Collections.Generic;
 					break;
 					
 				case 138:
-					// #line 385
+					// #line 395
 					{
 						this._tokenSemantics.Object = GetTokenString();
 						return (Tokens.T_INCLUDE_ONCE);
@@ -1204,7 +1204,7 @@ using System.Collections.Generic;
 					break;
 					
 				case 139:
-					// #line 395
+					// #line 405
 					{
 						this._tokenSemantics.Object = GetTokenString();
 						return (Tokens.T_REQUIRE_ONCE);
@@ -1212,7 +1212,7 @@ using System.Collections.Generic;
 					break;
 					
 				case 140:
-					// #line 707
+					// #line 717
 					{
 						this._tokenSemantics.Object = GetTokenString();
 						return (Tokens.T_FUNC_C);
@@ -1220,7 +1220,7 @@ using System.Collections.Generic;
 					break;
 					
 				case 141:
-					// #line 732
+					// #line 742
 					{
 						this._tokenSemantics.Object = GetTokenString();
 						return (Tokens.T_NS_C);
@@ -1228,7 +1228,7 @@ using System.Collections.Generic;
 					break;
 					
 				case 142:
-					// #line 445
+					// #line 455
 					{
 						// IMPORTANT - Added because PHP lexer explicitly checks halt compiler syntax and reverts to initial state after semicolon
 						yy_push_state(LexicalStates.ST_HALT_COMPILER1); 
@@ -1237,7 +1237,7 @@ using System.Collections.Generic;
 					break;
 					
 				case 143:
-					// #line 929
+					// #line 939
 					{
 					    this._tokenSemantics.Object = ProcessEscapedString(GetTokenString(), _encoding, false);
 					    return (Tokens.T_ENCAPSED_AND_WHITESPACE);
@@ -1245,7 +1245,7 @@ using System.Collections.Generic;
 					break;
 					
 				case 144:
-					// #line 899
+					// #line 909
 					{
 						BEGIN(LexicalStates.ST_IN_SCRIPTING);
 						return (Tokens.T_DOUBLE_QUOTES);
@@ -1253,7 +1253,7 @@ using System.Collections.Generic;
 					break;
 					
 				case 145:
-					// #line 890
+					// #line 900
 					{
 						//Z_LVAL_P(zendlval) = (zend_long) '{';
 						yy_push_state(LexicalStates.ST_IN_SCRIPTING);
@@ -1263,7 +1263,7 @@ using System.Collections.Generic;
 					break;
 					
 				case 146:
-					// #line 643
+					// #line 653
 					{
 						yy_push_state(LexicalStates.ST_LOOKING_FOR_VARNAME);
 						return (Tokens.T_DOLLAR_OPEN_CURLY_BRACES);
@@ -1271,7 +1271,7 @@ using System.Collections.Generic;
 					break;
 					
 				case 147:
-					// #line 775
+					// #line 785
 					{
 						yyless(TokenLength - 1);
 						yy_push_state(LexicalStates.ST_VAR_OFFSET);
@@ -1280,7 +1280,7 @@ using System.Collections.Generic;
 					break;
 					
 				case 148:
-					// #line 769
+					// #line 779
 					{
 						yyless(TokenLength - 3);
 						yy_push_state(LexicalStates.ST_LOOKING_FOR_PROPERTY);
@@ -1293,7 +1293,6 @@ using System.Collections.Generic;
 					{
 						if(!string.IsNullOrEmpty(GetTokenString()))
 						{
-							yyless(1);
 							_tokenSemantics.Object = GetTokenString(); 
 							return (Tokens.T_ENCAPSED_AND_WHITESPACE);
 						}
@@ -1302,17 +1301,17 @@ using System.Collections.Generic;
 					break;
 					
 				case 150:
-					// #line 837
+					// #line 847
 					{ yymore(); break; }
 					break;
 					
 				case 151:
-					// #line 838
+					// #line 848
 					{ BEGIN(LexicalStates.ST_IN_SCRIPTING); return ProcessSingleQuotedString(); }
 					break;
 					
 				case 152:
-					// #line 934
+					// #line 944
 					{
 					    this._tokenSemantics.Object = ProcessEscapedString(GetTokenString(), _encoding, false);
 					    return (Tokens.T_ENCAPSED_AND_WHITESPACE);
@@ -1320,7 +1319,7 @@ using System.Collections.Generic;
 					break;
 					
 				case 153:
-					// #line 904
+					// #line 914
 					{
 						BEGIN(LexicalStates.ST_IN_SCRIPTING);
 						return (Tokens.T_BACKQUOTE);
@@ -1328,7 +1327,7 @@ using System.Collections.Generic;
 					break;
 					
 				case 154:
-					// #line 941
+					// #line 951
 					{
 					    this._tokenSemantics.Object = ProcessEscapedString(GetTokenString(), _encoding, false);
 					    return (Tokens.T_ENCAPSED_AND_WHITESPACE);
@@ -1336,12 +1335,12 @@ using System.Collections.Generic;
 					break;
 					
 				case 155:
-					// #line 939
+					// #line 949
 					{ yymore(); break; }
 					break;
 					
 				case 156:
-					// #line 918
+					// #line 928
 					{
 					    if(GetTokenString().Contains(this._hereDocLabel))
 						{
@@ -1353,7 +1352,7 @@ using System.Collections.Generic;
 					break;
 					
 				case 157:
-					// #line 305
+					// #line 315
 					{
 						yy_pop_state();
 						return ProcessLabel();
@@ -1361,7 +1360,7 @@ using System.Collections.Generic;
 					break;
 					
 				case 158:
-					// #line 310
+					// #line 320
 					{
 						yyless(0);
 						if (!yy_pop_state()) return Tokens.T_ERROR;
@@ -1370,14 +1369,14 @@ using System.Collections.Generic;
 					break;
 					
 				case 159:
-					// #line 301
+					// #line 311
 					{
 						return (Tokens.T_OBJECT_OPERATOR);
 					}
 					break;
 					
 				case 160:
-					// #line 666
+					// #line 676
 					{
 						yyless(0);
 						if (!yy_pop_state()) return Tokens.T_ERROR;
@@ -1387,7 +1386,7 @@ using System.Collections.Generic;
 					break;
 					
 				case 161:
-					// #line 657
+					// #line 667
 					{
 						yyless(TokenLength - 1);
 						this._tokenSemantics.Object = GetTokenString();
@@ -1398,67 +1397,78 @@ using System.Collections.Generic;
 					break;
 					
 				case 162:
-					// #line 89
-					{ SetDocBlock(); return Tokens.T_DOC_COMMENT; }
+					// #line 92
+					{
+						if(!string.IsNullOrEmpty(GetTokenString()))
+						{
+							SetDocBlock(); 
+							return Tokens.T_DOC_COMMENT; 
+						}
+						return Tokens.EOF;
+					}
 					break;
 					
 				case 163:
-					// #line 818
+					// #line 828
 					{ yymore(); break; }
 					break;
 					
 				case 164:
-					// #line 820
+					// #line 830
 					{ yymore(); break; }
 					break;
 					
 				case 165:
-					// #line 819
+					// #line 829
 					{ yy_pop_state(); SetDocBlock(); return Tokens.T_DOC_COMMENT; }
 					break;
 					
 				case 166:
-					// #line 88
-					{ return Tokens.T_COMMENT; }
+					// #line 87
+					{ 
+						if(!string.IsNullOrEmpty(GetTokenString()))
+							return Tokens.T_COMMENT; 
+						return Tokens.EOF;
+					}
 					break;
 					
 				case 167:
-					// #line 813
+					// #line 823
 					{ yymore(); break; }
 					break;
 					
 				case 168:
-					// #line 815
+					// #line 825
 					{ yymore(); break; }
 					break;
 					
 				case 169:
-					// #line 814
+					// #line 824
 					{ yy_pop_state(); return Tokens.T_COMMENT; }
 					break;
 					
 				case 170:
-					// #line 954
+					// #line 964
 					{ yymore(); break; }
 					break;
 					
 				case 171:
-					// #line 955
+					// #line 965
 					{ yy_pop_state(); return Tokens.T_COMMENT; }
 					break;
 					
 				case 172:
-					// #line 953
+					// #line 963
 					{ yymore(); break; }
 					break;
 					
 				case 173:
-					// #line 957
+					// #line 967
 					{ yymore(); break; }
 					break;
 					
 				case 174:
-					// #line 795
+					// #line 805
 					{
 						/* Invalid rule to return a more explicit parse error with proper line number */
 						yyless(0);
@@ -1468,7 +1478,7 @@ using System.Collections.Generic;
 					break;
 					
 				case 175:
-					// #line 790
+					// #line 800
 					{
 						/* Only '[' can be valid, but returning other tokens will allow a more explicit parse error */
 						return (Tokens)GetTokenChar(0);
@@ -1476,14 +1486,14 @@ using System.Collections.Generic;
 					break;
 					
 				case 176:
-					// #line 685
+					// #line 695
 					{ /* Offset could be treated as a long */
 						return ProcessVariableOffsetNumber();
 					}
 					break;
 					
 				case 177:
-					// #line 785
+					// #line 795
 					{
 						yy_pop_state();
 						return (Tokens.T_RBRACKET);
@@ -1491,14 +1501,14 @@ using System.Collections.Generic;
 					break;
 					
 				case 178:
-					// #line 689
+					// #line 699
 					{ /* Offset must be treated as a string */
 						return ProcessVariableOffsetString();
 					}
 					break;
 					
 				case 179:
-					// #line 883
+					// #line 893
 					{
 						BEGIN(LexicalStates.ST_IN_SCRIPTING);
 						this._tokenSemantics.Object = this._hereDocLabel;
@@ -1507,12 +1517,12 @@ using System.Collections.Generic;
 					break;
 					
 				case 180:
-					// #line 927
+					// #line 937
 					{ yymore(); break; }
 					break;
 					
 				case 181:
-					// #line 909
+					// #line 919
 					{
 					    if(GetTokenString().Contains(this._hereDocLabel))
 						{
@@ -1524,7 +1534,7 @@ using System.Collections.Generic;
 					break;
 					
 				case 182:
-					// #line 457
+					// #line 467
 					{
 						yy_pop_state();
 						yymore(); break;
@@ -1532,12 +1542,12 @@ using System.Collections.Generic;
 					break;
 					
 				case 183:
-					// #line 451
+					// #line 461
 					{ return (Tokens.T_WHITESPACE); }
 					break;
 					
 				case 184:
-					// #line 430
+					// #line 440
 					{
 						BEGIN(LexicalStates.ST_HALT_COMPILER2);
 						return (Tokens)GetTokenChar(0);
@@ -1545,22 +1555,22 @@ using System.Collections.Generic;
 					break;
 					
 				case 185:
-					// #line 454
+					// #line 464
 					{ yy_push_state(LexicalStates.ST_ONE_LINE_COMMENT); yymore(); break; }
 					break;
 					
 				case 186:
-					// #line 455
+					// #line 465
 					{ yy_push_state(LexicalStates.ST_COMMENT); yymore(); break; }
 					break;
 					
 				case 187:
-					// #line 453
+					// #line 463
 					{ yy_push_state(LexicalStates.ST_DOC_COMMENT); yymore(); ResetDocBlock(); break; }
 					break;
 					
 				case 188:
-					// #line 435
+					// #line 445
 					{
 						BEGIN(LexicalStates.ST_HALT_COMPILER3);
 						return (Tokens)GetTokenChar(0);
@@ -1568,7 +1578,7 @@ using System.Collections.Generic;
 					break;
 					
 				case 189:
-					// #line 440
+					// #line 450
 					{
 						BEGIN(LexicalStates.INITIAL);
 						return (Tokens)GetTokenChar(0);
