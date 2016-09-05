@@ -149,6 +149,11 @@ namespace Devsense.PHP.Syntax
 
         protected void _yymore() { yymore(); }
 
+        private void _yyless(int count)
+        {
+            lookahead_index = (token_end -= count);
+        }
+
         #region Token Buffer Interpretation
 
         public int GetTokenByteLength(Encoding/*!*/ encoding)
@@ -456,6 +461,19 @@ namespace Devsense.PHP.Syntax
             }
 
             return result.Result;
+        }
+
+        protected object ProcessEscapedStringWithEnding(string text, Encoding/*!*/ encoding, bool forceBinaryString, char ending)
+        {
+            object output;
+            if (text.EndsWith("$" + ending) || text.EndsWith("{" + ending))
+            {
+                output = ProcessEscapedString(text.Substring(0, text.Length - 1), _encoding, false);
+                _yyless(1);
+            }
+            else
+                output = ProcessEscapedString(text, _encoding, false);
+            return output;
         }
 
         protected object ProcessEscapedString(string text, Encoding/*!*/ encoding, bool forceBinaryString)
