@@ -138,8 +138,8 @@
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
   <PropertyGroup>
-    <PreBuildEvent>rem "$(ProjectDir)Syntax\Generators\CsLex.exe" $(ProjectDir)Syntax\Generators\PhpLexer.lex $(ProjectDir)Syntax\Generated\Lexer.cs /version:2
-rem "$(ProjectDir)Syntax\Generators\gppg.exe" /l $(ProjectDir)Syntax\Generators\PhpParser.y $(ProjectDir)Syntax\Generated\Parser.cs</PreBuildEvent>
+    <PreBuildEvent>"$(ProjectDir)Syntax\Generators\CsLex.exe" $(ProjectDir)Syntax\Generators\PhpLexer.lex $(ProjectDir)Syntax\Generated\Lexer.cs /version:2
+"$(ProjectDir)Syntax\Generators\gppg.exe" /l $(ProjectDir)Syntax\Generators\PhpParser.y $(ProjectDir)Syntax\Generated\Parser.cs</PreBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
     <PostBuildEvent>
