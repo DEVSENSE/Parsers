@@ -2187,7 +2187,7 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
         return;
       case 156: // catch_list -> catch_list T_CATCH '(' catch_name_list T_VARIABLE ')' '{' inner_statement_list '}' 
 { 
-				yyval.Object = AddToList<CatchItem>(value_stack.array[value_stack.top-9].yyval.Object, _astFactory.Catch(yypos, 
+				yyval.Object = AddToList<CatchItem>(value_stack.array[value_stack.top-9].yyval.Object, _astFactory.Catch(CombineSpans(value_stack.array[value_stack.top-8].yypos, value_stack.array[value_stack.top-1].yypos), 
 					(TypeRef)_astFactory.TypeReference(value_stack.array[value_stack.top-6].yypos, TypeRefListFromTranslatedQNRList(value_stack.array[value_stack.top-6].yyval.Object), null), 
 					(DirectVarUse)_astFactory.Variable(value_stack.array[value_stack.top-5].yypos, (string)value_stack.array[value_stack.top-5].yyval.Object, (LangElement)null), 
 					_astFactory.Block(CombineSpans(value_stack.array[value_stack.top-3].yypos, value_stack.array[value_stack.top-1].yypos), (List<LangElement>)value_stack.array[value_stack.top-2].yyval.Object))); 
@@ -2337,10 +2337,10 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 { yyval.Object = new List<LangElement>(); }
         return;
       case 198: // case_list -> case_list T_CASE expr case_separator inner_statement_list 
-{ yyval.Object = AddToList<LangElement>(value_stack.array[value_stack.top-5].yyval.Object, _astFactory.Case(yypos, (LangElement)value_stack.array[value_stack.top-3].yyval.Object, _astFactory.Block(value_stack.array[value_stack.top-1].yypos, (List<LangElement>)value_stack.array[value_stack.top-1].yyval.Object))); }
+{ yyval.Object = AddToList<LangElement>(value_stack.array[value_stack.top-5].yyval.Object, _astFactory.Case(CombineSpans(value_stack.array[value_stack.top-4].yypos, value_stack.array[value_stack.top-2].yypos, value_stack.array[value_stack.top-1].yypos), (LangElement)value_stack.array[value_stack.top-3].yyval.Object, _astFactory.Block(value_stack.array[value_stack.top-1].yypos, (List<LangElement>)value_stack.array[value_stack.top-1].yyval.Object))); }
         return;
       case 199: // case_list -> case_list T_DEFAULT case_separator inner_statement_list 
-{ yyval.Object = AddToList<LangElement>(value_stack.array[value_stack.top-4].yyval.Object, _astFactory.Case(yypos, null, _astFactory.Block(value_stack.array[value_stack.top-1].yypos, (List<LangElement>)value_stack.array[value_stack.top-1].yyval.Object))); }
+{ yyval.Object = AddToList<LangElement>(value_stack.array[value_stack.top-4].yyval.Object, _astFactory.Case(CombineSpans(value_stack.array[value_stack.top-3].yypos, value_stack.array[value_stack.top-2].yypos, value_stack.array[value_stack.top-1].yypos), null, _astFactory.Block(value_stack.array[value_stack.top-1].yypos, (List<LangElement>)value_stack.array[value_stack.top-1].yyval.Object))); }
         return;
       case 202: // while_statement -> statement 
 { yyval.Object = value_stack.array[value_stack.top-1].yyval.Object; }

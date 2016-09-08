@@ -505,7 +505,7 @@ catch_list:
 			{ $$ = new List<CatchItem>(); }
 	|	catch_list T_CATCH '(' catch_name_list T_VARIABLE ')' '{' inner_statement_list '}'
 			{ 
-				$$ = AddToList<CatchItem>($1, _astFactory.Catch(@$, 
+				$$ = AddToList<CatchItem>($1, _astFactory.Catch(CombineSpans(@2, @9), 
 					(TypeRef)_astFactory.TypeReference(@4, TypeRefListFromTranslatedQNRList($4), null), 
 					(DirectVarUse)_astFactory.Variable(@5, (string)$5, (LangElement)null), 
 					_astFactory.Block(CombineSpans(@7, @9), (List<LangElement>)$8))); 
@@ -641,9 +641,9 @@ switch_case_list:
 case_list:
 		/* empty */ { $$ = new List<LangElement>(); }
 	|	case_list T_CASE expr case_separator inner_statement_list
-			{ $$ = AddToList<LangElement>($1, _astFactory.Case(@$, (LangElement)$3, _astFactory.Block(@5, (List<LangElement>)$5))); }
+			{ $$ = AddToList<LangElement>($1, _astFactory.Case(CombineSpans(@2, @4, @5), (LangElement)$3, _astFactory.Block(@5, (List<LangElement>)$5))); }
 	|	case_list T_DEFAULT case_separator inner_statement_list
-			{ $$ = AddToList<LangElement>($1, _astFactory.Case(@$, null, _astFactory.Block(@4, (List<LangElement>)$4))); }
+			{ $$ = AddToList<LangElement>($1, _astFactory.Case(CombineSpans(@2, @3, @4), null, _astFactory.Block(@4, (List<LangElement>)$4))); }
 ;
 
 case_separator:
