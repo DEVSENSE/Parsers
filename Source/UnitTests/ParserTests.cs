@@ -90,11 +90,16 @@ namespace UnitTests
         /// </summary>
         sealed class NameSpanCheck : TreeVisitor
         {
+            List<Span> inclusion = new List<Span>() { new Span(0, int.MaxValue) };
+
             public override void VisitElement(LangElement element)
             {
                 if (element != null)
                 {
                     Assert.IsTrue(element.Span.IsValid);
+                    if (!inclusion.Last().Contains(element.Span))
+                        ;
+                    Assert.IsTrue(inclusion.Last().Contains(element.Span));
                     if (element is FunctionDecl)
                         CheckFunctionDecl((FunctionDecl)element);
                     else if (element is MethodDecl)
@@ -103,7 +108,17 @@ namespace UnitTests
                         CheckLambdaDecl((LambdaFunctionExpr)element);
                     else if (element is TypeDecl)
                         CheckTypeDecl((TypeDecl)element);
+
+                    if (element is NamespaceDecl && ((NamespaceDecl)element).IsSimpleSyntax)
+                        inclusion.Add(Span.Combine(element.Span, ((NamespaceDecl)element).Body.Span));
+                    else if (element is VarLikeConstructUse && ((VarLikeConstructUse)element).IsMemberOf != null)
+                        inclusion.Add(Span.Combine(((VarLikeConstructUse)element).IsMemberOf.Span, element.Span));
+                    else if (element is IfStmt || element is SwitchItem)
+                        inclusion.Add(new Span(0, int.MaxValue));
+                    else
+                        inclusion.Add(element.Span);
                     base.VisitElement(element);
+                    inclusion.RemoveAt(inclusion.Count - 1);
                 }
             }
 
@@ -117,7 +132,7 @@ namespace UnitTests
                 Assert.IsTrue(func.HeadingSpan.Contains(func.ParametersSpan));
                 Assert.IsTrue(func.HeadingSpan.End <= func.Body.Span.Start);
                 Assert.IsTrue(func.Name.Span.End <= func.ParametersSpan.Start);
-                foreach(var param in func.Signature.FormalParams)
+                foreach (var param in func.Signature.FormalParams)
                     Assert.IsTrue(param.Span.Contains(param.Name.Span));
             }
 

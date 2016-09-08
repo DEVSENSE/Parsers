@@ -268,15 +268,16 @@ namespace Devsense.PHP.Syntax
         {
             Debug.Assert(statements is List<LangElement>);
             var statemenList = (List<LangElement>)statements;
-            return StatementsToBlock(Span.FromBounds(span.Start, endSpan.End), statemenList, endToken);
+            return StatementsToBlock(Span.FromBounds(span.Start, endSpan.Start), statemenList, endToken);
         }
 
         void RebuildLast(object condList, Span end, Tokens token)
         {
-            var ifList = ((List<Tuple<LangElement, LangElement>>)condList);
+            var ifList = ((List<Tuple<Span, LangElement, LangElement>>)condList);
             var block = ifList.Last();
             ifList.Remove(block);
-            ifList.Add(new Tuple<LangElement, LangElement>(block.Item1, StatementsToBlock(block.Item2.Span, end, ((BlockStmt)block.Item2).Statements.Select(s => (LangElement)s).ToList(), token)));
+            ifList.Add(new Tuple<Span, LangElement, LangElement>(Span.FromBounds(block.Item1.Start, end.Start), block.Item2, 
+                StatementsToBlock(block.Item3.Span, end, ((BlockStmt)block.Item3).Statements.Select(s => (LangElement)s).ToList(), token)));
         }
 
         private LangElement CreateProperty(Span span, LangElement objectExpr, object name)

@@ -641,9 +641,9 @@ switch_case_list:
 case_list:
 		/* empty */ { $$ = new List<LangElement>(); }
 	|	case_list T_CASE expr case_separator inner_statement_list
-			{ $$ = AddToList<LangElement>($1, _astFactory.Case(CombineSpans(@2, @4, @5), (LangElement)$3, _astFactory.Block(@5, (List<LangElement>)$5))); }
+			{ $$ = AddToList<LangElement>($1, _astFactory.Case(Span.FromBounds(@2.Start, @$.End), (LangElement)$3, _astFactory.Block(@5, (List<LangElement>)$5))); }
 	|	case_list T_DEFAULT case_separator inner_statement_list
-			{ $$ = AddToList<LangElement>($1, _astFactory.Case(CombineSpans(@2, @3, @4), null, _astFactory.Block(@4, (List<LangElement>)$4))); }
+			{ $$ = AddToList<LangElement>($1, _astFactory.Case(Span.FromBounds(@2.Start, @$.End), null, _astFactory.Block(@4, (List<LangElement>)$4))); }
 ;
 
 case_separator:
@@ -660,48 +660,48 @@ while_statement:
 
 if_stmt_without_else:
 		T_IF '(' expr ')' statement
-			{ $$ = new List<Tuple<LangElement, LangElement>>() { 
-				new Tuple<LangElement, LangElement>((LangElement)$3, (LangElement)$5) }; 
+			{ $$ = new List<Tuple<Span, LangElement, LangElement>>() { 
+				new Tuple<Span, LangElement, LangElement>(@$, (LangElement)$3, (LangElement)$5) }; 
 			}
 	|	if_stmt_without_else T_ELSEIF '(' expr ')' statement
-			{ $$ = AddToList<Tuple<LangElement, LangElement>>($1, 
-				new Tuple<LangElement, LangElement>((LangElement)$4, (LangElement)$6)); 
+			{ $$ = AddToList<Tuple<Span, LangElement, LangElement>>($1, 
+				new Tuple<Span, LangElement, LangElement>(CombineSpans(@2, @5, @6), (LangElement)$4, (LangElement)$6)); 
 			}
 ;
 
 if_stmt:
 		if_stmt_without_else %prec T_NOELSE 
-			{ ((List<Tuple<LangElement, LangElement>>)$1).Reverse(); $$ = null; 
-			foreach (var item in (List<Tuple<LangElement, LangElement>>)$1) $$ = _astFactory.If(@$, item.Item1, item.Item2, (LangElement)$$); }
+			{ ((List<Tuple<Span, LangElement, LangElement>>)$1).Reverse(); $$ = null; 
+			foreach (var item in (List<Tuple<Span, LangElement, LangElement>>)$1) $$ = _astFactory.If(item.Item1, item.Item2, item.Item3, (LangElement)$$); }
 	|	if_stmt_without_else T_ELSE statement
-			{ ((List<Tuple<LangElement, LangElement>>)$1).Reverse(); $$ = _astFactory.If(@$, null, (LangElement)$3, null); 
-			foreach (var item in (List<Tuple<LangElement, LangElement>>)$1) $$ = _astFactory.If(@$, item.Item1, item.Item2, (LangElement)$$); }
+			{ ((List<Tuple<Span, LangElement, LangElement>>)$1).Reverse(); $$ = _astFactory.If(CombineSpans(@2, @3), null, (LangElement)$3, null); 
+			foreach (var item in (List<Tuple<Span, LangElement, LangElement>>)$1) $$ = _astFactory.If(item.Item1, item.Item2, item.Item3, (LangElement)$$); }
 ;
 
 alt_if_stmt_without_else:
 		T_IF '(' expr ')' ':' inner_statement_list
 			{ 
-				$$ = new List<Tuple<LangElement, LangElement>>() { 
-					new Tuple<LangElement, LangElement>((LangElement)$3, StatementsToBlock(@5, @5, $6, Tokens.END)) }; 
+				$$ = new List<Tuple<Span, LangElement, LangElement>>() { 
+					new Tuple<Span, LangElement, LangElement>(@$, (LangElement)$3, StatementsToBlock(@5, @5, $6, Tokens.END)) }; 
 			}
 			
 	|	alt_if_stmt_without_else T_ELSEIF '(' expr ')' ':' inner_statement_list
 			{ 
 				RebuildLast($1, @2, Tokens.T_ELSEIF);
-				$$ = AddToList<Tuple<LangElement, LangElement>>($1, 
-					new Tuple<LangElement, LangElement>((LangElement)$4, StatementsToBlock(@6, @6, $7, Tokens.END))); 
+				$$ = AddToList<Tuple<Span, LangElement, LangElement>>($1, 
+					new Tuple<Span, LangElement, LangElement>(CombineSpans(@2, @6, @7), (LangElement)$4, StatementsToBlock(@6, @6, $7, Tokens.END))); 
 			}
 ;
 
 alt_if_stmt:
 		alt_if_stmt_without_else T_ENDIF ';' 
 			{ RebuildLast($1, @2, Tokens.T_ENDIF);
-			 ((List<Tuple<LangElement, LangElement>>)$1).Reverse(); $$ = null; 
-			foreach (var item in (List<Tuple<LangElement, LangElement>>)$1) $$ = _astFactory.If(@$, item.Item1, item.Item2, (LangElement)$$); }
+			 ((List<Tuple<Span, LangElement, LangElement>>)$1).Reverse(); $$ = null; 
+			foreach (var item in (List<Tuple<Span, LangElement, LangElement>>)$1) $$ = _astFactory.If(item.Item1, item.Item2, item.Item3, (LangElement)$$); }
 	|	alt_if_stmt_without_else T_ELSE ':' inner_statement_list T_ENDIF ';'
 			{ RebuildLast($1, @2, Tokens.T_ELSE);
-			((List<Tuple<LangElement, LangElement>>)$1).Reverse(); $$ = _astFactory.If(@$, null, StatementsToBlock(@3, @5, $4, Tokens.T_ENDIF), null); 
-			foreach (var item in (List<Tuple<LangElement, LangElement>>)$1) $$ = _astFactory.If(@$, item.Item1, item.Item2, (LangElement)$$); }
+			((List<Tuple<Span, LangElement, LangElement>>)$1).Reverse(); $$ = _astFactory.If(CombineSpans(@2, @6), null, StatementsToBlock(@3, @5, $4, Tokens.T_ENDIF), null); 
+			foreach (var item in (List<Tuple<Span, LangElement, LangElement>>)$1) $$ = _astFactory.If(item.Item1, item.Item2, item.Item3, (LangElement)$$); }
 ;
 
 parameter_list:
@@ -721,7 +721,7 @@ parameter:
 		optional_type is_reference is_variadic T_VARIABLE
 			{ $$ = _astFactory.Parameter(CombineSpans(@1, @2, @3, @4), (string)$4, @4, (TypeRef)$1, (FormalParam.Flags)$2|(FormalParam.Flags)$3, null); /* Important - @$ is invalid when optional_type is empty */ }
 	|	optional_type is_reference is_variadic T_VARIABLE '=' expr
-			{ $$ = _astFactory.Parameter(CombineSpans(@1, @2, @3, @4), (string)$4, @4, (TypeRef)$1, (FormalParam.Flags)$2|(FormalParam.Flags)$3|FormalParam.Flags.Default, (Expression)$6); /* Important - @$ is invalid when optional_type is empty */ }
+			{ $$ = _astFactory.Parameter(CombineSpans(@1, @2, @3, @4, @6), (string)$4, @4, (TypeRef)$1, (FormalParam.Flags)$2|(FormalParam.Flags)$3|FormalParam.Flags.Default, (Expression)$6); /* Important - @$ is invalid when optional_type is empty */ }
 ;
 
 
@@ -835,23 +835,23 @@ trait_adaptation_list:
 ;
 
 trait_adaptation:
-		trait_precedence ';'	{ $$ = $1; }
-	|	trait_alias ';'			{ $$ = $1; }
+		trait_precedence	{ $$ = $1; }
+	|	trait_alias			{ $$ = $1; }
 ;
 
 trait_precedence:
-	absolute_trait_method_reference T_INSTEADOF name_list
+	absolute_trait_method_reference T_INSTEADOF name_list ';'
 		{ $$ = _astFactory.TraitAdaptationPrecedence(@$, (Tuple<QualifiedNameRef,NameRef>)$1, (List<QualifiedNameRef>)$3); }
 ;
 
 trait_alias:
-		trait_method_reference T_AS T_STRING
+		trait_method_reference T_AS T_STRING ';'
 			{ $$ = _astFactory.TraitAdaptationAlias(@$, (Tuple<QualifiedNameRef, NameRef>)$1, new NameRef(@3, (string)$3), null); }
-	|	trait_method_reference T_AS reserved_non_modifiers
+	|	trait_method_reference T_AS reserved_non_modifiers ';'
 			{ $$ = _astFactory.TraitAdaptationAlias(@$, (Tuple<QualifiedNameRef, NameRef>)$1, new NameRef(@3, (string)$3), null); }
-	|	trait_method_reference T_AS member_modifier identifier
+	|	trait_method_reference T_AS member_modifier identifier ';'
 			{ $$ = _astFactory.TraitAdaptationAlias(@$, (Tuple<QualifiedNameRef, NameRef>)$1, new NameRef(@4, (string)$4), (PhpMemberAttributes)$3); }
-	|	trait_method_reference T_AS member_modifier
+	|	trait_method_reference T_AS member_modifier ';'
 			{ $$ = _astFactory.TraitAdaptationAlias(@$, (Tuple<QualifiedNameRef, NameRef>)$1, NameRef.Invalid, (PhpMemberAttributes)$3); }
 ;
 
