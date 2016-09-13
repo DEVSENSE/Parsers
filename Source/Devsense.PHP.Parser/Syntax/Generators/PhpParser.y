@@ -825,7 +825,7 @@ name_list:
 ;
 
 trait_adaptations:
-		';'								{ $$ = _astFactory.TraitAdaptationBlock(@$, new List<LangElement>()); }
+		';'								{ $$ = null; }
 	|	'{' '}'							{ $$ = _astFactory.TraitAdaptationBlock(@$, new List<LangElement>()); }
 	|	'{' trait_adaptation_list '}'	{ $$ = _astFactory.TraitAdaptationBlock(@$, (List<LangElement>)$2); }
 ;

@@ -587,11 +587,11 @@ namespace Devsense.PHP.Syntax.Ast
     /// </summary>
     public sealed class TraitAdaptationBlock : LangElement
     {
-        private readonly LangElement[]/*!*/_adaptations;
+        private readonly TraitsUse.TraitAdaptation[]/*!*/_adaptations;
         /// <summary>Statements in block</summary>
-        public LangElement[]/*!*/ Adaptations { get { return _adaptations; } }
+        public TraitsUse.TraitAdaptation[]/*!*/ Adaptations { get { return _adaptations; } }
 
-        public TraitAdaptationBlock(Text.Span span, IList<LangElement>/*!*/body)
+        public TraitAdaptationBlock(Text.Span span, IList<TraitsUse.TraitAdaptation>/*!*/body)
             : base(span)
         {
             Debug.Assert(body != null);

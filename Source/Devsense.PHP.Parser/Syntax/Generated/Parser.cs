@@ -2515,7 +2515,7 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 { yyval.Object = AddToList<QualifiedNameRef>(value_stack.array[value_stack.top-3].yyval.Object,(QualifiedNameRef)value_stack.array[value_stack.top-1].yyval.Object); }
         return;
       case 248: // trait_adaptations -> ';' 
-{ yyval.Object = _astFactory.TraitAdaptationBlock(yypos, new List<LangElement>()); }
+{ yyval.Object = null; }
         return;
       case 249: // trait_adaptations -> '{' '}' 
 { yyval.Object = _astFactory.TraitAdaptationBlock(yypos, new List<LangElement>()); }

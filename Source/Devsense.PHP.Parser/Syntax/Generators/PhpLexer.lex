@@ -844,7 +844,7 @@ ST_HALT_COMPILER1,ST_HALT_COMPILER2,ST_HALT_COMPILER3>{EOF} {
 	yymore(); 
 	break; 
 }
-<ST_SINGLE_QUOTES>([^'\\]|("\\".)|("\\"{NEWLINE}))+ { yymore(); break; }
+<ST_SINGLE_QUOTES>([^'\\]|("\\".)|("\\"{NEWLINE}))+{NEWLINE}? { yymore(); break; }
 <ST_SINGLE_QUOTES>"'"                               { BEGIN(LexicalStates.ST_IN_SCRIPTING); return ProcessSingleQuotedString(); }
 
 <ST_IN_SCRIPTING>b?["]({WHITESPACE}?[^"\r\n\{$\\]*([$][^a-zA-Z_\{"\\]|[$\{]?\\.|\{[^"$\\])?)*[$\{]?["] {

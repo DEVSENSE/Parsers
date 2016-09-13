@@ -20,8 +20,7 @@ class SimpleClass
     "PHPDoc":{"Comment":"classdeclaration"},
     
     "TraitsUse":{ 
-      "Traits":{"Trait":"SayWorld"},    
-      "TraitAdaptationBlock":{}
+      "Traits":{"Trait":"SayWorld"}
     },
     "TraitsUse":{
       "Traits":{"Trait":"A","Trait":"B"},

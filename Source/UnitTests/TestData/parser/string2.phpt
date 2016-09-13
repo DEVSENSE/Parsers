@@ -1,5 +1,8 @@
 <?php
-echo "{";  		
+echo "{";
+echo "
+\75";  
+echo "\x$x";		
 foo('
 ');
 ?>
@@ -8,6 +11,13 @@ foo('
 "GlobalCode":{
   "NamingContext":{},
   "EchoStmt":{"StringLiteral":{"Value":"{"}},
+  "EchoStmt":{"StringLiteral":{"Value":"="}},
+  "EchoStmt":{
+    "ConcatEx":{
+      "StringLiteral":{"Value":"\x"},
+      "DirectVarUse":{"VarName":"x"}
+    }
+  },
   "DirectFcnCall":{
     "Name":"foo",
     "FallbackQualifiedName":"",

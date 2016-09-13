@@ -49,12 +49,34 @@ namespace UnitTests
 
         [TestMethod]
         [DataSource("Microsoft.VisualStudio.TestTools.DataSource.CSV", "|DataDirectory|\\TestData.csv", "TestData#csv", DataAccessMethod.Sequential)]
+        public void LexerGetNextTokenByLineTest()
+        {
+            string path = (string)TestContext.DataRow["files"];
+
+            TestErrorSink errorSink = new TestErrorSink();
+            Lexer lexer = new Lexer(new StreamReader(path), Encoding.UTF8, errorSink,
+                LanguageFeatures.ShortOpenTags, 0, Lexer.LexicalStates.INITIAL);
+            
+            Lexer.LexicalStates previousState = Lexer.LexicalStates.INITIAL;
+            foreach (var line in File.ReadAllLines(path))
+            {
+                lexer.Initialize(new StringReader(line + Environment.NewLine), previousState, true, 0);
+
+                while (lexer.GetNextToken() != Tokens.EOF)
+                {
+                    Assert.IsTrue(lexer.TokenSpan.IsValid);
+                }
+                previousState = lexer.CurrentLexicalState;
+            }
+        }
+
+        [TestMethod]
+        [DataSource("Microsoft.VisualStudio.TestTools.DataSource.CSV", "|DataDirectory|\\TestData.csv", "TestData#csv", DataAccessMethod.Sequential)]
         public void LexerGetNextTokenTest()
         {
             string path = (string)TestContext.DataRow["files"];
 
             TestErrorSink errorSink = new TestErrorSink();
-            SourceUnit sourceUnit = new CodeSourceUnit(File.ReadAllText(path), path, Encoding.UTF8, Lexer.LexicalStates.INITIAL, LanguageFeatures.Basic);
             Lexer lexer = new Lexer(new StreamReader(path), Encoding.UTF8, errorSink, 
                 LanguageFeatures.ShortOpenTags, 0, Lexer.LexicalStates.INITIAL);
 

@@ -79,7 +79,7 @@ namespace Devsense.PHP.Syntax.Ast
 
         public virtual LangElement TraitAdaptationBlock(Span span, IEnumerable<LangElement> adaptations)
         {
-            return new TraitAdaptationBlock(span, ConvertList<LangElement>(adaptations));
+            return new TraitAdaptationBlock(span, ConvertList<TraitsUse.TraitAdaptation>(adaptations));
         }
 
         public virtual LangElement BlockComment(Span span, string content)

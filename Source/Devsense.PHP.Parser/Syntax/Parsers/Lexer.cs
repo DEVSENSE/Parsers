@@ -486,7 +486,6 @@ namespace Devsense.PHP.Syntax
             PhpStringBuilder result = new PhpStringBuilder(encoding, forceBinaryString, text.Length);
 
             int pos = 0;
-
             char c;
             while (pos < text.Length)
             {
@@ -527,7 +526,7 @@ namespace Devsense.PHP.Syntax
                         case 'x':
                             {
                                 int digit;
-                                if ((digit = Convert.AlphaNumericToDigit(text[pos])) < 16)
+                                if (pos < text.Length && (digit = Convert.AlphaNumericToDigit(text[pos])) < 16)
                                 {
                                     int hex_code = digit;
                                     pos++;
@@ -556,12 +555,12 @@ namespace Devsense.PHP.Syntax
                                 {
                                     int octal_code = digit;
 
-                                    if ((digit = Convert.NumericToDigit(text[pos])) < 8)
+                                    if (pos < text.Length && (digit = Convert.NumericToDigit(text[pos])) < 8)
                                     {
                                         octal_code = (octal_code << 3) + digit;
                                         pos++;
 
-                                        if ((digit = Convert.NumericToDigit(text[pos])) < 8)
+                                        if (pos < text.Length && (digit = Convert.NumericToDigit(text[pos])) < 8)
                                         {
                                             pos++;
                                             octal_code = (octal_code << 3) + digit;
@@ -589,41 +588,23 @@ namespace Devsense.PHP.Syntax
             return result.Result;
         }
 
-        protected object GetTokenAsSinglyQuotedString(int startIndex, Encoding/*!*/ encoding, bool forceBinaryString)
+        protected object GetTokenAsSinglyQuotedString(string text, Encoding/*!*/ encoding, bool forceBinaryString)
         {
             PhpStringBuilder result = new PhpStringBuilder(encoding, forceBinaryString, TokenLength);
 
-            int buffer_pos = token_start + startIndex + 1;
-
-            // the following loops expect the token ending by '
-            Debug.Assert(buffer[buffer_pos - 1] == '\'' && buffer[token_end - 1] == '\'');
-
-            //StringBuilder result = new StringBuilder(TokenLength);
+            int pos = 1;
             char c;
-
-            while ((c = buffer[buffer_pos++]) != '\'')
+            while (pos < text.Length)
             {
+                c = text[pos++];
                 if (c == '\\')
                 {
-                    switch (c = buffer[buffer_pos++])
+                    switch (c = text[pos++])
                     {
                         case '\\':
                         case '\'':
                             result.Append(c);
                             break;
-
-                        // ??? will cause many problems ... but PHP allows this
-                        //case 'C':
-                        //  if (!inUnicodeString) goto default;
-                        //  result.Append(ParseCodePointName(ref buffer_pos));
-                        //  break;
-
-                        //case 'u':
-                        //case 'U':
-                        //  if (!inUnicodeString) goto default;
-                        //  result.Append(ParseCodePoint( c == 'u' ? 4 : 6, ref buffer_pos));
-                        //  break;
-
                         default:
                             result.Append('\\');
                             result.Append(c);
@@ -632,6 +613,8 @@ namespace Devsense.PHP.Syntax
                 }
                 else
                 {
+                    if (c == '\'')
+                        break;
                     result.Append(c);
                 }
             }
@@ -777,7 +760,7 @@ namespace Devsense.PHP.Syntax
         {
             bool forceBinaryString = GetTokenChar(0) == 'b';
 
-            _tokenSemantics.Object = GetTokenAsSinglyQuotedString(forceBinaryString ? 1 : 0, _encoding, forceBinaryString);
+            _tokenSemantics.Object = GetTokenAsSinglyQuotedString(GetTokenString(), _encoding, forceBinaryString);
             return Tokens.T_CONSTANT_ENCAPSED_STRING;
         }
 
