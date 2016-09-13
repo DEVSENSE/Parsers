@@ -186,7 +186,7 @@ namespace Devsense.PHP.Syntax.Ast
         /// <param name="traits">Enumeration of traits.</param>
         /// <param name="adaptations">Enumeration of trait adaptations.</param>
         /// <returns>Trait use type member.</returns>
-        TNode TraitUse(TSpan span, IEnumerable<QualifiedNameRef> traits, IEnumerable<TNode> adaptations);
+        TNode TraitUse(TSpan span, IEnumerable<QualifiedNameRef> traits, TNode adaptationsBlock);
 
         /// <summary>
         /// Create <c>TraitAdaptationPrecedence</c> expression.
@@ -267,6 +267,14 @@ namespace Devsense.PHP.Syntax.Ast
         /// <param name="statements">Containing statements.</param>
         /// <returns>Block statement.</returns>
         TNode Block(TSpan span, IEnumerable<TNode> statements);
+
+        /// <summary>
+        /// Creates block containing trait adaptations.
+        /// </summary>
+        /// <param name="span">Entire element span.</param>
+        /// <param name="statements">Containing statements.</param>
+        /// <returns>Block trait adaptations.</returns>
+        TNode TraitAdaptationBlock(TSpan span, IEnumerable<TNode> adaptations);
 
         /// <summary>
         /// Creates block of code enclosed between colon and <paramref name="endToken"/> followed by semicolon (<c>;</c>).

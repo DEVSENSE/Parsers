@@ -1,10 +1,19 @@
 <?php
-echo "{";
+echo "{";  		
+foo('
+');
 ?>
 <<<TEST>>>
 
 "GlobalCode":{
   "NamingContext":{},
-  "EchoStmt":{"StringLiteral":{"Value":"{"}}
+  "EchoStmt":{"StringLiteral":{"Value":"{"}},
+  "DirectFcnCall":{
+    "Name":"foo",
+    "FallbackQualifiedName":"",
+    "ActualParam":{
+      "IsUnpack":"False",
+      "StringLiteral":{"Value":""}
+    }
+  }
 }
-

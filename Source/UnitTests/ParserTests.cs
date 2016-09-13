@@ -97,8 +97,6 @@ namespace UnitTests
                 if (element != null)
                 {
                     Assert.IsTrue(element.Span.IsValid);
-                    if (!inclusion.Last().Contains(element.Span))
-                        ;
                     Assert.IsTrue(inclusion.Last().Contains(element.Span));
                     if (element is FunctionDecl)
                         CheckFunctionDecl((FunctionDecl)element);
@@ -113,8 +111,6 @@ namespace UnitTests
                         inclusion.Add(Span.Combine(element.Span, ((NamespaceDecl)element).Body.Span));
                     else if (element is VarLikeConstructUse && ((VarLikeConstructUse)element).IsMemberOf != null)
                         inclusion.Add(Span.Combine(((VarLikeConstructUse)element).IsMemberOf.Span, element.Span));
-                    else if (element is IfStmt || element is SwitchItem)
-                        inclusion.Add(new Span(0, int.MaxValue));
                     else
                         inclusion.Add(element.Span);
                     base.VisitElement(element);

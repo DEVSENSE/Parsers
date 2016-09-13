@@ -2340,10 +2340,12 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 { yyval.Object = new List<LangElement>(); }
         return;
       case 198: // case_list -> case_list T_CASE expr case_separator inner_statement_list 
-{ yyval.Object = AddToList<LangElement>(value_stack.array[value_stack.top-5].yyval.Object, _astFactory.Case(Span.FromBounds(value_stack.array[value_stack.top-4].yypos.Start, yypos.End), (LangElement)value_stack.array[value_stack.top-3].yyval.Object, _astFactory.Block(value_stack.array[value_stack.top-1].yypos, (List<LangElement>)value_stack.array[value_stack.top-1].yyval.Object))); }
+{ yyval.Object = AddToList<LangElement>(value_stack.array[value_stack.top-5].yyval.Object, _astFactory.Case(Span.FromBounds(value_stack.array[value_stack.top-4].yypos.Start, ((List<LangElement>)value_stack.array[value_stack.top-1].yyval.Object).Count > 0? ((List<LangElement>)value_stack.array[value_stack.top-1].yyval.Object).Last().Span.End: yypos.End), 
+				(LangElement)value_stack.array[value_stack.top-3].yyval.Object, _astFactory.Block(value_stack.array[value_stack.top-1].yypos, (List<LangElement>)value_stack.array[value_stack.top-1].yyval.Object))); }
         return;
       case 199: // case_list -> case_list T_DEFAULT case_separator inner_statement_list 
-{ yyval.Object = AddToList<LangElement>(value_stack.array[value_stack.top-4].yyval.Object, _astFactory.Case(Span.FromBounds(value_stack.array[value_stack.top-3].yypos.Start, yypos.End), null, _astFactory.Block(value_stack.array[value_stack.top-1].yypos, (List<LangElement>)value_stack.array[value_stack.top-1].yyval.Object))); }
+{ yyval.Object = AddToList<LangElement>(value_stack.array[value_stack.top-4].yyval.Object, _astFactory.Case(Span.FromBounds(value_stack.array[value_stack.top-3].yypos.Start, ((List<LangElement>)value_stack.array[value_stack.top-1].yyval.Object).Count > 0? ((List<LangElement>)value_stack.array[value_stack.top-1].yyval.Object).Last().Span.End: yypos.End), 
+				null, _astFactory.Block(value_stack.array[value_stack.top-1].yypos, (List<LangElement>)value_stack.array[value_stack.top-1].yyval.Object))); }
         return;
       case 202: // while_statement -> statement 
 { yyval.Object = value_stack.array[value_stack.top-1].yyval.Object; }
@@ -2363,11 +2365,12 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
         return;
       case 206: // if_stmt -> if_stmt_without_else 
 { ((List<Tuple<Span, LangElement, LangElement>>)value_stack.array[value_stack.top-1].yyval.Object).Reverse(); yyval.Object = null; 
-			foreach (var item in (List<Tuple<Span, LangElement, LangElement>>)value_stack.array[value_stack.top-1].yyval.Object) yyval.Object = _astFactory.If(item.Item1, item.Item2, item.Item3, (LangElement)yyval.Object); }
+			foreach (var item in (List<Tuple<Span, LangElement, LangElement>>)value_stack.array[value_stack.top-1].yyval.Object) 
+				yyval.Object = _astFactory.If(yyval.Object != null? CombineSpans(item.Item1, ((LangElement)yyval.Object).Span): item.Item1, item.Item2, item.Item3, (LangElement)yyval.Object); }
         return;
       case 207: // if_stmt -> if_stmt_without_else T_ELSE statement 
 { ((List<Tuple<Span, LangElement, LangElement>>)value_stack.array[value_stack.top-3].yyval.Object).Reverse(); yyval.Object = _astFactory.If(CombineSpans(value_stack.array[value_stack.top-2].yypos, value_stack.array[value_stack.top-1].yypos), null, (LangElement)value_stack.array[value_stack.top-1].yyval.Object, null); 
-			foreach (var item in (List<Tuple<Span, LangElement, LangElement>>)value_stack.array[value_stack.top-3].yyval.Object) yyval.Object = _astFactory.If(item.Item1, item.Item2, item.Item3, (LangElement)yyval.Object); }
+			foreach (var item in (List<Tuple<Span, LangElement, LangElement>>)value_stack.array[value_stack.top-3].yyval.Object) yyval.Object = _astFactory.If(CombineSpans(item.Item1, ((LangElement)yyval.Object).Span), item.Item2, item.Item3, (LangElement)yyval.Object); }
         return;
       case 208: // alt_if_stmt_without_else -> T_IF '(' expr ')' ':' inner_statement_list 
 { 
@@ -2385,12 +2388,13 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
       case 210: // alt_if_stmt -> alt_if_stmt_without_else T_ENDIF ';' 
 { RebuildLast(value_stack.array[value_stack.top-3].yyval.Object, value_stack.array[value_stack.top-2].yypos, Tokens.T_ENDIF);
 			 ((List<Tuple<Span, LangElement, LangElement>>)value_stack.array[value_stack.top-3].yyval.Object).Reverse(); yyval.Object = null; 
-			foreach (var item in (List<Tuple<Span, LangElement, LangElement>>)value_stack.array[value_stack.top-3].yyval.Object) yyval.Object = _astFactory.If(item.Item1, item.Item2, item.Item3, (LangElement)yyval.Object); }
+			foreach (var item in (List<Tuple<Span, LangElement, LangElement>>)value_stack.array[value_stack.top-3].yyval.Object) 
+				yyval.Object = _astFactory.If(yyval.Object != null? CombineSpans(item.Item1, ((LangElement)yyval.Object).Span): item.Item1, item.Item2, item.Item3, (LangElement)yyval.Object); }
         return;
       case 211: // alt_if_stmt -> alt_if_stmt_without_else T_ELSE ':' inner_statement_list T_ENDIF ';' 
 { RebuildLast(value_stack.array[value_stack.top-6].yyval.Object, value_stack.array[value_stack.top-5].yypos, Tokens.T_ELSE);
 			((List<Tuple<Span, LangElement, LangElement>>)value_stack.array[value_stack.top-6].yyval.Object).Reverse(); yyval.Object = _astFactory.If(CombineSpans(value_stack.array[value_stack.top-5].yypos, value_stack.array[value_stack.top-1].yypos), null, StatementsToBlock(value_stack.array[value_stack.top-4].yypos, value_stack.array[value_stack.top-2].yypos, value_stack.array[value_stack.top-3].yyval.Object, Tokens.T_ENDIF), null); 
-			foreach (var item in (List<Tuple<Span, LangElement, LangElement>>)value_stack.array[value_stack.top-6].yyval.Object) yyval.Object = _astFactory.If(item.Item1, item.Item2, item.Item3, (LangElement)yyval.Object); }
+			foreach (var item in (List<Tuple<Span, LangElement, LangElement>>)value_stack.array[value_stack.top-6].yyval.Object) yyval.Object = _astFactory.If(CombineSpans(item.Item1, ((LangElement)yyval.Object).Span), item.Item2, item.Item3, (LangElement)yyval.Object); }
         return;
       case 212: // parameter_list -> non_empty_parameter_list 
 { yyval.Object = value_stack.array[value_stack.top-1].yyval.Object; }
@@ -2495,7 +2499,7 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 			}
         return;
       case 244: // class_statement -> T_USE name_list trait_adaptations 
-{ yyval.Object = _astFactory.TraitUse(yypos, (List<QualifiedNameRef>)value_stack.array[value_stack.top-2].yyval.Object, (List<TraitsUse.TraitAdaptation>)value_stack.array[value_stack.top-1].yyval.Object); }
+{ yyval.Object = _astFactory.TraitUse(yypos, (List<QualifiedNameRef>)value_stack.array[value_stack.top-2].yyval.Object, (LangElement)value_stack.array[value_stack.top-1].yyval.Object); }
         return;
       case 245: // class_statement -> method_modifiers function returns_ref identifier backup_doc_comment '(' parameter_list ')' return_type backup_fn_flags method_body backup_fn_flags 
 { yyval.Object = _astFactory.Method(yypos, value_stack.array[value_stack.top-10].yyval.Long == (long)FormalParam.Flags.IsByRef, (PhpMemberAttributes)value_stack.array[value_stack.top-12].yyval.Long, 
@@ -2511,20 +2515,20 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 { yyval.Object = AddToList<QualifiedNameRef>(value_stack.array[value_stack.top-3].yyval.Object,(QualifiedNameRef)value_stack.array[value_stack.top-1].yyval.Object); }
         return;
       case 248: // trait_adaptations -> ';' 
-{ yyval.Object = new List<TraitsUse.TraitAdaptation>(); }
+{ yyval.Object = _astFactory.TraitAdaptationBlock(yypos, new List<LangElement>()); }
         return;
       case 249: // trait_adaptations -> '{' '}' 
-{ yyval.Object = new List<TraitsUse.TraitAdaptation>(); }
+{ yyval.Object = _astFactory.TraitAdaptationBlock(yypos, new List<LangElement>()); }
         return;
       case 250: // trait_adaptations -> '{' trait_adaptation_list '}' 
-{ yyval.Object = value_stack.array[value_stack.top-2].yyval.Object; }
+{ yyval.Object = _astFactory.TraitAdaptationBlock(yypos, (List<LangElement>)value_stack.array[value_stack.top-2].yyval.Object); }
         return;
       case 251: // trait_adaptation_list -> trait_adaptation 
-{ yyval.Object = new List<TraitsUse.TraitAdaptation>() { (TraitsUse.TraitAdaptation)value_stack.array[value_stack.top-1].yyval.Object };
+{ yyval.Object = new List<LangElement>() { (LangElement)value_stack.array[value_stack.top-1].yyval.Object };
  }
         return;
       case 252: // trait_adaptation_list -> trait_adaptation_list trait_adaptation 
-{ yyval.Object = AddToList<TraitsUse.TraitAdaptation>(value_stack.array[value_stack.top-2].yyval.Object, value_stack.array[value_stack.top-1].yyval.Object); }
+{ yyval.Object = AddToList<LangElement>(value_stack.array[value_stack.top-2].yyval.Object, value_stack.array[value_stack.top-1].yyval.Object); }
         return;
       case 253: // trait_adaptation -> trait_precedence 
 { yyval.Object = value_stack.array[value_stack.top-1].yyval.Object; }

@@ -74,7 +74,12 @@ namespace Devsense.PHP.Syntax.Ast
 
         public virtual LangElement Block(Span span, IEnumerable<LangElement> statements)
         {
-            return new BlockStmt(span, ConvertList<Statement>(statements));
+            return new BlockStmt(span.IsValid || statements.Count() == 0? span: Span.FromBounds(statements.First().Span.Start, statements.Last().Span.End), ConvertList<Statement>(statements));
+        }
+
+        public virtual LangElement TraitAdaptationBlock(Span span, IEnumerable<LangElement> adaptations)
+        {
+            return new TraitAdaptationBlock(span, ConvertList<LangElement>(adaptations));
         }
 
         public virtual LangElement BlockComment(Span span, string content)
@@ -381,10 +386,10 @@ namespace Devsense.PHP.Syntax.Ast
                 return new DefaultItem(span, ((BlockStmt)block).Statements);
         }
 
-        public virtual LangElement TraitUse(Span span, IEnumerable<QualifiedNameRef> traits, IEnumerable<LangElement> adaptations)
+        public virtual LangElement TraitUse(Span span, IEnumerable<QualifiedNameRef> traits, LangElement adaptationsBlock)
         {
             Debug.Assert(traits != null);
-            return new TraitsUse(span, traits.ToList(), (adaptations != null) ? ConvertList<TraitsUse.TraitAdaptation>(adaptations) : null);
+            return new TraitsUse(span, traits.ToList(), (TraitAdaptationBlock)adaptationsBlock);
         }
 
         public virtual LangElement TraitAdaptationPrecedence(Span span, Tuple<QualifiedNameRef, NameRef> name, IEnumerable<QualifiedNameRef> precedences)

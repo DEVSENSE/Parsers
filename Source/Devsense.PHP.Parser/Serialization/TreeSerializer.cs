@@ -297,6 +297,13 @@ namespace Devsense.PHP.Syntax.Ast.Serialization
             _serializer.EndSerialize();
         }
 
+        override public void VisitTraitAdaptationBlock(TraitAdaptationBlock x)
+        {
+            _serializer.StartSerialize(typeof(TraitAdaptationBlock).Name, SerializeSpan(x.Span));
+            base.VisitTraitAdaptationBlock(x);
+            _serializer.EndSerialize();
+        }
+
         override public void VisitJumpStmt(JumpStmt x)
         {
             _serializer.StartSerialize(typeof(JumpStmt).Name, SerializeSpan(x.Span),

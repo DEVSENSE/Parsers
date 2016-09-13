@@ -13,6 +13,7 @@
 // See the Apache Version 2.0 License for specific language governing
 // permissions and limitations under the License.
 
+using System;
 using System.Collections.Generic;
 
 using Devsense.PHP.Syntax.Ast;
@@ -97,6 +98,11 @@ namespace Devsense.PHP.Syntax
         virtual public void VisitGlobalConstantDecl(GlobalConstantDecl x)
         {
             // nothing
+        }
+
+        virtual public void VisitTraitAdaptationBlock(TraitAdaptationBlock x)
+        {
+            VisitList(x.Adaptations);
         }
 
         /// <summary>
@@ -282,7 +288,7 @@ namespace Devsense.PHP.Syntax
         virtual public void VisitTraitsUse(TraitsUse x)
         {
             // visits adaptation list
-            VisitList(x.TraitAdaptationList);
+            VisitElement(x.TraitAdaptationBlock);
         }
 
         virtual public void VisitTraitAdaptationPrecedence(TraitsUse.TraitAdaptationPrecedence x)

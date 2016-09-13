@@ -22,14 +22,17 @@ class SimpleClass
     "PHPDoc":{"Comment":"classdeclaration"},
 
     "TraitsUse":{
-      "Traits":{"Trait":"HelloWorld"},
-      "TraitAdaptationAlias":{"TraitMemberName":"sayHello","NewName":"myPrivateHello","NewModifier":"Public"},
-      "TraitAdaptationAlias":{"TraitMemberName":"HelloWorld::sayHello","NewName":"endswitch","NewModifier":"Public"},
-      "TraitAdaptationAlias":{"TraitMemberName":"sayHello","NewName":"myPrivateHello","NewModifier":"Private"},
-      "TraitAdaptationAlias":{"TraitMemberName":"sayHello","NewName":"","NewModifier":"Private"}
+      "Traits":{"Trait":"HelloWorld"},    
+      "TraitAdaptationBlock":{
+        "TraitAdaptationAlias":{"TraitMemberName":"sayHello","NewName":"myPrivateHello","NewModifier":"Public"},
+        "TraitAdaptationAlias":{"TraitMemberName":"HelloWorld::sayHello","NewName":"endswitch","NewModifier":"Public"},
+        "TraitAdaptationAlias":{"TraitMemberName":"sayHello","NewName":"myPrivateHello","NewModifier":"Private"},
+        "TraitAdaptationAlias":{"TraitMemberName":"sayHello","NewName":"","NewModifier":"Private"}
+      }
     },      
     "TraitsUse":{
-      "Traits":{"Trait":"EmptyTrait"}
+      "Traits":{"Trait":"EmptyTrait"},    
+      "TraitAdaptationBlock":{}
     }
   }
 }

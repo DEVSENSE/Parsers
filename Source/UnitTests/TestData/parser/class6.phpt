@@ -20,12 +20,15 @@ class SimpleClass
     "PHPDoc":{"Comment":"classdeclaration"},
     
     "TraitsUse":{ 
-      "Traits":{"Trait":"SayWorld"}
+      "Traits":{"Trait":"SayWorld"},    
+      "TraitAdaptationBlock":{}
     },
     "TraitsUse":{
       "Traits":{"Trait":"A","Trait":"B"},
-      "TraitAdaptationPrecedence":{"TraitMemberName":"B::foo","IgnoredTypes":{"IgnoredType":"A"}},
-      "TraitAdaptationPrecedence":{"TraitMemberName":"A::bar","IgnoredTypes":{"IgnoredType":"B","IgnoredType":"A"}}
+      "TraitAdaptationBlock":{
+        "TraitAdaptationPrecedence":{"TraitMemberName":"B::foo","IgnoredTypes":{"IgnoredType":"A"}},
+        "TraitAdaptationPrecedence":{"TraitMemberName":"A::bar","IgnoredTypes":{"IgnoredType":"B","IgnoredType":"A"}}
+      }
     }
   }
 }

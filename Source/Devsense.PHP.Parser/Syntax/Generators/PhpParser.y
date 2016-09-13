@@ -641,9 +641,11 @@ switch_case_list:
 case_list:
 		/* empty */ { $$ = new List<LangElement>(); }
 	|	case_list T_CASE expr case_separator inner_statement_list
-			{ $$ = AddToList<LangElement>($1, _astFactory.Case(Span.FromBounds(@2.Start, @$.End), (LangElement)$3, _astFactory.Block(@5, (List<LangElement>)$5))); }
+			{ $$ = AddToList<LangElement>($1, _astFactory.Case(Span.FromBounds(@2.Start, ((List<LangElement>)$5).Count > 0? ((List<LangElement>)$5).Last().Span.End: @$.End), 
+				(LangElement)$3, _astFactory.Block(@5, (List<LangElement>)$5))); }
 	|	case_list T_DEFAULT case_separator inner_statement_list
-			{ $$ = AddToList<LangElement>($1, _astFactory.Case(Span.FromBounds(@2.Start, @$.End), null, _astFactory.Block(@4, (List<LangElement>)$4))); }
+			{ $$ = AddToList<LangElement>($1, _astFactory.Case(Span.FromBounds(@2.Start, ((List<LangElement>)$4).Count > 0? ((List<LangElement>)$4).Last().Span.End: @$.End), 
+				null, _astFactory.Block(@4, (List<LangElement>)$4))); }
 ;
 
 case_separator:
@@ -672,10 +674,11 @@ if_stmt_without_else:
 if_stmt:
 		if_stmt_without_else %prec T_NOELSE 
 			{ ((List<Tuple<Span, LangElement, LangElement>>)$1).Reverse(); $$ = null; 
-			foreach (var item in (List<Tuple<Span, LangElement, LangElement>>)$1) $$ = _astFactory.If(item.Item1, item.Item2, item.Item3, (LangElement)$$); }
+			foreach (var item in (List<Tuple<Span, LangElement, LangElement>>)$1) 
+				$$ = _astFactory.If($$ != null? CombineSpans(item.Item1, ((LangElement)$$).Span): item.Item1, item.Item2, item.Item3, (LangElement)$$); }
 	|	if_stmt_without_else T_ELSE statement
 			{ ((List<Tuple<Span, LangElement, LangElement>>)$1).Reverse(); $$ = _astFactory.If(CombineSpans(@2, @3), null, (LangElement)$3, null); 
-			foreach (var item in (List<Tuple<Span, LangElement, LangElement>>)$1) $$ = _astFactory.If(item.Item1, item.Item2, item.Item3, (LangElement)$$); }
+			foreach (var item in (List<Tuple<Span, LangElement, LangElement>>)$1) $$ = _astFactory.If(CombineSpans(item.Item1, ((LangElement)$$).Span), item.Item2, item.Item3, (LangElement)$$); }
 ;
 
 alt_if_stmt_without_else:
@@ -697,11 +700,12 @@ alt_if_stmt:
 		alt_if_stmt_without_else T_ENDIF ';' 
 			{ RebuildLast($1, @2, Tokens.T_ENDIF);
 			 ((List<Tuple<Span, LangElement, LangElement>>)$1).Reverse(); $$ = null; 
-			foreach (var item in (List<Tuple<Span, LangElement, LangElement>>)$1) $$ = _astFactory.If(item.Item1, item.Item2, item.Item3, (LangElement)$$); }
+			foreach (var item in (List<Tuple<Span, LangElement, LangElement>>)$1) 
+				$$ = _astFactory.If($$ != null? CombineSpans(item.Item1, ((LangElement)$$).Span): item.Item1, item.Item2, item.Item3, (LangElement)$$); }
 	|	alt_if_stmt_without_else T_ELSE ':' inner_statement_list T_ENDIF ';'
 			{ RebuildLast($1, @2, Tokens.T_ELSE);
 			((List<Tuple<Span, LangElement, LangElement>>)$1).Reverse(); $$ = _astFactory.If(CombineSpans(@2, @6), null, StatementsToBlock(@3, @5, $4, Tokens.T_ENDIF), null); 
-			foreach (var item in (List<Tuple<Span, LangElement, LangElement>>)$1) $$ = _astFactory.If(item.Item1, item.Item2, item.Item3, (LangElement)$$); }
+			foreach (var item in (List<Tuple<Span, LangElement, LangElement>>)$1) $$ = _astFactory.If(CombineSpans(item.Item1, ((LangElement)$$).Span), item.Item2, item.Item3, (LangElement)$$); }
 ;
 
 parameter_list:
@@ -805,7 +809,7 @@ class_statement:
 				SetDoc($$, $3);
 			}
 	|	T_USE name_list trait_adaptations
-			{ $$ = _astFactory.TraitUse(@$, (List<QualifiedNameRef>)$2, (List<TraitsUse.TraitAdaptation>)$3); }
+			{ $$ = _astFactory.TraitUse(@$, (List<QualifiedNameRef>)$2, (LangElement)$3); }
 	|	method_modifiers function returns_ref identifier backup_doc_comment '(' parameter_list ')'
 		return_type backup_fn_flags method_body backup_fn_flags
 			{ $$ = _astFactory.Method(@$, $3 == (long)FormalParam.Flags.IsByRef, (PhpMemberAttributes)$1, 
@@ -821,17 +825,17 @@ name_list:
 ;
 
 trait_adaptations:
-		';'								{ $$ = new List<TraitsUse.TraitAdaptation>(); }
-	|	'{' '}'							{ $$ = new List<TraitsUse.TraitAdaptation>(); }
-	|	'{' trait_adaptation_list '}'	{ $$ = $2; }
+		';'								{ $$ = _astFactory.TraitAdaptationBlock(@$, new List<LangElement>()); }
+	|	'{' '}'							{ $$ = _astFactory.TraitAdaptationBlock(@$, new List<LangElement>()); }
+	|	'{' trait_adaptation_list '}'	{ $$ = _astFactory.TraitAdaptationBlock(@$, (List<LangElement>)$2); }
 ;
 
 trait_adaptation_list:
 		trait_adaptation
-			{ $$ = new List<TraitsUse.TraitAdaptation>() { (TraitsUse.TraitAdaptation)$1 };
+			{ $$ = new List<LangElement>() { (LangElement)$1 };
  }
 	|	trait_adaptation_list trait_adaptation
-			{ $$ = AddToList<TraitsUse.TraitAdaptation>($1, $2); }
+			{ $$ = AddToList<LangElement>($1, $2); }
 ;
 
 trait_adaptation:

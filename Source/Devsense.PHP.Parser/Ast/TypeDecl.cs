@@ -576,9 +576,39 @@ namespace Devsense.PHP.Syntax.Ast
         }
     }
 
-	#endregion
+    #endregion
 
     #region Traits
+
+    #region TraitAdaptationBlock
+
+    /// <summary>
+    /// Block statement.
+    /// </summary>
+    public sealed class TraitAdaptationBlock : LangElement
+    {
+        private readonly LangElement[]/*!*/_adaptations;
+        /// <summary>Statements in block</summary>
+        public LangElement[]/*!*/ Adaptations { get { return _adaptations; } }
+
+        public TraitAdaptationBlock(Text.Span span, IList<LangElement>/*!*/body)
+            : base(span)
+        {
+            Debug.Assert(body != null);
+            _adaptations = body.AsArray();
+        }
+
+        /// <summary>
+        /// Call the right Visit* method on the given Visitor object.
+        /// </summary>
+        /// <param name="visitor">Visitor to be called.</param>
+        public override void VisitMe(TreeVisitor visitor)
+        {
+            visitor.VisitTraitAdaptationBlock(this);
+        }
+    }
+
+    #endregion
 
     /// <summary>
     /// Represents class traits usage.
@@ -665,27 +695,22 @@ namespace Devsense.PHP.Syntax.Ast
         /// <summary>
         /// List of trait adaptations modifying names of trait members. Can be <c>null</c> reference.
         /// </summary>
-        public List<TraitAdaptation> TraitAdaptationList { get { return traitAdaptationList; } }
-        private readonly List<TraitAdaptation> traitAdaptationList;
-
-        /// <summary>
-        /// Gets a value indicating whether there is a block (even empty) of trait adaptations.
-        /// </summary>
-        public bool HasTraitAdaptationBlock { get { return this.traitAdaptationList != null; } }
+        public TraitAdaptationBlock TraitAdaptationBlock { get { return traitAdaptationBlock; } }
+        private readonly TraitAdaptationBlock traitAdaptationBlock;
 
         /// <summary>
         /// Position where traits list ends.
         /// </summary>
         public int HeadingEndPosition => traitsList.Last().Span.End;
 
-        public TraitsUse(Text.Span span, List<QualifiedNameRef>/*!*/traitsList, List<TraitAdaptation> traitAdaptationList)
+        public TraitsUse(Text.Span span, List<QualifiedNameRef>/*!*/traitsList, TraitAdaptationBlock traitAdaptationBlock)
             : base(span, null)
         {
             if (traitsList == null)
                 throw new ArgumentNullException("traitsList");
 
             this.traitsList = traitsList;
-            this.traitAdaptationList = traitAdaptationList;
+            this.traitAdaptationBlock = traitAdaptationBlock;
         }
 
         public override void VisitMe(TreeVisitor visitor)
