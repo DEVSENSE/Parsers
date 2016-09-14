@@ -728,7 +728,7 @@ namespace Devsense.PHP.Syntax.Ast.Serialization
             _serializer.StartSerialize(typeof(StaticStmt).Name, SerializeSpan(x.Span));
             foreach (StaticVarDecl v in x.StVarList)
             {
-                _serializer.StartSerialize(typeof(StaticVarDecl).Name, SerializeSpan(x.Span), new NodeObj("Name", v.Variable.VarName.Value));
+                _serializer.StartSerialize(typeof(StaticVarDecl).Name, SerializeSpan(x.Span), new NodeObj("Name", v.Variable.Value));
                 VisitElement(v.Initializer);
                 _serializer.EndSerialize();
             }

@@ -235,19 +235,24 @@ namespace Devsense.PHP.Syntax.Ast
     public class StaticVarDecl : LangElement
     {
         /// <summary>Static variable being declared</summary>
-        public DirectVarUse /*!*/ Variable { get { return variable; } }
-        private DirectVarUse/*!*/ variable;
-        
+        public VariableName/*!*/ Variable { get { return variable; } }
+        private VariableName/*!*/ variable;
+
+        /// <summary>
+        /// Span of the static variable name.
+        /// </summary>
+        public Text.Span NameSpan => new Text.Span(Span.Start, variable.Value.Length + 1);
+
         /// <summary>Expression used to initialize static variable</summary>
         public Expression Initializer { get { return initializer; } internal set { initializer = value; } }
         private Expression initializer;
         
-        public StaticVarDecl(Text.Span span, DirectVarUse/*!*/ variable, Expression initializer)
+        public StaticVarDecl(Text.Span span, VariableName variableName, Expression initializer)
             : base(span)
         {
-            Debug.Assert(variable != null);
+            Debug.Assert(variableName != null);
 
-            this.variable = variable;
+            this.variable = variableName;
             this.initializer = initializer;
         }
 

@@ -917,7 +917,7 @@ ST_HALT_COMPILER1,ST_HALT_COMPILER2,ST_HALT_COMPILER3>{EOF} {
 }
 
 <ST_NOWDOC>^{LABEL}(";")?{NEWLINE} {
-    if(GetTokenString().Contains(this._hereDocLabel))
+    if(!string.IsNullOrEmpty(this._hereDocLabel) && GetTokenString().Contains(this._hereDocLabel))
 	{
 		BEGIN(LexicalStates.ST_END_HEREDOC); 
 		if( ProcessEndNowDoc(s => s) ) return (Tokens.T_ENCAPSED_AND_WHITESPACE);
@@ -926,7 +926,7 @@ ST_HALT_COMPILER1,ST_HALT_COMPILER2,ST_HALT_COMPILER3>{EOF} {
 }
 
 <ST_HEREDOC>^{LABEL}(";")?{NEWLINE} {
-    if(GetTokenString().Contains(this._hereDocLabel))
+    if(!string.IsNullOrEmpty(this._hereDocLabel) && GetTokenString().Contains(this._hereDocLabel))
 	{
 		BEGIN(LexicalStates.ST_END_HEREDOC); 
 		if( ProcessEndNowDoc(s => (string)ProcessEscapedString(s, _encoding, false)) ) return (Tokens.T_ENCAPSED_AND_WHITESPACE);
@@ -936,19 +936,19 @@ ST_HALT_COMPILER1,ST_HALT_COMPILER2,ST_HALT_COMPILER3>{EOF} {
 
 <ST_NOWDOC>{ANY_CHAR}         { yymore(); break; }
 
-<ST_DOUBLE_QUOTES>([^"\{$\\]*([$][^"a-zA-Z_\{\\]|[$\{]?\\.|\{[^"$\\])?)*([$\{]["])? {
+<ST_DOUBLE_QUOTES>([^"\{$\\]*(([$][^"a-zA-Z_\{\\])|([$\{]?[\\]{ANY_CHAR})|(\{[^"$\\]))?)*(([$\{\\]["])|([$\{]?[$\{\\]{EOF}))? {
     this._tokenSemantics.Object = ProcessEscapedStringWithEnding(GetTokenString(), _encoding, false, '"');
     return (Tokens.T_ENCAPSED_AND_WHITESPACE);
 }
 
-<ST_BACKQUOTE>([^`\{$\\]*([$][^`a-zA-Z_\{\\]|[$\{]?\\.|\{[^`$\\])?)*([$\{][`])? {
+<ST_BACKQUOTE>    ([^`\{$\\]*(([$][^`a-zA-Z_\{\\])|([$\{]?[\\]{ANY_CHAR})|(\{[^`$\\]))?)*(([$\{\\][`])|([$\{]?[$\{\\]{EOF}))? {
     this._tokenSemantics.Object = ProcessEscapedStringWithEnding(GetTokenString(), _encoding, false, '`');
     return (Tokens.T_ENCAPSED_AND_WHITESPACE);
 }
 
-<ST_HEREDOC>([^\n\r\{$\\]*([$][^a-zA-Z_\{\\]|[$\{]?\\.|\{[^$\\])?)*{NEWLINE} { yymore(); break; }
+<ST_HEREDOC>([^\n\r\{$\\]*([$][^a-zA-Z_\{\\]|[$\{]?[\\]{ANY_CHAR}|\{[^$\\])?)*{NEWLINE} { yymore(); break; }
 
-<ST_HEREDOC>([^\n\r\{$\\]*([$][^a-zA-Z_\{]|[$\{]?\\.|\{[^$])?)* {
+<ST_HEREDOC>([^\n\r\{$\\]*([$][^a-zA-Z_\{]|[$\{]?[\\]{ANY_CHAR}|\{[^$])?)*([$\{]?[$\{\\]{EOF})? {
     this._tokenSemantics.Object = ProcessEscapedString(GetTokenString(), _encoding, false);
     return (Tokens.T_ENCAPSED_AND_WHITESPACE);
 }

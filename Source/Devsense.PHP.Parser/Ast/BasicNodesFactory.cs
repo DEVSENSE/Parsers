@@ -562,7 +562,7 @@ namespace Devsense.PHP.Syntax.Ast
         public virtual LangElement StaticVarDecl(Span span, VariableName name, LangElement initializerOpt)
         {
             Debug.Assert(initializerOpt == null || initializerOpt is Expression);
-            return new StaticVarDecl(span, new DirectVarUse(span, name), (Expression)initializerOpt);
+            return new StaticVarDecl(span, name, (Expression)initializerOpt);
         }
 
         public virtual LangElement ConstUse(Span span, QualifiedName name, QualifiedName? nameFallback)

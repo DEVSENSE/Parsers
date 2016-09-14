@@ -21,6 +21,7 @@ using System.Globalization;
 using Devsense.PHP.Text;
 using Devsense.PHP.Errors;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 
 namespace Devsense.PHP.Syntax
 {
@@ -67,7 +68,7 @@ namespace Devsense.PHP.Syntax
         /// <summary>
         /// Last encountered heredoc or nowdoc label
         /// </summary>
-        protected string _hereDocLabel = null;
+        internal string _hereDocLabel = null;
 
         /// <summary>
         /// Flag for handling unicode strings (currently always false, may be eliminated)
@@ -351,23 +352,18 @@ namespace Devsense.PHP.Syntax
 
         #region GetTokenAs*QuotedString
 
-        protected object GetTokenAsDoublyQuotedString(int startIndex, Encoding/*!*/ encoding, bool forceBinaryString)
+        protected object GetTokenAsDoublyQuotedString(string text, Encoding/*!*/ encoding, bool forceBinaryString)
         {
             PhpStringBuilder result = new PhpStringBuilder(encoding, forceBinaryString, TokenLength);
-
-            int buffer_pos = token_start + startIndex + 1;
-
-            // the following loops expect the token ending by "
-            Debug.Assert(buffer[buffer_pos - 1] == '"' && buffer[token_end - 1] == '"');
-
-            //StringBuilder result = new StringBuilder(TokenLength);
-
+            Debug.Assert(text.Length == 0 || text[0] == '"');
+            int pos = 1;
             char c;
-            while ((c = buffer[buffer_pos++]) != '"')
+            while (pos < text.Length)
             {
-                if (c == '\\')
+                c = text[pos++];
+                if (c == '\\' && pos < text.Length)
                 {
-                    switch (c = buffer[buffer_pos++])
+                    switch (c = text[pos++])
                     {
                         case 'n':
                             result.Append('\n');
@@ -389,25 +385,25 @@ namespace Devsense.PHP.Syntax
 
                         case 'C':
                             if (!_inUnicodeString) goto default;
-                            result.Append(ParseCodePointName(ref buffer_pos));
+                            result.Append(ParseCodePointName(ref pos));
                             break;
 
                         case 'u':
                         case 'U':
                             if (!_inUnicodeString) goto default;
-                            result.Append(ParseCodePoint(c == 'u' ? 4 : 6, ref buffer_pos));
+                            result.Append(ParseCodePoint(c == 'u' ? 4 : 6, ref pos));
                             break;
 
                         case 'x':
                             {
                                 int digit;
-                                if ((digit = Convert.AlphaNumericToDigit(buffer[buffer_pos])) < 16)
+                                if (pos < text.Length && (digit = Convert.AlphaNumericToDigit(text[pos])) < 16)
                                 {
                                     int hex_code = digit;
-                                    buffer_pos++;
-                                    if ((digit = Convert.AlphaNumericToDigit(buffer[buffer_pos])) < 16)
+                                    pos++;
+                                    if (pos < text.Length && (digit = Convert.AlphaNumericToDigit(text[pos])) < 16)
                                     {
-                                        buffer_pos++;
+                                        pos++;
                                         hex_code = (hex_code << 4) + digit;
                                     }
 
@@ -426,18 +422,18 @@ namespace Devsense.PHP.Syntax
                         default:
                             {
                                 int digit;
-                                if ((digit = Convert.NumericToDigit(c)) < 8)
+                                if (pos < text.Length && (digit = Convert.NumericToDigit(c)) < 8)
                                 {
                                     int octal_code = digit;
 
-                                    if ((digit = Convert.NumericToDigit(buffer[buffer_pos])) < 8)
+                                    if (pos < text.Length && pos < text.Length && (digit = Convert.NumericToDigit(text[pos])) < 8)
                                     {
                                         octal_code = (octal_code << 3) + digit;
-                                        buffer_pos++;
+                                        pos++;
 
-                                        if ((digit = Convert.NumericToDigit(buffer[buffer_pos])) < 8)
+                                        if (pos < text.Length && (digit = Convert.NumericToDigit(text[pos])) < 8)
                                         {
-                                            buffer_pos++;
+                                            pos++;
                                             octal_code = (octal_code << 3) + digit;
                                         }
                                     }
@@ -456,6 +452,8 @@ namespace Devsense.PHP.Syntax
                 }
                 else
                 {
+                    if (c == '"')
+                        break;
                     result.Append(c);
                 }
             }
@@ -490,7 +488,7 @@ namespace Devsense.PHP.Syntax
             while (pos < text.Length)
             {
                 c = text[pos++];
-                if (c == '\\')
+                if (c == '\\' && pos < text.Length)
                 {
                     switch (c = text[pos++])
                     {
@@ -530,7 +528,7 @@ namespace Devsense.PHP.Syntax
                                 {
                                     int hex_code = digit;
                                     pos++;
-                                    if ((digit = Convert.AlphaNumericToDigit(text[pos])) < 16)
+                                    if (pos < text.Length && (digit = Convert.AlphaNumericToDigit(text[pos])) < 16)
                                     {
                                         pos++;
                                         hex_code = (hex_code << 4) + digit;
@@ -597,7 +595,7 @@ namespace Devsense.PHP.Syntax
             while (pos < text.Length)
             {
                 c = text[pos++];
-                if (c == '\\')
+                if (c == '\\' && pos < text.Length)
                 {
                     switch (c = text[pos++])
                     {
@@ -768,7 +766,7 @@ namespace Devsense.PHP.Syntax
         {
             bool forceBinaryString = GetTokenChar(0) == 'b';
 
-            _tokenSemantics.Object = GetTokenAsDoublyQuotedString(forceBinaryString ? 1 : 0, _encoding, forceBinaryString);
+            _tokenSemantics.Object = GetTokenAsDoublyQuotedString(GetTokenString(), _encoding, forceBinaryString);
             return Tokens.T_CONSTANT_ENCAPSED_STRING;
         }
 

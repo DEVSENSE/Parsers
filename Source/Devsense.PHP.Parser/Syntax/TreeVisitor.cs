@@ -865,7 +865,6 @@ namespace Devsense.PHP.Syntax
         /// <param name="x"></param>
         virtual public void VisitStaticVarDecl(StaticVarDecl x)
         {
-            VisitElement(x.Variable);
             VisitElement(x.Initializer);
         }
 

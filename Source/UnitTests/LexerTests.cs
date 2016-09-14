@@ -9,6 +9,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using UnitTests.TestImplementation;
 using Devsense.PHP.Syntax;
+using System.Threading.Tasks;
 
 namespace UnitTests
 {
@@ -42,9 +43,55 @@ namespace UnitTests
         {
             string path = (string)TestContext.DataRow["files"];
             SourceUnit sourceUnit = new CodeSourceUnit(File.ReadAllText(path), path, Encoding.UTF8, Lexer.LexicalStates.INITIAL, LanguageFeatures.Basic);
-            ITokenProvider<SemanticValueType, Span> lexer = new Lexer(new StreamReader(path), Encoding.UTF8, new TestErrorSink(), 
+            ITokenProvider<SemanticValueType, Span> lexer = new Lexer(new StreamReader(path), Encoding.UTF8, new TestErrorSink(),
                 LanguageFeatures.ShortOpenTags, 0, Lexer.LexicalStates.INITIAL);
             Assert.AreNotEqual(null, lexer);
+        }
+
+        bool Increment(int[] word, int n)
+        {
+            for (int i = 0; i < word.Length; i++)
+            {
+                word[i] = (word[i] + 1) % n;
+                if (word[i] != 0)
+                    return true;
+            }
+            return false;
+        }
+
+        void ToArray(int[] word, char[] text, char[] chars)
+        {
+            for (int i = 0; i < word.Length; i++)
+                text[i] = chars[word[i]];
+        }
+
+        [TestMethod]
+        public void LexerStringsTest()
+        {
+            TestErrorSink errorSink = new TestErrorSink();
+            Lexer lexer = new Lexer(new StringReader("\"\""), Encoding.UTF8, errorSink,
+                LanguageFeatures.ShortOpenTags, 0, Lexer.LexicalStates.INITIAL);
+
+            var chars = new[] { '$', '{', 'n', '\0', '\n', ' ', '\'', '\\', 'x', 'c', '"', '`', '8', '0' };
+            int[] word = new int[5];
+            char[] text = new char[word.Length];
+
+            var states = new Lexer.LexicalStates[] { Lexer.LexicalStates.ST_DOUBLE_QUOTES, Lexer.LexicalStates.ST_SINGLE_QUOTES,
+                Lexer.LexicalStates.ST_BACKQUOTE, Lexer.LexicalStates.ST_HEREDOC, Lexer.LexicalStates.ST_NOWDOC };
+
+            foreach (var state in states)
+                while (Increment(word, chars.Length))
+                {
+                    ToArray(word, text, chars);
+                    string line = new string(text);
+                    lexer.Initialize(new StringReader(line), state, true, 0);
+                    Tokens token = Tokens.EOF;
+                    while ((token = lexer.GetNextToken()) != Tokens.EOF)
+                    {
+                        Assert.IsTrue(lexer.TokenSpan.IsValid, line);
+                        Assert.IsTrue(lexer.TokenSpan.Length > 0, line + " - " + state.ToString() + " - " + lexer.TokenSpan.Start.ToString());
+                    }
+                }
         }
 
         [TestMethod]
@@ -56,7 +103,7 @@ namespace UnitTests
             TestErrorSink errorSink = new TestErrorSink();
             Lexer lexer = new Lexer(new StreamReader(path), Encoding.UTF8, errorSink,
                 LanguageFeatures.ShortOpenTags, 0, Lexer.LexicalStates.INITIAL);
-            
+
             Lexer.LexicalStates previousState = Lexer.LexicalStates.INITIAL;
             foreach (var line in File.ReadAllLines(path))
             {
@@ -77,7 +124,7 @@ namespace UnitTests
             string path = (string)TestContext.DataRow["files"];
 
             TestErrorSink errorSink = new TestErrorSink();
-            Lexer lexer = new Lexer(new StreamReader(path), Encoding.UTF8, errorSink, 
+            Lexer lexer = new Lexer(new StreamReader(path), Encoding.UTF8, errorSink,
                 LanguageFeatures.ShortOpenTags, 0, Lexer.LexicalStates.INITIAL);
 
             string parsed = ParseByPhp(path);
