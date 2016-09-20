@@ -28,7 +28,7 @@ namespace Devsense.PHP.Syntax
 
     public partial class Parser
     {
-        ITokenProvider<SemanticValueType, Span> _lexer;
+        CompliantLexer _lexer;
         INodesFactory<LangElement, Span> _astFactory;
         IErrorSink<Span> _errors;
         Scope _currentScope;
@@ -446,7 +446,7 @@ namespace Devsense.PHP.Syntax
         /// </summary>
         /// <param name="target"><see cref="IPropertyCollection"/> instance. Must not be <c>null</c>.</param>
         /// <param name="phpdoc">A <see cref="PHPDocBlock"/> instance. Can be <c>null</c>.</param>
-        void SetDoc(object target, object phpdoc)
+        void SetDoc(object target, object phpdoc, int x)
         {
             Debug.Assert(target != null);
             Debug.Assert(target is IPropertyCollection);
@@ -456,6 +456,28 @@ namespace Devsense.PHP.Syntax
             {
                 ((IPropertyCollection)target).SetPHPDoc((PHPDocBlock)phpdoc);
             }
+        }
+
+        /// <summary>
+        /// Associates givcen <paramref name="phpdoc"/> refering to instance of <see cref="PHPDocBlock"/> to a target which must be an instance of <see cref="IPropertyCollection"/>.
+        /// </summary>
+        /// <param name="target"><see cref="IPropertyCollection"/> instance. Must not be <c>null</c>.</param>
+        void SetDoc(object target)
+        {
+            Debug.Assert(target != null);
+            Debug.Assert(target is IPropertyCollection);
+            _lexer.DocBlockList.Annotate((LangElement)target);
+        }
+
+        /// <summary>
+        /// Associates givcen <paramref name="phpdoc"/> refering to instance of <see cref="PHPDocBlock"/> to a target which must be an instance of <see cref="IPropertyCollection"/>.
+        /// </summary>
+        /// <param name="target"><see cref="IPropertyCollection"/> instance. Must not be <c>null</c>.</param>
+        void SetMemberDoc(object target)
+        {
+            Debug.Assert(target != null);
+            Debug.Assert(target is IPropertyCollection);
+            _lexer.DocBlockList.AnnotateMember((LangElement)target);
         }
     }
 }

@@ -77,7 +77,6 @@ const constC = 'World', ConstD = 11;
             },
             "NameIsConditional" : "False",
             "Name" : "constC",
-            "PHPDoc":{"Comment":"global const"},
             "StringLiteral" : {
               "Span" : {
                 "start" : "89",

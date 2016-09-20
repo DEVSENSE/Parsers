@@ -131,6 +131,32 @@ namespace Devsense.PHP.Syntax.Ast
 
     #endregion
 
+    #region PHPDocStmt
+
+    /// <summary>
+    /// Empty statement containing PHPDoc block.
+    /// </summary>
+    public sealed class PHPDocStmt : Statement
+    {
+        public PHPDocBlock/*!*/PHPDoc { get { return _phpdoc; } }
+        private readonly PHPDocBlock _phpdoc;
+
+        internal override bool SkipInPureGlobalCode() { return true; }
+
+        public PHPDocStmt(PHPDocBlock/*!*/phpdoc) : base(phpdoc.Span)
+        {
+            Debug.Assert(phpdoc != null);
+            _phpdoc = phpdoc;
+        }
+
+        public override void VisitMe(TreeVisitor visitor)
+        {
+            visitor.VisitPHPDocStmt(this);
+        }
+    }
+
+    #endregion
+
     #region UnsetStmt
 
     /// <summary>

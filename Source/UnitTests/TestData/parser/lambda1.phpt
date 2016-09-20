@@ -14,7 +14,6 @@ $greet = function($name)
     "Operation" : "AssignValue",
     "DirectVarUse" : {"VarName" : "greet"},
     "LambdaFunctionExpr":{
-      "PHPDoc":{"Comment":"lambda doc"},
       "UseParams":{},
       "FormalParams":{
         "FormalParam":{"Name":"name","PassedByRef":"False","IsVariadic":"False"}

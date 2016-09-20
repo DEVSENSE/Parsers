@@ -28,11 +28,11 @@ class SimpleClass
     }, 
     "FieldDeclList":{
       "PHPDoc":{"Comment":"default property declaration"},
-      "FieldDecl":{"Name":"pvar","MemberAttributes":"Public","PHPDoc":{"Comment":"default property declaration"},"LongIntLiteral":{"Value":"1"}}
+      "FieldDecl":{"Name":"pvar","MemberAttributes":"Public","LongIntLiteral":{"Value":"1"}}
     },
     "ConstDeclList":{
       "PHPDoc":{"Comment":"constant declaration"},
-      "ClassConstantDecl":{"Name":"cvar","MemberAttributes":"Public","PHPDoc":{"Comment":"constant declaration"},"LongIntLiteral":{"Value":"22"}}
+      "ClassConstantDecl":{"Name":"cvar","MemberAttributes":"Public","LongIntLiteral":{"Value":"22"}}
     }
   }  
 }

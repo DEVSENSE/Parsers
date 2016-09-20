@@ -16,9 +16,6 @@ $greet = static function(string $name) use($x, &$y): integer
       "VarName" : "greet"
     },
     "LambdaFunctionExpr" : {
-      "PHPDoc" : {
-        "Comment" : "lambda doc"
-      },
       "UseParams" : {
         "FormalParam" : {
           "Name" : "x",

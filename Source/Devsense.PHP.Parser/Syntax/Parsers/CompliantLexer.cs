@@ -28,6 +28,8 @@ namespace Devsense.PHP.Syntax
     {
         ITokenProvider<SemanticValueType, Span> _provider;
 
+        DocCommentList _phpDocs = new DocCommentList();
+
         /// <summary>
         /// Lexer constructor that initializes all the necessary members
         /// </summary>
@@ -37,7 +39,9 @@ namespace Devsense.PHP.Syntax
             _provider = provider;
         }
 
-        public PHPDocBlock DocBlock { get { return _provider.DocBlock; } set { _provider.DocBlock = value; } }
+        public PHPDocBlock DocBlock { get { return _phpDocs.LastDocBlock; } set { } }
+
+        public DocCommentList DocBlockList { get { return _phpDocs; } }
 
         public Span TokenPosition => _provider.TokenPosition;
 
@@ -52,6 +56,7 @@ namespace Devsense.PHP.Syntax
         /// <returns>Next token.</returns>
         public int GetNextToken()
         {
+            int docBlockExtend = -1;
             do
             {
                 Tokens token = (Tokens)_provider.GetNextToken();
@@ -59,10 +64,12 @@ namespace Devsense.PHP.Syntax
                 // origianl zendlex() functionality - skip open and close tags because they are not in the PHP grammar
                 switch (token)
                 {
-                    case Tokens.T_COMMENT:
                     case Tokens.T_DOC_COMMENT:
-                    case Tokens.T_OPEN_TAG:
                     case Tokens.T_WHITESPACE:
+                        docBlockExtend = TokenPosition.End;
+                        continue;
+                    case Tokens.T_COMMENT:
+                    case Tokens.T_OPEN_TAG:
                         continue;
                     case Tokens.T_CLOSE_TAG:
                         token = Tokens.T_SEMI; /* implicit ; */
@@ -71,7 +78,13 @@ namespace Devsense.PHP.Syntax
                         token = Tokens.T_ECHO;
                         break;
                 }
-                
+
+                if (_provider.DocBlock != null)
+                {
+                    _phpDocs.AppendBlock(_provider.DocBlock, docBlockExtend);
+                    _provider.DocBlock = null;
+                }
+
                 return (int)token;
             } while (true);
         }

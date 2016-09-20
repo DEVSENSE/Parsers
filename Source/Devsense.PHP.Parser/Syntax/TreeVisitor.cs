@@ -164,6 +164,15 @@ namespace Devsense.PHP.Syntax
         }
 
         /// <summary>
+        /// Visists a statement representing a PHPDoc
+        /// </summary>
+        /// <param name="pHPDocStmt"></param>
+        internal void VisitPHPDocStmt(PHPDocStmt pHPDocStmt)
+        {
+            // empty
+        }
+
+        /// <summary>
         /// Visit all conditional statements.
         /// See VisitConditionalStmt(ConditionalStmt x).
         /// </summary>

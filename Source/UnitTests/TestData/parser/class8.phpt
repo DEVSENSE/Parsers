@@ -34,18 +34,17 @@ $x = new class(1, "world")
       "AnonymousTypeDecl":{
         "MemberAttributes":"Public",
         "IsConditional":"False",
-        "PHPDoc":{"Comment":"class declaration"},
         "FieldDeclList":{
           "FieldDecl":{"Name":"var","MemberAttributes":"Error","PHPDoc":{"Comment":"propertydeclaration"},"StringLiteral":{"Value":"adefaultvalue"}},
           "FieldDecl":{"Name":"vara","MemberAttributes":"Error","PHPDoc":{"Comment":"seconddoc"},"LongIntLiteral":{"Value":"10"}}
         },
         "FieldDeclList":{
           "PHPDoc":{"Comment":"defaultpropertydeclaration"},
-          "FieldDecl":{"Name":"pvar","MemberAttributes":"Public","PHPDoc":{"Comment":"defaultpropertydeclaration"},"LongIntLiteral":{"Value":"1"}}
+          "FieldDecl":{"Name":"pvar","MemberAttributes":"Public","LongIntLiteral":{"Value":"1"}}
         },
         "ConstDeclList":{
           "PHPDoc":{"Comment":"constantdeclaration"},
-          "ClassConstantDecl":{"Name":"cvar","MemberAttributes":"Public","PHPDoc":{"Comment":"constantdeclaration"},"LongIntLiteral":{"Value":"22"}},
+          "ClassConstantDecl":{"Name":"cvar","MemberAttributes":"Public","LongIntLiteral":{"Value":"22"}},
           "ClassConstantDecl":{"Name":"cvar","MemberAttributes":"Public","LongIntLiteral":{"Value":"10"}}
         },
         "FieldDeclList":{
