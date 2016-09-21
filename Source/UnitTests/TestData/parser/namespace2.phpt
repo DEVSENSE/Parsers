@@ -1,6 +1,9 @@
 <?php     
 /** namespace1 */
+// empty
 namespace MyProject;  
+
+/** free comment */
                     
 /** namespace2 */
 namespace MyProject\AnotherProject;
@@ -15,7 +18,9 @@ namespace MyProject\AnotherProject;
     "NamingContext":{"Namespace":"MyProject"},
     "PHPDoc":{"Comment":"namespace1"},
     "Body":{
-      "BlockStmt":{}
+      "BlockStmt":{
+        "PHPDocStmt":{"PHPDoc":{"Comment":"free comment"}}
+      }
     }
   },
   "NamespaceDecl":{

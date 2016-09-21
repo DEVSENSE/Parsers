@@ -9,7 +9,8 @@ $greet = function($name)
 <<<TEST>>>
 
 "GlobalCode" : {
-  "NamingContext" : {},
+  "NamingContext" : {},   
+  "PHPDocStmt":{"PHPDoc":{"Comment":"lambda doc"}},
   "ValueAssignEx" : {
     "Operation" : "AssignValue",
     "DirectVarUse" : {"VarName" : "greet"},

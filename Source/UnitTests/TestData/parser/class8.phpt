@@ -26,7 +26,8 @@ $x = new class(1, "world")
     "DirectTypeRef":{"ClassName":"MyClass"},
     "ActualParam":{"IsUnpack":"False","LongIntLiteral":{"Value":"1"}},
     "ActualParam":{"IsUnpack":"False","StringLiteral":{"Value":"hello"}}
-  },
+  },   
+  "PHPDocStmt":{"PHPDoc":{"Comment":"class declaration"}},
   "ValueAssignEx":{
     "Operation":"AssignValue",
     "DirectVarUse":{"VarName":"x"},

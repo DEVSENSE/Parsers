@@ -831,5 +831,13 @@ namespace Devsense.PHP.Syntax.Ast.Serialization
             base.VisitInstanceOfEx(x);
             _serializer.EndSerialize();
         }
+
+        override public void VisitPHPDocStmt(PHPDocStmt x)
+        {
+            _serializer.StartSerialize(typeof(PHPDocStmt).Name, SerializeSpan(x.Span));
+            SerializePHPDoc(x.PHPDoc);
+            base.VisitPHPDocStmt(x);
+            _serializer.EndSerialize();
+        }
     }
 }

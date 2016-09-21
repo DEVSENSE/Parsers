@@ -4,6 +4,7 @@ function foo(...$arg_1)
 {
     function bar()
     {
+        /** varhint */
         return $retval;
     }
     return $retval;
@@ -28,7 +29,8 @@ function foo(...$arg_1)
           "IsConditional":"True",
           "FormalParams":{},
           "Body":{ 
-            "BlockStmt":{
+            "BlockStmt":{     
+              "PHPDocStmt":{"PHPDoc":{"Comment":"varhint"}},
               "JumpStmt":{"Type":"Return","DirectVarUse":{"VarName":"retval"}}
             }
           }

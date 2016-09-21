@@ -261,6 +261,7 @@ namespace Devsense.PHP.Syntax
 
         private LangElement StatementsToBlock(Span span, List<LangElement> statements, Tokens endToken)
         {
+            _lexer.DocBlockList.Merge(span, statements);
             return _astFactory.ColonBlock(span, statements, endToken);
         }
 
@@ -478,6 +479,22 @@ namespace Devsense.PHP.Syntax
             Debug.Assert(target != null);
             Debug.Assert(target is IPropertyCollection);
             _lexer.DocBlockList.AnnotateMember((LangElement)target);
+        }
+
+        BlockStmt CreateBlock(Span span, List<LangElement> statements)
+        {
+            _lexer.DocBlockList.Merge(span, statements);
+            return (BlockStmt)_astFactory.Block(span, statements);
+        }
+
+        BlockStmt CreateUnboundBlock(Span separatorSpan, List<LangElement> statements)
+        {
+            if(statements.Count == 0)
+                return (BlockStmt)_astFactory.Block(separatorSpan, statements);
+            Span bodySpan = Span.Combine(statements.First().Span, statements.Last().Span);
+            Debug.Assert(bodySpan.Start >= separatorSpan.End);
+            _lexer.DocBlockList.Merge(bodySpan, statements);
+            return (BlockStmt)_astFactory.Block(bodySpan, statements);
         }
     }
 }

@@ -2,6 +2,7 @@
 /** lambda doc */
 $greet = static function(string $name) use($x, &$y): integer
 {
+    /** var hint */
     print("Hello world");
 };
                                              
@@ -9,7 +10,8 @@ $greet = static function(string $name) use($x, &$y): integer
 <<<TEST>>>
 "GlobalCode" : {
   "NamingContext" : {
-  },
+  },        
+  "PHPDocStmt":{"PHPDoc":{"Comment":"lambda doc"}},
   "ValueAssignEx" : {
     "Operation" : "AssignValue",
     "DirectVarUse" : {
@@ -41,7 +43,8 @@ $greet = static function(string $name) use($x, &$y): integer
         }
       },
       "Body" : {
-        "BlockStmt" : {
+        "BlockStmt" : {  
+          "PHPDocStmt":{"PHPDoc":{"Comment":"var hint"}},
           "UnaryEx" : {
             "Operation" : "Print",
             "StringLiteral" : {

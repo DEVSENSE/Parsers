@@ -295,12 +295,11 @@ using Devsense.PHP.Errors;
 %% /* Rules */
 
 start:
-    {
-		SetNamingContext(null);
-	}
+    { SetNamingContext(null); }
 	top_statement_list
 	{ 
 		AssignNamingContext(); 
+        _lexer.DocBlockList.Merge(new Span(0, int.MaxValue), (List<LangElement>)$2);
 		AssignStatements((List<LangElement>)$2);
 		_astRoot = _astFactory.GlobalCode(@$, (List<LangElement>)$2, namingContext); 
 		ResetNamingContext(); 
@@ -360,14 +359,14 @@ top_statement:
 	|	T_NAMESPACE namespace_name backup_doc_comment { SetNamingContext((List<string>)$2); }
 		'{' top_statement_list '}'
 		{ 
-			$$ = _astFactory.Namespace(@$, namingContext.CurrentNamespace, @2, _astFactory.Block(CombineSpans(@5, @7), (List<LangElement>)$6), namingContext);
+			$$ = _astFactory.Namespace(@$, namingContext.CurrentNamespace, @2, CreateBlock(CombineSpans(@5, @7), (List<LangElement>)$6), namingContext);
 			SetDoc($$);
 			ResetNamingContext(); 
 		}
 	|	T_NAMESPACE backup_doc_comment { SetNamingContext(null); }
 		'{' top_statement_list '}'
 		{ 
-			$$ = _astFactory.Namespace(@$, null, @$, _astFactory.Block(CombineSpans(@4, @6), (List<LangElement>)$5), namingContext);
+			$$ = _astFactory.Namespace(@$, null, @$, CreateBlock(CombineSpans(@4, @6), (List<LangElement>)$5), namingContext);
 			SetDoc($$);
 			ResetNamingContext(); 
 		}
@@ -465,7 +464,7 @@ inner_statement:
 ;
 
 statement:
-		'{' inner_statement_list '}' { $$ = _astFactory.Block(@$, (List<LangElement>)$2); }
+		'{' inner_statement_list '}' { $$ = CreateBlock(@$, (List<LangElement>)$2); }
 	|	enter_scope if_stmt exit_scope { $$ = $2; }
 	|	enter_scope alt_if_stmt exit_scope { $$ = $2; }
 	|	T_WHILE '(' expr ')' enter_scope while_statement exit_scope
@@ -493,7 +492,7 @@ statement:
 			{ $$ = _astFactory.Declare(@$, (LangElement)$5); }
 	|	';'	/* empty statement */ { $$ = _astFactory.EmptyStmt(@$); }
 	|	T_TRY '{' inner_statement_list '}' enter_scope catch_list finally_statement exit_scope
-			{ $$ = _astFactory.TryCatch(@$, _astFactory.Block(CombineSpans(@2, @4), (List<LangElement>)$3), (List<CatchItem>)$6, (LangElement)$7); }
+			{ $$ = _astFactory.TryCatch(@$, CreateBlock(CombineSpans(@2, @4), (List<LangElement>)$3), (List<CatchItem>)$6, (LangElement)$7); }
 	|	T_THROW expr ';' { $$ = _astFactory.Throw(@$, (LangElement)$2); }
 	|	T_GOTO T_STRING ';' { $$ = _astFactory.Goto(@$, (string)$2, @2); }
 	|	T_STRING ':' { $$ = _astFactory.Label(@$, (string)$1, @1); }
@@ -507,7 +506,7 @@ catch_list:
 				$$ = AddToList<CatchItem>($1, _astFactory.Catch(CombineSpans(@2, @9), 
 					(TypeRef)_astFactory.TypeReference(@4, TypeRefListFromTranslatedQNRList($4), null), 
 					(DirectVarUse)_astFactory.Variable(@5, (string)$5, (LangElement)null), 
-					_astFactory.Block(CombineSpans(@7, @9), (List<LangElement>)$8))); 
+					CreateBlock(CombineSpans(@7, @9), (List<LangElement>)$8))); 
 			}
 ;
 
@@ -518,7 +517,7 @@ catch_name_list:
 
 finally_statement:
 		/* empty */ { $$ = null; }
-	|	T_FINALLY '{' inner_statement_list '}' { $$ =_astFactory.Finally(@$, _astFactory.Block(CombineSpans(@2, @4), (List<LangElement>)$3)); }
+	|	T_FINALLY '{' inner_statement_list '}' { $$ =_astFactory.Finally(@$, CreateBlock(CombineSpans(@2, @4), (List<LangElement>)$3)); }
 ;
 
 unset_variables:
@@ -535,7 +534,7 @@ function_declaration_statement:
 	backup_fn_flags enter_scope '{' inner_statement_list '}' exit_scope backup_fn_flags
 		{ $$ = _astFactory.Function(@$, isConditional, $2 == (long)FormalParam.Flags.IsByRef, PhpMemberAttributes.None, (TypeRef)$8, 
 			new Name((string)$3), @3, null, (List<FormalParam>)$6, CombineSpans(@5, @7), 
-			_astFactory.Block(CombineSpans(@11, @13), (List<LangElement>)$12)); 
+			CreateBlock(CombineSpans(@11, @13), (List<LangElement>)$12)); 
 			SetDoc($$);
 		}
 ;
@@ -641,10 +640,10 @@ case_list:
 		/* empty */ { $$ = new List<LangElement>(); }
 	|	case_list T_CASE expr case_separator inner_statement_list
 			{ $$ = AddToList<LangElement>($1, _astFactory.Case(Span.FromBounds(@2.Start, ((List<LangElement>)$5).Count > 0? ((List<LangElement>)$5).Last().Span.End: @$.End), 
-				(LangElement)$3, _astFactory.Block(@5, (List<LangElement>)$5))); }
+				(LangElement)$3, CreateUnboundBlock(@4, (List<LangElement>)$5))); }
 	|	case_list T_DEFAULT case_separator inner_statement_list
 			{ $$ = AddToList<LangElement>($1, _astFactory.Case(Span.FromBounds(@2.Start, ((List<LangElement>)$4).Count > 0? ((List<LangElement>)$4).Last().Span.End: @$.End), 
-				null, _astFactory.Block(@4, (List<LangElement>)$4))); }
+				null, CreateUnboundBlock(@3, (List<LangElement>)$4))); }
 ;
 
 case_separator:
@@ -871,7 +870,7 @@ absolute_trait_method_reference:
 
 method_body:
 		';' /* abstract method */		{ $$ = null; }
-	|	'{' inner_statement_list '}'	{ $$ = _astFactory.Block(CombineSpans(@1, @3), (List<LangElement>)$2); }
+	|	'{' inner_statement_list '}'	{ $$ = CreateBlock(CombineSpans(@1, @3), (List<LangElement>)$2); }
 ;
 
 variable_modifiers:
@@ -1075,14 +1074,14 @@ expr_without_variable:
 		backup_fn_flags enter_scope '{' inner_statement_list '}' exit_scope backup_fn_flags
 			{ $$ = _astFactory.Lambda(@$, CombineSpans(@1, @6, @7, @8), $2 == (long)FormalParam.Flags.IsByRef, (TypeRef)$8, 
 				(List<FormalParam>)$5, CombineSpans(@4, @6), 
-				(List<FormalParam>)$7, _astFactory.Block(CombineSpans(@11, @13), (List<LangElement>)$12)); 
+				(List<FormalParam>)$7, CreateBlock(CombineSpans(@11, @13), (List<LangElement>)$12)); 
 				SetDoc($$);
 			}
 	|	T_STATIC function returns_ref backup_doc_comment '(' parameter_list ')' lexical_vars
 		return_type backup_fn_flags enter_scope '{' inner_statement_list '}' exit_scope backup_fn_flags
 			{ $$ = _astFactory.Lambda(@$, CombineSpans(@1, @7, @8, @9), $3 == (long)FormalParam.Flags.IsByRef, (TypeRef)$9, 
 				(List<FormalParam>)$6, CombineSpans(@5, @7), 
-				(List<FormalParam>)$8, _astFactory.Block(CombineSpans(@12, @14), (List<LangElement>)$13)); 
+				(List<FormalParam>)$8, CreateBlock(CombineSpans(@12, @14), (List<LangElement>)$13)); 
 				SetDoc($$);
 			}
 ;

@@ -39,6 +39,8 @@ namespace Devsense.PHP.Syntax
             _provider = provider;
         }
 
+        PHPDocBlock backupDocBlock = null;
+
         public PHPDocBlock DocBlock { get { return _phpDocs.LastDocBlock; } set { } }
 
         public DocCommentList DocBlockList { get { return _phpDocs; } }
@@ -65,10 +67,14 @@ namespace Devsense.PHP.Syntax
                 switch (token)
                 {
                     case Tokens.T_DOC_COMMENT:
-                    case Tokens.T_WHITESPACE:
+                        SaveDocComment(docBlockExtend);
+                        backupDocBlock = _provider.DocBlock;
                         docBlockExtend = TokenPosition.End;
                         continue;
+                    case Tokens.T_WHITESPACE:
                     case Tokens.T_COMMENT:
+                        docBlockExtend = TokenPosition.End;
+                        continue;
                     case Tokens.T_OPEN_TAG:
                         continue;
                     case Tokens.T_CLOSE_TAG:
@@ -78,15 +84,19 @@ namespace Devsense.PHP.Syntax
                         token = Tokens.T_ECHO;
                         break;
                 }
-
-                if (_provider.DocBlock != null)
-                {
-                    _phpDocs.AppendBlock(_provider.DocBlock, docBlockExtend);
-                    _provider.DocBlock = null;
-                }
+                SaveDocComment(docBlockExtend);
 
                 return (int)token;
             } while (true);
+        }
+
+        void SaveDocComment(int extend)
+        {
+            if (backupDocBlock != null)
+            {
+                _phpDocs.AppendBlock(backupDocBlock, extend);
+                backupDocBlock = null;
+            }
         }
 
         public void ReportError(string[] expectedTokens)

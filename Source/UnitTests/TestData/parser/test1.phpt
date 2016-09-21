@@ -8,6 +8,7 @@ return [];
 <<<TEST>>>
 
 "GlobalCode":{
-  "NamingContext":{},
+  "NamingContext":{}, 
+  "PHPDocStmt":{"PHPDoc":{"Comment":""}},
   "JumpStmt":{"Type":"Return","ArrayEx":{}}
 }
