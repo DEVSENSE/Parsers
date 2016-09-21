@@ -18,6 +18,7 @@ using System.Text;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using Devsense.PHP.Text;
 
 namespace Devsense.PHP.Syntax
 {
@@ -718,7 +719,7 @@ namespace Devsense.PHP.Syntax
         /// <param name="aliases">Enumeration of aliases.</param>
         /// <param name="currentNamespace">Current namespace to be prepended if no alias is found.</param>
         /// <returns>Qualified name that has been tralated according to given naming context.</returns>
-        public static QualifiedName TranslateAlias(QualifiedName qname, Dictionary<string, QualifiedName> aliases, QualifiedName? currentNamespace)
+        public static QualifiedName TranslateAlias(QualifiedName qname, Dictionary<NameRef, QualifiedNameRef> aliases, QualifiedName? currentNamespace)
         {
             if (!qname.IsFullyQualifiedName)
             {
@@ -726,8 +727,8 @@ namespace Devsense.PHP.Syntax
                 string first = qname.IsSimpleName ? qname.Name.Value : qname.Namespaces[0].Value;
 
                 // return the alias if found:
-                QualifiedName alias;
-                if (aliases != null && aliases.TryGetValue(first, out alias))
+                QualifiedNameRef alias;
+                if (aliases != null && aliases.TryGetValue(new NameRef(Span.Invalid, first), out alias))
                 {
                     if (qname.IsSimpleName)
                     {
@@ -736,10 +737,10 @@ namespace Devsense.PHP.Syntax
                     else
                     {
                         // [ alias.namespaces, alias.name, qname.namespaces+1 ]
-                        Name[] names = new Name[qname.namespaces.Length + alias.namespaces.Length];
-                        for (int i = 0; i < alias.namespaces.Length; ++i) names[i] = alias.namespaces[i];
-                        names[alias.namespaces.Length] = alias.name;
-                        for (int j = 1; j < qname.namespaces.Length; ++j) names[alias.namespaces.Length + j] = qname.namespaces[j];
+                        Name[] names = new Name[qname.namespaces.Length + alias.QualifiedName.namespaces.Length];
+                        for (int i = 0; i < alias.QualifiedName.namespaces.Length; ++i) names[i] = alias.QualifiedName.namespaces[i];
+                        names[alias.QualifiedName.namespaces.Length] = alias.QualifiedName.name;
+                        for (int j = 1; j < qname.namespaces.Length; ++j) names[alias.QualifiedName.namespaces.Length + j] = qname.namespaces[j];
 
                         qname = new QualifiedName(qname.name, names);
                     }
@@ -1011,7 +1012,22 @@ namespace Devsense.PHP.Syntax
 
     [DebuggerNonUserCode]
     public sealed class NamingContext
-	{
+    {
+        class NameRefComparer : IEqualityComparer<NameRef>
+        {
+            public static readonly NameRefComparer Singleton = new NameRefComparer();
+
+            public bool Equals(NameRef x, NameRef y)
+            {
+                return x.Name.Equals(y.Name);
+            }
+
+            public int GetHashCode(NameRef obj)
+            {
+                return obj.HasValue? obj.Name.GetHashCode(): ~0;
+            }
+        }
+
         #region Fields & Properties
 
         /// <summary>
@@ -1022,21 +1038,21 @@ namespace Devsense.PHP.Syntax
         /// <summary>
         /// PHP aliases. Can be null.
         /// </summary>
-        public Dictionary<string, QualifiedName> Aliases { get { return _aliases; } }
+        public Dictionary<NameRef, QualifiedNameRef> Aliases { get { return _aliases; } }
 
         /// <summary>
         /// Function aliases. Can be null.
         /// </summary>
-        public Dictionary<string, QualifiedName> FunctionAliases { get { return _functionAliases; } }
+        public Dictionary<NameRef, QualifiedNameRef> FunctionAliases { get { return _functionAliases; } }
 
         /// <summary>
         /// Constant aliases. Can be null.
         /// </summary>
-        public Dictionary<string, QualifiedName> ConstantAliases { get { return _constantAliases; } }
+        public Dictionary<NameRef, QualifiedNameRef> ConstantAliases { get { return _constantAliases; } }
 
-        private Dictionary<string, QualifiedName> _aliases;
-        private Dictionary<string, QualifiedName> _functionAliases;
-        private Dictionary<string, QualifiedName> _constantAliases;
+        private Dictionary<NameRef, QualifiedNameRef> _aliases;
+        private Dictionary<NameRef, QualifiedNameRef> _functionAliases;
+        private Dictionary<NameRef, QualifiedNameRef> _constantAliases;
 
         #endregion
 
@@ -1058,16 +1074,16 @@ namespace Devsense.PHP.Syntax
         /// <param name="alias">Alias name.</param>
         /// <param name="qualifiedName">Aliased namespace. Not starting with <see cref="QualifiedName.Separator"/>.</param>
         /// <remarks>Used when constructing naming context at runtime.</remarks>
-        public void AddAlias(string alias, string qualifiedName)
+        public void AddAlias(NameRef alias, QualifiedNameRef qualifiedName)
         {
-            Debug.Assert(!string.IsNullOrEmpty(alias));
-            Debug.Assert(!string.IsNullOrEmpty(qualifiedName));
-            Debug.Assert(qualifiedName[0] != QualifiedName.Separator);   // not starting with separator
+            Debug.Assert(!string.IsNullOrEmpty(alias.Name.Value));
+            Debug.Assert(qualifiedName.HasValue && !string.IsNullOrEmpty(qualifiedName.QualifiedName.NamespacePhpName));
+            Debug.Assert(qualifiedName.QualifiedName.NamespacePhpName[0] != QualifiedName.Separator);   // not starting with separator
 
-            AddAlias(alias, new QualifiedName(qualifiedName.Split(QualifiedName.Separator), true, true));
+            AddClassAlias(alias, qualifiedName);
         }
 
-        private static bool AddAlias(Dictionary<string, QualifiedName>/*!*/dict, string alias, QualifiedName qname)
+        private static bool AddAlias(Dictionary<NameRef, QualifiedNameRef>/*!*/dict, NameRef alias, QualifiedNameRef qname)
         {
             var count = dict.Count;
             dict[alias] = qname;
@@ -1077,11 +1093,11 @@ namespace Devsense.PHP.Syntax
         /// <summary>
         /// Adds an alias into the context.
         /// </summary>
-        public bool AddAlias(string alias, QualifiedName qname)
+        public bool AddClassAlias(NameRef alias, QualifiedNameRef qname)
         {
             var aliases = _aliases;
             if (aliases == null)
-                _aliases = aliases = new Dictionary<string, QualifiedName>(StringComparer.OrdinalIgnoreCase);
+                _aliases = aliases = new Dictionary<NameRef, QualifiedNameRef>(NameRefComparer.Singleton);
 
             return AddAlias(aliases, alias, qname);
         }
@@ -1089,11 +1105,11 @@ namespace Devsense.PHP.Syntax
         /// <summary>
         /// Adds a function alias into the context.
         /// </summary>
-        public bool AddFunctionAlias(string alias, QualifiedName qname)
+        public bool AddFunctionAlias(NameRef alias, QualifiedNameRef qname)
         {
             var aliases = _functionAliases;
             if (aliases == null)
-                _functionAliases = aliases = new Dictionary<string, QualifiedName>(StringComparer.OrdinalIgnoreCase);
+                _functionAliases = aliases = new Dictionary<NameRef, QualifiedNameRef>(NameRefComparer.Singleton);
 
             return AddAlias(aliases, alias, qname);
         }
@@ -1101,11 +1117,11 @@ namespace Devsense.PHP.Syntax
         /// <summary>
         /// Adds a constant into the context.
         /// </summary>
-        public bool AddConstantAlias(string alias, QualifiedName qname)
+        public bool AddConstantAlias(NameRef alias, QualifiedNameRef qname)
         {
             var aliases = _constantAliases;
             if (aliases == null)
-                _constantAliases = aliases = new Dictionary<string, QualifiedName>(StringComparer.OrdinalIgnoreCase);
+                _constantAliases = aliases = new Dictionary<NameRef, QualifiedNameRef>(NameRefComparer.Singleton);
 
             return AddAlias(aliases, alias, qname);
         }

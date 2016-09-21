@@ -206,36 +206,41 @@ namespace Devsense.PHP.Syntax
             }
         }
 
-        private void AddAlias(Tuple<List<string>, string> alias)
+        private void AddAlias(Tuple<QualifiedNameRef, NameRef> alias)
         {
             AddAlias(alias, _contextType);
         }
 
-        private void AddAlias(Tuple<List<string>, string> alias, ContextType contextType)
+        private void AddAlias(Tuple<QualifiedNameRef, NameRef> alias, ContextType contextType)
         {
-            string aliasName = string.IsNullOrEmpty(alias.Item2) ? alias.Item1.Last() : alias.Item2;
+            NameRef aliasName = alias.Item2.HasValue ? alias.Item2: new NameRef(Span.Invalid, alias.Item1.QualifiedName.Name);
             switch (contextType)
             {
                 case ContextType.Class:
-                    namingContext.AddAlias(aliasName, new QualifiedName(alias.Item1, true, true));
+                    namingContext.AddAlias(aliasName, alias.Item1);
                     break;
                 case ContextType.Function:
-                    namingContext.AddFunctionAlias(aliasName, new QualifiedName(alias.Item1, true, true));
+                    namingContext.AddFunctionAlias(aliasName, alias.Item1);
                     break;
                 case ContextType.Constant:
-                    namingContext.AddConstantAlias(aliasName, new QualifiedName(alias.Item1, true, true));
+                    namingContext.AddConstantAlias(aliasName, alias.Item1);
                     break;
             }
         }
 
-        private void AddAlias(List<string> prefix, Tuple<List<string>, string> alias)
+        private void AddAlias(List<string> prefix, Tuple<QualifiedNameRef, NameRef> alias)
         {
-            AddAlias(new Tuple<List<string>, string>((List<string>)JoinLists(prefix, alias.Item1), alias.Item2));
+            Name[] namespaces = prefix.Select(p => new Name(p)).Concat(alias.Item1.QualifiedName.Namespaces).ToArray();
+            AddAlias(new Tuple<QualifiedNameRef, NameRef>(
+                new QualifiedNameRef(alias.Item1.Span, alias.Item1.QualifiedName.Name, namespaces), alias.Item2));
         }
 
-        private void AddAlias(List<string> prefix, Tuple<List<string>, string, ContextType> alias)
+        private void AddAlias(List<string> prefix, Tuple<QualifiedNameRef, NameRef, ContextType> alias)
         {
-            AddAlias(new Tuple<List<string>, string>((List<string>)JoinLists(prefix, alias.Item1), alias.Item2), alias.Item3);
+            Name[] namespaces = prefix.Select(p => new Name(p)).Concat(alias.Item1.QualifiedName.Namespaces).ToArray();
+            AddAlias(new Tuple<QualifiedNameRef, NameRef>(
+                new QualifiedNameRef(alias.Item1.Span, alias.Item1.QualifiedName.Name, namespaces), alias.Item2), 
+                alias.Item3);
         }
 
         private IList<T> AddToList<T>(IList<T> list, T item)
@@ -382,13 +387,13 @@ namespace Devsense.PHP.Syntax
 
         #endregion
 
-        private void TranslateFallbackQualifiedName(ref QualifiedName qname, out QualifiedName? fallbackQName, Dictionary<string, QualifiedName> aliases)
+        private void TranslateFallbackQualifiedName(ref QualifiedName qname, out QualifiedName? fallbackQName, Dictionary<NameRef, QualifiedNameRef> aliases)
         {
             // aliasing
-            QualifiedName tmp;
-            if (qname.IsSimpleName && aliases != null && aliases.TryGetValue(qname.Name.Value, out tmp))
+            QualifiedNameRef tmp;
+            if (qname.IsSimpleName && aliases != null && aliases.TryGetValue(new NameRef(Span.Invalid, qname.Name), out tmp))
             {
-                qname = tmp;
+                qname = tmp.QualifiedName;
                 fallbackQName = null;
                 return;
             }

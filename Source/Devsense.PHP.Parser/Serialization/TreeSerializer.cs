@@ -108,11 +108,11 @@ namespace Devsense.PHP.Syntax.Ast.Serialization
             if (context.CurrentNamespace.HasValue)
                 data.Add(new NodeObj("Namespace", context.CurrentNamespace.Value.NamespacePhpName));
             if (context.Aliases != null && context.Aliases.Count > 0)
-                data.Add(new NodeObj("Aliases", context.Aliases.Select(a => new NodeObj(a.Key, a.Value.ToString())).ToArray()));
+                data.Add(new NodeObj("Aliases", context.Aliases.Select(a => new NodeObj(a.Key.Name.Value, a.Value.ToString())).ToArray()));
             if (context.ConstantAliases != null && context.ConstantAliases.Count > 0)
-                data.Add(new NodeObj("ConstantAliases", context.ConstantAliases.Select(a => new NodeObj(a.Key, a.Value.ToString())).ToArray()));
+                data.Add(new NodeObj("ConstantAliases", context.ConstantAliases.Select(a => new NodeObj(a.Key.Name.Value, a.Value.ToString())).ToArray()));
             if (context.FunctionAliases != null && context.FunctionAliases.Count > 0)
-                data.Add(new NodeObj("FunctionAliases", context.FunctionAliases.Select(a => new NodeObj(a.Key, a.Value.ToString())).ToArray()));
+                data.Add(new NodeObj("FunctionAliases", context.FunctionAliases.Select(a => new NodeObj(a.Key.Name.Value, a.Value.ToString())).ToArray()));
             return new NodeObj("NamingContext", data.ToArray());
         }
 

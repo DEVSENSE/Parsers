@@ -384,49 +384,49 @@ use_type:
 
 group_use_declaration:
 		namespace_name T_NS_SEPARATOR '{' unprefixed_use_declarations '}'
-			{ foreach (var item in (List<Tuple<List<string>, string>>)$4) AddAlias((List<string>)$1, item); }
+			{ foreach (var item in (List<Tuple<QualifiedNameRef, NameRef>>)$4) AddAlias((List<string>)$1, item); }
 	|	T_NS_SEPARATOR namespace_name T_NS_SEPARATOR '{' unprefixed_use_declarations '}'
-			{ foreach (var item in (List<Tuple<List<string>, string>>)$5) AddAlias((List<string>)$2, item); }
+			{ foreach (var item in (List<Tuple<QualifiedNameRef, NameRef>>)$5) AddAlias((List<string>)$2, item); }
 ;
 
 mixed_group_use_declaration:
 		namespace_name T_NS_SEPARATOR '{' inline_use_declarations '}'
-			{ foreach (var item in (List<Tuple<List<string>, string, ContextType>>)$4) AddAlias((List<string>)$1, item); }
+			{ foreach (var item in (List<Tuple<QualifiedNameRef, NameRef, ContextType>>)$4) AddAlias((List<string>)$1, item); }
 	|	T_NS_SEPARATOR namespace_name T_NS_SEPARATOR '{' inline_use_declarations '}'
-			{ foreach (var item in (List<Tuple<List<string>, string, ContextType>>)$5) AddAlias((List<string>)$2, item); }
+			{ foreach (var item in (List<Tuple<QualifiedNameRef, NameRef, ContextType>>)$5) AddAlias((List<string>)$2, item); }
 ;
 
 inline_use_declarations:
 		inline_use_declarations ',' inline_use_declaration
-			{ $$ = AddToList<Tuple<List<string>, string, ContextType>>($1, $3); }
+			{ $$ = AddToList<Tuple<QualifiedNameRef, NameRef, ContextType>>($1, $3); }
 	|	inline_use_declaration
-			{ $$ = new List<Tuple<List<string>, string, ContextType>>() { (Tuple<List<string>, string, ContextType>)$1 }; }
+			{ $$ = new List<Tuple<QualifiedNameRef, NameRef, ContextType>>() { (Tuple<QualifiedNameRef, NameRef, ContextType>)$1 }; }
 ;
 
 unprefixed_use_declarations:
 		unprefixed_use_declarations ',' unprefixed_use_declaration
-			{ $$ = AddToList<Tuple<List<string>, string>>($1, $3); }
+			{ $$ = AddToList<Tuple<QualifiedNameRef, NameRef>>($1, $3); }
 	|	unprefixed_use_declaration
-			{ $$ = new List<Tuple<List<string>, string>>() { (Tuple<List<string>, string>)$1 }; }
+			{ $$ = new List<Tuple<QualifiedNameRef, NameRef>>() { (Tuple<QualifiedNameRef, NameRef>)$1 }; }
 ;
 
 use_declarations:
 		use_declarations ',' use_declaration
-			{ AddAlias((Tuple<List<string>, string>)$3); }
+			{ AddAlias((Tuple<QualifiedNameRef, NameRef>)$3); }
 	|	use_declaration
-			{ AddAlias((Tuple<List<string>, string>)$1); }
+			{ AddAlias((Tuple<QualifiedNameRef, NameRef>)$1); }
 ;
 
 inline_use_declaration:
-		unprefixed_use_declaration { $$ = JoinTuples((Tuple<List<string>, string>)$1, ContextType.Class); }
-	|	use_type unprefixed_use_declaration { $$ = JoinTuples((Tuple<List<string>, string>)$2, (ContextType)$1);  }
+		unprefixed_use_declaration { $$ = JoinTuples((Tuple<QualifiedNameRef, NameRef>)$1, ContextType.Class); }
+	|	use_type unprefixed_use_declaration { $$ = JoinTuples((Tuple<QualifiedNameRef, NameRef>)$2, (ContextType)$1);  }
 ;
 
 unprefixed_use_declaration:
 		namespace_name
-			{ $$ = new Tuple<List<string>, string>((List<string>)$1, null); }
+			{ $$ = new Tuple<QualifiedNameRef, NameRef>(new QualifiedNameRef(@$, new QualifiedName((List<string>)$1, true, false)), NameRef.Invalid); }
 	|	namespace_name T_AS T_STRING
-			{ $$ = new Tuple<List<string>, string>((List<string>)$1, (string)$3); }
+			{ $$ = new Tuple<QualifiedNameRef, NameRef>(new QualifiedNameRef(@1, new QualifiedName((List<string>)$1, true, false)), new NameRef(@3, (string)$3)); }
 ;
 
 use_declaration:

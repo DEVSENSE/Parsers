@@ -2023,46 +2023,46 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 { yyval.Long = (long)ContextType.Constant; _contextType = (ContextType)yyval.Long; }
         return;
       case 105: // group_use_declaration -> namespace_name T_NS_SEPARATOR '{' unprefixed_use_declarations '}' 
-{ foreach (var item in (List<Tuple<List<string>, string>>)value_stack.array[value_stack.top-2].yyval.Object) AddAlias((List<string>)value_stack.array[value_stack.top-5].yyval.Object, item); }
+{ foreach (var item in (List<Tuple<QualifiedNameRef, NameRef>>)value_stack.array[value_stack.top-2].yyval.Object) AddAlias((List<string>)value_stack.array[value_stack.top-5].yyval.Object, item); }
         return;
       case 106: // group_use_declaration -> T_NS_SEPARATOR namespace_name T_NS_SEPARATOR '{' unprefixed_use_declarations '}' 
-{ foreach (var item in (List<Tuple<List<string>, string>>)value_stack.array[value_stack.top-2].yyval.Object) AddAlias((List<string>)value_stack.array[value_stack.top-5].yyval.Object, item); }
+{ foreach (var item in (List<Tuple<QualifiedNameRef, NameRef>>)value_stack.array[value_stack.top-2].yyval.Object) AddAlias((List<string>)value_stack.array[value_stack.top-5].yyval.Object, item); }
         return;
       case 107: // mixed_group_use_declaration -> namespace_name T_NS_SEPARATOR '{' inline_use_declarations '}' 
-{ foreach (var item in (List<Tuple<List<string>, string, ContextType>>)value_stack.array[value_stack.top-2].yyval.Object) AddAlias((List<string>)value_stack.array[value_stack.top-5].yyval.Object, item); }
+{ foreach (var item in (List<Tuple<QualifiedNameRef, NameRef, ContextType>>)value_stack.array[value_stack.top-2].yyval.Object) AddAlias((List<string>)value_stack.array[value_stack.top-5].yyval.Object, item); }
         return;
       case 108: // mixed_group_use_declaration -> T_NS_SEPARATOR namespace_name T_NS_SEPARATOR '{' inline_use_declarations '}' 
-{ foreach (var item in (List<Tuple<List<string>, string, ContextType>>)value_stack.array[value_stack.top-2].yyval.Object) AddAlias((List<string>)value_stack.array[value_stack.top-5].yyval.Object, item); }
+{ foreach (var item in (List<Tuple<QualifiedNameRef, NameRef, ContextType>>)value_stack.array[value_stack.top-2].yyval.Object) AddAlias((List<string>)value_stack.array[value_stack.top-5].yyval.Object, item); }
         return;
       case 109: // inline_use_declarations -> inline_use_declarations ',' inline_use_declaration 
-{ yyval.Object = AddToList<Tuple<List<string>, string, ContextType>>(value_stack.array[value_stack.top-3].yyval.Object, value_stack.array[value_stack.top-1].yyval.Object); }
+{ yyval.Object = AddToList<Tuple<QualifiedNameRef, NameRef, ContextType>>(value_stack.array[value_stack.top-3].yyval.Object, value_stack.array[value_stack.top-1].yyval.Object); }
         return;
       case 110: // inline_use_declarations -> inline_use_declaration 
-{ yyval.Object = new List<Tuple<List<string>, string, ContextType>>() { (Tuple<List<string>, string, ContextType>)value_stack.array[value_stack.top-1].yyval.Object }; }
+{ yyval.Object = new List<Tuple<QualifiedNameRef, NameRef, ContextType>>() { (Tuple<QualifiedNameRef, NameRef, ContextType>)value_stack.array[value_stack.top-1].yyval.Object }; }
         return;
       case 111: // unprefixed_use_declarations -> unprefixed_use_declarations ',' unprefixed_use_declaration 
-{ yyval.Object = AddToList<Tuple<List<string>, string>>(value_stack.array[value_stack.top-3].yyval.Object, value_stack.array[value_stack.top-1].yyval.Object); }
+{ yyval.Object = AddToList<Tuple<QualifiedNameRef, NameRef>>(value_stack.array[value_stack.top-3].yyval.Object, value_stack.array[value_stack.top-1].yyval.Object); }
         return;
       case 112: // unprefixed_use_declarations -> unprefixed_use_declaration 
-{ yyval.Object = new List<Tuple<List<string>, string>>() { (Tuple<List<string>, string>)value_stack.array[value_stack.top-1].yyval.Object }; }
+{ yyval.Object = new List<Tuple<QualifiedNameRef, NameRef>>() { (Tuple<QualifiedNameRef, NameRef>)value_stack.array[value_stack.top-1].yyval.Object }; }
         return;
       case 113: // use_declarations -> use_declarations ',' use_declaration 
-{ AddAlias((Tuple<List<string>, string>)value_stack.array[value_stack.top-1].yyval.Object); }
+{ AddAlias((Tuple<QualifiedNameRef, NameRef>)value_stack.array[value_stack.top-1].yyval.Object); }
         return;
       case 114: // use_declarations -> use_declaration 
-{ AddAlias((Tuple<List<string>, string>)value_stack.array[value_stack.top-1].yyval.Object); }
+{ AddAlias((Tuple<QualifiedNameRef, NameRef>)value_stack.array[value_stack.top-1].yyval.Object); }
         return;
       case 115: // inline_use_declaration -> unprefixed_use_declaration 
-{ yyval.Object = JoinTuples((Tuple<List<string>, string>)value_stack.array[value_stack.top-1].yyval.Object, ContextType.Class); }
+{ yyval.Object = JoinTuples((Tuple<QualifiedNameRef, NameRef>)value_stack.array[value_stack.top-1].yyval.Object, ContextType.Class); }
         return;
       case 116: // inline_use_declaration -> use_type unprefixed_use_declaration 
-{ yyval.Object = JoinTuples((Tuple<List<string>, string>)value_stack.array[value_stack.top-1].yyval.Object, (ContextType)value_stack.array[value_stack.top-2].yyval.Long);  }
+{ yyval.Object = JoinTuples((Tuple<QualifiedNameRef, NameRef>)value_stack.array[value_stack.top-1].yyval.Object, (ContextType)value_stack.array[value_stack.top-2].yyval.Long);  }
         return;
       case 117: // unprefixed_use_declaration -> namespace_name 
-{ yyval.Object = new Tuple<List<string>, string>((List<string>)value_stack.array[value_stack.top-1].yyval.Object, null); }
+{ yyval.Object = new Tuple<QualifiedNameRef, NameRef>(new QualifiedNameRef(yypos, new QualifiedName((List<string>)value_stack.array[value_stack.top-1].yyval.Object, true, false)), NameRef.Invalid); }
         return;
       case 118: // unprefixed_use_declaration -> namespace_name T_AS T_STRING 
-{ yyval.Object = new Tuple<List<string>, string>((List<string>)value_stack.array[value_stack.top-3].yyval.Object, (string)value_stack.array[value_stack.top-1].yyval.Object); }
+{ yyval.Object = new Tuple<QualifiedNameRef, NameRef>(new QualifiedNameRef(value_stack.array[value_stack.top-3].yypos, new QualifiedName((List<string>)value_stack.array[value_stack.top-3].yyval.Object, true, false)), new NameRef(value_stack.array[value_stack.top-1].yypos, (string)value_stack.array[value_stack.top-1].yyval.Object)); }
         return;
       case 119: // use_declaration -> unprefixed_use_declaration 
 { yyval.Object = value_stack.array[value_stack.top-1].yyval.Object; }
