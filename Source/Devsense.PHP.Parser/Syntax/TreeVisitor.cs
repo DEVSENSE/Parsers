@@ -48,6 +48,7 @@ namespace Devsense.PHP.Syntax
         }
 
         #region Statements
+
         public virtual void VisitHaltCompiler(HaltCompiler x)
         {
         }
@@ -166,10 +167,9 @@ namespace Devsense.PHP.Syntax
         /// <summary>
         /// Visists a statement representing a PHPDoc
         /// </summary>
-        /// <param name="pHPDocStmt"></param>
         virtual public void VisitPHPDocStmt(PHPDocStmt x)
         {
-            // empty
+            VisitElement(x.PHPDoc);
         }
 
         /// <summary>
