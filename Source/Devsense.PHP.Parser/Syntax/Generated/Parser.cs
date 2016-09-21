@@ -27,329 +27,329 @@ using Devsense.PHP.Errors;
 namespace Devsense.PHP.Syntax
 {
 public enum Tokens {
-/// <summary>"include (T_INCLUDE)"</summary>
+/// <summary>&quot;include (T_INCLUDE)&quot;</summary>
 T_INCLUDE=262,
-/// <summary>"include_once (T_INCLUDE_ONCE)"</summary>
+/// <summary>&quot;include_once (T_INCLUDE_ONCE)&quot;</summary>
 T_INCLUDE_ONCE=261,
-/// <summary>"eval (T_EVAL)"</summary>
+/// <summary>&quot;eval (T_EVAL)&quot;</summary>
 T_EVAL=260,
-/// <summary>"require (T_REQUIRE)"</summary>
+/// <summary>&quot;require (T_REQUIRE)&quot;</summary>
 T_REQUIRE=259,
-/// <summary>"require_once (T_REQUIRE_ONCE)"</summary>
+/// <summary>&quot;require_once (T_REQUIRE_ONCE)&quot;</summary>
 T_REQUIRE_ONCE=258,
-/// <summary>"or (T_LOGICAL_OR)"</summary>
+/// <summary>&quot;or (T_LOGICAL_OR)&quot;</summary>
 T_LOGICAL_OR=263,
-/// <summary>"xor (T_LOGICAL_XOR)"</summary>
+/// <summary>&quot;xor (T_LOGICAL_XOR)&quot;</summary>
 T_LOGICAL_XOR=264,
-/// <summary>"and (T_LOGICAL_AND)"</summary>
+/// <summary>&quot;and (T_LOGICAL_AND)&quot;</summary>
 T_LOGICAL_AND=265,
-/// <summary>"print (T_PRINT)"</summary>
+/// <summary>&quot;print (T_PRINT)&quot;</summary>
 T_PRINT=266,
-/// <summary>"yield (T_YIELD)"</summary>
+/// <summary>&quot;yield (T_YIELD)&quot;</summary>
 T_YIELD=267,
-/// <summary>"=> (T_DOUBLE_ARROW)"</summary>
+/// <summary>&quot;=&gt; (T_DOUBLE_ARROW)&quot;</summary>
 T_DOUBLE_ARROW=268,
-/// <summary>"yield from (T_YIELD_FROM)"</summary>
+/// <summary>&quot;yield from (T_YIELD_FROM)&quot;</summary>
 T_YIELD_FROM=269,
-/// <summary>"+= (T_PLUS_EQUAL)"</summary>
+/// <summary>&quot;+= (T_PLUS_EQUAL)&quot;</summary>
 T_PLUS_EQUAL=281,
-/// <summary>"-= (T_MINUS_EQUAL)"</summary>
+/// <summary>&quot;-= (T_MINUS_EQUAL)&quot;</summary>
 T_MINUS_EQUAL=280,
-/// <summary>"*= (T_MUL_EQUAL)"</summary>
+/// <summary>&quot;*= (T_MUL_EQUAL)&quot;</summary>
 T_MUL_EQUAL=279,
-/// <summary>"/= (T_DIV_EQUAL)"</summary>
+/// <summary>&quot;/= (T_DIV_EQUAL)&quot;</summary>
 T_DIV_EQUAL=278,
-/// <summary>".= (T_CONCAT_EQUAL)"</summary>
+/// <summary>&quot;.= (T_CONCAT_EQUAL)&quot;</summary>
 T_CONCAT_EQUAL=277,
-/// <summary>"%= (T_MOD_EQUAL)"</summary>
+/// <summary>&quot;%= (T_MOD_EQUAL)&quot;</summary>
 T_MOD_EQUAL=276,
-/// <summary>"&= (T_AND_EQUAL)"</summary>
+/// <summary>&quot;&amp;= (T_AND_EQUAL)&quot;</summary>
 T_AND_EQUAL=275,
-/// <summary>"|= (T_OR_EQUAL)"</summary>
+/// <summary>&quot;|= (T_OR_EQUAL)&quot;</summary>
 T_OR_EQUAL=274,
-/// <summary>"^= (T_XOR_EQUAL)"</summary>
+/// <summary>&quot;^= (T_XOR_EQUAL)&quot;</summary>
 T_XOR_EQUAL=273,
-/// <summary>"<<= (T_SL_EQUAL)"</summary>
+/// <summary>&quot;&lt;&lt;= (T_SL_EQUAL)&quot;</summary>
 T_SL_EQUAL=272,
-/// <summary>">>= (T_SR_EQUAL)"</summary>
+/// <summary>&quot;&gt;&gt;= (T_SR_EQUAL)&quot;</summary>
 T_SR_EQUAL=271,
-/// <summary>"**= (T_POW_EQUAL)"</summary>
+/// <summary>&quot;**= (T_POW_EQUAL)&quot;</summary>
 T_POW_EQUAL=270,
-/// <summary>"?? (T_COALESCE)"</summary>
+/// <summary>&quot;?? (T_COALESCE)&quot;</summary>
 T_COALESCE=282,
-/// <summary>"|| (T_BOOLEAN_OR)"</summary>
+/// <summary>&quot;|| (T_BOOLEAN_OR)&quot;</summary>
 T_BOOLEAN_OR=283,
-/// <summary>"&& (T_BOOLEAN_AND)"</summary>
+/// <summary>&quot;&amp;&amp; (T_BOOLEAN_AND)&quot;</summary>
 T_BOOLEAN_AND=284,
-/// <summary>"== (T_IS_EQUAL)"</summary>
+/// <summary>&quot;== (T_IS_EQUAL)&quot;</summary>
 T_IS_EQUAL=289,
-/// <summary>"!= (T_IS_NOT_EQUAL)"</summary>
+/// <summary>&quot;!= (T_IS_NOT_EQUAL)&quot;</summary>
 T_IS_NOT_EQUAL=288,
-/// <summary>"=== (T_IS_IDENTICAL)"</summary>
+/// <summary>&quot;=== (T_IS_IDENTICAL)&quot;</summary>
 T_IS_IDENTICAL=287,
-/// <summary>"!== (T_IS_NOT_IDENTICAL)"</summary>
+/// <summary>&quot;!== (T_IS_NOT_IDENTICAL)&quot;</summary>
 T_IS_NOT_IDENTICAL=286,
-/// <summary>"<=> (T_SPACESHIP)"</summary>
+/// <summary>&quot;&lt;=&gt; (T_SPACESHIP)&quot;</summary>
 T_SPACESHIP=285,
-/// <summary>"<= (T_IS_SMALLER_OR_EQUAL)"</summary>
+/// <summary>&quot;&lt;= (T_IS_SMALLER_OR_EQUAL)&quot;</summary>
 T_IS_SMALLER_OR_EQUAL=291,
-/// <summary>">= (T_IS_GREATER_OR_EQUAL)"</summary>
+/// <summary>&quot;&gt;= (T_IS_GREATER_OR_EQUAL)&quot;</summary>
 T_IS_GREATER_OR_EQUAL=290,
-/// <summary>"<< (T_SL)"</summary>
+/// <summary>&quot;&lt;&lt; (T_SL)&quot;</summary>
 T_SL=293,
-/// <summary>">> (T_SR)"</summary>
+/// <summary>&quot;&gt;&gt; (T_SR)&quot;</summary>
 T_SR=292,
-/// <summary>"instanceof (T_INSTANCEOF)"</summary>
+/// <summary>&quot;instanceof (T_INSTANCEOF)&quot;</summary>
 T_INSTANCEOF=294,
-/// <summary>"++ (T_INC)"</summary>
+/// <summary>&quot;++ (T_INC)&quot;</summary>
 T_INC=303,
-/// <summary>"-- (T_DEC)"</summary>
+/// <summary>&quot;-- (T_DEC)&quot;</summary>
 T_DEC=302,
-/// <summary>"(int) (T_INT_CAST)"</summary>
+/// <summary>&quot;(int) (T_INT_CAST)&quot;</summary>
 T_INT_CAST=301,
-/// <summary>"(double) (T_DOUBLE_CAST)"</summary>
+/// <summary>&quot;(double) (T_DOUBLE_CAST)&quot;</summary>
 T_DOUBLE_CAST=300,
-/// <summary>"(string) (T_STRING_CAST)"</summary>
+/// <summary>&quot;(string) (T_STRING_CAST)&quot;</summary>
 T_STRING_CAST=299,
-/// <summary>"(array) (T_ARRAY_CAST)"</summary>
+/// <summary>&quot;(array) (T_ARRAY_CAST)&quot;</summary>
 T_ARRAY_CAST=298,
-/// <summary>"(object) (T_OBJECT_CAST)"</summary>
+/// <summary>&quot;(object) (T_OBJECT_CAST)&quot;</summary>
 T_OBJECT_CAST=297,
-/// <summary>"(bool) (T_BOOL_CAST)"</summary>
+/// <summary>&quot;(bool) (T_BOOL_CAST)&quot;</summary>
 T_BOOL_CAST=296,
-/// <summary>"(unset) (T_UNSET_CAST)"</summary>
+/// <summary>&quot;(unset) (T_UNSET_CAST)&quot;</summary>
 T_UNSET_CAST=295,
-/// <summary>"** (T_POW)"</summary>
+/// <summary>&quot;** (T_POW)&quot;</summary>
 T_POW=304,
-/// <summary>"new (T_NEW)"</summary>
+/// <summary>&quot;new (T_NEW)&quot;</summary>
 T_NEW=306,
-/// <summary>"clone (T_CLONE)"</summary>
+/// <summary>&quot;clone (T_CLONE)&quot;</summary>
 T_CLONE=305,
 T_NOELSE=176,
-/// <summary>"elseif (T_ELSEIF)"</summary>
+/// <summary>&quot;elseif (T_ELSEIF)&quot;</summary>
 T_ELSEIF=308,
-/// <summary>"else (T_ELSE)"</summary>
+/// <summary>&quot;else (T_ELSE)&quot;</summary>
 T_ELSE=309,
-/// <summary>"endif (T_ENDIF)"</summary>
+/// <summary>&quot;endif (T_ENDIF)&quot;</summary>
 T_ENDIF=310,
-/// <summary>"static (T_STATIC)"</summary>
+/// <summary>&quot;static (T_STATIC)&quot;</summary>
 T_STATIC=316,
-/// <summary>"abstract (T_ABSTRACT)"</summary>
+/// <summary>&quot;abstract (T_ABSTRACT)&quot;</summary>
 T_ABSTRACT=315,
-/// <summary>"final (T_FINAL)"</summary>
+/// <summary>&quot;final (T_FINAL)&quot;</summary>
 T_FINAL=314,
-/// <summary>"private (T_PRIVATE)"</summary>
+/// <summary>&quot;private (T_PRIVATE)&quot;</summary>
 T_PRIVATE=313,
-/// <summary>"protected (T_PROTECTED)"</summary>
+/// <summary>&quot;protected (T_PROTECTED)&quot;</summary>
 T_PROTECTED=312,
-/// <summary>"public (T_PUBLIC)"</summary>
+/// <summary>&quot;public (T_PUBLIC)&quot;</summary>
 T_PUBLIC=311,
-/// <summary>"integer number (T_LNUMBER)"</summary>
+/// <summary>&quot;integer number (T_LNUMBER)&quot;</summary>
 T_LNUMBER=317,
-/// <summary>"floating-point number (T_DNUMBER)"</summary>
+/// <summary>&quot;floating-point number (T_DNUMBER)&quot;</summary>
 T_DNUMBER=318,
-/// <summary>"identifier (T_STRING)"</summary>
+/// <summary>&quot;identifier (T_STRING)&quot;</summary>
 T_STRING=319,
-/// <summary>"variable (T_VARIABLE)"</summary>
+/// <summary>&quot;variable (T_VARIABLE)&quot;</summary>
 T_VARIABLE=320,
 T_INLINE_HTML=321,
-/// <summary>"quoted-string and whitespace (T_ENCAPSED_AND_WHITESPACE)"</summary>
+/// <summary>&quot;quoted-string and whitespace (T_ENCAPSED_AND_WHITESPACE)&quot;</summary>
 T_ENCAPSED_AND_WHITESPACE=322,
-/// <summary>"quoted-string (T_CONSTANT_ENCAPSED_STRING)"</summary>
+/// <summary>&quot;quoted-string (T_CONSTANT_ENCAPSED_STRING)&quot;</summary>
 T_CONSTANT_ENCAPSED_STRING=323,
-/// <summary>"variable name (T_STRING_VARNAME)"</summary>
+/// <summary>&quot;variable name (T_STRING_VARNAME)&quot;</summary>
 T_STRING_VARNAME=324,
-/// <summary>"number (T_NUM_STRING)"</summary>
+/// <summary>&quot;number (T_NUM_STRING)&quot;</summary>
 T_NUM_STRING=325,
-/// <summary>'!'</summary>
+/// <summary>&#39;!&#39;</summary>
 T_EXCLAM=33,
-/// <summary>'"'</summary>
+/// <summary>&#39;&quot;&#39;</summary>
 T_DOUBLE_QUOTES=34,
-/// <summary>'$'</summary>
+/// <summary>&#39;$&#39;</summary>
 T_DOLLAR=36,
-/// <summary>'%'</summary>
+/// <summary>&#39;%&#39;</summary>
 T_PERCENT=37,
-/// <summary>'&'</summary>
+/// <summary>&#39;&amp;&#39;</summary>
 T_AMP=38,
-/// <summary>'('</summary>
+/// <summary>&#39;(&#39;</summary>
 T_LPAREN=40,
-/// <summary>')'</summary>
+/// <summary>&#39;)&#39;</summary>
 T_RPAREN=41,
-/// <summary>'*'</summary>
+/// <summary>&#39;*&#39;</summary>
 T_MUL=42,
-/// <summary>'+'</summary>
+/// <summary>&#39;+&#39;</summary>
 T_PLUS=43,
-/// <summary>''</summary>
+/// <summary>&#39;&#39;</summary>
 T_COMMA=44,
-/// <summary>'-'</summary>
+/// <summary>&#39;-&#39;</summary>
 T_MINUS=45,
-/// <summary>'.'</summary>
+/// <summary>&#39;.&#39;</summary>
 T_DOT=46,
-/// <summary>'/'</summary>
+/// <summary>&#39;/&#39;</summary>
 T_SLASH=47,
-/// <summary>':'</summary>
+/// <summary>&#39;:&#39;</summary>
 T_COLON=58,
-/// <summary>';'</summary>
+/// <summary>&#39;;&#39;</summary>
 T_SEMI=59,
-/// <summary>'<'</summary>
+/// <summary>&#39;&lt;&#39;</summary>
 T_LT=60,
-/// <summary>'='</summary>
+/// <summary>&#39;=&#39;</summary>
 T_EQ=61,
-/// <summary>'>'</summary>
+/// <summary>&#39;&gt;&#39;</summary>
 T_GT=62,
-/// <summary>'?'</summary>
+/// <summary>&#39;?&#39;</summary>
 T_QUESTION=63,
-/// <summary>'@'</summary>
+/// <summary>&#39;@&#39;</summary>
 T_AT=64,
-/// <summary>'['</summary>
+/// <summary>&#39;[&#39;</summary>
 T_LBRACKET=91,
-/// <summary>']'</summary>
+/// <summary>&#39;]&#39;</summary>
 T_RBRACKET=93,
-/// <summary>'^'</summary>
+/// <summary>&#39;^&#39;</summary>
 T_CARET=94,
-/// <summary>'`'</summary>
+/// <summary>&#39;`&#39;</summary>
 T_BACKQUOTE=96,
-/// <summary>'{'</summary>
+/// <summary>&#39;{&#39;</summary>
 T_LBRACE=123,
-/// <summary>'|'</summary>
+/// <summary>&#39;|&#39;</summary>
 T_PIPE=124,
-/// <summary>'}'</summary>
+/// <summary>&#39;}&#39;</summary>
 T_RBRACE=125,
-/// <summary>'~'</summary>
+/// <summary>&#39;~&#39;</summary>
 T_TILDE=126,
-/// <summary>"end of file"</summary>
+/// <summary>&quot;end of file&quot;</summary>
 END=0,
-/// <summary>"exit (T_EXIT)"</summary>
+/// <summary>&quot;exit (T_EXIT)&quot;</summary>
 T_EXIT=326,
-/// <summary>"if (T_IF)"</summary>
+/// <summary>&quot;if (T_IF)&quot;</summary>
 T_IF=327,
-/// <summary>"echo (T_ECHO)"</summary>
+/// <summary>&quot;echo (T_ECHO)&quot;</summary>
 T_ECHO=328,
-/// <summary>"do (T_DO)"</summary>
+/// <summary>&quot;do (T_DO)&quot;</summary>
 T_DO=329,
-/// <summary>"while (T_WHILE)"</summary>
+/// <summary>&quot;while (T_WHILE)&quot;</summary>
 T_WHILE=330,
-/// <summary>"endwhile (T_ENDWHILE)"</summary>
+/// <summary>&quot;endwhile (T_ENDWHILE)&quot;</summary>
 T_ENDWHILE=331,
-/// <summary>"for (T_FOR)"</summary>
+/// <summary>&quot;for (T_FOR)&quot;</summary>
 T_FOR=332,
-/// <summary>"endfor (T_ENDFOR)"</summary>
+/// <summary>&quot;endfor (T_ENDFOR)&quot;</summary>
 T_ENDFOR=333,
-/// <summary>"foreach (T_FOREACH)"</summary>
+/// <summary>&quot;foreach (T_FOREACH)&quot;</summary>
 T_FOREACH=334,
-/// <summary>"endforeach (T_ENDFOREACH)"</summary>
+/// <summary>&quot;endforeach (T_ENDFOREACH)&quot;</summary>
 T_ENDFOREACH=335,
-/// <summary>"declare (T_DECLARE)"</summary>
+/// <summary>&quot;declare (T_DECLARE)&quot;</summary>
 T_DECLARE=336,
-/// <summary>"enddeclare (T_ENDDECLARE)"</summary>
+/// <summary>&quot;enddeclare (T_ENDDECLARE)&quot;</summary>
 T_ENDDECLARE=337,
-/// <summary>"as (T_AS)"</summary>
+/// <summary>&quot;as (T_AS)&quot;</summary>
 T_AS=338,
-/// <summary>"switch (T_SWITCH)"</summary>
+/// <summary>&quot;switch (T_SWITCH)&quot;</summary>
 T_SWITCH=339,
-/// <summary>"endswitch (T_ENDSWITCH)"</summary>
+/// <summary>&quot;endswitch (T_ENDSWITCH)&quot;</summary>
 T_ENDSWITCH=340,
-/// <summary>"case (T_CASE)"</summary>
+/// <summary>&quot;case (T_CASE)&quot;</summary>
 T_CASE=341,
-/// <summary>"default (T_DEFAULT)"</summary>
+/// <summary>&quot;default (T_DEFAULT)&quot;</summary>
 T_DEFAULT=342,
-/// <summary>"break (T_BREAK)"</summary>
+/// <summary>&quot;break (T_BREAK)&quot;</summary>
 T_BREAK=343,
-/// <summary>"continue (T_CONTINUE)"</summary>
+/// <summary>&quot;continue (T_CONTINUE)&quot;</summary>
 T_CONTINUE=344,
-/// <summary>"goto (T_GOTO)"</summary>
+/// <summary>&quot;goto (T_GOTO)&quot;</summary>
 T_GOTO=345,
-/// <summary>"function (T_FUNCTION)"</summary>
+/// <summary>&quot;function (T_FUNCTION)&quot;</summary>
 T_FUNCTION=346,
-/// <summary>"const (T_CONST)"</summary>
+/// <summary>&quot;const (T_CONST)&quot;</summary>
 T_CONST=347,
-/// <summary>"return (T_RETURN)"</summary>
+/// <summary>&quot;return (T_RETURN)&quot;</summary>
 T_RETURN=348,
-/// <summary>"try (T_TRY)"</summary>
+/// <summary>&quot;try (T_TRY)&quot;</summary>
 T_TRY=349,
-/// <summary>"catch (T_CATCH)"</summary>
+/// <summary>&quot;catch (T_CATCH)&quot;</summary>
 T_CATCH=350,
-/// <summary>"finally (T_FINALLY)"</summary>
+/// <summary>&quot;finally (T_FINALLY)&quot;</summary>
 T_FINALLY=351,
-/// <summary>"throw (T_THROW)"</summary>
+/// <summary>&quot;throw (T_THROW)&quot;</summary>
 T_THROW=352,
-/// <summary>"use (T_USE)"</summary>
+/// <summary>&quot;use (T_USE)&quot;</summary>
 T_USE=353,
-/// <summary>"insteadof (T_INSTEADOF)"</summary>
+/// <summary>&quot;insteadof (T_INSTEADOF)&quot;</summary>
 T_INSTEADOF=354,
-/// <summary>"exit_scope (T_GLOBAL)"</summary>
+/// <summary>&quot;exit_scope (T_GLOBAL)&quot;</summary>
 T_GLOBAL=355,
-/// <summary>"var (T_VAR)"</summary>
+/// <summary>&quot;var (T_VAR)&quot;</summary>
 T_VAR=356,
-/// <summary>"unset (T_UNSET)"</summary>
+/// <summary>&quot;unset (T_UNSET)&quot;</summary>
 T_UNSET=357,
-/// <summary>"isset (T_ISSET)"</summary>
+/// <summary>&quot;isset (T_ISSET)&quot;</summary>
 T_ISSET=358,
-/// <summary>"empty (T_EMPTY)"</summary>
+/// <summary>&quot;empty (T_EMPTY)&quot;</summary>
 T_EMPTY=359,
-/// <summary>"__halt_compiler (T_HALT_COMPILER)"</summary>
+/// <summary>&quot;__halt_compiler (T_HALT_COMPILER)&quot;</summary>
 T_HALT_COMPILER=360,
-/// <summary>"class (T_CLASS)"</summary>
+/// <summary>&quot;class (T_CLASS)&quot;</summary>
 T_CLASS=361,
-/// <summary>"trait (T_TRAIT)"</summary>
+/// <summary>&quot;trait (T_TRAIT)&quot;</summary>
 T_TRAIT=362,
-/// <summary>"interface (T_INTERFACE)"</summary>
+/// <summary>&quot;interface (T_INTERFACE)&quot;</summary>
 T_INTERFACE=363,
-/// <summary>"extends (T_EXTENDS)"</summary>
+/// <summary>&quot;extends (T_EXTENDS)&quot;</summary>
 T_EXTENDS=364,
-/// <summary>"implements (T_IMPLEMENTS)"</summary>
+/// <summary>&quot;implements (T_IMPLEMENTS)&quot;</summary>
 T_IMPLEMENTS=365,
-/// <summary>"-> (T_OBJECT_OPERATOR)"</summary>
+/// <summary>&quot;-&gt; (T_OBJECT_OPERATOR)&quot;</summary>
 T_OBJECT_OPERATOR=366,
-/// <summary>"list (T_LIST)"</summary>
+/// <summary>&quot;list (T_LIST)&quot;</summary>
 T_LIST=367,
-/// <summary>"array (T_ARRAY)"</summary>
+/// <summary>&quot;array (T_ARRAY)&quot;</summary>
 T_ARRAY=368,
-/// <summary>"callable (T_CALLABLE)"</summary>
+/// <summary>&quot;callable (T_CALLABLE)&quot;</summary>
 T_CALLABLE=369,
-/// <summary>"__LINE__ (T_LINE)"</summary>
+/// <summary>&quot;__LINE__ (T_LINE)&quot;</summary>
 T_LINE=370,
-/// <summary>"__FILE__ (T_FILE)"</summary>
+/// <summary>&quot;__FILE__ (T_FILE)&quot;</summary>
 T_FILE=371,
-/// <summary>"__DIR__ (T_DIR)"</summary>
+/// <summary>&quot;__DIR__ (T_DIR)&quot;</summary>
 T_DIR=372,
-/// <summary>"__CLASS__ (T_CLASS_C)"</summary>
+/// <summary>&quot;__CLASS__ (T_CLASS_C)&quot;</summary>
 T_CLASS_C=373,
-/// <summary>"__TRAIT__ (T_TRAIT_C)"</summary>
+/// <summary>&quot;__TRAIT__ (T_TRAIT_C)&quot;</summary>
 T_TRAIT_C=374,
-/// <summary>"__METHOD__ (T_METHOD_C)"</summary>
+/// <summary>&quot;__METHOD__ (T_METHOD_C)&quot;</summary>
 T_METHOD_C=375,
-/// <summary>"__FUNCTION__ (T_FUNC_C)"</summary>
+/// <summary>&quot;__FUNCTION__ (T_FUNC_C)&quot;</summary>
 T_FUNC_C=376,
-/// <summary>"comment (T_COMMENT)"</summary>
+/// <summary>&quot;comment (T_COMMENT)&quot;</summary>
 T_COMMENT=377,
-/// <summary>"doc comment (T_DOC_COMMENT)"</summary>
+/// <summary>&quot;doc comment (T_DOC_COMMENT)&quot;</summary>
 T_DOC_COMMENT=378,
-/// <summary>"open tag (T_OPEN_TAG)"</summary>
+/// <summary>&quot;open tag (T_OPEN_TAG)&quot;</summary>
 T_OPEN_TAG=379,
-/// <summary>"open tag with echo (T_OPEN_TAG_WITH_ECHO)"</summary>
+/// <summary>&quot;open tag with echo (T_OPEN_TAG_WITH_ECHO)&quot;</summary>
 T_OPEN_TAG_WITH_ECHO=380,
-/// <summary>"close tag (T_CLOSE_TAG)"</summary>
+/// <summary>&quot;close tag (T_CLOSE_TAG)&quot;</summary>
 T_CLOSE_TAG=381,
-/// <summary>"whitespace (T_WHITESPACE)"</summary>
+/// <summary>&quot;whitespace (T_WHITESPACE)&quot;</summary>
 T_WHITESPACE=382,
-/// <summary>"heredoc start (T_START_HEREDOC)"</summary>
+/// <summary>&quot;heredoc start (T_START_HEREDOC)&quot;</summary>
 T_START_HEREDOC=383,
-/// <summary>"heredoc end (T_END_HEREDOC)"</summary>
+/// <summary>&quot;heredoc end (T_END_HEREDOC)&quot;</summary>
 T_END_HEREDOC=384,
-/// <summary>"${ (T_DOLLAR_OPEN_CURLY_BRACES)"</summary>
+/// <summary>&quot;${ (T_DOLLAR_OPEN_CURLY_BRACES)&quot;</summary>
 T_DOLLAR_OPEN_CURLY_BRACES=385,
-/// <summary>"{$ (T_CURLY_OPEN)"</summary>
+/// <summary>&quot;{$ (T_CURLY_OPEN)&quot;</summary>
 T_CURLY_OPEN=386,
-/// <summary>":: (T_DOUBLE_COLON)"</summary>
+/// <summary>&quot;:: (T_DOUBLE_COLON)&quot;</summary>
 T_DOUBLE_COLON=387,
-/// <summary>"namespace (T_NAMESPACE)"</summary>
+/// <summary>&quot;namespace (T_NAMESPACE)&quot;</summary>
 T_NAMESPACE=388,
-/// <summary>"__NAMESPACE__ (T_NS_C)"</summary>
+/// <summary>&quot;__NAMESPACE__ (T_NS_C)&quot;</summary>
 T_NS_C=389,
-/// <summary>"\\ (T_NS_SEPARATOR)"</summary>
+/// <summary>&quot;\\ (T_NS_SEPARATOR)&quot;</summary>
 T_NS_SEPARATOR=390,
-/// <summary>"... (T_ELLIPSIS)"</summary>
+/// <summary>&quot;... (T_ELLIPSIS)&quot;</summary>
 T_ELLIPSIS=391,
 T_ERROR=257,
 EOF=0

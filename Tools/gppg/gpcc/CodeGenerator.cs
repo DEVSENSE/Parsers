@@ -77,7 +77,7 @@ namespace gpcc
                         this.output.Write("{0}={1}", current.ToString(), current.num);
                     else
                     {
-                        this.output.WriteLine("/// <summary>{0}</summary>", current.Comment);
+                        this.output.WriteLine("/// <summary>{0}</summary>", System.Web.HttpUtility.HtmlEncode(current.Comment));
                         this.output.Write("{0}={1}", current.ToString(), current.num);
                     }
                     flag = false;

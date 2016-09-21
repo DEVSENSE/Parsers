@@ -70,7 +70,6 @@ namespace Devsense.PHP.Syntax.Ast
         /// <param name="span">Entire element span.</param>
         /// <param name="name">Name of the namespace. Can be an empty name.</param>
         /// <param name="nameSpan">Name span. Can be <c>Invalid</c> in case the name is empty.</param>
-        /// <param name="statements">List of statements within the namespace.</param>
         /// <param name="context">Namespace naming context.</param>
         /// <returns>Namespace node.</returns>
         TNode Namespace(TSpan span, QualifiedName? name, TSpan nameSpan, NamingContext context);
@@ -184,7 +183,7 @@ namespace Devsense.PHP.Syntax.Ast
         /// </summary>
         /// <param name="span">Entire element span.</param>
         /// <param name="traits">Enumeration of traits.</param>
-        /// <param name="adaptations">Enumeration of trait adaptations.</param>
+        /// <param name="adaptationsBlock"><see cref="TraitAdaptationBlock"/> containing all adaptations.</param>
         /// <returns>Trait use type member.</returns>
         TNode TraitUse(TSpan span, IEnumerable<QualifiedNameRef> traits, TNode adaptationsBlock);
 
@@ -272,7 +271,7 @@ namespace Devsense.PHP.Syntax.Ast
         /// Creates block containing trait adaptations.
         /// </summary>
         /// <param name="span">Entire element span.</param>
-        /// <param name="statements">Containing statements.</param>
+        /// <param name="adaptations">Containing adaptations.</param>
         /// <returns>Block trait adaptations.</returns>
         TNode TraitAdaptationBlock(TSpan span, IEnumerable<TNode> adaptations);
 

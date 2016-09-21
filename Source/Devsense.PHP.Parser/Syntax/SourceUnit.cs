@@ -264,7 +264,7 @@ namespace Devsense.PHP.Syntax
         }
 
         /// <summary>
-        /// Initializes <c>Ast</c> with empty <see cref="AST.GlobalCode"/>.
+        /// Initializes <c>Ast</c> with empty <see cref="GlobalCode"/>.
         /// </summary>
         internal void SetEmptyAst()
         {
@@ -291,7 +291,7 @@ namespace Devsense.PHP.Syntax
         /// <param name="code">Source code to be parsed.</param>
         /// <param name="filePath">Source file used for error reporting.</param>
         /// <param name="factory">Nodes factory and error sink.</param>
-        /// <param name="reductionsSink">Reduction sink. Can be <c>null</c>.</param>
+        /// <param name="errors">Error sink. Can be <c>null</c>.</param>
         /// <param name="features">Optional. Language features.</param>
         /// <param name="initialState">
         /// Optional. Initial parser state.

@@ -166,7 +166,6 @@ namespace Devsense.PHP.Syntax
         /// <summary>
         /// Visists a statement representing a PHPDoc
         /// </summary>
-        /// <param name="pHPDocStmt"></param>
         virtual public void VisitPHPDocStmt(PHPDocStmt x)
         {
             // empty

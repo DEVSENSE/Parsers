@@ -447,24 +447,7 @@ namespace Devsense.PHP.Syntax
         private Span CombineSpans(Span a, Span b) => a.IsValid ? (b.IsValid ? Span.Combine(a, b) : a) : b;
 
         /// <summary>
-        /// Associates givcen <paramref name="phpdoc"/> refering to instance of <see cref="PHPDocBlock"/> to a target which must be an instance of <see cref="IPropertyCollection"/>.
-        /// </summary>
-        /// <param name="target"><see cref="IPropertyCollection"/> instance. Must not be <c>null</c>.</param>
-        /// <param name="phpdoc">A <see cref="PHPDocBlock"/> instance. Can be <c>null</c>.</param>
-        void SetDoc(object target, object phpdoc, int x)
-        {
-            Debug.Assert(target != null);
-            Debug.Assert(target is IPropertyCollection);
-            Debug.Assert(phpdoc == null || phpdoc is PHPDocBlock);
-
-            if (phpdoc != null)
-            {
-                ((IPropertyCollection)target).SetPHPDoc((PHPDocBlock)phpdoc);
-            }
-        }
-
-        /// <summary>
-        /// Associates givcen <paramref name="phpdoc"/> refering to instance of <see cref="PHPDocBlock"/> to a target which must be an instance of <see cref="IPropertyCollection"/>.
+        /// Associates givcen <paramref name="target"/> refering to instance of <see cref="PHPDocBlock"/> to a target which must be an instance of <see cref="IPropertyCollection"/>.
         /// </summary>
         /// <param name="target"><see cref="IPropertyCollection"/> instance. Must not be <c>null</c>.</param>
         void SetDoc(object target)
@@ -475,7 +458,7 @@ namespace Devsense.PHP.Syntax
         }
 
         /// <summary>
-        /// Associates given <paramref name="phpdoc"/> refering to instance of <see cref="PHPDocBlock"/> to a target which must be an instance of <see cref="IPropertyCollection"/>.
+        /// Associates given <paramref name="target"/> refering to instance of <see cref="PHPDocBlock"/> to a target which must be an instance of <see cref="IPropertyCollection"/>.
         /// </summary>
         /// <param name="target"><see cref="IPropertyCollection"/> instance. Must not be <c>null</c>.</param>
         void SetMemberDoc(object target)
