@@ -22,6 +22,16 @@ namespace Devsense.PHP.Syntax
             /// DOC comment span including following whitespace.
             /// </summary>
             public Span Extent;
+
+            /// <summary>
+            /// Determines whether this block is above given element.
+            /// </summary>
+            public bool IsAbove(LangElement element) => element != null && Extent.End <= element.Span.Start;
+
+            /// <summary>
+            /// Determines whether this block is below given element or element is <c>null</c>.
+            /// </summary>
+            public bool IsBelowOrNull(LangElement element) => element == null || Extent.End > element.Span.End;
         }
 
         #region Fields & Properties
@@ -151,13 +161,13 @@ namespace Devsense.PHP.Syntax
                 for (var index = indexFrom; index < list.Count && (doc = list[index]).Extent.OverlapsWith(extent); index++)
                 {
                     // skip stmts fully above {doc}
-                    while (insertAt < stmts.Count && stmts[insertAt].Span.End < doc.Extent.End)
+                    while (insertAt < stmts.Count && doc.IsBelowOrNull(stmts[insertAt]))
                     {
                         insertAt++;
                     }
 
                     // insert {doc} into {stmts}
-                    if (insertAt == stmts.Count || stmts[insertAt].Span.Start >= doc.Extent.End)
+                    if (insertAt == stmts.Count || doc.IsAbove(stmts[insertAt]))
                     {
                         stmts.Insert(insertAt, new PHPDocStmt(doc.PhpDoc));
                         insertAt++;
