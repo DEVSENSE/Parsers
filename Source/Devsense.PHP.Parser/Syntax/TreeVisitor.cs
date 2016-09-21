@@ -48,6 +48,7 @@ namespace Devsense.PHP.Syntax
         }
 
         #region Statements
+
         public virtual void VisitHaltCompiler(HaltCompiler x)
         {
         }
@@ -168,7 +169,7 @@ namespace Devsense.PHP.Syntax
         /// </summary>
         virtual public void VisitPHPDocStmt(PHPDocStmt x)
         {
-            // empty
+            VisitElement(x.PHPDoc);
         }
 
         /// <summary>
