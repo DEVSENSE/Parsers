@@ -2,10 +2,12 @@
 switch ($i) {
     case 0:
         echo "i equals 0";
+        /** free comment */
         break;
     case 1:
         echo "i equals 1";
         break;
+        /** end comment */
     default:
         echo "default i";
         break;
@@ -40,7 +42,8 @@ switch ($i) {
         "Statements":{
           "EchoStmt":{
             "StringLiteral":{"Value":"i equals 0"}
-          },
+          },      
+          "PHPDocStmt":{"PHPDoc":{"Comment":"free comment"}},
           "JumpStmt":{"Type":"Break"}
         }
       }, 

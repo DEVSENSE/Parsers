@@ -438,9 +438,13 @@ namespace Devsense.PHP.Syntax
 
         private bool IsInGlobalNamespace => !namingContext.CurrentNamespace.HasValue || namingContext.CurrentNamespace.Value.Namespaces.Length == 0;
 
+        /// <summary>
+        /// Combine spans if they are valid.
+        /// </summary>
+        /// <param name="a">First span.</param>
+        /// <param name="b">Second span.</param>
+        /// <returns>Combined span.</returns>
         private Span CombineSpans(Span a, Span b) => a.IsValid ? (b.IsValid ? Span.Combine(a, b) : a) : b;
-
-        void ResetDocBlock() => Scanner.DocBlock = null;
 
         /// <summary>
         /// Associates givcen <paramref name="phpdoc"/> refering to instance of <see cref="PHPDocBlock"/> to a target which must be an instance of <see cref="IPropertyCollection"/>.
@@ -471,7 +475,7 @@ namespace Devsense.PHP.Syntax
         }
 
         /// <summary>
-        /// Associates givcen <paramref name="phpdoc"/> refering to instance of <see cref="PHPDocBlock"/> to a target which must be an instance of <see cref="IPropertyCollection"/>.
+        /// Associates given <paramref name="phpdoc"/> refering to instance of <see cref="PHPDocBlock"/> to a target which must be an instance of <see cref="IPropertyCollection"/>.
         /// </summary>
         /// <param name="target"><see cref="IPropertyCollection"/> instance. Must not be <c>null</c>.</param>
         void SetMemberDoc(object target)
@@ -481,18 +485,31 @@ namespace Devsense.PHP.Syntax
             _lexer.DocBlockList.AnnotateMember((LangElement)target);
         }
 
+        /// <summary>
+        /// Creates a <see cref="BlockStmt"/> statement from a list of statements.
+        /// Unassigned PHPDoc comments are merged to the statements as <see cref="PHPDocStmt"/>.
+        /// </summary>
+        /// <param name="span">Span of the entire block.</param>
+        /// <param name="statements">List of statements in the block.</param>
+        /// <returns>Complete block statement.</returns>
         BlockStmt CreateBlock(Span span, List<LangElement> statements)
         {
             _lexer.DocBlockList.Merge(span, statements);
             return (BlockStmt)_astFactory.Block(span, statements);
         }
 
-        BlockStmt CreateUnboundBlock(Span separatorSpan, List<LangElement> statements)
+        /// <summary>
+        /// Creates a <see cref="BlockStmt"/> statement from a list of statements in a case or default.
+        /// Unassigned PHPDoc comments are merged to the statements as <see cref="PHPDocStmt"/>, PHPDoc comments after the last statement are ignored.
+        /// </summary>
+        /// <param name="separatorSpan">Span of the separator ':'.</param>
+        /// <param name="statements">List of statements in the block.</param>
+        /// <returns>Complete block statement.</returns>
+        BlockStmt CreateCaseBlock(Span separatorSpan, List<LangElement> statements)
         {
             if(statements.Count == 0)
                 return (BlockStmt)_astFactory.Block(separatorSpan, statements);
-            Span bodySpan = Span.Combine(statements.First().Span, statements.Last().Span);
-            Debug.Assert(bodySpan.Start >= separatorSpan.End);
+            Span bodySpan = Span.Combine(separatorSpan, statements.Last().Span);
             _lexer.DocBlockList.Merge(bodySpan, statements);
             return (BlockStmt)_astFactory.Block(bodySpan, statements);
         }

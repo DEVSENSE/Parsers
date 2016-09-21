@@ -1921,8 +1921,7 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 		AssignNamingContext(); 
         _lexer.DocBlockList.Merge(new Span(0, int.MaxValue), (List<LangElement>)value_stack.array[value_stack.top-1].yyval.Object);
 		AssignStatements((List<LangElement>)value_stack.array[value_stack.top-1].yyval.Object);
-		_astRoot = _astFactory.GlobalCode(yypos, (List<LangElement>)value_stack.array[value_stack.top-1].yyval.Object, namingContext); 
-		ResetNamingContext(); 
+		_astRoot = _astFactory.GlobalCode(yypos, (List<LangElement>)value_stack.array[value_stack.top-1].yyval.Object, namingContext);
 	}
         return;
       case 71: // semi_reserved -> reserved_non_modifiers 
@@ -1977,9 +1976,7 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 {
 			AssignNamingContext();
             SetNamingContext((List<string>)value_stack.array[value_stack.top-2].yyval.Object);
-            SetDoc(
-				yyval.Object = _currentNamespace = (NamespaceDecl)_astFactory.Namespace(yypos, namingContext.CurrentNamespace, value_stack.array[value_stack.top-2].yypos, namingContext));
-			ResetDocBlock(); 
+            SetDoc(yyval.Object = _currentNamespace = (NamespaceDecl)_astFactory.Namespace(yypos, namingContext.CurrentNamespace, value_stack.array[value_stack.top-2].yypos, namingContext));
 		}
         return;
       case 94: // @2 -> 
@@ -2334,11 +2331,11 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
         return;
       case 198: // case_list -> case_list T_CASE expr case_separator inner_statement_list 
 { yyval.Object = AddToList<LangElement>(value_stack.array[value_stack.top-5].yyval.Object, _astFactory.Case(Span.FromBounds(value_stack.array[value_stack.top-4].yypos.Start, ((List<LangElement>)value_stack.array[value_stack.top-1].yyval.Object).Count > 0? ((List<LangElement>)value_stack.array[value_stack.top-1].yyval.Object).Last().Span.End: yypos.End), 
-				(LangElement)value_stack.array[value_stack.top-3].yyval.Object, CreateUnboundBlock(value_stack.array[value_stack.top-2].yypos, (List<LangElement>)value_stack.array[value_stack.top-1].yyval.Object))); }
+				(LangElement)value_stack.array[value_stack.top-3].yyval.Object, CreateCaseBlock(value_stack.array[value_stack.top-2].yypos, (List<LangElement>)value_stack.array[value_stack.top-1].yyval.Object))); }
         return;
       case 199: // case_list -> case_list T_DEFAULT case_separator inner_statement_list 
 { yyval.Object = AddToList<LangElement>(value_stack.array[value_stack.top-4].yyval.Object, _astFactory.Case(Span.FromBounds(value_stack.array[value_stack.top-3].yypos.Start, ((List<LangElement>)value_stack.array[value_stack.top-1].yyval.Object).Count > 0? ((List<LangElement>)value_stack.array[value_stack.top-1].yyval.Object).Last().Span.End: yypos.End), 
-				null, CreateUnboundBlock(value_stack.array[value_stack.top-2].yypos, (List<LangElement>)value_stack.array[value_stack.top-1].yyval.Object))); }
+				null, CreateCaseBlock(value_stack.array[value_stack.top-2].yypos, (List<LangElement>)value_stack.array[value_stack.top-1].yyval.Object))); }
         return;
       case 202: // while_statement -> statement 
 { yyval.Object = value_stack.array[value_stack.top-1].yyval.Object; }

@@ -301,8 +301,7 @@ start:
 		AssignNamingContext(); 
         _lexer.DocBlockList.Merge(new Span(0, int.MaxValue), (List<LangElement>)$2);
 		AssignStatements((List<LangElement>)$2);
-		_astRoot = _astFactory.GlobalCode(@$, (List<LangElement>)$2, namingContext); 
-		ResetNamingContext(); 
+		_astRoot = _astFactory.GlobalCode(@$, (List<LangElement>)$2, namingContext);
 	}
 ;
 reserved_non_modifiers:
@@ -352,9 +351,7 @@ top_statement:
 		{
 			AssignNamingContext();
             SetNamingContext((List<string>)$2);
-            SetDoc(
-				$$ = _currentNamespace = (NamespaceDecl)_astFactory.Namespace(@$, namingContext.CurrentNamespace, @2, namingContext));
-			ResetDocBlock(); 
+            SetDoc($$ = _currentNamespace = (NamespaceDecl)_astFactory.Namespace(@$, namingContext.CurrentNamespace, @2, namingContext));
 		}
 	|	T_NAMESPACE namespace_name backup_doc_comment { SetNamingContext((List<string>)$2); }
 		'{' top_statement_list '}'
@@ -640,10 +637,10 @@ case_list:
 		/* empty */ { $$ = new List<LangElement>(); }
 	|	case_list T_CASE expr case_separator inner_statement_list
 			{ $$ = AddToList<LangElement>($1, _astFactory.Case(Span.FromBounds(@2.Start, ((List<LangElement>)$5).Count > 0? ((List<LangElement>)$5).Last().Span.End: @$.End), 
-				(LangElement)$3, CreateUnboundBlock(@4, (List<LangElement>)$5))); }
+				(LangElement)$3, CreateCaseBlock(@4, (List<LangElement>)$5))); }
 	|	case_list T_DEFAULT case_separator inner_statement_list
 			{ $$ = AddToList<LangElement>($1, _astFactory.Case(Span.FromBounds(@2.Start, ((List<LangElement>)$4).Count > 0? ((List<LangElement>)$4).Last().Span.End: @$.End), 
-				null, CreateUnboundBlock(@3, (List<LangElement>)$4))); }
+				null, CreateCaseBlock(@3, (List<LangElement>)$4))); }
 ;
 
 case_separator:
