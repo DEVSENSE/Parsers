@@ -520,11 +520,12 @@ namespace Devsense.PHP.Syntax.Ast
         public List<ClassConstantDecl>/*!*/ Constants { get { return constants; } }
         private readonly List<ClassConstantDecl>/*!*/ constants;
         
-		public ConstDeclList(Text.Span span, List<ClassConstantDecl>/*!*/ constants, List<CustomAttribute> attributes)
+		public ConstDeclList(Text.Span span, PhpMemberAttributes modifiers, List<ClassConstantDecl>/*!*/ constants, List<CustomAttribute> attributes)
             : base(span, attributes)
 		{
 			Debug.Assert(constants != null);
 
+            this.modifiers = modifiers;
 			this.constants = constants;
 
 			//class constants never have modifiers

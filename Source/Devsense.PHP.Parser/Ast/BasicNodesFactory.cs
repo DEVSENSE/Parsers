@@ -141,7 +141,7 @@ namespace Devsense.PHP.Syntax.Ast
             if (decls.All(e => e is GlobalConstantDecl))
                 return new GlobalConstDeclList(span, ConvertList<GlobalConstantDecl>(decls), null);
             else if (decls.All(e => e is ClassConstantDecl))
-                return new ConstDeclList(span, ConvertList<ClassConstantDecl>(decls), null);
+                return new ConstDeclList(span, attributes, ConvertList<ClassConstantDecl>(decls), null);
             else //if (decls.All(e => e is FieldDecl))
                 return new FieldDeclList(span, attributes, ConvertList<FieldDecl>(decls), null);
         }

@@ -14,7 +14,6 @@
 // permissions and limitations under the License.
 
 using System;
-using System.Linq;
 using System.Collections.Generic;
 
 %%
@@ -745,8 +744,7 @@ ST_HALT_COMPILER1,ST_HALT_COMPILER2,ST_HALT_COMPILER3>{EOF} {
 	return (Tokens.T_NS_C);
 }
 
-<INITIAL>(([^<]|<[^?<])+)|< { 
-	if(GetTokenString().ToCharArray().All(c => c == '<')) { yymore(); break; }
+<INITIAL>(([^<]|<[^?])+) {
     this._tokenSemantics.Object = GetTokenString();
 	return Tokens.T_INLINE_HTML; 
 }

@@ -32,7 +32,7 @@ class SimpleClass
     },
     "ConstDeclList":{
       "PHPDoc":{"Comment":"constant declaration"},
-      "ClassConstantDecl":{"Name":"cvar","MemberAttributes":"Public","LongIntLiteral":{"Value":"22"}}
+      "ClassConstantDecl":{"Name":"cvar","MemberAttributes":"Private","LongIntLiteral":{"Value":"22"}}
     }
   }  
 }

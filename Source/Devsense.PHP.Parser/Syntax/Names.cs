@@ -1068,21 +1068,6 @@ namespace Devsense.PHP.Syntax
             this.CurrentNamespace = currentNamespace;
         }
 
-        /// <summary>
-        /// Add an alias into the <see cref="Aliases"/>.
-        /// </summary>
-        /// <param name="alias">Alias name.</param>
-        /// <param name="qualifiedName">Aliased namespace. Not starting with <see cref="QualifiedName.Separator"/>.</param>
-        /// <remarks>Used when constructing naming context at runtime.</remarks>
-        public void AddAlias(NameRef alias, QualifiedNameRef qualifiedName)
-        {
-            Debug.Assert(!string.IsNullOrEmpty(alias.Name.Value));
-            Debug.Assert(qualifiedName.HasValue && !string.IsNullOrEmpty(qualifiedName.QualifiedName.NamespacePhpName));
-            Debug.Assert(qualifiedName.QualifiedName.NamespacePhpName[0] != QualifiedName.Separator);   // not starting with separator
-
-            AddClassAlias(alias, qualifiedName);
-        }
-
         private static bool AddAlias(Dictionary<NameRef, QualifiedNameRef>/*!*/dict, NameRef alias, QualifiedNameRef qname)
         {
             var count = dict.Count;
@@ -1090,16 +1075,24 @@ namespace Devsense.PHP.Syntax
             return count != dict.Count;  // item was added
         }
 
+
         /// <summary>
-        /// Adds an alias into the context.
+        /// Add an alias into the <see cref="Aliases"/>.
         /// </summary>
-        public bool AddClassAlias(NameRef alias, QualifiedNameRef qname)
+        /// <param name="alias">Alias name.</param>
+        /// <param name="qualifiedName">Aliased namespace. Not starting with <see cref="QualifiedName.Separator"/>.</param>
+        /// <remarks>Used when constructing naming context at runtime.</remarks>
+        public bool AddAlias(NameRef alias, QualifiedNameRef qualifiedName)
         {
+            Debug.Assert(!string.IsNullOrEmpty(alias.Name.Value));
+            Debug.Assert(qualifiedName.HasValue && !string.IsNullOrEmpty(qualifiedName.QualifiedName.NamespacePhpName));
+            Debug.Assert(qualifiedName.QualifiedName.NamespacePhpName[0] != QualifiedName.Separator);   // not starting with separator
+
             var aliases = _aliases;
             if (aliases == null)
                 _aliases = aliases = new Dictionary<NameRef, QualifiedNameRef>(NameRefComparer.Singleton);
 
-            return AddAlias(aliases, alias, qname);
+            return AddAlias(aliases, alias, qualifiedName);
         }
 
         /// <summary>
