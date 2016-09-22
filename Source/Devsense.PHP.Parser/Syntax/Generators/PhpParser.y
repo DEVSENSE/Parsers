@@ -336,7 +336,7 @@ namespace_name:
 
 name:
 		namespace_name								{ $$ = new QualifiedNameRef(@$, new QualifiedName((List<string>)$1, true, false)); }
-	|	T_NAMESPACE T_NS_SEPARATOR namespace_name	{ $$ = new QualifiedNameRef(@$, new QualifiedName((List<string>)$3, true,  true)); }
+	|	T_NAMESPACE T_NS_SEPARATOR namespace_name	{ $$ = new QualifiedNameRef(@$, MergeWithCurrentNamespace(namingContext.CurrentNamespace, (List<string>)$3)); }
 	|	T_NS_SEPARATOR namespace_name				{ $$ = new QualifiedNameRef(@$, new QualifiedName((List<string>)$2, true,  true)); }
 ;
 

@@ -1949,7 +1949,7 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 { yyval.Object = new QualifiedNameRef(yypos, new QualifiedName((List<string>)value_stack.array[value_stack.top-1].yyval.Object, true, false)); }
         return;
       case 85: // name -> T_NAMESPACE T_NS_SEPARATOR namespace_name 
-{ yyval.Object = new QualifiedNameRef(yypos, new QualifiedName((List<string>)value_stack.array[value_stack.top-1].yyval.Object, true,  true)); }
+{ yyval.Object = new QualifiedNameRef(yypos, MergeWithCurrentNamespace(namingContext.CurrentNamespace, (List<string>)value_stack.array[value_stack.top-1].yyval.Object)); }
         return;
       case 86: // name -> T_NS_SEPARATOR namespace_name 
 { yyval.Object = new QualifiedNameRef(yypos, new QualifiedName((List<string>)value_stack.array[value_stack.top-1].yyval.Object, true,  true)); }

@@ -501,5 +501,25 @@ namespace Devsense.PHP.Syntax
             _lexer.DocBlockList.Merge(bodySpan, statements);
             return (BlockStmt)_astFactory.Block(bodySpan, statements);
         }
+
+        /// <summary>
+        /// Merges current namespace with the name. 
+        /// Returns a qualified name based only on the suffix, if the namespace is <c>null</c>.
+        /// </summary>
+        /// <param name="currentNamespace">Current namespace name, can be <c>null</c>.</param>
+        /// <param name="suffix">Rest of the name, after current namespace.</param>
+        /// <returns>Complete qualified name</returns>
+        QualifiedName MergeWithCurrentNamespace(QualifiedName? currentNamespace, IList<string> suffix)
+        {
+            if (!currentNamespace.HasValue)
+                return new QualifiedName((List<string>)suffix, true, true);
+
+            QualifiedName currentNS = currentNamespace.Value;
+            Name[] namespaces = new Name[currentNS.Namespaces.Length + suffix.Count - 1];
+            currentNS.Namespaces.CopyTo(namespaces, 0);
+            for (int i = currentNS.Namespaces.Length; i < namespaces.Length; i++)
+                namespaces[i] = new Name(suffix[i - currentNS.Namespaces.Length]); // loop otimization
+            return new QualifiedName(new Name(suffix.Last()), namespaces, true);
+        }
     }
 }
