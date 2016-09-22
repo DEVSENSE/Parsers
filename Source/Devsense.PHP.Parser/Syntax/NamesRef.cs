@@ -105,6 +105,9 @@ namespace Devsense.PHP.Syntax
             _name = name;
         }
 
+        /// <summary>
+        /// Gets <see cref="Name"/> as <see cref="string"/>.
+        /// </summary>
         public override string ToString() => _name.ToString();
 
         public static implicit operator Name(NameRef self) => self.Name;
@@ -168,6 +171,9 @@ namespace Devsense.PHP.Syntax
             _name = name;
         }
 
+        /// <summary>
+        /// Gets <see cref="QualifiedName"/> as <see cref="string"/>.
+        /// </summary>
         public override string ToString() => _name.ToString();
 
         public static implicit operator QualifiedName(QualifiedNameRef self) => self.QualifiedName;
