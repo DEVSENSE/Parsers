@@ -960,9 +960,10 @@ ST_HALT_COMPILER1,ST_HALT_COMPILER2,ST_HALT_COMPILER3>{EOF} {
 }
 
 
-<ST_ONE_LINE_COMMENT>"?"|"%"|">" { yymore(); break; }
-<ST_ONE_LINE_COMMENT>[^\n\r?%>]+ { yymore(); break; }
-<ST_ONE_LINE_COMMENT>{NEWLINE}   { yy_pop_state(); return Tokens.T_COMMENT; }
-
-<ST_ONE_LINE_COMMENT>"?>"|"%>"   { yymore(); break; }
+<ST_ONE_LINE_COMMENT>"?>"   { 
+	yy_pop_state(); 
+	BEGIN(LexicalStates.INITIAL);
+	return (Tokens.T_CLOSE_TAG);
+	}
+<ST_ONE_LINE_COMMENT>([^\n\r?>]+([?][^>]|[>])*)*([?]?{NEWLINE})? { yy_pop_state(); return Tokens.T_COMMENT; }
 
