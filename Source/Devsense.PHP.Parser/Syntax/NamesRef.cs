@@ -127,12 +127,12 @@ namespace Devsense.PHP.Syntax
         private readonly QualifiedName _name;
 
         /// <summary>
-        /// Position of the name.
+        /// Position of the qualified name.
         /// </summary>
         public Span Span => _span;
 
         /// <summary>
-        /// Variable name.
+        /// Qualified name.
         /// </summary>
         public QualifiedName QualifiedName => _name;
 
