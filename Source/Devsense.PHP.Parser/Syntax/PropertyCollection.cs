@@ -435,9 +435,7 @@ namespace Devsense.PHP.Syntax
                 {
                     Debug.Assert(o is Hashtable);
                     var hashtable = (Hashtable)o;
-                    int count = hashtable.Count;
-                    hashtable.Remove(key);
-                    if (hashtable.Count != count)
+                    if (hashtable.Remove(key))
                     {
                         if (hashtable.Count <= MaxListSize)
                         {
