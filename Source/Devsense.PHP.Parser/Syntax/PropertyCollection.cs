@@ -14,6 +14,9 @@
 // permissions and limitations under the License.
 
 using System;
+using System.Linq;
+using System.Collections;
+using System.Collections.Generic;
 using System.Diagnostics;
 
 using Hashtable = System.Collections.Generic.Dictionary<object, object>;
@@ -93,7 +96,7 @@ namespace Devsense.PHP.Syntax
     /// <summary>
     /// Manages list of properties, organized by a key.
     /// </summary>
-    public struct PropertyCollection : IPropertyCollection
+    public struct PropertyCollection : IPropertyCollection, IEnumerable<KeyValuePair<object, object>>
     {
         #region Fields & Properties
 
@@ -121,13 +124,88 @@ namespace Devsense.PHP.Syntax
 
         #endregion
 
+        #region IEnumerable
+
+        /// <summary>
+        /// Returns an enumerator that iterates through the collection.
+        /// </summary>
+        public IEnumerator<KeyValuePair<object, object>> GetEnumerator() => Enumerable.GetEnumerator();
+
+        /// <summary>
+        /// Returns an enumerator that iterates through the collection.
+        /// </summary>
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+
+        /// <summary>
+        /// Enumerates items in this collection.
+        /// </summary>
+        /// <returns>Enumerable object of the collection. Cannot be <c>null</c>.</returns>
+        IEnumerable<KeyValuePair<object, object>>/*!*/Enumerable
+        {
+            get
+            {
+                object p = _type;
+                object o = _obj;
+
+                if (p != null)
+                {
+                    // non-empty container
+                    if (object.ReferenceEquals(p, TypeList))
+                    {
+                        Debug.Assert(o is DictionaryNode);
+                        return (DictionaryNode)o;   // IEnumerable
+                    }
+                    else if (object.ReferenceEquals(p, TypeHashtable))
+                    {
+                        Debug.Assert(o is Hashtable);
+                        return (Hashtable)o;
+                    }
+                    else
+                    {
+                        // single item in here
+                        return new[] { new KeyValuePair<object, object>(p, o) };
+                    }
+                }
+                else
+                {
+                    return EmptyArray<KeyValuePair<object, object>>.Instance;
+                }
+            }
+        }
+
+        #endregion
+
         #region Nested class: DictionaryNode
 
-        private sealed class DictionaryNode
+        private sealed class DictionaryNode : IEnumerable<KeyValuePair<object, object>>
         {
             public object key;
             public object value;
-            public PropertyCollection.DictionaryNode next;
+            public DictionaryNode next;
+
+            /// <summary>
+            /// Casts node to <see cref="KeyValuePair{Object, Object}"/>.
+            /// </summary>
+            public static implicit operator KeyValuePair<object, object>(DictionaryNode node) => new KeyValuePair<object, object>(node.key, node.value);
+
+            /// <summary>
+            /// Items count in this node.
+            /// </summary>
+            public int Count => CountItems(this);
+
+            #region IEnumerable
+
+            public IEnumerator<KeyValuePair<object, object>> GetEnumerator()
+            {
+                for (var node = this; node != null; node = node.next)
+                {
+                    yield return node;
+                }
+            }
+
+            IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+
+            #endregion
         }
 
         #endregion
@@ -475,7 +553,7 @@ namespace Devsense.PHP.Syntax
     public class PropertyCollectionClass : IPropertyCollection
     {
         /// <summary>
-        /// Internbal collection (struct).
+        /// Internal collection (struct).
         /// </summary>
         private PropertyCollection _properties = new PropertyCollection();
 
