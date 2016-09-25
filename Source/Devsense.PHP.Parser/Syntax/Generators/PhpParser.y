@@ -604,11 +604,11 @@ implements_list:
 	|	T_IMPLEMENTS name_list	{ $$ = TypeRefListFromQNRList($2); }
 ;
 
-foreach_variable:
-		variable			{ $$ = $1; }
-	|	'&' variable		{ $$ = _astFactory.Variable(@$, (LangElement)$2, (LangElement)null); }
-	|	T_LIST '(' array_pair_list ')' { $$ = _astFactory.List(@$, (List<Item>)$3); }
-	|	'[' array_pair_list ']' { $$ = _astFactory.List(@$, (List<Item>)$2); }
+foreach_variable:	// TODO: <return ForeachVar>
+		variable			{ $$ = $1; }	// TODO: new ForeachVar($1, false)
+	|	'&' variable		{ $$ = $2; }	// TODO: new ForeachVar($2, true)
+	|	T_LIST '(' array_pair_list ')' { $$ = _astFactory.List(@$, (List<Item>)$3); }	// TODO: new ForeachVar((ListEx))
+	|	'[' array_pair_list ']' { $$ = _astFactory.List(@$, (List<Item>)$2); }	// TODO: new ForeachVar((ListEx))
 ;
 
 for_statement:
@@ -966,8 +966,9 @@ expr_without_variable:
 	|	variable '=' expr
 			{ $$ = _astFactory.Assignment(@$, (LangElement)$1, (LangElement)$3, Operations.AssignValue); }
 	|	variable '=' '&' variable
-			{ $$ = _astFactory.Assignment(@$, (LangElement)$1, _astFactory.Variable(@$, (LangElement)$4, (LangElement)null), Operations.AssignRef); }
-	|	T_CLONE expr { $$ = _astFactory.UnaryOperation(@$, Operations.Clone,   (Expression)$2); }
+			{ $$ = _astFactory.Assignment(@$, (LangElement)$1, (LangElement)$4, Operations.AssignRef); }
+	|	T_CLONE expr
+			{ $$ = _astFactory.UnaryOperation(@$, Operations.Clone,   (Expression)$2); }
 	|	variable T_PLUS_EQUAL expr
 			{ $$ = _astFactory.Assignment(@$, (LangElement)$1, (LangElement)$3, Operations.AssignAdd); }
 	|	variable T_MINUS_EQUAL expr
@@ -1023,7 +1024,7 @@ expr_without_variable:
 	|	'!' expr { $$ = _astFactory.UnaryOperation(@$, Operations.LogicNegation, (Expression)$2); }
 	|	'~' expr { $$ = _astFactory.UnaryOperation(@$, Operations.BitNegation,   (Expression)$2); }
 	|	expr T_IS_IDENTICAL expr
-			{ $$ = _astFactory.BinaryOperation(@$, Operations.ShiftRight, (LangElement)$1, (LangElement)$3); }
+			{ $$ = _astFactory.BinaryOperation(@$, Operations.Identical, (LangElement)$1, (LangElement)$3); }
 	|	expr T_IS_NOT_IDENTICAL expr
 			{ $$ = _astFactory.BinaryOperation(@$, Operations.NotIdentical, (LangElement)$1, (LangElement)$3); }
 	|	expr T_IS_EQUAL expr
