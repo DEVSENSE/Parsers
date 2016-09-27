@@ -22,55 +22,55 @@ using Devsense.PHP.Text;
 
 namespace Devsense.PHP.Syntax
 {
-	// 
-	//  Identifier            Representation
-	// --------------------------------------------------------------------
-	//  variable, field       VariableName     (case-sensitive)
-	//  class constant        VariableName     (case-sensitive)
-	//  namespace constant    QualifiedName    (case-sensitive)
-	//  method                Name             (case-insensitive)
-	//  class, function       QualifiedName    (case-insensitive)
+    // 
+    //  Identifier            Representation
+    // --------------------------------------------------------------------
+    //  variable, field       VariableName     (case-sensitive)
+    //  class constant        VariableName     (case-sensitive)
+    //  namespace constant    QualifiedName    (case-sensitive)
+    //  method                Name             (case-insensitive)
+    //  class, function       QualifiedName    (case-insensitive)
     //  primitive type        PrimitiveTypeName(case-insensitive)
-	//  namespace component   Name             (case-sensitive?)
-	//  label                 VariableName     (case-sensitive?)
-	//
+    //  namespace component   Name             (case-sensitive?)
+    //  label                 VariableName     (case-sensitive?)
+    //
 
-	#region Name
+    #region Name
 
-	/// <summary>
-	/// Case-insensitive culture-sensitive (TODO ???) simple name in Unicode C normal form.
-	/// Used for names of methods and namespace components.
-	/// </summary>
-	[DebuggerNonUserCode]
-	public struct Name : IEquatable<Name>, IEquatable<string>
-	{
-		public string/*!*/ Value
-		{
-			get { return value; }
-		}
-		private readonly string/*!*/ value;
+    /// <summary>
+    /// Case-insensitive culture-sensitive (TODO ???) simple name in Unicode C normal form.
+    /// Used for names of methods and namespace components.
+    /// </summary>
+    [DebuggerNonUserCode]
+    public struct Name : IEquatable<Name>, IEquatable<string>
+    {
+        public string/*!*/ Value
+        {
+            get { return value; }
+        }
+        private readonly string/*!*/ value;
         private readonly int hashCode;
-        
-		#region Special Names
 
-		public static readonly Name[] EmptyNames = new Name[0];
-		public static readonly Name EmptyBaseName = new Name("");
-		public static readonly Name SelfClassName = new Name("self");
+        #region Special Names
+
+        public static readonly Name[] EmptyNames = new Name[0];
+        public static readonly Name EmptyBaseName = new Name("");
+        public static readonly Name SelfClassName = new Name("self");
         public static readonly Name StaticClassName = new Name("static");
-		public static readonly Name ParentClassName = new Name("parent");
-		public static readonly Name AutoloadName = new Name("__autoload");
-		public static readonly Name ClrCtorName = new Name(".ctor");
-		public static readonly Name ClrInvokeName = new Name("Invoke"); // delegate Invoke method
-		public static readonly Name AppStaticName = new Name("AppStatic");
-		public static readonly Name AppStaticAttributeName = new Name("AppStaticAttribute");
-		public static readonly Name ExportName = new Name("Export");
-		public static readonly Name ExportAttributeName = new Name("ExportAttribute");
+        public static readonly Name ParentClassName = new Name("parent");
+        public static readonly Name AutoloadName = new Name("__autoload");
+        public static readonly Name ClrCtorName = new Name(".ctor");
+        public static readonly Name ClrInvokeName = new Name("Invoke"); // delegate Invoke method
+        public static readonly Name AppStaticName = new Name("AppStatic");
+        public static readonly Name AppStaticAttributeName = new Name("AppStaticAttribute");
+        public static readonly Name ExportName = new Name("Export");
+        public static readonly Name ExportAttributeName = new Name("ExportAttribute");
         public static readonly Name DllImportAttributeName = new Name("DllImportAttribute");
         public static readonly Name DllImportName = new Name("DllImport");
-		public static readonly Name OutAttributeName = new Name("OutAttribute");
-		public static readonly Name OutName = new Name("Out");
-		public static readonly Name DeclareHelperName = new Name("<Declare>");
-		public static readonly Name LambdaFunctionName = new Name("<Lambda>");
+        public static readonly Name OutAttributeName = new Name("OutAttribute");
+        public static readonly Name OutName = new Name("Out");
+        public static readonly Name DeclareHelperName = new Name("<Declare>");
+        public static readonly Name LambdaFunctionName = new Name("<Lambda>");
         public static readonly Name ClosureFunctionName = new Name("{closure}");
 
         #region SpecialMethodNames
@@ -127,20 +127,20 @@ namespace Devsense.PHP.Syntax
         /// </summary>
         internal const string AttributeNameSuffix = "Attribute";
 
-		public bool IsCloneName
-		{
-			get { return this.Equals(SpecialMethodNames.Clone); }
-		}
+        public bool IsCloneName
+        {
+            get { return this.Equals(SpecialMethodNames.Clone); }
+        }
 
-		public bool IsConstructName
-		{
-			get { return this.Equals(SpecialMethodNames.Construct); }
-		}
+        public bool IsConstructName
+        {
+            get { return this.Equals(SpecialMethodNames.Construct); }
+        }
 
-		public bool IsDestructName
-		{
-			get { return this.Equals(SpecialMethodNames.Destruct); }
-		}
+        public bool IsDestructName
+        {
+            get { return this.Equals(SpecialMethodNames.Destruct); }
+        }
 
         public bool IsCallName
         {
@@ -177,18 +177,18 @@ namespace Devsense.PHP.Syntax
             get { return IsParentClassName || IsSelfClassName || IsStaticClassName; }
         }
 
-		#endregion
+        #endregion
 
-		/// <summary>
-		/// Creates a name. 
-		/// </summary>
-		/// <param name="value">The name shouldn't be <B>null</B>.</param>
-		public Name(string/*!*/ value)
-		{
-			Debug.Assert(value != null);
-			this.value = value;
+        /// <summary>
+        /// Creates a name. 
+        /// </summary>
+        /// <param name="value">The name shouldn't be <B>null</B>.</param>
+        public Name(string/*!*/ value)
+        {
+            Debug.Assert(value != null);
+            this.value = value;
             this.hashCode = StringComparer.OrdinalIgnoreCase.GetHashCode(value);
-		}
+        }
 
         #region Utils
 
@@ -240,70 +240,70 @@ namespace Devsense.PHP.Syntax
         #region Basic Overrides
 
         public override bool Equals(object obj)
-		{
+        {
             return obj != null && obj.GetType() == typeof(Name) && Equals((Name)obj);
-		}
+        }
 
-		public override int GetHashCode()
-		{
+        public override int GetHashCode()
+        {
             return this.hashCode;
-		}
+        }
 
-		public override string ToString()
-		{
-			return this.value;
-		}
+        public override string ToString()
+        {
+            return this.value;
+        }
 
-		#endregion
+        #endregion
 
-		#region IEquatable<Name> Members
+        #region IEquatable<Name> Members
 
-		public bool Equals(Name other)
-		{
+        public bool Equals(Name other)
+        {
             return this.GetHashCode() == other.GetHashCode() && Equals(other.Value);
-		}
+        }
 
-		public static bool operator ==(Name name, Name other)
-		{
-			return name.Equals(other);
-		}
+        public static bool operator ==(Name name, Name other)
+        {
+            return name.Equals(other);
+        }
 
-		public static bool operator !=(Name name, Name other)
-		{
-			return !name.Equals(other);
-		}
+        public static bool operator !=(Name name, Name other)
+        {
+            return !name.Equals(other);
+        }
 
-		#endregion
+        #endregion
 
-		#region IEquatable<string> Members
+        #region IEquatable<string> Members
 
-		public bool Equals(string other)
-		{
+        public bool Equals(string other)
+        {
             return string.Equals(value, other, StringComparison.OrdinalIgnoreCase);
-		}
+        }
 
-		#endregion
-	}
+        #endregion
+    }
 
-	#endregion
+    #endregion
 
-	#region VariableName
+    #region VariableName
 
-	/// <summary>
-	/// Case-sensitive simple name in Unicode C normal form.
-	/// Used for names of variables and constants.
-	/// </summary>
-	[DebuggerNonUserCode]
-	public struct VariableName : IEquatable<VariableName>, IEquatable<string>
-	{
-		public string/*!*/ Value { get { return value; } set { this.value = value; } }
-		private string/*!*/ value;
+    /// <summary>
+    /// Case-sensitive simple name in Unicode C normal form.
+    /// Used for names of variables and constants.
+    /// </summary>
+    [DebuggerNonUserCode]
+    public struct VariableName : IEquatable<VariableName>, IEquatable<string>
+    {
+        public string/*!*/ Value { get { return value; } set { this.value = value; } }
+        private string/*!*/ value;
 
         #region Special Names
 
         public static readonly VariableName ThisVariableName = new VariableName("this");
 
-		#region Autoglobals
+        #region Autoglobals
 
         public const string EnvName = "_ENV";
         public const string ServerName = "_SERVER";
@@ -317,14 +317,14 @@ namespace Devsense.PHP.Syntax
         public const string SessionName = "_SESSION";
 
         #endregion
-        
+
         public bool IsThisVariableName
-		{
-			get
-			{
-				return this == ThisVariableName;
-			}
-		}
+        {
+            get
+            {
+                return this == ThisVariableName;
+            }
+        }
 
         #region IsAutoGlobal
 
@@ -374,79 +374,79 @@ namespace Devsense.PHP.Syntax
 		/// </summary>
 		/// <param name="value">The name, cannot be <B>null</B> nor empty.</param>
 		public VariableName(string/*!*/ value)
-		{
-			Debug.Assert(value != null);
-			// TODO (missing from Mono): this.value = value.Normalize();
+        {
+            Debug.Assert(value != null);
+            // TODO (missing from Mono): this.value = value.Normalize();
 
-			this.value = value;
-		}
+            this.value = value;
+        }
 
-		#region Basic Overrides
+        #region Basic Overrides
 
-		public override bool Equals(object obj)
-		{
-			if (!(obj is VariableName)) return false;
-			return Equals((VariableName)obj);
-		}
+        public override bool Equals(object obj)
+        {
+            if (!(obj is VariableName)) return false;
+            return Equals((VariableName)obj);
+        }
 
-		public override int GetHashCode()
-		{
-			return value.GetHashCode();
-		}
+        public override int GetHashCode()
+        {
+            return value.GetHashCode();
+        }
 
-		public override string ToString()
-		{
-			return this.value;
-		}
+        public override string ToString()
+        {
+            return this.value;
+        }
 
-		#endregion
+        #endregion
 
-		#region IEquatable<VariableName> Members
+        #region IEquatable<VariableName> Members
 
-		public bool Equals(VariableName other)
-		{
-			return this.value.Equals(other.value);
-		}
+        public bool Equals(VariableName other)
+        {
+            return this.value.Equals(other.value);
+        }
 
-		public static bool operator ==(VariableName name, VariableName other)
-		{
-			return name.Equals(other);
-		}
+        public static bool operator ==(VariableName name, VariableName other)
+        {
+            return name.Equals(other);
+        }
 
-		public static bool operator !=(VariableName name, VariableName other)
-		{
-			return !name.Equals(other);
-		}
+        public static bool operator !=(VariableName name, VariableName other)
+        {
+            return !name.Equals(other);
+        }
 
-		#endregion
+        #endregion
 
-		#region IEquatable<string> Members
+        #region IEquatable<string> Members
 
-		public bool Equals(string other)
-		{
-			return value.Equals(other);
-		}
+        public bool Equals(string other)
+        {
+            return value.Equals(other);
+        }
 
-		public static bool operator ==(VariableName name, string str)
-		{
-			return name.Equals(str);
-		}
+        public static bool operator ==(VariableName name, string str)
+        {
+            return name.Equals(str);
+        }
 
-		public static bool operator !=(VariableName name, string str)
-		{
-			return !name.Equals(str);
-		}
+        public static bool operator !=(VariableName name, string str)
+        {
+            return !name.Equals(str);
+        }
 
-		#endregion
-	}
+        #endregion
+    }
 
-	#endregion
+    #endregion
 
     #region QualifiedName
 
     /// <summary>
-	/// Case-insensitive culture-sensitive (TODO ???) qualified name in Unicode C normal form.
-	/// </summary>
+    /// Case-insensitive culture-sensitive (TODO ???) qualified name in Unicode C normal form.
+    /// </summary>
     [DebuggerNonUserCode]
     public struct QualifiedName : IEquatable<QualifiedName>
     {
@@ -454,23 +454,23 @@ namespace Devsense.PHP.Syntax
 
         public static readonly QualifiedName Assert = new QualifiedName(new Name("assert"), Name.EmptyNames);
         public static readonly QualifiedName Error = new QualifiedName(new Name("<error>"), Name.EmptyNames);
-		public static readonly QualifiedName Global = new QualifiedName(new Name("<Global>"), Name.EmptyNames);
-		public static readonly QualifiedName Lambda = new QualifiedName(new Name("Lambda"), Name.EmptyNames);
-		public static readonly QualifiedName Null = new QualifiedName(new Name("null"), Name.EmptyNames);
-		public static readonly QualifiedName True = new QualifiedName(new Name("true"), Name.EmptyNames);
-		public static readonly QualifiedName False = new QualifiedName(new Name("false"), Name.EmptyNames);
-		public static readonly QualifiedName Array = new QualifiedName(new Name("array"), Name.EmptyNames);
-		public static readonly QualifiedName Object = new QualifiedName(new Name("object"), Name.EmptyNames);
+        public static readonly QualifiedName Global = new QualifiedName(new Name("<Global>"), Name.EmptyNames);
+        public static readonly QualifiedName Lambda = new QualifiedName(new Name("Lambda"), Name.EmptyNames);
+        public static readonly QualifiedName Null = new QualifiedName(new Name("null"), Name.EmptyNames);
+        public static readonly QualifiedName True = new QualifiedName(new Name("true"), Name.EmptyNames);
+        public static readonly QualifiedName False = new QualifiedName(new Name("false"), Name.EmptyNames);
+        public static readonly QualifiedName Array = new QualifiedName(new Name("array"), Name.EmptyNames);
+        public static readonly QualifiedName Object = new QualifiedName(new Name("object"), Name.EmptyNames);
         public static readonly QualifiedName Int = new QualifiedName(new Name("int"), Name.EmptyNames);
         public static readonly QualifiedName Integer = new QualifiedName(new Name("integer"), Name.EmptyNames);
-		public static readonly QualifiedName LongInteger = new QualifiedName(new Name("int64"), Name.EmptyNames);
-		public static readonly QualifiedName String = new QualifiedName(new Name("string"), Name.EmptyNames);
+        public static readonly QualifiedName LongInteger = new QualifiedName(new Name("int64"), Name.EmptyNames);
+        public static readonly QualifiedName String = new QualifiedName(new Name("string"), Name.EmptyNames);
         public static readonly QualifiedName Boolean = new QualifiedName(new Name("boolean"), Name.EmptyNames);
         public static readonly QualifiedName Bool = new QualifiedName(new Name("bool"), Name.EmptyNames);
         public static readonly QualifiedName Double = new QualifiedName(new Name("double"), Name.EmptyNames);
         public static readonly QualifiedName Float = new QualifiedName(new Name("float"), Name.EmptyNames);
         public static readonly QualifiedName Resource = new QualifiedName(new Name("resource"), Name.EmptyNames);
-		public static readonly QualifiedName Callable = new QualifiedName(new Name("callable"), Name.EmptyNames);
+        public static readonly QualifiedName Callable = new QualifiedName(new Name("callable"), Name.EmptyNames);
 
         public bool IsSimpleName
         {
@@ -552,13 +552,13 @@ namespace Devsense.PHP.Syntax
 		/// The outer most namespace is the first in the array.
 		/// </summary>
 		public Name[]/*!*/ Namespaces { get { return namespaces; } set { namespaces = value; } }
-		private Name[]/*!*/ namespaces;
+        private Name[]/*!*/ namespaces;
 
-		/// <summary>
-		/// Base name. Contains the empty string for namespaces.
-		/// </summary>
-		public Name Name { get { return name; } set { name = value; } }
-		private Name name;
+        /// <summary>
+        /// Base name. Contains the empty string for namespaces.
+        /// </summary>
+        public Name Name { get { return name; } set { name = value; } }
+        private Name name;
 
         /// <summary>
         /// <c>True</c> if this represents fully qualified name (absolute namespace).
@@ -582,38 +582,38 @@ namespace Devsense.PHP.Syntax
         //    this.isFullyQualifiedName = qn.IsFullyQualifiedName;
         //}
 
-		internal QualifiedName(IList<string>/*!*/ names, bool hasBaseName, bool fullyQualified)
-		{
-			Debug.Assert(names != null && names.Count > 0);
+        internal QualifiedName(IList<string>/*!*/ names, bool hasBaseName, bool fullyQualified)
+        {
+            Debug.Assert(names != null && names.Count > 0);
 
             //
             if (hasBaseName)
-			{
-				name = new Name(names[names.Count - 1]);
-				namespaces = new Name[names.Count - 1];
-			}
-			else
-			{
-				name = Name.EmptyBaseName;
-				namespaces = new Name[names.Count];
-			}
+            {
+                name = new Name(names[names.Count - 1]);
+                namespaces = new Name[names.Count - 1];
+            }
+            else
+            {
+                name = Name.EmptyBaseName;
+                namespaces = new Name[names.Count];
+            }
 
-			for (int i = 0; i < namespaces.Length; i++)
-				namespaces[i] = new Name(names[i]);
+            for (int i = 0; i < namespaces.Length; i++)
+                namespaces[i] = new Name(names[i]);
 
             //
             isFullyQualifiedName = fullyQualified;
-		}
+        }
 
-		public QualifiedName(Name name)
-            :this(name, Name.EmptyNames, false)
-		{
-		}
+        public QualifiedName(Name name)
+            : this(name, Name.EmptyNames, false)
+        {
+        }
 
-		public QualifiedName(Name name, Name[]/*!*/ namespaces)
-            :this(name, namespaces, false)
-		{
-		}
+        public QualifiedName(Name name, Name[]/*!*/ namespaces)
+            : this(name, namespaces, false)
+        {
+        }
 
         public QualifiedName(Name name, Name[]/*!*/ namespaces, bool fullyQualified)
         {
@@ -625,32 +625,32 @@ namespace Devsense.PHP.Syntax
             this.isFullyQualifiedName = fullyQualified;
         }
 
-		internal QualifiedName(Name name, QualifiedName namespaceName)
-		{
-			Debug.Assert(namespaceName.name.Value == "");
+        internal QualifiedName(Name name, QualifiedName namespaceName)
+        {
+            Debug.Assert(namespaceName.name.Value == "");
 
-			this.name = name;
-			this.namespaces = namespaceName.Namespaces;
+            this.name = name;
+            this.namespaces = namespaceName.Namespaces;
             this.isFullyQualifiedName = namespaceName.IsFullyQualifiedName;
-		}
+        }
 
-		internal QualifiedName(QualifiedName name, QualifiedName namespaceName)
-		{
-			Debug.Assert(namespaceName.name.Value == "");
+        internal QualifiedName(QualifiedName name, QualifiedName namespaceName)
+        {
+            Debug.Assert(namespaceName.name.Value == "");
 
             this.name = name.name;
-				
-			if (name.IsSimpleName)
-			{
-				this.namespaces = namespaceName.Namespaces;
-			}
-			else // used for nested types
-			{
-				this.namespaces = ArrayUtils.Concat(namespaceName.namespaces, name.namespaces);
-			}
+
+            if (name.IsSimpleName)
+            {
+                this.namespaces = namespaceName.Namespaces;
+            }
+            else // used for nested types
+            {
+                this.namespaces = ArrayUtils.Concat(namespaceName.namespaces, name.namespaces);
+            }
 
             this.isFullyQualifiedName = namespaceName.IsFullyQualifiedName;
-		}
+        }
 
         /// <summary>
         /// Make QualifiedName from the string like AAA\BBB\XXX
@@ -771,7 +771,7 @@ namespace Devsense.PHP.Syntax
         /// <returns>String List of namespaces (additionaly with <see cref="Name"/> component if it is not empty).</returns>
         internal List<string>/*!*/ToStringList()
         {
-            List<string> list = new List<string>( this.Namespaces.Select( x => x.Value ) );
+            List<string> list = new List<string>(this.Namespaces.Select(x => x.Value));
 
             if (!string.IsNullOrEmpty(this.Name.Value))
                 list.Add(this.Name.Value);
@@ -779,26 +779,26 @@ namespace Devsense.PHP.Syntax
             return list;
         }
 
-		#endregion
+        #endregion
 
-		#region Basic Overrides
+        #region Basic Overrides
 
-		public override bool Equals(object obj)
-		{
-			return obj != null && obj.GetType() == typeof(QualifiedName) && this.Equals((QualifiedName)obj);
-		}
+        public override bool Equals(object obj)
+        {
+            return obj != null && obj.GetType() == typeof(QualifiedName) && this.Equals((QualifiedName)obj);
+        }
 
-		public override int GetHashCode()
-		{
-			unchecked
-			{
-				int result = name.GetHashCode();
-				for (int i = 0; i < namespaces.Length; i++)
-					result ^= namespaces[i].GetHashCode() << (i & 0x0f);
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                int result = name.GetHashCode();
+                for (int i = 0; i < namespaces.Length; i++)
+                    result ^= namespaces[i].GetHashCode() << (i & 0x0f);
 
-				return result;
-			}
-		}
+                return result;
+            }
+        }
 
         /// <summary>
         /// Return the namespace PHP name in form "A\B\C", not ending with <see cref="Separator"/>.
@@ -825,26 +825,26 @@ namespace Devsense.PHP.Syntax
             }
         }
 
-		public string ToString(Name? memberName, bool instance)
-		{
-			StringBuilder result = new StringBuilder();
-			for (int i = 0; i < namespaces.Length; i++)
-			{
-				result.Append(namespaces[i]);
-				result.Append(Separator);
-			}
-			result.Append(Name);
-			if (memberName.HasValue)
-			{
-				result.Append(instance ? "->" : "::");
-				result.Append(memberName.Value.ToString());
-			}
+        public string ToString(Name? memberName, bool instance)
+        {
+            StringBuilder result = new StringBuilder();
+            for (int i = 0; i < namespaces.Length; i++)
+            {
+                result.Append(namespaces[i]);
+                result.Append(Separator);
+            }
+            result.Append(Name);
+            if (memberName.HasValue)
+            {
+                result.Append(instance ? "->" : "::");
+                result.Append(memberName.Value.ToString());
+            }
 
-			return result.ToString();
-		}
+            return result.ToString();
+        }
 
-		public override string ToString()
-		{
+        public override string ToString()
+        {
             var ns = this.namespaces;
             if (ns == null || ns.Length == 0)
             {
@@ -861,37 +861,37 @@ namespace Devsense.PHP.Syntax
                 result.Append(this.Name.Value);
                 return result.ToString();
             }
-		}
+        }
 
-		#endregion
+        #endregion
 
-		#region IEquatable<QualifiedName> Members
+        #region IEquatable<QualifiedName> Members
 
-		public bool Equals(QualifiedName other)
-		{
-			if (!this.name.Equals(other.name) || this.namespaces.Length != other.namespaces.Length) return false;
+        public bool Equals(QualifiedName other)
+        {
+            if (!this.name.Equals(other.name) || this.namespaces.Length != other.namespaces.Length) return false;
 
             for (int i = 0; i < namespaces.Length; i++)
-			{
-				if (!this.namespaces[i].Equals(other.namespaces[i]))
-					return false;
-			}
+            {
+                if (!this.namespaces[i].Equals(other.namespaces[i]))
+                    return false;
+            }
 
-			return true;
-		}
+            return true;
+        }
 
-		public static bool operator ==(QualifiedName name, QualifiedName other)
-		{
-			return name.Equals(other);
-		}
+        public static bool operator ==(QualifiedName name, QualifiedName other)
+        {
+            return name.Equals(other);
+        }
 
-		public static bool operator !=(QualifiedName name, QualifiedName other)
-		{
-			return !name.Equals(other);
-		}
+        public static bool operator !=(QualifiedName name, QualifiedName other)
+        {
+            return !name.Equals(other);
+        }
 
-		#endregion
-	}
+        #endregion
+    }
 
     internal class ConstantQualifiedNameComparer : IEqualityComparer<QualifiedName>
     {
@@ -908,16 +908,16 @@ namespace Devsense.PHP.Syntax
         }
     }
 
-	#endregion
+    #endregion
 
-	#region GenericQualifiedName
+    #region GenericQualifiedName
 
-	/// <summary>
-	/// Case-insensitive culture-sensitive (TODO ???) qualified name in Unicode C normal form
-	/// with associated list of generic qualified names.
-	/// </summary>
-	public struct GenericQualifiedName
-	{
+    /// <summary>
+    /// Case-insensitive culture-sensitive (TODO ???) qualified name in Unicode C normal form
+    /// with associated list of generic qualified names.
+    /// </summary>
+    public struct GenericQualifiedName
+    {
         /// <summary>
         /// Empty GenericQualifiedName array.
         /// </summary>
@@ -927,11 +927,11 @@ namespace Devsense.PHP.Syntax
         /// Qualified name without generics.
         /// </summary>
 		public QualifiedName QualifiedName { get { return qualifiedName; } }
-		private QualifiedName qualifiedName;
+        private QualifiedName qualifiedName;
 
-		/// <summary>
+        /// <summary>
         /// Array of <see cref="GenericQualifiedName"/> or <see cref="PrimitiveTypeName"/>.
-		/// </summary>
+        /// </summary>
         public object[]/*!!*/ GenericParams { get { return genericParams; } }
         private object[]/*!!*/ genericParams;
 
@@ -941,22 +941,22 @@ namespace Devsense.PHP.Syntax
         public bool IsGeneric { get { return genericParams != null && genericParams.Length != 0; } }
 
         public GenericQualifiedName(QualifiedName qualifiedName, object[]/*!!*/ genericParams)
-		{
-			Debug.Assert(genericParams != null);
+        {
+            Debug.Assert(genericParams != null);
             Debug.Assert(genericParams.All(obj => obj == null || obj is PrimitiveTypeName || obj is GenericQualifiedName));
 
-			this.qualifiedName = qualifiedName;
-			this.genericParams = genericParams;
-		}
+            this.qualifiedName = qualifiedName;
+            this.genericParams = genericParams;
+        }
 
-		public GenericQualifiedName(QualifiedName qualifiedName)
-		{
-			this.qualifiedName = qualifiedName;
-			this.genericParams = ArrayUtils.EmptyObjects;
-		}
-	}
+        public GenericQualifiedName(QualifiedName qualifiedName)
+        {
+            this.qualifiedName = qualifiedName;
+            this.genericParams = ArrayUtils.EmptyObjects;
+        }
+    }
 
-	#endregion
+    #endregion
 
     #region PrimitiveTypeName
 
@@ -1008,7 +1008,7 @@ namespace Devsense.PHP.Syntax
 
     #endregion
 
-	#region NamingContext
+    #region NamingContext
 
     [DebuggerNonUserCode]
     public sealed class NamingContext
@@ -1017,15 +1017,17 @@ namespace Devsense.PHP.Syntax
         {
             public static readonly NameRefComparer Singleton = new NameRefComparer();
 
-            public bool Equals(NameRef x, NameRef y)
-            {
-                return x.Name.Equals(y.Name);
-            }
+            public bool Equals(NameRef x, NameRef y) => x.Name.Equals(y.Name);
 
-            public int GetHashCode(NameRef obj)
-            {
-                return obj.HasValue? obj.Name.GetHashCode(): ~0;
-            }
+            public int GetHashCode(NameRef obj) => obj.HasValue ? obj.Name.GetHashCode() : ~0;
+        }
+        class CaseSensitiveNameRefComparer : IEqualityComparer<NameRef>
+        {
+            public static readonly CaseSensitiveNameRefComparer Singleton = new CaseSensitiveNameRefComparer();
+
+            public bool Equals(NameRef x, NameRef y) => x.Name.Value.Equals(y.Name.Value, StringComparison.Ordinal);
+
+            public int GetHashCode(NameRef obj) => obj.HasValue ? obj.Name.GetHashCode() : ~0;
         }
 
         #region Fields & Properties
@@ -1114,7 +1116,7 @@ namespace Devsense.PHP.Syntax
         {
             var aliases = _constantAliases;
             if (aliases == null)
-                _constantAliases = aliases = new Dictionary<NameRef, QualifiedNameRef>(NameRefComparer.Singleton);
+                _constantAliases = aliases = new Dictionary<NameRef, QualifiedNameRef>(CaseSensitiveNameRefComparer.Singleton);
 
             return AddAlias(aliases, alias, qname);
         }
