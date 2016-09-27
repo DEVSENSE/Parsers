@@ -430,8 +430,13 @@ unprefixed_use_declaration:
 ;
 
 use_declaration:
-		unprefixed_use_declaration                { $$ = $1; }
-	|	T_NS_SEPARATOR unprefixed_use_declaration { $$ = $2; }
+		unprefixed_use_declaration                
+			{ $$ = $1; }
+	|	T_NS_SEPARATOR unprefixed_use_declaration 
+			{ 
+				var src = (Tuple<QualifiedNameRef, NameRef>)$2;
+				$$ = new Tuple<QualifiedNameRef, NameRef>(new QualifiedNameRef(CombineSpans(@1, src.Item1.Span), src.Item1.QualifiedName), src.Item2); 
+			}
 ;
 
 const_list:
@@ -482,9 +487,9 @@ statement:
 	|	expr ';' { $$ = _astFactory.ExpressionStmt(@$, (LangElement)$1); }
 	|	T_UNSET '(' unset_variables ')' ';' { $$ = _astFactory.Unset(@$, (List<LangElement>)$3); }
 	|	T_FOREACH '(' expr T_AS foreach_variable ')' enter_scope foreach_statement exit_scope
-			{ $$ = _astFactory.Foreach(@$, (LangElement)$3, null, (LangElement)$5, (LangElement)$8); }
+			{ $$ = _astFactory.Foreach(@$, (LangElement)$3, null, (ForeachVar)$5, (LangElement)$8); }
 	|	T_FOREACH '(' expr T_AS foreach_variable T_DOUBLE_ARROW foreach_variable ')' enter_scope foreach_statement exit_scope
-			{ $$ = _astFactory.Foreach(@$, (LangElement)$3, (LangElement)$5, (LangElement)$7, (LangElement)$10); }
+			{ $$ = _astFactory.Foreach(@$, (LangElement)$3, (ForeachVar)$5, (ForeachVar)$7, (LangElement)$10); }
 	|	T_DECLARE '(' const_list ')' declare_statement
 			{ $$ = _astFactory.Declare(@$, (LangElement)$5); }
 	|	';'	/* empty statement */ { $$ = _astFactory.EmptyStmt(@$); }
@@ -604,11 +609,11 @@ implements_list:
 	|	T_IMPLEMENTS name_list	{ $$ = TypeRefListFromQNRList($2); }
 ;
 
-foreach_variable:	// TODO: <return ForeachVar>
-		variable			{ $$ = $1; }	// TODO: new ForeachVar($1, false)
-	|	'&' variable		{ $$ = $2; }	// TODO: new ForeachVar($2, true)
-	|	T_LIST '(' array_pair_list ')' { $$ = _astFactory.List(@$, (List<Item>)$3); }	// TODO: new ForeachVar((ListEx))
-	|	'[' array_pair_list ']' { $$ = _astFactory.List(@$, (List<Item>)$2); }	// TODO: new ForeachVar((ListEx))
+foreach_variable:
+		variable			{ $$ = _astFactory.ForeachVariable(@$, (LangElement)$1); }
+	|	'&' variable		{ $$ = _astFactory.ForeachVariable(@$, (LangElement)$2, true); }
+	|	T_LIST '(' array_pair_list ')' { $$ = _astFactory.ForeachVariable(@$, _astFactory.List(@$, (List<Item>)$3)); }
+	|	'[' array_pair_list ']' { $$ = _astFactory.ForeachVariable(@$, _astFactory.List(@$, (List<Item>)$2)); }
 ;
 
 for_statement:

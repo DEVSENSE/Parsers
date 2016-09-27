@@ -21,10 +21,8 @@ endforeach;
       }
     },
     "ValueVariable":{
-      "IndirectVarUse":{
-        "DirectVarUse":{
-          "VarName":"value"
-        }
+      "DirectVarUse":{
+        "VarName":"value"
       }
     },
     "Body":{

@@ -62,7 +62,7 @@ $a? : $b;
 
 "GlobalCode":{
   "NamingContext":{},
-  "RefAssignEx":{"Operation":"AssignRef","DirectVarUse":{"VarName":"a"},"IndirectVarUse":{"DirectVarUse":{"VarName":"b"}}},
+  "RefAssignEx":{"Operation":"AssignRef","DirectVarUse":{"VarName":"a"},"DirectVarUse":{"VarName":"b"}},
   "ValueAssignEx":{"Operation":"AssignSub","DirectVarUse":{"VarName":"a"},"DirectVarUse":{"VarName":"b"}},
   "ValueAssignEx":{"Operation":"AssignMul","DirectVarUse":{"VarName":"a"},"DirectVarUse":{"VarName":"b"}},
   "ValueAssignEx":{"Operation":"AssignPow","DirectVarUse":{"VarName":"a"},"DirectVarUse":{"VarName":"b"}},
@@ -99,7 +99,7 @@ $a? : $b;
   "UnaryEx":{"Operation":"LogicNegation","DirectVarUse":{"VarName":"b"}},
   "UnaryEx":{"Operation":"BitNegation","DirectVarUse":{"VarName":"b"}},
   
-  "BinaryEx":{"Operation":"ShiftRight","DirectVarUse":{"VarName":"a"},"DirectVarUse":{"VarName":"b"}},
+  "BinaryEx":{"Operation":"Identical","DirectVarUse":{"VarName":"a"},"DirectVarUse":{"VarName":"b"}},
   "BinaryEx":{"Operation":"NotIdentical","DirectVarUse":{"VarName":"a"},"DirectVarUse":{"VarName":"b"}},
   "BinaryEx":{"Operation":"Equal","DirectVarUse":{"VarName":"a"},"DirectVarUse":{"VarName":"b"}},
   "BinaryEx":{"Operation":"NotEqual","DirectVarUse":{"VarName":"a"},"DirectVarUse":{"VarName":"b"}},

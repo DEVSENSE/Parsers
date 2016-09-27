@@ -437,7 +437,7 @@ namespace Devsense.PHP.Syntax.Ast
         /// <param name="value">The value variable.</param>
         /// <param name="body">Loop body.</param>
         /// <returns>Foreach statement.</returns>
-        TNode Foreach(TSpan span, TNode enumeree, TNode keyOpt, TNode value, TNode body);
+        TNode Foreach(TSpan span, TNode enumeree, ForeachVar keyOpt, ForeachVar value, TNode body);
 
         /// <summary>
         /// Creates <c>if</c> statement.
@@ -668,6 +668,15 @@ namespace Devsense.PHP.Syntax.Ast
         /// <param name="typeRef">Field containing type.</param>
         /// <returns>Direct static field access expression.</returns>
         TNode Variable(TSpan span, TNode nameExpr, TypeRef typeRef);
+
+        /// <summary>
+        /// Foreach variable used in <c>foreach</c> loop as key and value.
+        /// </summary>
+        /// <param name="span">Entire element span.</param>
+        /// <param name="variable">Expression representing the variable name.</param>
+        /// <param name="alias">Indicates if the variable is alias.</param>
+        /// <returns>Foreach variable expression.</returns>
+        ForeachVar ForeachVariable(TSpan span, TNode variable, bool alias = false);
 
         /// <summary>
         /// Create <c>TypeRef</c> reference to a type.

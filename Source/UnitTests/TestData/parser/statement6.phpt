@@ -19,10 +19,8 @@ foreach ($arr as $key => $value) {
       }
     },
     "ValueVariable":{
-      "IndirectVarUse":{
-        "DirectVarUse":{
-          "VarName":"value"
-        }
+      "DirectVarUse":{
+        "VarName":"value"
       }
     },
     "Body":{

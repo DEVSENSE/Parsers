@@ -965,5 +965,5 @@ ST_HALT_COMPILER1,ST_HALT_COMPILER2,ST_HALT_COMPILER3>{EOF} {
 	BEGIN(LexicalStates.INITIAL);
 	return (Tokens.T_CLOSE_TAG);
 	}
-<ST_ONE_LINE_COMMENT>([^\n\r?>]+([?][^>]|[>])*)*([?]?{NEWLINE})? { yy_pop_state(); return Tokens.T_COMMENT; }
+<ST_ONE_LINE_COMMENT>([^\n\r?>]*([?][^>]|[>])*)*([?]?{NEWLINE})? { yy_pop_state(); return Tokens.T_COMMENT; }
 

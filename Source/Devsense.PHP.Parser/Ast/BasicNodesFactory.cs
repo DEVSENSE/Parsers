@@ -203,11 +203,9 @@ namespace Devsense.PHP.Syntax.Ast
             return new ForStmt(span, ConvertList<Expression>(init), ConvertList<Expression>(cond), ConvertList<Expression>(action), (Statement)body);
         }
 
-        public virtual LangElement Foreach(Span span, LangElement enumeree, LangElement keyOpt, LangElement value, LangElement body)
+        public virtual LangElement Foreach(Span span, LangElement enumeree, ForeachVar keyOpt, ForeachVar value, LangElement body)
         {
-            ForeachVar key = keyOpt == null? null: (keyOpt is VariableUse ? new ForeachVar((VariableUse)keyOpt, false) : new ForeachVar((ListEx)keyOpt));
-            ForeachVar val = value is VariableUse ? new ForeachVar((VariableUse)value, false) : new ForeachVar((ListEx)value);
-            return new ForeachStmt(span, (Expression)enumeree, key, val, (Statement)body);
+            return new ForeachStmt(span, (Expression)enumeree, keyOpt, value, (Statement)body);
         }
 
         public virtual LangElement Function(Span span, bool conditional, bool aliasReturn, PhpMemberAttributes attributes, TypeRef returnType, 
@@ -488,6 +486,14 @@ namespace Devsense.PHP.Syntax.Ast
             int nameLength = name.Length + (memberOfOpt == null ? 1 : 0);
             return new DirectVarUse(new Span(span.End - nameLength, nameLength), name) { IsMemberOf = (VarLikeConstructUse)memberOfOpt };
         }
+        public virtual ForeachVar ForeachVariable(Span span, LangElement variable, bool alias)
+        {
+            if (variable is ListEx)
+                return new ForeachVar((ListEx)variable);
+            else
+                return new ForeachVar((VariableUse)variable, alias);
+        }
+
         public virtual LangElement TypeReference(Span span, QualifiedName className, bool isNullable, List<TypeRef> genericParamsOpt)
         {
             var type = className.IsPrimitiveTypeName
