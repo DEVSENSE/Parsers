@@ -43,8 +43,8 @@ namespace Devsense.PHP.Syntax.Ast
 		/// <summary>
 		/// Name of the argument.
 		/// </summary>
-		public VariableNameRef Name { get { return name; } }
-		private VariableNameRef name;
+		public VariableNameRef Name { get { return _name; } }
+		private VariableNameRef _name;
 
 		/// <summary>
 		/// Whether the parameter is &amp;-modified.
@@ -72,19 +72,16 @@ namespace Devsense.PHP.Syntax.Ast
 		/// <summary>
 		/// Initial value expression. Can be <B>null</B>.
 		/// </summary>
-        public Expression InitValue { get { return initValue; } internal set { initValue = value; } }
-		private Expression initValue;
+        public Expression InitValue { get { return _initValue; } internal set { _initValue = value; } }
+		private Expression _initValue;
 
 		/// <summary>
 		/// Either <see cref="PrimitiveTypeName"/>, <see cref="GenericQualifiedName"/>, or <B>null</B>.
 		/// </summary>
-        public TypeRef TypeHint { get { return typeHint; } }
-		private TypeRef typeHint;
+        public TypeRef TypeHint { get { return _typeHint; } }
+		private TypeRef _typeHint;
 
-        /// <summary>Position of <see cref="TypeHint"/> if any.</summary>
-        public Text.Span TypeHintPosition { get; internal set; }
-
-		/// <summary>
+        /// <summary>
         /// Gets collection of CLR attributes annotating this statement.
         /// </summary>
         public CustomAttributes Attributes
@@ -99,14 +96,14 @@ namespace Devsense.PHP.Syntax.Ast
 				Expression initValue, List<CustomAttribute> attributes)
             : base(span)
 		{
-			this.name = new VariableNameRef(nameSpan, name);
-			this.typeHint = typeHint;
-            this._flags = flags;
-			this.initValue = initValue;
+			_name = new VariableNameRef(nameSpan, name);
+			_typeHint = typeHint;
+            _flags = flags;
+			_initValue = initValue;
             if (attributes != null && attributes.Count != 0)
+            {
                 this.Attributes = new CustomAttributes(attributes);
-
-			this.TypeHintPosition = Text.Span.Invalid;
+            }
 		}
 
 		#endregion

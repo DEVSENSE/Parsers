@@ -897,6 +897,7 @@ namespace Devsense.PHP.Syntax
         /// <param name="x"></param>
         virtual public void VisitFormalParam(FormalParam x)
         {
+            VisitElement(x.TypeHint);
             VisitElement(x.InitValue);
         }
 
