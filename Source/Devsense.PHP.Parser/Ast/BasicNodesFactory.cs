@@ -494,45 +494,30 @@ namespace Devsense.PHP.Syntax.Ast
                 return new ForeachVar((VariableUse)variable, alias);
         }
 
-        public virtual LangElement TypeReference(Span span, QualifiedName className, bool isNullable, List<TypeRef> genericParamsOpt)
+        public virtual LangElement TypeReference(Span span, QualifiedName className)
         {
-            var type = className.IsPrimitiveTypeName
+            return className.IsPrimitiveTypeName
                 ? (TypeRef)new PrimitiveTypeRef(span, new PrimitiveTypeName(className))
                 : (TypeRef)new DirectTypeRef(span, className);
-
-            //
-            if (genericParamsOpt != null && genericParamsOpt.Count != 0)
-            {
-                type = new GenericTypeRef(span, type, genericParamsOpt);
-            }
-
-            //
-            if (isNullable)
-            {
-                type = new NullableTypeRef(span, type);
-            }
-
-            //
-            return type;
         }
-        public virtual LangElement TypeReference(Span span, LangElement varName, List<TypeRef> genericParamsOpt)
+        public virtual LangElement NullableTypeReference(Span span, LangElement className)
         {
-            TypeRef type = new IndirectTypeRef(span, (VariableUse)varName);
-            if (genericParamsOpt != null && genericParamsOpt != GenericTypeRef.EmptyList)
-                type = new GenericTypeRef(span, type, genericParamsOpt);
-            return type;
+            return new NullableTypeRef(span, (TypeRef)className);
         }
-        public virtual LangElement TypeReference(Span span, IEnumerable<LangElement> classes, List<TypeRef> genericParamsOpt)
+        public virtual LangElement GenericTypeReference(Span span, LangElement className, List<TypeRef> genericParams)
+        {
+            return new GenericTypeRef(span, (TypeRef)className, genericParams);
+        }
+        public virtual LangElement TypeReference(Span span, LangElement varName)
+        {
+            return new IndirectTypeRef(span, (VariableUse)varName);
+        }
+        public virtual LangElement TypeReference(Span span, IEnumerable<LangElement> classes)
         {
             Debug.Assert(classes != null && classes.Count() > 0 && classes.All(c => c is TypeRef));
             if (classes.Count() == 1)
                 return classes.First();
-
-            TypeRef type = null;
-            type = new MultipleTypeRef(span, ConvertList<TypeRef>(classes));
-            if (genericParamsOpt != null && genericParamsOpt != GenericTypeRef.EmptyList)
-                type = new GenericTypeRef(span, type, genericParamsOpt);
-            return type;
+            return new MultipleTypeRef(span, ConvertList<TypeRef>(classes));
         }
 
         public virtual LangElement While(Span span, LangElement cond, LangElement body)

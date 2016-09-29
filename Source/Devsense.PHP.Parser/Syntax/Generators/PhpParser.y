@@ -506,7 +506,7 @@ catch_list:
 	|	catch_list T_CATCH '(' catch_name_list T_VARIABLE ')' '{' inner_statement_list '}'
 			{ 
 				$$ = AddToList<CatchItem>($1, _astFactory.Catch(CombineSpans(@2, @9), 
-					(TypeRef)_astFactory.TypeReference(@4, TypeRefListFromTranslatedQNRList($4), null), 
+					(TypeRef)_astFactory.TypeReference(@4, TypeRefListFromTranslatedQNRList($4)), 
 					(DirectVarUse)_astFactory.Variable(@5, (string)$5, (LangElement)null), 
 					CreateBlock(CombineSpans(@7, @9), (List<LangElement>)$8))); 
 			}
@@ -596,7 +596,7 @@ interface_declaration_statement:
 
 extends_from:
 		/* empty */		{ $$ = null; }
-	|	T_EXTENDS name	{ $$ = TypeRefFromName(TranslateQNR($2)); }
+	|	T_EXTENDS name	{ $$ = TypeRefFromName(@2, TranslateQNR($2)); }
 ;
 
 interface_extends_list:
@@ -735,8 +735,8 @@ optional_type:
 ;
 
 type_expr:
-		type		{ $$ = TypeRefFromName(TranslateQNR($1), false); }
-	|	'?' type	{ $$ = TypeRefFromName(TranslateQNR($2), true); }
+		type		{ $$ = TypeRefFromName(@$, TranslateQNR($1), false); }
+	|	'?' type	{ $$ = TypeRefFromName(@$, TranslateQNR($2), true); }
 ;
 
 type:
@@ -1145,22 +1145,22 @@ function_call:
 	|	variable_class_name T_DOUBLE_COLON member_name argument_list
 			{
 				if($3 is Name)
-					$$ = _astFactory.Call(@$, (Name)$3, @3, new CallSignature((List<ActualParam>)$4), (TypeRef)_astFactory.TypeReference(@1, (LangElement)$1, null)); 
+					$$ = _astFactory.Call(@$, (Name)$3, @3, new CallSignature((List<ActualParam>)$4), (TypeRef)_astFactory.TypeReference(@1, (LangElement)$1)); 
 				else
-					$$ = _astFactory.Call(@$, (LangElement)$3, new CallSignature((List<ActualParam>)$4), (TypeRef)_astFactory.TypeReference(@1, (LangElement)$1, null)); 
+					$$ = _astFactory.Call(@$, (LangElement)$3, new CallSignature((List<ActualParam>)$4), (TypeRef)_astFactory.TypeReference(@1, (LangElement)$1)); 
 			}
 	|	callable_expr argument_list
 			{ $$ = _astFactory.Call(@$, (LangElement)$1, new CallSignature((List<ActualParam>)$2), (LangElement)null);}
 ;
 
 class_name:
-		T_STATIC	{ $$ = _astFactory.TypeReference(@$, new QualifiedName(Name.StaticClassName), false, null); }
-	|	name		{ $$ = TypeRefFromName(TranslateQNR($1)); }
+		T_STATIC	{ $$ = _astFactory.TypeReference(@$, new QualifiedName(Name.StaticClassName)); }
+	|	name		{ $$ = TypeRefFromName(@$, TranslateQNR($1)); }
 ;
 
 class_name_reference:
 		class_name		{ $$ = $1; }
-	|	new_variable	{ $$ = _astFactory.TypeReference(@$, (LangElement)$1, null); }
+	|	new_variable	{ $$ = _astFactory.TypeReference(@$, (LangElement)$1); }
 ;
 
 exit_expr:
@@ -1215,7 +1215,7 @@ constant:
 	|	class_name T_DOUBLE_COLON identifier
 			{ $$ = _astFactory.ClassConstUse(@$, (TypeRef)$1, new Name((string)$3), @3); }
 	|	variable_class_name T_DOUBLE_COLON identifier
-			{ $$ = _astFactory.ClassConstUse(@$, (TypeRef)_astFactory.TypeReference(@$, (LangElement)$1, null), new Name((string)$3), @3); }
+			{ $$ = _astFactory.ClassConstUse(@$, (TypeRef)_astFactory.TypeReference(@$, (LangElement)$1), new Name((string)$3), @3); }
 ;
 
 expr:

@@ -683,19 +683,41 @@ namespace Devsense.PHP.Syntax.Ast
         /// </summary>
         /// <param name="span">Entire element span.</param>
         /// <param name="className">Qualified class name.</param>
-        /// <param name="isNullable">Indicates if the type is nullable.</param>
-        /// <param name="genericParamsOpt">Actual generic parameters</param>
         /// <returns>Type reference.</returns>
-        TNode TypeReference(TSpan span, QualifiedName className, bool isNullable, List<TypeRef> genericParamsOpt);
+        TNode TypeReference(TSpan span, QualifiedName className);
+
+        /// <summary>
+        /// Create <c>NullableTypeRef</c> reference to a nullable type.
+        /// </summary>
+        /// <param name="span">Entire element span.</param>
+        /// <param name="className">Qualified class name.</param>
+        /// <returns>Nullable type reference.</returns>
+        TNode NullableTypeReference(TSpan span, TNode className);
+
+        /// <summary>
+        /// Create <c>GenericTypeRef</c> reference to a generic type.
+        /// </summary>
+        /// <param name="span">Entire element span.</param>
+        /// <param name="className">Qualified class name.</param>
+        /// <param name="genericParams">Actual generic parameters.</param>
+        /// <returns>Nullable type reference.</returns>
+        TNode GenericTypeReference(TSpan span, TNode className, List<TypeRef> genericParams);
 
         /// <summary>
         /// Create <c>TypeRef</c> reference to a type.
         /// </summary>
         /// <param name="span">Entire element span.</param>
         /// <param name="varName">Indirect name.</param>
-        /// <param name="genericParamsOpt">Actual generic parameters</param>
         /// <returns>Type reference.</returns>
-        TNode TypeReference(TSpan span, TNode varName, List<TypeRef> genericParamsOpt);
+        TNode TypeReference(TSpan span, TNode varName);
+
+        /// <summary>
+        /// Create <c>TypeRef</c> reference to a type.
+        /// </summary>
+        /// <param name="span">Entire element span.</param>
+        /// <param name="classes">List of all qualified classes in the expression.</param>
+        /// <returns>Type reference.</returns>
+        TNode TypeReference(TSpan span, IEnumerable<TNode> classes);
 
         /// <summary>
         /// Creates anonymous type reference node.
@@ -716,15 +738,6 @@ namespace Devsense.PHP.Syntax.Ast
             TypeRef baseClassOpt,
             IEnumerable<TypeRef> implements,
             IEnumerable<TNode> members, TSpan blockSpan);
-
-        /// <summary>
-        /// Create <c>TypeRef</c> reference to a type.
-        /// </summary>
-        /// <param name="span">Entire element span.</param>
-        /// <param name="classes">List of all qualified classes in the expression.</param>
-        /// <param name="genericParamsOpt">Actual generic parameters</param>
-        /// <returns>Type reference.</returns>
-        TNode TypeReference(TSpan span, IEnumerable<TNode> classes, List<TypeRef> genericParamsOpt);
 
         /// <summary>
         /// Creates a pseudo constant use.

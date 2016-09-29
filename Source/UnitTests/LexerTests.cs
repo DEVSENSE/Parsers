@@ -73,7 +73,7 @@ namespace UnitTests
                 LanguageFeatures.ShortOpenTags, 0, Lexer.LexicalStates.INITIAL);
 
             var chars = new[] { '$', '{', 'n', '\0', '\n', ' ', '\'', '\\', 'x', 'c', '"', '`', '8', '0', '/', '*', '?', '>' };
-            int[] word = new int[6];
+            int[] word = new int[5];
             char[] text = new char[word.Length];
 
             var states = new Lexer.LexicalStates[] { Lexer.LexicalStates.ST_DOUBLE_QUOTES, Lexer.LexicalStates.ST_SINGLE_QUOTES,

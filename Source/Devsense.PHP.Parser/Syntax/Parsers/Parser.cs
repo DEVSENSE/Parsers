@@ -303,7 +303,7 @@ namespace Devsense.PHP.Syntax
         }
 
         private LangElement CreateStaticProperty(Span span, LangElement objectExpr, Span objectNamePos, object name) =>
-            CreateStaticProperty(span, (TypeRef)_astFactory.TypeReference(objectNamePos, objectExpr, null), objectNamePos, name);
+            CreateStaticProperty(span, (TypeRef)_astFactory.TypeReference(objectNamePos, objectExpr), objectNamePos, name);
 
         private List<T> RightTrimList<T>(List<T> list)
         {
@@ -319,22 +319,23 @@ namespace Devsense.PHP.Syntax
             return Span.FromBounds(validSpans.Min(s => s.Start), validSpans.Max(s => s.End));
         }
 
-        TypeRef TypeRefFromName(object nref, bool isNullable = false)
+        TypeRef TypeRefFromName(Span span, object nref, bool isNullable = false)
         {
             var name = (QualifiedNameRef)nref;
-            return (TypeRef)_astFactory.TypeReference(name.Span, name.QualifiedName, isNullable, TypeRef.EmptyList);
+            var type = (TypeRef)_astFactory.TypeReference(name.Span, name.QualifiedName);
+            return isNullable ? (TypeRef)_astFactory.NullableTypeReference(span, type) : type;
         }
 
         IEnumerable<TypeRef> TypeRefListFromTranslatedQNRList(object nrefList)
         {
             var list = (IList<QualifiedNameRef>)nrefList;
-            return list.Select(n => TypeRefFromName(n));
+            return list.Select(n => TypeRefFromName(n.Span, n));
         }
 
         IEnumerable<TypeRef> TypeRefListFromQNRList(object nrefList)
         {
             var list = (IList<QualifiedNameRef>)nrefList;
-            return list.Select(n => TypeRefFromName(TranslateQNR(n)));
+            return list.Select(n => TypeRefFromName(n.Span, TranslateQNR(n)));
         }
 
         #region Aliasing
