@@ -158,11 +158,11 @@ namespace UnitTests
 
             void CheckTypeDecl(TypeDecl type)
             {
-                Assert.IsTrue(type.Span.Contains(type.Name.Span));
+                Assert.IsTrue(!type.Name.HasValue || type.Span.Contains(type.Name.Span));
                 Assert.IsTrue(type.Span.Contains(type.HeadingSpan));
                 foreach (var member in type.Members)
                     Assert.IsTrue(type.Span.Contains(member.Span));
-                Assert.IsTrue(type.HeadingSpan.Contains(type.Name.Span));
+                Assert.IsTrue(!type.Name.HasValue || type.HeadingSpan.Contains(type.Name.Span));
                 foreach (var implements in type.ImplementsList)
                 {
                     Assert.IsTrue(type.HeadingSpan.Contains(implements.Span));

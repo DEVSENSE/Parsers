@@ -945,7 +945,7 @@ namespace Devsense.PHP.Syntax
         }
         virtual public void VisitAnonymousTypeRef(AnonymousTypeRef x)
         {
-            VisitAnonymousTypeDecl(x.TypeDeclaration);
+            VisitElement(x.TypeDeclaration);
         }
         virtual public void VisitAssertEx(AssertEx x)
         {
