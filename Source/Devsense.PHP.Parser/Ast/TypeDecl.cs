@@ -195,15 +195,6 @@ namespace Devsense.PHP.Syntax.Ast
         #endregion
 
         /// <summary>
-        /// Call the right Visit* method on the given Visitor object.
-        /// </summary>
-        /// <param name="visitor">Visitor to be called.</param>
-        public override void VisitMe(TreeVisitor visitor)
-        {
-            visitor.VisitTypeDecl(this);
-        }
-
-        /// <summary>
         /// <see cref="PHPDocBlock"/> instance or <c>null</c> reference.
         /// </summary>
         public PHPDocBlock PHPDoc
