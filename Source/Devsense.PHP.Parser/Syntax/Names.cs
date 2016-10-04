@@ -1073,7 +1073,8 @@ namespace Devsense.PHP.Syntax
         private static bool AddAlias(Dictionary<NameRef, QualifiedNameRef>/*!*/dict, NameRef alias, QualifiedNameRef qname)
         {
             var count = dict.Count;
-            dict[alias] = qname;
+            if(!dict.ContainsKey(alias))
+                dict.Add(alias, qname);
             return count != dict.Count;  // item was added
         }
 
