@@ -213,18 +213,29 @@ namespace Devsense.PHP.Syntax
 
         private void AddAlias(Tuple<QualifiedNameRef, NameRef> alias, ContextType contextType)
         {
-            NameRef aliasName = alias.Item2.HasValue ? alias.Item2: new NameRef(Span.Invalid, alias.Item1.QualifiedName.Name);
+            var aliasName = alias.Item2.HasValue
+                ? alias.Item2
+                : new NameRef(Span.Invalid, alias.Item1.QualifiedName.Name);
+
+            bool added;
             switch (contextType)
             {
                 case ContextType.Class:
-                    namingContext.AddAlias(aliasName, alias.Item1);
+                    added = namingContext.AddAlias(aliasName, alias.Item1);
                     break;
                 case ContextType.Function:
-                    namingContext.AddFunctionAlias(aliasName, alias.Item1);
+                    added = namingContext.AddFunctionAlias(aliasName, alias.Item1);
                     break;
                 case ContextType.Constant:
-                    namingContext.AddConstantAlias(aliasName, alias.Item1);
+                    added = namingContext.AddConstantAlias(aliasName, alias.Item1);
                     break;
+                default:
+                    return;
+            }
+            if (!added)
+            {
+                this.ErrorSink.Error(aliasName.Span.IsValid ? aliasName.Span : alias.Item1.Span, FatalErrors.AliasAlreadyInUse,
+                    alias.Item1.QualifiedName.ToString(), aliasName.Name.ToString());
             }
         }
 
