@@ -72,7 +72,7 @@ namespace UnitTests
             Lexer lexer = new Lexer(new StringReader("\"\""), Encoding.UTF8, errorSink,
                 LanguageFeatures.ShortOpenTags, 0, Lexer.LexicalStates.INITIAL);
 
-            var chars = new[] { '$', '{', 'n', '\0', '\n', ' ', '\'', '\\', 'x', 'c', '"', '`', '8', '0', '/', '*', '?', '>' };
+            var chars = new[] { '$', '{', 'n', '\0', '\r', '\n', ' ', '\'', '\\', 'x', 'c', '"', '`', '8', '0', '/', '*', '?', '>' };
             int[] word = new int[5];
             char[] text = new char[word.Length];
 
