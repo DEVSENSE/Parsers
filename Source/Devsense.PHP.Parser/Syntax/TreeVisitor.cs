@@ -428,7 +428,18 @@ namespace Devsense.PHP.Syntax
         virtual public void VisitForeachStmt(ForeachStmt x)
         {
             VisitElement(x.Enumeree);
+            VisitForeachVar(x.KeyVariable);
+            VisitForeachVar(x.ValueVariable);
             VisitElement(x.Body);
+        }
+
+        /// <summary>
+        /// Visit foreach variable used for value and key.
+        /// </summary>
+        /// <param name="x"></param>
+        virtual public void VisitForeachVar(ForeachVar x)
+        {
+            VisitElement(x?.Target);
         }
 
         #endregion
