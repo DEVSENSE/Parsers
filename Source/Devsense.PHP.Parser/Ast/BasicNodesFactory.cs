@@ -50,11 +50,11 @@ namespace Devsense.PHP.Syntax.Ast
         {
             return new ItemUse(span, (VarLikeConstructUse)expression, (Expression)indexOpt);
         }
-        public Item ArrayItemValue(Span span, LangElement indexOpt, LangElement valueExpr)
+        public virtual Item ArrayItemValue(Span span, LangElement indexOpt, LangElement valueExpr)
         {
             return new ValueItem((Expression)indexOpt, (Expression)valueExpr);
         }
-        public Item ArrayItemRef(Span span, LangElement indexOpt, LangElement variable)
+        public virtual Item ArrayItemRef(Span span, LangElement indexOpt, LangElement variable)
         {
             return new RefItem((Expression)indexOpt, (VariableUse)variable);
         }
@@ -343,7 +343,7 @@ namespace Devsense.PHP.Syntax.Ast
             return space;
         }
 
-        public virtual LangElement Declare(Span span, LangElement statementOpt)
+        public virtual LangElement Declare(Span span, IEnumerable<LangElement> decls, LangElement statementOpt)
         {
             Debug.Assert(statementOpt == null || statementOpt is Statement);
             return new DeclareStmt(span, (Statement)statementOpt);

@@ -292,9 +292,9 @@ namespace Devsense.PHP.Syntax
         {
             var ifList = ((List<Tuple<Span, LangElement, LangElement>>)condList);
             var block = ifList.Last();
+            ((BlockStmt)block.Item3).ExtendSpan(Span.FromBounds(block.Item3.Span.Start, end.Start));
             ifList.Remove(block);
-            ifList.Add(new Tuple<Span, LangElement, LangElement>(Span.FromBounds(block.Item1.Start, end.Start), block.Item2, 
-                StatementsToBlock(block.Item3.Span, end, ((BlockStmt)block.Item3).Statements.Select(s => (LangElement)s).ToList(), token)));
+            ifList.Add(new Tuple<Span, LangElement, LangElement>(Span.FromBounds(block.Item1.Start, end.Start), block.Item2, block.Item3));
         }
 
         private LangElement CreateProperty(Span span, LangElement objectExpr, object name)
@@ -337,16 +337,31 @@ namespace Devsense.PHP.Syntax
             return isNullable ? (TypeRef)_astFactory.NullableTypeReference(span, type) : type;
         }
 
+        /// <summary>
+        /// Converts a list of <c>QualifiedName</c> to array of <c>TypeRef</c>. 
+        /// This does not cause multiple TypeRef creation, unlike Linq functions.
+        /// </summary>
+        /// <param name="list">List of qualified names.</param>
+        /// <param name="translate">Function used to translate the names.</param>
+        /// <returns>Array of <c>TypeRef</c>.</returns>
+        IEnumerable<TypeRef> ToTypeRef(IList<QualifiedNameRef> list, Func<object, QualifiedNameRef> translate)
+        {
+            TypeRef[] types = new TypeRef[list.Count];
+            for (int i = 0; i < types.Length; i++)
+                types[i] = TypeRefFromName(list[i].Span, TranslateQNR(list[i]));
+            return types;
+        }
+
         IEnumerable<TypeRef> TypeRefListFromTranslatedQNRList(object nrefList)
         {
             var list = (IList<QualifiedNameRef>)nrefList;
-            return list.Select(n => TypeRefFromName(n.Span, n));
+            return ToTypeRef(list, o => (QualifiedNameRef)o);
         }
 
         IEnumerable<TypeRef> TypeRefListFromQNRList(object nrefList)
         {
             var list = (IList<QualifiedNameRef>)nrefList;
-            return list.Select(n => TypeRefFromName(n.Span, TranslateQNR(n)));
+            return ToTypeRef(list, TranslateQNR);
         }
 
         #region Aliasing

@@ -62,6 +62,7 @@
     <Compile Include="LexerTests.cs" />
     <Compile Include="SerializerTreeVisitorTests.cs" />
     <Compile Include="TestImplementation\TestErrorSink.cs" />
+    <Compile Include="VisitorTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Devsense.PHP.Parser\Devsense.PHP.Parser.csproj">

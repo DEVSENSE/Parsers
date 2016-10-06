@@ -78,9 +78,10 @@ namespace Devsense.PHP.Syntax.Ast
         /// Create declare statement.
         /// </summary>
         /// <param name="span">Entire element span.</param>
+        /// <param name="decls">List of constant declarations.</param>
         /// <param name="statementOpt">List of statements within the namespace.</param>
         /// <returns>Declare statement.</returns>
-        TNode Declare(TSpan span, TNode statementOpt);
+        TNode Declare(TSpan span, IEnumerable<LangElement> decls, TNode statementOpt);
 
         /// <summary>
         /// Creates function declaration node.

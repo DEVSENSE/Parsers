@@ -2161,7 +2161,7 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 { yyval.Object = _astFactory.Foreach(yypos, (LangElement)value_stack.array[value_stack.top-9].yyval.Object, (ForeachVar)value_stack.array[value_stack.top-7].yyval.Object, (ForeachVar)value_stack.array[value_stack.top-5].yyval.Object, (LangElement)value_stack.array[value_stack.top-2].yyval.Object); }
         return;
       case 149: // statement -> T_DECLARE '(' const_list ')' declare_statement 
-{ yyval.Object = _astFactory.Declare(yypos, (LangElement)value_stack.array[value_stack.top-1].yyval.Object); }
+{ yyval.Object = _astFactory.Declare(yypos, (List<LangElement>)value_stack.array[value_stack.top-3].yyval.Object, (LangElement)value_stack.array[value_stack.top-1].yyval.Object); }
         return;
       case 150: // statement -> ';' 
 { yyval.Object = _astFactory.EmptyStmt(yypos); }

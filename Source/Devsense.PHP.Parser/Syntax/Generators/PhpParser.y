@@ -491,7 +491,7 @@ statement:
 	|	T_FOREACH '(' expr T_AS foreach_variable T_DOUBLE_ARROW foreach_variable ')' enter_scope foreach_statement exit_scope
 			{ $$ = _astFactory.Foreach(@$, (LangElement)$3, (ForeachVar)$5, (ForeachVar)$7, (LangElement)$10); }
 	|	T_DECLARE '(' const_list ')' declare_statement
-			{ $$ = _astFactory.Declare(@$, (LangElement)$5); }
+			{ $$ = _astFactory.Declare(@$, (List<LangElement>)$3, (LangElement)$5); }
 	|	';'	/* empty statement */ { $$ = _astFactory.EmptyStmt(@$); }
 	|	T_TRY '{' inner_statement_list '}' enter_scope catch_list finally_statement exit_scope
 			{ $$ = _astFactory.TryCatch(@$, CreateBlock(CombineSpans(@2, @4), (List<LangElement>)$3), (List<CatchItem>)$6, (LangElement)$7); }

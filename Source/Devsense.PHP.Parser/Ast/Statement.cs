@@ -60,6 +60,17 @@ namespace Devsense.PHP.Syntax.Ast
         }
 
         /// <summary>
+        /// Extend actual block span.
+        /// Used for the colon blocks in the alternate notation if/else.
+        /// </summary>
+        /// <param name="newSpan">New span, which must contain the old span.</param>
+        internal void ExtendSpan(Text.Span newSpan)
+        {
+            Debug.Assert(newSpan.Contains(Span));
+            Span = newSpan;
+        }
+
+        /// <summary>
         /// Call the right Visit* method on the given Visitor object.
         /// </summary>
         /// <param name="visitor">Visitor to be called.</param>
