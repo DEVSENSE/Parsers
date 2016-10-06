@@ -98,7 +98,7 @@ namespace Devsense.PHP.Syntax
 
         virtual public void VisitGlobalConstantDecl(GlobalConstantDecl x)
         {
-            // nothing
+            VisitElement(x.Initializer);
         }
 
         virtual public void VisitTraitAdaptationBlock(TraitAdaptationBlock x)
