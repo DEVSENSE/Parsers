@@ -255,7 +255,7 @@ namespace Devsense.PHP.Syntax
                 case Tokens.T_RBRACE:                       // }
                     if (inString)
                         // we are in string:
-                        return TokenCategory.String;
+                        return TokenCategory.StringCode;
                     else
                         // part of script:
                         return TokenCategory.Delimiter;
