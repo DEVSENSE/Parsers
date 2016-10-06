@@ -950,7 +950,7 @@ non_empty_for_exprs:
 anonymous_class:
         T_CLASS ctor_arguments
 		extends_from implements_list backup_doc_comment enter_scope '{' class_statement_list '}' exit_scope {
-			var typeRef = (TypeRef)_astFactory.AnonymousTypeReference(@$, CombineSpans(@1, @2), isConditional, PhpMemberAttributes.None, null, (TypeRef)$3, (List<TypeRef>)$4, (List<LangElement>)$8, CombineSpans(@7, @9));
+			var typeRef = (TypeRef)_astFactory.AnonymousTypeReference(@$, CombineSpans(@1, @2, @3, @4), isConditional, PhpMemberAttributes.None, null, (TypeRef)$3, (IEnumerable<TypeRef>)$4, (List<LangElement>)$8, CombineSpans(@7, @9));
 			SetDoc(((AnonymousTypeRef)typeRef).TypeDeclaration);
 			$$ = new Tuple<TypeRef, List<ActualParam>>(typeRef, (List<ActualParam>)$2); 
 		}
@@ -1401,7 +1401,7 @@ isset_variables:
 ;
 
 isset_variable:
-		expr { $$ = _astFactory.Variable(@$, (LangElement)$1, (LangElement)null); }
+		expr { $$ = $1; /* TODO - check that $1 is a VarLikeConstruct */ }
 ;
 
 %%

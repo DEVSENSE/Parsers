@@ -2647,7 +2647,7 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
         return;
       case 292: // anonymous_class -> T_CLASS ctor_arguments extends_from implements_list backup_doc_comment enter_scope '{' class_statement_list '}' exit_scope 
 {
-			var typeRef = (TypeRef)_astFactory.AnonymousTypeReference(yypos, CombineSpans(value_stack.array[value_stack.top-10].yypos, value_stack.array[value_stack.top-9].yypos), isConditional, PhpMemberAttributes.None, null, (TypeRef)value_stack.array[value_stack.top-8].yyval.Object, (List<TypeRef>)value_stack.array[value_stack.top-7].yyval.Object, (List<LangElement>)value_stack.array[value_stack.top-3].yyval.Object, CombineSpans(value_stack.array[value_stack.top-4].yypos, value_stack.array[value_stack.top-2].yypos));
+			var typeRef = (TypeRef)_astFactory.AnonymousTypeReference(yypos, CombineSpans(value_stack.array[value_stack.top-10].yypos, value_stack.array[value_stack.top-9].yypos, value_stack.array[value_stack.top-8].yypos, value_stack.array[value_stack.top-7].yypos), isConditional, PhpMemberAttributes.None, null, (TypeRef)value_stack.array[value_stack.top-8].yyval.Object, (IEnumerable<TypeRef>)value_stack.array[value_stack.top-7].yyval.Object, (List<LangElement>)value_stack.array[value_stack.top-3].yyval.Object, CombineSpans(value_stack.array[value_stack.top-4].yypos, value_stack.array[value_stack.top-2].yypos));
 			SetDoc(((AnonymousTypeRef)typeRef).TypeDeclaration);
 			yyval.Object = new Tuple<TypeRef, List<ActualParam>>(typeRef, (List<ActualParam>)value_stack.array[value_stack.top-9].yyval.Object); 
 		}
@@ -3278,7 +3278,7 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 { yyval.Object = AddToList<LangElement>(value_stack.array[value_stack.top-3].yyval.Object, value_stack.array[value_stack.top-1].yyval.Object); }
         return;
       case 492: // isset_variable -> expr 
-{ yyval.Object = _astFactory.Variable(yypos, (LangElement)value_stack.array[value_stack.top-1].yyval.Object, (LangElement)null); }
+{ yyval.Object = value_stack.array[value_stack.top-1].yyval.Object; /* TODO - check that $1 is a VarLikeConstruct */ }
         return;
     }
   }

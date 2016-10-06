@@ -144,6 +144,13 @@ namespace UnitTests
                 // TODO - AnonymousTypeRef internaly creates AnonymousTypeDecl
                 var reference = CountLE(base.AnonymousTypeReference(span, headingSpan, conditional, attributes, typeParamsOpt, baseClassOpt, implements, members, blockSpan));
                 _createdElements.Add(((AnonymousTypeRef)reference).TypeDeclaration);
+                // TODO - base class and interfaces are not visited, they are converted to qualified name
+                var imp = implements != null ? implements.ToList() : null;
+                if (imp != null)
+                    foreach (var item in imp)
+                        _createdElements.Remove(item);
+                if (baseClassOpt != null)
+                    _createdElements.Remove(baseClassOpt);
                 return reference;
             }
 
