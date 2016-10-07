@@ -62,6 +62,6 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>cp ./gppg.exe ../../../../Source/Devsense.PHP.Parser/Syntax/Generators/gppg.exe</PostBuildEvent>
+    <PostBuildEvent>rem cp ./gppg.exe ../../../../Source/Devsense.PHP.Parser/Syntax/Generators/gppg.exe</PostBuildEvent>
   </PropertyGroup>
 </Project>

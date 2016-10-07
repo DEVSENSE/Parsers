@@ -63,6 +63,6 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>cp ./CsLex.exe ../../../../Source/Devsense.PHP.Parser/Syntax/Generators/CsLex.exe</PostBuildEvent>
+    <PostBuildEvent>rem cp ./CsLex.exe ../../../../Source/Devsense.PHP.Parser/Syntax/Generators/CsLex.exe</PostBuildEvent>
   </PropertyGroup>
 </Project>
