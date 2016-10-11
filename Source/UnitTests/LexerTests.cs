@@ -77,7 +77,8 @@ namespace UnitTests
             char[] text = new char[word.Length];
 
             var states = new Lexer.LexicalStates[] { Lexer.LexicalStates.ST_DOUBLE_QUOTES, Lexer.LexicalStates.ST_SINGLE_QUOTES,
-                Lexer.LexicalStates.ST_BACKQUOTE, Lexer.LexicalStates.ST_HEREDOC, Lexer.LexicalStates.ST_NOWDOC };
+                Lexer.LexicalStates.ST_BACKQUOTE, Lexer.LexicalStates.ST_HEREDOC, Lexer.LexicalStates.ST_NOWDOC, Lexer.LexicalStates.ST_COMMENT,
+                Lexer.LexicalStates.ST_ONE_LINE_COMMENT, Lexer.LexicalStates.ST_DOC_COMMENT, Lexer.LexicalStates.INITIAL, Lexer.LexicalStates.ST_IN_SCRIPTING };
 
             foreach (var state in states)
                 while (Increment(word, chars.Length))
