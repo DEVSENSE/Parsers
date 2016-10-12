@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Devsense.PHP.Syntax.Ast
 {
-    class Php71NodesFactory : BasicNodesFactory
+    public class Php71NodesFactory : BasicNodesFactory
     {
         public Php71NodesFactory(SourceUnit sourceUnit) : base(sourceUnit)
         {
@@ -15,7 +15,7 @@ namespace Devsense.PHP.Syntax.Ast
 
         public override LangElement TypeReference(Span span, QualifiedName className)
         {
-            return className.IsSimpleName && (Equals(QualifiedName.Void) || Equals(QualifiedName.Iterable))
+            return className.IsSimpleName && (className.Equals(QualifiedName.Void) || className.Equals(QualifiedName.Iterable))
                 ? (TypeRef)new PrimitiveTypeRef(span, new PrimitiveTypeName(className))
                 : base.TypeReference(span, className);
         }

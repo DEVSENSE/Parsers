@@ -974,8 +974,9 @@ namespace Devsense.PHP.Syntax
 
         public PrimitiveTypeName(QualifiedName qualifiedName)
         {
-            if (!qualifiedName.IsPrimitiveTypeName)
-                throw new ArgumentException();
+            // TODO - verify if necessary 
+            //if (!qualifiedName.IsPrimitiveTypeName)
+            //    throw new ArgumentException();
 
             this.qualifiedName = qualifiedName;
         }
