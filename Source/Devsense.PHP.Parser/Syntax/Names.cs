@@ -471,6 +471,8 @@ namespace Devsense.PHP.Syntax
         public static readonly QualifiedName Float = new QualifiedName(new Name("float"), Name.EmptyNames);
         public static readonly QualifiedName Resource = new QualifiedName(new Name("resource"), Name.EmptyNames);
         public static readonly QualifiedName Callable = new QualifiedName(new Name("callable"), Name.EmptyNames);
+        public static readonly QualifiedName Void = new QualifiedName(new Name("void"), Name.EmptyNames);
+        public static readonly QualifiedName Iterable = new QualifiedName(new Name("iterable"), Name.EmptyNames);
 
         public bool IsSimpleName
         {

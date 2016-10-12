@@ -43,9 +43,6 @@
     <AssemblyOriginatorKeyFile>key.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
-    <!-- A reference to the entire .NET Framework is automatically included -->
-  </ItemGroup>
-  <ItemGroup>
     <Compile Include="Ast\ArrayEx.cs" />
     <Compile Include="Ast\AssignEx.cs" />
     <Compile Include="Ast\BasicNodesFactory.cs" />
@@ -75,6 +72,7 @@
     <Compile Include="Ast\Literal.cs" />
     <Compile Include="Ast\LoopStmt.cs" />
     <Compile Include="Ast\NewAndInstanceof.cs" />
+    <Compile Include="Ast\Php71NodesFactory.cs" />
     <Compile Include="Ast\ShellEx.cs" />
     <Compile Include="Ast\Statement.cs" />
     <Compile Include="Ast\SwitchStmt.cs" />
