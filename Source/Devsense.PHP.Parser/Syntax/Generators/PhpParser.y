@@ -435,7 +435,8 @@ use_declaration:
 	|	T_NS_SEPARATOR unprefixed_use_declaration 
 			{ 
 				var src = (Tuple<QualifiedNameRef, NameRef>)$2;
-				$$ = new Tuple<QualifiedNameRef, NameRef>(new QualifiedNameRef(CombineSpans(@1, src.Item1.Span), src.Item1.QualifiedName), src.Item2); 
+				$$ = new Tuple<QualifiedNameRef, NameRef>(new QualifiedNameRef(CombineSpans(@1, src.Item1.Span), 
+					new QualifiedName(src.Item1.QualifiedName.Name, src.Item1.QualifiedName.Namespaces, true)), src.Item2); 
 			}
 ;
 

@@ -2070,7 +2070,8 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
       case 120: // use_declaration -> T_NS_SEPARATOR unprefixed_use_declaration 
 { 
 				var src = (Tuple<QualifiedNameRef, NameRef>)value_stack.array[value_stack.top-1].yyval.Object;
-				yyval.Object = new Tuple<QualifiedNameRef, NameRef>(new QualifiedNameRef(CombineSpans(value_stack.array[value_stack.top-2].yypos, src.Item1.Span), src.Item1.QualifiedName), src.Item2); 
+				yyval.Object = new Tuple<QualifiedNameRef, NameRef>(new QualifiedNameRef(CombineSpans(value_stack.array[value_stack.top-2].yypos, src.Item1.Span), 
+					new QualifiedName(src.Item1.QualifiedName.Name, src.Item1.QualifiedName.Namespaces, true)), src.Item2); 
 			}
         return;
       case 121: // const_list -> const_list ',' const_decl 
