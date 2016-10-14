@@ -495,7 +495,10 @@ namespace Devsense.PHP.Syntax
                         Equals(String) ||
                         Equals(Bool) ||
                         Equals(Array) ||
-                        Equals(Callable));
+                        Equals(Callable) ||
+                        Equals(Void) ||     // PHP 7.1
+                        Equals(Iterable)    // PHP 7.1
+                        );  
             }
         }
 

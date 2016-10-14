@@ -513,7 +513,7 @@ catch_list:
 			}
 ;
 
-catch_name_list:
+catch_name_list:	// TODO: List<TypeRef>
 		name { $$ = new List<QualifiedNameRef>() { TranslateQNR($1) }; }
 	|	catch_name_list '|' name { $$ = AddToList<QualifiedNameRef>($1, TranslateQNR($3)); }
 ;
@@ -740,7 +740,7 @@ type_expr:
 	|	'?' type	{ $$ = TypeRefFromName(@$, TranslateQNR($2), true); }
 ;
 
-type:
+type:	// TODO: TypeRef // TODO: primitivename: {"float", "int", "string", ...} -> factory.PrimitiveTypeRef()
 		T_ARRAY		{ $$ = new QualifiedNameRef(@$, QualifiedName.Array); }
 	|	T_CALLABLE	{ $$ = new QualifiedNameRef(@$, QualifiedName.Callable); }
 	|	name		{ $$ = $1; }

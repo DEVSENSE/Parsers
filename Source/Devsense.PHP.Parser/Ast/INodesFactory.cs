@@ -688,6 +688,14 @@ namespace Devsense.PHP.Syntax.Ast
         TNode TypeReference(TSpan span, QualifiedName className);
 
         /// <summary>
+        /// Create <c>TypeRef</c> reference to a primitive type.
+        /// </summary>
+        /// <param name="span">Element span.</param>
+        /// <param name="typeName">Primitive type name.</param>
+        /// <returns>A type reference to a primitive type.</returns>
+        TNode PrimitiveTypeReference(TSpan span, PrimitiveTypeName typeName);
+
+        /// <summary>
         /// Create <c>NullableTypeRef</c> reference to a nullable type.
         /// </summary>
         /// <param name="span">Entire element span.</param>

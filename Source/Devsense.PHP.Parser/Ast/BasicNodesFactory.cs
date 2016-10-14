@@ -496,9 +496,12 @@ namespace Devsense.PHP.Syntax.Ast
 
         public virtual LangElement TypeReference(Span span, QualifiedName className)
         {
-            return className.IsPrimitiveTypeName
-                ? (TypeRef)new PrimitiveTypeRef(span, new PrimitiveTypeName(className))
-                : (TypeRef)new DirectTypeRef(span, className);
+            Debug.Assert(!className.IsPrimitiveTypeName);
+            return new DirectTypeRef(span, className);
+        }
+        public virtual LangElement PrimitiveTypeReference(Span span, PrimitiveTypeName tname)
+        {
+            return new PrimitiveTypeRef(span, tname);
         }
         public virtual LangElement NullableTypeReference(Span span, LangElement className)
         {

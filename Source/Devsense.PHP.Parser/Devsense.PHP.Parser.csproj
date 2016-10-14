@@ -72,7 +72,6 @@
     <Compile Include="Ast\Literal.cs" />
     <Compile Include="Ast\LoopStmt.cs" />
     <Compile Include="Ast\NewAndInstanceof.cs" />
-    <Compile Include="Ast\Php71NodesFactory.cs" />
     <Compile Include="Ast\ShellEx.cs" />
     <Compile Include="Ast\Statement.cs" />
     <Compile Include="Ast\SwitchStmt.cs" />
