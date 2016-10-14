@@ -338,7 +338,7 @@ namespace Devsense.PHP.Syntax
                 else if (object.ReferenceEquals(p, TypeHashtable))
                 {
                     Debug.Assert(o is Hashtable);
-                    return ((Hashtable)o).TryGetValue(key, out value) || value != null;
+                    return ((Hashtable)o).TryGetValue(key, out value);
                 }
             }
 
