@@ -255,9 +255,10 @@ namespace Devsense.PHP.Syntax.Ast
         #region Properties
 
         /// <summary>
-        /// Always empty.
+        /// The anonymous class name as it is in PHP - "class@anonymous\0{FILENAME}{BUFFER_POINTER,X8}".
+        /// Does not have span (its span is invalid).
         /// </summary>
-        public override NameRef Name => NameRef.Invalid;
+        public override NameRef Name => new NameRef(Text.Span.Invalid, GeneratePhpLikeName(this.ContainingSourceUnit, this.Span));
 
         #endregion
 
@@ -275,6 +276,23 @@ namespace Devsense.PHP.Syntax.Ast
         }
 
         #endregion
+
+        /// <summary>
+        /// Create the type name of an anomynous class as it is in PHP. See <c>__CLASS__</c> for a reference.
+        /// </summary>
+        /// <param name="unit">The containing source unit. Can be <c>null</c> if unknown.</param>
+        /// <param name="span">Position of the class declaration within source unit.</param>
+        /// <returns>An anonymous class name.</returns>
+        private static string GeneratePhpLikeName(SourceUnit unit, Text.Span span)
+        {
+            // see zend_compile.c
+            // sprintf(ZSTR_VAL(result), "class@anonymous%c%s%s", '\0', ZSTR_VAL(filename), char_pos_buf);
+
+            var fname = unit?.FilePath ?? "<unknown>";  // TODO: (unit is EvalSourceUnit) => $"{fname}({line_number}) : eval()'d code"
+
+            // TEMPLATE: class@anonymous{FILENAME}{BUFFER_POINTER,X8}
+            return $"class@anonymous\0{fname}{span.Start.ToString("X8")}";
+        }
 
         /// <summary>
         /// Call the right Visit* method on the given Visitor object.
