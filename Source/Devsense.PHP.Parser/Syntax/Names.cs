@@ -490,10 +490,10 @@ namespace Devsense.PHP.Syntax
             get
             {
                 return IsSimpleName && (
-                        Equals(Int) ||
-                        Equals(Float) ||
-                        Equals(String) ||
-                        Equals(Bool) ||
+                        Equals(Int) ||      // PHP 7.0
+                        Equals(Float) ||    // PHP 7.0
+                        Equals(String) ||   // PHP 7.0
+                        Equals(Bool) ||     // PHP 7.0
                         Equals(Array) ||
                         Equals(Callable) ||
                         Equals(Void) ||     // PHP 7.1

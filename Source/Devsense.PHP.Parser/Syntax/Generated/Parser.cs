@@ -2415,19 +2415,19 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 { yyval.Object = value_stack.array[value_stack.top-1].yyval.Object; }
         return;
       case 220: // type_expr -> type 
-{ yyval.Object = TypeRefFromName(yypos, TranslateQNR(value_stack.array[value_stack.top-1].yyval.Object), false); }
+{ yyval.Object = (TypeRef)value_stack.array[value_stack.top-1].yyval.Object; }
         return;
       case 221: // type_expr -> '?' type 
-{ yyval.Object = TypeRefFromName(yypos, TranslateQNR(value_stack.array[value_stack.top-1].yyval.Object), true); }
+{ yyval.Object = _astFactory.NullableTypeReference(yypos, (TypeRef)value_stack.array[value_stack.top-1].yyval.Object); }
         return;
       case 222: // type -> T_ARRAY 
-{ yyval.Object = new QualifiedNameRef(yypos, QualifiedName.Array); }
+{ yyval.Object = _astFactory.PrimitiveTypeReference(yypos, new PrimitiveTypeName(QualifiedName.Array)); }
         return;
       case 223: // type -> T_CALLABLE 
-{ yyval.Object = new QualifiedNameRef(yypos, QualifiedName.Callable); }
+{ yyval.Object = _astFactory.PrimitiveTypeReference(yypos, new PrimitiveTypeName(QualifiedName.Callable)); }
         return;
       case 224: // type -> name 
-{ yyval.Object = value_stack.array[value_stack.top-1].yyval.Object; }
+{ yyval.Object = CreateTypeRef(yypos, (QualifiedNameRef)value_stack.array[value_stack.top-1].yyval.Object); }
         return;
       case 225: // return_type -> 
 { yyval.Object = null; }

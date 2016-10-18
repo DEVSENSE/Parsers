@@ -22,6 +22,9 @@ namespace Devsense.PHP.Syntax
     /// <summary>
     /// PHP language features supported by Phalanger.
     /// </summary>
+    /// <remarks>
+    /// 
+    /// </remarks>
     [Flags]
     public enum LanguageFeatures
     {
@@ -33,7 +36,37 @@ namespace Devsense.PHP.Syntax
         /// <summary>
         /// Allows using short open tags in the script.
         /// </summary>
-        ShortOpenTags = 1
+        ShortOpenTags = 1,
+
+        /// <summary>
+        /// Allows using short open tags in the script.
+        /// </summary>
+        Php54Set = 16,
+
+        /// <summary>
+        /// PHP 5.5 feature set.
+        /// </summary>
+        Php55Set = Php54Set | 32,
+
+        /// <summary>
+        /// PHP 5.6 feature set.
+        /// </summary>
+        Php56Set = Php55Set | 64,
+
+        /// <summary>
+        /// PHP 7.0 feature set.
+        /// </summary>
+        Php70Set = Php56Set | 128,
+
+        /// <summary>
+        /// PHP 7.1 feature set.
+        /// </summary>
+        Php71Set = Php70Set | 256
+    }
+
+    public static class LanguageFeaturesExtensions
+    {
+        public static bool HasFeture(this LanguageFeatures value, LanguageFeatures feature) => (value & feature) == feature;
     }
 
     #endregion

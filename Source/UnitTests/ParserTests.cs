@@ -30,7 +30,7 @@ namespace UnitTests
             string[] testparts = testcontent.Split(new string[] { "<<<TEST>>>" }, StringSplitOptions.RemoveEmptyEntries);
             Assert.IsTrue(testparts.Length >= 2);
 
-            var sourceUnit = new CodeSourceUnit(testparts[0], path, Encoding.UTF8, Lexer.LexicalStates.INITIAL, LanguageFeatures.Basic);
+            var sourceUnit = new CodeSourceUnit(testparts[0], path, Encoding.UTF8, Lexer.LexicalStates.INITIAL, LanguageFeatures.Php71Set);
             var factory = new BasicNodesFactory(sourceUnit);
             var errors = new TestErrorSink();
 
@@ -158,11 +158,12 @@ namespace UnitTests
 
             void CheckTypeDecl(TypeDecl type)
             {
-                Assert.IsTrue(!type.Name.HasValue || type.Span.Contains(type.Name.Span));
+                Assert.IsTrue(type.Name.HasValue);
+                Assert.IsTrue(type is AnonymousTypeDecl || type.Span.Contains(type.Name.Span));
                 Assert.IsTrue(type.Span.Contains(type.HeadingSpan));
                 foreach (var member in type.Members)
                     Assert.IsTrue(type.Span.Contains(member.Span));
-                Assert.IsTrue(!type.Name.HasValue || type.HeadingSpan.Contains(type.Name.Span));
+                Assert.IsTrue(type is AnonymousTypeDecl || type.HeadingSpan.Contains(type.Name.Span));
                 foreach (var implements in type.ImplementsList)
                 {
                     Assert.IsTrue(type.HeadingSpan.Contains(implements.Span));

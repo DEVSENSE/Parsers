@@ -3,7 +3,7 @@
 class SimpleClass
 {
     /** method comment */
-    abstract function aMemberFunc(boolean $arg_1): int;
+    abstract function aMemberFunc(boolean $arg_1): void;
 }
 ?>
 <<<TEST>>>
@@ -37,7 +37,7 @@ class SimpleClass
       },
       "ReturnType" : {
         "PrimitiveTypeRef" : {
-          "QualifiedName" : "int"
+          "QualifiedName" : "void"
         }
       }
     }

@@ -736,14 +736,13 @@ optional_type:
 ;
 
 type_expr:
-		type		{ $$ = TypeRefFromName(@$, TranslateQNR($1), false); }
-	|	'?' type	{ $$ = TypeRefFromName(@$, TranslateQNR($2), true); }
+		type		{ $$ = (TypeRef)$1; }
+	|	'?' type	{ $$ = _astFactory.NullableTypeReference(@$, (TypeRef)$2); }
 ;
 
-type:	// TODO: TypeRef // TODO: primitivename: {"float", "int", "string", ...} -> factory.PrimitiveTypeRef()
-		T_ARRAY		{ $$ = new QualifiedNameRef(@$, QualifiedName.Array); }
-	|	T_CALLABLE	{ $$ = new QualifiedNameRef(@$, QualifiedName.Callable); }
-	|	name		{ $$ = $1; }
+type:   T_ARRAY		{ $$ = _astFactory.PrimitiveTypeReference(@$, new PrimitiveTypeName(QualifiedName.Array)); }
+	|	T_CALLABLE	{ $$ = _astFactory.PrimitiveTypeReference(@$, new PrimitiveTypeName(QualifiedName.Callable)); }
+	|	name		{ $$ = CreateTypeRef(@$, (QualifiedNameRef)$1); }
 ;
 
 return_type:

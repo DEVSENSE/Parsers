@@ -37,6 +37,7 @@ namespace Devsense.PHP.Syntax
         readonly Stack<NamingContext> _context = new Stack<NamingContext>();
         NamingContext namingContext => _context.Peek();
         ContextType _contextType = ContextType.Class;
+        LanguageFeatures _languageFeatures;
 
         /// <summary>
         /// The root of AST.
@@ -76,6 +77,7 @@ namespace Devsense.PHP.Syntax
         public LangElement Parse(
                 ITokenProvider<SemanticValueType, Span> lexer,
                 INodesFactory<LangElement, Span> astFactory,
+                LanguageFeatures language,
                 IErrorSink<Span> errors = null,
                 int positionShift = 0)
         {
@@ -86,6 +88,7 @@ namespace Devsense.PHP.Syntax
                 throw new ArgumentNullException(nameof(astFactory));
 
             // initialization:
+            _languageFeatures = language;
             _lexer = new CompliantLexer(lexer);
             _astFactory = astFactory;
             _errors = errors ?? new EmptyErrorSink<Span>();
@@ -250,7 +253,7 @@ namespace Devsense.PHP.Syntax
         {
             Name[] namespaces = prefix.Select(p => new Name(p)).Concat(alias.Item1.QualifiedName.Namespaces).ToArray();
             AddAlias(new Tuple<QualifiedNameRef, NameRef>(
-                new QualifiedNameRef(alias.Item1.Span, alias.Item1.QualifiedName.Name, namespaces), alias.Item2), 
+                new QualifiedNameRef(alias.Item1.Span, alias.Item1.QualifiedName.Name, namespaces), alias.Item2),
                 alias.Item3);
         }
 
@@ -330,11 +333,33 @@ namespace Devsense.PHP.Syntax
             return Span.FromBounds(validSpans.Min(s => s.Start), validSpans.Max(s => s.End));
         }
 
-        TypeRef TypeRefFromName(Span span, object nref, bool isNullable = false)
+        TypeRef TypeRefFromName(Span span, object nref)
         {
             var name = (QualifiedNameRef)nref;
-            var type = (TypeRef)_astFactory.TypeReference(name.Span, name.QualifiedName);
-            return isNullable ? (TypeRef)_astFactory.NullableTypeReference(span, type) : type;
+            return (TypeRef)_astFactory.TypeReference(name.Span, name.QualifiedName);
+        }
+
+        static readonly HashSet<QualifiedName> PHP70PrimitiveTypes = new HashSet<QualifiedName>(new[] { QualifiedName.Int, QualifiedName.Float, QualifiedName.String, QualifiedName.Bool, QualifiedName.Array, QualifiedName.Callable });
+        static readonly HashSet<QualifiedName> PHP71PrimitiveTypes = new HashSet<QualifiedName>(new[] { QualifiedName.Void, QualifiedName.Iterable });
+
+        TypeRef CreateTypeRef(Span span, QualifiedNameRef tname)
+        {
+            var qname = tname.QualifiedName;
+            // primitive type name ?
+            if (qname.IsSimpleName)
+            {
+                if ((_languageFeatures.HasFeture(LanguageFeatures.Php71Set)) && PHP71PrimitiveTypes.Contains(qname))
+                {
+                    return (TypeRef)new PrimitiveTypeRef(span, new PrimitiveTypeName(tname));
+                }
+                if ((_languageFeatures.HasFeture(LanguageFeatures.Php70Set)) && PHP70PrimitiveTypes.Contains(qname))
+                {
+                    return (TypeRef)new PrimitiveTypeRef(span, new PrimitiveTypeName(tname));
+                }
+            }
+
+            // direct type reference
+            return (TypeRef)_astFactory.TypeReference(span, TranslateQNR(tname));
         }
 
         /// <summary>
@@ -522,7 +547,7 @@ namespace Devsense.PHP.Syntax
         /// <returns>Complete block statement.</returns>
         BlockStmt CreateCaseBlock(Span separatorSpan, List<LangElement> statements)
         {
-            if(statements.Count == 0)
+            if (statements.Count == 0)
                 return (BlockStmt)_astFactory.Block(separatorSpan, statements);
             Span bodySpan = Span.Combine(separatorSpan, statements.Last().Span);
             _lexer.DocBlockList.Merge(bodySpan, statements);
