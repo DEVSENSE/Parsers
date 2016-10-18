@@ -66,7 +66,7 @@ namespace Devsense.PHP.Syntax
 
     public static class LanguageFeaturesExtensions
     {
-        public static bool HasFeture(this LanguageFeatures value, LanguageFeatures feature) => (value & feature) == feature;
+        public static bool HasFeature(this LanguageFeatures value, LanguageFeatures feature) => (value & feature) == feature;
     }
 
     #endregion

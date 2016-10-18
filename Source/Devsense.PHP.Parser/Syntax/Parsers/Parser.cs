@@ -348,11 +348,11 @@ namespace Devsense.PHP.Syntax
             // primitive type name ?
             if (qname.IsSimpleName)
             {
-                if ((_languageFeatures.HasFeture(LanguageFeatures.Php71Set)) && PHP71PrimitiveTypes.Contains(qname))
+                if ((_languageFeatures.HasFeature(LanguageFeatures.Php71Set)) && PHP71PrimitiveTypes.Contains(qname))
                 {
                     return (TypeRef)new PrimitiveTypeRef(span, new PrimitiveTypeName(tname));
                 }
-                if ((_languageFeatures.HasFeture(LanguageFeatures.Php70Set)) && PHP70PrimitiveTypes.Contains(qname))
+                if ((_languageFeatures.HasFeature(LanguageFeatures.Php70Set)) && PHP70PrimitiveTypes.Contains(qname))
                 {
                     return (TypeRef)new PrimitiveTypeRef(span, new PrimitiveTypeName(tname));
                 }

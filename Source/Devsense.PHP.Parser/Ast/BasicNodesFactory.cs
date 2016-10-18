@@ -435,7 +435,7 @@ namespace Devsense.PHP.Syntax.Ast
             if (implements == null) implements = TypeRef.EmptyList;
 
             Debug.Assert(members != null && implements != null);
-            return new NamedTypeDecl(span, headingSpan, conditional, new Scope(), attributes, false,
+            return new NamedTypeDecl(span, headingSpan, conditional, attributes, false,
                 new NameRef(nameSpan, name), (typeParamsOpt != null) ? typeParamsOpt.ToList() : FormalTypeParam.EmptyList,
                 QualifiedNameRef.FromTypeRef(baseClassOpt), implements.Select(QualifiedNameRef.FromTypeRef).ToList(),
                 ConvertList<TypeMemberDecl>(members), bodySpan, null);
@@ -447,7 +447,7 @@ namespace Devsense.PHP.Syntax.Ast
 
             Debug.Assert(members != null && implements != null);
             return new AnonymousTypeRef(span, new AnonymousTypeDecl(span, headingSpan,
-                conditional, new Scope(), attributes, false, (typeParamsOpt != null) ? typeParamsOpt.ToList() : FormalTypeParam.EmptyList,
+                conditional, attributes, false, (typeParamsOpt != null) ? typeParamsOpt.ToList() : FormalTypeParam.EmptyList,
                 QualifiedNameRef.FromTypeRef(baseClassOpt), implements.Select(QualifiedNameRef.FromTypeRef).ToList(), ConvertList<TypeMemberDecl>(members), bodySpan, null));
         }
 

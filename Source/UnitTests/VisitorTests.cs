@@ -417,6 +417,9 @@ namespace UnitTests
                 else return reference;
             }
 
+            public override LangElement PrimitiveTypeReference(Span span, PrimitiveTypeName tname)
+                => CountLE(base.PrimitiveTypeReference(span, tname));
+
             public override LangElement TypeReference(Span span, LangElement varName)
                  => CountLE(base.TypeReference(span, varName));
 

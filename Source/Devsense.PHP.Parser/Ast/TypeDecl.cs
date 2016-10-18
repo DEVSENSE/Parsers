@@ -154,8 +154,6 @@ namespace Devsense.PHP.Syntax.Ast
         /// <summary>Contains value of the <see cref="PartialKeyword"/> property</summary>
         private bool partialKeyword;
 
-        internal Scope Scope { get; private set; }
-
         /// <summary>
         /// Gets value indicating whether the declaration is conditional.
         /// </summary>
@@ -167,7 +165,7 @@ namespace Devsense.PHP.Syntax.Ast
 
         public TypeDecl(
             Text.Span span, Text.Span headingSpan,
-            bool isConditional, Scope scope, PhpMemberAttributes memberAttributes, bool isPartial,
+            bool isConditional, PhpMemberAttributes memberAttributes, bool isPartial,
             List<FormalTypeParam>/*!*/ genericParams, QualifiedNameRef baseClass,
             List<QualifiedNameRef>/*!*/ implementsList, List<TypeMemberDecl>/*!*/ elements, Text.Span bodySpan,
             List<CustomAttribute> attributes)
@@ -179,7 +177,6 @@ namespace Devsense.PHP.Syntax.Ast
             this.typeSignature = new TypeSignature(genericParams);
             this.baseClass = baseClass;
             this.MemberAttributes = memberAttributes;
-            this.Scope = scope;
             this.IsConditional = isConditional;
             this.ImplementsList = implementsList.AsArray();
             this.members = elements;
@@ -221,13 +218,13 @@ namespace Devsense.PHP.Syntax.Ast
 		#region Construction
 
 		public NamedTypeDecl(
-            Text.Span span, Text.Span headingSpan, bool isConditional, Scope scope, PhpMemberAttributes memberAttributes, bool isPartial,
+            Text.Span span, Text.Span headingSpan, bool isConditional, PhpMemberAttributes memberAttributes, bool isPartial,
             NameRef className, List<FormalTypeParam>/*!*/ genericParams, QualifiedNameRef baseClass,
             List<QualifiedNameRef>/*!*/ implementsList, List<TypeMemberDecl>/*!*/ elements, Text.Span bodySpan,
 
             List<CustomAttribute> attributes)
             : base(span, headingSpan, isConditional, 
-                  scope, memberAttributes, isPartial, genericParams, baseClass, implementsList, elements, bodySpan, attributes)
+                  memberAttributes, isPartial, genericParams, baseClass, implementsList, elements, bodySpan, attributes)
 		{
 			Debug.Assert(genericParams != null && implementsList != null && elements != null);
             Debug.Assert((memberAttributes & PhpMemberAttributes.Trait) == 0 || (memberAttributes & PhpMemberAttributes.Interface) == 0, "Interface cannot be a trait");
@@ -266,12 +263,12 @@ namespace Devsense.PHP.Syntax.Ast
 
         public AnonymousTypeDecl(
             Text.Span span, Text.Span headingSpan,
-            bool isConditional, Scope scope, PhpMemberAttributes memberAttributes, bool isPartial,
+            bool isConditional, PhpMemberAttributes memberAttributes, bool isPartial,
             List<FormalTypeParam>/*!*/ genericParams, QualifiedNameRef baseClass,
             List<QualifiedNameRef>/*!*/ implementsList, List<TypeMemberDecl>/*!*/ elements, Text.Span bodySpan,
             List<CustomAttribute> attributes)
             : base(span, headingSpan, isConditional,
-                  scope, memberAttributes, isPartial, genericParams, baseClass, implementsList, elements, bodySpan, attributes)
+                  memberAttributes, isPartial, genericParams, baseClass, implementsList, elements, bodySpan, attributes)
         {
         }
 

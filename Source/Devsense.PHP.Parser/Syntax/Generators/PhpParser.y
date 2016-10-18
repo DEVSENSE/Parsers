@@ -45,10 +45,11 @@ using Devsense.PHP.Errors;
 	public long Long;
 
 	[FieldOffset(8)]
-	public object Object; 
-
-	[FieldOffset(16)]
-	public int Attr;
+	public object Object;
+	[FieldOffset(8)]
+	public TypeRef TypeReference;
+	[FieldOffset(8)]
+	public TypeRef LangElement;
 }
 
 
@@ -263,10 +264,10 @@ using Devsense.PHP.Errors;
 %type <Object> unprefixed_use_declarations const_decl inner_statement
 %type <Object> expr optional_expr while_statement for_statement foreach_variable
 %type <Object> foreach_statement declare_statement finally_statement unset_variable variable
-%type <Object> extends_from parameter optional_type argument expr_without_variable global_var
+%type <Object> parameter argument expr_without_variable global_var
 %type <Object> static_var class_statement trait_adaptation trait_precedence trait_alias
 %type <Object> absolute_trait_method_reference trait_method_reference property echo_expr
-%type <Object> new_expr anonymous_class class_name class_name_reference simple_variable
+%type <Object> new_expr anonymous_class simple_variable
 %type <Object> internal_functions_in_yacc
 %type <Object> exit_expr scalar backticks_expr lexical_var function_call member_name property_name
 %type <Object> variable_class_name dereferencable_scalar constant dereferencable
@@ -281,7 +282,7 @@ using Devsense.PHP.Errors;
 %type <Object> ctor_arguments alt_if_stmt_without_else trait_adaptation_list lexical_vars
 %type <Object> lexical_var_list encaps_list
 %type <Object> array_pair non_empty_array_pair_list array_pair_list possible_array_pair
-%type <Object> isset_variable type return_type type_expr
+%type <Object> isset_variable 
 %type <Object> identifier semi_reserved reserved_non_modifiers
 
 %type <Long> returns_ref function is_reference is_variadic variable_modifiers
@@ -289,6 +290,9 @@ using Devsense.PHP.Errors;
 %type <Long> class_modifiers class_modifier use_type backup_fn_flags
 
 %type <Object> backup_doc_comment enter_scope exit_scope
+
+%type <TypeReference> type return_type type_expr optional_type extends_from
+%type <TypeReference> class_name_reference class_name
 
 %type <Object> inline_html                     // Expression
 
@@ -535,7 +539,7 @@ unset_variable:
 function_declaration_statement:
 	function returns_ref T_STRING backup_doc_comment '(' parameter_list ')' return_type
 	backup_fn_flags enter_scope '{' inner_statement_list '}' exit_scope backup_fn_flags
-		{ $$ = _astFactory.Function(@$, isConditional, $2 == (long)FormalParam.Flags.IsByRef, PhpMemberAttributes.None, (TypeRef)$8, 
+		{ $$ = _astFactory.Function(@$, isConditional, $2 == (long)FormalParam.Flags.IsByRef, PhpMemberAttributes.None, $8, 
 			new Name((string)$3), @3, null, (List<FormalParam>)$6, CombineSpans(@5, @7), 
 			CreateBlock(CombineSpans(@11, @13), (List<LangElement>)$12)); 
 			SetDoc($$);
@@ -556,13 +560,13 @@ class_declaration_statement:
 		class_modifiers T_CLASS T_STRING extends_from implements_list backup_doc_comment enter_scope '{' class_statement_list '}' exit_scope
 			{ 
 				$$ = _astFactory.Type(@$, CombineSpans(@1, @2, @3, @4, @5), isConditional, (PhpMemberAttributes)$1, new Name((string)$3), @3, null, 
-				(TypeRef)$4, (IEnumerable<TypeRef>)$5, (List<LangElement>)$9, CombineSpans(@8, @10)); 
+				$4, (IEnumerable<TypeRef>)$5, (List<LangElement>)$9, CombineSpans(@8, @10)); 
 				SetDoc($$);
 			}
 	|	T_CLASS T_STRING extends_from implements_list backup_doc_comment enter_scope '{' class_statement_list '}' exit_scope
 			{ 
 				$$ = _astFactory.Type(@$, CombineSpans(@1, @2, @3, @4), isConditional, PhpMemberAttributes.None, new Name((string)$2), @2, null, 
-				(TypeRef)$3, (IEnumerable<TypeRef>)$4, (List<LangElement>)$8, CombineSpans(@7, @9)); 
+				$3, (IEnumerable<TypeRef>)$4, (List<LangElement>)$8, CombineSpans(@7, @9)); 
 				SetDoc($$);
 			}
 ;
@@ -724,9 +728,9 @@ non_empty_parameter_list:
 
 parameter:
 		optional_type is_reference is_variadic T_VARIABLE
-			{ $$ = _astFactory.Parameter(CombineSpans(@1, @2, @3, @4), (string)$4, @4, (TypeRef)$1, (FormalParam.Flags)$2|(FormalParam.Flags)$3, null); /* Important - @$ is invalid when optional_type is empty */ }
+			{ $$ = _astFactory.Parameter(CombineSpans(@1, @2, @3, @4), (string)$4, @4, $1, (FormalParam.Flags)$2|(FormalParam.Flags)$3, null); /* Important - @$ is invalid when optional_type is empty */ }
 	|	optional_type is_reference is_variadic T_VARIABLE '=' expr
-			{ $$ = _astFactory.Parameter(CombineSpans(@1, @2, @3, @4, @6), (string)$4, @4, (TypeRef)$1, (FormalParam.Flags)$2|(FormalParam.Flags)$3|FormalParam.Flags.Default, (Expression)$6); /* Important - @$ is invalid when optional_type is empty */ }
+			{ $$ = _astFactory.Parameter(CombineSpans(@1, @2, @3, @4, @6), (string)$4, @4, $1, (FormalParam.Flags)$2|(FormalParam.Flags)$3|FormalParam.Flags.Default, (Expression)$6); /* Important - @$ is invalid when optional_type is empty */ }
 ;
 
 
@@ -736,12 +740,12 @@ optional_type:
 ;
 
 type_expr:
-		type		{ $$ = (TypeRef)$1; }
-	|	'?' type	{ $$ = _astFactory.NullableTypeReference(@$, (TypeRef)$2); }
+		type		{ $$ = $1; }
+	|	'?' type	{ $$ = (TypeRef)_astFactory.NullableTypeReference(@$, $2); }
 ;
 
-type:   T_ARRAY		{ $$ = _astFactory.PrimitiveTypeReference(@$, new PrimitiveTypeName(QualifiedName.Array)); }
-	|	T_CALLABLE	{ $$ = _astFactory.PrimitiveTypeReference(@$, new PrimitiveTypeName(QualifiedName.Callable)); }
+type:   T_ARRAY		{ $$ = (TypeRef)_astFactory.PrimitiveTypeReference(@$, new PrimitiveTypeName(QualifiedName.Array)); }
+	|	T_CALLABLE	{ $$ = (TypeRef)_astFactory.PrimitiveTypeReference(@$, new PrimitiveTypeName(QualifiedName.Callable)); }
 	|	name		{ $$ = CreateTypeRef(@$, (QualifiedNameRef)$1); }
 ;
 
@@ -813,7 +817,7 @@ class_statement:
 	|	method_modifiers function returns_ref identifier backup_doc_comment '(' parameter_list ')'
 		return_type backup_fn_flags method_body backup_fn_flags
 			{ $$ = _astFactory.Method(@$, $3 == (long)FormalParam.Flags.IsByRef, (PhpMemberAttributes)$1, 
-				(TypeRef)$9, @9, (string)$4, @4, null, (List<FormalParam>)$7, @8, 
+				$9, @9, (string)$4, @4, null, (List<FormalParam>)$7, @8, 
 				null, (LangElement)$11); 
 			SetDoc($$);
 			}
@@ -950,7 +954,7 @@ non_empty_for_exprs:
 anonymous_class:
         T_CLASS ctor_arguments
 		extends_from implements_list backup_doc_comment enter_scope '{' class_statement_list '}' exit_scope {
-			var typeRef = (TypeRef)_astFactory.AnonymousTypeReference(@$, CombineSpans(@1, @2, @3, @4), isConditional, PhpMemberAttributes.None, null, (TypeRef)$3, (IEnumerable<TypeRef>)$4, (List<LangElement>)$8, CombineSpans(@7, @9));
+			var typeRef = (TypeRef)_astFactory.AnonymousTypeReference(@$, CombineSpans(@1, @2, @3, @4), isConditional, PhpMemberAttributes.None, null, $3, (IEnumerable<TypeRef>)$4, (List<LangElement>)$8, CombineSpans(@7, @9));
 			SetDoc(((AnonymousTypeRef)typeRef).TypeDeclaration);
 			$$ = new Tuple<TypeRef, List<ActualParam>>(typeRef, (List<ActualParam>)$2); 
 		}
@@ -958,7 +962,7 @@ anonymous_class:
 
 new_expr:
 		T_NEW class_name_reference ctor_arguments
-			{ $$ = _astFactory.New(@$, (TypeRef)$2, (List<ActualParam>)$3); }
+			{ $$ = _astFactory.New(@$, $2, (List<ActualParam>)$3); }
 	|	T_NEW anonymous_class
 			{ $$ = _astFactory.New(@$, ((Tuple<TypeRef, List<ActualParam>>)$2).Item1, ((Tuple<TypeRef, List<ActualParam>>)$2).Item2); }
 ;
@@ -1047,7 +1051,7 @@ expr_without_variable:
 	|	expr T_SPACESHIP expr
 			{ $$ = _astFactory.BinaryOperation(@$, Operations.Spaceship, (LangElement)$1, (LangElement)$3); }
 	|	expr T_INSTANCEOF class_name_reference
-			{ $$ = _astFactory.InstanceOf(@$, (LangElement)$1, (TypeRef)$3); }
+			{ $$ = _astFactory.InstanceOf(@$, (LangElement)$1, $3); }
 	|	'(' expr ')' { $$ = _astFactory.ParenthesisExpression(@$, (LangElement)$2); }
 	|	new_expr { $$ = $1; }
 	|	expr '?' expr ':' expr
@@ -1075,14 +1079,14 @@ expr_without_variable:
 	|	T_YIELD_FROM expr { $$ = _astFactory.YieldFrom(@$, (LangElement)$2); }
 	|	function returns_ref backup_doc_comment '(' parameter_list ')' lexical_vars return_type
 		backup_fn_flags enter_scope '{' inner_statement_list '}' exit_scope backup_fn_flags
-			{ $$ = _astFactory.Lambda(@$, CombineSpans(@1, @6, @7, @8), $2 == (long)FormalParam.Flags.IsByRef, (TypeRef)$8, 
+			{ $$ = _astFactory.Lambda(@$, CombineSpans(@1, @6, @7, @8), $2 == (long)FormalParam.Flags.IsByRef, $8, 
 				(List<FormalParam>)$5, CombineSpans(@4, @6), 
 				(List<FormalParam>)$7, CreateBlock(CombineSpans(@11, @13), (List<LangElement>)$12)); 
 				SetDoc($$);
 			}
 	|	T_STATIC function returns_ref backup_doc_comment '(' parameter_list ')' lexical_vars
 		return_type backup_fn_flags enter_scope '{' inner_statement_list '}' exit_scope backup_fn_flags
-			{ $$ = _astFactory.Lambda(@$, CombineSpans(@1, @7, @8, @9), $3 == (long)FormalParam.Flags.IsByRef, (TypeRef)$9, 
+			{ $$ = _astFactory.Lambda(@$, CombineSpans(@1, @7, @8, @9), $3 == (long)FormalParam.Flags.IsByRef, $9, 
 				(List<FormalParam>)$6, CombineSpans(@5, @7), 
 				(List<FormalParam>)$8, CreateBlock(CombineSpans(@12, @14), (List<LangElement>)$13)); 
 				SetDoc($$);
@@ -1138,9 +1142,9 @@ function_call:
 	|	class_name T_DOUBLE_COLON member_name argument_list
 			{
 				if($3 is Name)
-					$$ = _astFactory.Call(@$, (Name)$3, @3, new CallSignature((List<ActualParam>)$4), (TypeRef)$1); 
+					$$ = _astFactory.Call(@$, (Name)$3, @3, new CallSignature((List<ActualParam>)$4), $1); 
 				else
-					$$ = _astFactory.Call(@$, (LangElement)$3, new CallSignature((List<ActualParam>)$4), (TypeRef)$1); 
+					$$ = _astFactory.Call(@$, (LangElement)$3, new CallSignature((List<ActualParam>)$4), $1); 
 			}
 	|	variable_class_name T_DOUBLE_COLON member_name argument_list
 			{
@@ -1154,13 +1158,13 @@ function_call:
 ;
 
 class_name:
-		T_STATIC	{ $$ = _astFactory.TypeReference(@$, new QualifiedName(Name.StaticClassName)); }
+		T_STATIC	{ $$ = (TypeRef)_astFactory.TypeReference(@$, new QualifiedName(Name.StaticClassName)); }
 	|	name		{ $$ = TypeRefFromName(@$, TranslateQNR($1)); }
 ;
 
 class_name_reference:
 		class_name		{ $$ = $1; }
-	|	new_variable	{ $$ = _astFactory.TypeReference(@$, (LangElement)$1); }
+	|	new_variable	{ $$ = (TypeRef)_astFactory.TypeReference(@$, (LangElement)$1); }
 ;
 
 exit_expr:
@@ -1213,7 +1217,7 @@ constant:
 				$$ = _astFactory.ConstUse(@$, name.Item1, name.Item2); 
 			}
 	|	class_name T_DOUBLE_COLON identifier
-			{ $$ = _astFactory.ClassConstUse(@$, (TypeRef)$1, new Name((string)$3), @3); }
+			{ $$ = _astFactory.ClassConstUse(@$, $1, new Name((string)$3), @3); }
 	|	variable_class_name T_DOUBLE_COLON identifier
 			{ $$ = _astFactory.ClassConstUse(@$, (TypeRef)_astFactory.TypeReference(@$, (LangElement)$1), new Name((string)$3), @3); }
 ;
@@ -1280,7 +1284,7 @@ simple_variable:
 
 static_member:
 		class_name T_DOUBLE_COLON simple_variable
-			{ $$ = CreateStaticProperty(@$, (TypeRef)$1, @1, (LangElement)$3); }	
+			{ $$ = CreateStaticProperty(@$, $1, @1, (LangElement)$3); }	
 	|	variable_class_name T_DOUBLE_COLON simple_variable
 			{ $$ = CreateStaticProperty(@$, (LangElement)$1, @1, (LangElement)$3); }
 ;
@@ -1295,7 +1299,7 @@ new_variable:
 	|	new_variable T_OBJECT_OPERATOR property_name
 			{ $$ = CreateProperty(@$, (LangElement)$1, $3); }
 	|	class_name T_DOUBLE_COLON simple_variable
-			{ $$ = CreateStaticProperty(@$, (TypeRef)$1, @1, (LangElement)$3); }
+			{ $$ = CreateStaticProperty(@$, $1, @1, (LangElement)$3); }
 	|	new_variable T_DOUBLE_COLON simple_variable
 			{ $$ = CreateStaticProperty(@$, (LangElement)$1, @1, (LangElement)$3); }
 ;
