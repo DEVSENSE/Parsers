@@ -32,7 +32,7 @@ namespace test{
       "BlockStmt":{
         "DirectFcnCall":{"Name":"MySpace\bar","FallbackQualifiedName":""},
         "DirectFcnCall":{"Name":"test\define","FallbackQualifiedName":"define"},
-        "NewEx":{"DirectTypeRef":{"ClassName":"MySpace\X"}},
+        "NewEx":{"AliasedTypeRef":{"ClassName":"MySpace\X","OriginalName":"Y"}},
         "GlobalConstUse":{"Name":"MySpace\gconst","FallbackName":""},
         "GlobalConstUse":{"Name":"test\clsconst","FallbackName":"clsconst"},
         "NamedTypeDecl":{"Name":"A","MemberAttributes":"Public","IsConditional":"False","BaseClassName":{"Name":"MySpace\X"},"ImplementsList":{"Name":"MySpace\X","Name":"Y"}}

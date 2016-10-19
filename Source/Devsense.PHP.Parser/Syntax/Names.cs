@@ -498,7 +498,7 @@ namespace Devsense.PHP.Syntax
                         Equals(Callable) ||
                         Equals(Void) ||     // PHP 7.1
                         Equals(Iterable)    // PHP 7.1
-                        );  
+                        );
             }
         }
 
@@ -707,14 +707,24 @@ namespace Devsense.PHP.Syntax
         /// <summary>
         /// Translates <see cref="QualifiedName"/> according to given naming.
         /// </summary>
-        public static QualifiedName TranslateAlias(QualifiedName qname, NamingContext naming)
+        public static bool TryTranslateAlias(QualifiedName qname, NamingContext naming, out QualifiedName translated)
         {
             if (naming != null)
             {
-                qname = TranslateAlias(qname, naming.Aliases, naming.CurrentNamespace);
+                return TryTranslateAlias(qname, naming.Aliases, naming.CurrentNamespace, out translated);
             }
+            translated = qname;
+            return false;
+        }
 
-            return qname;
+        /// <summary>
+        /// Translates <see cref="QualifiedName"/> according to given naming.
+        /// </summary>
+        public static QualifiedName TranslateAlias(QualifiedName qname, Dictionary<NameRef, QualifiedNameRef> aliases, QualifiedName? currentNamespace)
+        {
+            QualifiedName translated;
+            TryTranslateAlias(qname, aliases, currentNamespace, out translated);
+            return translated;
         }
 
         /// <summary>
@@ -724,7 +734,7 @@ namespace Devsense.PHP.Syntax
         /// <param name="aliases">Enumeration of aliases.</param>
         /// <param name="currentNamespace">Current namespace to be prepended if no alias is found.</param>
         /// <returns>Qualified name that has been tralated according to given naming context.</returns>
-        public static QualifiedName TranslateAlias(QualifiedName qname, Dictionary<NameRef, QualifiedNameRef> aliases, QualifiedName? currentNamespace)
+        public static bool TryTranslateAlias(QualifiedName qname, Dictionary<NameRef, QualifiedNameRef> aliases, QualifiedName? currentNamespace, out QualifiedName translated)
         {
             if (!qname.IsFullyQualifiedName)
             {
@@ -737,7 +747,8 @@ namespace Devsense.PHP.Syntax
                 {
                     if (qname.IsSimpleName)
                     {
-                        qname = alias;
+                        translated = alias;
+                        translated.IsFullyQualifiedName = true;
                     }
                     else
                     {
@@ -747,27 +758,26 @@ namespace Devsense.PHP.Syntax
                         names[alias.QualifiedName.namespaces.Length] = alias.QualifiedName.name;
                         for (int j = 1; j < qname.namespaces.Length; ++j) names[alias.QualifiedName.namespaces.Length + j] = qname.namespaces[j];
 
-                        qname = new QualifiedName(qname.name, names);
+                        translated = new QualifiedName(qname.name, names) { IsFullyQualifiedName = true };
                     }
+                    return true;
                 }
                 else
                 {
                     if (currentNamespace.HasValue)
                     {
                         Debug.Assert(string.IsNullOrEmpty(currentNamespace.Value.Name.Value));
-                        qname = new QualifiedName(qname, currentNamespace.Value);
+                        translated = new QualifiedName(qname, currentNamespace.Value) { IsFullyQualifiedName = true };
                     }
                     else
                     {
-                        qname = new QualifiedName(qname.Name, qname.Namespaces);
+                        translated = new QualifiedName(qname.Name, qname.Namespaces) { IsFullyQualifiedName = true };
                     }
+                    return false;
                 }
-
-                // the name is translated (fully qualified)
-                qname.IsFullyQualifiedName = true;
             }
-
-            return qname;
+            translated = qname;
+            return false;
         }
 
         /// <summary>
@@ -1079,7 +1089,7 @@ namespace Devsense.PHP.Syntax
         private static bool AddAlias(Dictionary<NameRef, QualifiedNameRef>/*!*/dict, NameRef alias, QualifiedNameRef qname)
         {
             var count = dict.Count;
-            if(!dict.ContainsKey(alias))
+            if (!dict.ContainsKey(alias))
                 dict.Add(alias, qname);
             return count != dict.Count;  // item was added
         }

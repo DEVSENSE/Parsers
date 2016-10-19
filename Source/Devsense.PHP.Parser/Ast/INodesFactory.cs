@@ -685,7 +685,16 @@ namespace Devsense.PHP.Syntax.Ast
         /// <param name="span">Entire element span.</param>
         /// <param name="className">Qualified class name.</param>
         /// <returns>Type reference.</returns>
-        TNode TypeReference(TSpan span, QualifiedName className);
+        TypeRef TypeReference(TSpan span, QualifiedName className);
+
+        /// <summary>
+        /// Create <c>TypeRef</c> reference to an aliased type.
+        /// </summary>
+        /// <param name="span">Entire element span.</param>
+        /// <param name="className">Translated class name.</param>
+        /// <param name="origianType">Original type reference.</param>
+        /// <returns>Type reference.</returns>
+        TypeRef AliasedTypeReference(TSpan span, QualifiedName className, TNode origianType);
 
         /// <summary>
         /// Create <c>TypeRef</c> reference to a primitive type.
@@ -693,7 +702,15 @@ namespace Devsense.PHP.Syntax.Ast
         /// <param name="span">Element span.</param>
         /// <param name="typeName">Primitive type name.</param>
         /// <returns>A type reference to a primitive type.</returns>
-        TNode PrimitiveTypeReference(TSpan span, PrimitiveTypeName typeName);
+        TypeRef PrimitiveTypeReference(TSpan span, PrimitiveTypeName typeName);
+
+        /// <summary>
+        /// Create <c>TypeRef</c> reference to a reserved type keyword (parent, self, static).
+        /// </summary>
+        /// <param name="span">Element span.</param>
+        /// <param name="typeName">Reserved keyword.</param>
+        /// <returns>A type reference to a reserved type.</returns>
+        TypeRef ReservedTypeReference(TSpan span, ReservedTypeRef.ReservedType typeName);
 
         /// <summary>
         /// Create <c>NullableTypeRef</c> reference to a nullable type.
@@ -701,7 +718,7 @@ namespace Devsense.PHP.Syntax.Ast
         /// <param name="span">Entire element span.</param>
         /// <param name="className">Qualified class name.</param>
         /// <returns>Nullable type reference.</returns>
-        TNode NullableTypeReference(TSpan span, TNode className);
+        TypeRef NullableTypeReference(TSpan span, TNode className);
 
         /// <summary>
         /// Create <c>GenericTypeRef</c> reference to a generic type.
@@ -710,7 +727,7 @@ namespace Devsense.PHP.Syntax.Ast
         /// <param name="className">Qualified class name.</param>
         /// <param name="genericParams">Actual generic parameters.</param>
         /// <returns>Nullable type reference.</returns>
-        TNode GenericTypeReference(TSpan span, TNode className, List<TypeRef> genericParams);
+        TypeRef GenericTypeReference(TSpan span, TNode className, List<TypeRef> genericParams);
 
         /// <summary>
         /// Create <c>TypeRef</c> reference to a type.
@@ -718,7 +735,7 @@ namespace Devsense.PHP.Syntax.Ast
         /// <param name="span">Entire element span.</param>
         /// <param name="varName">Indirect name.</param>
         /// <returns>Type reference.</returns>
-        TNode TypeReference(TSpan span, TNode varName);
+        TypeRef TypeReference(TSpan span, TNode varName);
 
         /// <summary>
         /// Create <c>TypeRef</c> reference to a type.
@@ -726,7 +743,7 @@ namespace Devsense.PHP.Syntax.Ast
         /// <param name="span">Entire element span.</param>
         /// <param name="classes">List of all qualified classes in the expression.</param>
         /// <returns>Type reference.</returns>
-        TNode TypeReference(TSpan span, IEnumerable<TNode> classes);
+        TypeRef TypeReference(TSpan span, IEnumerable<TNode> classes);
 
         /// <summary>
         /// Creates anonymous type reference node.
@@ -741,7 +758,7 @@ namespace Devsense.PHP.Syntax.Ast
         /// <param name="members">Enumeration of type members.</param>
         /// <param name="blockSpan">Span of block enclosing members (including <c>{</c> and <c>}</c>.</param>
         /// <returns>Type node.</returns>
-        TNode AnonymousTypeReference(TSpan span, Span headingSpan,
+        TypeRef AnonymousTypeReference(TSpan span, Span headingSpan,
             bool conditional, PhpMemberAttributes attributes,
             IEnumerable<FormalTypeParam> typeParamsOpt,
             TypeRef baseClassOpt,

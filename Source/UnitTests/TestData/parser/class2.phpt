@@ -3,7 +3,7 @@
 class SimpleClass
 {
     /** method comment */
-    protected function aMemberFunc(boolean $arg_1): int { 
+    protected function aMemberFunc(parent $arg_1): self {
         print 'Inside `aMemberFunc()`'; 
     } 
 }
@@ -31,8 +31,8 @@ class SimpleClass
           "PassedByRef" : "False",
           "IsVariadic" : "False",
           "TypeHint" : {
-            "DirectTypeRef" : {
-              "ClassName" : "boolean"
+            "ReservedTypeRef" : {
+              "Type" : "parent"
             }
           }
         }
@@ -48,8 +48,8 @@ class SimpleClass
         }
       },
       "ReturnType" : {
-        "PrimitiveTypeRef" : {
-          "QualifiedName" : "int"
+        "ReservedTypeRef" : {
+          "Type" : "self"
         }
       }
     }

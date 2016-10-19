@@ -35,18 +35,18 @@ namespace test{
     },
     "Body":{
       "BlockStmt":{
-        "DirectStFldUse":{"PropertyName":"x","DirectTypeRef":{"ClassName":"MySpace\X"}},
-        "ClassConstUse":{"Name":"yConst","DirectTypeRef":{"ClassName":"MySpace\X"}},
-        "DirectStFldUse":{"PropertyName":"x","DirectTypeRef":{"ClassName":"test\B"}},  
-        "ClassConstUse":{"Name":"bConst","DirectTypeRef":{"ClassName":"test\B"}},
+        "DirectStFldUse":{"PropertyName":"x","AliasedTypeRef":{"ClassName":"MySpace\X","OriginalName":"Y"}},
+        "ClassConstUse":{"Name":"yConst","AliasedTypeRef":{"ClassName":"MySpace\X","OriginalName":"Y"}},
+        "DirectStFldUse":{"PropertyName":"x","ClassTypeRef":{"ClassName":"test\B"}},  
+        "ClassConstUse":{"Name":"bConst","ClassTypeRef":{"ClassName":"test\B"}},
         "TryStmt":{
           "Body":{"BlockStmt":{}},
           "Catches":{
             "CatchItem":{
               "TypeRef":{
                 "MultipleTypeRef":{
-                  "DirectTypeRef":{"ClassName":"MySpace\X"},
-                  "DirectTypeRef":{"ClassName":"test\A"}
+                  "AliasedTypeRef":{"ClassName":"MySpace\X","OriginalName":"Y"},
+                  "ClassTypeRef":{"ClassName":"test\A"}
                 }
               },
               "Variable":{"DirectVarUse":{"VarName":"a"}},
@@ -62,13 +62,13 @@ namespace test{
               "Name":"a",
               "PassedByRef":"False",
               "IsVariadic":"False",
-              "TypeHint":{"DirectTypeRef":{"ClassName":"MySpace\X"}}
+              "TypeHint":{"AliasedTypeRef":{"ClassName":"MySpace\X","OriginalName":"Y"}}
             }
           },
           "Body":{"BlockStmt":{}},
-          "ReturnType":{"DirectTypeRef":{"ClassName":"MySpace\X"}}
+          "ReturnType":{"AliasedTypeRef":{"ClassName":"MySpace\X","OriginalName":"Y"}}
         },
-        "InstanceOfEx":{"DirectVarUse":{"VarName":"x"},"DirectTypeRef":{"ClassName":"MySpace\X"}}
+        "InstanceOfEx":{"DirectVarUse":{"VarName":"x"},"AliasedTypeRef":{"ClassName":"MySpace\X","OriginalName":"Y"}}
       }
     }
   }

@@ -25,10 +25,10 @@ try {
       "CatchItem":{
         "TypeRef":{   
           "MultipleTypeRef":{
-            "DirectTypeRef":{
+            "ClassTypeRef":{
               "ClassName":"TestEx"
             },         
-            "DirectTypeRef":{
+            "ClassTypeRef":{
               "ClassName":"MyEx"
             }
           }
@@ -46,7 +46,7 @@ try {
       },
       "CatchItem":{
         "TypeRef":{
-          "DirectTypeRef":{
+          "ClassTypeRef":{
             "ClassName":"Exception"
           }
         },

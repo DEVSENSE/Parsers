@@ -23,7 +23,7 @@ $x = new class(1, "world")
 "GlobalCode":{
   "NamingContext":{},
   "NewEx":{
-    "DirectTypeRef":{"ClassName":"MyClass"},
+    "ClassTypeRef":{"ClassName":"MyClass"},
     "ActualParam":{"IsUnpack":"False","LongIntLiteral":{"Value":"1"}},
     "ActualParam":{"IsUnpack":"False","StringLiteral":{"Value":"hello"}}
   },   

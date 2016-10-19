@@ -131,7 +131,7 @@ namespace Devsense.PHP.Syntax.Ast
         private Types consttype;
 
         internal PseudoClassConstUse(Text.Span span, GenericQualifiedName className, Text.Span classNamePosition, Types type, Text.Span namePosition)
-            : this(span, DirectTypeRef.FromGenericQualifiedName(classNamePosition, className), type, namePosition)
+            : this(span, ClassTypeRef.FromGenericQualifiedName(classNamePosition, className), type, namePosition)
 		{
 		}
 

@@ -52,7 +52,7 @@ namespace Devsense.PHP.Syntax.Ast
 
         internal static TypeRef FromGenericQualifiedName(Span span, GenericQualifiedName qname)
         {
-            var tref = new DirectTypeRef(span, qname.QualifiedName);
+            var tref = new ClassTypeRef(span, qname.QualifiedName);
             if (qname.IsGeneric)
             {
                 return new GenericTypeRef(span, tref, qname.GenericParams.Select(p => FromObject(Span.Invalid, p)).ToList());
@@ -66,7 +66,7 @@ namespace Devsense.PHP.Syntax.Ast
         internal static TypeRef FromObject(Span span, object obj)
         {
             if (obj is PrimitiveTypeName) return new PrimitiveTypeRef(span, (PrimitiveTypeName)obj);
-            if (obj is QualifiedName) return new DirectTypeRef(span, (QualifiedName)obj);
+            if (obj is QualifiedName) return new ClassTypeRef(span, (QualifiedName)obj);
             if (obj is GenericQualifiedName) return FromGenericQualifiedName(span, (GenericQualifiedName)obj);
             if (obj is TypeRef) return (TypeRef)obj;
 
@@ -126,7 +126,7 @@ namespace Devsense.PHP.Syntax.Ast
                 }
 
                 // direct types
-                return new DirectTypeRef(span, qname);
+                return new ClassTypeRef(span, qname);
             }
         }
 
@@ -168,13 +168,67 @@ namespace Devsense.PHP.Syntax.Ast
 
     #endregion
 
+    #region ReservedTypeRef
+
+    /// <summary>
+    /// Primitive type reference.
+    /// </summary>
+    [DebuggerDisplay("{_typeName.Name,nq}")]
+    public sealed class ReservedTypeRef : TypeRef
+    {
+        public enum ReservedType
+        {
+            /// <summary>
+            /// Parent class reference.
+            /// </summary>
+           parent,
+
+            /// <summary>
+            /// This class reference.
+            /// </summary>
+            self,
+
+            /// <summary>
+            /// Static class reference.
+            /// </summary>
+            @static
+        }
+
+        public static readonly Dictionary<Name, ReservedTypeRef.ReservedType> ReservedTypes = new Dictionary<Name, ReservedTypeRef.ReservedType>() {
+            { Name.StaticClassName, ReservedTypeRef.ReservedType.@static },
+            { Name.SelfClassName, ReservedTypeRef.ReservedType.self },
+            { Name.ParentClassName, ReservedTypeRef.ReservedType.parent }
+        };
+
+        ReservedType Reserved => _reservedType;
+        ReservedType _reservedType;
+
+        public ReservedTypeRef(Span span, ReservedType type)
+            : base(span)
+        {
+            _reservedType = type;
+        }
+
+        /// <summary>
+        /// Call the right Visit* method on the given Visitor object.
+        /// </summary>
+        /// <param name="visitor">Visitor to be called.</param>
+        public override void VisitMe(TreeVisitor visitor) => visitor.VisitReservedTypeRef(this);
+
+        public override QualifiedName? QualifiedName => new QualifiedName(new Name(_reservedType.ToString()));
+
+        public override string ToString() => QualifiedName.ToString();
+    }
+
+    #endregion
+
     #region DirectTypeRef
 
     /// <summary>
     /// Direct use of class name.
     /// </summary>
     [DebuggerDisplay("{_className,nq}")]
-    public sealed class DirectTypeRef : TypeRef, IEquatable<DirectTypeRef>
+    public sealed class ClassTypeRef : TypeRef, IEquatable<ClassTypeRef>
     {
         /// <summary>
         /// Non nullable <see cref="QualifiedName"/>.
@@ -184,7 +238,7 @@ namespace Devsense.PHP.Syntax.Ast
 
         public override QualifiedName? QualifiedName => ClassName;
 
-        public DirectTypeRef(Span span, QualifiedName className)
+        public ClassTypeRef(Span span, QualifiedName className)
             : base(span)
         {
             Debug.Assert(!className.IsPrimitiveTypeName);
@@ -195,17 +249,69 @@ namespace Devsense.PHP.Syntax.Ast
         /// Call the right Visit* method on the given Visitor object.
         /// </summary>
         /// <param name="visitor">Visitor to be called.</param>
-        public override void VisitMe(TreeVisitor visitor) => visitor.VisitDirectTypeRef(this);
+        public override void VisitMe(TreeVisitor visitor) => visitor.VisitClassTypeRef(this);
 
         public override string ToString() => _className.ToString();
 
         #region IEquatable
 
-        public override bool Equals(object obj) => ((IEquatable<DirectTypeRef>)this).Equals(obj as DirectTypeRef);
+        public override bool Equals(object obj) => ((IEquatable<ClassTypeRef>)this).Equals(obj as ClassTypeRef);
 
         public override int GetHashCode() => _className.GetHashCode();
 
-        bool IEquatable<DirectTypeRef>.Equals(DirectTypeRef other) => other != null && other._className == _className;
+        bool IEquatable<ClassTypeRef>.Equals(ClassTypeRef other) => other != null && other._className == _className;
+
+        #endregion
+    }
+
+    #endregion
+
+    #region AliasedTypeRef
+
+    /// <summary>
+    /// Direct use of class name.
+    /// </summary>
+    [DebuggerDisplay("{_className,nq}")]
+    public sealed class AliasedTypeRef : TypeRef, IEquatable<AliasedTypeRef>
+    {
+        /// <summary>
+        /// Non nullable <see cref="QualifiedName"/>.
+        /// </summary>
+        public QualifiedName ClassName => _className;
+        private readonly QualifiedName _className;
+
+        public override QualifiedName? QualifiedName => ClassName;
+
+        /// <summary>
+        /// Original type reference before alias translation.
+        /// Non nullable <see cref="ClassTypeRef"/>.
+        /// </summary>
+        public ClassTypeRef OriginalType => _originalType;
+        private readonly ClassTypeRef _originalType;
+
+        public AliasedTypeRef(Span span, QualifiedName className, ClassTypeRef originalType)
+            : base(span)
+        {
+            Debug.Assert(!className.IsPrimitiveTypeName);
+            _className = className;
+            _originalType = originalType;
+        }
+
+        /// <summary>
+        /// Call the right Visit* method on the given Visitor object.
+        /// </summary>
+        /// <param name="visitor">Visitor to be called.</param>
+        public override void VisitMe(TreeVisitor visitor) => visitor.VisitAliasedTypeRef(this);
+
+        public override string ToString() => _className.ToString();
+
+        #region IEquatable
+
+        public override bool Equals(object obj) => ((IEquatable<AliasedTypeRef>)this).Equals(obj as AliasedTypeRef);
+
+        public override int GetHashCode() => _className.GetHashCode();
+
+        bool IEquatable<AliasedTypeRef>.Equals(AliasedTypeRef other) => other != null && other._originalType.Equals(_originalType);
 
         #endregion
     }
@@ -345,7 +451,7 @@ namespace Devsense.PHP.Syntax.Ast
                 Debug.Assert(_results.Count == stack + 1);
             }
 
-            public override void VisitDirectTypeRef(DirectTypeRef x)
+            public override void VisitClassTypeRef(ClassTypeRef x)
             {
                 _results.Push(new GenericQualifiedName(x.ClassName));
             }

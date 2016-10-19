@@ -12,7 +12,7 @@ nothrow:
     "LabelName" : "nothrow"
   },
   "NewEx":{
-    "DirectTypeRef":{
+    "ClassTypeRef":{
       "ClassName":"Exception"
     },
     "ActualParam":{   

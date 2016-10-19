@@ -479,11 +479,15 @@ namespace Devsense.PHP.Syntax.Ast.Serialization
             SerializeOptionalProperty("Body", x.Body);
             _serializer.EndSerialize();
         }
-        override public void VisitDirectTypeRef(DirectTypeRef x)
+        override public void VisitClassTypeRef(ClassTypeRef x)
         {
-            _serializer.StartSerialize(typeof(DirectTypeRef).Name, SerializeSpan(x.Span), 
+            _serializer.Serialize(typeof(ClassTypeRef).Name, SerializeSpan(x.Span), 
                 new NodeObj("ClassName", x.QualifiedName.ToString()));
-            _serializer.EndSerialize();
+        }
+        public override void VisitAliasedTypeRef(AliasedTypeRef x)
+        {
+            _serializer.Serialize(typeof(AliasedTypeRef).Name, SerializeSpan(x.Span),
+                new NodeObj("ClassName", x.QualifiedName.ToString()), new NodeObj("OriginalName", x.OriginalType.QualifiedName.ToString()));
         }
         override public void VisitIndirectTypeRef(IndirectTypeRef x)
         {
@@ -496,6 +500,12 @@ namespace Devsense.PHP.Syntax.Ast.Serialization
         {
             _serializer.Serialize(typeof(PrimitiveTypeRef).Name, SerializeSpan(x.Span),
                 new NodeObj("QualifiedName", x.QualifiedName.ToString()));
+        }
+
+        override public void VisitReservedTypeRef(ReservedTypeRef x)
+        {
+            _serializer.Serialize(typeof(ReservedTypeRef).Name, SerializeSpan(x.Span),
+                new NodeObj("Type", x.ToString()));
         }
 
         override public void VisitNullableTypeRef(NullableTypeRef x)

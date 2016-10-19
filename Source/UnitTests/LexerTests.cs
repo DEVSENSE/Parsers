@@ -72,7 +72,9 @@ namespace UnitTests
             Lexer lexer = new Lexer(new StringReader("\"\""), Encoding.UTF8, errorSink,
                 LanguageFeatures.ShortOpenTags, 0, Lexer.LexicalStates.INITIAL);
 
-            var chars = new[] { '$', '{', 'n', '\0', '\r', '\n', ' ', '\'', '\\', 'x', 'c', '"', '`', '8', '0', '/', '*', '?', '>', ';' };
+            var charSet = new[] { new [] { '$', '{', 'n', '\0', '\r', '\n', ' ' },
+                new [] { '\'', '\\', 'x', 'c', '"', '`', '8', '0' },
+                new [] { '/', '*', '?', '>', ';' } };
             int[] word = new int[5];
             char[] text = new char[word.Length];
 
@@ -80,7 +82,8 @@ namespace UnitTests
                 Lexer.LexicalStates.ST_BACKQUOTE, Lexer.LexicalStates.ST_HEREDOC, Lexer.LexicalStates.ST_NOWDOC, Lexer.LexicalStates.ST_COMMENT,
                 Lexer.LexicalStates.ST_ONE_LINE_COMMENT, Lexer.LexicalStates.ST_DOC_COMMENT, Lexer.LexicalStates.INITIAL, Lexer.LexicalStates.ST_IN_SCRIPTING };
 
-            foreach (var state in states)
+            foreach (var chars in charSet)
+                foreach (var state in states)
                 while (Increment(word, chars.Length))
                 {
                     ToArray(word, text, chars);

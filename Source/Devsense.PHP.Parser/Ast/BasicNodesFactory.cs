@@ -441,7 +441,7 @@ namespace Devsense.PHP.Syntax.Ast
                 ConvertList<TypeMemberDecl>(members), bodySpan, null);
         }
 
-        public virtual LangElement AnonymousTypeReference(Span span, Span headingSpan, bool conditional, PhpMemberAttributes attributes, IEnumerable<FormalTypeParam> typeParamsOpt, TypeRef baseClassOpt, IEnumerable<TypeRef> implements, IEnumerable<LangElement> members, Span bodySpan)
+        public virtual TypeRef AnonymousTypeReference(Span span, Span headingSpan, bool conditional, PhpMemberAttributes attributes, IEnumerable<FormalTypeParam> typeParamsOpt, TypeRef baseClassOpt, IEnumerable<TypeRef> implements, IEnumerable<LangElement> members, Span bodySpan)
         {
             if (implements == null) implements = TypeRef.EmptyList;
 
@@ -494,32 +494,41 @@ namespace Devsense.PHP.Syntax.Ast
                 return new ForeachVar((VariableUse)variable, alias);
         }
 
-        public virtual LangElement TypeReference(Span span, QualifiedName className)
+        public virtual TypeRef TypeReference(Span span, QualifiedName className)
+        {
+            //Debug.Assert(!className.IsPrimitiveTypeName);
+            return new ClassTypeRef(span, className);
+        }
+        public virtual TypeRef AliasedTypeReference(Span span, QualifiedName className, LangElement origianType)
         {
             Debug.Assert(!className.IsPrimitiveTypeName);
-            return new DirectTypeRef(span, className);
+            return new AliasedTypeRef(span, className, (ClassTypeRef)origianType);
         }
-        public virtual LangElement PrimitiveTypeReference(Span span, PrimitiveTypeName tname)
+        public virtual TypeRef PrimitiveTypeReference(Span span, PrimitiveTypeName tname)
         {
             return new PrimitiveTypeRef(span, tname);
         }
-        public virtual LangElement NullableTypeReference(Span span, LangElement className)
+        public virtual TypeRef ReservedTypeReference(Span span, ReservedTypeRef.ReservedType typeName)
+        {
+            return new ReservedTypeRef(span, typeName);
+        }
+        public virtual TypeRef NullableTypeReference(Span span, LangElement className)
         {
             return new NullableTypeRef(span, (TypeRef)className);
         }
-        public virtual LangElement GenericTypeReference(Span span, LangElement className, List<TypeRef> genericParams)
+        public virtual TypeRef GenericTypeReference(Span span, LangElement className, List<TypeRef> genericParams)
         {
             return new GenericTypeRef(span, (TypeRef)className, genericParams);
         }
-        public virtual LangElement TypeReference(Span span, LangElement varName)
+        public virtual TypeRef TypeReference(Span span, LangElement varName)
         {
             return new IndirectTypeRef(span, (VariableUse)varName);
         }
-        public virtual LangElement TypeReference(Span span, IEnumerable<LangElement> classes)
+        public virtual TypeRef TypeReference(Span span, IEnumerable<LangElement> classes)
         {
             Debug.Assert(classes != null && classes.Count() > 0 && classes.All(c => c is TypeRef));
             if (classes.Count() == 1)
-                return classes.First();
+                return (TypeRef)classes.First();
             return new MultipleTypeRef(span, ConvertList<TypeRef>(classes));
         }
 

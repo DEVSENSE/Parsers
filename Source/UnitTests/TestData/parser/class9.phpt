@@ -29,7 +29,7 @@ class SimpleClass
           "PassedByRef" : "False",
           "IsVariadic" : "False",
           "TypeHint" : {
-            "DirectTypeRef" : {
+            "ClassTypeRef" : {
               "ClassName" : "boolean"
             }
           }

@@ -42,7 +42,7 @@ if ($a > $b)
                   "PassedByRef" : "False",
                   "IsVariadic" : "False",
                   "TypeHint" : {
-                    "DirectTypeRef" : {
+                    "ClassTypeRef" : {
                       "ClassName" : "MyClass"
                     }
                   }
@@ -53,7 +53,7 @@ if ($a > $b)
                   "IsVariadic" : "False",
                   "TypeHint" : {
                     "NullableTypeRef" : {
-                      "DirectTypeRef" : {
+                      "ClassTypeRef" : {
                         "ClassName" : "integer"
                       }
                     }

@@ -100,6 +100,13 @@ namespace UnitTests
                     _foreachVarCount++;
                 base.VisitForeachVar(x);
             }
+
+            public override void VisitAliasedTypeRef(AliasedTypeRef x)
+            {
+                // TODO visit original type reference
+                VisitElement(x.OriginalType);
+                base.VisitAliasedTypeRef(x);
+            }
         }
 
         sealed class AstCounterFactory : BasicNodesFactory
@@ -124,6 +131,12 @@ namespace UnitTests
                 return element;
             }
 
+            TypeRef CountTR(TypeRef element)
+            {
+                Assert.IsTrue(_createdElements.Add(element));
+                return element;
+            }
+
             Item CountI(Item i)
             {
                 _itemCount++;
@@ -139,10 +152,10 @@ namespace UnitTests
             public override LangElement ActualParameter(Span span, LangElement expr, ActualParam.Flags flags)
                 => CountLE(base.ActualParameter(span, expr, flags));
 
-            public override LangElement AnonymousTypeReference(Span span, Span headingSpan, bool conditional, PhpMemberAttributes attributes, IEnumerable<FormalTypeParam> typeParamsOpt, TypeRef baseClassOpt, IEnumerable<TypeRef> implements, IEnumerable<LangElement> members, Span blockSpan)
+            public override TypeRef AnonymousTypeReference(Span span, Span headingSpan, bool conditional, PhpMemberAttributes attributes, IEnumerable<FormalTypeParam> typeParamsOpt, TypeRef baseClassOpt, IEnumerable<TypeRef> implements, IEnumerable<LangElement> members, Span blockSpan)
             {
                 // TODO - AnonymousTypeRef internaly creates AnonymousTypeDecl
-                var reference = CountLE(base.AnonymousTypeReference(span, headingSpan, conditional, attributes, typeParamsOpt, baseClassOpt, implements, members, blockSpan));
+                var reference = CountTR(base.AnonymousTypeReference(span, headingSpan, conditional, attributes, typeParamsOpt, baseClassOpt, implements, members, blockSpan));
                 _createdElements.Add(((AnonymousTypeRef)reference).TypeDeclaration);
                 // TODO - base class and interfaces are not visited, they are converted to qualified name
                 var imp = implements != null ? implements.ToList() : null;
@@ -224,7 +237,7 @@ namespace UnitTests
                         CreatedElements.Remove(item);
                         CreatedElements.Remove(((ConstantDecl)item).Initializer);
                     }
-                 return CountLE(base.Declare(span, decls, statementOpt));
+                return CountLE(base.Declare(span, decls, statementOpt));
             }
 
             public override LangElement DeclList(Span span, PhpMemberAttributes attributes, IEnumerable<LangElement> decls)
@@ -269,8 +282,8 @@ namespace UnitTests
             public override LangElement Function(Span span, bool conditional, bool aliasReturn, PhpMemberAttributes attributes, TypeRef returnType, Name name, Span nameSpan, IEnumerable<FormalTypeParam> typeParamsOpt, IEnumerable<FormalParam> formalParams, Span formalParamsSpan, LangElement body)
                  => CountLE(base.Function(span, conditional, aliasReturn, attributes, returnType, name, nameSpan, typeParamsOpt, formalParams, formalParamsSpan, body));
 
-            public override LangElement GenericTypeReference(Span span, LangElement className, List<TypeRef> genericParams)
-                 => CountLE(base.GenericTypeReference(span, className, genericParams));
+            public override TypeRef GenericTypeReference(Span span, LangElement className, List<TypeRef> genericParams)
+                 => CountTR(base.GenericTypeReference(span, className, genericParams));
 
             public override LangElement Global(Span span, List<LangElement> variables)
                  => CountLE(base.Global(span, variables));
@@ -348,8 +361,8 @@ namespace UnitTests
             public override LangElement NewArray(Span span, IEnumerable<Item> itemsOpt)
                  => CountLE(base.NewArray(span, itemsOpt));
 
-            public override LangElement NullableTypeReference(Span span, LangElement className)
-                 => CountLE(base.NullableTypeReference(span, className));
+            public override TypeRef NullableTypeReference(Span span, LangElement className)
+                 => CountTR(base.NullableTypeReference(span, className));
 
             public override LangElement Parameter(Span span, string name, Span nameSpan, TypeRef typeOpt, FormalParam.Flags flags, Expression initValue)
                  => CountLE(base.Parameter(span, name, nameSpan, typeOpt, flags, initValue));
@@ -402,29 +415,43 @@ namespace UnitTests
                 var imp = implements != null ? implements.ToList() : null;
                 if (imp != null)
                     foreach (var item in imp)
+                    {
                         _createdElements.Remove(item);
-                if(baseClassOpt != null)
+                        if (item is AliasedTypeRef)
+                            _createdElements.Remove(((AliasedTypeRef)item).OriginalType);
+                    }
+                if (baseClassOpt != null)
+                {
                     _createdElements.Remove(baseClassOpt);
+                    if (baseClassOpt is AliasedTypeRef)
+                        _createdElements.Remove(((AliasedTypeRef)baseClassOpt).OriginalType);
+                }
                 return CountLE(base.Type(span, headingSpan, conditional, attributes, name, nameSpan, typeParamsOpt, baseClassOpt, imp, members, bodySpan));
             }
 
-            public override LangElement TypeReference(Span span, IEnumerable<LangElement> classes)
+            public override TypeRef TypeReference(Span span, IEnumerable<LangElement> classes)
             {
                 // TODO - returns only the first type if only one is present
                 var reference = base.TypeReference(span, classes);
                 if (reference is MultipleTypeRef)
-                    return CountLE(reference);
+                    return CountTR(reference);
                 else return reference;
             }
 
-            public override LangElement PrimitiveTypeReference(Span span, PrimitiveTypeName tname)
-                => CountLE(base.PrimitiveTypeReference(span, tname));
+            public override TypeRef PrimitiveTypeReference(Span span, PrimitiveTypeName tname)
+                => CountTR(base.PrimitiveTypeReference(span, tname));
 
-            public override LangElement TypeReference(Span span, LangElement varName)
-                 => CountLE(base.TypeReference(span, varName));
+            public override TypeRef AliasedTypeReference(Span span, QualifiedName className, LangElement origianType)
+                => CountTR(base.AliasedTypeReference(span, className, origianType));
 
-            public override LangElement TypeReference(Span span, QualifiedName className)
-                 => CountLE(base.TypeReference(span, className));
+            public override TypeRef ReservedTypeReference(Span span, ReservedTypeRef.ReservedType typeName)
+                => CountTR(base.ReservedTypeReference(span, typeName));
+
+            public override TypeRef TypeReference(Span span, LangElement varName)
+                => CountTR(base.TypeReference(span, varName));
+
+            public override TypeRef TypeReference(Span span, QualifiedName className)
+                 => CountTR(base.TypeReference(span, className));
 
             public override LangElement UnaryOperation(Span span, Operations operation, LangElement expression)
                  => CountLE(base.UnaryOperation(span, operation, expression));

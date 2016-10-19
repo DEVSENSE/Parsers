@@ -106,7 +106,7 @@ $a? : $b;
   "BinaryEx":{"Operation":"LessThan","DirectVarUse":{"VarName":"a"},"DirectVarUse":{"VarName":"b"}},
   "BinaryEx":{"Operation":"GreaterThanOrEqual","DirectVarUse":{"VarName":"a"},"DirectVarUse":{"VarName":"b"}},
   "BinaryEx":{"Operation":"Spaceship","DirectVarUse":{"VarName":"a"},"DirectVarUse":{"VarName":"b"}},
-  "InstanceOfEx":{"DirectVarUse":{"VarName":"a"},"DirectTypeRef":{"ClassName":"B"}},
+  "InstanceOfEx":{"DirectVarUse":{"VarName":"a"},"ClassTypeRef":{"ClassName":"B"}},
   "ConditionalEx":{"CondExpr":{"DirectVarUse":{"VarName":"a"}},"TrueExpr":{},"FalseExpr":{"DirectVarUse":{"VarName":"b"}}},
   
   "UnaryEx":{"Operation":"Int64Cast","DirectVarUse":{"VarName":"a"}},

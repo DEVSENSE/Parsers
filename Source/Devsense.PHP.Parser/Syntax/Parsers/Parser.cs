@@ -257,13 +257,13 @@ namespace Devsense.PHP.Syntax
                 alias.Item3);
         }
 
-        private IList<T> AddToList<T>(IList<T> list, T item)
+        private List<T> AddToList<T>(List<T> list, T item)
         {
             list.Add(item);
             return list;
         }
 
-        private IList<T> AddToList<T>(object list, object item)
+        private List<T> AddToList<T>(object list, object item)
         {
             return AddToList((List<T>)list, (T)item);
         }
@@ -317,7 +317,7 @@ namespace Devsense.PHP.Syntax
         }
 
         private LangElement CreateStaticProperty(Span span, LangElement objectExpr, Span objectNamePos, object name) =>
-            CreateStaticProperty(span, (TypeRef)_astFactory.TypeReference(objectNamePos, objectExpr), objectNamePos, name);
+            CreateStaticProperty(span, _astFactory.TypeReference(objectNamePos, objectExpr), objectNamePos, name);
 
         private List<T> RightTrimList<T>(List<T> list)
         {
@@ -333,14 +333,10 @@ namespace Devsense.PHP.Syntax
             return Span.FromBounds(validSpans.Min(s => s.Start), validSpans.Max(s => s.End));
         }
 
-        TypeRef TypeRefFromName(Span span, object nref)
-        {
-            var name = (QualifiedNameRef)nref;
-            return (TypeRef)_astFactory.TypeReference(name.Span, name.QualifiedName);
-        }
-
         static readonly HashSet<QualifiedName> PHP70PrimitiveTypes = new HashSet<QualifiedName>(new[] { QualifiedName.Int, QualifiedName.Float, QualifiedName.String, QualifiedName.Bool, QualifiedName.Array, QualifiedName.Callable });
         static readonly HashSet<QualifiedName> PHP71PrimitiveTypes = new HashSet<QualifiedName>(new[] { QualifiedName.Void, QualifiedName.Iterable });
+
+        ReservedTypeRef.ReservedType _reservedTypeStatic => ReservedTypeRef.ReservedType.@static;
 
         TypeRef CreateTypeRef(Span span, QualifiedNameRef tname)
         {
@@ -348,45 +344,34 @@ namespace Devsense.PHP.Syntax
             // primitive type name ?
             if (qname.IsSimpleName)
             {
+                ReservedTypeRef.ReservedType reserved;
                 if ((_languageFeatures.HasFeature(LanguageFeatures.Php71Set)) && PHP71PrimitiveTypes.Contains(qname))
                 {
-                    return (TypeRef)new PrimitiveTypeRef(span, new PrimitiveTypeName(tname));
+                    return _astFactory.PrimitiveTypeReference(span, new PrimitiveTypeName(tname));
                 }
                 if ((_languageFeatures.HasFeature(LanguageFeatures.Php70Set)) && PHP70PrimitiveTypes.Contains(qname))
                 {
-                    return (TypeRef)new PrimitiveTypeRef(span, new PrimitiveTypeName(tname));
+                    return _astFactory.PrimitiveTypeReference(span, new PrimitiveTypeName(tname));
+                }
+                if (ReservedTypeRef.ReservedTypes.TryGetValue(qname.Name, out reserved))
+                {
+                    return _astFactory.ReservedTypeReference(span, reserved);
                 }
             }
 
             // direct type reference
-            return (TypeRef)_astFactory.TypeReference(span, TranslateQNR(tname));
+            QualifiedName translated;
+            return (TryTranslateAny(tname, out translated)) ?
+                _astFactory.AliasedTypeReference(span, translated, _astFactory.TypeReference(span, tname)) :
+                _astFactory.TypeReference(span, translated);
         }
 
-        /// <summary>
-        /// Converts a list of <c>QualifiedName</c> to array of <c>TypeRef</c>. 
-        /// This does not cause multiple TypeRef creation, unlike Linq functions.
-        /// </summary>
-        /// <param name="list">List of qualified names.</param>
-        /// <param name="translate">Function used to translate the names.</param>
-        /// <returns>Array of <c>TypeRef</c>.</returns>
-        IEnumerable<TypeRef> ToTypeRef(IList<QualifiedNameRef> list, Func<object, QualifiedNameRef> translate)
+        List<TypeRef> TypeRefListFromQNRList(List<QualifiedNameRef> nrefList)
         {
-            TypeRef[] types = new TypeRef[list.Count];
+            TypeRef[] types = new TypeRef[nrefList.Count];
             for (int i = 0; i < types.Length; i++)
-                types[i] = TypeRefFromName(list[i].Span, TranslateQNR(list[i]));
-            return types;
-        }
-
-        IEnumerable<TypeRef> TypeRefListFromTranslatedQNRList(object nrefList)
-        {
-            var list = (IList<QualifiedNameRef>)nrefList;
-            return ToTypeRef(list, o => (QualifiedNameRef)o);
-        }
-
-        IEnumerable<TypeRef> TypeRefListFromQNRList(object nrefList)
-        {
-            var list = (IList<QualifiedNameRef>)nrefList;
-            return ToTypeRef(list, TranslateQNR);
+                types[i] = CreateTypeRef(nrefList[i].Span, nrefList[i]);
+            return types.ToList();
         }
 
         #region Aliasing
@@ -400,19 +385,13 @@ namespace Devsense.PHP.Syntax
         {
             Debug.Assert(tref != null);
 
-            if (tref is DirectTypeRef) return new DirectTypeRef(tref.Span, TranslateAny(((DirectTypeRef)tref).ClassName));
+            if (tref is ClassTypeRef) return new ClassTypeRef(tref.Span, TranslateAny(((ClassTypeRef)tref).ClassName));
             if (tref is NullableTypeRef) return new NullableTypeRef(tref.Span, Translate(((NullableTypeRef)tref).TargetType));
             if (tref is MultipleTypeRef) return new MultipleTypeRef(tref.Span, ((MultipleTypeRef)tref).MultipleTypes.Select(Translate).ToList());
             if (tref is GenericTypeRef) throw new NotImplementedException();
             // PrimitiveTypeRef is not translated
             // IndirectTypeRef is not translated
             return tref;
-        }
-
-        QualifiedNameRef TranslateQNR(object nref)
-        {
-            var name = (QualifiedNameRef)nref;
-            return new QualifiedNameRef(name.Span, TranslateAny(name.QualifiedName));
         }
 
         Tuple<QualifiedName, QualifiedName?> TranslateQNRFunction(object nref)
@@ -471,26 +450,41 @@ namespace Devsense.PHP.Syntax
 
         private QualifiedName TranslateAlias(QualifiedName qname)
         {
+            QualifiedName name;
+            TryTranslateAlias(qname, out name);
+            return name;
+        }
+
+        private bool TryTranslateAlias(QualifiedName qname, out QualifiedName translated)
+        {
             Debug.Assert(!qname.IsFullyQualifiedName);
             Debug.Assert(!qname.IsPrimitiveTypeName);
             Debug.Assert(!qname.IsReservedClassName);
 
             // do not use current namespace, if there are imported namespace ... will be resolved later
-            return QualifiedName.TranslateAlias(qname, this.namingContext.Aliases,
-                (IsInGlobalNamespace) ? (QualifiedName?)null : namingContext.CurrentNamespace.Value);
+            return QualifiedName.TryTranslateAlias(qname, this.namingContext.Aliases,
+                (IsInGlobalNamespace) ? (QualifiedName?)null : namingContext.CurrentNamespace.Value, out translated);
         }
 
         private QualifiedName TranslateAny(QualifiedName qname)
+        {
+            QualifiedName name;
+            TryTranslateAny(qname, out name);
+            return name;
+        }
+
+        private bool TryTranslateAny(QualifiedName qname, out QualifiedName translated)
         {
             if (qname.IsFullyQualifiedName ||   // already translated
                 qname.IsReservedClassName ||    // special names (self, parent, static)
                 qname.IsPrimitiveTypeName)      // primitive type name
             {
-                return qname;
+                translated = qname;
+                return false;
             }
 
             // return the alias if found:
-            return TranslateAlias(qname);
+            return TryTranslateAlias(qname, out translated);
         }
 
         private bool IsInGlobalNamespace => !namingContext.CurrentNamespace.HasValue || namingContext.CurrentNamespace.Value.Namespaces.Length == 0;

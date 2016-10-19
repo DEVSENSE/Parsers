@@ -54,7 +54,7 @@ $greet = static function(string $name) use($x, &$y): integer
         }
       },
       "ReturnType" : {
-        "DirectTypeRef" : {
+        "ClassTypeRef" : {
           "ClassName" : "integer"
         }
       }

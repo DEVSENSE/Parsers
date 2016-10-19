@@ -11,14 +11,14 @@ new namespace\A();
 
 "GlobalCode":{
   "NamingContext":{},
-  "NewEx":{"DirectTypeRef":{"ClassName":"A"}},
+  "NewEx":{"ClassTypeRef":{"ClassName":"A"}},
   "NamespaceDecl":{
     "Name":"MyNamespace",
     "SimpleSyntax":"True",
     "NamingContext":{"Namespace":"MyNamespace"},
     "Body":{
       "BlockStmt":{
-        "NewEx":{"DirectTypeRef":{"ClassName":"MyNamespace\A"}}
+        "NewEx":{"ClassTypeRef":{"ClassName":"MyNamespace\A"}}
       }
     }
   }

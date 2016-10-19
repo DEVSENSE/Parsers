@@ -31,7 +31,7 @@ new $x::$y;
     "DirectVarUse":{"VarName":"y","IsMemberOf":{"DirectVarUse":{"VarName":"x"}}}}
   },
   "NewEx":{"IndirectTypeRef":{
-    "DirectStFldUse":{"PropertyName":"y","DirectTypeRef":{"ClassName":"X"}}}
+    "DirectStFldUse":{"PropertyName":"y","ClassTypeRef":{"ClassName":"X"}}}
   },
   "NewEx":{"IndirectTypeRef":{
     "DirectStFldUse":{"PropertyName":"y","IndirectTypeRef":{"DirectVarUse":{"VarName":"x"}}}}

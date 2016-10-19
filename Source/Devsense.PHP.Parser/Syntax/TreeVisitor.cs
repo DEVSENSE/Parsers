@@ -934,7 +934,15 @@ namespace Devsense.PHP.Syntax
         {
             // nothing
         }
-        virtual public void VisitDirectTypeRef(DirectTypeRef x)
+        virtual public void VisitClassTypeRef(ClassTypeRef x)
+        {
+            // nothing
+        }
+        virtual public void VisitAliasedTypeRef(AliasedTypeRef x)
+        {
+            // nothing
+        }
+        virtual public void VisitReservedTypeRef(ReservedTypeRef x)
         {
             // nothing
         }

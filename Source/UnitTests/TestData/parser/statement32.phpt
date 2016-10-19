@@ -9,6 +9,6 @@ static::include;
   "NamingContext":{},
   "ClassConstUse":{
   "Name":"include",
-    "DirectTypeRef":{"ClassName":"static"}
+    "ReservedTypeRef":{"Type":"static"}
   }
 }

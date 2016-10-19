@@ -20,7 +20,7 @@ try {
     "Catches":{
       "CatchItem":{
         "TypeRef":{
-          "DirectTypeRef":{
+          "ClassTypeRef":{
             "ClassName":"TestEx"
           }
         },

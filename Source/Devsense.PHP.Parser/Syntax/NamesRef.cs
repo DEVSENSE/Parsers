@@ -143,9 +143,13 @@ namespace Devsense.PHP.Syntax
 
         internal static QualifiedNameRef FromTypeRef(TypeRef tref)
         {
-            if (tref is DirectTypeRef)
+            if (tref is ClassTypeRef)
             {
-                return new QualifiedNameRef(tref.Span, ((DirectTypeRef)tref).ClassName);
+                return new QualifiedNameRef(tref.Span, ((ClassTypeRef)tref).ClassName);
+            }
+            else if (tref is AliasedTypeRef)
+            {
+                return new QualifiedNameRef(tref.Span, ((AliasedTypeRef)tref).ClassName);
             }
             else if (tref == null)
             {
