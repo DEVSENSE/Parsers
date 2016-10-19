@@ -111,6 +111,11 @@ namespace Devsense.PHP.Syntax.Ast
         public abstract NameRef Name { get; }
 
         /// <summary>
+        /// Gets full type name including containing namespace.
+        /// </summary>
+        public abstract QualifiedName QualifiedName { get; }
+
+        /// <summary>
 		/// Name of the base class.
 		/// </summary>
 		private readonly QualifiedNameRef baseClass;
@@ -212,12 +217,31 @@ namespace Devsense.PHP.Syntax.Ast
 		/// </summary>
 		public override NameRef Name { get { return name; } }
 		private readonly NameRef name;
-        
-		#endregion
 
-		#region Construction
+        /// <summary>
+        /// Fully qualified name.
+        /// </summary>
+        public override QualifiedName QualifiedName
+        {
+            get
+            {
+                var ns = this.ContainingNamespace;
+                if (ns != null && ns.QualifiedName.HasValue)
+                {
+                    return new QualifiedName(Name, ns.QualifiedName.QualifiedName.Namespaces, true);
+                }
+                else
+                {
+                    return new QualifiedName(Name, Syntax.Name.EmptyNames, true);
+                }
+            }
+        }
 
-		public NamedTypeDecl(
+        #endregion
+
+        #region Construction
+
+        public NamedTypeDecl(
             Text.Span span, Text.Span headingSpan, bool isConditional, PhpMemberAttributes memberAttributes, bool isPartial,
             NameRef className, List<FormalTypeParam>/*!*/ genericParams, QualifiedNameRef baseClass,
             List<QualifiedNameRef>/*!*/ implementsList, List<TypeMemberDecl>/*!*/ elements, Text.Span bodySpan,
@@ -256,6 +280,11 @@ namespace Devsense.PHP.Syntax.Ast
         /// Does not have span (its span is invalid).
         /// </summary>
         public override NameRef Name => new NameRef(Text.Span.Invalid, GeneratePhpLikeName(this.ContainingSourceUnit, this.Span));
+
+        /// <summary>
+        /// Fully qualified name. Does not contain containing namespace.
+        /// </summary>
+        public override QualifiedName QualifiedName => new QualifiedName(Name, Syntax.Name.EmptyNames, true);
 
         #endregion
 
