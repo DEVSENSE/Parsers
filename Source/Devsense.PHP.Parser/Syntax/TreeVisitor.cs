@@ -93,6 +93,7 @@ namespace Devsense.PHP.Syntax
         /// <param name="x"></param>
         virtual public void VisitGlobalConstDeclList(GlobalConstDeclList x)
         {
+            VisitElement(x.PHPDoc);
             VisitList(x.Constants);
         }
 
@@ -196,6 +197,7 @@ namespace Devsense.PHP.Syntax
         /// <param name="x"></param>
         virtual public void VisitTypeDecl(TypeDecl x)
         {
+            VisitElement(x.PHPDoc);
             VisitList(x.Members);
         }
 
@@ -223,6 +225,8 @@ namespace Devsense.PHP.Syntax
         /// <param name="x"></param>
         virtual public void VisitMethodDecl(MethodDecl x)
         {
+            VisitElement(x.PHPDoc);
+
             // function parameters
             VisitList(x.Signature.FormalParams);
 
@@ -239,6 +243,7 @@ namespace Devsense.PHP.Syntax
         /// <param name="x"></param>
         virtual public void VisitFieldDeclList(FieldDeclList x)
         {
+            VisitElement(x.PHPDoc);
             VisitList(x.Fields);
         }
 
@@ -257,6 +262,7 @@ namespace Devsense.PHP.Syntax
         /// <param name="x"></param>
         virtual public void VisitConstDeclList(ConstDeclList x)
         {
+            VisitElement(x.PHPDoc);
             VisitList(x.Constants);
         }
 
@@ -284,6 +290,8 @@ namespace Devsense.PHP.Syntax
         /// <param name="x"></param>
         virtual public void VisitFunctionDecl(FunctionDecl x)
         {
+            VisitElement(x.PHPDoc);
+
             // function parameters
             VisitList(x.Signature.FormalParams);
 
@@ -940,7 +948,7 @@ namespace Devsense.PHP.Syntax
         }
         virtual public void VisitAliasedTypeRef(AliasedTypeRef x)
         {
-            // nothing
+            // note - eventually we want to vist original type
         }
         virtual public void VisitReservedTypeRef(ReservedTypeRef x)
         {
@@ -974,7 +982,7 @@ namespace Devsense.PHP.Syntax
 
         virtual public void VisitPHPDocBlock(PHPDocBlock x)
         {
-
+            // nothing
         }
 
         #endregion

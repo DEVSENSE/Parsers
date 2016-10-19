@@ -399,6 +399,8 @@ namespace Devsense.PHP.Errors
         public static readonly ErrorInfo TryWithoutCatchOrFinally = new ErrorInfo_(2050, "try_without_catch_or_finally", ErrorSeverity.FatalError);
 
         public static readonly ErrorInfo MixedNamespacedeclarations = new ErrorInfo_(2060, "mixed_namespace_declaration", ErrorSeverity.FatalError);
+
+        public static readonly ErrorInfo ParentAccessedInParentlessClass = new ErrorInfo_(2070, "parent_accessed_in_parentless_class", ErrorSeverity.FatalError);
     }
 
     #endregion

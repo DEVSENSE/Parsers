@@ -31,7 +31,7 @@ namespace Devsense.PHP.Syntax
         /// <summary>
         /// Basic features - always present.
         /// </summary>
-        Basic = 0,
+        Basic = Php71Set,
 
         /// <summary>
         /// Allows using short open tags in the script.

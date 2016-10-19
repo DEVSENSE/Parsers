@@ -76,14 +76,11 @@ namespace UnitTests
 
             public override void VisitElement(LangElement element)
             {
-                // TODO - PHPDocBlock and Statement are created by Lexer and CompliantLexer, without the factory
-                if (!(element is PHPDocStmt) && !(element is PHPDocBlock))
+                // TODO - PHPDocBlock is not created by Lexer and CompliantLexer, without the factory
+                if (element != null && !(element is PHPDocBlock))
                 {
-                    if (element != null)
-                    {
-                        Assert.IsTrue(_visitedElements.Add(element));
-                        base.VisitElement(element);
-                    }
+                    Assert.IsTrue(_visitedElements.Add(element));
+                    base.VisitElement(element);
                 }
             }
 
@@ -127,6 +124,7 @@ namespace UnitTests
 
             LangElement CountLE(LangElement element)
             {
+                if (element == null) return element;
                 Assert.IsTrue(_createdElements.Add(element));
                 return element;
             }
@@ -149,8 +147,8 @@ namespace UnitTests
                 return i;
             }
 
-            public override LangElement ActualParameter(Span span, LangElement expr, ActualParam.Flags flags)
-                => CountLE(base.ActualParameter(span, expr, flags));
+            public override ActualParam ActualParameter(Span span, LangElement expr, ActualParam.Flags flags)
+                => (ActualParam)CountLE(base.ActualParameter(span, expr, flags)); // TODO - replace definitions by interfaces
 
             public override TypeRef AnonymousTypeReference(Span span, Span headingSpan, bool conditional, PhpMemberAttributes attributes, IEnumerable<FormalTypeParam> typeParamsOpt, TypeRef baseClassOpt, IEnumerable<TypeRef> implements, IEnumerable<LangElement> members, Span blockSpan)
             {
@@ -280,7 +278,7 @@ namespace UnitTests
                  => CountFV(base.ForeachVariable(span, variable, alias));
 
             public override LangElement Function(Span span, bool conditional, bool aliasReturn, PhpMemberAttributes attributes, TypeRef returnType, Name name, Span nameSpan, IEnumerable<FormalTypeParam> typeParamsOpt, IEnumerable<FormalParam> formalParams, Span formalParamsSpan, LangElement body)
-                 => CountLE(base.Function(span, conditional, aliasReturn, attributes, returnType, name, nameSpan, typeParamsOpt, formalParams, formalParamsSpan, body));
+                => CountLE(base.Function(span, conditional, aliasReturn, attributes, returnType, name, nameSpan, typeParamsOpt, formalParams, formalParamsSpan, body));
 
             public override TypeRef GenericTypeReference(Span span, LangElement className, List<TypeRef> genericParams)
                  => CountTR(base.GenericTypeReference(span, className, genericParams));
@@ -364,8 +362,8 @@ namespace UnitTests
             public override TypeRef NullableTypeReference(Span span, LangElement className)
                  => CountTR(base.NullableTypeReference(span, className));
 
-            public override LangElement Parameter(Span span, string name, Span nameSpan, TypeRef typeOpt, FormalParam.Flags flags, Expression initValue)
-                 => CountLE(base.Parameter(span, name, nameSpan, typeOpt, flags, initValue));
+            public override FormalParam Parameter(Span span, string name, Span nameSpan, TypeRef typeOpt, FormalParam.Flags flags, Expression initValue)
+                 => (FormalParam)CountLE(base.Parameter(span, name, nameSpan, typeOpt, flags, initValue)); // TODO - replace definitions by interfaces
 
             public override LangElement ParenthesisExpression(Span span, LangElement expression)
                  => base.ParenthesisExpression(span, expression); // TODO - expression is returned, no new expression is created
@@ -406,7 +404,7 @@ namespace UnitTests
             public override LangElement TraitUse(Span span, IEnumerable<QualifiedNameRef> traits, LangElement adaptationsBlock)
                  => CountLE(base.TraitUse(span, traits, adaptationsBlock));
 
-            public override LangElement TryCatch(Span span, LangElement body, IEnumerable<CatchItem> catches, LangElement finallyBlockOpt)
+            public override LangElement TryCatch(Span span, LangElement body, IEnumerable<LangElement> catches, LangElement finallyBlockOpt)
                  => CountLE(base.TryCatch(span, body, catches, finallyBlockOpt));
 
             public override LangElement Type(Span span, Span headingSpan, bool conditional, PhpMemberAttributes attributes, Name name, Span nameSpan, IEnumerable<FormalTypeParam> typeParamsOpt, TypeRef baseClassOpt, IEnumerable<TypeRef> implements, IEnumerable<LangElement> members, Span bodySpan)
@@ -441,7 +439,7 @@ namespace UnitTests
             public override TypeRef PrimitiveTypeReference(Span span, PrimitiveTypeName tname)
                 => CountTR(base.PrimitiveTypeReference(span, tname));
 
-            public override TypeRef AliasedTypeReference(Span span, QualifiedName className, LangElement origianType)
+            public override TypeRef AliasedTypeReference(Span span, QualifiedName className, TypeRef origianType)
                 => CountTR(base.AliasedTypeReference(span, className, origianType));
 
             public override TypeRef ReservedTypeReference(Span span, ReservedTypeRef.ReservedType typeName)

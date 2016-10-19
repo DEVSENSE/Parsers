@@ -1,6 +1,6 @@
 <?php      
 /** class declaration */
-class SimpleClass
+class SimpleClass extends MyClass
 {
     /** method comment */
     protected function aMemberFunc(parent $arg_1): self {
@@ -16,6 +16,7 @@ class SimpleClass
     "Name" : "SimpleClass",
     "MemberAttributes" : "Public",
     "IsConditional" : "False",
+    "BaseClassName":{"Name":"MyClass"},
     "PHPDoc" : {
       "Comment" : "class declaration"
     },
@@ -31,8 +32,9 @@ class SimpleClass
           "PassedByRef" : "False",
           "IsVariadic" : "False",
           "TypeHint" : {
-            "ReservedTypeRef" : {
-              "Type" : "parent"
+            "AliasedTypeRef":{
+              "ClassName":"MyClass",
+              "OriginalName":"parent"
             }
           }
         }
@@ -48,8 +50,9 @@ class SimpleClass
         }
       },
       "ReturnType" : {
-        "ReservedTypeRef" : {
-          "Type" : "self"
+        "AliasedTypeRef":{
+          "ClassName":"SimpleClass",
+          "OriginalName":"self"
         }
       }
     }

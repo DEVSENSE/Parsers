@@ -19,6 +19,11 @@ using Devsense.PHP.Syntax.Ast;
 using Devsense.PHP.Text;
 using Devsense.PHP.Errors;
 
+using Alias = System.Tuple<Devsense.PHP.Syntax.QualifiedNameRef, Devsense.PHP.Syntax.NameRef>;
+using ContextAlias = System.Tuple<Devsense.PHP.Syntax.QualifiedNameRef, Devsense.PHP.Syntax.NameRef, Devsense.PHP.Syntax.ContextType>;
+using IfItem = System.Tuple<Devsense.PHP.Text.Span, Devsense.PHP.Syntax.Ast.LangElement, Devsense.PHP.Syntax.Ast.LangElement>;
+using AnonymousClass = System.Tuple<Devsense.PHP.Syntax.Ast.TypeRef, System.Collections.Generic.List<Devsense.PHP.Syntax.Ast.ActualParam>>;
+
 %%
 
 %namespace Devsense.PHP.Syntax
@@ -53,6 +58,19 @@ using Devsense.PHP.Errors;
 	public List<LangElement> NodeList					{ get { return (List<LangElement>)Object; }			set { Object = value; } }
 	public string String								{ get { return (string)Object; }					set { Object = value; } }
 	public List<string> StringList						{ get { return (List<string>)Object; }				set { Object = value; } }
+	public Alias Alias									{ get { return (Alias)Object; }						set { Object = value; } }
+	public List<Alias> AliasList						{ get { return (List<Alias>)Object; }				set { Object = value; } }
+	public ContextAlias ContextAlias					{ get { return (ContextAlias)Object; }				set { Object = value; } }
+	public List<ContextAlias> ContextAliasList			{ get { return (List<ContextAlias>)Object; }		set { Object = value; } }
+	public ActualParam Param							{ get { return (ActualParam)Object; }				set { Object = value; } }
+	public List<ActualParam> ParamList					{ get { return (List<ActualParam>)Object; }			set { Object = value; } }
+	public FormalParam FormalParam						{ get { return (FormalParam)Object; }				set { Object = value; } }
+	public List<FormalParam> FormalParamList			{ get { return (List<FormalParam>)Object; }			set { Object = value; } }
+	public Item Item									{ get { return (Item)Object; }						set { Object = value; } }
+	public List<Item> ItemList							{ get { return (List<Item>)Object; }				set { Object = value; } }
+	public List<IfItem> IfItemList						{ get { return (List<IfItem>)Object; }				set { Object = value; } }
+	public ForeachVar ForeachVar						{ get { return (ForeachVar)Object; }				set { Object = value; } }
+	public AnonymousClass AnonymousClass				{ get { return (AnonymousClass)Object; }			set { Object = value; } }
 }
 
 
@@ -259,31 +277,8 @@ using Devsense.PHP.Errors;
 /* Token used to force a parse error from the lexer */
 %token T_ERROR 257
 
-%type <Object> interface_extends_list
-%type <Object> group_use_declaration inline_use_declarations inline_use_declaration
-%type <Object> mixed_group_use_declaration use_declaration unprefixed_use_declaration
-%type <Object> unprefixed_use_declarations const_decl inner_statement
-%type <Object> expr optional_expr while_statement for_statement foreach_variable
-%type <Object> foreach_statement declare_statement finally_statement unset_variable variable
-%type <Object> parameter argument expr_without_variable global_var
-%type <Object> static_var class_statement trait_adaptation trait_precedence trait_alias
-%type <Object> absolute_trait_method_reference trait_method_reference property echo_expr
-%type <Object> new_expr anonymous_class simple_variable
-%type <Object> internal_functions_in_yacc
-%type <Object> exit_expr scalar backticks_expr lexical_var function_call member_name property_name
-%type <Object> variable_class_name dereferencable_scalar constant dereferencable
-%type <Object> callable_expr callable_variable static_member new_variable
-%type <Object> encaps_var encaps_var_offset
-%type <Object> use_declarations
-%type <Object> for_exprs
-%type <Object> catch_list parameter_list 
-%type <Object> if_stmt_without_else
-%type <Object> non_empty_parameter_list argument_list non_empty_argument_list 
-%type <Object> class_const_decl trait_adaptations method_body non_empty_for_exprs
-%type <Object> ctor_arguments alt_if_stmt_without_else lexical_vars
-%type <Object> lexical_var_list
-%type <Object> array_pair non_empty_array_pair_list array_pair_list possible_array_pair
-%type <Object> isset_variable
+// type safe declaration
+%type <Object> property_name member_name
 
 %type <Long> returns_ref function is_reference is_variadic variable_modifiers
 %type <Long> method_modifiers non_empty_member_modifiers member_modifier
@@ -298,23 +293,52 @@ using Devsense.PHP.Errors;
 %type <TypeReference> type return_type type_expr optional_type extends_from
 %type <TypeReference> class_name_reference class_name
 
-%type <TypeRefList> catch_name_list implements_list
+%type <TypeRefList> catch_name_list implements_list interface_extends_list
 
 %type <Node> top_statement statement function_declaration_statement class_declaration_statement 
-%type <Node> trait_declaration_statement interface_declaratioimplements_listn_statement if_stmt alt_if_stmt
-%type <Node> interface_declaration_statement
+%type <Node> trait_declaration_statement interface_declaratioimplements_listn_statement 
+%type <Node> interface_declaration_statement inline_html isset_variable expr variable 
+%type <Node> expr_without_variable new_expr internal_functions_in_yacc callable_variable 
+%type <Node> simple_variable scalar constant dereferencable_scalar function_call
+%type <Node> static_member if_stmt alt_if_stmt const_decl unset_variable
+%type <Node> global_var static_var echo_expr optional_expr 
+%type <Node> property encaps_var encaps_var_offset declare_statement
+%type <Node> trait_adaptation trait_precedence trait_alias
+%type <Node> class_const_decl dereferencable for_statement foreach_statement
+%type <Node> while_statement backticks_expr method_body exit_expr
+%type <Node> finally_statement new_variable callable_expr
+%type <Node> trait_adaptations variable_class_name inner_statement class_statement
 
 %type <NodeList> top_statement_list const_list class_const_list
-%type <NodeList> inner_statement_list class_statement_list
+%type <NodeList> inner_statement_list class_statement_list for_exprs
 %type <NodeList> global_var_list static_var_list echo_expr_list unset_variables
 %type <NodeList> trait_adaptation_list encaps_list isset_variables property_list
-%type <NodeList> case_list switch_case_list
+%type <NodeList> case_list switch_case_list non_empty_for_exprs catch_list
 
 %type <String> identifier semi_reserved reserved_non_modifiers
-
 %type <StringList> namespace_name
 
-%type <Object> inline_html                     // Expression
+%type <Alias> unprefixed_use_declaration trait_method_reference absolute_trait_method_reference
+%type <Alias> use_declaration
+%type <AliasList> unprefixed_use_declarations
+
+%type <ContextAlias> inline_use_declaration
+%type <ContextAliasList> inline_use_declarations
+
+%type <Param> argument
+%type <ParamList> ctor_arguments argument_list non_empty_argument_list
+
+%type <FormalParam> parameter lexical_var
+%type <FormalParamList> parameter_list non_empty_parameter_list lexical_vars lexical_var_list
+
+%type <Item> possible_array_pair array_pair
+%type <ItemList> non_empty_array_pair_list non_empty_array_pair_list array_pair_list
+
+%type <IfItemList> if_stmt_without_else alt_if_stmt_without_else
+
+%type <ForeachVar> foreach_variable
+
+%type <AnonymousClass> anonymous_class
 
 %% /* Rules */
 
@@ -323,7 +347,7 @@ start:
 	top_statement_list
 	{ 
 		AssignNamingContext(); 
-        _lexer.DocBlockList.Merge(new Span(0, int.MaxValue), $2);
+        _lexer.DocBlockList.Merge(new Span(0, int.MaxValue), $2, _astFactory);
 		AssignStatements($2);
 		_astRoot = _astFactory.GlobalCode(@$, $2, namingContext);
 	}
@@ -408,49 +432,49 @@ use_type:
 
 group_use_declaration:
 		namespace_name T_NS_SEPARATOR '{' unprefixed_use_declarations '}'
-			{ foreach (var item in (List<Tuple<QualifiedNameRef, NameRef>>)$4) AddAlias($1, item); }
+			{ foreach (var item in $4) AddAlias($1, item); }
 	|	T_NS_SEPARATOR namespace_name T_NS_SEPARATOR '{' unprefixed_use_declarations '}'
-			{ foreach (var item in (List<Tuple<QualifiedNameRef, NameRef>>)$5) AddAlias($2, item); }
+			{ foreach (var item in $5) AddAlias($2, item); }
 ;
 
 mixed_group_use_declaration:
 		namespace_name T_NS_SEPARATOR '{' inline_use_declarations '}'
-			{ foreach (var item in (List<Tuple<QualifiedNameRef, NameRef, ContextType>>)$4) AddAlias($1, item); }
+			{ foreach (var item in $4) AddAlias($1, item); }
 	|	T_NS_SEPARATOR namespace_name T_NS_SEPARATOR '{' inline_use_declarations '}'
-			{ foreach (var item in (List<Tuple<QualifiedNameRef, NameRef, ContextType>>)$5) AddAlias($2, item); }
+			{ foreach (var item in $5) AddAlias($2, item); }
 ;
 
 inline_use_declarations:
 		inline_use_declarations ',' inline_use_declaration
-			{ $$ = AddToList<Tuple<QualifiedNameRef, NameRef, ContextType>>($1, $3); }
+			{ $$ = AddToList<ContextAlias>($1, $3); }
 	|	inline_use_declaration
-			{ $$ = new List<Tuple<QualifiedNameRef, NameRef, ContextType>>() { (Tuple<QualifiedNameRef, NameRef, ContextType>)$1 }; }
+			{ $$ = new List<ContextAlias>() { $1 }; }
 ;
 
 unprefixed_use_declarations:
 		unprefixed_use_declarations ',' unprefixed_use_declaration
-			{ $$ = AddToList<Tuple<QualifiedNameRef, NameRef>>($1, $3); }
+			{ $$ = AddToList<Alias>($1, $3); }
 	|	unprefixed_use_declaration
-			{ $$ = new List<Tuple<QualifiedNameRef, NameRef>>() { (Tuple<QualifiedNameRef, NameRef>)$1 }; }
+			{ $$ = new List<Alias>() { $1 }; }
 ;
 
 use_declarations:
 		use_declarations ',' use_declaration
-			{ AddAlias((Tuple<QualifiedNameRef, NameRef>)$3); }
+			{ AddAlias($3); }
 	|	use_declaration
-			{ AddAlias((Tuple<QualifiedNameRef, NameRef>)$1); }
+			{ AddAlias($1); }
 ;
 
 inline_use_declaration:
-		unprefixed_use_declaration { $$ = JoinTuples((Tuple<QualifiedNameRef, NameRef>)$1, ContextType.Class); }
-	|	use_type unprefixed_use_declaration { $$ = JoinTuples((Tuple<QualifiedNameRef, NameRef>)$2, (ContextType)$1);  }
+		unprefixed_use_declaration { $$ = JoinTuples($1, ContextType.Class); }
+	|	use_type unprefixed_use_declaration { $$ = JoinTuples($2, (ContextType)$1);  }
 ;
 
 unprefixed_use_declaration:
 		namespace_name
-			{ $$ = new Tuple<QualifiedNameRef, NameRef>(new QualifiedNameRef(@$, new QualifiedName($1, true, false)), NameRef.Invalid); }
+			{ $$ = new Alias(new QualifiedNameRef(@$, new QualifiedName($1, true, false)), NameRef.Invalid); }
 	|	namespace_name T_AS T_STRING
-			{ $$ = new Tuple<QualifiedNameRef, NameRef>(new QualifiedNameRef(@1, new QualifiedName($1, true, false)), new NameRef(@3, $3)); }
+			{ $$ = new Alias(new QualifiedNameRef(@1, new QualifiedName($1, true, false)), new NameRef(@3, $3)); }
 ;
 
 use_declaration:
@@ -458,15 +482,15 @@ use_declaration:
 			{ $$ = $1; }
 	|	T_NS_SEPARATOR unprefixed_use_declaration 
 			{ 
-				var src = (Tuple<QualifiedNameRef, NameRef>)$2;
-				$$ = new Tuple<QualifiedNameRef, NameRef>(new QualifiedNameRef(CombineSpans(@1, src.Item1.Span), 
+				var src = $2;
+				$$ = new Alias(new QualifiedNameRef(CombineSpans(@1, src.Item1.Span), 
 					new QualifiedName(src.Item1.QualifiedName.Name, src.Item1.QualifiedName.Namespaces, true)), src.Item2); 
 			}
 ;
 
 const_list:
 		const_list ',' const_decl { $$ = AddToList<LangElement>($1, $3); }
-	|	const_decl { $$ = new List<LangElement>() { (LangElement)$1 }; }
+	|	const_decl { $$ = new List<LangElement>() { $1 }; }
 ;
 
 inner_statement_list:
@@ -495,45 +519,43 @@ statement:
 	|	enter_scope if_stmt exit_scope { $$ = $2; }
 	|	enter_scope alt_if_stmt exit_scope { $$ = $2; }
 	|	T_WHILE '(' expr ')' enter_scope while_statement exit_scope
-			{ $$ = _astFactory.While(@$, (LangElement)$3, (LangElement)$6); }
+			{ $$ = _astFactory.While(@$, $3, $6); }
 	|	T_DO enter_scope statement T_WHILE '(' expr ')' ';' exit_scope
-			{ $$ = _astFactory.Do(@$, (LangElement)$3, (LangElement)$6); }
+			{ $$ = _astFactory.Do(@$, $3, $6); }
 	|	T_FOR '(' for_exprs ';' for_exprs ';' for_exprs ')' enter_scope for_statement exit_scope
-			{ $$ = _astFactory.For(@$, (List<Expression>)$3, (List<Expression>)$5, (List<Expression>)$7, (LangElement)$10); }
+			{ $$ = _astFactory.For(@$, $3, $5, $7, $10); }
 	|	T_SWITCH '(' expr ')' enter_scope switch_case_list exit_scope
-			{ $$ = _astFactory.Switch(@$, (LangElement)$3, $6); }
-	|	T_BREAK optional_expr ';'		{ $$ = _astFactory.Jump(@$, JumpStmt.Types.Break, (LangElement)$2);}
-	|	T_CONTINUE optional_expr ';'	{ $$ = _astFactory.Jump(@$, JumpStmt.Types.Continue, (LangElement)$2); }
-	|	T_RETURN optional_expr ';'		{ $$ = _astFactory.Jump(@$, JumpStmt.Types.Return, (LangElement)$2); }
+			{ $$ = _astFactory.Switch(@$, $3, $6); }
+	|	T_BREAK optional_expr ';'		{ $$ = _astFactory.Jump(@$, JumpStmt.Types.Break, $2);}
+	|	T_CONTINUE optional_expr ';'	{ $$ = _astFactory.Jump(@$, JumpStmt.Types.Continue, $2); }
+	|	T_RETURN optional_expr ';'		{ $$ = _astFactory.Jump(@$, JumpStmt.Types.Return, $2); }
 	|	T_GLOBAL global_var_list ';'	{ $$ = _astFactory.Global(@$, $2); }
 	|	T_STATIC static_var_list ';'	{ $$ = _astFactory.Static(@$, $2); }
 	|	T_ECHO echo_expr_list ';'		{ $$ = _astFactory.Echo(@$, $2); }
 	|	T_INLINE_HTML { $$ = _astFactory.InlineHtml(@$, $1); }
-	|	expr ';' { $$ = _astFactory.ExpressionStmt(@$, (LangElement)$1); }
+	|	expr ';' { $$ = _astFactory.ExpressionStmt(@$, $1); }
 	|	T_UNSET '(' unset_variables ')' ';' { $$ = _astFactory.Unset(@$, $3); }
 	|	T_FOREACH '(' expr T_AS foreach_variable ')' enter_scope foreach_statement exit_scope
-			{ $$ = _astFactory.Foreach(@$, (LangElement)$3, null, (ForeachVar)$5, (LangElement)$8); }
+			{ $$ = _astFactory.Foreach(@$, $3, null, $5, $8); }
 	|	T_FOREACH '(' expr T_AS foreach_variable T_DOUBLE_ARROW foreach_variable ')' enter_scope foreach_statement exit_scope
-			{ $$ = _astFactory.Foreach(@$, (LangElement)$3, (ForeachVar)$5, (ForeachVar)$7, (LangElement)$10); }
+			{ $$ = _astFactory.Foreach(@$, $3, $5, $7, $10); }
 	|	T_DECLARE '(' const_list ')' declare_statement
-			{ $$ = _astFactory.Declare(@$, $3, (LangElement)$5); }
+			{ $$ = _astFactory.Declare(@$, $3, $5); }
 	|	';'	/* empty statement */ { $$ = _astFactory.EmptyStmt(@$); }
 	|	T_TRY '{' inner_statement_list '}' enter_scope catch_list finally_statement exit_scope
-			{ $$ = _astFactory.TryCatch(@$, CreateBlock(CombineSpans(@2, @4), $3), (List<CatchItem>)$6, (LangElement)$7); }
-	|	T_THROW expr ';' { $$ = _astFactory.Throw(@$, (LangElement)$2); }
+			{ $$ = _astFactory.TryCatch(@$, CreateBlock(CombineSpans(@2, @4), $3), $6, $7); }
+	|	T_THROW expr ';' { $$ = _astFactory.Throw(@$, $2); }
 	|	T_GOTO T_STRING ';' { $$ = _astFactory.Goto(@$, $2, @2); }
 	|	T_STRING ':' { $$ = _astFactory.Label(@$, $1, @1); }
 ;
 
 catch_list:
 		/* empty */
-			{ $$ = new List<CatchItem>(); }
+			{ $$ = new List<LangElement>(); }
 	|	catch_list T_CATCH '(' catch_name_list T_VARIABLE ')' '{' inner_statement_list '}'
 			{ 
-				$$ = AddToList<CatchItem>($1, _astFactory.Catch(CombineSpans(@2, @9), 
-					_astFactory.TypeReference(@4, $4), 
-					(DirectVarUse)_astFactory.Variable(@5, $5, (LangElement)null), 
-					CreateBlock(CombineSpans(@7, @9), $8))); 
+				$$ = AddToList<LangElement>($1, _astFactory.Catch(CombineSpans(@2, @9), _astFactory.TypeReference(@4, $4), 
+					(DirectVarUse)_astFactory.Variable(@5, $5, NullLangElement), CreateBlock(CombineSpans(@7, @9), $8))); 
 			}
 ;
 
@@ -548,7 +570,7 @@ finally_statement:
 ;
 
 unset_variables:
-		unset_variable { $$ = new List<LangElement>() { (LangElement)$1 }; }
+		unset_variable { $$ = new List<LangElement>() { $1 }; }
 	|	unset_variables ',' unset_variable { $$ = AddToList<LangElement>($1, $3); }
 ;
 
@@ -560,7 +582,7 @@ function_declaration_statement:
 	function returns_ref T_STRING backup_doc_comment '(' parameter_list ')' return_type
 	backup_fn_flags enter_scope '{' inner_statement_list '}' exit_scope backup_fn_flags
 		{ $$ = _astFactory.Function(@$, isConditional, $2 == (long)FormalParam.Flags.IsByRef, PhpMemberAttributes.None, $8, 
-			new Name($3), @3, null, (List<FormalParam>)$6, CombineSpans(@5, @7), 
+			new Name($3), @3, null, $6, CombineSpans(@5, @7), 
 			CreateBlock(CombineSpans(@11, @13), $12)); 
 			SetDoc($$);
 		}
@@ -577,17 +599,19 @@ is_variadic:
 ;
 
 class_declaration_statement:
-		class_modifiers T_CLASS T_STRING extends_from implements_list backup_doc_comment enter_scope '{' class_statement_list '}' exit_scope
+		class_modifiers T_CLASS T_STRING extends_from {PushClassContext($3, $4);} implements_list backup_doc_comment enter_scope '{' class_statement_list '}' exit_scope
 			{ 
-				$$ = _astFactory.Type(@$, CombineSpans(@1, @2, @3, @4, @5), isConditional, (PhpMemberAttributes)$1, new Name($3), @3, null, 
-				$4, $5, $9, CombineSpans(@8, @10)); 
+				$$ = _astFactory.Type(@$, CombineSpans(@1, @2, @3, @4, @6), isConditional, (PhpMemberAttributes)$1, new Name($3), @3, null, 
+				$4, $6, $10, CombineSpans(@9, @11)); 
 				SetDoc($$);
+				PopClassContext();
 			}
-	|	T_CLASS T_STRING extends_from implements_list backup_doc_comment enter_scope '{' class_statement_list '}' exit_scope
+	|	T_CLASS T_STRING extends_from {PushClassContext($2, $3);} implements_list backup_doc_comment enter_scope '{' class_statement_list '}' exit_scope
 			{ 
-				$$ = _astFactory.Type(@$, CombineSpans(@1, @2, @3, @4), isConditional, PhpMemberAttributes.None, new Name($2), @2, null, 
-				$3, $4, $8, CombineSpans(@7, @9)); 
+				$$ = _astFactory.Type(@$, CombineSpans(@1, @2, @3, @5), isConditional, PhpMemberAttributes.None, new Name($2), @2, null, 
+				$3, $5, $9, CombineSpans(@8, @10)); 
 				SetDoc($$);
+				PopClassContext();
 			}
 ;
 
@@ -635,10 +659,10 @@ implements_list:
 ;
 
 foreach_variable:
-		variable			{ $$ = _astFactory.ForeachVariable(@$, (LangElement)$1); }
-	|	'&' variable		{ $$ = _astFactory.ForeachVariable(@$, (LangElement)$2, true); }
-	|	T_LIST '(' array_pair_list ')' { $$ = _astFactory.ForeachVariable(@$, _astFactory.List(@$, (List<Item>)$3)); }
-	|	'[' array_pair_list ']' { $$ = _astFactory.ForeachVariable(@$, _astFactory.List(@$, (List<Item>)$2)); }
+		variable			{ $$ = _astFactory.ForeachVariable(@$, $1); }
+	|	'&' variable		{ $$ = _astFactory.ForeachVariable(@$, $2, true); }
+	|	T_LIST '(' array_pair_list ')' { $$ = _astFactory.ForeachVariable(@$, _astFactory.List(@$, $3)); }
+	|	'[' array_pair_list ']' { $$ = _astFactory.ForeachVariable(@$, _astFactory.List(@$, $2)); }
 ;
 
 for_statement:
@@ -667,7 +691,7 @@ case_list:
 		/* empty */ { $$ = new List<LangElement>(); }
 	|	case_list T_CASE expr case_separator inner_statement_list
 			{ $$ = AddToList<LangElement>($1, _astFactory.Case(Span.FromBounds(@2.Start, ($5).Count > 0? ($5).Last().Span.End: @$.End), 
-				(LangElement)$3, CreateCaseBlock(@4, $5))); }
+				$3, CreateCaseBlock(@4, $5))); }
 	|	case_list T_DEFAULT case_separator inner_statement_list
 			{ $$ = AddToList<LangElement>($1, _astFactory.Case(Span.FromBounds(@2.Start, ($4).Count > 0? ($4).Last().Span.End: @$.End), 
 				null, CreateCaseBlock(@3, $4))); }
@@ -688,11 +712,11 @@ while_statement:
 if_stmt_without_else:
 		T_IF '(' expr ')' statement
 			{ $$ = new List<Tuple<Span, LangElement, LangElement>>() { 
-				new Tuple<Span, LangElement, LangElement>(@$, (LangElement)$3, (LangElement)$5) }; 
+				new Tuple<Span, LangElement, LangElement>(@$, $3, $5) }; 
 			}
 	|	if_stmt_without_else T_ELSEIF '(' expr ')' statement
 			{ $$ = AddToList<Tuple<Span, LangElement, LangElement>>($1, 
-				new Tuple<Span, LangElement, LangElement>(CombineSpans(@2, @5, @6), (LangElement)$4, (LangElement)$6)); 
+				new Tuple<Span, LangElement, LangElement>(CombineSpans(@2, @5, @6), $4, $6)); 
 			}
 ;
 
@@ -700,24 +724,24 @@ if_stmt:
 		if_stmt_without_else %prec T_NOELSE 
 			{ ((List<Tuple<Span, LangElement, LangElement>>)$1).Reverse(); $$ = null; 
 			foreach (var item in (List<Tuple<Span, LangElement, LangElement>>)$1) 
-				$$ = _astFactory.If($$ != null? CombineSpans(item.Item1, ((LangElement)$$).Span): item.Item1, item.Item2, item.Item3, (LangElement)$$); }
+				$$ = _astFactory.If($$ != null? CombineSpans(item.Item1, ($$).Span): item.Item1, item.Item2, item.Item3, $$); }
 	|	if_stmt_without_else T_ELSE statement
-			{ ((List<Tuple<Span, LangElement, LangElement>>)$1).Reverse(); $$ = _astFactory.If(CombineSpans(@2, @3), null, (LangElement)$3, null); 
-			foreach (var item in (List<Tuple<Span, LangElement, LangElement>>)$1) $$ = _astFactory.If(CombineSpans(item.Item1, ((LangElement)$$).Span), item.Item2, item.Item3, (LangElement)$$); }
+			{ ((List<Tuple<Span, LangElement, LangElement>>)$1).Reverse(); $$ = _astFactory.If(CombineSpans(@2, @3), null, $3, null); 
+			foreach (var item in (List<Tuple<Span, LangElement, LangElement>>)$1) $$ = _astFactory.If(CombineSpans(item.Item1, ($$).Span), item.Item2, item.Item3, $$); }
 ;
 
 alt_if_stmt_without_else:
 		T_IF '(' expr ')' ':' inner_statement_list
 			{ 
 				$$ = new List<Tuple<Span, LangElement, LangElement>>() { 
-					new Tuple<Span, LangElement, LangElement>(@$, (LangElement)$3, StatementsToBlock(@5, @5, $6, Tokens.END)) }; 
+					new Tuple<Span, LangElement, LangElement>(@$, $3, StatementsToBlock(@5, @5, $6, Tokens.END)) }; 
 			}
 			
 	|	alt_if_stmt_without_else T_ELSEIF '(' expr ')' ':' inner_statement_list
 			{ 
 				RebuildLast($1, @2, Tokens.T_ELSEIF);
 				$$ = AddToList<Tuple<Span, LangElement, LangElement>>($1, 
-					new Tuple<Span, LangElement, LangElement>(CombineSpans(@2, @6, @7), (LangElement)$4, StatementsToBlock(@6, @6, $7, Tokens.END))); 
+					new Tuple<Span, LangElement, LangElement>(CombineSpans(@2, @6, @7), $4, StatementsToBlock(@6, @6, $7, Tokens.END))); 
 			}
 ;
 
@@ -726,11 +750,11 @@ alt_if_stmt:
 			{ RebuildLast($1, @2, Tokens.T_ENDIF);
 			 ((List<Tuple<Span, LangElement, LangElement>>)$1).Reverse(); $$ = null; 
 			foreach (var item in (List<Tuple<Span, LangElement, LangElement>>)$1) 
-				$$ = _astFactory.If($$ != null? CombineSpans(item.Item1, ((LangElement)$$).Span): item.Item1, item.Item2, item.Item3, (LangElement)$$); }
+				$$ = _astFactory.If($$ != null? CombineSpans(item.Item1, ($$).Span): item.Item1, item.Item2, item.Item3, $$); }
 	|	alt_if_stmt_without_else T_ELSE ':' inner_statement_list T_ENDIF ';'
 			{ RebuildLast($1, @2, Tokens.T_ELSE);
 			((List<Tuple<Span, LangElement, LangElement>>)$1).Reverse(); $$ = _astFactory.If(CombineSpans(@2, @6), null, StatementsToBlock(@3, @5, $4, Tokens.T_ENDIF), null); 
-			foreach (var item in (List<Tuple<Span, LangElement, LangElement>>)$1) $$ = _astFactory.If(CombineSpans(item.Item1, ((LangElement)$$).Span), item.Item2, item.Item3, (LangElement)$$); }
+			foreach (var item in (List<Tuple<Span, LangElement, LangElement>>)$1) $$ = _astFactory.If(CombineSpans(item.Item1, ($$).Span), item.Item2, item.Item3, $$); }
 ;
 
 parameter_list:
@@ -781,19 +805,19 @@ argument_list:
 
 non_empty_argument_list:
 		argument
-			{ $$ = new List<ActualParam>() { (ActualParam)$1 }; }
+			{ $$ = new List<ActualParam>() { $1 }; }
 	|	non_empty_argument_list ',' argument
-			{ $$ = AddToList<ActualParam>($1, (ActualParam)$3); }
+			{ $$ = AddToList<ActualParam>($1, $3); }
 ;
 
 argument:
-		expr			{ $$ = _astFactory.ActualParameter(@$, (Expression)$1, ActualParam.Flags.Default); }
-	|	T_ELLIPSIS expr	{ $$ = _astFactory.ActualParameter(@$, (Expression)$2, ActualParam.Flags.IsUnpack); }
+		expr			{ $$ = _astFactory.ActualParameter(@$, $1, ActualParam.Flags.Default); }
+	|	T_ELLIPSIS expr	{ $$ = _astFactory.ActualParameter(@$, $2, ActualParam.Flags.IsUnpack); }
 ;
 
 global_var_list:
 		global_var_list ',' global_var { $$ = AddToList<LangElement>($1, $3); }
-	|	global_var { $$ = new List<LangElement>() { (LangElement)$1 }; }
+	|	global_var { $$ = new List<LangElement>() { $1 }; }
 ;
 
 global_var:
@@ -804,12 +828,12 @@ global_var:
 
 static_var_list:
 		static_var_list ',' static_var { $$ = AddToList<LangElement>($1, $3); }
-	|	static_var { $$ = new List<LangElement>() { (LangElement)$1 }; }
+	|	static_var { $$ = new List<LangElement>() { $1 }; }
 ;
 
 static_var:
 		T_VARIABLE			{ $$ = _astFactory.StaticVarDecl(@$, new VariableName($1), null); }
-	|	T_VARIABLE '=' expr	{ $$ = _astFactory.StaticVarDecl(@$, new VariableName($1), (LangElement)$3); }
+	|	T_VARIABLE '=' expr	{ $$ = _astFactory.StaticVarDecl(@$, new VariableName($1), $3); }
 ;
 
 
@@ -833,12 +857,12 @@ class_statement:
 				SetDoc($$);
 			}
 	|	T_USE name_list trait_adaptations
-			{ $$ = _astFactory.TraitUse(@$, (List<QualifiedNameRef>)$2, (LangElement)$3); }
+			{ $$ = _astFactory.TraitUse(@$, $2, $3); }
 	|	method_modifiers function returns_ref identifier backup_doc_comment '(' parameter_list ')'
 		return_type backup_fn_flags method_body backup_fn_flags
 			{ $$ = _astFactory.Method(@$, $3 == (long)FormalParam.Flags.IsByRef, (PhpMemberAttributes)$1, 
-				$9, @9, $4, @4, null, (List<FormalParam>)$7, @8, 
-				null, (LangElement)$11); 
+				$9, @9, $4, @4, null, $7, @8, 
+				null, $11); 
 			SetDoc($$);
 			}
 ;
@@ -856,7 +880,7 @@ trait_adaptations:
 
 trait_adaptation_list:
 		trait_adaptation
-			{ $$ = new List<LangElement>() { (LangElement)$1 };
+			{ $$ = new List<LangElement>() { $1 };
  }
 	|	trait_adaptation_list trait_adaptation
 			{ $$ = AddToList<LangElement>($1, $2); }
@@ -869,18 +893,18 @@ trait_adaptation:
 
 trait_precedence:
 	absolute_trait_method_reference T_INSTEADOF name_list ';'
-		{ $$ = _astFactory.TraitAdaptationPrecedence(@$, (Tuple<QualifiedNameRef,NameRef>)$1, (List<QualifiedNameRef>)$3); }
+		{ $$ = _astFactory.TraitAdaptationPrecedence(@$, (Tuple<QualifiedNameRef,NameRef>)$1, $3); }
 ;
 
 trait_alias:
 		trait_method_reference T_AS T_STRING ';'
-			{ $$ = _astFactory.TraitAdaptationAlias(@$, (Tuple<QualifiedNameRef, NameRef>)$1, new NameRef(@3, $3), null); }
+			{ $$ = _astFactory.TraitAdaptationAlias(@$, $1, new NameRef(@3, $3), null); }
 	|	trait_method_reference T_AS reserved_non_modifiers ';'
-			{ $$ = _astFactory.TraitAdaptationAlias(@$, (Tuple<QualifiedNameRef, NameRef>)$1, new NameRef(@3, $3), null); }
+			{ $$ = _astFactory.TraitAdaptationAlias(@$, $1, new NameRef(@3, $3), null); }
 	|	trait_method_reference T_AS member_modifier identifier ';'
-			{ $$ = _astFactory.TraitAdaptationAlias(@$, (Tuple<QualifiedNameRef, NameRef>)$1, new NameRef(@4, $4), (PhpMemberAttributes)$3); }
+			{ $$ = _astFactory.TraitAdaptationAlias(@$, $1, new NameRef(@4, $4), (PhpMemberAttributes)$3); }
 	|	trait_method_reference T_AS member_modifier ';'
-			{ $$ = _astFactory.TraitAdaptationAlias(@$, (Tuple<QualifiedNameRef, NameRef>)$1, NameRef.Invalid, (PhpMemberAttributes)$3); }
+			{ $$ = _astFactory.TraitAdaptationAlias(@$, $1, NameRef.Invalid, (PhpMemberAttributes)$3); }
 ;
 
 trait_method_reference:
@@ -927,7 +951,7 @@ member_modifier:
 
 property_list:
 		property_list ',' property { $$ = AddToList<LangElement>($1, $3); }
-	|	property { $$ = new List<LangElement>() { (LangElement)$1 }; }
+	|	property { $$ = new List<LangElement>() { $1 }; }
 ;
 
 property:
@@ -937,38 +961,38 @@ property:
 
 class_const_list:
 		class_const_list ',' class_const_decl { $$ = AddToList<LangElement>($1, $3); }
-	|	class_const_decl { $$ = new List<LangElement>() { (LangElement)$1 }; }
+	|	class_const_decl { $$ = new List<LangElement>() { $1 }; }
 ;
 
 class_const_decl:
 	identifier '=' expr backup_doc_comment {
-		$$ = _astFactory.ClassConstDecl(@$, new VariableName($1), @1, (LangElement)$3); 
+		$$ = _astFactory.ClassConstDecl(@$, new VariableName($1), @1, $3); 
 		SetMemberDoc($$);
 	}
 ;
 
 const_decl:
-	T_STRING '=' expr backup_doc_comment { $$ = _astFactory.GlobalConstDecl(@$, false, new VariableName($1), @1, (LangElement)$3); 
+	T_STRING '=' expr backup_doc_comment { $$ = _astFactory.GlobalConstDecl(@$, false, new VariableName($1), @1, $3); 
 		SetMemberDoc($$);
 	}
 ;
 
 echo_expr_list:
 		echo_expr_list ',' echo_expr { $$ = AddToList<LangElement>($1, $3); }
-	|	echo_expr { $$ = new List<LangElement>() { (LangElement)$1 }; }
+	|	echo_expr { $$ = new List<LangElement>() { $1 }; }
 ;
 echo_expr:
 	expr { $$ = $1; }
 ;
 
 for_exprs:
-		/* empty */			{ $$ = Expression.EmptyList; }
+		/* empty */			{ $$ = LangElement.EmptyList; }
 	|	non_empty_for_exprs	{ $$ = $1; }
 ;
 
 non_empty_for_exprs:
-		non_empty_for_exprs ',' expr { $$ = AddToList<Expression>($1, $3); }
-	|	expr { $$ = new List<Expression>() { (Expression)$1 }; }
+		non_empty_for_exprs ',' expr { $$ = AddToList<LangElement>($1, $3); }
+	|	expr { $$ = new List<LangElement>() { $1 }; }
 ;
 
 anonymous_class:
@@ -976,110 +1000,110 @@ anonymous_class:
 		extends_from implements_list backup_doc_comment enter_scope '{' class_statement_list '}' exit_scope {
 			var typeRef = _astFactory.AnonymousTypeReference(@$, CombineSpans(@1, @2, @3, @4), isConditional, PhpMemberAttributes.None, null, $3, (IEnumerable<TypeRef>)$4, $8, CombineSpans(@7, @9));
 			SetDoc(((AnonymousTypeRef)typeRef).TypeDeclaration);
-			$$ = new Tuple<TypeRef, List<ActualParam>>(typeRef, (List<ActualParam>)$2); 
+			$$ = new Tuple<TypeRef, List<ActualParam>>(typeRef, $2); 
 		}
 ;
 
 new_expr:
 		T_NEW class_name_reference ctor_arguments
-			{ $$ = _astFactory.New(@$, $2, (List<ActualParam>)$3); }
+			{ $$ = _astFactory.New(@$, $2, $3); }
 	|	T_NEW anonymous_class
 			{ $$ = _astFactory.New(@$, ((Tuple<TypeRef, List<ActualParam>>)$2).Item1, ((Tuple<TypeRef, List<ActualParam>>)$2).Item2); }
 ;
 
 expr_without_variable:
 		T_LIST '(' array_pair_list ')' '=' expr
-			{ $$ = _astFactory.Assignment(@$, _astFactory.List(@3, (List<Item>)$3), (LangElement)$6, Operations.AssignValue); }
+			{ $$ = _astFactory.Assignment(@$, _astFactory.List(@3, $3), $6, Operations.AssignValue); }
 	|	'[' array_pair_list ']' '=' expr
-			{ $$ = _astFactory.Assignment(@$, _astFactory.NewArray(CombineSpans(@1, @3), (List<Item>)$2), (LangElement)$5, Operations.AssignValue); }
+			{ $$ = _astFactory.Assignment(@$, _astFactory.NewArray(CombineSpans(@1, @3), $2), $5, Operations.AssignValue); }
 	|	variable '=' expr
-			{ $$ = _astFactory.Assignment(@$, (LangElement)$1, (LangElement)$3, Operations.AssignValue); }
+			{ $$ = _astFactory.Assignment(@$, $1, $3, Operations.AssignValue); }
 	|	variable '=' '&' variable
-			{ $$ = _astFactory.Assignment(@$, (LangElement)$1, (LangElement)$4, Operations.AssignRef); }
+			{ $$ = _astFactory.Assignment(@$, $1, $4, Operations.AssignRef); }
 	|	T_CLONE expr
 			{ $$ = _astFactory.UnaryOperation(@$, Operations.Clone,   (Expression)$2); }
 	|	variable T_PLUS_EQUAL expr
-			{ $$ = _astFactory.Assignment(@$, (LangElement)$1, (LangElement)$3, Operations.AssignAdd); }
+			{ $$ = _astFactory.Assignment(@$, $1, $3, Operations.AssignAdd); }
 	|	variable T_MINUS_EQUAL expr
-			{ $$ = _astFactory.Assignment(@$, (LangElement)$1, (LangElement)$3, Operations.AssignSub); }
+			{ $$ = _astFactory.Assignment(@$, $1, $3, Operations.AssignSub); }
 	|	variable T_MUL_EQUAL expr
-			{ $$ = _astFactory.Assignment(@$, (LangElement)$1, (LangElement)$3, Operations.AssignMul); }
+			{ $$ = _astFactory.Assignment(@$, $1, $3, Operations.AssignMul); }
 	|	variable T_POW_EQUAL expr
-			{ $$ = _astFactory.Assignment(@$, (LangElement)$1, (LangElement)$3, Operations.AssignPow); }
+			{ $$ = _astFactory.Assignment(@$, $1, $3, Operations.AssignPow); }
 	|	variable T_DIV_EQUAL expr
-			{ $$ = _astFactory.Assignment(@$, (LangElement)$1, (LangElement)$3, Operations.AssignDiv); }
+			{ $$ = _astFactory.Assignment(@$, $1, $3, Operations.AssignDiv); }
 	|	variable T_CONCAT_EQUAL expr
-			{ $$ = _astFactory.Assignment(@$, (LangElement)$1, (LangElement)$3, Operations.AssignAppend); }
+			{ $$ = _astFactory.Assignment(@$, $1, $3, Operations.AssignAppend); }
 	|	variable T_MOD_EQUAL expr
-			{ $$ = _astFactory.Assignment(@$, (LangElement)$1, (LangElement)$3, Operations.AssignMod); }
+			{ $$ = _astFactory.Assignment(@$, $1, $3, Operations.AssignMod); }
 	|	variable T_AND_EQUAL expr
-			{ $$ = _astFactory.Assignment(@$, (LangElement)$1, (LangElement)$3, Operations.AssignAnd); }
+			{ $$ = _astFactory.Assignment(@$, $1, $3, Operations.AssignAnd); }
 	|	variable T_OR_EQUAL expr
-			{ $$ = _astFactory.Assignment(@$, (LangElement)$1, (LangElement)$3, Operations.AssignOr); }
+			{ $$ = _astFactory.Assignment(@$, $1, $3, Operations.AssignOr); }
 	|	variable T_XOR_EQUAL expr
-			{ $$ = _astFactory.Assignment(@$, (LangElement)$1, (LangElement)$3, Operations.AssignXor); }
+			{ $$ = _astFactory.Assignment(@$, $1, $3, Operations.AssignXor); }
 	|	variable T_SL_EQUAL expr
-			{ $$ = _astFactory.Assignment(@$, (LangElement)$1, (LangElement)$3, Operations.AssignShiftLeft); }
+			{ $$ = _astFactory.Assignment(@$, $1, $3, Operations.AssignShiftLeft); }
 	|	variable T_SR_EQUAL expr
-			{ $$ = _astFactory.Assignment(@$, (LangElement)$1, (LangElement)$3, Operations.AssignShiftRight); }
+			{ $$ = _astFactory.Assignment(@$, $1, $3, Operations.AssignShiftRight); }
 	|	variable T_INC { $$ = _astFactory.IncrementDecrement(@$, (Expression)$1, true,  true); }
 	|	T_INC variable { $$ = _astFactory.IncrementDecrement(@$, (Expression)$2, true,  false); }
 	|	variable T_DEC { $$ = _astFactory.IncrementDecrement(@$, (Expression)$1, false, true); }
 	|	T_DEC variable { $$ = _astFactory.IncrementDecrement(@$, (Expression)$2, false, false); }
 	|	expr T_BOOLEAN_OR expr
-			{ $$ = _astFactory.BinaryOperation(@$, Operations.Or,   (LangElement)$1, (LangElement)$3); }
+			{ $$ = _astFactory.BinaryOperation(@$, Operations.Or,   $1, $3); }
 	|	expr T_BOOLEAN_AND expr
-			{ $$ = _astFactory.BinaryOperation(@$, Operations.And,  (LangElement)$1, (LangElement)$3); }
+			{ $$ = _astFactory.BinaryOperation(@$, Operations.And,  $1, $3); }
 	|	expr T_LOGICAL_OR expr
-			{ $$ = _astFactory.BinaryOperation(@$, Operations.Or,   (LangElement)$1, (LangElement)$3); }
+			{ $$ = _astFactory.BinaryOperation(@$, Operations.Or,   $1, $3); }
 	|	expr T_LOGICAL_AND expr
-			{ $$ = _astFactory.BinaryOperation(@$, Operations.And,  (LangElement)$1, (LangElement)$3); }
+			{ $$ = _astFactory.BinaryOperation(@$, Operations.And,  $1, $3); }
 	|	expr T_LOGICAL_XOR expr
-			{ $$ = _astFactory.BinaryOperation(@$, Operations.Xor,  (LangElement)$1, (LangElement)$3); }
-	|	expr '|' expr	{ $$ = _astFactory.BinaryOperation(@$, Operations.BitOr,  (LangElement)$1, (LangElement)$3); }
-	|	expr '&' expr	{ $$ = _astFactory.BinaryOperation(@$, Operations.BitAnd, (LangElement)$1, (LangElement)$3); }
-	|	expr '^' expr	{ $$ = _astFactory.BinaryOperation(@$, Operations.BitXor, (LangElement)$1, (LangElement)$3); }
-	|	expr '.' expr 	{ $$ = _astFactory.BinaryOperation(@$, Operations.Concat, (LangElement)$1, (LangElement)$3); }
-	|	expr '+' expr 	{ $$ = _astFactory.BinaryOperation(@$, Operations.Add,    (LangElement)$1, (LangElement)$3); }
-	|	expr '-' expr 	{ $$ = _astFactory.BinaryOperation(@$, Operations.Sub,    (LangElement)$1, (LangElement)$3); }
-	|	expr '*' expr	{ $$ = _astFactory.BinaryOperation(@$, Operations.Mul,    (LangElement)$1, (LangElement)$3); }
-	|	expr T_POW expr	{ $$ = _astFactory.BinaryOperation(@$, Operations.Pow,    (LangElement)$1, (LangElement)$3); }
-	|	expr '/' expr	{ $$ = _astFactory.BinaryOperation(@$, Operations.Div,    (LangElement)$1, (LangElement)$3); }
-	|	expr '%' expr 	{ $$ = _astFactory.BinaryOperation(@$, Operations.Mod,    (LangElement)$1, (LangElement)$3); }
-	| 	expr T_SL expr	{ $$ = _astFactory.BinaryOperation(@$, Operations.ShiftLeft,  (LangElement)$1, (LangElement)$3); } 
-	|	expr T_SR expr	{ $$ = _astFactory.BinaryOperation(@$, Operations.ShiftRight, (LangElement)$1, (LangElement)$3); } 
+			{ $$ = _astFactory.BinaryOperation(@$, Operations.Xor,  $1, $3); }
+	|	expr '|' expr	{ $$ = _astFactory.BinaryOperation(@$, Operations.BitOr,  $1, $3); }
+	|	expr '&' expr	{ $$ = _astFactory.BinaryOperation(@$, Operations.BitAnd, $1, $3); }
+	|	expr '^' expr	{ $$ = _astFactory.BinaryOperation(@$, Operations.BitXor, $1, $3); }
+	|	expr '.' expr 	{ $$ = _astFactory.BinaryOperation(@$, Operations.Concat, $1, $3); }
+	|	expr '+' expr 	{ $$ = _astFactory.BinaryOperation(@$, Operations.Add,    $1, $3); }
+	|	expr '-' expr 	{ $$ = _astFactory.BinaryOperation(@$, Operations.Sub,    $1, $3); }
+	|	expr '*' expr	{ $$ = _astFactory.BinaryOperation(@$, Operations.Mul,    $1, $3); }
+	|	expr T_POW expr	{ $$ = _astFactory.BinaryOperation(@$, Operations.Pow,    $1, $3); }
+	|	expr '/' expr	{ $$ = _astFactory.BinaryOperation(@$, Operations.Div,    $1, $3); }
+	|	expr '%' expr 	{ $$ = _astFactory.BinaryOperation(@$, Operations.Mod,    $1, $3); }
+	| 	expr T_SL expr	{ $$ = _astFactory.BinaryOperation(@$, Operations.ShiftLeft,  $1, $3); } 
+	|	expr T_SR expr	{ $$ = _astFactory.BinaryOperation(@$, Operations.ShiftRight, $1, $3); } 
 	|	'+' expr %prec T_INC { $$ = _astFactory.UnaryOperation(@$, Operations.Plus,   (Expression)$2); }
 	|	'-' expr %prec T_INC { $$ = _astFactory.UnaryOperation(@$, Operations.Plus,   (Expression)$2); }
 	|	'!' expr { $$ = _astFactory.UnaryOperation(@$, Operations.LogicNegation, (Expression)$2); }
 	|	'~' expr { $$ = _astFactory.UnaryOperation(@$, Operations.BitNegation,   (Expression)$2); }
 	|	expr T_IS_IDENTICAL expr
-			{ $$ = _astFactory.BinaryOperation(@$, Operations.Identical, (LangElement)$1, (LangElement)$3); }
+			{ $$ = _astFactory.BinaryOperation(@$, Operations.Identical, $1, $3); }
 	|	expr T_IS_NOT_IDENTICAL expr
-			{ $$ = _astFactory.BinaryOperation(@$, Operations.NotIdentical, (LangElement)$1, (LangElement)$3); }
+			{ $$ = _astFactory.BinaryOperation(@$, Operations.NotIdentical, $1, $3); }
 	|	expr T_IS_EQUAL expr
-			{ $$ = _astFactory.BinaryOperation(@$, Operations.Equal, (LangElement)$1, (LangElement)$3); }
+			{ $$ = _astFactory.BinaryOperation(@$, Operations.Equal, $1, $3); }
 	|	expr T_IS_NOT_EQUAL expr
-			{ $$ = _astFactory.BinaryOperation(@$, Operations.NotEqual, (LangElement)$1, (LangElement)$3); }
+			{ $$ = _astFactory.BinaryOperation(@$, Operations.NotEqual, $1, $3); }
 	|	expr '<' expr
-			{ $$ = _astFactory.BinaryOperation(@$, Operations.LessThan, (LangElement)$1, (LangElement)$3); }
+			{ $$ = _astFactory.BinaryOperation(@$, Operations.LessThan, $1, $3); }
 	|	expr T_IS_SMALLER_OR_EQUAL expr
-			{ $$ = _astFactory.BinaryOperation(@$, Operations.LessThanOrEqual, (LangElement)$1, (LangElement)$3); }
+			{ $$ = _astFactory.BinaryOperation(@$, Operations.LessThanOrEqual, $1, $3); }
 	|	expr '>' expr
-			{ $$ = _astFactory.BinaryOperation(@$, Operations.GreaterThan, (LangElement)$1, (LangElement)$3); }
+			{ $$ = _astFactory.BinaryOperation(@$, Operations.GreaterThan, $1, $3); }
 	|	expr T_IS_GREATER_OR_EQUAL expr
-			{ $$ = _astFactory.BinaryOperation(@$, Operations.GreaterThanOrEqual, (LangElement)$1, (LangElement)$3); }
+			{ $$ = _astFactory.BinaryOperation(@$, Operations.GreaterThanOrEqual, $1, $3); }
 	|	expr T_SPACESHIP expr
-			{ $$ = _astFactory.BinaryOperation(@$, Operations.Spaceship, (LangElement)$1, (LangElement)$3); }
+			{ $$ = _astFactory.BinaryOperation(@$, Operations.Spaceship, $1, $3); }
 	|	expr T_INSTANCEOF class_name_reference
-			{ $$ = _astFactory.InstanceOf(@$, (LangElement)$1, $3); }
-	|	'(' expr ')' { $$ = _astFactory.ParenthesisExpression(@$, (LangElement)$2); }
+			{ $$ = _astFactory.InstanceOf(@$, $1, $3); }
+	|	'(' expr ')' { $$ = _astFactory.ParenthesisExpression(@$, $2); }
 	|	new_expr { $$ = $1; }
 	|	expr '?' expr ':' expr
-			{ $$ = _astFactory.ConditionalEx(@$, (LangElement)$1, (LangElement)$3, (LangElement)$5); }
+			{ $$ = _astFactory.ConditionalEx(@$, $1, $3, $5); }
 	|	expr '?' ':' expr
-			{ $$ = _astFactory.ConditionalEx(@$, (LangElement)$1, null, (LangElement)$4); }
+			{ $$ = _astFactory.ConditionalEx(@$, $1, null, $4); }
 	|	expr T_COALESCE expr
-			{ $$ = _astFactory.BinaryOperation(@$, Operations.Coalesce, (LangElement)$1, (LangElement)$3); }
+			{ $$ = _astFactory.BinaryOperation(@$, Operations.Coalesce, $1, $3); }
 	|	internal_functions_in_yacc { $$ = $1; }
 	|	T_INT_CAST expr		{ $$ = _astFactory.UnaryOperation(@$, Operations.Int64Cast,   (Expression)$2); }
 	|	T_DOUBLE_CAST expr	{ $$ = _astFactory.UnaryOperation(@$, Operations.DoubleCast, (Expression)$2); }
@@ -1088,27 +1112,27 @@ expr_without_variable:
 	|	T_OBJECT_CAST expr	{ $$ = _astFactory.UnaryOperation(@$, Operations.ObjectCast, (Expression)$2); }
 	|	T_BOOL_CAST expr	{ $$ = _astFactory.UnaryOperation(@$, Operations.BoolCast,   (Expression)$2); }
 	|	T_UNSET_CAST expr	{ $$ = _astFactory.UnaryOperation(@$, Operations.UnsetCast,  (Expression)$2); }
-	|	T_EXIT exit_expr	{ $$ = _astFactory.Exit(@$, (Expression)$2); }
+	|	T_EXIT exit_expr	{ $$ = _astFactory.Exit(@$, $2); }
 	|	'@' expr			{ $$ = _astFactory.UnaryOperation(@$, Operations.AtSign,     (Expression)$2); }
 	|	scalar { $$ = $1; }
-	|	'`' backticks_expr '`' { $$ = _astFactory.Shell(@$, $2 == null? _astFactory.Literal(new Span(@1.End, 0), string.Empty): (LangElement)$2); }
+	|	'`' backticks_expr '`' { $$ = _astFactory.Shell(@$, $2 == null? _astFactory.Literal(new Span(@1.End, 0), string.Empty): $2); }
 	|	T_PRINT expr { $$ = _astFactory.UnaryOperation(@$, Operations.Print, (Expression)$2); }
 	|	T_YIELD { $$ = _astFactory.Yield(@$, null, null); }
-	|	T_YIELD expr { $$ = _astFactory.Yield(@$, null, (LangElement)$2); }
-	|	T_YIELD expr T_DOUBLE_ARROW expr { $$ = _astFactory.Yield(@$, (LangElement)$2, (LangElement)$4); }
-	|	T_YIELD_FROM expr { $$ = _astFactory.YieldFrom(@$, (LangElement)$2); }
+	|	T_YIELD expr { $$ = _astFactory.Yield(@$, null, $2); }
+	|	T_YIELD expr T_DOUBLE_ARROW expr { $$ = _astFactory.Yield(@$, $2, $4); }
+	|	T_YIELD_FROM expr { $$ = _astFactory.YieldFrom(@$, $2); }
 	|	function returns_ref backup_doc_comment '(' parameter_list ')' lexical_vars return_type
 		backup_fn_flags enter_scope '{' inner_statement_list '}' exit_scope backup_fn_flags
 			{ $$ = _astFactory.Lambda(@$, CombineSpans(@1, @6, @7, @8), $2 == (long)FormalParam.Flags.IsByRef, $8, 
-				(List<FormalParam>)$5, CombineSpans(@4, @6), 
-				(List<FormalParam>)$7, CreateBlock(CombineSpans(@11, @13), $12)); 
+				$5, CombineSpans(@4, @6), 
+				$7, CreateBlock(CombineSpans(@11, @13), $12)); 
 				SetDoc($$);
 			}
 	|	T_STATIC function returns_ref backup_doc_comment '(' parameter_list ')' lexical_vars
 		return_type backup_fn_flags enter_scope '{' inner_statement_list '}' exit_scope backup_fn_flags
 			{ $$ = _astFactory.Lambda(@$, CombineSpans(@1, @7, @8, @9), $3 == (long)FormalParam.Flags.IsByRef, $9, 
-				(List<FormalParam>)$6, CombineSpans(@5, @7), 
-				(List<FormalParam>)$8, CreateBlock(CombineSpans(@12, @14), $13)); 
+				$6, CombineSpans(@5, @7), 
+				$8, CreateBlock(CombineSpans(@12, @14), $13)); 
 				SetDoc($$);
 			}
 ;
@@ -1157,24 +1181,24 @@ function_call:
 		name argument_list
 			{ 
 				var name = TranslateQNRFunction($1);
-				$$ = _astFactory.Call(@$, name.Item1, name.Item2, @1, new CallSignature((List<ActualParam>)$2), null); 
+				$$ = _astFactory.Call(@$, name.Item1, name.Item2, @1, new CallSignature($2), null); 
 			}
 	|	class_name T_DOUBLE_COLON member_name argument_list
 			{
 				if($3 is Name)
-					$$ = _astFactory.Call(@$, (Name)$3, @3, new CallSignature((List<ActualParam>)$4), $1); 
+					$$ = _astFactory.Call(@$, (Name)$3, @3, new CallSignature($4), $1); 
 				else
-					$$ = _astFactory.Call(@$, (LangElement)$3, new CallSignature((List<ActualParam>)$4), $1); 
+					$$ = _astFactory.Call(@$, (LangElement)$3, new CallSignature($4), $1); 
 			}
 	|	variable_class_name T_DOUBLE_COLON member_name argument_list
 			{
 				if($3 is Name)
-					$$ = _astFactory.Call(@$, (Name)$3, @3, new CallSignature((List<ActualParam>)$4), _astFactory.TypeReference(@1, (LangElement)$1)); 
+					$$ = _astFactory.Call(@$, (Name)$3, @3, new CallSignature($4), _astFactory.TypeReference(@1, $1)); 
 				else
-					$$ = _astFactory.Call(@$, (LangElement)$3, new CallSignature((List<ActualParam>)$4), _astFactory.TypeReference(@1, (LangElement)$1)); 
+					$$ = _astFactory.Call(@$, (LangElement)$3, new CallSignature($4), _astFactory.TypeReference(@1, $1)); 
 			}
 	|	callable_expr argument_list
-			{ $$ = _astFactory.Call(@$, (LangElement)$1, new CallSignature((List<ActualParam>)$2), (LangElement)null);}
+			{ $$ = _astFactory.Call(@$, $1, new CallSignature($2), NullLangElement);}
 ;
 
 class_name:
@@ -1184,7 +1208,7 @@ class_name:
 
 class_name_reference:
 		class_name		{ $$ = $1; }
-	|	new_variable	{ $$ = _astFactory.TypeReference(@$, (LangElement)$1); }
+	|	new_variable	{ $$ = _astFactory.TypeReference(@$, $1); }
 ;
 
 exit_expr:
@@ -1206,8 +1230,8 @@ ctor_arguments:
 
 
 dereferencable_scalar:
-		T_ARRAY '(' array_pair_list ')'	{ $$ = _astFactory.NewArray(@$, (List<Item>)$3); }
-	|	'[' array_pair_list ']'			{ $$ = _astFactory.NewArray(@$, (List<Item>)$2); }
+		T_ARRAY '(' array_pair_list ')'	{ $$ = _astFactory.NewArray(@$, $3); }
+	|	'[' array_pair_list ']'			{ $$ = _astFactory.NewArray(@$, $2); }
 	|	T_CONSTANT_ENCAPSED_STRING		{ $$ = _astFactory.Literal(@$, $1); }
 ;
 
@@ -1239,7 +1263,7 @@ constant:
 	|	class_name T_DOUBLE_COLON identifier
 			{ $$ = _astFactory.ClassConstUse(@$, $1, new Name($3), @3); }
 	|	variable_class_name T_DOUBLE_COLON identifier
-			{ $$ = _astFactory.ClassConstUse(@$, _astFactory.TypeReference(@$, (LangElement)$1), new Name($3), @3); }
+			{ $$ = _astFactory.ClassConstUse(@$, _astFactory.TypeReference(@$, $1), new Name($3), @3); }
 ;
 
 expr:
@@ -1258,8 +1282,8 @@ variable_class_name:
 
 dereferencable:
 		variable				{ $$ = $1; }
-	|	'(' expr ')'			{ $$ = _astFactory.Variable(@$, (LangElement)$2, (LangElement)null); }
-	|	dereferencable_scalar	{ $$ = _astFactory.Variable(@$, (LangElement)$1, (LangElement)null); }
+	|	'(' expr ')'			{ $$ = _astFactory.Variable(@$, $2, NullLangElement); }
+	|	dereferencable_scalar	{ $$ = _astFactory.Variable(@$, $1, NullLangElement); }
 ;
 
 callable_expr:
@@ -1272,17 +1296,17 @@ callable_variable:
 		simple_variable
 			{ $$ = $1; }
 	|	dereferencable '[' optional_expr ']'
-			{ $$ = _astFactory.ArrayItem(@$, (LangElement)$1, (LangElement)$3); }
+			{ $$ = _astFactory.ArrayItem(@$, $1, $3); }
 	|	constant '[' optional_expr ']'
-			{ $$ = _astFactory.ArrayItem(@$, (LangElement)$1, (LangElement)$3); }
+			{ $$ = _astFactory.ArrayItem(@$, $1, $3); }
 	|	dereferencable '{' expr '}'
-			{ $$ = _astFactory.ArrayItem(@$, (LangElement)$1, (LangElement)$3); }
+			{ $$ = _astFactory.ArrayItem(@$, $1, $3); }
 	|	dereferencable T_OBJECT_OPERATOR property_name argument_list
 		{
 			if($3 is Name)
-				$$ = _astFactory.Call(@$, new QualifiedName((Name)$3), null, @3, new CallSignature((List<ActualParam>)$4), (LangElement)$1);
+				$$ = _astFactory.Call(@$, new QualifiedName((Name)$3), null, @3, new CallSignature($4), $1);
 			else
-				$$ = _astFactory.Call(@$, (LangElement)$3, new CallSignature((List<ActualParam>)$4), (LangElement)$1);
+				$$ = _astFactory.Call(@$, (LangElement)$3, new CallSignature($4), $1);
 		}
 	|	function_call { $$ = $1; }
 ;
@@ -1293,35 +1317,35 @@ variable:
 	|	static_member
 			{ $$ = $1; }
 	|	dereferencable T_OBJECT_OPERATOR property_name
-			{ $$ = CreateProperty(@$, (LangElement)$1, $3); }
+			{ $$ = CreateProperty(@$, $1, $3); }
 ;
 
 simple_variable:
-		T_VARIABLE			{ $$ = _astFactory.Variable(@$, $1,		 (LangElement)null); }
-	|	'$' '{' expr '}'	{ $$ = _astFactory.Variable(@$, (LangElement)$3, (LangElement)null); }
-	|	'$' simple_variable	{ $$ = _astFactory.Variable(@$, (LangElement)$2, (LangElement)null); }
+		T_VARIABLE			{ $$ = _astFactory.Variable(@$, $1,	NullLangElement); }
+	|	'$' '{' expr '}'	{ $$ = _astFactory.Variable(@$, $3, NullLangElement); }
+	|	'$' simple_variable	{ $$ = _astFactory.Variable(@$, $2, NullLangElement); }
 ;
 
 static_member:
 		class_name T_DOUBLE_COLON simple_variable
-			{ $$ = CreateStaticProperty(@$, $1, @1, (LangElement)$3); }	
+			{ $$ = CreateStaticProperty(@$, $1, @1, $3); }	
 	|	variable_class_name T_DOUBLE_COLON simple_variable
-			{ $$ = CreateStaticProperty(@$, (LangElement)$1, @1, (LangElement)$3); }
+			{ $$ = CreateStaticProperty(@$, $1, @1, $3); }
 ;
 
 new_variable:
 		simple_variable
 			{ $$ = $1; }
 	|	new_variable '[' optional_expr ']'
-			{ $$ = _astFactory.ArrayItem(@$, (LangElement)$1, (LangElement)$3); }
+			{ $$ = _astFactory.ArrayItem(@$, $1, $3); }
 	|	new_variable '{' expr '}'
-			{ $$ = _astFactory.ArrayItem(@$, (LangElement)$1, (LangElement)$3); }
+			{ $$ = _astFactory.ArrayItem(@$, $1, $3); }
 	|	new_variable T_OBJECT_OPERATOR property_name
-			{ $$ = CreateProperty(@$, (LangElement)$1, $3); }
+			{ $$ = CreateProperty(@$, $1, $3); }
 	|	class_name T_DOUBLE_COLON simple_variable
-			{ $$ = CreateStaticProperty(@$, $1, @1, (LangElement)$3); }
+			{ $$ = CreateStaticProperty(@$, $1, @1, $3); }
 	|	new_variable T_DOUBLE_COLON simple_variable
-			{ $$ = CreateStaticProperty(@$, (LangElement)$1, @1, (LangElement)$3); }
+			{ $$ = CreateStaticProperty(@$, $1, @1, $3); }
 ;
 
 member_name:
@@ -1338,7 +1362,7 @@ property_name:
 
 array_pair_list:
 		non_empty_array_pair_list
-			{ $$ = RightTrimList((List<Item>)$1);  }
+			{ $$ = RightTrimList($1);  }
 ;
 
 possible_array_pair:
@@ -1350,22 +1374,22 @@ non_empty_array_pair_list:
 		non_empty_array_pair_list ',' possible_array_pair
 			{ $$ = AddToList<Item>($1, $3); }
 	|	possible_array_pair
-			{ $$ = new List<Item>() { (Item)$1 }; }
+			{ $$ = new List<Item>() { $1 }; }
 ;
 
 array_pair:
 		expr T_DOUBLE_ARROW expr
-			{ $$ = _astFactory.ArrayItemValue(@$, (LangElement)$1, (LangElement)$3); }
+			{ $$ = _astFactory.ArrayItemValue(@$, $1, $3); }
 	|	expr
-			{ $$ = _astFactory.ArrayItemValue(@$, null, (LangElement)$1); }
+			{ $$ = _astFactory.ArrayItemValue(@$, null, $1); }
 	|	expr T_DOUBLE_ARROW '&' variable
-			{ $$ = _astFactory.ArrayItemRef(@$, (LangElement)$1, (LangElement)$4); }
+			{ $$ = _astFactory.ArrayItemRef(@$, $1, $4); }
 	|	'&' variable
-			{ $$ = _astFactory.ArrayItemRef(@$, null, (LangElement)$2); }
+			{ $$ = _astFactory.ArrayItemRef(@$, null, $2); }
 	|	expr T_DOUBLE_ARROW T_LIST '(' array_pair_list ')'
-			{ $$ = _astFactory.ArrayItemValue(@$, (LangElement)$1, _astFactory.List(@5, (List<Item>)$5)); }
+			{ $$ = _astFactory.ArrayItemValue(@$, $1, _astFactory.List(@5, $5)); }
 	|	T_LIST '(' array_pair_list ')'
-			{ $$ = _astFactory.ArrayItemValue(@$, null, _astFactory.List(@3, (List<Item>)$3)); }
+			{ $$ = _astFactory.ArrayItemValue(@$, null, _astFactory.List(@3, $3)); }
 ;
 
 encaps_list:
@@ -1374,53 +1398,53 @@ encaps_list:
 	|	encaps_list T_ENCAPSED_AND_WHITESPACE
 			{ $$ = AddToList<LangElement>($1, _astFactory.Literal(@2, $2)); }
 	|	encaps_var
-			{ $$ = new List<LangElement>() { (LangElement)$1 }; }
+			{ $$ = new List<LangElement>() { $1 }; }
 	|	T_ENCAPSED_AND_WHITESPACE encaps_var
-			{ $$ = new List<LangElement>() { _astFactory.Literal(@1, $1), (LangElement)$2 }; }
+			{ $$ = new List<LangElement>() { _astFactory.Literal(@1, $1), $2 }; }
 ;
 
 encaps_var:
 		T_VARIABLE
-			{ $$ = _astFactory.Variable(@$, $1, (LangElement)null); }
+			{ $$ = _astFactory.Variable(@$, $1, NullLangElement); }
 	|	T_VARIABLE '[' encaps_var_offset ']'
 			{ $$ = _astFactory.ArrayItem(@$, 
-					_astFactory.Variable(@1, $1, (LangElement)null), (LangElement)$3); }
+					_astFactory.Variable(@1, $1, NullLangElement), $3); }
 	|	T_VARIABLE T_OBJECT_OPERATOR T_STRING
-			{ $$ = CreateProperty(@$, _astFactory.Variable(@1, $1, (LangElement)null), new Name($3)); }
+			{ $$ = CreateProperty(@$, _astFactory.Variable(@1, $1, NullLangElement), new Name($3)); }
 	|	T_DOLLAR_OPEN_CURLY_BRACES expr '}'
-			{ $$ = _astFactory.Variable(@$, (LangElement)$2, (LangElement)null); }
+			{ $$ = _astFactory.Variable(@$, $2, NullLangElement); }
 	|	T_DOLLAR_OPEN_CURLY_BRACES T_STRING_VARNAME '}'
-			{ $$ = _astFactory.Variable(@$, $2, (LangElement)null); }
+			{ $$ = _astFactory.Variable(@$, $2, NullLangElement); }
 	|	T_DOLLAR_OPEN_CURLY_BRACES T_STRING_VARNAME '[' expr ']' '}'
 			{ $$ = _astFactory.ArrayItem(@$, 
-					_astFactory.Variable(@2, $2, (LangElement)null), (LangElement)$4); }
+					_astFactory.Variable(@2, $2, NullLangElement), $4); }
 	|	T_CURLY_OPEN variable '}' { $$ = $2; }
 ;
 
 encaps_var_offset:
 		T_STRING		{ $$ = _astFactory.Literal(@$, $1); }
 	|	T_NUM_STRING	{ $$ = _astFactory.Literal(@$, $1); }
-	|	T_VARIABLE		{ $$ = _astFactory.Variable(@$, $1, (LangElement)null); }
+	|	T_VARIABLE		{ $$ = _astFactory.Variable(@$, $1, NullLangElement); }
 ;
 
 
 internal_functions_in_yacc:
 		T_ISSET '(' isset_variables ')' { $$ = _astFactory.Isset(@$, $3); }
-	|	T_EMPTY '(' expr ')' { $$ = _astFactory.Empty(@$, (LangElement)$3);}
+	|	T_EMPTY '(' expr ')' { $$ = _astFactory.Empty(@$, $3);}
 	|	T_INCLUDE expr
-			{ $$ = _astFactory.Inclusion(@$, isConditional, InclusionTypes.Include, (LangElement)$2); }
+			{ $$ = _astFactory.Inclusion(@$, isConditional, InclusionTypes.Include, $2); }
 	|	T_INCLUDE_ONCE expr
-			{ $$ = _astFactory.Inclusion(@$, isConditional, InclusionTypes.IncludeOnce, (LangElement)$2); }
+			{ $$ = _astFactory.Inclusion(@$, isConditional, InclusionTypes.IncludeOnce, $2); }
 	|	T_EVAL '(' expr ')'
-			{ $$ = _astFactory.Eval(@$, (LangElement)$3); }
+			{ $$ = _astFactory.Eval(@$, $3); }
 	|	T_REQUIRE expr
-			{ $$ = _astFactory.Inclusion(@$, isConditional, InclusionTypes.Require, (LangElement)$2); }
+			{ $$ = _astFactory.Inclusion(@$, isConditional, InclusionTypes.Require, $2); }
 	|	T_REQUIRE_ONCE expr
-			{ $$ = _astFactory.Inclusion(@$, isConditional, InclusionTypes.RequireOnce, (LangElement)$2); }
+			{ $$ = _astFactory.Inclusion(@$, isConditional, InclusionTypes.RequireOnce, $2); }
 ;
 
 isset_variables:
-		isset_variable { $$ = new List<LangElement>() { (LangElement)$1 }; }
+		isset_variable { $$ = new List<LangElement>() { $1 }; }
 	|	isset_variables ',' isset_variable { $$ = AddToList<LangElement>($1, $3); }
 ;
 

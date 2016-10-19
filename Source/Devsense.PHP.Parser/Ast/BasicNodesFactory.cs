@@ -109,7 +109,7 @@ namespace Devsense.PHP.Syntax.Ast
             Debug.Assert(memberOfOpt == null || memberOfOpt is VarLikeConstructUse);
             return new DirectFcnCall(span, name, nameFallback, nameSpan, signature.Parameters, signature.GenericParams) { IsMemberOf = (VarLikeConstructUse)memberOfOpt };
         }
-        public virtual LangElement ActualParameter(Span span, LangElement expr, ActualParam.Flags flags)
+        public virtual ActualParam ActualParameter(Span span, LangElement expr, ActualParam.Flags flags)
         {
             Debug.Assert(expr != null && expr is Expression);
             return new ActualParam(span, (Expression)expr, flags);
@@ -224,7 +224,7 @@ namespace Devsense.PHP.Syntax.Ast
                 (BlockStmt)body, returnType);
         }
 
-        public virtual LangElement Parameter(Span span, string name, Span nameSpan, TypeRef typeOpt, FormalParam.Flags flags, Expression initValue)
+        public virtual FormalParam Parameter(Span span, string name, Span nameSpan, TypeRef typeOpt, FormalParam.Flags flags, Expression initValue)
         {
             return new FormalParam(span, name, nameSpan, typeOpt, flags, initValue, null);
         }
@@ -361,7 +361,7 @@ namespace Devsense.PHP.Syntax.Ast
 
         public virtual LangElement PHPDoc(Span span, LangElement block)
         {
-            throw new NotImplementedException();
+            return new PHPDocStmt((PHPDocBlock)block);
         }
 
         public virtual LangElement Shell(Span span, LangElement command)
@@ -406,10 +406,10 @@ namespace Devsense.PHP.Syntax.Ast
             return new GlobalStmt(span, ConvertList<SimpleVarUse>(variables));
         }
 
-        public virtual LangElement TryCatch(Span span, LangElement body, IEnumerable<CatchItem> catches, LangElement finallyBlockOpt)
+        public virtual LangElement TryCatch(Span span, LangElement body, IEnumerable<LangElement> catches, LangElement finallyBlockOpt)
         {
             Debug.Assert(body is BlockStmt);
-            return new TryStmt(span, (BlockStmt)body, catches.ToList(), (FinallyItem)finallyBlockOpt);
+            return new TryStmt(span, (BlockStmt)body, ConvertList<CatchItem>(catches), (FinallyItem)finallyBlockOpt);
         }
 
         public virtual LangElement Catch(Span span, TypeRef typeOpt, DirectVarUse variable, LangElement block)
@@ -499,10 +499,10 @@ namespace Devsense.PHP.Syntax.Ast
             //Debug.Assert(!className.IsPrimitiveTypeName);
             return new ClassTypeRef(span, className);
         }
-        public virtual TypeRef AliasedTypeReference(Span span, QualifiedName className, LangElement origianType)
+        public virtual TypeRef AliasedTypeReference(Span span, QualifiedName className, TypeRef origianType)
         {
             Debug.Assert(!className.IsPrimitiveTypeName);
-            return new AliasedTypeRef(span, className, (ClassTypeRef)origianType);
+            return new AliasedTypeRef(span, className, origianType);
         }
         public virtual TypeRef PrimitiveTypeReference(Span span, PrimitiveTypeName tname)
         {

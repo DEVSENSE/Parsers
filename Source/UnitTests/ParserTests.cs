@@ -97,7 +97,7 @@ namespace UnitTests
                 if (element != null)
                 {
                     Assert.IsTrue(element.Span.IsValid);
-                    Assert.IsTrue(inclusion.Last().Contains(element.Span));
+                    Assert.IsTrue(element is PHPDocBlock || inclusion.Last().Contains(element.Span));
                     if (element is FunctionDecl)
                         CheckFunctionDecl((FunctionDecl)element);
                     else if (element is MethodDecl)

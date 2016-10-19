@@ -144,7 +144,7 @@ namespace Devsense.PHP.Syntax
         /// </summary>
         /// <param name="extent">Span of code block containing <paramref name="stmts"/>.</param>
         /// <param name="stmts">List of statements to be merged with overlapping DOC comments.</param>
-        public void Merge(Text.Span extent, IList<LangElement>/*!*/stmts)
+        public void Merge(Text.Span extent, IList<LangElement>/*!*/stmts, INodesFactory<LangElement, Span> factory)
         {
             Debug.Assert(extent.IsValid);
             Debug.Assert(stmts != null);
@@ -169,7 +169,7 @@ namespace Devsense.PHP.Syntax
                     // insert {doc} into {stmts}
                     if (insertAt == stmts.Count || doc.IsAbove(stmts[insertAt]))
                     {
-                        stmts.Insert(insertAt, new PHPDocStmt(doc.PhpDoc));
+                        stmts.Insert(insertAt, factory.PHPDoc(doc.PhpDoc.Span, doc.PhpDoc));
                         insertAt++;
                     }
 

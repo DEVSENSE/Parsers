@@ -132,7 +132,7 @@ namespace Devsense.PHP.Syntax.Ast
         /// <param name="flags">Parameter flags.</param>
         /// <param name="initValue">Default value expression.</param>
         /// <returns></returns>
-        TNode Parameter(Span span, string name, Span nameSpan, TypeRef typeOpt, FormalParam.Flags flags, Expression initValue);
+        FormalParam Parameter(Span span, string name, Span nameSpan, TypeRef typeOpt, FormalParam.Flags flags, Expression initValue);
 
         /// <summary>
         /// Creates type declaration node.
@@ -328,7 +328,7 @@ namespace Devsense.PHP.Syntax.Ast
         /// <param name="catches">Catch items.</param>
         /// <param name="finallyBlockOpt">Optional. Finally block.</param>
         /// <returns>Try block.</returns>
-        TNode TryCatch(TSpan span, TNode body, IEnumerable<CatchItem> catches, TNode finallyBlockOpt);
+        TNode TryCatch(TSpan span, TNode body, IEnumerable<TNode> catches, TNode finallyBlockOpt);
 
         /// <summary>
         /// Creates <c>catch</c> block according to the optional parameters.
@@ -694,7 +694,7 @@ namespace Devsense.PHP.Syntax.Ast
         /// <param name="className">Translated class name.</param>
         /// <param name="origianType">Original type reference.</param>
         /// <returns>Type reference.</returns>
-        TypeRef AliasedTypeReference(TSpan span, QualifiedName className, TNode origianType);
+        TypeRef AliasedTypeReference(TSpan span, QualifiedName className, TypeRef origianType);
 
         /// <summary>
         /// Create <c>TypeRef</c> reference to a primitive type.
@@ -845,7 +845,7 @@ namespace Devsense.PHP.Syntax.Ast
         /// <param name="expr">Argument expression.</param>
         /// <param name="flags">Parameter flags.</param>
         /// <returns>Function call argument.</returns>
-        TNode ActualParameter(Span span, TNode expr, ActualParam.Flags flags);
+        ActualParam ActualParameter(Span span, TNode expr, ActualParam.Flags flags);
 
         /// <summary>
         /// Creates new <c>array</c> expression.

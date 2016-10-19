@@ -15,6 +15,7 @@
 
 using System;
 using Devsense.PHP.Text;
+using System.Collections.Generic;
 
 namespace Devsense.PHP.Syntax.Ast
 {
@@ -108,7 +109,12 @@ namespace Devsense.PHP.Syntax.Ast
 	/// Base class for all AST nodes representing PHP language Elements - statements and expressions.
 	/// </summary>
 	public abstract class LangElement : AstNode
-	{
+    {
+        /// <summary>
+        /// Immutable empty list of <see cref="LangElement"/>.
+        /// </summary>
+        internal static readonly List<LangElement>/*!*/EmptyList = new List<LangElement>();
+
         #region ContainingElement
 
         /// <summary>

@@ -140,7 +140,7 @@ namespace Devsense.PHP.Syntax.Ast
     public abstract class Expression : LangElement
     {
         /// <summary>
-        /// Immutable empty list of <see cref="TypeRef"/>.
+        /// Immutable empty list of <see cref="Expression"/>.
         /// </summary>
         internal static readonly List<Expression>/*!*/EmptyList = new List<Expression>();
 

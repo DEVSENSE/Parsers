@@ -241,7 +241,6 @@ namespace Devsense.PHP.Syntax.Ast
         public ClassTypeRef(Span span, QualifiedName className)
             : base(span)
         {
-            Debug.Assert(!className.IsPrimitiveTypeName);
             _className = className;
         }
 
@@ -284,12 +283,12 @@ namespace Devsense.PHP.Syntax.Ast
 
         /// <summary>
         /// Original type reference before alias translation.
-        /// Non nullable <see cref="ClassTypeRef"/>.
+        /// Non nullable <see cref="TypeRef"/>.
         /// </summary>
-        public ClassTypeRef OriginalType => _originalType;
-        private readonly ClassTypeRef _originalType;
+        public TypeRef OriginalType => _originalType;
+        private readonly TypeRef _originalType;
 
-        public AliasedTypeRef(Span span, QualifiedName className, ClassTypeRef originalType)
+        public AliasedTypeRef(Span span, QualifiedName className, TypeRef originalType)
             : base(span)
         {
             Debug.Assert(!className.IsPrimitiveTypeName);

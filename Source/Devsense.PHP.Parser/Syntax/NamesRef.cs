@@ -143,20 +143,15 @@ namespace Devsense.PHP.Syntax
 
         internal static QualifiedNameRef FromTypeRef(TypeRef tref)
         {
-            if (tref is ClassTypeRef)
-            {
-                return new QualifiedNameRef(tref.Span, ((ClassTypeRef)tref).ClassName);
-            }
-            else if (tref is AliasedTypeRef)
-            {
-                return new QualifiedNameRef(tref.Span, ((AliasedTypeRef)tref).ClassName);
-            }
-            else if (tref == null)
+            if (tref == null)
             {
                 return QualifiedNameRef.Invalid;
             }
-
-            throw new ArgumentException();
+            var qname = tref.QualifiedName;
+            if (qname.HasValue)
+                return new QualifiedNameRef(tref.Span, qname.Value);
+            else
+                throw new ArgumentException();
         }
 
         /// <summary>

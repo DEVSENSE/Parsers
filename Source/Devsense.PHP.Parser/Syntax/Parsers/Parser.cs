@@ -24,7 +24,7 @@ using Devsense.PHP.Errors;
 
 namespace Devsense.PHP.Syntax
 {
-    internal enum ContextType { Class, Function, Constant }
+    public enum ContextType { Class, Function, Constant }
 
     public partial class Parser
     {
@@ -48,6 +48,16 @@ namespace Devsense.PHP.Syntax
         /// Gets parser error sink. Cannot be <c>null</c>.
         /// </summary>
         public IErrorSink<Span> ErrorSink => _errors;
+
+        LangElement NullLangElement => null;
+
+        Stack<ClassContext> ClassContexts = new Stack<ClassContext>();
+
+        private struct ClassContext
+        {
+            public QualifiedName Name;
+            public TypeRef Base;
+        }
 
         protected sealed override int EofToken
         {
@@ -257,20 +267,24 @@ namespace Devsense.PHP.Syntax
                 alias.Item3);
         }
 
+        void PushClassContext(string name, TypeRef type)
+        {
+            ClassContexts.Push(new ClassContext()
+            {
+                Name = new QualifiedName(new Name(name), namingContext.CurrentNamespace.HasValue? namingContext.CurrentNamespace.Value.Namespaces: Name.EmptyNames),
+                Base = type
+            });
+        }
+
+        void PopClassContext()
+        {
+            ClassContexts.Pop();
+        }
+
         private List<T> AddToList<T>(List<T> list, T item)
         {
             list.Add(item);
             return list;
-        }
-
-        private List<T> AddToList<T>(object list, object item)
-        {
-            return AddToList((List<T>)list, (T)item);
-        }
-
-        private IList<T> JoinLists<T>(IList<T> first, IList<T> second)
-        {
-            return first.Concat(second).ToList();
         }
 
         private Tuple<T1, T2, T3> JoinTuples<T1, T2, T3>(Tuple<T1, T2> first, T3 second)
@@ -280,7 +294,7 @@ namespace Devsense.PHP.Syntax
 
         private LangElement StatementsToBlock(Span span, List<LangElement> statements, Tokens endToken)
         {
-            _lexer.DocBlockList.Merge(span, statements);
+            _lexer.DocBlockList.Merge(span, statements, _astFactory);
             return _astFactory.ColonBlock(span, statements, endToken);
         }
 
@@ -355,7 +369,16 @@ namespace Devsense.PHP.Syntax
                 }
                 if (ReservedTypeRef.ReservedTypes.TryGetValue(qname.Name, out reserved))
                 {
-                    return _astFactory.ReservedTypeReference(span, reserved);
+                    if(qname.Name == Name.ParentClassName)
+                    {
+                        if (ClassContexts.Peek().Base == null)
+                        {
+                            this.ErrorSink.Error(span, FatalErrors.ParentAccessedInParentlessClass);
+                            return _astFactory.ReservedTypeReference(span, reserved);
+                        }
+                        return _astFactory.AliasedTypeReference(span, ClassContexts.Peek().Base.QualifiedName.Value, _astFactory.ReservedTypeReference(span, reserved));
+                    }
+                    return _astFactory.AliasedTypeReference(span, ClassContexts.Peek().Name, _astFactory.ReservedTypeReference(span, reserved));
                 }
             }
 
@@ -528,7 +551,7 @@ namespace Devsense.PHP.Syntax
         /// <returns>Complete block statement.</returns>
         BlockStmt CreateBlock(Span span, List<LangElement> statements)
         {
-            _lexer.DocBlockList.Merge(span, statements);
+            _lexer.DocBlockList.Merge(span, statements, _astFactory);
             return (BlockStmt)_astFactory.Block(span, statements);
         }
 
@@ -544,7 +567,7 @@ namespace Devsense.PHP.Syntax
             if (statements.Count == 0)
                 return (BlockStmt)_astFactory.Block(separatorSpan, statements);
             Span bodySpan = Span.Combine(separatorSpan, statements.Last().Span);
-            _lexer.DocBlockList.Merge(bodySpan, statements);
+            _lexer.DocBlockList.Merge(bodySpan, statements, _astFactory);
             return (BlockStmt)_astFactory.Block(bodySpan, statements);
         }
 
