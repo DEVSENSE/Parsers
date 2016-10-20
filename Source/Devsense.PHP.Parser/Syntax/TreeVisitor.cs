@@ -946,7 +946,7 @@ namespace Devsense.PHP.Syntax
         {
             // nothing
         }
-        virtual public void VisitAliasedTypeRef(AliasedTypeRef x)
+        virtual public void VisitAliasedTypeRef(TranslatedTypeRef x)
         {
             // note - eventually we want to vist original type
         }

@@ -21,6 +21,23 @@ using Devsense.PHP.Text;
 
 namespace Devsense.PHP.Syntax.Ast
 {
+    #region INamedTypeRef
+
+    public interface INamedTypeRef
+    {
+        /// <summary>
+        /// Position of element in source file.
+        /// </summary>
+        Span Span { get; }
+
+        /// <summary>
+        /// Gets qualified name of the type if possible. Indirect type reference and multiple type references gets no value.
+        /// </summary>
+        QualifiedName ClassName { get; }
+    }
+
+    #endregion
+
     #region TypeRef
 
     /// <summary>
@@ -228,7 +245,7 @@ namespace Devsense.PHP.Syntax.Ast
     /// Direct use of class name.
     /// </summary>
     [DebuggerDisplay("{_className,nq}")]
-    public sealed class ClassTypeRef : TypeRef, IEquatable<ClassTypeRef>
+    public sealed class ClassTypeRef : TypeRef, IEquatable<ClassTypeRef>, INamedTypeRef
     {
         /// <summary>
         /// Non nullable <see cref="QualifiedName"/>.
@@ -265,13 +282,13 @@ namespace Devsense.PHP.Syntax.Ast
 
     #endregion
 
-    #region AliasedTypeRef
+    #region TranslatedTypeRef
 
     /// <summary>
     /// Direct use of class name.
     /// </summary>
     [DebuggerDisplay("{_className,nq}")]
-    public sealed class AliasedTypeRef : TypeRef, IEquatable<AliasedTypeRef>
+    public sealed class TranslatedTypeRef : TypeRef, IEquatable<TranslatedTypeRef>, INamedTypeRef
     {
         /// <summary>
         /// Non nullable <see cref="QualifiedName"/>.
@@ -288,7 +305,7 @@ namespace Devsense.PHP.Syntax.Ast
         public TypeRef OriginalType => _originalType;
         private readonly TypeRef _originalType;
 
-        public AliasedTypeRef(Span span, QualifiedName className, TypeRef originalType)
+        public TranslatedTypeRef(Span span, QualifiedName className, TypeRef originalType)
             : base(span)
         {
             Debug.Assert(!className.IsPrimitiveTypeName);
@@ -306,11 +323,11 @@ namespace Devsense.PHP.Syntax.Ast
 
         #region IEquatable
 
-        public override bool Equals(object obj) => ((IEquatable<AliasedTypeRef>)this).Equals(obj as AliasedTypeRef);
+        public override bool Equals(object obj) => ((IEquatable<TranslatedTypeRef>)this).Equals(obj as TranslatedTypeRef);
 
         public override int GetHashCode() => _className.GetHashCode();
 
-        bool IEquatable<AliasedTypeRef>.Equals(AliasedTypeRef other) => other != null && other._originalType.Equals(_originalType);
+        bool IEquatable<TranslatedTypeRef>.Equals(TranslatedTypeRef other) => other != null && other._originalType.Equals(_originalType);
 
         #endregion
     }

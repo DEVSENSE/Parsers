@@ -32,7 +32,7 @@ class SimpleClass extends MyClass
           "PassedByRef" : "False",
           "IsVariadic" : "False",
           "TypeHint" : {
-            "AliasedTypeRef":{
+            "TranslatedTypeRef":{
               "ClassName":"MyClass",
               "OriginalName":"parent"
             }
@@ -50,7 +50,7 @@ class SimpleClass extends MyClass
         }
       },
       "ReturnType" : {
-        "AliasedTypeRef":{
+        "TranslatedTypeRef":{
           "ClassName":"SimpleClass",
           "OriginalName":"self"
         }

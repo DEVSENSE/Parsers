@@ -19,6 +19,8 @@ namespace Devsense.PHP.Syntax.Ast.Serialization
 {
     public struct NodeObj
     {
+        public static readonly NodeObj Empty = new NodeObj() { NodeType = null, NodeValue = null };
+
         public NodeObj(string nodeType, string nodeValue) { NodeType = nodeType; NodeValue = nodeValue; NodeProperties = null; }
         public NodeObj(string nodeType, params NodeObj[] nodeProperties) { NodeType = nodeType; NodeValue = null; NodeProperties = nodeProperties; }
 

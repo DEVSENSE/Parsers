@@ -437,7 +437,7 @@ namespace Devsense.PHP.Syntax.Ast
             Debug.Assert(members != null && implements != null);
             return new NamedTypeDecl(span, headingSpan, conditional, attributes, false,
                 new NameRef(nameSpan, name), (typeParamsOpt != null) ? typeParamsOpt.ToList() : FormalTypeParam.EmptyList,
-                QualifiedNameRef.FromTypeRef(baseClassOpt), implements.Select(QualifiedNameRef.FromTypeRef).ToList(),
+                baseClassOpt, implements.ToList(),
                 ConvertList<TypeMemberDecl>(members), bodySpan, null);
         }
 
@@ -448,7 +448,7 @@ namespace Devsense.PHP.Syntax.Ast
             Debug.Assert(members != null && implements != null);
             return new AnonymousTypeRef(span, new AnonymousTypeDecl(span, headingSpan,
                 conditional, attributes, false, (typeParamsOpt != null) ? typeParamsOpt.ToList() : FormalTypeParam.EmptyList,
-                QualifiedNameRef.FromTypeRef(baseClassOpt), implements.Select(QualifiedNameRef.FromTypeRef).ToList(), ConvertList<TypeMemberDecl>(members), bodySpan, null));
+                baseClassOpt, implements.ToList(), ConvertList<TypeMemberDecl>(members), bodySpan, null));
         }
 
         public virtual LangElement Method(Span span, bool aliasReturn, PhpMemberAttributes attributes, TypeRef returnType, Span returnTypeSpan, string name, Span nameSpan, IEnumerable<FormalTypeParam> typeParamsOpt, IEnumerable<FormalParam> formalParams, Span formalParamsSpan, IEnumerable<ActualParam> baseCtorParams, LangElement body)
@@ -502,7 +502,7 @@ namespace Devsense.PHP.Syntax.Ast
         public virtual TypeRef AliasedTypeReference(Span span, QualifiedName className, TypeRef origianType)
         {
             Debug.Assert(!className.IsPrimitiveTypeName);
-            return new AliasedTypeRef(span, className, origianType);
+            return new TranslatedTypeRef(span, className, origianType);
         }
         public virtual TypeRef PrimitiveTypeReference(Span span, PrimitiveTypeName tname)
         {

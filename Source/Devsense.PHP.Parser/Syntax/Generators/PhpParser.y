@@ -382,7 +382,7 @@ namespace_name:
 	|	namespace_name T_NS_SEPARATOR T_STRING	{ $$ = AddToList<string>($1, $3); }
 ;
 
-name:
+name:	// TODO - count as translate (use a helper object)
 		namespace_name								{ $$ = new QualifiedNameRef(@$, new QualifiedName($1, true, false)); }
 	|	T_NAMESPACE T_NS_SEPARATOR namespace_name	{ $$ = new QualifiedNameRef(@$, MergeWithCurrentNamespace(namingContext.CurrentNamespace, $3)); }
 	|	T_NS_SEPARATOR namespace_name				{ $$ = new QualifiedNameRef(@$, new QualifiedName($2, true,  true)); }

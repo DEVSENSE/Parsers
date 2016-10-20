@@ -173,7 +173,7 @@ namespace UnitTests
                     Assert.IsTrue(type.HeadingSpan.End <= type.Members.Min(a => a.Span.Start));
                 if (type.ImplementsList.Length > 0)
                     Assert.IsTrue(type.Name.Span.End <= type.ImplementsList.Min(a => a.Span.Start));
-                if (type.BaseClass.HasValue)
+                if (type.BaseClass != null)
                 {
                     Assert.IsTrue(type.Span.Contains(type.BaseClass.Span));
                     Assert.IsTrue(type.HeadingSpan.Contains(type.BaseClass.Span));

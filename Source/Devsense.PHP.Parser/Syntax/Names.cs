@@ -768,12 +768,13 @@ namespace Devsense.PHP.Syntax
                     {
                         Debug.Assert(string.IsNullOrEmpty(currentNamespace.Value.Name.Value));
                         translated = new QualifiedName(qname, currentNamespace.Value) { IsFullyQualifiedName = true };
+                        return true;
                     }
                     else
                     {
                         translated = new QualifiedName(qname.Name, qname.Namespaces) { IsFullyQualifiedName = true };
+                        return false;
                     }
-                    return false;
                 }
             }
             translated = qname;

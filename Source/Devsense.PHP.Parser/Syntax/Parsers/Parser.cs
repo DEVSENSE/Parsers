@@ -386,7 +386,7 @@ namespace Devsense.PHP.Syntax
             QualifiedName translated;
             return (TryTranslateAny(tname, out translated)) ?
                 _astFactory.AliasedTypeReference(span, translated, _astFactory.TypeReference(span, tname)) :
-                _astFactory.TypeReference(span, translated);
+                _astFactory.TypeReference(span, tname);
         }
 
         List<TypeRef> TypeRefListFromQNRList(List<QualifiedNameRef> nrefList)

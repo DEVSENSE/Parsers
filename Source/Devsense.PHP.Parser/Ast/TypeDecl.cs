@@ -118,14 +118,14 @@ namespace Devsense.PHP.Syntax.Ast
         /// <summary>
 		/// Name of the base class.
 		/// </summary>
-		private readonly QualifiedNameRef baseClass;
+		private readonly TypeRef baseClass;
         /// <summary>Name of the base class.</summary>
-        public QualifiedNameRef BaseClass { get { return baseClass; } }
+        public TypeRef BaseClass { get { return baseClass; } }
 
         public PhpMemberAttributes MemberAttributes { get; private set; }
 
         /// <summary>Implemented interface name indices. </summary>
-        public QualifiedNameRef[]/*!!*/ ImplementsList { get; private set; }
+        public TypeRef[]/*!!*/ ImplementsList { get; private set; }
 
         /// <summary>
         /// Type parameters.
@@ -171,8 +171,8 @@ namespace Devsense.PHP.Syntax.Ast
         public TypeDecl(
             Text.Span span, Text.Span headingSpan,
             bool isConditional, PhpMemberAttributes memberAttributes, bool isPartial,
-            List<FormalTypeParam>/*!*/ genericParams, QualifiedNameRef baseClass,
-            List<QualifiedNameRef>/*!*/ implementsList, List<TypeMemberDecl>/*!*/ elements, Text.Span bodySpan,
+            List<FormalTypeParam>/*!*/ genericParams, TypeRef baseClass,
+            List<TypeRef>/*!*/ implementsList, List<TypeMemberDecl>/*!*/ elements, Text.Span bodySpan,
             List<CustomAttribute> attributes)
             : base(span)
         {
@@ -243,8 +243,8 @@ namespace Devsense.PHP.Syntax.Ast
 
         public NamedTypeDecl(
             Text.Span span, Text.Span headingSpan, bool isConditional, PhpMemberAttributes memberAttributes, bool isPartial,
-            NameRef className, List<FormalTypeParam>/*!*/ genericParams, QualifiedNameRef baseClass,
-            List<QualifiedNameRef>/*!*/ implementsList, List<TypeMemberDecl>/*!*/ elements, Text.Span bodySpan,
+            NameRef className, List<FormalTypeParam>/*!*/ genericParams, TypeRef baseClass,
+            List<TypeRef>/*!*/ implementsList, List<TypeMemberDecl>/*!*/ elements, Text.Span bodySpan,
 
             List<CustomAttribute> attributes)
             : base(span, headingSpan, isConditional, 
@@ -293,8 +293,8 @@ namespace Devsense.PHP.Syntax.Ast
         public AnonymousTypeDecl(
             Text.Span span, Text.Span headingSpan,
             bool isConditional, PhpMemberAttributes memberAttributes, bool isPartial,
-            List<FormalTypeParam>/*!*/ genericParams, QualifiedNameRef baseClass,
-            List<QualifiedNameRef>/*!*/ implementsList, List<TypeMemberDecl>/*!*/ elements, Text.Span bodySpan,
+            List<FormalTypeParam>/*!*/ genericParams, TypeRef baseClass,
+            List<TypeRef>/*!*/ implementsList, List<TypeMemberDecl>/*!*/ elements, Text.Span bodySpan,
             List<CustomAttribute> attributes)
             : base(span, headingSpan, isConditional,
                   memberAttributes, isPartial, genericParams, baseClass, implementsList, elements, bodySpan, attributes)

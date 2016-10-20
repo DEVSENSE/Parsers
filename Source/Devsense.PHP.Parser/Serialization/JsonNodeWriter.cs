@@ -29,7 +29,7 @@ namespace Devsense.PHP.Syntax.Ast.Serialization
         bool _first = true;
 
         void Indent() { _indent += "  "; _first = true; }
-        void DeIndent() { if(_indent.Length >= 2) _indent = _indent.Remove(_indent.Length - 2); _first = false; }
+        void DeIndent() { if (_indent.Length >= 2) _indent = _indent.Remove(_indent.Length - 2); _first = false; }
 
         void SerializeValue(string nodeType, string nodeValue)
         {
@@ -44,17 +44,17 @@ namespace Devsense.PHP.Syntax.Ast.Serialization
         {
             if (properties != null)
                 foreach (var property in properties)
-                {
-                    Debug.Assert(!string.IsNullOrEmpty(property.NodeType));
-                    Debug.Assert(property.NodeValue == null || property.NodeProperties == null);
-                    if (property.NodeValue != null)
-                        SerializeValue(property.NodeType, property.NodeValue);
-                    else
+                    if (!string.IsNullOrEmpty(property.NodeType))
                     {
-                        Debug.Assert(property.NodeProperties != null);
-                        Serialize(property.NodeType, property.NodeProperties);
+                        Debug.Assert(property.NodeValue == null || property.NodeProperties == null);
+                        if (property.NodeValue != null)
+                            SerializeValue(property.NodeType, property.NodeValue);
+                        else
+                        {
+                            Debug.Assert(property.NodeProperties != null);
+                            Serialize(property.NodeType, property.NodeProperties);
+                        }
                     }
-                }
         }
 
         //LangElement Reconstruct(KeyValuePair<string, JToken> node)

@@ -11,6 +11,7 @@ namespace test{
   
   B::$x; 
   B::bConst;
+  namespace\B::$x;
   
   try{}
   catch(Y|A $a){}
@@ -35,18 +36,19 @@ namespace test{
     },
     "Body":{
       "BlockStmt":{
-        "DirectStFldUse":{"PropertyName":"x","AliasedTypeRef":{"ClassName":"MySpace\X","OriginalName":"Y"}},
-        "ClassConstUse":{"Name":"yConst","AliasedTypeRef":{"ClassName":"MySpace\X","OriginalName":"Y"}},
-        "DirectStFldUse":{"PropertyName":"x","ClassTypeRef":{"ClassName":"test\B"}},  
-        "ClassConstUse":{"Name":"bConst","ClassTypeRef":{"ClassName":"test\B"}},
+        "DirectStFldUse":{"PropertyName":"x","TranslatedTypeRef":{"ClassName":"MySpace\X","OriginalName":"Y"}},
+        "ClassConstUse":{"Name":"yConst","TranslatedTypeRef":{"ClassName":"MySpace\X","OriginalName":"Y"}},
+        "DirectStFldUse":{"PropertyName":"x","TranslatedTypeRef":{"ClassName":"test\B","OriginalName":"B"}},  
+        "ClassConstUse":{"Name":"bConst","TranslatedTypeRef":{"ClassName":"test\B","OriginalName":"B"}},
+        "DirectStFldUse":{"PropertyName":"x","ClassTypeRef":{"ClassName":"test\B"}},
         "TryStmt":{
           "Body":{"BlockStmt":{}},
           "Catches":{
             "CatchItem":{
               "TypeRef":{
                 "MultipleTypeRef":{
-                  "AliasedTypeRef":{"ClassName":"MySpace\X","OriginalName":"Y"},
-                  "ClassTypeRef":{"ClassName":"test\A"}
+                  "TranslatedTypeRef":{"ClassName":"MySpace\X","OriginalName":"Y"},
+                  "TranslatedTypeRef":{"ClassName":"test\A","OriginalName":"A"}
                 }
               },
               "Variable":{"DirectVarUse":{"VarName":"a"}},
@@ -62,13 +64,13 @@ namespace test{
               "Name":"a",
               "PassedByRef":"False",
               "IsVariadic":"False",
-              "TypeHint":{"AliasedTypeRef":{"ClassName":"MySpace\X","OriginalName":"Y"}}
+              "TypeHint":{"TranslatedTypeRef":{"ClassName":"MySpace\X","OriginalName":"Y"}}
             }
           },
           "Body":{"BlockStmt":{}},
-          "ReturnType":{"AliasedTypeRef":{"ClassName":"MySpace\X","OriginalName":"Y"}}
+          "ReturnType":{"TranslatedTypeRef":{"ClassName":"MySpace\X","OriginalName":"Y"}}
         },
-        "InstanceOfEx":{"DirectVarUse":{"VarName":"x"},"AliasedTypeRef":{"ClassName":"MySpace\X","OriginalName":"Y"}}
+        "InstanceOfEx":{"DirectVarUse":{"VarName":"x"},"TranslatedTypeRef":{"ClassName":"MySpace\X","OriginalName":"Y"}}
       }
     }
   }

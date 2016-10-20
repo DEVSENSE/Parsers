@@ -98,7 +98,7 @@ namespace UnitTests
                 base.VisitForeachVar(x);
             }
 
-            public override void VisitAliasedTypeRef(AliasedTypeRef x)
+            public override void VisitAliasedTypeRef(TranslatedTypeRef x)
             {
                 // TODO visit original type reference
                 VisitElement(x.OriginalType);
@@ -415,14 +415,14 @@ namespace UnitTests
                     foreach (var item in imp)
                     {
                         _createdElements.Remove(item);
-                        if (item is AliasedTypeRef)
-                            _createdElements.Remove(((AliasedTypeRef)item).OriginalType);
+                        if (item is TranslatedTypeRef)
+                            _createdElements.Remove(((TranslatedTypeRef)item).OriginalType);
                     }
                 if (baseClassOpt != null)
                 {
                     _createdElements.Remove(baseClassOpt);
-                    if (baseClassOpt is AliasedTypeRef)
-                        _createdElements.Remove(((AliasedTypeRef)baseClassOpt).OriginalType);
+                    if (baseClassOpt is TranslatedTypeRef)
+                        _createdElements.Remove(((TranslatedTypeRef)baseClassOpt).OriginalType);
                 }
                 return CountLE(base.Type(span, headingSpan, conditional, attributes, name, nameSpan, typeParamsOpt, baseClassOpt, imp, members, bodySpan));
             }

@@ -484,9 +484,9 @@ namespace Devsense.PHP.Syntax.Ast.Serialization
             _serializer.Serialize(typeof(ClassTypeRef).Name, SerializeSpan(x.Span), 
                 new NodeObj("ClassName", x.QualifiedName.ToString()));
         }
-        public override void VisitAliasedTypeRef(AliasedTypeRef x)
+        public override void VisitAliasedTypeRef(TranslatedTypeRef x)
         {
-            _serializer.Serialize(typeof(AliasedTypeRef).Name, SerializeSpan(x.Span),
+            _serializer.Serialize(typeof(TranslatedTypeRef).Name, SerializeSpan(x.Span),
                 new NodeObj("ClassName", x.QualifiedName.ToString()), new NodeObj("OriginalName", x.OriginalType.QualifiedName.ToString()));
         }
         override public void VisitIndirectTypeRef(IndirectTypeRef x)
@@ -627,8 +627,9 @@ namespace Devsense.PHP.Syntax.Ast.Serialization
             _serializer.StartSerialize(typeof(NamedTypeDecl).Name, SerializeSpan(x.Span), 
                 new NodeObj("Name", x.Name.Name.Value), new NodeObj("MemberAttributes", MemberAttributesToString(x.MemberAttributes)),
                 new NodeObj("IsConditional", x.IsConditional.ToString()));
-            if (x.BaseClass.HasValue)
-                _serializer.Serialize("BaseClassName", new NodeObj("Name", x.BaseClass.QualifiedName.ToString()));
+            if (x.BaseClass != null)
+                _serializer.Serialize("BaseClassName", new NodeObj("Name", x.BaseClass.QualifiedName.ToString()),
+                    x.BaseClass is TranslatedTypeRef? new NodeObj("OriginalName", ((TranslatedTypeRef)x.BaseClass).OriginalType.QualifiedName.ToString()): NodeObj.Empty);
             if (x.ImplementsList != null && x.ImplementsList.Length > 0)
                 _serializer.Serialize("ImplementsList", x.ImplementsList.Select(n => new NodeObj("Name", n.QualifiedName.ToString())).ToArray());
             SerializePHPDoc(x.PHPDoc);
@@ -640,7 +641,7 @@ namespace Devsense.PHP.Syntax.Ast.Serialization
             _serializer.StartSerialize(typeof(AnonymousTypeDecl).Name, SerializeSpan(x.Span),
                 new NodeObj("MemberAttributes", MemberAttributesToString(x.MemberAttributes)),
                 new NodeObj("IsConditional", x.IsConditional.ToString()));
-            if (x.BaseClass.HasValue)
+            if (x.BaseClass != null)
                 _serializer.Serialize("BaseClassName", new NodeObj("Name", x.BaseClass.QualifiedName.ToString()));
             if (x.ImplementsList != null && x.ImplementsList.Length > 0)
                 _serializer.Serialize("ImplementsList", x.ImplementsList.Select(n => new NodeObj("Name", n.QualifiedName.ToString())).ToArray());
