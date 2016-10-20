@@ -500,7 +500,7 @@ namespace Devsense.PHP.Syntax.Ast
             Debug.Assert(!className.IsPrimitiveTypeName);
             return new TranslatedTypeRef(span, className, origianType);
         }
-        public virtual TypeRef PrimitiveTypeReference(Span span, PrimitiveTypeName tname)
+        public virtual TypeRef PrimitiveTypeReference(Span span, PrimitiveTypeRef.PrimitiveType tname)
         {
             return new PrimitiveTypeRef(span, tname);
         }

@@ -82,8 +82,10 @@ namespace Devsense.PHP.Syntax.Ast
 
         internal static TypeRef FromObject(Span span, object obj)
         {
-            if (obj is PrimitiveTypeName) return new PrimitiveTypeRef(span, (PrimitiveTypeName)obj);
-            if (obj is QualifiedName) return new ClassTypeRef(span, (QualifiedName)obj);
+            PrimitiveTypeRef.PrimitiveType primitive;
+            if (obj is QualifiedName) return Enum.TryParse<PrimitiveTypeRef.PrimitiveType>(((QualifiedName)obj).Name.Value, true, out primitive) ?
+                (TypeRef)new PrimitiveTypeRef(span, primitive) :
+                (TypeRef)new ClassTypeRef(span, (QualifiedName)obj);
             if (obj is GenericQualifiedName) return FromGenericQualifiedName(span, (GenericQualifiedName)obj);
             if (obj is TypeRef) return (TypeRef)obj;
 
@@ -131,9 +133,10 @@ namespace Devsense.PHP.Syntax.Ast
             var qname = Syntax.QualifiedName.Parse(name, false);
 
             // primitive types
-            if (qname.IsPrimitiveTypeName)
+            PrimitiveTypeRef.PrimitiveType primitive;
+            if (Enum.TryParse<PrimitiveTypeRef.PrimitiveType>(qname.Name.Value, true, out primitive))
             {
-                return new PrimitiveTypeRef(span, new PrimitiveTypeName(qname));
+                return new PrimitiveTypeRef(span, primitive);
             }
             else
             {
@@ -160,13 +163,56 @@ namespace Devsense.PHP.Syntax.Ast
     [DebuggerDisplay("{_typeName.Name,nq}")]
     public sealed class PrimitiveTypeRef : TypeRef
     {
+        public enum PrimitiveType
+        {
+            /// <summary>
+            /// Integer.
+            /// </summary>
+            @int,
+
+            /// <summary>
+            /// Float.
+            /// </summary>
+            @float,
+
+            /// <summary>
+            /// String.
+            /// </summary>
+            @string,
+
+            /// <summary>
+            /// Bool.
+            /// </summary>
+            @bool,
+
+            /// <summary>
+            /// Array.
+            /// </summary>
+            @array,
+
+            /// <summary>
+            /// Callable.
+            /// </summary>
+            callable,
+
+            /// <summary>
+            /// Void.
+            /// </summary>
+            @void,
+
+            /// <summary>
+            /// Iterable.
+            /// </summary>
+            iterable
+        }
+
         /// <summary>
         /// Gets underlaying primitive type name.
         /// </summary>
-        public PrimitiveTypeName PrimitiveTypeName => _typeName;
-        private PrimitiveTypeName _typeName;
+        public PrimitiveType PrimitiveTypeName => _typeName;
+        private PrimitiveType _typeName;
 
-        public PrimitiveTypeRef(Span span, PrimitiveTypeName name)
+        public PrimitiveTypeRef(Span span, PrimitiveType name)
             : base(span)
         {
             _typeName = name;
@@ -178,9 +224,9 @@ namespace Devsense.PHP.Syntax.Ast
         /// <param name="visitor">Visitor to be called.</param>
         public override void VisitMe(TreeVisitor visitor) => visitor.VisitPrimitiveTypeRef(this);
 
-        public override QualifiedName? QualifiedName => _typeName.QualifiedName;
+        public override QualifiedName? QualifiedName => new QualifiedName(new Name(_typeName.ToString()));
 
-        public override string ToString() => _typeName.QualifiedName.ToString();
+        public override string ToString() => QualifiedName.ToString();
     }
 
     #endregion
@@ -198,7 +244,7 @@ namespace Devsense.PHP.Syntax.Ast
             /// <summary>
             /// Parent class reference.
             /// </summary>
-           parent,
+            parent,
 
             /// <summary>
             /// This class reference.
@@ -211,10 +257,10 @@ namespace Devsense.PHP.Syntax.Ast
             @static
         }
 
-        public static readonly Dictionary<Name, ReservedTypeRef.ReservedType> ReservedTypes = new Dictionary<Name, ReservedTypeRef.ReservedType>() {
-            { Name.StaticClassName, ReservedTypeRef.ReservedType.@static },
-            { Name.SelfClassName, ReservedTypeRef.ReservedType.self },
-            { Name.ParentClassName, ReservedTypeRef.ReservedType.parent }
+        public static readonly Dictionary<Name, ReservedType> ReservedTypes = new Dictionary<Name, ReservedType>() {
+            { Name.StaticClassName, ReservedType.@static },
+            { Name.SelfClassName, ReservedType.self },
+            { Name.ParentClassName, ReservedType.parent }
         };
 
         ReservedType Reserved => _reservedType;
@@ -496,7 +542,7 @@ namespace Devsense.PHP.Syntax.Ast
 
             public override void VisitPrimitiveTypeRef(PrimitiveTypeRef x)
             {
-                _results.Push(new GenericQualifiedName(x.PrimitiveTypeName.QualifiedName));
+                _results.Push(new GenericQualifiedName(x.QualifiedName.Value));
             }
 
             public override void VisitGenericTypeRef(GenericTypeRef x)

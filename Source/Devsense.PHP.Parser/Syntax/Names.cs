@@ -959,7 +959,7 @@ namespace Devsense.PHP.Syntax
         public GenericQualifiedName(QualifiedName qualifiedName, object[]/*!!*/ genericParams)
         {
             Debug.Assert(genericParams != null);
-            Debug.Assert(genericParams.All(obj => obj == null || obj is PrimitiveTypeName || obj is GenericQualifiedName));
+            Debug.Assert(genericParams.All(obj => obj == null || obj is QualifiedName || obj is GenericQualifiedName));
 
             this.qualifiedName = qualifiedName;
             this.genericParams = genericParams;
@@ -970,57 +970,6 @@ namespace Devsense.PHP.Syntax
             this.qualifiedName = qualifiedName;
             this.genericParams = ArrayUtils.EmptyObjects;
         }
-    }
-
-    #endregion
-
-    #region PrimitiveTypeName
-
-    /// <summary>
-    /// Represents primitive type name.
-    /// </summary>
-    public struct PrimitiveTypeName : IEquatable<PrimitiveTypeName>, IEquatable<QualifiedName>, IEquatable<string>
-    {
-        public QualifiedName QualifiedName { get { return qualifiedName; } }
-        private readonly QualifiedName qualifiedName;
-
-        public Name Name { get { return qualifiedName.Name; } }
-
-        public PrimitiveTypeName(QualifiedName qualifiedName)
-        {
-            // TODO - verify if necessary 
-            //if (!qualifiedName.IsPrimitiveTypeName)
-            //    throw new ArgumentException();
-
-            this.qualifiedName = qualifiedName;
-        }
-
-        #region IEquatable<PrimitiveName> Members
-
-        public bool Equals(PrimitiveTypeName other)
-        {
-            return Equals(other.qualifiedName);
-        }
-
-        #endregion
-
-        #region IEquatable<QualifiedName> Members
-
-        public bool Equals(QualifiedName other)
-        {
-            return Equals(other.Name.Value);
-        }
-
-        #endregion
-
-        #region IEquatable<string> Members
-
-        public bool Equals(string other)
-        {
-            return qualifiedName.Name.Value.Equals(other, StringComparison.OrdinalIgnoreCase);
-        }
-
-        #endregion
     }
 
     #endregion

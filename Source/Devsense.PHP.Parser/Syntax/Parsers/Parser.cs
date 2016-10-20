@@ -346,9 +346,21 @@ namespace Devsense.PHP.Syntax
             var validSpans = spans.Where(s => s.IsValid);
             return Span.FromBounds(validSpans.Min(s => s.Start), validSpans.Max(s => s.End));
         }
-
-        static readonly HashSet<QualifiedName> PHP70PrimitiveTypes = new HashSet<QualifiedName>(new[] { QualifiedName.Int, QualifiedName.Float, QualifiedName.String, QualifiedName.Bool, QualifiedName.Array, QualifiedName.Callable });
-        static readonly HashSet<QualifiedName> PHP71PrimitiveTypes = new HashSet<QualifiedName>(new[] { QualifiedName.Void, QualifiedName.Iterable });
+        
+        public static readonly Dictionary<QualifiedName, PrimitiveTypeRef.PrimitiveType> PHP56PrimitiveTypes = new Dictionary<QualifiedName, PrimitiveTypeRef.PrimitiveType>() {
+            { QualifiedName.Array, PrimitiveTypeRef.PrimitiveType.array },
+            { QualifiedName.Callable, PrimitiveTypeRef.PrimitiveType.callable }
+        };
+        public static readonly Dictionary<QualifiedName, PrimitiveTypeRef.PrimitiveType> PHP70PrimitiveTypes = new Dictionary<QualifiedName, PrimitiveTypeRef.PrimitiveType>() {
+            { QualifiedName.Int, PrimitiveTypeRef.PrimitiveType.@int },
+            { QualifiedName.Float, PrimitiveTypeRef.PrimitiveType.@float },
+            { QualifiedName.String, PrimitiveTypeRef.PrimitiveType.@string },
+            { QualifiedName.Bool, PrimitiveTypeRef.PrimitiveType.@bool }
+        };
+        public static readonly Dictionary<QualifiedName, PrimitiveTypeRef.PrimitiveType> PHP71PrimitiveTypes = new Dictionary<QualifiedName, PrimitiveTypeRef.PrimitiveType>() {
+            { QualifiedName.Void, PrimitiveTypeRef.PrimitiveType.@void },
+            { QualifiedName.Iterable, PrimitiveTypeRef.PrimitiveType.iterable }
+        };
 
         ReservedTypeRef.ReservedType _reservedTypeStatic => ReservedTypeRef.ReservedType.@static;
 
@@ -359,13 +371,18 @@ namespace Devsense.PHP.Syntax
             if (qname.IsSimpleName)
             {
                 ReservedTypeRef.ReservedType reserved;
-                if ((_languageFeatures.HasFeature(LanguageFeatures.Php71Set)) && PHP71PrimitiveTypes.Contains(qname))
+                PrimitiveTypeRef.PrimitiveType primitive;
+                if ((_languageFeatures.HasFeature(LanguageFeatures.Php71Set)) && PHP71PrimitiveTypes.TryGetValue(qname, out primitive))
                 {
-                    return _astFactory.PrimitiveTypeReference(span, new PrimitiveTypeName(tname));
+                    return _astFactory.PrimitiveTypeReference(span, primitive);
                 }
-                if ((_languageFeatures.HasFeature(LanguageFeatures.Php70Set)) && PHP70PrimitiveTypes.Contains(qname))
+                if ((_languageFeatures.HasFeature(LanguageFeatures.Php70Set)) && PHP70PrimitiveTypes.TryGetValue(qname, out primitive))
                 {
-                    return _astFactory.PrimitiveTypeReference(span, new PrimitiveTypeName(tname));
+                    return _astFactory.PrimitiveTypeReference(span, primitive);
+                }
+                if ((_languageFeatures.HasFeature(LanguageFeatures.Php56Set)) && PHP56PrimitiveTypes.TryGetValue(qname, out primitive))
+                {
+                    return _astFactory.PrimitiveTypeReference(span, primitive);
                 }
                 if (ReservedTypeRef.ReservedTypes.TryGetValue(qname.Name, out reserved))
                 {

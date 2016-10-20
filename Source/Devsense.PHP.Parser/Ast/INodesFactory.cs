@@ -702,7 +702,7 @@ namespace Devsense.PHP.Syntax.Ast
         /// <param name="span">Element span.</param>
         /// <param name="typeName">Primitive type name.</param>
         /// <returns>A type reference to a primitive type.</returns>
-        TypeRef PrimitiveTypeReference(TSpan span, PrimitiveTypeName typeName);
+        TypeRef PrimitiveTypeReference(TSpan span, PrimitiveTypeRef.PrimitiveType typeName);
 
         /// <summary>
         /// Create <c>TypeRef</c> reference to a reserved type keyword (parent, self, static).

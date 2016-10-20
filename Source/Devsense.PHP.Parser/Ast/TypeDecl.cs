@@ -51,7 +51,7 @@ namespace Devsense.PHP.Syntax.Ast
 		public FormalTypeParam(Text.Span span, Name name, object defaultType, List<CustomAttribute> attributes)
             : base(span)
 		{
-            Debug.Assert(defaultType == null || defaultType is PrimitiveTypeName || defaultType is GenericQualifiedName);
+            Debug.Assert(defaultType == null || defaultType is QualifiedName || defaultType is GenericQualifiedName);
 
 			this.name = name;
 			this.defaultType = defaultType;

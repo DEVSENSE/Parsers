@@ -436,7 +436,7 @@ namespace UnitTests
                 else return reference;
             }
 
-            public override TypeRef PrimitiveTypeReference(Span span, PrimitiveTypeName tname)
+            public override TypeRef PrimitiveTypeReference(Span span, PrimitiveTypeRef.PrimitiveType tname)
                 => CountTR(base.PrimitiveTypeReference(span, tname));
 
             public override TypeRef AliasedTypeReference(Span span, QualifiedName className, TypeRef origianType)

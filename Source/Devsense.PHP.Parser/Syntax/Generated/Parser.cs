@@ -2455,10 +2455,10 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 { yyval.TypeReference = _astFactory.NullableTypeReference(yypos, value_stack.array[value_stack.top-1].yyval.TypeReference); }
         return;
       case 224: // type -> T_ARRAY 
-{ yyval.TypeReference = _astFactory.PrimitiveTypeReference(yypos, new PrimitiveTypeName(QualifiedName.Array)); }
+{ yyval.TypeReference = _astFactory.PrimitiveTypeReference(yypos, PrimitiveTypeRef.PrimitiveType.array); }
         return;
       case 225: // type -> T_CALLABLE 
-{ yyval.TypeReference = _astFactory.PrimitiveTypeReference(yypos, new PrimitiveTypeName(QualifiedName.Callable)); }
+{ yyval.TypeReference = _astFactory.PrimitiveTypeReference(yypos, PrimitiveTypeRef.PrimitiveType.callable); }
         return;
       case 226: // type -> name 
 { yyval.TypeReference = CreateTypeRef(yypos, value_stack.array[value_stack.top-1].yyval.QualifiedNameReference); }
