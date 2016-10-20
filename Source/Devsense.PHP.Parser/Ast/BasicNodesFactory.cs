@@ -430,10 +430,8 @@ namespace Devsense.PHP.Syntax.Ast
             return new ThrowStmt(span, (Expression)expression);
         }
 
-        public virtual LangElement Type(Span span, Span headingSpan, bool conditional, PhpMemberAttributes attributes, Name name, Span nameSpan, IEnumerable<FormalTypeParam> typeParamsOpt, TypeRef baseClassOpt, IEnumerable<TypeRef> implements, IEnumerable<LangElement> members, Span bodySpan)
+        public virtual LangElement Type(Span span, Span headingSpan, bool conditional, PhpMemberAttributes attributes, Name name, Span nameSpan, IEnumerable<FormalTypeParam> typeParamsOpt, INamedTypeRef baseClassOpt, IEnumerable<INamedTypeRef> implements, IEnumerable<LangElement> members, Span bodySpan)
         {
-            if (implements == null) implements = TypeRef.EmptyList;
-
             Debug.Assert(members != null && implements != null);
             return new NamedTypeDecl(span, headingSpan, conditional, attributes, false,
                 new NameRef(nameSpan, name), (typeParamsOpt != null) ? typeParamsOpt.ToList() : FormalTypeParam.EmptyList,
@@ -441,10 +439,8 @@ namespace Devsense.PHP.Syntax.Ast
                 ConvertList<TypeMemberDecl>(members), bodySpan, null);
         }
 
-        public virtual TypeRef AnonymousTypeReference(Span span, Span headingSpan, bool conditional, PhpMemberAttributes attributes, IEnumerable<FormalTypeParam> typeParamsOpt, TypeRef baseClassOpt, IEnumerable<TypeRef> implements, IEnumerable<LangElement> members, Span bodySpan)
+        public virtual TypeRef AnonymousTypeReference(Span span, Span headingSpan, bool conditional, PhpMemberAttributes attributes, IEnumerable<FormalTypeParam> typeParamsOpt, INamedTypeRef baseClassOpt, IEnumerable<INamedTypeRef> implements, IEnumerable<LangElement> members, Span bodySpan)
         {
-            if (implements == null) implements = TypeRef.EmptyList;
-
             Debug.Assert(members != null && implements != null);
             return new AnonymousTypeRef(span, new AnonymousTypeDecl(span, headingSpan,
                 conditional, attributes, false, (typeParamsOpt != null) ? typeParamsOpt.ToList() : FormalTypeParam.EmptyList,

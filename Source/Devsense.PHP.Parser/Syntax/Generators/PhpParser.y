@@ -602,14 +602,14 @@ class_declaration_statement:
 		class_modifiers T_CLASS T_STRING extends_from {PushClassContext($3, $4);} implements_list backup_doc_comment enter_scope '{' class_statement_list '}' exit_scope
 			{ 
 				$$ = _astFactory.Type(@$, CombineSpans(@1, @2, @3, @4, @6), isConditional, (PhpMemberAttributes)$1, new Name($3), @3, null, 
-				$4, $6, $10, CombineSpans(@9, @11)); 
+				(INamedTypeRef)$4, $6.Cast<INamedTypeRef>(), $10, CombineSpans(@9, @11)); 
 				SetDoc($$);
 				PopClassContext();
 			}
 	|	T_CLASS T_STRING extends_from {PushClassContext($2, $3);} implements_list backup_doc_comment enter_scope '{' class_statement_list '}' exit_scope
 			{ 
 				$$ = _astFactory.Type(@$, CombineSpans(@1, @2, @3, @5), isConditional, PhpMemberAttributes.None, new Name($2), @2, null, 
-				$3, $5, $9, CombineSpans(@8, @10)); 
+				(INamedTypeRef)$3, $5.Cast<INamedTypeRef>(), $9, CombineSpans(@8, @10)); 
 				SetDoc($$);
 				PopClassContext();
 			}
@@ -629,7 +629,7 @@ trait_declaration_statement:
 		T_TRAIT T_STRING backup_doc_comment enter_scope '{' class_statement_list '}' exit_scope
 			{ 
 				$$ = _astFactory.Type(@$, CombineSpans(@1, @2), isConditional, PhpMemberAttributes.Trait, new Name($2), @2, null, 
-					null, null, $6, CombineSpans(@5, @7)); 
+					null, new List<INamedTypeRef>(), $6, CombineSpans(@5, @7)); 
 				SetDoc($$);
 			}
 ;
@@ -638,7 +638,7 @@ interface_declaration_statement:
 		T_INTERFACE T_STRING interface_extends_list backup_doc_comment enter_scope '{' class_statement_list '}' exit_scope
 			{ 
 				$$ = _astFactory.Type(@$, CombineSpans(@1, @2, @3), isConditional, PhpMemberAttributes.Interface, new Name($2), @2, null, 
-					null, (IEnumerable<TypeRef>)$3, $7, CombineSpans(@6, @8)); 
+					null, $3.Cast<INamedTypeRef>(), $7, CombineSpans(@6, @8)); 
 				SetDoc($$);
 			}
 ;
@@ -649,12 +649,12 @@ extends_from:
 ;
 
 interface_extends_list:
-		/* empty */			{ $$ = null; }
+		/* empty */			{ $$ = TypeRef.EmptyList; }
 	|	T_EXTENDS name_list { $$ = TypeRefListFromQNRList($2); }
 ;
 
 implements_list:
-		/* empty */				{ $$ = null; }
+		/* empty */				{ $$ = TypeRef.EmptyList; }
 	|	T_IMPLEMENTS name_list	{ $$ = TypeRefListFromQNRList($2); }
 ;
 
@@ -998,7 +998,7 @@ non_empty_for_exprs:
 anonymous_class:
         T_CLASS ctor_arguments
 		extends_from implements_list backup_doc_comment enter_scope '{' class_statement_list '}' exit_scope {
-			var typeRef = _astFactory.AnonymousTypeReference(@$, CombineSpans(@1, @2, @3, @4), isConditional, PhpMemberAttributes.None, null, $3, (IEnumerable<TypeRef>)$4, $8, CombineSpans(@7, @9));
+			var typeRef = _astFactory.AnonymousTypeReference(@$, CombineSpans(@1, @2, @3, @4), isConditional, PhpMemberAttributes.None, null, (INamedTypeRef)$3, $4.Cast<INamedTypeRef>(), $8, CombineSpans(@7, @9));
 			SetDoc(((AnonymousTypeRef)typeRef).TypeDeclaration);
 			$$ = new Tuple<TypeRef, List<ActualParam>>(typeRef, $2); 
 		}

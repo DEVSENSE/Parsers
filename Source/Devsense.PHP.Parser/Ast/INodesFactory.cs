@@ -152,8 +152,8 @@ namespace Devsense.PHP.Syntax.Ast
         TNode Type(TSpan span, Span headingSpan,
             bool conditional, PhpMemberAttributes attributes,
             Name name, TSpan nameSpan, IEnumerable<FormalTypeParam> typeParamsOpt,
-            TypeRef baseClassOpt,
-            IEnumerable<TypeRef> implements,
+            INamedTypeRef baseClassOpt,
+            IEnumerable<INamedTypeRef> implements,
             IEnumerable<TNode> members, TSpan bodySpan);
 
         /// <summary>
@@ -761,8 +761,8 @@ namespace Devsense.PHP.Syntax.Ast
         TypeRef AnonymousTypeReference(TSpan span, Span headingSpan,
             bool conditional, PhpMemberAttributes attributes,
             IEnumerable<FormalTypeParam> typeParamsOpt,
-            TypeRef baseClassOpt,
-            IEnumerable<TypeRef> implements,
+            INamedTypeRef baseClassOpt,
+            IEnumerable<INamedTypeRef> implements,
             IEnumerable<TNode> members, TSpan blockSpan);
 
         /// <summary>

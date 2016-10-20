@@ -150,7 +150,7 @@ namespace UnitTests
             public override ActualParam ActualParameter(Span span, LangElement expr, ActualParam.Flags flags)
                 => (ActualParam)CountLE(base.ActualParameter(span, expr, flags)); // TODO - replace definitions by interfaces
 
-            public override TypeRef AnonymousTypeReference(Span span, Span headingSpan, bool conditional, PhpMemberAttributes attributes, IEnumerable<FormalTypeParam> typeParamsOpt, TypeRef baseClassOpt, IEnumerable<TypeRef> implements, IEnumerable<LangElement> members, Span blockSpan)
+            public override TypeRef AnonymousTypeReference(Span span, Span headingSpan, bool conditional, PhpMemberAttributes attributes, IEnumerable<FormalTypeParam> typeParamsOpt, INamedTypeRef baseClassOpt, IEnumerable<INamedTypeRef> implements, IEnumerable<LangElement> members, Span blockSpan)
             {
                 // TODO - AnonymousTypeRef internaly creates AnonymousTypeDecl
                 var reference = CountTR(base.AnonymousTypeReference(span, headingSpan, conditional, attributes, typeParamsOpt, baseClassOpt, implements, members, blockSpan));
@@ -159,9 +159,9 @@ namespace UnitTests
                 var imp = implements != null ? implements.ToList() : null;
                 if (imp != null)
                     foreach (var item in imp)
-                        _createdElements.Remove(item);
+                        _createdElements.Remove((TypeRef)item);
                 if (baseClassOpt != null)
-                    _createdElements.Remove(baseClassOpt);
+                    _createdElements.Remove((TypeRef)baseClassOpt);
                 return reference;
             }
 
@@ -407,20 +407,20 @@ namespace UnitTests
             public override LangElement TryCatch(Span span, LangElement body, IEnumerable<LangElement> catches, LangElement finallyBlockOpt)
                  => CountLE(base.TryCatch(span, body, catches, finallyBlockOpt));
 
-            public override LangElement Type(Span span, Span headingSpan, bool conditional, PhpMemberAttributes attributes, Name name, Span nameSpan, IEnumerable<FormalTypeParam> typeParamsOpt, TypeRef baseClassOpt, IEnumerable<TypeRef> implements, IEnumerable<LangElement> members, Span bodySpan)
+            public override LangElement Type(Span span, Span headingSpan, bool conditional, PhpMemberAttributes attributes, Name name, Span nameSpan, IEnumerable<FormalTypeParam> typeParamsOpt, INamedTypeRef baseClassOpt, IEnumerable<INamedTypeRef> implements, IEnumerable<LangElement> members, Span bodySpan)
             {
                 // TODO - base class and interfaces are not visited, they are converted to qualified name
                 var imp = implements != null ? implements.ToList() : null;
                 if (imp != null)
                     foreach (var item in imp)
                     {
-                        _createdElements.Remove(item);
+                        _createdElements.Remove((TypeRef)item);
                         if (item is TranslatedTypeRef)
                             _createdElements.Remove(((TranslatedTypeRef)item).OriginalType);
                     }
                 if (baseClassOpt != null)
                 {
-                    _createdElements.Remove(baseClassOpt);
+                    _createdElements.Remove((TypeRef)baseClassOpt);
                     if (baseClassOpt is TranslatedTypeRef)
                         _createdElements.Remove(((TranslatedTypeRef)baseClassOpt).OriginalType);
                 }

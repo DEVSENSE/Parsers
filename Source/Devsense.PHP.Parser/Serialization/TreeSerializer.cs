@@ -628,10 +628,10 @@ namespace Devsense.PHP.Syntax.Ast.Serialization
                 new NodeObj("Name", x.Name.Name.Value), new NodeObj("MemberAttributes", MemberAttributesToString(x.MemberAttributes)),
                 new NodeObj("IsConditional", x.IsConditional.ToString()));
             if (x.BaseClass != null)
-                _serializer.Serialize("BaseClassName", new NodeObj("Name", x.BaseClass.QualifiedName.ToString()),
+                _serializer.Serialize("BaseClassName", new NodeObj("Name", x.BaseClass.ClassName.ToString()),
                     x.BaseClass is TranslatedTypeRef? new NodeObj("OriginalName", ((TranslatedTypeRef)x.BaseClass).OriginalType.QualifiedName.ToString()): NodeObj.Empty);
             if (x.ImplementsList != null && x.ImplementsList.Length > 0)
-                _serializer.Serialize("ImplementsList", x.ImplementsList.Select(n => new NodeObj("Name", n.QualifiedName.ToString())).ToArray());
+                _serializer.Serialize("ImplementsList", x.ImplementsList.Select(n => new NodeObj("Name", n.ClassName.ToString())).ToArray());
             SerializePHPDoc(x.PHPDoc);
             base.VisitNamedTypeDecl(x);
             _serializer.EndSerialize();
@@ -642,9 +642,9 @@ namespace Devsense.PHP.Syntax.Ast.Serialization
                 new NodeObj("MemberAttributes", MemberAttributesToString(x.MemberAttributes)),
                 new NodeObj("IsConditional", x.IsConditional.ToString()));
             if (x.BaseClass != null)
-                _serializer.Serialize("BaseClassName", new NodeObj("Name", x.BaseClass.QualifiedName.ToString()));
+                _serializer.Serialize("BaseClassName", new NodeObj("Name", x.BaseClass.ClassName.ToString()));
             if (x.ImplementsList != null && x.ImplementsList.Length > 0)
-                _serializer.Serialize("ImplementsList", x.ImplementsList.Select(n => new NodeObj("Name", n.QualifiedName.ToString())).ToArray());
+                _serializer.Serialize("ImplementsList", x.ImplementsList.Select(n => new NodeObj("Name", n.ClassName.ToString())).ToArray());
             SerializePHPDoc(x.PHPDoc);
             base.VisitAnonymousTypeDecl(x);
             _serializer.EndSerialize();
