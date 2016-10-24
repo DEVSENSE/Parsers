@@ -23,15 +23,18 @@ namespace Devsense.PHP.Syntax.Ast
 {
     #region INamedTypeRef
 
+    /// <summary>
+    /// A common interface for a direct class reference (translated, class or generic).
+    /// </summary>
     public interface INamedTypeRef
     {
         /// <summary>
-        /// Position of element in source file.
+        /// Position of the element in the source file.
         /// </summary>
         Span Span { get; }
 
         /// <summary>
-        /// Gets qualified name of the type if possible. Indirect type reference and multiple type references gets no value.
+        /// Gets qualified name of the named type.
         /// </summary>
         QualifiedName ClassName { get; }
     }
@@ -48,7 +51,7 @@ namespace Devsense.PHP.Syntax.Ast
         /// <summary>
         /// Immutable empty list of <see cref="TypeRef"/>.
         /// </summary>
-		internal static readonly List<TypeRef>/*!*/EmptyList = new List<TypeRef>();
+		internal static new readonly List<TypeRef>/*!*/EmptyList = new List<TypeRef>();
 
         /// <summary>
         /// Gets qualified name of the type if possible. Indirect type reference and multiple type references gets no value.
@@ -134,20 +137,30 @@ namespace Devsense.PHP.Syntax.Ast
 
             // primitive types
             PrimitiveTypeRef.PrimitiveType primitive;
-            if (Enum.TryParse<PrimitiveTypeRef.PrimitiveType>(qname.Name.Value, true, out primitive))
+            if (qname.IsSimpleName && Enum.TryParse(qname.Name.Value, true, out primitive))
             {
                 return new PrimitiveTypeRef(span, primitive);
             }
-            else
-            {
-                if (naming != null && !qname.IsReservedClassName)
-                {
-                    qname = Syntax.QualifiedName.TranslateAlias(qname, naming.Aliases, naming.CurrentNamespace);
-                }
 
-                // direct types
-                return new ClassTypeRef(span, qname);
+            // reserved type names
+            ReservedTypeRef.ReservedType rtype;
+            if (qname.IsSimpleName && ReservedTypeRef.ReservedTypes.TryGetValue(qname.Name, out rtype))
+            {
+                return new ReservedTypeRef(span, rtype);
             }
+
+            // direct types
+            TypeRef result = new ClassTypeRef(span, qname);
+
+            // apply naming context
+            QualifiedName translated;
+            if (Syntax.QualifiedName.TryTranslateAlias(qname, naming, out translated))
+            {
+                result = new TranslatedTypeRef(span, translated, result);
+            }
+
+            //
+            return result;
         }
 
         #endregion
@@ -160,9 +173,14 @@ namespace Devsense.PHP.Syntax.Ast
     /// <summary>
     /// Primitive type reference.
     /// </summary>
-    [DebuggerDisplay("{_typeName.Name,nq}")]
+    [DebuggerDisplay("{PrimitiveTypeName,nq}")]
     public sealed class PrimitiveTypeRef : TypeRef
     {
+        #region enum PrimitiveType
+
+        /// <summary>
+        /// Enumeration of possible primitive types.
+        /// </summary>
         public enum PrimitiveType
         {
             /// <summary>
@@ -206,6 +224,8 @@ namespace Devsense.PHP.Syntax.Ast
             iterable
         }
 
+        #endregion
+
         /// <summary>
         /// Gets underlaying primitive type name.
         /// </summary>
@@ -215,6 +235,7 @@ namespace Devsense.PHP.Syntax.Ast
         public PrimitiveTypeRef(Span span, PrimitiveType name)
             : base(span)
         {
+            Debug.Assert(Enum.IsDefined(typeof(PrimitiveType), name));
             _typeName = name;
         }
 
@@ -224,7 +245,25 @@ namespace Devsense.PHP.Syntax.Ast
         /// <param name="visitor">Visitor to be called.</param>
         public override void VisitMe(TreeVisitor visitor) => visitor.VisitPrimitiveTypeRef(this);
 
-        public override QualifiedName? QualifiedName => new QualifiedName(new Name(_typeName.ToString()));
+        public override QualifiedName? QualifiedName
+        {
+            get
+            {
+                switch (_typeName)
+                {
+                    case PrimitiveType.@int: return Syntax.QualifiedName.Int;
+                    case PrimitiveType.@float: return Syntax.QualifiedName.Float;
+                    case PrimitiveType.@string: return Syntax.QualifiedName.String;
+                    case PrimitiveType.@bool: return Syntax.QualifiedName.Bool;
+                    case PrimitiveType.array: return Syntax.QualifiedName.Array;
+                    case PrimitiveType.callable: return Syntax.QualifiedName.Callable;
+                    case PrimitiveType.@void: return Syntax.QualifiedName.Void;
+                    case PrimitiveType.iterable: return Syntax.QualifiedName.Iterable;
+                    default:
+                        throw new InvalidOperationException();  // invalid _typeName
+                }
+            }
+        }
 
         public override string ToString() => QualifiedName.ToString();
     }
@@ -269,6 +308,7 @@ namespace Devsense.PHP.Syntax.Ast
         public ReservedTypeRef(Span span, ReservedType type)
             : base(span)
         {
+            Debug.Assert(Enum.IsDefined(typeof(ReservedType), type));
             _reservedType = type;
         }
 
@@ -278,8 +318,22 @@ namespace Devsense.PHP.Syntax.Ast
         /// <param name="visitor">Visitor to be called.</param>
         public override void VisitMe(TreeVisitor visitor) => visitor.VisitReservedTypeRef(this);
 
-        public override QualifiedName? QualifiedName => new QualifiedName(new Name(_reservedType.ToString()));
-
+        /// <summary>
+        /// Gets qualified name of the type reference. Always a valid reserved type name.
+        /// </summary>
+        public override QualifiedName? QualifiedName
+        {
+            get
+            {
+                switch (_reservedType)
+                {
+                    case ReservedType.parent: return new QualifiedName(Name.ParentClassName);
+                    case ReservedType.self: return new QualifiedName(Name.SelfClassName);
+                    case ReservedType.@static: return new QualifiedName(Name.StaticClassName);
+                    default: throw new InvalidOperationException(); // invalid _reservedType
+                }
+            }
+        }
         public override string ToString() => QualifiedName.ToString();
     }
 
