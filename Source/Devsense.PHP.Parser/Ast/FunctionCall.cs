@@ -49,17 +49,16 @@ namespace Devsense.PHP.Syntax.Ast
 	{
         public override Operations Operation { get { return Operations.DirectCall; } }
 
-        TranslatedQualifiedName _fullName;
-
         /// <summary>
         /// Complete translated name, contians translated, original and fallback names.
         /// </summary>
         TranslatedQualifiedName FullName => _fullName;
+        readonly TranslatedQualifiedName _fullName;
 
         /// <summary>Simple name for methods.</summary>
         public QualifiedName QualifiedName => _fullName.Name;
-        public QualifiedName? FallbackQualifiedName => _fullName.NameFallback;
-        public override Text.Span NameSpan => _fullName.NameSpan;
+        public QualifiedName? FallbackQualifiedName => _fullName.FallbackName;
+        public override Text.Span NameSpan => _fullName.Span;
 
         public DirectFcnCall(Text.Span span, TranslatedQualifiedName name,
             IList<ActualParam> parameters, IList<TypeRef> genericParams)

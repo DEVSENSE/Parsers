@@ -54,7 +54,7 @@ namespace Devsense.PHP.Syntax.Ast
         /// <summary>
         /// Name used when the <see cref="Name"/> is not found. Used when reading global constant in a namespace context.
         /// </summary>
-        internal QualifiedName? FallbackName => _fullName.NameFallback;
+        internal QualifiedName? FallbackName => _fullName.FallbackName;
 
 
         public GlobalConstUse(Text.Span span, TranslatedQualifiedName name)

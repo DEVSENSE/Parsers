@@ -1093,24 +1093,44 @@ namespace Devsense.PHP.Syntax
 
     #endregion
 
-    #region DoubleName
+    #region TranslatedQualifiedName
 
+    /// <summary>
+    /// Ecapsulates name of a global constant use or a global function call according to PHP semantics.
+    /// </summary>
+    /// <remarks>The qualified name can be translated according to current naming context or it can have a fallback.</remarks>
     public struct TranslatedQualifiedName
     {
-        QualifiedNameRef _name;
-        QualifiedName _originalName;
-        QualifiedName? _nameFallback;
+        readonly QualifiedNameRef _name;
+        readonly QualifiedName _originalName;
+        readonly QualifiedName? _fallbackName;
 
+        /// <summary>
+        /// Translated qualified name.
+        /// </summary>
         public QualifiedNameRef Name => _name;
+
+        /// <summary>
+        /// Original qualified name, can be equal to <see cref="Name"/>.
+        /// Always a valid name.
+        /// </summary>
         public QualifiedName OriginalName => _originalName;
-        public QualifiedName? NameFallback => _nameFallback;
-        public Span NameSpan => _name.Span;
+
+        /// <summary>
+        /// Optional. A second name to be used in case <see cref="Name"/> is not defined.
+        /// </summary>
+        public QualifiedName? FallbackName => _fallbackName;
+
+        /// <summary>
+        /// Span of the element within the source code.
+        /// </summary>
+        public Span Span => _name.Span;
 
         public TranslatedQualifiedName(QualifiedName name, Span nameSpan, QualifiedName originalName, QualifiedName? nameFallback)
         {
             _name = new QualifiedNameRef(nameSpan, name);
             _originalName = originalName;
-            _nameFallback = nameFallback;
+            _fallbackName = nameFallback;
         }
     }
 
