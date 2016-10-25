@@ -42,20 +42,25 @@ namespace Devsense.PHP.Syntax.Ast
 	{
         public override Operations Operation { get { return Operations.GlobalConstUse; } }
 
-		public QualifiedName Name { get { return name; } }
-		private QualifiedName name;
+        TranslatedQualifiedName _fullName;
+
+        /// <summary>
+        /// Complete translated name, contians translated, original and fallback names.
+        /// </summary>
+        TranslatedQualifiedName FullName => _fullName;
+
+        public QualifiedName Name => _fullName.Name;
 
         /// <summary>
         /// Name used when the <see cref="Name"/> is not found. Used when reading global constant in a namespace context.
         /// </summary>
-        internal QualifiedName? FallbackName { get { return fallbackName; } }
-        private QualifiedName? fallbackName;
+        internal QualifiedName? FallbackName => _fullName.NameFallback;
 
-		public GlobalConstUse(Text.Span span, QualifiedName name, QualifiedName? fallbackName)
+
+        public GlobalConstUse(Text.Span span, TranslatedQualifiedName name)
 			: base(span)
 		{
-			this.name = name;
-            this.fallbackName = fallbackName;
+			this._fullName = name;
 		}
 
 		/// <summary>

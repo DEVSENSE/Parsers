@@ -49,24 +49,24 @@ namespace Devsense.PHP.Syntax.Ast
 	{
         public override Operations Operation { get { return Operations.DirectCall; } }
 
-        /// <summary>
-		/// Simple name for methods.
-		/// </summary>
-		private QualifiedNameRef qualifiedName;
-        private QualifiedName? fallbackQualifiedName;
-        /// <summary>Simple name for methods.</summary>
-        public QualifiedName QualifiedName { get { return qualifiedName.QualifiedName; } }
-        public QualifiedName? FallbackQualifiedName { get { return fallbackQualifiedName; } }
-        public override Text.Span NameSpan => qualifiedName.Span;
+        TranslatedQualifiedName _fullName;
 
-        public DirectFcnCall(Text.Span span,
-            QualifiedName qualifiedName, QualifiedName? fallbackQualifiedName, Text.Span qualifiedNameSpan,
+        /// <summary>
+        /// Complete translated name, contians translated, original and fallback names.
+        /// </summary>
+        TranslatedQualifiedName FullName => _fullName;
+
+        /// <summary>Simple name for methods.</summary>
+        public QualifiedName QualifiedName => _fullName.Name;
+        public QualifiedName? FallbackQualifiedName => _fullName.NameFallback;
+        public override Text.Span NameSpan => _fullName.NameSpan;
+
+        public DirectFcnCall(Text.Span span, TranslatedQualifiedName name,
             IList<ActualParam> parameters, IList<TypeRef> genericParams)
             : base(span, parameters, genericParams)
 		{
-            this.qualifiedName = new QualifiedNameRef(qualifiedNameSpan, qualifiedName);
-            this.fallbackQualifiedName = fallbackQualifiedName;
-		}
+            _fullName = name;
+        }
 
 		/// <summary>
         /// Call the right Visit* method on the given Visitor object.

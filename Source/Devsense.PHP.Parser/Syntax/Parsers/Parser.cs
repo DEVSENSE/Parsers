@@ -271,7 +271,7 @@ namespace Devsense.PHP.Syntax
         {
             ClassContexts.Push(new ClassContext()
             {
-                Name = new QualifiedName(new Name(name), namingContext.CurrentNamespace.HasValue? namingContext.CurrentNamespace.Value.Namespaces: Name.EmptyNames),
+                Name = new QualifiedName(new Name(name), namingContext.CurrentNamespace.HasValue ? namingContext.CurrentNamespace.Value.Namespaces : Name.EmptyNames),
                 Base = type
             });
         }
@@ -346,7 +346,7 @@ namespace Devsense.PHP.Syntax
             var validSpans = spans.Where(s => s.IsValid);
             return Span.FromBounds(validSpans.Min(s => s.Start), validSpans.Max(s => s.End));
         }
-        
+
         public static readonly Dictionary<QualifiedName, PrimitiveTypeRef.PrimitiveType> PHP56PrimitiveTypes = new Dictionary<QualifiedName, PrimitiveTypeRef.PrimitiveType>() {
             { QualifiedName.Array, PrimitiveTypeRef.PrimitiveType.array },
             { QualifiedName.Callable, PrimitiveTypeRef.PrimitiveType.callable }
@@ -386,7 +386,7 @@ namespace Devsense.PHP.Syntax
                 }
                 if (ReservedTypeRef.ReservedTypes.TryGetValue(qname.Name, out reserved))
                 {
-                    if(qname.Name == Name.ParentClassName)
+                    if (qname.Name == Name.ParentClassName)
                     {
                         if (ClassContexts.Peek().Base == null)
                         {
@@ -434,65 +434,56 @@ namespace Devsense.PHP.Syntax
             return tref;
         }
 
-        Tuple<QualifiedName, QualifiedName?> TranslateQNRFunction(object nref)
-        {
-            var qname = ((QualifiedNameRef)nref).QualifiedName;
-            QualifiedName? fallbackQName;
-            TranslateFallbackQualifiedName(ref qname, out fallbackQName, this.namingContext.FunctionAliases);
-            return new Tuple<QualifiedName, QualifiedName?>(qname, fallbackQName);
-        }
+        TranslatedQualifiedName TranslateQNRFunction(QualifiedNameRef nref) => TranslateFallbackQualifiedName(nref, this.namingContext.FunctionAliases);
 
-        Tuple<QualifiedName, QualifiedName?> TranslateQNRConstant(object nref)
+        private TranslatedQualifiedName TranslateQNRConstant(QualifiedNameRef nref)
         {
-            var qname = ((QualifiedNameRef)nref).QualifiedName;
-            QualifiedName? fallbackQName;
+            var qname = nref.QualifiedName;
             if (qname.IsSimpleName && (qname == QualifiedName.Null || qname == QualifiedName.True || qname == QualifiedName.False))
             {
                 // special exit_scope consts
-                fallbackQName = null;
                 qname.IsFullyQualifiedName = true;
+                return new TranslatedQualifiedName(qname, nref.Span, qname, null);
             }
-            else TranslateFallbackQualifiedName(ref qname, out fallbackQName, this.namingContext.ConstantAliases);
-            return new Tuple<QualifiedName, QualifiedName?>(qname, fallbackQName);
+            else return TranslateFallbackQualifiedName(nref, this.namingContext.ConstantAliases);
         }
 
         #endregion
 
-        private void TranslateFallbackQualifiedName(ref QualifiedName qname, out QualifiedName? fallbackQName, Dictionary<NameRef, QualifiedNameRef> aliases)
+        private TranslatedQualifiedName TranslateFallbackQualifiedName(QualifiedNameRef qname, Dictionary<NameRef, QualifiedNameRef> aliases)
         {
             // aliasing
             QualifiedNameRef tmp;
-            if (qname.IsSimpleName && aliases != null && aliases.TryGetValue(new NameRef(Span.Invalid, qname.Name), out tmp))
-            {
-                qname = tmp.QualifiedName;
-                fallbackQName = null;
-                return;
-            }
+            if (qname.QualifiedName.IsSimpleName && aliases != null && aliases.TryGetValue(new NameRef(Span.Invalid, qname.QualifiedName.Name), out tmp))
+                return new TranslatedQualifiedName(tmp.QualifiedName, qname.Span, qname, null);
 
             //
-            qname = TranslateNamespace(qname);
-
-            if (!qname.IsFullyQualifiedName && qname.IsSimpleName && !IsInGlobalNamespace)
+            QualifiedName translatedQName;
+            bool translated = TranslateNamespace(qname, out translatedQName);
+            if (!translatedQName.IsFullyQualifiedName && translatedQName.IsSimpleName && !IsInGlobalNamespace)
             {
                 // "\foo"
-                fallbackQName = new QualifiedName(qname.Name) { IsFullyQualifiedName = true };
+                var fallbackQName = new QualifiedName(translatedQName.Name) { IsFullyQualifiedName = true };
                 // "namespace\foo"
-                qname = new QualifiedName(qname.Name, namingContext.CurrentNamespace.Value.Namespaces) { IsFullyQualifiedName = true };
+                translatedQName = new QualifiedName(translatedQName.Name, namingContext.CurrentNamespace.Value.Namespaces) { IsFullyQualifiedName = true };
+                return new TranslatedQualifiedName(translatedQName, qname.Span, qname, fallbackQName);
             }
             else
             {
-                fallbackQName = null;
-                qname.IsFullyQualifiedName = true;  // just ensure
+                translatedQName.IsFullyQualifiedName = true;  // just ensure
+                return new TranslatedQualifiedName(translatedQName, qname.Span, qname, null);
             }
         }
 
-        private QualifiedName TranslateNamespace(QualifiedName qname) => qname.IsFullyQualifiedName || qname.IsSimpleName ? qname : TranslateAlias(qname);
-
-        private QualifiedName TranslateAlias(QualifiedName qname)
+        private bool TranslateNamespace(QualifiedName qname, out QualifiedName translated)
         {
-            QualifiedName name;
-            TryTranslateAlias(qname, out name);
-            return name;
+            if (qname.IsFullyQualifiedName || qname.IsSimpleName)
+            {
+                translated = qname;
+                return false;
+            }
+            else
+                return TryTranslateAlias(qname, out translated);
         }
 
         private bool TryTranslateAlias(QualifiedName qname, out QualifiedName translated)

@@ -1180,10 +1180,7 @@ lexical_var:
 
 function_call:
 		name argument_list
-			{ 
-				var name = TranslateQNRFunction($1);
-				$$ = _astFactory.Call(@$, name.Item1, name.Item2, @1, new CallSignature($2), null); 
-			}
+			{ $$ = _astFactory.Call(@$, TranslateQNRFunction($1), new CallSignature($2), null); }
 	|	class_name T_DOUBLE_COLON member_name argument_list
 			{
 				if($3 is Name)
@@ -1257,10 +1254,7 @@ scalar:
 
 constant:
 		name 
-			{ 
-				var name = TranslateQNRConstant($1);
-				$$ = _astFactory.ConstUse(@$, name.Item1, name.Item2); 
-			}
+			{ $$ = _astFactory.ConstUse(@$, TranslateQNRConstant($1)); }
 	|	class_name T_DOUBLE_COLON identifier
 			{ $$ = _astFactory.ClassConstUse(@$, $1, new Name($3), @3); }
 	|	variable_class_name T_DOUBLE_COLON identifier
@@ -1305,7 +1299,7 @@ callable_variable:
 	|	dereferencable T_OBJECT_OPERATOR property_name argument_list
 		{
 			if($3 is Name)
-				$$ = _astFactory.Call(@$, new QualifiedName((Name)$3), null, @3, new CallSignature($4), $1);
+				$$ = _astFactory.Call(@$, TranslateQNRFunction(new QualifiedNameRef(@3, new QualifiedName((Name)$3))), new CallSignature($4), $1);
 			else
 				$$ = _astFactory.Call(@$, (LangElement)$3, new CallSignature($4), $1);
 		}

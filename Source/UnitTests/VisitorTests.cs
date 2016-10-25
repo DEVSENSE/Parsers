@@ -195,8 +195,8 @@ namespace UnitTests
             public override LangElement Call(Span span, Name name, Span nameSpan, CallSignature signature, TypeRef typeRef)
                  => CountLE(base.Call(span, name, nameSpan, signature, typeRef));
 
-            public override LangElement Call(Span span, QualifiedName name, QualifiedName? nameFallback, Span nameSpan, CallSignature signature, LangElement memberOfOpt)
-                 => CountLE(base.Call(span, name, nameFallback, nameSpan, signature, memberOfOpt));
+            public override LangElement Call(Span span, TranslatedQualifiedName name, CallSignature signature, LangElement memberOfOpt)
+                 => CountLE(base.Call(span, name, signature, memberOfOpt));
 
             public override LangElement Case(Span span, LangElement valueOpt, LangElement block)
             {
@@ -223,8 +223,8 @@ namespace UnitTests
             public override LangElement ConditionalEx(Span span, LangElement condExpr, LangElement trueExpr, LangElement falseExpr)
                  => CountLE(base.ConditionalEx(span, condExpr, trueExpr, falseExpr));
 
-            public override LangElement ConstUse(Span span, QualifiedName name, QualifiedName? nameFallback)
-                 => CountLE(base.ConstUse(span, name, nameFallback));
+            public override LangElement ConstUse(Span span, TranslatedQualifiedName name)
+                 => CountLE(base.ConstUse(span, name));
 
             public override LangElement Declare(Span span, IEnumerable<LangElement> decls, LangElement statementOpt)
             {

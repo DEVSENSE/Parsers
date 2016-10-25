@@ -2966,10 +2966,7 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 { yyval.FormalParam = _astFactory.Parameter(yypos, value_stack.array[value_stack.top-1].yyval.String, value_stack.array[value_stack.top-1].yypos, null, FormalParam.Flags.IsByRef, null); }
         return;
       case 386: // function_call -> name argument_list 
-{ 
-				var name = TranslateQNRFunction(value_stack.array[value_stack.top-2].yyval.QualifiedNameReference);
-				yyval.Node = _astFactory.Call(yypos, name.Item1, name.Item2, value_stack.array[value_stack.top-2].yypos, new CallSignature(value_stack.array[value_stack.top-1].yyval.ParamList), null); 
-			}
+{ yyval.Node = _astFactory.Call(yypos, TranslateQNRFunction(value_stack.array[value_stack.top-2].yyval.QualifiedNameReference), new CallSignature(value_stack.array[value_stack.top-1].yyval.ParamList), null); }
         return;
       case 387: // function_call -> class_name T_DOUBLE_COLON member_name argument_list 
 {
@@ -3081,10 +3078,7 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 { yyval.Node = value_stack.array[value_stack.top-1].yyval.Node; }
         return;
       case 420: // constant -> name 
-{ 
-				var name = TranslateQNRConstant(value_stack.array[value_stack.top-1].yyval.QualifiedNameReference);
-				yyval.Node = _astFactory.ConstUse(yypos, name.Item1, name.Item2); 
-			}
+{ yyval.Node = _astFactory.ConstUse(yypos, TranslateQNRConstant(value_stack.array[value_stack.top-1].yyval.QualifiedNameReference)); }
         return;
       case 421: // constant -> class_name T_DOUBLE_COLON identifier 
 { yyval.Node = _astFactory.ClassConstUse(yypos, value_stack.array[value_stack.top-3].yyval.TypeReference, new Name(value_stack.array[value_stack.top-1].yyval.String), value_stack.array[value_stack.top-1].yypos); }
@@ -3140,7 +3134,7 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
       case 438: // callable_variable -> dereferencable T_OBJECT_OPERATOR property_name argument_list 
 {
 			if(value_stack.array[value_stack.top-2].yyval.Object is Name)
-				yyval.Node = _astFactory.Call(yypos, new QualifiedName((Name)value_stack.array[value_stack.top-2].yyval.Object), null, value_stack.array[value_stack.top-2].yypos, new CallSignature(value_stack.array[value_stack.top-1].yyval.ParamList), value_stack.array[value_stack.top-4].yyval.Node);
+				yyval.Node = _astFactory.Call(yypos, TranslateQNRFunction(new QualifiedNameRef(value_stack.array[value_stack.top-2].yypos, new QualifiedName((Name)value_stack.array[value_stack.top-2].yyval.Object))), new CallSignature(value_stack.array[value_stack.top-1].yyval.ParamList), value_stack.array[value_stack.top-4].yyval.Node);
 			else
 				yyval.Node = _astFactory.Call(yypos, (LangElement)value_stack.array[value_stack.top-2].yyval.Object, new CallSignature(value_stack.array[value_stack.top-1].yyval.ParamList), value_stack.array[value_stack.top-4].yyval.Node);
 		}

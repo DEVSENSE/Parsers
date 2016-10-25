@@ -104,10 +104,10 @@ namespace Devsense.PHP.Syntax.Ast
             return new DirectStMtdCall(span, new ClassConstUse(span, typeRef, new VariableNameRef(nameSpan, name.Value)), signature.Parameters, signature.GenericParams);
         }
 
-        public virtual LangElement Call(Span span, QualifiedName name, QualifiedName? nameFallback, Span nameSpan, CallSignature signature, LangElement memberOfOpt)
+        public virtual LangElement Call(Span span, TranslatedQualifiedName name, CallSignature signature, LangElement memberOfOpt)
         {
             Debug.Assert(memberOfOpt == null || memberOfOpt is VarLikeConstructUse);
-            return new DirectFcnCall(span, name, nameFallback, nameSpan, signature.Parameters, signature.GenericParams) { IsMemberOf = (VarLikeConstructUse)memberOfOpt };
+            return new DirectFcnCall(span, name, signature.Parameters, signature.GenericParams) { IsMemberOf = (VarLikeConstructUse)memberOfOpt };
         }
         public virtual ActualParam ActualParameter(Span span, LangElement expr, ActualParam.Flags flags)
         {
@@ -564,9 +564,9 @@ namespace Devsense.PHP.Syntax.Ast
             return new StaticVarDecl(span, name, (Expression)initializerOpt);
         }
 
-        public virtual LangElement ConstUse(Span span, QualifiedName name, QualifiedName? nameFallback)
+        public virtual LangElement ConstUse(Span span, TranslatedQualifiedName name)
         {
-            return new GlobalConstUse(span, name, nameFallback);
+            return new GlobalConstUse(span, name);
         }
 
         public virtual LangElement ClassConstUse(Span span, TypeRef tref, Name name, Span nameSpan)

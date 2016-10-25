@@ -1092,4 +1092,27 @@ namespace Devsense.PHP.Syntax
     }
 
     #endregion
+
+    #region DoubleName
+
+    public struct TranslatedQualifiedName
+    {
+        QualifiedNameRef _name;
+        QualifiedName _originalName;
+        QualifiedName? _nameFallback;
+
+        public QualifiedNameRef Name => _name;
+        public QualifiedName OriginalName => _originalName;
+        public QualifiedName? NameFallback => _nameFallback;
+        public Span NameSpan => _name.Span;
+
+        public TranslatedQualifiedName(QualifiedName name, Span nameSpan, QualifiedName originalName, QualifiedName? nameFallback)
+        {
+            _name = new QualifiedNameRef(nameSpan, name);
+            _originalName = originalName;
+            _nameFallback = nameFallback;
+        }
+    }
+
+    #endregion
 }
