@@ -1277,7 +1277,7 @@ variable_class_name:
 
 dereferencable:
 		variable				{ $$ = $1; }
-	|	'(' expr ')'			{ $$ = _astFactory.Variable(@$, $2, NullLangElement); }
+	|	'(' expr ')'			{ $$ = $2; }	// TODO: Assert $2 is VarLikeConstruct(?)
 	|	dereferencable_scalar	{ $$ = _astFactory.Variable(@$, $1, NullLangElement); }
 ;
 
