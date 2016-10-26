@@ -93,7 +93,7 @@ namespace UnitTests
                     while ((token = lexer.GetNextToken()) != Tokens.EOF)
                     {
                         Assert.IsTrue(lexer.TokenSpan.IsValid, line);
-                        Assert.IsTrue(lexer.TokenSpan.Length > 0, line + " - " + state.ToString() + " - " + lexer.TokenSpan.Start.ToString());
+                        Assert.IsTrue(lexer.TokenSpan.Length >= 0, line + " - " + state.ToString() + " - " + lexer.TokenSpan.Start.ToString());
                     }
                 }
         }
@@ -142,11 +142,11 @@ namespace UnitTests
                 select g.ToArray()
                 ).ToArray();
 
-            //List<KeyValuePair<Tokens, SemanticValueType>> l = new List<KeyValuePair<Tokens, SemanticValueType>>();
+            //List<KeyValuePair<Tokens, string>> l = new List<KeyValuePair<Tokens, string>>();
             //Tokens t = Tokens.END;
             //while ((t = (Tokens)lexer.GetNextToken()) != Tokens.END)
             //{
-            //    l.Add(new KeyValuePair<Tokens, SemanticValueType>(t, lexer.TokenValue));
+            //    l.Add(new KeyValuePair<Tokens, string>(t, lexer.TokenText));
             //}
 
             foreach (var expectedToken in expectedTokens)
@@ -167,7 +167,6 @@ namespace UnitTests
                 }
                 //lexer.RestoreCompressedState(lexer.GetCompressedState());
             }
-            while (Tokens.EOF != lexer.GetNextToken()) ;
             Assert.AreEqual(Tokens.EOF, lexer.GetNextToken(), path);
             Assert.AreEqual(Tokens.EOF, lexer.GetNextToken(), path);
             Assert.AreEqual(Tokens.EOF, lexer.GetNextToken(), path);

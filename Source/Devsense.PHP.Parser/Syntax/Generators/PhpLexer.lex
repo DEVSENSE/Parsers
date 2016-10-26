@@ -655,10 +655,6 @@ ST_HALT_COMPILER1,ST_HALT_COMPILER2,ST_HALT_COMPILER3>{EOF} {
 }
 
 
-<ST_DOUBLE_QUOTES,ST_BACKQUOTE,ST_HEREDOC>"${" {
-	yy_push_state(LexicalStates.ST_LOOKING_FOR_VARNAME);
-	return (Tokens.T_DOLLAR_OPEN_CURLY_BRACES);
-}
 
 
 <ST_IN_SCRIPTING>"}" {
@@ -781,22 +777,6 @@ ST_HALT_COMPILER1,ST_HALT_COMPILER2,ST_HALT_COMPILER3>{EOF} {
 	return Tokens.T_ERROR;
 }
 
-<ST_DOUBLE_QUOTES,ST_HEREDOC,ST_BACKQUOTE>"$"{LABEL}"->"[a-zA-Z_\x80-\xff] {
-	yyless(TokenLength - 3);
-	yy_push_state(LexicalStates.ST_LOOKING_FOR_PROPERTY);
-	return ProcessVariable();
-}
-
-<ST_DOUBLE_QUOTES,ST_HEREDOC,ST_BACKQUOTE>"$"{LABEL}"[" {
-	yyless(TokenLength - 1);
-	yy_push_state(LexicalStates.ST_VAR_OFFSET);
-	return ProcessVariable();
-}
-
-<ST_IN_SCRIPTING,ST_DOUBLE_QUOTES,ST_HEREDOC,ST_BACKQUOTE,ST_VAR_OFFSET>"$"{LABEL} {
-	return ProcessVariable();
-}
-
 <ST_VAR_OFFSET>"]" {
 	yy_pop_state();
 	return (Tokens.T_RBRACKET);
@@ -856,11 +836,6 @@ ST_HALT_COMPILER1,ST_HALT_COMPILER2,ST_HALT_COMPILER3>{EOF} {
 	return ProcessDoubleQuotedString();
 }
 
-<ST_IN_SCRIPTING>b?["] {
-	BEGIN(LexicalStates.ST_DOUBLE_QUOTES);
-	return (Tokens.T_DOUBLE_QUOTES);
-}
-
 
 <ST_IN_SCRIPTING>b?"<<<"{TABS_AND_SPACES}({LABEL}|([']{LABEL}['])|(["]{LABEL}["])){NEWLINE} {
 	int bprefix = (GetTokenChar(0) != '<') ? 1 : 0;
@@ -901,21 +876,6 @@ ST_HALT_COMPILER1,ST_HALT_COMPILER2,ST_HALT_COMPILER3>{EOF} {
 	return (Tokens.T_END_HEREDOC);
 }
 
-
-<ST_DOUBLE_QUOTES,ST_BACKQUOTE,ST_HEREDOC>"{$" {
-	//Z_LVAL_P(zendlval) = (zend_long) '{';
-	yy_push_state(LexicalStates.ST_IN_SCRIPTING);
-	yyless(1);
-	return (Tokens.T_CURLY_OPEN);
-}
-
-
-
-<ST_DOUBLE_QUOTES>["] {
-	BEGIN(LexicalStates.ST_IN_SCRIPTING);
-	return (Tokens.T_DOUBLE_QUOTES);
-}
-
 <ST_BACKQUOTE>[`] {
 	BEGIN(LexicalStates.ST_IN_SCRIPTING);
 	return (Tokens.T_BACKQUOTE);
@@ -941,6 +901,45 @@ ST_HALT_COMPILER1,ST_HALT_COMPILER2,ST_HALT_COMPILER3>{EOF} {
 
 <ST_NOWDOC>{ANY_CHAR}         { yymore(); break; }
 
+<ST_DOUBLE_QUOTES,ST_BACKQUOTE,ST_HEREDOC>"${" {
+	yy_push_state(LexicalStates.ST_LOOKING_FOR_VARNAME);
+	return (Tokens.T_DOLLAR_OPEN_CURLY_BRACES);
+}
+
+<ST_DOUBLE_QUOTES,ST_HEREDOC,ST_BACKQUOTE>"$"{LABEL}"->"[a-zA-Z_\x80-\xff] {
+	yyless(TokenLength - 3);
+	yy_push_state(LexicalStates.ST_LOOKING_FOR_PROPERTY);
+	return ProcessVariable();
+}
+
+<ST_DOUBLE_QUOTES,ST_HEREDOC,ST_BACKQUOTE>"$"{LABEL}"[" {
+	yyless(TokenLength - 1);
+	yy_push_state(LexicalStates.ST_VAR_OFFSET);
+	return ProcessVariable();
+}
+
+<ST_IN_SCRIPTING,ST_DOUBLE_QUOTES,ST_HEREDOC,ST_BACKQUOTE,ST_VAR_OFFSET>"$"{LABEL} {
+	return ProcessVariable();
+}
+
+<ST_IN_SCRIPTING>b?["] {
+	BEGIN(LexicalStates.ST_DOUBLE_QUOTES);
+	return (Tokens.T_DOUBLE_QUOTES);
+}
+
+
+<ST_DOUBLE_QUOTES,ST_BACKQUOTE,ST_HEREDOC>"{$" {
+	//Z_LVAL_P(zendlval) = (zend_long) '{';
+	yy_push_state(LexicalStates.ST_IN_SCRIPTING);
+	yyless(1);
+	return (Tokens.T_CURLY_OPEN);
+}
+
+<ST_DOUBLE_QUOTES>["] {
+	BEGIN(LexicalStates.ST_IN_SCRIPTING);
+	return (Tokens.T_DOUBLE_QUOTES);
+}
+
 <ST_DOUBLE_QUOTES>([^"\{$\\]*(([$][^"a-zA-Z_\{\\])|([$\{]?[\\]{ANY_CHAR})|(\{[^"$\\]))?)*(([$\{\\]["])|([$\{]?[$\{\\]{EOF}))? {
     this._tokenSemantics.Object = ProcessEscapedStringWithEnding(GetTokenString(), _encoding, false, '"');
     return (Tokens.T_ENCAPSED_AND_WHITESPACE);
@@ -965,10 +964,7 @@ ST_HALT_COMPILER1,ST_HALT_COMPILER2,ST_HALT_COMPILER3>{EOF} {
 }
 
 
-<ST_ONE_LINE_COMMENT>"?>"   { 
-	yy_pop_state(); 
-	BEGIN(LexicalStates.INITIAL);
-	return (Tokens.T_CLOSE_TAG);
-	}
-<ST_ONE_LINE_COMMENT>([^\n\r?>]*([?][^\n\r>]|[>])*)*([?]?{NEWLINE})? { yy_pop_state(); return Tokens.T_COMMENT; }
-
+<ST_ONE_LINE_COMMENT>{NEWLINE} { yy_pop_state(); return Tokens.T_COMMENT; }
+<ST_ONE_LINE_COMMENT>"?>" { _yyless(2); yy_pop_state(); return Tokens.T_COMMENT; }
+<ST_ONE_LINE_COMMENT>[?] { yymore(); break; }
+<ST_ONE_LINE_COMMENT>[^\n\r?]* { yymore(); break; }
