@@ -25,7 +25,8 @@ yield from from();
   },   
   "YieldFromEx" : {   
     "DirectFcnCall" : {
-      "Name" : "from",  
+      "Name" : "from",
+      "OrigianlName":"from",        
       "FallbackQualifiedName":""
     }
   }

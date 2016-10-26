@@ -60,6 +60,7 @@ foreach ($arr as $key => $value) {
         },
         "DirectFcnCall" : {
           "Name" : "print_r",
+          "OrigianlName":"print_r",
           "FallbackQualifiedName":"", 
           "ActualParam" : {
             "IsUnpack":"False",

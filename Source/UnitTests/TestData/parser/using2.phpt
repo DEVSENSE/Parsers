@@ -30,11 +30,11 @@ namespace test{
     },
     "Body":{
       "BlockStmt":{
-        "DirectFcnCall":{"Name":"MySpace\bar","FallbackQualifiedName":""},
-        "DirectFcnCall":{"Name":"test\define","FallbackQualifiedName":"define"},
+        "DirectFcnCall":{"Name":"MySpace\bar","OrigianlName":"foo","FallbackQualifiedName":""},
+        "DirectFcnCall":{"Name":"test\define","OrigianlName":"define","FallbackQualifiedName":"define"},
         "NewEx":{"TranslatedTypeRef":{"ClassName":"MySpace\X","OriginalName":"Y"}},
-        "GlobalConstUse":{"Name":"MySpace\gconst","FallbackName":""},
-        "GlobalConstUse":{"Name":"test\clsconst","FallbackName":"clsconst"},
+        "GlobalConstUse":{"Name":"MySpace\gconst","OrigianlName":"lconst","FallbackName":""},
+        "GlobalConstUse":{"Name":"test\clsconst","OrigianlName":"clsconst","FallbackName":"clsconst"},
         "NamedTypeDecl":{"Name":"A","MemberAttributes":"Public","IsConditional":"False","BaseClassName":{"Name":"MySpace\X","OriginalName":"Y"},"ImplementsList":{"Name":"MySpace\X","Name":"Y"}}
       }
     }

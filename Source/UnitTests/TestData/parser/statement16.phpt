@@ -10,7 +10,7 @@ $foo($a);
 
 "GlobalCode":{
   "NamingContext":{},
-  "DirectFcnCall":{"Name":"foo","FallbackQualifiedName":"","ActualParam":{"IsUnpack":"False","DirectVarUse":{"VarName":"a"}}},
+  "DirectFcnCall":{"Name":"foo","OrigianlName":"foo","FallbackQualifiedName":"","ActualParam":{"IsUnpack":"False","DirectVarUse":{"VarName":"a"}}},
   "IndirectFcnCall":{"DirectVarUse":{"VarName":"foo"},"ActualParam":{"IsUnpack":"False","DirectVarUse":{"VarName":"a"}}},
   "IndirectFcnCall":{"BinaryEx":{"Operation":"Concat","DirectVarUse":{"VarName":"foo"},"StringLiteral":{"Value":"f"}},"ActualParam":{"IsUnpack":"False","DirectVarUse":{"VarName":"a"}}},
   "IndirectFcnCall":{"StringLiteral":{"Value":"foo"},"ActualParam":{"IsUnpack":"False","DirectVarUse":{"VarName":"a"}}}

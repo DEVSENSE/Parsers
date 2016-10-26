@@ -9,6 +9,6 @@ assert();
 
 "GlobalCode":{
   "NamingContext":{},
-  "DirectFcnCall":{"Name":"assert","FallbackQualifiedName":"","ActualParam":{"IsUnpack":"False","StringLiteral":{"Value":"hello"}}},
-  "DirectFcnCall":{"Name":"assert","FallbackQualifiedName":""}
+  "DirectFcnCall":{"Name":"assert","OrigianlName":"assert","FallbackQualifiedName":"","ActualParam":{"IsUnpack":"False","StringLiteral":{"Value":"hello"}}},
+  "DirectFcnCall":{"Name":"assert","OrigianlName":"assert","FallbackQualifiedName":""}
 }

@@ -9,7 +9,7 @@ $x::func;
 
 "GlobalCode":{
   "NamingContext":{},
-  "GlobalConstUse":{"Name":"func","FallbackName":""},
+  "GlobalConstUse":{"Name":"func","OrigianlName":"func","FallbackName":""},
   "ClassConstUse":{"Name":"func","ClassTypeRef":{"ClassName":"X"}},
   "ClassConstUse":{"Name":"func","IndirectTypeRef":{"DirectVarUse":{"VarName":"x"}}}
 }

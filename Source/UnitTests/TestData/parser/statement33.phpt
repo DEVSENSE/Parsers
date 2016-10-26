@@ -17,9 +17,9 @@ doc */)
 
 "GlobalCode":{
   "NamingContext":{},
-  "GlobalConstUse":{"Name":"abc\included","FallbackName":""},
-  "GlobalConstUse":{"Name":"abc\included","FallbackName":""},
-  "GlobalConstUse":{"Name":"abc\included","FallbackName":""},
+  "GlobalConstUse":{"Name":"abc\included","OrigianlName":"abc\included","FallbackName":""},
+  "GlobalConstUse":{"Name":"abc\included","OrigianlName":"abc\included","FallbackName":""},
+  "GlobalConstUse":{"Name":"abc\included","OrigianlName":"abc\included","FallbackName":""},
   "HaltCompiler":{},
   "EchoStmt":{"StringLiteral":{"Value":""}}
 }

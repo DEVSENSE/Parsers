@@ -104,6 +104,15 @@ namespace UnitTests
                 VisitElement(x.OriginalType);
                 base.VisitTranslatedTypeRef(x);
             }
+
+            public override void VisitTypeDecl(TypeDecl x)
+            {
+                // TODO - base class and interfaces are not visited, they are converted to qualified name
+                VisitElement((TypeRef)x.BaseClass);
+                foreach (var item in x.ImplementsList)
+                    VisitElement((TypeRef)item);
+                base.VisitTypeDecl(x);
+            }
         }
 
         sealed class AstCounterFactory : BasicNodesFactory
@@ -155,13 +164,6 @@ namespace UnitTests
                 // TODO - AnonymousTypeRef internaly creates AnonymousTypeDecl
                 var reference = CountTR(base.AnonymousTypeReference(span, headingSpan, conditional, attributes, typeParamsOpt, baseClassOpt, implements, members, blockSpan));
                 _createdElements.Add(((AnonymousTypeRef)reference).TypeDeclaration);
-                // TODO - base class and interfaces are not visited, they are converted to qualified name
-                var imp = implements != null ? implements.ToList() : null;
-                if (imp != null)
-                    foreach (var item in imp)
-                        _createdElements.Remove((TypeRef)item);
-                if (baseClassOpt != null)
-                    _createdElements.Remove((TypeRef)baseClassOpt);
                 return reference;
             }
 
@@ -409,21 +411,7 @@ namespace UnitTests
 
             public override LangElement Type(Span span, Span headingSpan, bool conditional, PhpMemberAttributes attributes, Name name, Span nameSpan, IEnumerable<FormalTypeParam> typeParamsOpt, INamedTypeRef baseClassOpt, IEnumerable<INamedTypeRef> implements, IEnumerable<LangElement> members, Span bodySpan)
             {
-                // TODO - base class and interfaces are not visited, they are converted to qualified name
                 var imp = implements != null ? implements.ToList() : null;
-                if (imp != null)
-                    foreach (var item in imp)
-                    {
-                        _createdElements.Remove((TypeRef)item);
-                        if (item is TranslatedTypeRef)
-                            _createdElements.Remove(((TranslatedTypeRef)item).OriginalType);
-                    }
-                if (baseClassOpt != null)
-                {
-                    _createdElements.Remove((TypeRef)baseClassOpt);
-                    if (baseClassOpt is TranslatedTypeRef)
-                        _createdElements.Remove(((TranslatedTypeRef)baseClassOpt).OriginalType);
-                }
                 return CountLE(base.Type(span, headingSpan, conditional, attributes, name, nameSpan, typeParamsOpt, baseClassOpt, imp, members, bodySpan));
             }
 

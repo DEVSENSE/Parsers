@@ -24,8 +24,8 @@ namespace test{
     },
     "Body":{
       "BlockStmt":{
-        "GlobalConstUse":{"Name":"MySpace\gconst","FallbackName":""},
-        "GlobalConstUse":{"Name":"MySpace\GCONST","FallbackName":""}
+        "GlobalConstUse":{"Name":"MySpace\gconst","OrigianlName":"lconst","FallbackName":""},
+        "GlobalConstUse":{"Name":"MySpace\GCONST","OrigianlName":"LCONST","FallbackName":""}
       }
     }
   }

@@ -47,7 +47,7 @@ namespace Devsense.PHP.Syntax.Ast
         /// <summary>
         /// Complete translated name, contians translated, original and fallback names.
         /// </summary>
-        TranslatedQualifiedName FullName => _fullName;
+        public TranslatedQualifiedName FullName => _fullName;
 
         public QualifiedName Name => _fullName.Name;
 
