@@ -2811,7 +2811,7 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 { yyval.Node = _astFactory.UnaryOperation(yypos, Operations.Plus,   (Expression)value_stack.array[value_stack.top-1].yyval.Node); }
         return;
       case 336: // expr_without_variable -> '-' expr 
-{ yyval.Node = _astFactory.UnaryOperation(yypos, Operations.Plus,   (Expression)value_stack.array[value_stack.top-1].yyval.Node); }
+{ yyval.Node = _astFactory.UnaryOperation(yypos, Operations.Minus,   (Expression)value_stack.array[value_stack.top-1].yyval.Node); }
         return;
       case 337: // expr_without_variable -> '!' expr 
 { yyval.Node = _astFactory.UnaryOperation(yypos, Operations.LogicNegation, (Expression)value_stack.array[value_stack.top-1].yyval.Node); }

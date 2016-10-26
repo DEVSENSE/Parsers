@@ -1074,7 +1074,7 @@ expr_without_variable:
 	| 	expr T_SL expr	{ $$ = _astFactory.BinaryOperation(@$, Operations.ShiftLeft,  $1, $3); } 
 	|	expr T_SR expr	{ $$ = _astFactory.BinaryOperation(@$, Operations.ShiftRight, $1, $3); } 
 	|	'+' expr %prec T_INC { $$ = _astFactory.UnaryOperation(@$, Operations.Plus,   (Expression)$2); }
-	|	'-' expr %prec T_INC { $$ = _astFactory.UnaryOperation(@$, Operations.Plus,   (Expression)$2); }
+	|	'-' expr %prec T_INC { $$ = _astFactory.UnaryOperation(@$, Operations.Minus,   (Expression)$2); }
 	|	'!' expr { $$ = _astFactory.UnaryOperation(@$, Operations.LogicNegation, (Expression)$2); }
 	|	'~' expr { $$ = _astFactory.UnaryOperation(@$, Operations.BitNegation,   (Expression)$2); }
 	|	expr T_IS_IDENTICAL expr
