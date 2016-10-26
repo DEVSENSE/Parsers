@@ -417,7 +417,7 @@ namespace Devsense.PHP.Syntax.Ast
         /// Call the right Visit* method on the given Visitor object.
         /// </summary>
         /// <param name="visitor">Visitor to be called.</param>
-        public override void VisitMe(TreeVisitor visitor) => visitor.VisitAliasedTypeRef(this);
+        public override void VisitMe(TreeVisitor visitor) => visitor.VisitTranslatedTypeRef(this);
 
         public override string ToString() => _className.ToString();
 

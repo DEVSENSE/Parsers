@@ -102,7 +102,7 @@ namespace UnitTests
             {
                 // TODO visit original type reference
                 VisitElement(x.OriginalType);
-                base.VisitAliasedTypeRef(x);
+                base.VisitTranslatedTypeRef(x);
             }
         }
 

@@ -484,7 +484,7 @@ namespace Devsense.PHP.Syntax.Ast.Serialization
             _serializer.Serialize(typeof(ClassTypeRef).Name, SerializeSpan(x.Span), 
                 new NodeObj("ClassName", x.QualifiedName.ToString()));
         }
-        public override void VisitAliasedTypeRef(TranslatedTypeRef x)
+        public override void VisitTranslatedTypeRef(TranslatedTypeRef x)
         {
             _serializer.Serialize(typeof(TranslatedTypeRef).Name, SerializeSpan(x.Span),
                 new NodeObj("ClassName", x.QualifiedName.ToString()), new NodeObj("OriginalName", x.OriginalType.QualifiedName.ToString()));
