@@ -56,8 +56,12 @@ namespace Devsense.PHP.Syntax.Ast
         readonly TranslatedQualifiedName _fullName;
 
         /// <summary>Simple name for methods.</summary>
+        [Obsolete]
         public QualifiedName QualifiedName => _fullName.Name;
+
+        [Obsolete]
         public QualifiedName? FallbackQualifiedName => _fullName.FallbackName;
+
         public override Text.Span NameSpan => _fullName.Span;
 
         public DirectFcnCall(Text.Span span, TranslatedQualifiedName name,
@@ -111,14 +115,10 @@ namespace Devsense.PHP.Syntax.Ast
 
 	public abstract class StaticMtdCall : FunctionCall
 	{
-        public TypeRef TargetType { get { return this.typeRef; } }
+        public TypeRef TargetType => this.typeRef;
         protected readonly TypeRef/*!*/typeRef;
 
         /// <summary>
-        /// Position of <see cref="TargetType"/> in source code.
-        /// </summary>
-        public Text.Span ClassNamePosition { get { return this.typeRef.Span; } }
-
         internal StaticMtdCall(Text.Span span, GenericQualifiedName className, Text.Span classNamePosition, IList<ActualParam> parameters, IList<TypeRef> genericParams)
             : this(span, TypeRef.FromGenericQualifiedName(classNamePosition, className), parameters, genericParams)
 		{	
@@ -142,8 +142,8 @@ namespace Devsense.PHP.Syntax.Ast
         public override Operations Operation { get { return Operations.DirectStaticCall; } }
 
 		private NameRef methodName;
-        public NameRef MethodName { get { return methodName; } }
-        public override Text.Span NameSpan => MethodName.Span;
+        public NameRef MethodName => methodName;
+        public override Text.Span NameSpan => methodName.Span;
 
         public DirectStMtdCall(Text.Span span, ClassConstUse/*!*/ classConstant,
             IList<ActualParam>/*!*/ parameters, IList<TypeRef>/*!*/ genericParams)
