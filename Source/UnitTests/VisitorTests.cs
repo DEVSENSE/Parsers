@@ -98,7 +98,7 @@ namespace UnitTests
                 base.VisitForeachVar(x);
             }
 
-            public override void VisitAliasedTypeRef(TranslatedTypeRef x)
+            public override void VisitTranslatedTypeRef(TranslatedTypeRef x)
             {
                 // TODO visit original type reference
                 VisitElement(x.OriginalType);
