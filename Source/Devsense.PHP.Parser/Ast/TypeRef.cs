@@ -444,14 +444,15 @@ namespace Devsense.PHP.Syntax.Ast
         /// <summary>
         /// <see cref="VariableUse"/> which value in runtime contains the name of the type.
         /// </summary>
-        public VariableUse/*!*/ ClassNameVar => _classNameVar;
-        private readonly VariableUse/*!*/ _classNameVar;
+        public Expression/*!*/ ClassNameVar => _classNameVar;
+        private readonly Expression/*!*/ _classNameVar;
 
         public override QualifiedName? QualifiedName => null;
 
-        public IndirectTypeRef(Span span, VariableUse/*!*/ classNameVar)
+        public IndirectTypeRef(Span span, Expression/*!*/ classNameVar)
             : base(span)
         {
+            // TODO VariableUse replaced by Expression
             Debug.Assert(classNameVar != null);
             _classNameVar = classNameVar;
         }

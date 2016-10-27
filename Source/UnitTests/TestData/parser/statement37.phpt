@@ -95,7 +95,7 @@ $a? : $b;
   "BinaryEx":{"Operation":"ShiftRight","DirectVarUse":{"VarName":"a"},"DirectVarUse":{"VarName":"b"}},
   
   "UnaryEx":{"Operation":"Plus","DirectVarUse":{"VarName":"b"}},
-  "UnaryEx":{"Operation":"Plus","DirectVarUse":{"VarName":"b"}},
+  "UnaryEx":{"Operation":"Minus","DirectVarUse":{"VarName":"b"}},
   "UnaryEx":{"Operation":"LogicNegation","DirectVarUse":{"VarName":"b"}},
   "UnaryEx":{"Operation":"BitNegation","DirectVarUse":{"VarName":"b"}},
   

@@ -1277,7 +1277,7 @@ variable_class_name:
 
 dereferencable:
 		variable				{ $$ = $1; }
-	|	'(' expr ')'			{ $$ = $2; }
+	|	'(' expr ')'			{ $$ = $2; if (!($2 is VarLikeConstructUse)) _errors.Error(@$, FatalErrors.CheckVarUseFault); } 
 	|	dereferencable_scalar	{ $$ = $1; }
 ;
 
@@ -1299,7 +1299,10 @@ callable_variable:
 	|	dereferencable T_OBJECT_OPERATOR property_name argument_list
 		{
 			if($3 is Name)
-				$$ = _astFactory.Call(@$, TranslateQNRFunction(new QualifiedNameRef(@3, new QualifiedName((Name)$3))), new CallSignature($4), $1);
+			{
+				var name = new QualifiedName((Name)$3);
+				$$ = _astFactory.Call(@$, new TranslatedQualifiedName(name, @3, name, null), new CallSignature($4), $1);
+			}
 			else
 				$$ = _astFactory.Call(@$, (LangElement)$3, new CallSignature($4), $1);
 		}

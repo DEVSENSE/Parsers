@@ -3105,7 +3105,7 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 { yyval.Node = value_stack.array[value_stack.top-1].yyval.Node; }
         return;
       case 429: // dereferencable -> '(' expr ')' 
-{ yyval.Node = value_stack.array[value_stack.top-2].yyval.Node; }
+{ yyval.Node = value_stack.array[value_stack.top-2].yyval.Node; if (!(value_stack.array[value_stack.top-2].yyval.Node is VarLikeConstructUse)) _errors.Error(yypos, FatalErrors.CheckVarUseFault); }
         return;
       case 430: // dereferencable -> dereferencable_scalar 
 { yyval.Node = value_stack.array[value_stack.top-1].yyval.Node; }
@@ -3134,7 +3134,10 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
       case 438: // callable_variable -> dereferencable T_OBJECT_OPERATOR property_name argument_list 
 {
 			if(value_stack.array[value_stack.top-2].yyval.Object is Name)
-				yyval.Node = _astFactory.Call(yypos, TranslateQNRFunction(new QualifiedNameRef(value_stack.array[value_stack.top-2].yypos, new QualifiedName((Name)value_stack.array[value_stack.top-2].yyval.Object))), new CallSignature(value_stack.array[value_stack.top-1].yyval.ParamList), value_stack.array[value_stack.top-4].yyval.Node);
+			{
+				var name = new QualifiedName((Name)value_stack.array[value_stack.top-2].yyval.Object);
+				yyval.Node = _astFactory.Call(yypos, new TranslatedQualifiedName(name, value_stack.array[value_stack.top-2].yypos, name, null), new CallSignature(value_stack.array[value_stack.top-1].yyval.ParamList), value_stack.array[value_stack.top-4].yyval.Node);
+			}
 			else
 				yyval.Node = _astFactory.Call(yypos, (LangElement)value_stack.array[value_stack.top-2].yyval.Object, new CallSignature(value_stack.array[value_stack.top-1].yyval.ParamList), value_stack.array[value_stack.top-4].yyval.Node);
 		}

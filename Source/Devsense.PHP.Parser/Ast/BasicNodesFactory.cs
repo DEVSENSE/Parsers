@@ -518,7 +518,7 @@ namespace Devsense.PHP.Syntax.Ast
         }
         public virtual TypeRef TypeReference(Span span, LangElement varName)
         {
-            return new IndirectTypeRef(span, (VariableUse)varName);
+            return new IndirectTypeRef(span, (Expression)varName);
         }
         public virtual TypeRef TypeReference(Span span, IEnumerable<LangElement> classes)
         {

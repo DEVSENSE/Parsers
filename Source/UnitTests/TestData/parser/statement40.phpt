@@ -1,5 +1,5 @@
 <?php
-($x+1)::$y;
+($x)::$y;
 "x"::$y;
 $ $x;
 ?>
@@ -7,7 +7,7 @@ $ $x;
 
 "GlobalCode":{
   "NamingContext":{},
-  "DirectStFldUse":{"PropertyName":"y","IndirectTypeRef":{"IndirectVarUse":{"BinaryEx":{"Operation":"Add","DirectVarUse":{"VarName":"x"},"LongIntLiteral":{"Value":"1"}}}}},
-  "DirectStFldUse":{"PropertyName":"y","IndirectTypeRef":{"IndirectVarUse":{"StringLiteral":{"Value":"x"}}}},
+  "DirectStFldUse":{"PropertyName":"y","IndirectTypeRef":{"DirectVarUse":{"VarName":"x"}}},
+  "DirectStFldUse":{"PropertyName":"y","IndirectTypeRef":{"StringLiteral":{"Value":"x"}}},
   "IndirectVarUse":{"DirectVarUse":{"VarName":"x"}}
 }
