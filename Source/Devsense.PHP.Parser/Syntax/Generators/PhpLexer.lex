@@ -92,6 +92,7 @@ ST_HALT_COMPILER1,ST_HALT_COMPILER2,ST_HALT_COMPILER3>{EOF} {
 <ST_ONE_LINE_COMMENT>[?]?{EOF} { 
 	if(!string.IsNullOrEmpty(GetTokenString()))
 		return Tokens.T_COMMENT; 
+	yy_pop_state();
 	return Tokens.EOF;
 }
 <ST_DOC_COMMENT>{EOF} {

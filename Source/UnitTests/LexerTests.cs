@@ -80,22 +80,24 @@ namespace UnitTests
 
             var states = new Lexer.LexicalStates[] { Lexer.LexicalStates.ST_DOUBLE_QUOTES, Lexer.LexicalStates.ST_SINGLE_QUOTES,
                 Lexer.LexicalStates.ST_BACKQUOTE, Lexer.LexicalStates.ST_HEREDOC, Lexer.LexicalStates.ST_NOWDOC, Lexer.LexicalStates.ST_COMMENT,
-                Lexer.LexicalStates.ST_ONE_LINE_COMMENT, Lexer.LexicalStates.ST_DOC_COMMENT, Lexer.LexicalStates.INITIAL, Lexer.LexicalStates.ST_IN_SCRIPTING };
+                Lexer.LexicalStates.ST_DOC_COMMENT, Lexer.LexicalStates.INITIAL, Lexer.LexicalStates.ST_IN_SCRIPTING };
 
             foreach (var chars in charSet)
                 foreach (var state in states)
-                while (Increment(word, chars.Length))
-                {
-                    ToArray(word, text, chars);
-                    string line = new string(text);
-                    lexer.Initialize(new StringReader(line), state, true, 0);
-                    Tokens token = Tokens.EOF;
-                    while ((token = lexer.GetNextToken()) != Tokens.EOF)
+                    while (Increment(word, chars.Length))
                     {
-                        Assert.IsTrue(lexer.TokenSpan.IsValid, line);
-                        Assert.IsTrue(lexer.TokenSpan.Length >= 0, line + " - " + state.ToString() + " - " + lexer.TokenSpan.Start.ToString());
+                        ToArray(word, text, chars);
+                        string line = new string(text);
+                        lexer.Initialize(new StringReader(line), state, true, 0);
+                        Tokens token = Tokens.EOF;
+                        int count = 0;
+                        while ((token = lexer.GetNextToken()) != Tokens.EOF && count++ < 100)
+                        {
+                            Assert.IsTrue(lexer.TokenSpan.IsValid, line);
+                            Assert.IsTrue(lexer.TokenSpan.Length >= 0, line + " - " + state.ToString() + " - " + lexer.TokenSpan.Start.ToString());
+                        }
+                        Assert.IsTrue(count < 100, line);
                     }
-                }
         }
 
         [TestMethod]

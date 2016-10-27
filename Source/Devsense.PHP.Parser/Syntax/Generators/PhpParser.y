@@ -1272,12 +1272,12 @@ optional_expr:
 ;
 
 variable_class_name:
-	dereferencable { $$ = $1; }
+	dereferencable { $$ = $1; /* TODO if (!($1 is VarLikeConstructUse)) _errors.Error(@$, FatalErrors.CheckVarUseFault); */ }
 ;
 
 dereferencable:
 		variable				{ $$ = $1; }
-	|	'(' expr ')'			{ $$ = $2; if (!($2 is VarLikeConstructUse)) _errors.Error(@$, FatalErrors.CheckVarUseFault); } 
+	|	'(' expr ')'			{ $$ = $2; } 
 	|	dereferencable_scalar	{ $$ = $1; }
 ;
 

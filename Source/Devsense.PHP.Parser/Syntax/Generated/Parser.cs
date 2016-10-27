@@ -3099,13 +3099,13 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 { yyval.Node = value_stack.array[value_stack.top-1].yyval.Node; }
         return;
       case 427: // variable_class_name -> dereferencable 
-{ yyval.Node = value_stack.array[value_stack.top-1].yyval.Node; }
+{ yyval.Node = value_stack.array[value_stack.top-1].yyval.Node; if (!(value_stack.array[value_stack.top-1].yyval.Node is VarLikeConstructUse)) _errors.Error(yypos, FatalErrors.CheckVarUseFault); }
         return;
       case 428: // dereferencable -> variable 
 { yyval.Node = value_stack.array[value_stack.top-1].yyval.Node; }
         return;
       case 429: // dereferencable -> '(' expr ')' 
-{ yyval.Node = value_stack.array[value_stack.top-2].yyval.Node; if (!(value_stack.array[value_stack.top-2].yyval.Node is VarLikeConstructUse)) _errors.Error(yypos, FatalErrors.CheckVarUseFault); }
+{ yyval.Node = value_stack.array[value_stack.top-2].yyval.Node; }
         return;
       case 430: // dereferencable -> dereferencable_scalar 
 { yyval.Node = value_stack.array[value_stack.top-1].yyval.Node; }
