@@ -1132,6 +1132,8 @@ namespace Devsense.PHP.Syntax
             _originalName = originalName;
             _fallbackName = nameFallback;
         }
+
+        public TranslatedQualifiedName(QualifiedName name, Span nameSpan) : this(name, nameSpan, name, null) { }
     }
 
     #endregion

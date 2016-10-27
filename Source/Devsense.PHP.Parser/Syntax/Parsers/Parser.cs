@@ -455,7 +455,9 @@ namespace Devsense.PHP.Syntax
             // aliasing
             QualifiedNameRef tmp;
             if (qname.QualifiedName.IsSimpleName && aliases != null && aliases.TryGetValue(new NameRef(Span.Invalid, qname.QualifiedName.Name), out tmp))
+            {
                 return new TranslatedQualifiedName(tmp.QualifiedName, qname.Span, qname, null);
+            }
 
             //
             QualifiedName translatedQName;
@@ -483,7 +485,9 @@ namespace Devsense.PHP.Syntax
                 return false;
             }
             else
+            {
                 return TryTranslateAlias(qname, out translated);
+            }
         }
 
         private bool TryTranslateAlias(QualifiedName qname, out QualifiedName translated)
