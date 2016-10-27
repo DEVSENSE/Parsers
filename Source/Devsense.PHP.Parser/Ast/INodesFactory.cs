@@ -780,8 +780,7 @@ namespace Devsense.PHP.Syntax.Ast
         /// Creates global constant use.
         /// </summary>
         /// <param name="span">Entire element span.</param>
-        /// <param name="name">Constant name.</param>
-        /// <param name="nameFallback">Fallback name in case <paramref name="name"/> does not exist in current context.</param>
+        /// <param name="name">Constant name including fallback.</param>
         /// <returns>Global constant access expression.</returns>
         TNode ConstUse(TSpan span, TranslatedQualifiedName name);
 
@@ -799,8 +798,7 @@ namespace Devsense.PHP.Syntax.Ast
         /// Creates function or instance method call expression.
         /// </summary>
         /// <param name="span">Entire element span.</param>
-        /// <param name="name">Function name.</param>
-        /// <param name="nameSpan">Span of the <paramref name="name"/>.</param>
+        /// <param name="name">Function name including fallback.</param>
         /// <param name="signature">Function call signature.</param>
         /// <param name="memberOfOpt">Optional. Target expression in case of an instance method call.</param>
         /// <returns>Function call expression.</returns>

@@ -119,6 +119,13 @@ namespace Devsense.PHP.Syntax.Ast
         protected readonly TypeRef/*!*/typeRef;
 
         /// <summary>
+        /// Static method call.
+        /// </summary>
+        /// <param name="span">Entire element span.</param>
+        /// <param name="className">Name of the containing class.</param>
+        /// <param name="classNamePosition">Class name position.</param>
+        /// <param name="parameters">Actual parameters.</param>
+        /// <param name="genericParams">Generic parameters.</param>
         internal StaticMtdCall(Text.Span span, GenericQualifiedName className, Text.Span classNamePosition, IList<ActualParam> parameters, IList<TypeRef> genericParams)
             : this(span, TypeRef.FromGenericQualifiedName(classNamePosition, className), parameters, genericParams)
 		{	

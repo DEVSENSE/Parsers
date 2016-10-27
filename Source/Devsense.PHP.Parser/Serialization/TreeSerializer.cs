@@ -259,7 +259,7 @@ namespace Devsense.PHP.Syntax.Ast.Serialization
         override public void VisitDirectFcnCall(DirectFcnCall x)
         {
             _serializer.StartSerialize(typeof(DirectFcnCall).Name, SerializeSpan(x.Span),
-                new NodeObj("Name", x.QualifiedName.ToString()), new NodeObj("OrigianlName", x.FullName.OriginalName.ToString()), new NodeObj("FallbackQualifiedName", x.FallbackQualifiedName.ToString()));
+                new NodeObj("Name", x.FullName.Name.ToString()), new NodeObj("OrigianlName", x.FullName.OriginalName.ToString()), new NodeObj("FallbackQualifiedName", x.FullName.FallbackName.ToString()));
             base.VisitDirectFcnCall(x);
             _serializer.EndSerialize();
         }

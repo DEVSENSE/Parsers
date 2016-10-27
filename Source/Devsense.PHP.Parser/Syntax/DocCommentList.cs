@@ -144,6 +144,7 @@ namespace Devsense.PHP.Syntax
         /// </summary>
         /// <param name="extent">Span of code block containing <paramref name="stmts"/>.</param>
         /// <param name="stmts">List of statements to be merged with overlapping DOC comments.</param>
+        /// <param name="factory">Factory used to create PHPDoc statements.</param>
         public void Merge(Text.Span extent, IList<LangElement>/*!*/stmts, INodesFactory<LangElement, Span> factory)
         {
             Debug.Assert(extent.IsValid);

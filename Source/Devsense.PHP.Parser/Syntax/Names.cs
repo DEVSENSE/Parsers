@@ -733,7 +733,8 @@ namespace Devsense.PHP.Syntax
         /// <param name="qname">Qualified name to translate.</param>
         /// <param name="aliases">Enumeration of aliases.</param>
         /// <param name="currentNamespace">Current namespace to be prepended if no alias is found.</param>
-        /// <returns>Qualified name that has been tralated according to given naming context.</returns>
+        /// <param name="translated">Qualified name that has been tralated according to given naming context.</param>
+        /// <returns>Indication if the name has been translated or not.</returns>
         public static bool TryTranslateAlias(QualifiedName qname, Dictionary<NameRef, QualifiedNameRef> aliases, QualifiedName? currentNamespace, out QualifiedName translated)
         {
             if (!qname.IsFullyQualifiedName)
@@ -946,7 +947,7 @@ namespace Devsense.PHP.Syntax
         private QualifiedName qualifiedName;
 
         /// <summary>
-        /// Array of <see cref="GenericQualifiedName"/> or <see cref="PrimitiveTypeName"/>.
+        /// Array of <see cref="GenericQualifiedName"/> or <see cref="QualifiedName"/>.
         /// </summary>
         public object[]/*!!*/ GenericParams { get { return genericParams; } }
         private object[]/*!!*/ genericParams;

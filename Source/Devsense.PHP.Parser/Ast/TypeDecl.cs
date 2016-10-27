@@ -26,10 +26,10 @@ namespace Devsense.PHP.Syntax.Ast
 		public Name Name { get { return name; } }
 		private readonly Name name;
 
-		/// <summary>
-		/// Either <see cref="PrimitiveTypeName"/>, <see cref="GenericQualifiedName"/>, or <B>null</B>.
-		/// </summary>
-		public object DefaultType { get { return defaultType; } }
+        /// <summary>
+        /// Either <see cref="QualifiedName"/>, <see cref="GenericQualifiedName"/>, or <B>null</B>.
+        /// </summary>
+        public object DefaultType { get { return defaultType; } }
 		private readonly object defaultType;
 
         /// <summary>
@@ -44,7 +44,7 @@ namespace Devsense.PHP.Syntax.Ast
 		/// <summary>
         /// Singleton instance of an empty <see cref="List&lt;FormalTypeParam&gt;"/>.
         /// </summary>
-        public static readonly List<FormalTypeParam>/*!*/EmptyList = new List<FormalTypeParam>();
+        public new static readonly List<FormalTypeParam>/*!*/EmptyList = new List<FormalTypeParam>();
 
 		#region Construction
 

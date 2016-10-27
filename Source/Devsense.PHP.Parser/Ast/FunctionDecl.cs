@@ -75,9 +75,9 @@ namespace Devsense.PHP.Syntax.Ast
         public Expression InitValue { get { return _initValue; } internal set { _initValue = value; } }
 		private Expression _initValue;
 
-		/// <summary>
-		/// Either <see cref="PrimitiveTypeName"/>, <see cref="GenericQualifiedName"/>, or <B>null</B>.
-		/// </summary>
+        /// <summary>
+        /// Either <see cref="TypeRef"/> or <B>null</B>.
+        /// </summary>
         public TypeRef TypeHint { get { return _typeHint; } }
 		private TypeRef _typeHint;
 

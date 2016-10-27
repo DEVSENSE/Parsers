@@ -142,7 +142,7 @@ namespace Devsense.PHP.Syntax.Ast
         /// <summary>
         /// Immutable empty list of <see cref="Expression"/>.
         /// </summary>
-        internal static readonly List<Expression>/*!*/EmptyList = new List<Expression>();
+        internal new static readonly List<Expression>/*!*/EmptyList = new List<Expression>();
 
         public abstract Operations Operation { get; }
 
