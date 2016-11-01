@@ -47,6 +47,9 @@ using System.Collections.Generic;
 %x ST_HALT_COMPILER1
 %x ST_HALT_COMPILER2
 %x ST_HALT_COMPILER3
+%x ST_IN_STRING
+%x ST_IN_SHELL
+%x ST_IN_HEREDOC
 
 re2c:yyfill:check = 0;
 LNUM	[0-9]+
@@ -70,12 +73,12 @@ NonVariableStart        [^a-zA-Z_{]
 
 %%
 
-<INITIAL,ST_IN_SCRIPTING,ST_DOUBLE_QUOTES,ST_BACKQUOTE,ST_NEWDOC,ST_LOOKING_FOR_PROPERTY,
-ST_LOOKING_FOR_VARNAME,ST_VAR_OFFSET,ST_END_HEREDOC,
+<INITIAL,ST_IN_SCRIPTING,ST_NEWDOC,ST_LOOKING_FOR_PROPERTY,
+ST_LOOKING_FOR_VARNAME,ST_VAR_OFFSET,ST_END_HEREDOC,ST_IN_STRING,
 ST_HALT_COMPILER1,ST_HALT_COMPILER2,ST_HALT_COMPILER3>{EOF} {
 	return Tokens.EOF;
 }
-<ST_HEREDOC,ST_NOWDOC,ST_SINGLE_QUOTES>{EOF} {
+<ST_HEREDOC,ST_NOWDOC,ST_SINGLE_QUOTES,ST_DOUBLE_QUOTES,ST_BACKQUOTE>{EOF} {
 	if(!string.IsNullOrEmpty(GetTokenString()))
 	{
 		_tokenSemantics.Object = GetTokenString(); 
@@ -92,7 +95,6 @@ ST_HALT_COMPILER1,ST_HALT_COMPILER2,ST_HALT_COMPILER3>{EOF} {
 <ST_ONE_LINE_COMMENT>[?]?{EOF} { 
 	if(!string.IsNullOrEmpty(GetTokenString()))
 		return Tokens.T_COMMENT; 
-	yy_pop_state();
 	return Tokens.EOF;
 }
 <ST_DOC_COMMENT>{EOF} {
@@ -820,23 +822,9 @@ ST_HALT_COMPILER1,ST_HALT_COMPILER2,ST_HALT_COMPILER3>{EOF} {
 	return (Tokens.T_CLOSE_TAG);  /* implicit ';' at php-end tag */
 }
 
-<ST_IN_SCRIPTING>(b?[']([^'\\]|("\\".)|("\\"{NEWLINE}))*['])  { return ProcessSingleQuotedString(); }
-<ST_IN_SCRIPTING>b?['] 
-{ 
-	// Gets here only in the case of unterminated singly-quoted string. That leads usually to an error token,
-	// however when the source code is parsed per-line (as in Visual Studio colorizer) it is important to remember
-	// that we are in the singly-quoted string at the end of the line.
-	BEGIN(LexicalStates.ST_SINGLE_QUOTES); 
-	yymore(); 
-	break; 
+<ST_IN_SCRIPTING,ST_VAR_OFFSET>"$"{LABEL} {
+	return ProcessVariable();
 }
-<ST_SINGLE_QUOTES>([^'\\]|("\\".)|("\\"{NEWLINE}))+{NEWLINE}? { yymore(); break; }
-<ST_SINGLE_QUOTES>"'"                               { BEGIN(LexicalStates.ST_IN_SCRIPTING); return ProcessSingleQuotedString(); }
-
-<ST_IN_SCRIPTING>b?["]({WHITESPACE}?[^"\r\n\{$\\]*([$][^a-zA-Z_\{"\\]|[$\{]?\\.|\{[^"$\\])?)*[$\{]?["] {
-	return ProcessDoubleQuotedString();
-}
-
 
 <ST_IN_SCRIPTING>b?"<<<"{TABS_AND_SPACES}({LABEL}|([']{LABEL}['])|(["]{LABEL}["])){NEWLINE} {
 	int bprefix = (GetTokenChar(0) != '<') ? 1 : 0;
@@ -865,21 +853,10 @@ ST_HALT_COMPILER1,ST_HALT_COMPILER2,ST_HALT_COMPILER3>{EOF} {
 }
 
 
-<ST_IN_SCRIPTING>[`] {
-	BEGIN(LexicalStates.ST_BACKQUOTE); 
-	return (Tokens.T_BACKQUOTE);
-}
-
-
 <ST_END_HEREDOC>{ANY_CHAR} {
 	BEGIN(LexicalStates.ST_IN_SCRIPTING);
 	this._tokenSemantics.Object = this._hereDocLabel;
 	return (Tokens.T_END_HEREDOC);
-}
-
-<ST_BACKQUOTE>[`] {
-	BEGIN(LexicalStates.ST_IN_SCRIPTING);
-	return (Tokens.T_BACKQUOTE);
 }
 
 <ST_NOWDOC>^{LABEL}(";")?{NEWLINE} {
@@ -902,70 +879,92 @@ ST_HALT_COMPILER1,ST_HALT_COMPILER2,ST_HALT_COMPILER3>{EOF} {
 
 <ST_NOWDOC>{ANY_CHAR}         { yymore(); break; }
 
-<ST_DOUBLE_QUOTES,ST_BACKQUOTE,ST_HEREDOC>"${" {
+<ST_IN_SCRIPTING>b?[']				{ BEGIN(LexicalStates.ST_SINGLE_QUOTES); yymore(); break; }
+<ST_SINGLE_QUOTES>[\\]{ANY_CHAR}	{ yymore(); break; }
+<ST_SINGLE_QUOTES>[']				{ BEGIN(LexicalStates.ST_IN_SCRIPTING); return ProcessSingleQuotedString(); }
+<ST_SINGLE_QUOTES>{NEWLINE}			{ yymore(); break; }
+<ST_SINGLE_QUOTES>[^'\\]+			{ yymore(); break; }
+
+<ST_IN_STRING,ST_IN_SHELL,ST_IN_HEREDOC>"${" {
 	yy_push_state(LexicalStates.ST_LOOKING_FOR_VARNAME);
 	return (Tokens.T_DOLLAR_OPEN_CURLY_BRACES);
 }
 
-<ST_DOUBLE_QUOTES,ST_HEREDOC,ST_BACKQUOTE>"$"{LABEL}"->"[a-zA-Z_\x80-\xff] {
+<ST_IN_STRING,ST_IN_SHELL,ST_IN_HEREDOC>"$"{LABEL}"->"[a-zA-Z_\x80-\xff] {
 	yyless(TokenLength - 3);
 	yy_push_state(LexicalStates.ST_LOOKING_FOR_PROPERTY);
 	return ProcessVariable();
 }
 
-<ST_DOUBLE_QUOTES,ST_HEREDOC,ST_BACKQUOTE>"$"{LABEL}"[" {
+<ST_IN_STRING,ST_IN_SHELL,ST_IN_HEREDOC>"$"{LABEL}"[" {
 	yyless(TokenLength - 1);
 	yy_push_state(LexicalStates.ST_VAR_OFFSET);
 	return ProcessVariable();
 }
 
-<ST_IN_SCRIPTING,ST_DOUBLE_QUOTES,ST_HEREDOC,ST_BACKQUOTE,ST_VAR_OFFSET>"$"{LABEL} {
+<ST_IN_STRING,ST_IN_SHELL,ST_IN_HEREDOC>"$"{LABEL} {
+	yy_pop_state();
 	return ProcessVariable();
 }
 
-<ST_IN_SCRIPTING>b?["] {
-	BEGIN(LexicalStates.ST_DOUBLE_QUOTES);
-	return (Tokens.T_DOUBLE_QUOTES);
-}
-
-
-<ST_DOUBLE_QUOTES,ST_BACKQUOTE,ST_HEREDOC>"{$" {
-	//Z_LVAL_P(zendlval) = (zend_long) '{';
+<ST_IN_STRING,ST_IN_SHELL,ST_IN_HEREDOC>"{$" {
 	yy_push_state(LexicalStates.ST_IN_SCRIPTING);
-	yyless(1);
+	_yyless(1);
 	return (Tokens.T_CURLY_OPEN);
 }
 
-<ST_DOUBLE_QUOTES>["] {
+<ST_IN_STRING>["] {
+	yy_pop_state();
 	BEGIN(LexicalStates.ST_IN_SCRIPTING);
 	return (Tokens.T_DOUBLE_QUOTES);
 }
-
-<ST_DOUBLE_QUOTES>([^"\{$\\]*(([$][^"a-zA-Z_\{\\])|([$\{]?[\\]{ANY_CHAR})|(\{[^"$\\]))?)*(([$\{\\]["])|([$\{]?[$\{\\]{EOF}))? {
-    this._tokenSemantics.Object = ProcessEscapedStringWithEnding(GetTokenString(), _encoding, false, '"');
-    return (Tokens.T_ENCAPSED_AND_WHITESPACE);
+<ST_IN_SHELL>[`] {
+	yy_pop_state();
+	BEGIN(LexicalStates.ST_IN_SCRIPTING);
+	return (Tokens.T_BACKQUOTE);
 }
 
-<ST_BACKQUOTE>    ([^`\{$\\]*(([$][^`a-zA-Z_\{\\])|([$\{]?[\\]{ANY_CHAR})|(\{[^`$\\]))?)*(([$\{\\][`])|([$\{]?[$\{\\]{EOF}))? {
-    this._tokenSemantics.Object = ProcessEscapedStringWithEnding(GetTokenString(), _encoding, false, '`');
-    return (Tokens.T_ENCAPSED_AND_WHITESPACE);
+<ST_IN_STRING,ST_IN_SHELL,ST_IN_HEREDOC>{ANY_CHAR} { 
+	yyless(1); 
+	yy_pop_state(); 
+	yymore(); break; 
 }
 
-<ST_HEREDOC>([^\n\r\{$\\]*([$][^a-zA-Z_\{\\]|[$\{]?[\\]{ANY_CHAR}|\{[^$\\])?)*{NEWLINE} { yymore(); break; }
+<ST_IN_SCRIPTING>b?["] { BEGIN(LexicalStates.ST_DOUBLE_QUOTES); yymore(); break; }
+<ST_DOUBLE_QUOTES>"${" { Tokens token; if (ProcessString(2, out token)) return token; else break; }
+<ST_DOUBLE_QUOTES>"$"[a-zA-Z_] { Tokens token; if (ProcessString(2, out token)) return token; else break; }
+<ST_DOUBLE_QUOTES>"{$" { Tokens token; if (ProcessString(2, out token)) return token; else break; }
+<ST_DOUBLE_QUOTES>["] { Tokens token; if (ProcessString(1, out token)) return token; else break; }
 
-<ST_HEREDOC>([^\n\r\{$\\]*([$][^a-zA-Z_\{]|[$\{]?[\\]{ANY_CHAR}|\{[^$])?)*([$\{]?[$\{\\]{EOF})? {
-    this._tokenSemantics.Object = ProcessEscapedString(GetTokenString(), _encoding, false);
-    return (Tokens.T_ENCAPSED_AND_WHITESPACE);
-}
+<ST_DOUBLE_QUOTES>[$]|[{] { yymore(); break; }
+<ST_DOUBLE_QUOTES>[\\]{ANY_CHAR} { yymore(); break; }
+<ST_DOUBLE_QUOTES>[^"\{$\\]+ { yymore(); break; }
 
+<ST_IN_SCRIPTING>[`] { BEGIN(LexicalStates.ST_BACKQUOTE); return Tokens.T_BACKQUOTE; }
+<ST_BACKQUOTE>"${" { Tokens token; if (ProcessShell(2, out token)) return token; else break; }
+<ST_BACKQUOTE>"$"[a-zA-Z_] { Tokens token; if (ProcessShell(2, out token)) return token; else break; }
+<ST_BACKQUOTE>"{$" { Tokens token; if (ProcessShell(2, out token)) return token; else break; }
+<ST_BACKQUOTE>[`] { Tokens token; if (ProcessShell(1, out token)) return token; else break; }
 
-<ST_IN_SCRIPTING,ST_VAR_OFFSET>{ANY_CHAR} {
-	//zend_error(E_COMPILE_WARNING,"Unexpected character in input:  '%c' (ASCII=%d) state=%d", yytext[0], yytext[0], YYSTATE);
-	return Tokens.T_ERROR;
-}
+<ST_BACKQUOTE>[$]|[{]			{ yymore(); break; }
+<ST_BACKQUOTE>[\\]{ANY_CHAR}	{ yymore(); break; }
+<ST_BACKQUOTE>[^`\{$\\]+		{ yymore(); break; }
 
+<ST_HEREDOC>"${"			{ Tokens token; if (ProcessHeredoc(2, out token)) return token; else break; }
+<ST_HEREDOC>"$"[a-zA-Z_]	{ Tokens token; if (ProcessHeredoc(2, out token)) return token; else break; }
+<ST_HEREDOC>"{$"			{ Tokens token; if (ProcessHeredoc(2, out token)) return token; else break; }
+
+<ST_HEREDOC>[$]|[{]			{ yymore(); break; }
+<ST_HEREDOC>[\\]{ANY_CHAR}	{ yymore(); break; }
+<ST_HEREDOC>{NEWLINE}		{ yymore(); break; }
+<ST_HEREDOC>[^\n\r\{$\\]+	{ yymore(); break; }
 
 <ST_ONE_LINE_COMMENT>{NEWLINE} { yy_pop_state(); return Tokens.T_COMMENT; }
 <ST_ONE_LINE_COMMENT>"?>" { _yyless(2); yy_pop_state(); return Tokens.T_COMMENT; }
 <ST_ONE_LINE_COMMENT>[?] { yymore(); break; }
 <ST_ONE_LINE_COMMENT>[^\n\r?]* { yymore(); break; }
+
+<ST_IN_SCRIPTING,ST_VAR_OFFSET>{ANY_CHAR} {
+	//zend_error(E_COMPILE_WARNING,"Unexpected character in input:  '%c' (ASCII=%d) state=%d", yytext[0], yytext[0], YYSTATE);
+	return Tokens.T_ERROR;
+}

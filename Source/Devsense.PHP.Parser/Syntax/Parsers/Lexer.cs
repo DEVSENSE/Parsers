@@ -810,6 +810,46 @@ namespace Devsense.PHP.Syntax
             return label.Length - _hereDocLabel.Length > 0;
         }
 
+        bool ProcessString(int count, out Tokens token)
+        {
+            if (TokenLength > 1 && GetTokenChar(0) == '"' && GetTokenChar(TokenLength - 1) == '"' && GetTokenChar(TokenLength - 2) != '\\')
+            {
+                BEGIN(LexicalStates.ST_IN_SCRIPTING);
+                token = ProcessDoubleQuotedString();
+                return true;
+            }
+            else if (TokenLength > 1 && GetTokenChar(0) == '"')
+            {
+                _yyless(TokenLength - 1);
+                token = Tokens.T_DOUBLE_QUOTES;
+                return true;
+            }
+            else
+            {
+                return ProcessText(count, LexicalStates.ST_IN_STRING, '"', out token);
+            }
+        }
+
+        bool ProcessShell(int count, out Tokens token) => ProcessText(count, LexicalStates.ST_IN_SHELL, '`', out token);
+        bool ProcessHeredoc(int count, out Tokens token) => ProcessText(count, LexicalStates.ST_IN_HEREDOC, '\0', out token);
+
+        bool ProcessText(int count, LexicalStates newState, char ending, out Tokens token)
+        {
+            _yyless(count);
+            token = Tokens.T_ENCAPSED_AND_WHITESPACE;
+            yy_push_state(newState);
+            if (TokenLength > 0)
+            {
+                this._tokenSemantics.Object = ProcessEscapedStringWithEnding(GetTokenString(), _encoding, false, ending);
+                return true;
+            }
+            else
+            {
+                yymore();
+                return false;
+            }
+        }
+
         #region Compressed State
 
         public struct CompressedState : IEquatable<CompressedState>
