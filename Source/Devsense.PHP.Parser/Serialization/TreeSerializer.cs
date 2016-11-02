@@ -108,11 +108,11 @@ namespace Devsense.PHP.Syntax.Ast.Serialization
             if (context.CurrentNamespace.HasValue)
                 data.Add(new NodeObj("Namespace", context.CurrentNamespace.Value.NamespacePhpName));
             if (context.Aliases != null && context.Aliases.Count > 0)
-                data.Add(new NodeObj("Aliases", context.Aliases.Select(a => new NodeObj(a.Key.Name.Value, a.Value.ToString())).ToArray()));
-            if (context.ConstantAliases != null && context.ConstantAliases.Count > 0)
-                data.Add(new NodeObj("ConstantAliases", context.ConstantAliases.Select(a => new NodeObj(a.Key.Name.Value, a.Value.ToString())).ToArray()));
-            if (context.FunctionAliases != null && context.FunctionAliases.Count > 0)
-                data.Add(new NodeObj("FunctionAliases", context.FunctionAliases.Select(a => new NodeObj(a.Key.Name.Value, a.Value.ToString())).ToArray()));
+            {
+                data.Add(new NodeObj("Aliases", context.Aliases.Where(a => a.Key.Kind == AliasKind.Type).Select(a => new NodeObj(a.Key.Name.Value, a.Value.ToString())).ToArray()));
+                data.Add(new NodeObj("ConstantAliases", context.Aliases.Where(a => a.Key.Kind == AliasKind.Constant).Select(a => new NodeObj(a.Key.Name.Value, a.Value.ToString())).ToArray()));
+                data.Add(new NodeObj("FunctionAliases", context.Aliases.Where(a => a.Key.Kind == AliasKind.Function).Select(a => new NodeObj(a.Key.Name.Value, a.Value.ToString())).ToArray()));
+            }
             return new NodeObj("NamingContext", data.ToArray());
         }
 
@@ -620,6 +620,15 @@ namespace Devsense.PHP.Syntax.Ast.Serialization
         {
             _serializer.StartSerialize(typeof(DeclareStmt).Name, SerializeSpan(x.Span));
             base.VisitDeclareStmt(x);
+            _serializer.EndSerialize();
+        }
+        public override void VisitUseStatement(UseStatement x)
+        {
+            _serializer.StartSerialize(typeof(UseStatement).Name, SerializeSpan(x.Span), new NodeObj("Kind", x.Kind.ToString()));
+            _serializer.Serialize("Aliases", x.Uses.All(u => u is SimpleUse)?
+                x.Uses.Where(u => u is SimpleUse).Select(u => new NodeObj(((SimpleUse)u).Alias.Name.Value, SerializeSpan(u.Span))).ToArray():
+                ((GroupUse)x.Uses.First(u => u is GroupUse)).Uses.Select(u => new NodeObj(u.Alias.Name.Value, SerializeSpan(u.Span))).ToArray());
+            base.VisitUseStatement(x);
             _serializer.EndSerialize();
         }
         override public void VisitNamedTypeDecl(NamedTypeDecl x)

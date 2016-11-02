@@ -23,10 +23,13 @@ use My\Full\Classname as Another;
       "Namespace" : "foo",
       "Aliases" : {
         "Another" : "My\Full\Classname"
-      }
+      },
+      "ConstantAliases":{},
+      "FunctionAliases":{}
     },  
     "Body":{
       "BlockStmt":{
+        "UseStatement":{"Kind":"Type","Aliases":{"Another":{}}},
         "EchoStmt" : {
           "Span" : {
             "start" : "64",

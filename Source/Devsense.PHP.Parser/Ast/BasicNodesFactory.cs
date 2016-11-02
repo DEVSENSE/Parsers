@@ -349,6 +349,11 @@ namespace Devsense.PHP.Syntax.Ast
             return new DeclareStmt(span, (Statement)statementOpt);
         }
 
+        public virtual LangElement Use(Span span, IEnumerable<UseBase> uses, AliasKind kind)
+        {
+            return new UseStatement(span, uses.ToList(), kind);
+        }
+
         public virtual LangElement New(Span span, TypeRef classNameRef, IEnumerable<ActualParam> argsOpt)
         {
             return new NewEx(span, classNameRef, argsOpt.ToList());

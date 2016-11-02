@@ -19,8 +19,8 @@ using Devsense.PHP.Syntax.Ast;
 using Devsense.PHP.Text;
 using Devsense.PHP.Errors;
 
-using Alias = System.Tuple<Devsense.PHP.Syntax.QualifiedNameRef, Devsense.PHP.Syntax.NameRef>;
-using ContextAlias = System.Tuple<Devsense.PHP.Syntax.QualifiedNameRef, Devsense.PHP.Syntax.NameRef, Devsense.PHP.Syntax.ContextType>;
+using CompleteAlias = System.Tuple<Devsense.PHP.Syntax.QualifiedNameRef, Devsense.PHP.Syntax.NameRef>;
+using ContextAlias = System.Tuple<Devsense.PHP.Syntax.QualifiedNameRef, Devsense.PHP.Syntax.NameRef, Devsense.PHP.Syntax.AliasKind>;
 using IfItem = System.Tuple<Devsense.PHP.Text.Span, Devsense.PHP.Syntax.Ast.LangElement, Devsense.PHP.Syntax.Ast.LangElement>;
 using AnonymousClass = System.Tuple<Devsense.PHP.Syntax.Ast.TypeRef, System.Collections.Generic.List<Devsense.PHP.Syntax.Ast.ActualParam>>;
 
@@ -47,6 +47,8 @@ using AnonymousClass = System.Tuple<Devsense.PHP.Syntax.Ast.TypeRef, System.Coll
 	public long Long;
 	[FieldOffset(0)]
 	public QualifiedNameRef QualifiedNameReference;
+	[FieldOffset(0)]
+	public AliasKind Kind;
 
 	[FieldOffset(8)]
 	public object Object;
@@ -58,8 +60,8 @@ using AnonymousClass = System.Tuple<Devsense.PHP.Syntax.Ast.TypeRef, System.Coll
 	public List<LangElement> NodeList					{ get { return (List<LangElement>)Object; }			set { Object = value; } }
 	public string String								{ get { return (string)Object; }					set { Object = value; } }
 	public List<string> StringList						{ get { return (List<string>)Object; }				set { Object = value; } }
-	public Alias Alias									{ get { return (Alias)Object; }						set { Object = value; } }
-	public List<Alias> AliasList						{ get { return (List<Alias>)Object; }				set { Object = value; } }
+	public CompleteAlias Alias							{ get { return (CompleteAlias)Object; }				set { Object = value; } }
+	public List<CompleteAlias> AliasList				{ get { return (List<CompleteAlias>)Object; }		set { Object = value; } }
 	public ContextAlias ContextAlias					{ get { return (ContextAlias)Object; }				set { Object = value; } }
 	public List<ContextAlias> ContextAliasList			{ get { return (List<ContextAlias>)Object; }		set { Object = value; } }
 	public ActualParam Param							{ get { return (ActualParam)Object; }				set { Object = value; } }
@@ -71,6 +73,8 @@ using AnonymousClass = System.Tuple<Devsense.PHP.Syntax.Ast.TypeRef, System.Coll
 	public List<IfItem> IfItemList						{ get { return (List<IfItem>)Object; }				set { Object = value; } }
 	public ForeachVar ForeachVar						{ get { return (ForeachVar)Object; }				set { Object = value; } }
 	public AnonymousClass AnonymousClass				{ get { return (AnonymousClass)Object; }			set { Object = value; } }
+	public UseBase Use									{ get { return (UseBase)Object; }					set { Object = value; } }
+	public List<UseBase> UseList						{ get { return (List<UseBase>)Object; }				set { Object = value; } }
 }
 
 
@@ -281,8 +285,8 @@ using AnonymousClass = System.Tuple<Devsense.PHP.Syntax.Ast.TypeRef, System.Coll
 %type <Object> property_name member_name
 
 %type <Long> returns_ref function is_reference is_variadic variable_modifiers
-%type <Long> method_modifiers non_empty_member_modifiers member_modifier
-%type <Long> class_modifiers class_modifier use_type backup_fn_flags
+%type <Long> method_modifiers non_empty_member_modifiers member_modifier class_modifier class_modifiers
+%type <Kind> use_type
 
 %type <Object> backup_doc_comment enter_scope exit_scope
 
@@ -339,6 +343,8 @@ using AnonymousClass = System.Tuple<Devsense.PHP.Syntax.Ast.TypeRef, System.Coll
 %type <ForeachVar> foreach_variable
 
 %type <AnonymousClass> anonymous_class
+
+%type <UseList> use_declarations group_use_declaration mixed_group_use_declaration
 
 %% /* Rules */
 
@@ -415,10 +421,10 @@ top_statement:
 			SetDoc($$);
 			ResetNamingContext(); 
 		}
-	|	T_USE mixed_group_use_declaration ';'		{ _contextType = ContextType.Class; }
-	|	T_USE use_type group_use_declaration ';'	{ _contextType = ContextType.Class; }
-	|	T_USE use_declarations ';'					{ _contextType = ContextType.Class; }
-	|	T_USE use_type use_declarations ';'			{ _contextType = ContextType.Class; }
+	|	T_USE mixed_group_use_declaration ';'		{ $$ = _astFactory.Use(@$, $2, AliasKind.Type); _contextType = AliasKind.Type;	/* TODO: Error - must contain only a single group use */	}	
+	|	T_USE use_type group_use_declaration ';'	{ $$ = _astFactory.Use(@$, $3, $2); _contextType = AliasKind.Type;				/* TODO: Error - must contain only a single group use */	}				
+	|	T_USE use_declarations ';'					{ $$ = _astFactory.Use(@$, $2, AliasKind.Type); _contextType = AliasKind.Type;	/* TODO: Error - must contain only simple uses		  */	}	
+	|	T_USE use_type use_declarations ';'			{ $$ = _astFactory.Use(@$, $3, $2); _contextType = AliasKind.Type;				/* TODO: Error - must contain only simple uses		  */	}				
 	|	T_CONST const_list ';'	
 		{
 			SetDoc($$ = _astFactory.DeclList(@$, PhpMemberAttributes.None, $2));
@@ -426,22 +432,22 @@ top_statement:
 ;
 
 use_type:
-	 	T_FUNCTION 		{ $$ = (long)ContextType.Function; _contextType = (ContextType)$$; }
-	| 	T_CONST 		{ $$ = (long)ContextType.Constant; _contextType = (ContextType)$$; }
+	 	T_FUNCTION 		{ $$ = _contextType = AliasKind.Function; }
+	| 	T_CONST 		{ $$ = _contextType = AliasKind.Constant; }
 ;
 
 group_use_declaration:
 		namespace_name T_NS_SEPARATOR '{' unprefixed_use_declarations '}'
-			{ foreach (var item in $4) AddAlias($1, item); }
+			{ $$ = new List<UseBase>() { AddAliases(@$, $1, @1, $4) }; }
 	|	T_NS_SEPARATOR namespace_name T_NS_SEPARATOR '{' unprefixed_use_declarations '}'
-			{ foreach (var item in $5) AddAlias($2, item); }
+			{ $$ = new List<UseBase>() { AddAliases(@$, $2, @2, $5) }; }
 ;
 
 mixed_group_use_declaration:
 		namespace_name T_NS_SEPARATOR '{' inline_use_declarations '}'
-			{ foreach (var item in $4) AddAlias($1, item); }
+			{ $$ = new List<UseBase>() { AddAliases(@$, $1, @1, $4) }; }
 	|	T_NS_SEPARATOR namespace_name T_NS_SEPARATOR '{' inline_use_declarations '}'
-			{ foreach (var item in $5) AddAlias($2, item); }
+			{ $$ = new List<UseBase>() { AddAliases(@$, $2, @2, $5) }; }
 ;
 
 inline_use_declarations:
@@ -453,28 +459,28 @@ inline_use_declarations:
 
 unprefixed_use_declarations:
 		unprefixed_use_declarations ',' unprefixed_use_declaration
-			{ $$ = AddToList<Alias>($1, $3); }
+			{ $$ = AddToList<CompleteAlias>($1, $3); }
 	|	unprefixed_use_declaration
-			{ $$ = new List<Alias>() { $1 }; }
+			{ $$ = new List<CompleteAlias>() { $1 }; }
 ;
 
 use_declarations:
 		use_declarations ',' use_declaration
-			{ AddAlias($3); }
+			{ $$ = AddToList<UseBase>($1, AddAlias($3)); }
 	|	use_declaration
-			{ AddAlias($1); }
+			{ $$ = new List<UseBase>() { AddAlias($1) }; }
 ;
 
 inline_use_declaration:
-		unprefixed_use_declaration { $$ = JoinTuples($1, ContextType.Class); }
-	|	use_type unprefixed_use_declaration { $$ = JoinTuples($2, (ContextType)$1);  }
+		unprefixed_use_declaration { $$ = JoinTuples($1, AliasKind.Type); }
+	|	use_type unprefixed_use_declaration { $$ = JoinTuples($2, (AliasKind)$1);  }
 ;
 
 unprefixed_use_declaration:
 		namespace_name
-			{ $$ = new Alias(new QualifiedNameRef(@$, new QualifiedName($1, true, false)), NameRef.Invalid); }
+			{ $$ = new CompleteAlias(new QualifiedNameRef(@$, new QualifiedName($1, true, false)), NameRef.Invalid); }
 	|	namespace_name T_AS T_STRING
-			{ $$ = new Alias(new QualifiedNameRef(@1, new QualifiedName($1, true, false)), new NameRef(@3, $3)); }
+			{ $$ = new CompleteAlias(new QualifiedNameRef(@1, new QualifiedName($1, true, false)), new NameRef(@3, $3)); }
 ;
 
 use_declaration:
@@ -483,7 +489,7 @@ use_declaration:
 	|	T_NS_SEPARATOR unprefixed_use_declaration 
 			{ 
 				var src = $2;
-				$$ = new Alias(new QualifiedNameRef(CombineSpans(@1, src.Item1.Span), 
+				$$ = new CompleteAlias(new QualifiedNameRef(CombineSpans(@1, src.Item1.Span), 
 					new QualifiedName(src.Item1.QualifiedName.Name, src.Item1.QualifiedName.Namespaces, true)), src.Item2); 
 			}
 ;

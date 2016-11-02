@@ -57,10 +57,13 @@ namespace MyProject\AnotherProject
       "Namespace" : "MyProject\AnotherProject",
       "Aliases" : {
           "cls" : "My\ClassA"
-      }
+      },
+      "ConstantAliases":{},
+      "FunctionAliases":{}
     },    
     "Body":{ 
       "BlockStmt" : {
+        "UseStatement":{"Kind":"Type","Aliases":{"cls":{}}},
         "EchoStmt" : {
           "Span" : {
             "start" : "119",

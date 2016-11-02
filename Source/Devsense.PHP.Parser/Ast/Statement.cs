@@ -13,6 +13,7 @@
 // See the Apache Version 2.0 License for specific language governing
 // permissions and limitations under the License.
 
+using Devsense.PHP.Text;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -324,6 +325,72 @@ namespace Devsense.PHP.Syntax.Ast
         public override void VisitMe(TreeVisitor visitor)
         {
             visitor.VisitDeclareStmt(this);
+        }
+    }
+
+    #endregion
+
+    #region UseStatement
+
+    public abstract class UseBase
+    {
+        private Span _span;
+        public Span Span => _span;
+
+        public UseBase(Span span)
+        {
+            _span = span;
+        }
+    }
+
+    public sealed class SimpleUse : UseBase
+    {
+        private Span _aliasSpan;
+        private Span _nameSpan;
+        private Alias _alias;
+        public Span AliasSpan => _aliasSpan;
+        public Span NameSpan => _nameSpan;
+        public Alias Alias => _alias;
+        public SimpleUse(Span aliasSpan, Span qnameSpan, Alias alias) :
+            base(aliasSpan.IsValid ? Span.Combine(qnameSpan, aliasSpan) : qnameSpan)
+        {
+            _aliasSpan = aliasSpan;
+            _nameSpan = qnameSpan;
+            _alias = alias;
+        }
+    }
+
+    public sealed class GroupUse : UseBase
+    {
+        private Span _prefixSpan;
+        private List<SimpleUse> _uses;
+        public Span PrefixSpan => _prefixSpan;
+        public List<SimpleUse> Uses => _uses;
+        public GroupUse(Span span, Span prefixSpan, List<SimpleUse> uses) :
+            base(span)
+        {
+            _prefixSpan = prefixSpan;
+            _uses = uses;
+        }
+    }
+
+    public class UseStatement : Statement
+    {
+        private AliasKind _kind;
+        private List<UseBase> _uses;
+        public AliasKind Kind => _kind;
+        public List<UseBase> Uses => _uses;
+
+        public UseStatement(Span span, List<UseBase> uses, AliasKind kind) :
+            base(span)
+        {
+            _kind = kind;
+            _uses = uses;
+        }
+
+        public override void VisitMe(TreeVisitor visitor)
+        {
+            visitor.VisitUseStatement(this);
         }
     }
 

@@ -37,6 +37,9 @@ namespace test{
     },
     "Body":{
       "BlockStmt":{
+        "UseStatement":{"Kind":"Function","Aliases":{"foo":{}}},
+        "UseStatement":{"Kind":"Type","Aliases":{"Y":{}}},
+        "UseStatement":{"Kind":"Constant","Aliases":{"lconst":{}}},
         "DirectStFldUse":{"PropertyName":"x","TranslatedTypeRef":{"ClassName":"MySpace\X","OriginalName":"Y"}},
         "ClassConstUse":{"Name":"yConst","TranslatedTypeRef":{"ClassName":"MySpace\X","OriginalName":"Y"}},
         "DirectStFldUse":{"PropertyName":"x","TranslatedTypeRef":{"ClassName":"test\B","OriginalName":"B"}},  

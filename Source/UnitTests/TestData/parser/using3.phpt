@@ -33,5 +33,10 @@ use const \My\Full\{MyA, MyB as MyC};
         "fn_b" : "My\Full\fn_b",
         "fC" : "My\Full\fn_c" 
     }
-  }
+  },
+  "UseStatement":{"Kind":"Type","Aliases":{"ClassA":{}, "ClassB":{}, "C":{}}},
+  "UseStatement":{"Kind":"Type","Aliases":{"MyX":{}, "MyZ":{}}},
+  "UseStatement":{"Kind":"Function","Aliases":{"fn_a":{}, "fn_b":{}, "fC":{}}},
+  "UseStatement":{"Kind":"Constant","Aliases":{"ConstA":{}, "ConstB":{}, "cC":{}}},
+  "UseStatement":{"Kind":"Constant","Aliases":{"MyA":{}, "MyC":{}}}
 }

@@ -56,10 +56,13 @@ echo "world";
       "Namespace" : "MyProject\AnotherProject",
       "Aliases" : {
           "cls" : "My\ClassA"
-      }
+      },
+      "ConstantAliases":{},
+      "FunctionAliases":{}
     },  
     "Body":{
       "BlockStmt":{
+        "UseStatement":{"Kind":"Type","Aliases":{"cls":{}}},
         "EchoStmt" : {
           "Span" : {
             "start" : "110",

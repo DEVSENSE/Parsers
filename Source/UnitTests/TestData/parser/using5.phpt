@@ -17,13 +17,17 @@ namespace test{
     "SimpleSyntax":"False",
     "NamingContext":{
       "Namespace":"test",
+      "Aliases" : {},
       "ConstantAliases":{
         "LCONST":"MySpace\GCONST",
         "lconst":"MySpace\gconst"
-      }
+      },
+      "FunctionAliases":{}
     },
     "Body":{
       "BlockStmt":{
+        "UseStatement":{"Kind":"Constant","Aliases":{"LCONST":{}}},
+        "UseStatement":{"Kind":"Constant","Aliases":{"lconst":{}}},
         "GlobalConstUse":{"Name":"MySpace\gconst","OrigianlName":"lconst","FallbackName":""},
         "GlobalConstUse":{"Name":"MySpace\GCONST","OrigianlName":"LCONST","FallbackName":""}
       }

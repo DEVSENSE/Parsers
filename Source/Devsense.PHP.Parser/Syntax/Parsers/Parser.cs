@@ -24,8 +24,6 @@ using Devsense.PHP.Errors;
 
 namespace Devsense.PHP.Syntax
 {
-    public enum ContextType { Class, Function, Constant }
-
     public partial class Parser
     {
         CompliantLexer _lexer;
@@ -36,7 +34,7 @@ namespace Devsense.PHP.Syntax
         NamespaceDecl _currentNamespace = null;
         readonly Stack<NamingContext> _context = new Stack<NamingContext>();
         NamingContext namingContext => _context.Peek();
-        ContextType _contextType = ContextType.Class;
+        AliasKind _contextType = AliasKind.Type;
         LanguageFeatures _languageFeatures;
 
         /// <summary>
@@ -143,20 +141,9 @@ namespace Devsense.PHP.Syntax
 
         void AssignStatements(List<LangElement> statements)
         {
-            Debug.Assert(statements.All(s => s == null || s is Statement), "Code contains an invalid statement.");
+            Debug.Assert(statements.All(s => s != null && s is Statement), "Code contains an invalid statement.");
 
             bool hasNsSimple = false, hasNsBracket = false, hasStmt = false;
-
-            for (int i = 0; i < statements.Count; i++)
-            {
-                var stmt = (Statement)statements[i];
-                if (stmt == null)
-                {
-                    statements.RemoveAt(i);
-                    i--;
-                    continue;
-                }
-            }
 
             for (int i = 0; i < statements.Count; i++)
             {
@@ -219,52 +206,60 @@ namespace Devsense.PHP.Syntax
             }
         }
 
-        private void AddAlias(Tuple<QualifiedNameRef, NameRef> alias)
+        private SimpleUse AddAlias(Tuple<QualifiedNameRef, NameRef> alias)
         {
-            AddAlias(alias, _contextType);
+            return AddAlias(alias, _contextType);
         }
 
-        private void AddAlias(Tuple<QualifiedNameRef, NameRef> alias, ContextType contextType)
+        private SimpleUse AddAlias(Tuple<QualifiedNameRef, NameRef> alias, AliasKind contextType)
         {
             var aliasName = alias.Item2.HasValue
                 ? alias.Item2
                 : new NameRef(Span.Invalid, alias.Item1.QualifiedName.Name);
 
-            bool added;
+            bool added = false;
             switch (contextType)
             {
-                case ContextType.Class:
+                case AliasKind.Type:
                     added = namingContext.AddAlias(aliasName, alias.Item1);
                     break;
-                case ContextType.Function:
+                case AliasKind.Function:
                     added = namingContext.AddFunctionAlias(aliasName, alias.Item1);
                     break;
-                case ContextType.Constant:
+                case AliasKind.Constant:
                     added = namingContext.AddConstantAlias(aliasName, alias.Item1);
                     break;
-                default:
-                    return;
             }
             if (!added)
             {
                 this.ErrorSink.Error(aliasName.Span.IsValid ? aliasName.Span : alias.Item1.Span, FatalErrors.AliasAlreadyInUse,
                     alias.Item1.QualifiedName.ToString(), aliasName.Name.ToString());
             }
+            return new SimpleUse(aliasName.Span, alias.Item1.Span, new Alias(aliasName, contextType));
         }
 
-        private void AddAlias(List<string> prefix, Tuple<QualifiedNameRef, NameRef> alias)
+        private GroupUse AddAliases(Span span, List<string> prefix, Span prefixSpan, List<Tuple<QualifiedNameRef, NameRef>> aliases)
         {
-            Name[] namespaces = prefix.Select(p => new Name(p)).Concat(alias.Item1.QualifiedName.Namespaces).ToArray();
-            AddAlias(new Tuple<QualifiedNameRef, NameRef>(
-                new QualifiedNameRef(alias.Item1.Span, alias.Item1.QualifiedName.Name, namespaces), alias.Item2));
+            List<SimpleUse> uses = new List<SimpleUse>();
+            foreach (var alias in aliases)
+            {
+                Name[] namespaces = prefix.Select(p => new Name(p)).Concat(alias.Item1.QualifiedName.Namespaces).ToArray();
+                uses.Add(AddAlias(new Tuple<QualifiedNameRef, NameRef>(
+                    new QualifiedNameRef(alias.Item1.Span, alias.Item1.QualifiedName.Name, namespaces), alias.Item2)));
+            }
+            return new GroupUse(span, prefixSpan, uses);
         }
 
-        private void AddAlias(List<string> prefix, Tuple<QualifiedNameRef, NameRef, ContextType> alias)
+        private GroupUse AddAliases(Span span, List<string> prefix, Span prefixSpan, List<Tuple<QualifiedNameRef, NameRef, AliasKind>> aliases)
         {
-            Name[] namespaces = prefix.Select(p => new Name(p)).Concat(alias.Item1.QualifiedName.Namespaces).ToArray();
-            AddAlias(new Tuple<QualifiedNameRef, NameRef>(
-                new QualifiedNameRef(alias.Item1.Span, alias.Item1.QualifiedName.Name, namespaces), alias.Item2),
-                alias.Item3);
+            List<SimpleUse> uses = new List<SimpleUse>();
+            foreach (var alias in aliases)
+            {
+                Name[] namespaces = prefix.Select(p => new Name(p)).Concat(alias.Item1.QualifiedName.Namespaces).ToArray();
+                uses.Add(AddAlias(new Tuple<QualifiedNameRef, NameRef>(
+                    new QualifiedNameRef(alias.Item1.Span, alias.Item1.QualifiedName.Name, namespaces), alias.Item2), alias.Item3));
+            }
+            return new GroupUse(span, prefixSpan, uses);
         }
 
         void PushClassContext(string name, TypeRef type)
@@ -434,7 +429,7 @@ namespace Devsense.PHP.Syntax
             return tref;
         }
 
-        TranslatedQualifiedName TranslateQNRFunction(QualifiedNameRef nref) => TranslateFallbackQualifiedName(nref, this.namingContext.FunctionAliases);
+        TranslatedQualifiedName TranslateQNRFunction(QualifiedNameRef nref) => TranslateFallbackQualifiedName(nref, AliasKind.Function);
 
         private TranslatedQualifiedName TranslateQNRConstant(QualifiedNameRef nref)
         {
@@ -445,18 +440,19 @@ namespace Devsense.PHP.Syntax
                 qname.IsFullyQualifiedName = true;
                 return new TranslatedQualifiedName(qname, nref.Span, qname, null);
             }
-            else return TranslateFallbackQualifiedName(nref, this.namingContext.ConstantAliases);
+            else return TranslateFallbackQualifiedName(nref, AliasKind.Constant);
         }
 
         #endregion
 
-        private TranslatedQualifiedName TranslateFallbackQualifiedName(QualifiedNameRef qname, Dictionary<NameRef, QualifiedNameRef> aliases)
+        private TranslatedQualifiedName TranslateFallbackQualifiedName(QualifiedNameRef qname, AliasKind kind)
         {
             // aliasing
-            QualifiedNameRef tmp;
-            if (qname.QualifiedName.IsSimpleName && aliases != null && aliases.TryGetValue(new NameRef(Span.Invalid, qname.QualifiedName.Name), out tmp))
+            QualifiedName tmp;
+            if (qname.QualifiedName.IsSimpleName && this.namingContext.Aliases != null &&
+                this.namingContext.Aliases.TryGetValue(new Alias(qname.QualifiedName.Name, kind), out tmp))
             {
-                return new TranslatedQualifiedName(tmp.QualifiedName, qname.Span, qname, null);
+                return new TranslatedQualifiedName(tmp, qname.Span, qname, null);
             }
 
             //
@@ -497,7 +493,7 @@ namespace Devsense.PHP.Syntax
             Debug.Assert(!qname.IsReservedClassName);
 
             // do not use current namespace, if there are imported namespace ... will be resolved later
-            return QualifiedName.TryTranslateAlias(qname, this.namingContext.Aliases,
+            return QualifiedName.TryTranslateAlias(qname, AliasKind.Type, this.namingContext.Aliases,
                 (IsInGlobalNamespace) ? (QualifiedName?)null : namingContext.CurrentNamespace.Value, out translated);
         }
 
@@ -563,6 +559,7 @@ namespace Devsense.PHP.Syntax
         /// <returns>Complete block statement.</returns>
         BlockStmt CreateBlock(Span span, List<LangElement> statements)
         {
+            Debug.Assert(statements.All(s => s != null));
             _lexer.DocBlockList.Merge(span, statements, _astFactory);
             return (BlockStmt)_astFactory.Block(span, statements);
         }

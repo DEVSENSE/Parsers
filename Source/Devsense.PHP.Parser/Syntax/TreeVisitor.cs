@@ -166,6 +166,14 @@ namespace Devsense.PHP.Syntax
         }
 
         /// <summary>
+        /// Visits <c>declare</c> statement and its inner statement.
+        /// </summary>
+        virtual public void VisitUseStatement(UseStatement x)
+        {
+            // nothing
+        }
+
+        /// <summary>
         /// Visists a statement representing a PHPDoc
         /// </summary>
         virtual public void VisitPHPDocStmt(PHPDocStmt x)

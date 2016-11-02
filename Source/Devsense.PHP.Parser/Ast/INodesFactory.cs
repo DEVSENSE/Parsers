@@ -84,6 +84,15 @@ namespace Devsense.PHP.Syntax.Ast
         TNode Declare(TSpan span, IEnumerable<LangElement> decls, TNode statementOpt);
 
         /// <summary>
+        /// Create use statement.
+        /// </summary>
+        /// <param name="span">Entire element span.</param>
+        /// <param name="uses">List of all the uses in this statement.</param>
+        /// <param name="kind">Type of the use statement - type, function or constant.</param>
+        /// <returns>Use statement</returns>
+        TNode Use(TSpan span, IEnumerable<UseBase> uses, AliasKind kind);
+
+        /// <summary>
         /// Creates function declaration node.
         /// </summary>
         /// <param name="span">Entire element span.</param>

@@ -28,5 +28,7 @@ use \My\Full\{MyX, function MyY, const MyZ};
         "fB" : "My\Full\fn_b",
         "MyY" : "My\Full\MyY" 
     }
-  }
+  },
+  "UseStatement":{"Kind":"Type","Aliases":{"ClassA":{}, "fn_a":{}, "ConstA":{}, "B":{}, "fB":{}, "cB":{}}},
+  "UseStatement":{"Kind":"Type","Aliases":{"MyX":{}, "MyY":{}, "MyZ":{}}}
 }
