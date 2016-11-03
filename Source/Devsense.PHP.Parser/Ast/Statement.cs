@@ -368,7 +368,13 @@ namespace Devsense.PHP.Syntax.Ast
         public Alias Alias => _alias;
         private readonly Alias _alias;
 
-        public SimpleUse(Span aliasSpan, Span qnameSpan, Alias alias)
+        /// <summary>
+        /// The qualified name.
+        /// </summary>
+        public QualifiedName QualifiedName => _qualifiedName;
+        private readonly QualifiedName _qualifiedName;
+
+        public SimpleUse(Span aliasSpan, Span qnameSpan, Alias alias, QualifiedName qualifiedName)
             : base(aliasSpan.IsValid ? Span.Combine(qnameSpan, aliasSpan) : qnameSpan)
         {
             Debug.Assert(qnameSpan.IsValid);
@@ -376,6 +382,7 @@ namespace Devsense.PHP.Syntax.Ast
             _aliasSpan = aliasSpan;
             _nameSpan = qnameSpan;
             _alias = alias;
+            _qualifiedName = qualifiedName;
         }
     }
 

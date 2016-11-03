@@ -235,7 +235,7 @@ namespace Devsense.PHP.Syntax
                 this.ErrorSink.Error(aliasName.Span.IsValid ? aliasName.Span : alias.Item1.Span, FatalErrors.AliasAlreadyInUse,
                     alias.Item1.QualifiedName.ToString(), aliasName.Name.ToString());
             }
-            return new SimpleUse(aliasName.Span, alias.Item1.Span, new Alias(aliasName, contextType));
+            return new SimpleUse(aliasName.Span, alias.Item1.Span, new Alias(aliasName, contextType), alias.Item1);
         }
 
         private GroupUse AddAliases(Span span, List<string> prefix, Span prefixSpan, List<Tuple<QualifiedNameRef, NameRef>> aliases)
