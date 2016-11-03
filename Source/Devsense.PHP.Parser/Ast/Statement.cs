@@ -334,58 +334,97 @@ namespace Devsense.PHP.Syntax.Ast
 
     public abstract class UseBase
     {
-        private Span _span;
         public Span Span => _span;
+        private readonly Span _span;
 
         public UseBase(Span span)
         {
+            Debug.Assert(span.IsValid);
             _span = span;
         }
     }
 
+    /// <summary>
+    /// Represents a simple alias within use statement in form <c>QNAME as NAME</c> or just <c>QNAME</c>.
+    /// </summary>
     public sealed class SimpleUse : UseBase
     {
-        private Span _aliasSpan;
-        private Span _nameSpan;
-        private Alias _alias;
+        /// <summary>
+        /// Span of <see cref="Alias"/>,
+        /// can be <c>invalid</c>.
+        /// </summary>
         public Span AliasSpan => _aliasSpan;
+        private readonly Span _aliasSpan;
+
+        /// <summary>
+        /// Span of associated qualified name.
+        /// </summary>
         public Span NameSpan => _nameSpan;
+        private readonly Span _nameSpan;
+
+        /// <summary>
+        /// The alias name.
+        /// </summary>
         public Alias Alias => _alias;
-        public SimpleUse(Span aliasSpan, Span qnameSpan, Alias alias) :
-            base(aliasSpan.IsValid ? Span.Combine(qnameSpan, aliasSpan) : qnameSpan)
+        private readonly Alias _alias;
+
+        public SimpleUse(Span aliasSpan, Span qnameSpan, Alias alias)
+            : base(aliasSpan.IsValid ? Span.Combine(qnameSpan, aliasSpan) : qnameSpan)
         {
+            Debug.Assert(qnameSpan.IsValid);
+
             _aliasSpan = aliasSpan;
             _nameSpan = qnameSpan;
             _alias = alias;
         }
     }
 
+    /// <summary>
+    /// Represents a grouped using.
+    /// </summary>
     public sealed class GroupUse : UseBase
     {
-        private Span _prefixSpan;
-        private List<SimpleUse> _uses;
         public Span PrefixSpan => _prefixSpan;
-        public List<SimpleUse> Uses => _uses;
-        public GroupUse(Span span, Span prefixSpan, List<SimpleUse> uses) :
-            base(span)
+        private readonly Span _prefixSpan;
+
+        public SimpleUse[] Uses => _uses;
+        private readonly SimpleUse[] _uses;
+
+        public GroupUse(Span span, Span prefixSpan, List<SimpleUse> uses)
+            : base(span)
         {
+            Debug.Assert(span.IsValid);
+            Debug.Assert(uses != null);
+
             _prefixSpan = prefixSpan;
-            _uses = uses;
+            _uses = uses.ToArray();
         }
     }
 
+    /// <summary>
+    /// Represents <c>use</c> statement within the source code.
+    /// </summary>
     public class UseStatement : Statement
     {
-        private AliasKind _kind;
-        private List<UseBase> _uses;
+        /// <summary>
+        /// The kind of the use statement.
+        /// </summary>
         public AliasKind Kind => _kind;
-        public List<UseBase> Uses => _uses;
+        private readonly AliasKind _kind;
 
-        public UseStatement(Span span, List<UseBase> uses, AliasKind kind) :
-            base(span)
+        /// <summary>
+        /// Collection of actual uses within the statement.
+        /// </summary>
+        public UseBase[] Uses => _uses;
+        private readonly UseBase[] _uses;
+
+        public UseStatement(Span span, List<UseBase> uses, AliasKind kind)
+            : base(span)
         {
+            Debug.Assert(uses != null);
+
             _kind = kind;
-            _uses = uses;
+            _uses = uses.ToArray();
         }
 
         public override void VisitMe(TreeVisitor visitor)

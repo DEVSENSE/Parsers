@@ -999,6 +999,7 @@ namespace Devsense.PHP.Syntax
 
     /// <summary>
     /// Alias structure, contains both the name and type.
+    /// Represents the key to <see cref="NamingContext"/>.
     /// </summary>
     public struct Alias
     {
@@ -1008,12 +1009,12 @@ namespace Devsense.PHP.Syntax
         public readonly Name Name;
 
         /// <summary>
-        /// Type of alias - <see cref="AliasKind.Type"/>, <see cref="AliasKind.Function"/> or <see cref="AliasKind.Constant"/>.
+        /// Type of alias, a type/namespace, function or constant.
         /// </summary>
         public readonly AliasKind Kind;
 
         /// <summary>
-        /// Create new alias.
+        /// Creates new alias.
         /// </summary>
         /// <param name="name">Alias name.</param>
         /// <param name="kind">Alias type.</param>
@@ -1024,21 +1025,23 @@ namespace Devsense.PHP.Syntax
         }
 
         /// <summary>
-        /// Create new alias.
+        /// Creates new alias.
         /// </summary>
         /// <param name="name">Alias name.</param>
         /// <param name="kind">Alias type.</param>
         public Alias(string name, AliasKind kind)
+            :this(new Name(name), kind)
         {
-            Name = new Name(name);
-            Kind = kind;
         }
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
     [DebuggerNonUserCode]
     public sealed class NamingContext
     {
-        class AliasComparer : IEqualityComparer<Alias>
+        sealed class AliasComparer : IEqualityComparer<Alias>
         {
             public static readonly AliasComparer Singleton = new AliasComparer();
 
@@ -1064,7 +1067,6 @@ namespace Devsense.PHP.Syntax
         /// PHP aliases. Can be null.
         /// </summary>
         public Dictionary<Alias, QualifiedName> Aliases => _aliases;
-
         private Dictionary<Alias, QualifiedName> _aliases;
 
         #endregion
@@ -1081,22 +1083,48 @@ namespace Devsense.PHP.Syntax
             this.CurrentNamespace = currentNamespace;
         }
 
-        Dictionary<Alias, QualifiedName> GetOrCreateAliases()
+        Dictionary<Alias, QualifiedName> EnsureAliases()
         {
-            if (_aliases == null)
-                _aliases = new Dictionary<Alias, QualifiedName>(AliasComparer.Singleton);
-            return _aliases;
+            var dict = _aliases;
+            if (dict == null)
+            {
+                _aliases = dict = new Dictionary<Alias, QualifiedName>(AliasComparer.Singleton);
+            }
+
+            return dict;
         }
 
-        private static bool AddAlias(Dictionary<Alias, QualifiedName>/*!*/dict, Name name, AliasKind kind, QualifiedName qname)
+        /// <summary>
+        /// Gets qualified name matching given alias.
+        /// </summary>
+        public bool TryGetAlias(Name name, AliasKind kind, out QualifiedName qname)
         {
+            var dict = _aliases;
+            if (dict != null)
+            {
+                return dict.TryGetValue(new Alias(name, kind), out qname);
+            }
+            else
+            {
+                qname = default(QualifiedName);
+                return false;
+            }
+        }
+
+        private bool AddAlias(Name name, AliasKind kind, QualifiedName qname)
+        {
+            Debug.Assert(!string.IsNullOrEmpty(name.Value));
+
+            var dict = EnsureAliases();
             var count = dict.Count;
             var alias = new Alias(name, kind);
-            if (!dict.ContainsKey(alias))
-                dict.Add(alias, qname);
+
+            //
+            dict[alias] = qname;
+
+            //
             return count != dict.Count;  // item was added
         }
-
 
         /// <summary>
         /// Add an alias into the <see cref="Aliases"/>.
@@ -1106,11 +1134,10 @@ namespace Devsense.PHP.Syntax
         /// <remarks>Used when constructing naming context at runtime.</remarks>
         public bool AddAlias(Name alias, QualifiedName qualifiedName)
         {
-            Debug.Assert(!string.IsNullOrEmpty(alias.Value));
             Debug.Assert(!string.IsNullOrEmpty(qualifiedName.NamespacePhpName));
             Debug.Assert(qualifiedName.NamespacePhpName[0] != QualifiedName.Separator);   // not starting with separator
             
-            return AddAlias(GetOrCreateAliases(), alias, AliasKind.Type, qualifiedName);
+            return AddAlias(alias, AliasKind.Type, qualifiedName);
         }
 
         /// <summary>
@@ -1118,7 +1145,7 @@ namespace Devsense.PHP.Syntax
         /// </summary>
         public bool AddFunctionAlias(Name alias, QualifiedName qname)
         {
-            return AddAlias(GetOrCreateAliases(), alias, AliasKind.Function, qname);
+            return AddAlias(alias, AliasKind.Function, qname);
         }
 
         /// <summary>
@@ -1126,7 +1153,7 @@ namespace Devsense.PHP.Syntax
         /// </summary>
         public bool AddConstantAlias(Name alias, QualifiedName qname)
         {
-            return AddAlias(GetOrCreateAliases(), alias, AliasKind.Constant, qname);
+            return AddAlias(alias, AliasKind.Constant, qname);
         }
 
         #endregion
