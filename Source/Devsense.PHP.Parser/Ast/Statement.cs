@@ -391,19 +391,19 @@ namespace Devsense.PHP.Syntax.Ast
     /// </summary>
     public sealed class GroupUse : UseBase
     {
-        public Span PrefixSpan => _prefixSpan;
-        private readonly Span _prefixSpan;
+        public QualifiedNameRef Prefix => _prefix;
+        private readonly QualifiedNameRef _prefix;
 
         public SimpleUse[] Uses => _uses;
         private readonly SimpleUse[] _uses;
 
-        public GroupUse(Span span, Span prefixSpan, List<SimpleUse> uses)
+        public GroupUse(Span span, QualifiedNameRef prefix, List<SimpleUse> uses)
             : base(span)
         {
             Debug.Assert(span.IsValid);
             Debug.Assert(uses != null);
 
-            _prefixSpan = prefixSpan;
+            _prefix = prefix;
             _uses = uses.ToArray();
         }
     }

@@ -241,25 +241,27 @@ namespace Devsense.PHP.Syntax
         private GroupUse AddAliases(Span span, List<string> prefix, Span prefixSpan, List<Tuple<QualifiedNameRef, NameRef>> aliases)
         {
             List<SimpleUse> uses = new List<SimpleUse>();
+            var prefixNamespaces = prefix.Select(p => new Name(p));
             foreach (var alias in aliases)
             {
-                Name[] namespaces = prefix.Select(p => new Name(p)).Concat(alias.Item1.QualifiedName.Namespaces).ToArray();
+                Name[] namespaces = prefixNamespaces.Concat(alias.Item1.QualifiedName.Namespaces).ToArray();
                 uses.Add(AddAlias(new Tuple<QualifiedNameRef, NameRef>(
                     new QualifiedNameRef(alias.Item1.Span, alias.Item1.QualifiedName.Name, namespaces), alias.Item2)));
             }
-            return new GroupUse(span, prefixSpan, uses);
+            return new GroupUse(span, new QualifiedNameRef(prefixSpan, Name.EmptyBaseName, prefixNamespaces.ToArray()), uses);
         }
 
         private GroupUse AddAliases(Span span, List<string> prefix, Span prefixSpan, List<Tuple<QualifiedNameRef, NameRef, AliasKind>> aliases)
         {
             List<SimpleUse> uses = new List<SimpleUse>();
+            var prefixNamespaces = prefix.Select(p => new Name(p));
             foreach (var alias in aliases)
             {
-                Name[] namespaces = prefix.Select(p => new Name(p)).Concat(alias.Item1.QualifiedName.Namespaces).ToArray();
+                Name[] namespaces = prefixNamespaces.Concat(alias.Item1.QualifiedName.Namespaces).ToArray();
                 uses.Add(AddAlias(new Tuple<QualifiedNameRef, NameRef>(
                     new QualifiedNameRef(alias.Item1.Span, alias.Item1.QualifiedName.Name, namespaces), alias.Item2), alias.Item3));
             }
-            return new GroupUse(span, prefixSpan, uses);
+            return new GroupUse(span, new QualifiedNameRef(prefixSpan, Name.EmptyBaseName, prefixNamespaces.ToArray()), uses);
         }
 
         void PushClassContext(string name, TypeRef type)
