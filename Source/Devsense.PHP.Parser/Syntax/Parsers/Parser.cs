@@ -392,6 +392,10 @@ namespace Devsense.PHP.Syntax
                         }
                         return _astFactory.AliasedTypeReference(span, ClassContexts.Peek().Base.QualifiedName.Value, _astFactory.ReservedTypeReference(span, reserved));
                     }
+                    if (ClassContexts.Count == 0)
+                    {
+                        return _astFactory.ReservedTypeReference(span, reserved);
+                    }
                     return _astFactory.AliasedTypeReference(span, ClassContexts.Peek().Name, _astFactory.ReservedTypeReference(span, reserved));
                 }
             }
