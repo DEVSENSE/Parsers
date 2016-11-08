@@ -383,20 +383,26 @@ namespace Devsense.PHP.Syntax
                 }
                 if (ReservedTypeRef.ReservedTypes.TryGetValue(qname.Name, out reserved))
                 {
-                    if (qname.Name == Name.ParentClassName)
+                    var reservedRef = _astFactory.ReservedTypeReference(span, reserved);
+                    if (ClassContexts.Count != 0)
                     {
-                        if (ClassContexts.Peek().Base == null)
+                        var context = ClassContexts.Peek();
+                        switch (reserved)
                         {
-                            this.ErrorSink.Error(span, FatalErrors.ParentAccessedInParentlessClass);
-                            return _astFactory.ReservedTypeReference(span, reserved);
+                            case ReservedTypeRef.ReservedType.parent:
+                                if (context.Base == null)
+                                {
+                                    this.ErrorSink.Error(span, FatalErrors.ParentAccessedInParentlessClass);
+                                    return reservedRef;
+                                }
+                                return _astFactory.AliasedTypeReference(span, context.Base.QualifiedName.Value, reservedRef);
+                            case ReservedTypeRef.ReservedType.self:
+                                return _astFactory.AliasedTypeReference(span, context.Name, reservedRef);
+                            default:
+                                throw new ArgumentException();
                         }
-                        return _astFactory.AliasedTypeReference(span, ClassContexts.Peek().Base.QualifiedName.Value, _astFactory.ReservedTypeReference(span, reserved));
                     }
-                    if (ClassContexts.Count == 0)
-                    {
-                        return _astFactory.ReservedTypeReference(span, reserved);
-                    }
-                    return _astFactory.AliasedTypeReference(span, ClassContexts.Peek().Name, _astFactory.ReservedTypeReference(span, reserved));
+                    return reservedRef;
                 }
             }
 
