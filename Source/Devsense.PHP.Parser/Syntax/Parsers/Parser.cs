@@ -421,6 +421,16 @@ namespace Devsense.PHP.Syntax
             return types.ToList();
         }
 
+        LangElement CreateIncDec(Span span, LangElement variable, bool inc, bool post)
+        {
+            if (variable is VariableUse)
+            {
+                return _astFactory.IncrementDecrement(span, variable, inc, post);
+            }
+            _errors.Error(variable.Span, FatalErrors.CheckVarUseFault);
+            return variable;
+        }
+
         #region Aliasing
 
         /// <summary>

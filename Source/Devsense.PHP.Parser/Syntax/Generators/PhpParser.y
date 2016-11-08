@@ -1053,10 +1053,10 @@ expr_without_variable:
 			{ $$ = _astFactory.Assignment(@$, $1, $3, Operations.AssignShiftLeft); }
 	|	variable T_SR_EQUAL expr
 			{ $$ = _astFactory.Assignment(@$, $1, $3, Operations.AssignShiftRight); }
-	|	variable T_INC { $$ = _astFactory.IncrementDecrement(@$, (Expression)$1, true,  true); }
-	|	T_INC variable { $$ = _astFactory.IncrementDecrement(@$, (Expression)$2, true,  false); }
-	|	variable T_DEC { $$ = _astFactory.IncrementDecrement(@$, (Expression)$1, false, true); }
-	|	T_DEC variable { $$ = _astFactory.IncrementDecrement(@$, (Expression)$2, false, false); }
+	|	variable T_INC { $$ = CreateIncDec(@$, $1, true, true); }
+	|	T_INC variable { $$ = CreateIncDec(@$, $2, true,  false); }
+	|	variable T_DEC { $$ = CreateIncDec(@$, $1, false, true); }
+	|	T_DEC variable { $$ = CreateIncDec(@$, $2, false, false); }
 	|	expr T_BOOLEAN_OR expr
 			{ $$ = _astFactory.BinaryOperation(@$, Operations.Or,   $1, $3); }
 	|	expr T_BOOLEAN_AND expr

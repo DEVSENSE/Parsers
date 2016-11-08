@@ -2749,16 +2749,16 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 { yyval.Node = _astFactory.Assignment(yypos, value_stack.array[value_stack.top-3].yyval.Node, value_stack.array[value_stack.top-1].yyval.Node, Operations.AssignShiftRight); }
         return;
       case 314: // expr_without_variable -> variable T_INC 
-{ yyval.Node = _astFactory.IncrementDecrement(yypos, (Expression)value_stack.array[value_stack.top-2].yyval.Node, true,  true); }
+{ yyval.Node = CreateIncDec(yypos, value_stack.array[value_stack.top-2].yyval.Node, true, true); }
         return;
       case 315: // expr_without_variable -> T_INC variable 
-{ yyval.Node = _astFactory.IncrementDecrement(yypos, (Expression)value_stack.array[value_stack.top-1].yyval.Node, true,  false); }
+{ yyval.Node = CreateIncDec(yypos, value_stack.array[value_stack.top-1].yyval.Node, true,  false); }
         return;
       case 316: // expr_without_variable -> variable T_DEC 
-{ yyval.Node = _astFactory.IncrementDecrement(yypos, (Expression)value_stack.array[value_stack.top-2].yyval.Node, false, true); }
+{ yyval.Node = CreateIncDec(yypos, value_stack.array[value_stack.top-2].yyval.Node, false, true); }
         return;
       case 317: // expr_without_variable -> T_DEC variable 
-{ yyval.Node = _astFactory.IncrementDecrement(yypos, (Expression)value_stack.array[value_stack.top-1].yyval.Node, false, false); }
+{ yyval.Node = CreateIncDec(yypos, value_stack.array[value_stack.top-1].yyval.Node, false, false); }
         return;
       case 318: // expr_without_variable -> expr T_BOOLEAN_OR expr 
 { yyval.Node = _astFactory.BinaryOperation(yypos, Operations.Or,   value_stack.array[value_stack.top-3].yyval.Node, value_stack.array[value_stack.top-1].yyval.Node); }
