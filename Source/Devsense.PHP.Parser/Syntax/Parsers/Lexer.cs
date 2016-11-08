@@ -812,7 +812,7 @@ namespace Devsense.PHP.Syntax
 
         bool ProcessString(int count, out Tokens token)
         {
-            if (TokenLength > 1 && GetTokenChar(0) == '"' && GetTokenChar(TokenLength - 1) == '"' && GetTokenChar(TokenLength - 2) != '\\')
+            if (TokenLength > 1 && GetTokenChar(0) == '"' && GetTokenChar(TokenLength - 1) == '"' && count == 1)
             {
                 BEGIN(LexicalStates.ST_IN_SCRIPTING);
                 token = ProcessDoubleQuotedString();

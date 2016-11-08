@@ -78,27 +78,37 @@ ST_LOOKING_FOR_VARNAME,ST_VAR_OFFSET,ST_END_HEREDOC,ST_IN_STRING,
 ST_HALT_COMPILER1,ST_HALT_COMPILER2,ST_HALT_COMPILER3>{EOF} {
 	return Tokens.EOF;
 }
-<ST_HEREDOC,ST_NOWDOC,ST_SINGLE_QUOTES,ST_DOUBLE_QUOTES,ST_BACKQUOTE>{EOF} {
-	if(!string.IsNullOrEmpty(GetTokenString()))
+<ST_HEREDOC,ST_NOWDOC,ST_SINGLE_QUOTES,ST_BACKQUOTE>{EOF} {
+	if(TokenLength > 0)
 	{
 		_tokenSemantics.Object = GetTokenString(); 
 		return (Tokens.T_ENCAPSED_AND_WHITESPACE);
 	}
 	return Tokens.EOF;
 }
+<ST_DOUBLE_QUOTES>{EOF} {
+	if(TokenLength > 0)
+	{
+		Tokens token; 
+		if (ProcessString(0, out token)) 
+			return token; 
+		else break;
+	}
+	return Tokens.EOF;
+}
 
 <ST_COMMENT>{EOF} { 
-	if(!string.IsNullOrEmpty(GetTokenString()))
+	if(TokenLength > 0)
 		return Tokens.T_COMMENT; 
 	return Tokens.EOF;
 }
 <ST_ONE_LINE_COMMENT>[?]?{EOF} { 
-	if(!string.IsNullOrEmpty(GetTokenString()))
+	if(TokenLength > 0)
 		return Tokens.T_COMMENT; 
 	return Tokens.EOF;
 }
 <ST_DOC_COMMENT>{EOF} {
-	if(!string.IsNullOrEmpty(GetTokenString()))
+	if(TokenLength > 0)
 	{
 		SetDocBlock(); 
 		return Tokens.T_DOC_COMMENT; 
