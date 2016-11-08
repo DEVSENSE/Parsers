@@ -935,7 +935,7 @@ ST_HALT_COMPILER1,ST_HALT_COMPILER2,ST_HALT_COMPILER3>{EOF} {
 }
 
 <ST_IN_STRING,ST_IN_SHELL,ST_IN_HEREDOC>{ANY_CHAR} { 
-	yyless(1); 
+	_yyless(1); 
 	yy_pop_state(); 
 	yymore(); break; 
 }
