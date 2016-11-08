@@ -87,15 +87,10 @@ namespace Devsense.PHP.Syntax.Ast
 
         /// <summary>
         /// Optional. Catch variable type reference.
-        /// Can be multiple type reference.
+        /// Can be a multiple type reference.
         /// </summary>
         public TypeRef TargetType { get { return this.tref; } }
-        private TypeRef tref;
-
-        /// <summary>
-        /// Catch type reference.
-        /// </summary>
-        public TypeRef TypeRef { get { return tref; } }
+        private readonly TypeRef tref;
 
         public CatchItem(Text.Span p, TypeRef tref, DirectVarUse/*!*/ variable,
             BlockStmt body)

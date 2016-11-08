@@ -468,7 +468,7 @@ namespace Devsense.PHP.Syntax.Ast.Serialization
         override public void VisitCatchItem(CatchItem x)
         {
             _serializer.StartSerialize(typeof(CatchItem).Name, SerializeSpan(x.Span));
-            SerializeOptionalProperty("TypeRef", x.TypeRef);
+            SerializeOptionalProperty("TypeRef", x.TargetType);
             SerializeOptionalProperty("Variable", x.Variable);
             SerializeOptionalProperty("Body", x.Body);
             _serializer.EndSerialize();

@@ -882,7 +882,7 @@ namespace Devsense.PHP.Syntax
         /// <param name="x"></param>
         virtual public void VisitCatchItem(CatchItem x)
         {
-            VisitElement(x.TypeRef);
+            VisitElement(x.TargetType);
             VisitElement(x.Variable);
             VisitElement(x.Body);
         }
