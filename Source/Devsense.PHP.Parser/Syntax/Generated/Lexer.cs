@@ -1387,7 +1387,7 @@ using System.Collections.Generic;
 				case 170:
 					// #line 338
 					{
-						yyless(0);
+						_yyless(1);
 						if (!yy_pop_state()) return Tokens.T_ERROR;
 						break;
 					}
@@ -1411,7 +1411,7 @@ using System.Collections.Generic;
 				case 173:
 					// #line 690
 					{
-						yyless(0);
+						_yyless(1);
 						if (!yy_pop_state()) return Tokens.T_ERROR;
 						yy_push_state(LexicalStates.ST_IN_SCRIPTING);
 						break;
@@ -1421,7 +1421,7 @@ using System.Collections.Generic;
 				case 174:
 					// #line 681
 					{
-						yyless(TokenLength - 1);
+						_yyless(1);
 						this._tokenSemantics.Object = GetTokenString();
 						yy_pop_state();
 						yy_push_state(LexicalStates.ST_IN_SCRIPTING);
@@ -1521,7 +1521,7 @@ using System.Collections.Generic;
 					// #line 803
 					{
 						/* Invalid rule to return a more explicit parse error with proper line number */
-						yyless(0);
+						_yyless(1);
 						yy_pop_state();
 						return (Tokens.T_ENCAPSED_AND_WHITESPACE);
 					}
@@ -1673,7 +1673,7 @@ using System.Collections.Generic;
 				case 209:
 					// #line 909
 					{
-						yyless(TokenLength - 1);
+						_yyless(1);
 						yy_push_state(LexicalStates.ST_VAR_OFFSET);
 						return ProcessVariable();
 					}
@@ -1682,7 +1682,7 @@ using System.Collections.Generic;
 				case 210:
 					// #line 903
 					{
-						yyless(TokenLength - 3);
+						_yyless(3);
 						yy_push_state(LexicalStates.ST_LOOKING_FOR_PROPERTY);
 						return ProcessVariable();
 					}

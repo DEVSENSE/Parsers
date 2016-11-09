@@ -336,7 +336,7 @@ ST_HALT_COMPILER1,ST_HALT_COMPILER2,ST_HALT_COMPILER3>{EOF} {
 }
 
 <ST_LOOKING_FOR_PROPERTY>{ANY_CHAR} {
-	yyless(0);
+	_yyless(1);
 	if (!yy_pop_state()) return Tokens.T_ERROR;
 	break;
 }
@@ -679,7 +679,7 @@ ST_HALT_COMPILER1,ST_HALT_COMPILER2,ST_HALT_COMPILER3>{EOF} {
 
 
 <ST_LOOKING_FOR_VARNAME>{LABEL}[[}] {
-	yyless(TokenLength - 1);
+	_yyless(1);
 	this._tokenSemantics.Object = GetTokenString();
 	yy_pop_state();
 	yy_push_state(LexicalStates.ST_IN_SCRIPTING);
@@ -688,7 +688,7 @@ ST_HALT_COMPILER1,ST_HALT_COMPILER2,ST_HALT_COMPILER3>{EOF} {
 
 
 <ST_LOOKING_FOR_VARNAME>{ANY_CHAR} {
-	yyless(0);
+	_yyless(1);
 	if (!yy_pop_state()) return Tokens.T_ERROR;
 	yy_push_state(LexicalStates.ST_IN_SCRIPTING);
 	break;
@@ -802,7 +802,7 @@ ST_HALT_COMPILER1,ST_HALT_COMPILER2,ST_HALT_COMPILER3>{EOF} {
 
 <ST_VAR_OFFSET>[ \n\r\t\\'#] {
 	/* Invalid rule to return a more explicit parse error with proper line number */
-	yyless(0);
+	_yyless(1);
 	yy_pop_state();
 	return (Tokens.T_ENCAPSED_AND_WHITESPACE);
 }
@@ -901,13 +901,13 @@ ST_HALT_COMPILER1,ST_HALT_COMPILER2,ST_HALT_COMPILER3>{EOF} {
 }
 
 <ST_IN_STRING,ST_IN_SHELL,ST_IN_HEREDOC>"$"{LABEL}"->"[a-zA-Z_\x80-\xff] {
-	yyless(TokenLength - 3);
+	_yyless(3);
 	yy_push_state(LexicalStates.ST_LOOKING_FOR_PROPERTY);
 	return ProcessVariable();
 }
 
 <ST_IN_STRING,ST_IN_SHELL,ST_IN_HEREDOC>"$"{LABEL}"[" {
-	yyless(TokenLength - 1);
+	_yyless(1);
 	yy_push_state(LexicalStates.ST_VAR_OFFSET);
 	return ProcessVariable();
 }
