@@ -89,10 +89,7 @@ ST_HALT_COMPILER1,ST_HALT_COMPILER2,ST_HALT_COMPILER3>{EOF} {
 <ST_DOUBLE_QUOTES>{EOF} {
 	if(TokenLength > 0)
 	{
-		Tokens token; 
-		if (ProcessString(0, out token)) 
-			return token; 
-		else break;
+		return ProcessStringEOF(); 
 	}
 	return Tokens.EOF;
 }

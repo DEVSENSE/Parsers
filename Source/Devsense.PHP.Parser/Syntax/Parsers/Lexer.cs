@@ -810,6 +810,20 @@ namespace Devsense.PHP.Syntax
             return label.Length - _hereDocLabel.Length > 0;
         }
 
+        Tokens ProcessStringEOF()
+        {
+            if (TokenLength > 1 && GetTokenChar(0) == '"')
+            {
+                _yyless(TokenLength - 1);
+                return Tokens.T_DOUBLE_QUOTES;
+            }
+            else
+            {
+                this._tokenSemantics.Object = ProcessEscapedStringWithEnding(GetTokenString(), _encoding, false, '"');
+                return Tokens.T_ENCAPSED_AND_WHITESPACE;
+            }
+        }
+
         bool ProcessString(int count, out Tokens token)
         {
             if (TokenLength > 1 && GetTokenChar(0) == '"' && GetTokenChar(TokenLength - 1) == '"' && count == 1)
