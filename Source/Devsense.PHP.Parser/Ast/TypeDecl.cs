@@ -340,7 +340,7 @@ namespace Devsense.PHP.Syntax.Ast
     public abstract class TypeMemberDecl : LangElement
 	{
         public PhpMemberAttributes Modifiers { get { return modifiers; } }
-		protected PhpMemberAttributes modifiers;
+		protected readonly PhpMemberAttributes modifiers;
 
         /// <summary>
         /// Gets collection of CLR attributes annotating this statement.
@@ -351,11 +351,12 @@ namespace Devsense.PHP.Syntax.Ast
             set { this.SetCustomAttributes(value); }
         }
 
-        protected TypeMemberDecl(Text.Span span, List<CustomAttribute> attributes)
+        protected TypeMemberDecl(Text.Span span, PhpMemberAttributes modifiers, List<CustomAttribute> attributes)
             : base(span)
 		{
             if (attributes != null && attributes.Count != 0)
 			    this.Attributes = new CustomAttributes(attributes);
+            this.modifiers = modifiers;
 		}
 	}
 
@@ -401,11 +402,10 @@ namespace Devsense.PHP.Syntax.Ast
             IList<FormalTypeParam>/*!*/ genericParams,  BlockStmt body,
             PhpMemberAttributes modifiers, IList<ActualParam> baseCtorParams, 
 			List<CustomAttribute> attributes, TypeRef returnType)
-            : base(span, attributes)
+            : base(span, modifiers, attributes)
         {
             Debug.Assert(genericParams != null && formalParams != null);
 
-            this.modifiers = modifiers;
             this.name = name;
             this.signature = new Signature(aliasReturn, formalParams);
             this.typeSignature = new TypeSignature(genericParams);
@@ -455,11 +455,9 @@ namespace Devsense.PHP.Syntax.Ast
 
 		public FieldDeclList(Text.Span span, PhpMemberAttributes modifiers, List<FieldDecl>/*!*/ fields,
 			List<CustomAttribute> attributes)
-            : base(span, attributes)
+            : base(span, modifiers, attributes)
 		{
 			Debug.Assert(fields != null);
-
-			this.modifiers = modifiers;
 			this.fields = fields;
 		}
 
@@ -556,15 +554,10 @@ namespace Devsense.PHP.Syntax.Ast
         private readonly List<ClassConstantDecl>/*!*/ constants;
         
 		public ConstDeclList(Text.Span span, PhpMemberAttributes modifiers, List<ClassConstantDecl>/*!*/ constants, List<CustomAttribute> attributes)
-            : base(span, attributes)
+            : base(span, modifiers, attributes)
 		{
 			Debug.Assert(constants != null);
-
-            this.modifiers = modifiers;
 			this.constants = constants;
-
-			//class constants never have modifiers
-			modifiers = PhpMemberAttributes.Public;
 		}
 
         /// <summary>
@@ -740,7 +733,7 @@ namespace Devsense.PHP.Syntax.Ast
         public int HeadingEndPosition => traitsList.Last().Span.End;
 
         public TraitsUse(Text.Span span, List<QualifiedNameRef>/*!*/traitsList, TraitAdaptationBlock traitAdaptationBlock)
-            : base(span, null)
+            : base(span, PhpMemberAttributes.Public, null)
         {
             if (traitsList == null)
                 throw new ArgumentNullException("traitsList");
