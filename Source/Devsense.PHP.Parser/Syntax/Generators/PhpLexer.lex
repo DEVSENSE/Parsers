@@ -797,12 +797,12 @@ ST_HALT_COMPILER1,ST_HALT_COMPILER2,ST_HALT_COMPILER3>{EOF} {
 	return (Tokens)GetTokenChar(0);
 }
 
-<ST_VAR_OFFSET>[ \n\r\t\\'#] {
-	/* Invalid rule to return a more explicit parse error with proper line number */
-	_yyless(1);
-	yy_pop_state();
-	return (Tokens.T_ENCAPSED_AND_WHITESPACE);
-}
+%<ST_VAR_OFFSET>[ \n\r\t\\'#] {
+%	/* Invalid rule to return a more explicit parse error with proper line number */
+%	_yyless(1);
+%	yy_pop_state();
+%	return (Tokens.T_ENCAPSED_AND_WHITESPACE);
+%}
 
 <ST_IN_SCRIPTING,ST_VAR_OFFSET>{LABEL} {
 	return ProcessLabel();

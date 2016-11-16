@@ -37,8 +37,8 @@ namespace Devsense.PHP.Syntax.Ast
 		/// <summary>
 		/// Variable used as an array identifier.
 		/// </summary>
-        public VarLikeConstructUse Array { get { return array; } set { array = value; } }
-        private VarLikeConstructUse/*!*/ array;
+        public Expression Array { get { return array; } set { array = value; } }
+        private Expression/*!*/ array;
 
 		/// <summary>
 		/// Expression used as an array index. 
@@ -47,7 +47,7 @@ namespace Devsense.PHP.Syntax.Ast
         public Expression Index { get { return index; } internal set { index = value; } }
 		private Expression index;
 
-        public ItemUse(Text.Span p, VarLikeConstructUse/*!*/ array, Expression index, bool functionArrayDereferencing = false)
+        public ItemUse(Text.Span p, Expression/*!*/ array, Expression index, bool functionArrayDereferencing = false)
 			: base(p)
 		{
 			Debug.Assert(array != null);

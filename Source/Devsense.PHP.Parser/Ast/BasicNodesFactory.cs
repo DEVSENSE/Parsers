@@ -48,7 +48,7 @@ namespace Devsense.PHP.Syntax.Ast
 
         public virtual LangElement ArrayItem(Span span, LangElement expression, LangElement indexOpt)
         {
-            return new ItemUse(span, (VarLikeConstructUse)expression, (Expression)indexOpt);
+            return new ItemUse(span, (Expression)expression, (Expression)indexOpt);
         }
         public virtual Item ArrayItemValue(Span span, LangElement indexOpt, LangElement valueExpr)
         {
