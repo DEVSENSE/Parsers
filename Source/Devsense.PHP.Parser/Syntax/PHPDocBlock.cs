@@ -1544,10 +1544,13 @@ namespace Devsense.PHP.Syntax
             {
                 Debug.Assert(!string.IsNullOrEmpty(paramDecl));
 
+                // TODO: spans
+
                 TypeRef typehint = null;
                 string paramname = string.Empty;
                 Span paramnamespan = Span.Invalid;
                 bool byref = false;
+                Expression initExpr = null;
 
                 int i = 0;
                 var word = NextWord(paramDecl, ref i);
@@ -1556,7 +1559,7 @@ namespace Devsense.PHP.Syntax
                     // [type]
                     if (word.Length > 0 && word[0] != '$')
                     {
-                        typehint = TypeRef.FromString(new Span(i - word.Length, word.Length), word);    // TODO: naming, Span
+                        typehint = TypeRef.FromString(new Span(i - word.Length, word.Length), word);    // TODO: naming
                         word = NextWord(paramDecl, ref i);
                     }
 
@@ -1567,14 +1570,68 @@ namespace Devsense.PHP.Syntax
                         paramname = ((eqIndex == -1) ? word : word.Remove(eqIndex));
 
                         byref = paramname.IndexOf('&') != -1;
-                        paramname = paramname.TrimStart(new char[] { '$', '&' });
+                        paramname = paramname.TrimStart(new char[] { '$', '&' }).Trim();
+
+                        if (eqIndex > 0)
+                        {
+                            initExpr = TryParseInitValue(Span.Invalid, word.Substring(eqIndex + 1).Trim());
+                        }
                     }
                 }
 
                 return new FormalParam(
                     Span.Invalid, paramname, paramnamespan, typehint,
                     byref ? FormalParam.Flags.IsByRef : FormalParam.Flags.Default,
-                    null, null);
+                    initExpr, null);
+            }
+
+            /// <summary>
+            /// Parses a default parameter value from a string.
+            /// </summary>
+            /// <param name="span">Value position within source code.</param>
+            /// <param name="value">Parameter initializer as it is in PHPDoc string.</param>
+            /// <returns>Optional parsed expression. Returns <c>null</c> is value could not be parsed or is empty.</returns>
+            private static Expression TryParseInitValue(Span span, string value)
+            {
+                if (string.IsNullOrEmpty(value))
+                {
+                    return null;
+                }
+
+                long l;
+                bool b;
+                double d;
+
+                if (value == "[]" || value == "array()")
+                {
+                    return new ArrayEx(Span.Invalid, EmptyArray<Item>.Instance);
+                }
+                else if (long.TryParse(value, out l))
+                {
+                    return new LongIntLiteral(Span.Invalid, l);
+                }
+                else if (double.TryParse(value, out d))
+                {
+                    return new DoubleLiteral(Span.Invalid, d);
+                }
+                else if (bool.TryParse(value, out b))
+                {
+                    return new BoolLiteral(Span.Invalid, b);
+                }
+                else if (value == "\"\"")
+                {
+                    return new StringLiteral(Span.Invalid, string.Empty);
+                }
+                //else if (char.IsLetter(value[0]))
+                //{
+                //    return new GlobalConstUse(Span.Invalid, )
+                //}
+                else
+                {
+                    Debug.WriteLine("PHPDoc @method tag parameter init value {0} was not handled.", value);
+                }
+
+                return null;
             }
 
             #region Helpers
