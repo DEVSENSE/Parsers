@@ -1552,6 +1552,14 @@ namespace Devsense.PHP.Syntax
                 bool byref = false;
                 Expression initExpr = null;
 
+                // Trim [=initializer] off
+                int eqIndex = paramDecl.IndexOf('=');
+                if (eqIndex >= 0)
+                {
+                    initExpr = TryParseInitValue(Span.Invalid, paramDecl.Substring(eqIndex + 1).Trim());
+                    paramDecl = paramDecl.Remove(eqIndex);
+                }
+
                 int i = 0;
                 var word = NextWord(paramDecl, ref i);
                 if (word != null)
@@ -1566,16 +1574,11 @@ namespace Devsense.PHP.Syntax
                     // [$name][=initializer]
                     if (word != null && word.Length > 0 && word[0] == '$')
                     {
-                        int eqIndex = word.IndexOf('=');
+                        eqIndex = word.IndexOf('=');
                         paramname = ((eqIndex == -1) ? word : word.Remove(eqIndex));
 
                         byref = paramname.IndexOf('&') != -1;
                         paramname = paramname.TrimStart(new char[] { '$', '&' }).Trim();
-
-                        if (eqIndex > 0)
-                        {
-                            initExpr = TryParseInitValue(Span.Invalid, word.Substring(eqIndex + 1).Trim());
-                        }
                     }
                 }
 
