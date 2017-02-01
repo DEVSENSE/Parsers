@@ -32,6 +32,8 @@ namespace UnitTests
             var factory = new AstCounterFactory(sourceUnit);
             var errors = new TestErrorSink();
 
+            bool expectErrors = testparts[1].TrimStart().StartsWith(ParserTests.Errors);
+
             GlobalCode ast = null;
 
             Parser parser = new Parser();
@@ -40,14 +42,21 @@ namespace UnitTests
                 sourceUnit.Parse(factory, errors);
                 ast = sourceUnit.Ast;
             }
-            Assert.AreEqual(0, errors.Count, path);
+            if (expectErrors)
+            {
+                Assert.AreEqual(1, errors.Count, path);
+            }
+            else
+            {
+                Assert.AreEqual(0, errors.Count, path);
 
-            // check every node has a parent
-            var checker = new TreeVisitorCheck();
-            checker.VisitElement(ast);
-            Assert.AreEqual(factory.CreatedElements.Count, checker.VisitedElements.Count, path);
-            Assert.AreEqual(factory.ItemCount, checker.ItemCount, path);
-            Assert.AreEqual(factory.ForeachVarCount, checker.ForeachVarCount, path);
+                // check every node has a parent
+                var checker = new TreeVisitorCheck();
+                checker.VisitElement(ast);
+                Assert.AreEqual(factory.CreatedElements.Count, checker.VisitedElements.Count, path);
+                Assert.AreEqual(factory.ItemCount, checker.ItemCount, path);
+                Assert.AreEqual(factory.ForeachVarCount, checker.ForeachVarCount, path);
+            }
         }
 
         class LangElementComparer : IEqualityComparer<LangElement>

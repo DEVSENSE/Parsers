@@ -19,6 +19,9 @@ namespace UnitTests
     public class ParserTests
     {
         public TestContext TestContext { get; set; }
+        public const string Errors = "ERRORS:";
+        const string Pattern = @"\s*" + Errors + @"\s*(?<Number>\d*)\s*(?<JSON>.*)";
+        private Regex ErrorRegex = new Regex(Pattern, RegexOptions.Compiled | RegexOptions.Singleline);
 
         [TestMethod]
         [DataSource("Microsoft.VisualStudio.TestTools.DataSource.CSV", "|DataDirectory|\\ParserTestData.csv", "ParserTestData#csv", DataAccessMethod.Sequential)]
@@ -42,7 +45,20 @@ namespace UnitTests
                 sourceUnit.Parse(factory, errors);
                 ast = sourceUnit.Ast;
             }
-            Assert.AreEqual(0, errors.Count, path);
+            if (testparts[1].TrimStart().StartsWith(Errors))
+            {
+                var matches = ErrorRegex.Matches(testparts[1]);
+                Assert.AreEqual(1, matches.Count, path);
+                Assert.AreEqual(1, errors.Count, path);
+                int errorid = 0;
+                Assert.IsTrue(int.TryParse(matches[0].Groups["Number"].Value, out errorid), path);
+                Assert.AreEqual(errorid, errors.Errors.Single().Error.Id, path);
+                testparts[1] = matches[0].Groups["JSON"].Value;
+            }
+            else
+            {
+                Assert.AreEqual(0, errors.Count, path);
+            }
 
             var serializer = new JsonNodeWriter();
             TreeSerializer visitor = new TreeSerializer(serializer);
@@ -51,7 +67,6 @@ namespace UnitTests
             Regex rgx = new Regex(@"""Span""[^}]*},?\s*\n?"); // omit Span for more compact testing (position must be verified separately)
             string expected = rgx.Replace(testparts[1].Trim().Replace("\r", string.Empty).Replace("\n", string.Empty).Replace(" ", string.Empty), string.Empty);
             string actual = rgx.Replace(serializer.ToString().Replace("\r", string.Empty).Replace("\n", string.Empty).Replace(" ", string.Empty), string.Empty);
-
 
             if (testparts[1].Trim() != "<<<IGNORE>>>")
             {

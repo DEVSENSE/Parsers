@@ -335,6 +335,14 @@ namespace Devsense.PHP.Syntax.Ast.Serialization
             base.VisitIndirectVarUse(x);
             _serializer.EndSerialize();
         }
+
+        public override void VisitStringLiteralDereferenceEx(StringLiteralDereferenceEx x)
+        {
+            _serializer.StartSerialize(typeof(StringLiteralDereferenceEx).Name, SerializeSpan(x.Span));
+            SerializeOptionalProperty("Literal", x.StringExpr);
+            SerializeOptionalProperty("Index", x.KeyExpr);
+            _serializer.EndSerialize();
+        }
         override public void VisitDirectStFldUse(DirectStFldUse x)
         {
             _serializer.StartSerialize(typeof(DirectStFldUse).Name, SerializeSpan(x.Span),

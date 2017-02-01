@@ -3314,7 +3314,7 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 { yyval.NodeList = AddToList<LangElement>(value_stack.array[value_stack.top-3].yyval.NodeList, value_stack.array[value_stack.top-1].yyval.Node); }
         return;
       case 494: // isset_variable -> expr 
-{ System.Diagnostics.Debug.Assert(value_stack.array[value_stack.top-1].yyval.Node is VarLikeConstructUse); yyval.Node = value_stack.array[value_stack.top-1].yyval.Node; }
+{ yyval.Node = CreateIssetVar(value_stack.array[value_stack.top-1].yyval.Node); }
         return;
     }
   }

@@ -1453,7 +1453,7 @@ isset_variables:
 ;
 
 isset_variable:
-		expr { System.Diagnostics.Debug.Assert($1 is VarLikeConstructUse); $$ = $1; }
+		expr { $$ = CreateIssetVar($1); }
 ;
 
 %%

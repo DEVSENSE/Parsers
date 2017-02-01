@@ -431,6 +431,16 @@ namespace Devsense.PHP.Syntax
             return variable;
         }
 
+        VariableUse CreateIssetVar(LangElement node)
+        {
+            if (node is VariableUse)
+            {
+                return node as VariableUse;
+            }
+            _errors.Error(node.Span, FatalErrors.CheckVarUseFault);
+            return null;
+        }
+
         #region Aliasing
 
         /// <summary>
