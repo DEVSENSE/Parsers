@@ -73,7 +73,7 @@ NonVariableStart        [^a-zA-Z_{]
 
 %%
 
-<INITIAL,ST_IN_SCRIPTING,ST_NEWDOC,ST_LOOKING_FOR_PROPERTY,
+<ST_IN_SCRIPTING,ST_NEWDOC,ST_LOOKING_FOR_PROPERTY,
 ST_LOOKING_FOR_VARNAME,ST_VAR_OFFSET,ST_END_HEREDOC,ST_IN_STRING,
 ST_HALT_COMPILER1,ST_HALT_COMPILER2,ST_HALT_COMPILER3>{EOF} {
 	return Tokens.EOF;
@@ -90,6 +90,15 @@ ST_HALT_COMPILER1,ST_HALT_COMPILER2,ST_HALT_COMPILER3>{EOF} {
 	if(TokenLength > 0)
 	{
 		return ProcessStringEOF(); 
+	}
+	return Tokens.EOF;
+}
+
+<INITIAL>{EOF} { 
+	if(TokenLength > 0)
+	{
+		this._tokenSemantics.Object = GetTokenString();
+		return Tokens.T_INLINE_HTML;
 	}
 	return Tokens.EOF;
 }
@@ -755,18 +764,27 @@ ST_HALT_COMPILER1,ST_HALT_COMPILER2,ST_HALT_COMPILER3>{EOF} {
 	return (Tokens.T_NS_C);
 }
 
-<INITIAL>(([^<]|<[^?])+) {
-    this._tokenSemantics.Object = GetTokenString();
-	return Tokens.T_INLINE_HTML; 
-}
-
 <INITIAL>"<?=" {
+	if (TokenLength > 3)
+	{
+		string text = GetTokenString();
+		_yyless(Math.Abs(text.LastIndexOf('<') - text.Length));
+		this._tokenSemantics.Object = text.Substring(0, text.LastIndexOf('<'));
+		return Tokens.T_INLINE_HTML; 
+	}
 	BEGIN(LexicalStates.ST_IN_SCRIPTING);
 	return (Tokens.T_OPEN_TAG_WITH_ECHO);
 }
 
 
 <INITIAL>"<?php"([ \t]|{NEWLINE}) {
+	if (GetTokenString().LastIndexOf('<') != 0)
+	{
+		string text = GetTokenString();
+		_yyless(Math.Abs(text.LastIndexOf('<') - text.Length));
+		this._tokenSemantics.Object = text.Substring(0, text.LastIndexOf('<'));
+		return Tokens.T_INLINE_HTML; 
+	}
 	//HANDLE_NEWLINE(yytext[yyleng-1]);
 	BEGIN(LexicalStates.ST_IN_SCRIPTING);
 	return (Tokens.T_OPEN_TAG);
@@ -774,6 +792,13 @@ ST_HALT_COMPILER1,ST_HALT_COMPILER2,ST_HALT_COMPILER3>{EOF} {
 
 
 <INITIAL>"<?" {
+	if (TokenLength > 2)
+	{
+		string text = GetTokenString();
+		_yyless(Math.Abs(text.LastIndexOf('<') - text.Length));
+		this._tokenSemantics.Object = text.Substring(0, text.LastIndexOf('<'));
+		return Tokens.T_INLINE_HTML; 
+	}
 	if (this._allowShortTags) {
 		BEGIN(LexicalStates.ST_IN_SCRIPTING);
 		return (Tokens.T_OPEN_TAG);
@@ -783,8 +808,7 @@ ST_HALT_COMPILER1,ST_HALT_COMPILER2,ST_HALT_COMPILER3>{EOF} {
 }
 
 <INITIAL>{ANY_CHAR} {
-	
-	return Tokens.T_ERROR;
+	yymore(); break;
 }
 
 <ST_VAR_OFFSET>"]" {
