@@ -812,7 +812,7 @@ namespace Devsense.PHP.Syntax
             {
                 _tokenSemantics.Object = text.Remove(text.Length - 2);
             }
-            else if (text.Length > 0 && IsNewLineCharacter(text[text.Length-1]))
+            else if (text.Length > 0 && IsNewLineCharacter(text[text.Length - 1]))
             {
                 _tokenSemantics.Object = text.Remove(text.Length - 1);
             }
@@ -831,6 +831,35 @@ namespace Devsense.PHP.Syntax
                 this._tokenSemantics.Object = ProcessEscapedStringWithEnding(GetTokenString(), _encoding, false, '"');
                 return Tokens.T_ENCAPSED_AND_WHITESPACE;
             }
+        }
+
+        bool ProcessPreOpenTag()
+        {
+            string text = GetTokenString();
+            int pos = text.LastIndexOf('<');
+            if (pos != 0)
+            {
+                _yyless(Math.Abs(pos - text.Length));
+                this._tokenSemantics.Object = text.Remove(pos);
+                return true;
+            }
+            return false;
+        }
+
+        Tokens ProcessEof(Tokens token)
+        {
+            if (TokenLength > 0)
+            {
+                this._tokenSemantics.Object = GetTokenString();
+                return token;
+            }
+            return Tokens.EOF;
+        }
+
+        Tokens ProcessToken(Tokens token)
+        {
+            this._tokenSemantics.Object = GetTokenString();
+            return token;
         }
 
         bool ProcessString(int count, out Tokens token)

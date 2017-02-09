@@ -79,12 +79,7 @@ ST_HALT_COMPILER1,ST_HALT_COMPILER2,ST_HALT_COMPILER3>{EOF} {
 	return Tokens.EOF;
 }
 <ST_HEREDOC,ST_NOWDOC,ST_SINGLE_QUOTES,ST_BACKQUOTE>{EOF} {
-	if(TokenLength > 0)
-	{
-		_tokenSemantics.Object = GetTokenString(); 
-		return (Tokens.T_ENCAPSED_AND_WHITESPACE);
-	}
-	return Tokens.EOF;
+	return ProcessEof(Tokens.T_ENCAPSED_AND_WHITESPACE);
 }
 <ST_DOUBLE_QUOTES>{EOF} {
 	if(TokenLength > 0)
@@ -95,24 +90,17 @@ ST_HALT_COMPILER1,ST_HALT_COMPILER2,ST_HALT_COMPILER3>{EOF} {
 }
 
 <INITIAL>{EOF} { 
-	if(TokenLength > 0)
-	{
-		this._tokenSemantics.Object = GetTokenString();
-		return Tokens.T_INLINE_HTML;
-	}
-	return Tokens.EOF;
+	return ProcessEof(Tokens.T_INLINE_HTML);
 }
 
 <ST_COMMENT>{EOF} { 
-	if(TokenLength > 0)
-		return Tokens.T_COMMENT; 
-	return Tokens.EOF;
+	return ProcessEof(Tokens.T_COMMENT);
 }
+
 <ST_ONE_LINE_COMMENT>[?]?{EOF} { 
-	if(TokenLength > 0)
-		return Tokens.T_COMMENT; 
-	return Tokens.EOF;
+	return ProcessEof(Tokens.T_COMMENT);
 }
+
 <ST_DOC_COMMENT>{EOF} {
 	if(TokenLength > 0)
 	{
@@ -123,203 +111,163 @@ ST_HALT_COMPILER1,ST_HALT_COMPILER2,ST_HALT_COMPILER3>{EOF} {
 }
 
 <ST_IN_SCRIPTING>"exit" { 
-	this._tokenSemantics.Object = GetTokenString();
-	return (Tokens.T_EXIT); 
+	return ProcessToken(Tokens.T_EXIT);
 }
 
 <ST_IN_SCRIPTING>"die" {
-	this._tokenSemantics.Object = GetTokenString();
-	return (Tokens.T_EXIT);
+	return ProcessToken(Tokens.T_EXIT);
 }
 
 <ST_IN_SCRIPTING>"function" {
-	this._tokenSemantics.Object = GetTokenString();
-	return (Tokens.T_FUNCTION);
+	return ProcessToken(Tokens.T_FUNCTION);
 }
 
 <ST_IN_SCRIPTING>"const" {
-	this._tokenSemantics.Object = GetTokenString();
-	return (Tokens.T_CONST);
+	return ProcessToken(Tokens.T_CONST);
 }
 
 <ST_IN_SCRIPTING>"return" {
-	this._tokenSemantics.Object = GetTokenString();
-	return (Tokens.T_RETURN);
+	return ProcessToken(Tokens.T_RETURN);
 }
 
 <ST_IN_SCRIPTING>"yield"{WHITESPACE}"from" {
-	//HANDLE_NEWLINES(yytext, yyleng);
-	return (Tokens.T_YIELD_FROM);
+	return Tokens.T_YIELD_FROM;
 }
 
 <ST_IN_SCRIPTING>"yield" {
-	this._tokenSemantics.Object = GetTokenString();
-	return (Tokens.T_YIELD);
+	return ProcessToken(Tokens.T_YIELD);
 }
 
 <ST_IN_SCRIPTING>"try" {
-	this._tokenSemantics.Object = GetTokenString();
-	return (Tokens.T_TRY);
+	return ProcessToken(Tokens.T_TRY);
 }
 
 <ST_IN_SCRIPTING>"catch" {
-	this._tokenSemantics.Object = GetTokenString();
-	return (Tokens.T_CATCH);
+	return ProcessToken(Tokens.T_CATCH);
 }
 
 <ST_IN_SCRIPTING>"finally" {
-	this._tokenSemantics.Object = GetTokenString();
-	return (Tokens.T_FINALLY);
+	return ProcessToken(Tokens.T_FINALLY);
 }
 
 <ST_IN_SCRIPTING>"throw" {
-	this._tokenSemantics.Object = GetTokenString();
-	return (Tokens.T_THROW);
+	return ProcessToken(Tokens.T_THROW);
 }
 
 <ST_IN_SCRIPTING>"if" {
-	this._tokenSemantics.Object = GetTokenString();
-	return (Tokens.T_IF);
+	return ProcessToken(Tokens.T_IF);
 }
 
 <ST_IN_SCRIPTING>"elseif" {
-	this._tokenSemantics.Object = GetTokenString();
-	return (Tokens.T_ELSEIF);
+	return ProcessToken(Tokens.T_ELSEIF);
 }
 
 <ST_IN_SCRIPTING>"endif" {
-	this._tokenSemantics.Object = GetTokenString();
-	return (Tokens.T_ENDIF);
+	return ProcessToken(Tokens.T_ENDIF);
 }
 
 <ST_IN_SCRIPTING>"else" {
-	this._tokenSemantics.Object = GetTokenString();
-	return (Tokens.T_ELSE);
+	return ProcessToken(Tokens.T_ELSE);
 }
 
 <ST_IN_SCRIPTING>"while" {
-	this._tokenSemantics.Object = GetTokenString();
-	return (Tokens.T_WHILE);
+	return ProcessToken(Tokens.T_WHILE);
 }
 
 <ST_IN_SCRIPTING>"endwhile" {
-	this._tokenSemantics.Object = GetTokenString();
-	return (Tokens.T_ENDWHILE);
+	return ProcessToken(Tokens.T_ENDWHILE);
 }
 
 <ST_IN_SCRIPTING>"do" {
-	this._tokenSemantics.Object = GetTokenString();
-	return (Tokens.T_DO);
+	return ProcessToken(Tokens.T_DO);
 }
 
 <ST_IN_SCRIPTING>"for" {
-	this._tokenSemantics.Object = GetTokenString();
-	return (Tokens.T_FOR);
+	return ProcessToken(Tokens.T_FOR);
 }
 
 <ST_IN_SCRIPTING>"endfor" {
-	this._tokenSemantics.Object = GetTokenString();
-	return (Tokens.T_ENDFOR);
+	return ProcessToken(Tokens.T_ENDFOR);
 }
 
 <ST_IN_SCRIPTING>"foreach" {
-	this._tokenSemantics.Object = GetTokenString();
-	return (Tokens.T_FOREACH);
+	return ProcessToken(Tokens.T_FOREACH);
 }
 
 <ST_IN_SCRIPTING>"endforeach" {
-	this._tokenSemantics.Object = GetTokenString();
-	return (Tokens.T_ENDFOREACH);
+	return ProcessToken(Tokens.T_ENDFOREACH);
 }
 
 <ST_IN_SCRIPTING>"declare" {
-	this._tokenSemantics.Object = GetTokenString();
-	return (Tokens.T_DECLARE);
+	return ProcessToken(Tokens.T_DECLARE);
 }
 
 <ST_IN_SCRIPTING>"enddeclare" {
-	this._tokenSemantics.Object = GetTokenString();
-	return (Tokens.T_ENDDECLARE);
+	return ProcessToken(Tokens.T_ENDDECLARE);
 }
 
 <ST_IN_SCRIPTING>"instanceof" {
-	this._tokenSemantics.Object = GetTokenString();
-	return (Tokens.T_INSTANCEOF);
+	return ProcessToken(Tokens.T_INSTANCEOF);
 }
 
 <ST_IN_SCRIPTING>"as" {
-	this._tokenSemantics.Object = GetTokenString();
-	return (Tokens.T_AS);
+	return ProcessToken(Tokens.T_AS);
 }
 
 <ST_IN_SCRIPTING>"switch" {
-	this._tokenSemantics.Object = GetTokenString();
-	return (Tokens.T_SWITCH);
+	return ProcessToken(Tokens.T_SWITCH);
 }
 
 <ST_IN_SCRIPTING>"endswitch" {
-	this._tokenSemantics.Object = GetTokenString();
-	return (Tokens.T_ENDSWITCH);
+	return ProcessToken(Tokens.T_ENDSWITCH);
 }
 
 <ST_IN_SCRIPTING>"case" {
-	this._tokenSemantics.Object = GetTokenString();
-	return (Tokens.T_CASE);
+	return ProcessToken(Tokens.T_CASE);
 }
 
 <ST_IN_SCRIPTING>"default" {
-	this._tokenSemantics.Object = GetTokenString();
-	return (Tokens.T_DEFAULT);
+	return ProcessToken(Tokens.T_DEFAULT);
 }
 
 <ST_IN_SCRIPTING>"break" {
-	this._tokenSemantics.Object = GetTokenString();
-	return (Tokens.T_BREAK);
+	return ProcessToken(Tokens.T_BREAK);
 }
 
 <ST_IN_SCRIPTING>"continue" {
-	this._tokenSemantics.Object = GetTokenString();
-	return (Tokens.T_CONTINUE);
+	return ProcessToken(Tokens.T_CONTINUE);
 }
 
 <ST_IN_SCRIPTING>"goto" {
-	this._tokenSemantics.Object = GetTokenString();
-	return (Tokens.T_GOTO);
+	return ProcessToken(Tokens.T_GOTO);
 }
 
 <ST_IN_SCRIPTING>"echo" {
-	this._tokenSemantics.Object = GetTokenString();
-	return (Tokens.T_ECHO);
+	return ProcessToken(Tokens.T_ECHO);
 }
 
 <ST_IN_SCRIPTING>"print" {
-	this._tokenSemantics.Object = GetTokenString();
-	return (Tokens.T_PRINT);
+	return ProcessToken(Tokens.T_PRINT);
 }
 
 <ST_IN_SCRIPTING>"class" {
-	this._tokenSemantics.Object = GetTokenString();
-	return (Tokens.T_CLASS);
+	return ProcessToken(Tokens.T_CLASS);
 }
 
 <ST_IN_SCRIPTING>"interface" {
-	this._tokenSemantics.Object = GetTokenString();
-	return (Tokens.T_INTERFACE);
+	return ProcessToken(Tokens.T_INTERFACE);
 }
 
 <ST_IN_SCRIPTING>"trait" {
-	this._tokenSemantics.Object = GetTokenString();
-	return (Tokens.T_TRAIT);
+	return ProcessToken(Tokens.T_TRAIT);
 }
 
 <ST_IN_SCRIPTING>"extends" {
-	this._tokenSemantics.Object = GetTokenString();
-	return (Tokens.T_EXTENDS);
+	return ProcessToken(Tokens.T_EXTENDS);
 }
 
 <ST_IN_SCRIPTING>"implements" {
-	this._tokenSemantics.Object = GetTokenString();
-	return (Tokens.T_IMPLEMENTS);
+	return ProcessToken(Tokens.T_IMPLEMENTS);
 }
 
 <ST_IN_SCRIPTING>"->" {
@@ -328,7 +276,6 @@ ST_HALT_COMPILER1,ST_HALT_COMPILER2,ST_HALT_COMPILER3>{EOF} {
 }
 
 <ST_IN_SCRIPTING,ST_LOOKING_FOR_PROPERTY>{WHITESPACE}+ {
-	//HANDLE_NEWLINES(yytext, yyleng);
 	return (Tokens.T_WHITESPACE);
 }
 
@@ -364,18 +311,15 @@ ST_HALT_COMPILER1,ST_HALT_COMPILER2,ST_HALT_COMPILER3>{EOF} {
 }
 
 <ST_IN_SCRIPTING>"new" {
-	this._tokenSemantics.Object = GetTokenString();
-	return (Tokens.T_NEW);
+	return ProcessToken(Tokens.T_NEW);
 }
 
 <ST_IN_SCRIPTING>"clone" {
-	this._tokenSemantics.Object = GetTokenString();
-	return (Tokens.T_CLONE);
+	return ProcessToken(Tokens.T_CLONE);
 }
 
 <ST_IN_SCRIPTING>"var" {
-	this._tokenSemantics.Object = GetTokenString();
-	return (Tokens.T_VAR);
+	return ProcessToken(Tokens.T_VAR);
 }
 
 <ST_IN_SCRIPTING>"("{TABS_AND_SPACES}("int"|"integer"){TABS_AND_SPACES}")" {
@@ -407,58 +351,47 @@ ST_HALT_COMPILER1,ST_HALT_COMPILER2,ST_HALT_COMPILER3>{EOF} {
 }
 
 <ST_IN_SCRIPTING>"eval" {
-	this._tokenSemantics.Object = GetTokenString();
-	return (Tokens.T_EVAL);
+	return ProcessToken(Tokens.T_EVAL);
 }
 
 <ST_IN_SCRIPTING>"include" {
-	this._tokenSemantics.Object = GetTokenString();
-	return (Tokens.T_INCLUDE);
+	return ProcessToken(Tokens.T_INCLUDE);
 }
 
 <ST_IN_SCRIPTING>"include_once" {
-	this._tokenSemantics.Object = GetTokenString();
-	return (Tokens.T_INCLUDE_ONCE);
+	return ProcessToken(Tokens.T_INCLUDE_ONCE);
 }
 
 <ST_IN_SCRIPTING>"require" {
-	this._tokenSemantics.Object = GetTokenString();
-	return (Tokens.T_REQUIRE);
+	return ProcessToken(Tokens.T_REQUIRE);
 }
 
 <ST_IN_SCRIPTING>"require_once" {
-	this._tokenSemantics.Object = GetTokenString();
-	return (Tokens.T_REQUIRE_ONCE);
+	return ProcessToken(Tokens.T_REQUIRE_ONCE);
 }
 
 <ST_IN_SCRIPTING>"namespace" {
-	this._tokenSemantics.Object = GetTokenString();
-	return (Tokens.T_NAMESPACE);
+	return ProcessToken(Tokens.T_NAMESPACE);
 }
 
 <ST_IN_SCRIPTING>"use" {
-	this._tokenSemantics.Object = GetTokenString();
-	return (Tokens.T_USE);
+	return ProcessToken(Tokens.T_USE);
 }
 
 <ST_IN_SCRIPTING>"insteadof" {
-	this._tokenSemantics.Object = GetTokenString();
-    return (Tokens.T_INSTEADOF);
+	return ProcessToken(Tokens.T_INSTEADOF);
 }
 
 <ST_IN_SCRIPTING>"global" {
-	this._tokenSemantics.Object = GetTokenString();
-	return (Tokens.T_GLOBAL);
+	return ProcessToken(Tokens.T_GLOBAL);
 }
 
 <ST_IN_SCRIPTING>"isset" {
-	this._tokenSemantics.Object = GetTokenString();
-	return (Tokens.T_ISSET);
+	return ProcessToken(Tokens.T_ISSET);
 }
 
 <ST_IN_SCRIPTING>"empty" {
-	this._tokenSemantics.Object = GetTokenString();
-	return (Tokens.T_EMPTY);
+	return ProcessToken(Tokens.T_EMPTY);
 }
 
 <ST_HALT_COMPILER1>"(" {
@@ -494,57 +427,47 @@ ST_HALT_COMPILER1,ST_HALT_COMPILER2,ST_HALT_COMPILER3>{EOF} {
 }
 
 <ST_IN_SCRIPTING>"static" {
-	this._tokenSemantics.Object = GetTokenString();
-	return (Tokens.T_STATIC);
+	return ProcessToken(Tokens.T_STATIC);
 }
 
 <ST_IN_SCRIPTING>"abstract" {
-	this._tokenSemantics.Object = GetTokenString();
-	return (Tokens.T_ABSTRACT);
+	return ProcessToken(Tokens.T_ABSTRACT);
 }
 
 <ST_IN_SCRIPTING>"final" {
-	this._tokenSemantics.Object = GetTokenString();
-	return (Tokens.T_FINAL);
+	return ProcessToken(Tokens.T_FINAL);
 }
 
 <ST_IN_SCRIPTING>"private" {
-	this._tokenSemantics.Object = GetTokenString();
-	return (Tokens.T_PRIVATE);
+	return ProcessToken(Tokens.T_PRIVATE);
 }
 
 <ST_IN_SCRIPTING>"protected" {
-	this._tokenSemantics.Object = GetTokenString();
-	return (Tokens.T_PROTECTED);
+	return ProcessToken(Tokens.T_PROTECTED);
 }
 
 <ST_IN_SCRIPTING>"public" {
-	this._tokenSemantics.Object = GetTokenString();
-	return (Tokens.T_PUBLIC);
+	return ProcessToken(Tokens.T_PUBLIC);
 }
 
 <ST_IN_SCRIPTING>"unset" {
-	this._tokenSemantics.Object = GetTokenString();
-	return (Tokens.T_UNSET);
+	return ProcessToken(Tokens.T_UNSET);
 }
 
 <ST_IN_SCRIPTING>"=>" {
-	return (Tokens.T_DOUBLE_ARROW);
+	return Tokens.T_DOUBLE_ARROW;
 }
 
 <ST_IN_SCRIPTING>"list" {
-	this._tokenSemantics.Object = GetTokenString();
-	return (Tokens.T_LIST);
+	return ProcessToken(Tokens.T_LIST);
 }
 
 <ST_IN_SCRIPTING>"array" {
-	this._tokenSemantics.Object = GetTokenString();
-	return (Tokens.T_ARRAY);
+	return ProcessToken(Tokens.T_ARRAY);
 }
 
 <ST_IN_SCRIPTING>"callable" {
-	this._tokenSemantics.Object = GetTokenString();
-	return (Tokens.T_CALLABLE);
+	return ProcessToken(Tokens.T_CALLABLE);
 }
 
 <ST_IN_SCRIPTING>"++" {
@@ -686,10 +609,9 @@ ST_HALT_COMPILER1,ST_HALT_COMPILER2,ST_HALT_COMPILER3>{EOF} {
 
 <ST_LOOKING_FOR_VARNAME>{LABEL}[[}] {
 	_yyless(1);
-	this._tokenSemantics.Object = GetTokenString();
 	yy_pop_state();
 	yy_push_state(LexicalStates.ST_IN_SCRIPTING);
-	return (Tokens.T_STRING_VARNAME);
+	return ProcessToken(Tokens.T_STRING_VARNAME);
 }
 
 
@@ -725,51 +647,40 @@ ST_HALT_COMPILER1,ST_HALT_COMPILER2,ST_HALT_COMPILER3>{EOF} {
 }
 
 <ST_IN_SCRIPTING>"__CLASS__" {
-	this._tokenSemantics.Object = GetTokenString();
-	return (Tokens.T_CLASS_C);
+	return ProcessToken(Tokens.T_CLASS_C);
 }
 
 <ST_IN_SCRIPTING>"__TRAIT__" {
-	this._tokenSemantics.Object = GetTokenString();
-	return (Tokens.T_TRAIT_C);
+	return ProcessToken(Tokens.T_TRAIT_C);
 }
 
 <ST_IN_SCRIPTING>"__FUNCTION__" {
-	this._tokenSemantics.Object = GetTokenString();
-	return (Tokens.T_FUNC_C);
+	return ProcessToken(Tokens.T_FUNC_C);
 }
 
 <ST_IN_SCRIPTING>"__METHOD__" {
-	this._tokenSemantics.Object = GetTokenString();
-	return (Tokens.T_METHOD_C);
+	return ProcessToken(Tokens.T_METHOD_C);
 }
 
 <ST_IN_SCRIPTING>"__LINE__" {
-	this._tokenSemantics.Object = GetTokenString();
-	return (Tokens.T_LINE);
+	return ProcessToken(Tokens.T_LINE);
 }
 
 <ST_IN_SCRIPTING>"__FILE__" {
-	this._tokenSemantics.Object = GetTokenString();
-	return (Tokens.T_FILE);
+	return ProcessToken(Tokens.T_FILE);
 }
 
 <ST_IN_SCRIPTING>"__DIR__" {
-	this._tokenSemantics.Object = GetTokenString();
-	return (Tokens.T_DIR);
+	return ProcessToken(Tokens.T_DIR);
 }
 
 <ST_IN_SCRIPTING>"__NAMESPACE__" {
-	this._tokenSemantics.Object = GetTokenString();
-	return (Tokens.T_NS_C);
+	return ProcessToken(Tokens.T_NS_C);
 }
 
 <INITIAL>"<?=" {
-	if (TokenLength > 3)
+	if(ProcessPreOpenTag())
 	{
-		string text = GetTokenString();
-		_yyless(Math.Abs(text.LastIndexOf('<') - text.Length));
-		this._tokenSemantics.Object = text.Substring(0, text.LastIndexOf('<'));
 		return Tokens.T_INLINE_HTML; 
 	}
 	BEGIN(LexicalStates.ST_IN_SCRIPTING);
@@ -778,32 +689,25 @@ ST_HALT_COMPILER1,ST_HALT_COMPILER2,ST_HALT_COMPILER3>{EOF} {
 
 
 <INITIAL>"<?php"([ \t]|{NEWLINE}) {
-	if (GetTokenString().LastIndexOf('<') != 0)
+	if(ProcessPreOpenTag())
 	{
-		string text = GetTokenString();
-		_yyless(Math.Abs(text.LastIndexOf('<') - text.Length));
-		this._tokenSemantics.Object = text.Substring(0, text.LastIndexOf('<'));
 		return Tokens.T_INLINE_HTML; 
 	}
-	//HANDLE_NEWLINE(yytext[yyleng-1]);
 	BEGIN(LexicalStates.ST_IN_SCRIPTING);
 	return (Tokens.T_OPEN_TAG);
 }
 
 
 <INITIAL>"<?" {
-	if (TokenLength > 2)
+	if(ProcessPreOpenTag())
 	{
-		string text = GetTokenString();
-		_yyless(Math.Abs(text.LastIndexOf('<') - text.Length));
-		this._tokenSemantics.Object = text.Substring(0, text.LastIndexOf('<'));
 		return Tokens.T_INLINE_HTML; 
 	}
 	if (this._allowShortTags) {
 		BEGIN(LexicalStates.ST_IN_SCRIPTING);
 		return (Tokens.T_OPEN_TAG);
 	} else {
-		yymore(); break;//return Tokens.T_INLINE_HTML;
+		yymore(); break;
 	}
 }
 
@@ -838,7 +742,7 @@ ST_HALT_COMPILER1,ST_HALT_COMPILER2,ST_HALT_COMPILER3>{EOF} {
 	break;
 }
 
-<ST_IN_SCRIPTING>"/*"              	{ yy_push_state(LexicalStates.ST_COMMENT); yymore(); break; }
+<ST_IN_SCRIPTING>"/*"   { yy_push_state(LexicalStates.ST_COMMENT); yymore(); break; }
 <ST_COMMENT>[^*]+       { yymore(); break; }
 <ST_COMMENT>"*/"        { yy_pop_state(); return Tokens.T_COMMENT; }
 <ST_COMMENT>"*"         { yymore(); break; }
