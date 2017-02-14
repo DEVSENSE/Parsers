@@ -195,7 +195,7 @@ namespace Devsense.PHP.Syntax.Ast
         /// <param name="traits">Enumeration of traits.</param>
         /// <param name="adaptationsBlock"><see cref="TraitAdaptationBlock"/> containing all adaptations.</param>
         /// <returns>Trait use type member.</returns>
-        TNode TraitUse(TSpan span, IEnumerable<QualifiedNameRef> traits, TNode adaptationsBlock);
+        TNode TraitUse(TSpan span, IEnumerable<TypeRef> traits, TNode adaptationsBlock);
 
         /// <summary>
         /// Create <c>TraitAdaptationPrecedence</c> expression.

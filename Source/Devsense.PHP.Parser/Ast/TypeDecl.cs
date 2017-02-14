@@ -718,8 +718,8 @@ namespace Devsense.PHP.Syntax.Ast
         /// <summary>
         /// List of trait types to be used.
         /// </summary>
-        public List<QualifiedNameRef>/*!*/TraitsList { get { return traitsList; } }
-        private readonly List<QualifiedNameRef>/*!*/traitsList;
+        public List<TypeRef>/*!*/TraitsList { get { return traitsList; } }
+        private readonly List<TypeRef>/*!*/traitsList;
 
         /// <summary>
         /// List of trait adaptations modifying names of trait members. Can be <c>null</c> reference.
@@ -732,12 +732,12 @@ namespace Devsense.PHP.Syntax.Ast
         /// </summary>
         public int HeadingEndPosition => traitsList.Last().Span.End;
 
-        public TraitsUse(Text.Span span, List<QualifiedNameRef>/*!*/traitsList, TraitAdaptationBlock traitAdaptationBlock)
+        public TraitsUse(Text.Span span, List<TypeRef>/*!*/traitsList, TraitAdaptationBlock traitAdaptationBlock)
             : base(span, PhpMemberAttributes.Public, null)
         {
             if (traitsList == null)
                 throw new ArgumentNullException("traitsList");
-
+            Debug.Assert(traitsList.TrueForAll(t => t is INamedTypeRef));
             this.traitsList = traitsList;
             this.traitAdaptationBlock = traitAdaptationBlock;
         }

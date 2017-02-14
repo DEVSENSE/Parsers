@@ -389,7 +389,7 @@ namespace Devsense.PHP.Syntax.Ast
                 return new DefaultItem(span, ((BlockStmt)block).Statements);
         }
 
-        public virtual LangElement TraitUse(Span span, IEnumerable<QualifiedNameRef> traits, LangElement adaptationsBlock)
+        public virtual LangElement TraitUse(Span span, IEnumerable<TypeRef> traits, LangElement adaptationsBlock)
         {
             Debug.Assert(traits != null);
             return new TraitsUse(span, traits.ToList(), (TraitAdaptationBlock)adaptationsBlock);

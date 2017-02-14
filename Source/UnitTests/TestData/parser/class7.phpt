@@ -22,7 +22,7 @@ class SimpleClass
     "PHPDoc":{"Comment":"classdeclaration"},
 
     "TraitsUse":{
-      "Traits":{"Trait":"HelloWorld"},    
+      "Traits":{"ClassTypeRef":{"ClassName":"HelloWorld"}},    
       "TraitAdaptationBlock":{
         "TraitAdaptationAlias":{"TraitMemberName":"sayHello","NewName":"myPrivateHello","NewModifier":"Public"},
         "TraitAdaptationAlias":{"TraitMemberName":"HelloWorld::sayHello","NewName":"endswitch","NewModifier":"Public"},
@@ -31,7 +31,7 @@ class SimpleClass
       }
     },      
     "TraitsUse":{
-      "Traits":{"Trait":"EmptyTrait"},    
+      "Traits":{"ClassTypeRef":{"ClassName":"EmptyTrait"}},
       "TraitAdaptationBlock":{}
     }
   }

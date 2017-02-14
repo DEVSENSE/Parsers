@@ -412,7 +412,7 @@ namespace UnitTests
             public override LangElement TraitAdaptationPrecedence(Span span, Tuple<QualifiedNameRef, NameRef> name, IEnumerable<QualifiedNameRef> precedences)
                  => CountLE(base.TraitAdaptationPrecedence(span, name, precedences));
 
-            public override LangElement TraitUse(Span span, IEnumerable<QualifiedNameRef> traits, LangElement adaptationsBlock)
+            public override LangElement TraitUse(Span span, IEnumerable<TypeRef> traits, LangElement adaptationsBlock)
                  => CountLE(base.TraitUse(span, traits, adaptationsBlock));
 
             public override LangElement TryCatch(Span span, LangElement body, IEnumerable<LangElement> catches, LangElement finallyBlockOpt)

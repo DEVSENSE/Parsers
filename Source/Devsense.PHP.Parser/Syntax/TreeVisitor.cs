@@ -313,6 +313,7 @@ namespace Devsense.PHP.Syntax
         virtual public void VisitTraitsUse(TraitsUse x)
         {
             // visits adaptation list
+            VisitList(x.TraitsList);
             VisitElement(x.TraitAdaptationBlock);
         }
 

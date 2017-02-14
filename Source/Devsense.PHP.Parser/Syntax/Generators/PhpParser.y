@@ -864,7 +864,7 @@ class_statement:
 				SetDoc($$);
 			}
 	|	T_USE name_list trait_adaptations
-			{ $$ = _astFactory.TraitUse(@$, $2, $3); }
+			{ $$ = _astFactory.TraitUse(@$, TypeRefListFromQNRList($2), $3); }
 	|	method_modifiers function returns_ref identifier backup_doc_comment '(' parameter_list ')'
 		return_type backup_fn_flags method_body backup_fn_flags
 			{ $$ = _astFactory.Method(@$, $3 == (long)FormalParam.Flags.IsByRef, (PhpMemberAttributes)$1, 

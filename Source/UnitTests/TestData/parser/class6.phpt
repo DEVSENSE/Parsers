@@ -20,10 +20,10 @@ class SimpleClass
     "PHPDoc":{"Comment":"classdeclaration"},
     
     "TraitsUse":{ 
-      "Traits":{"Trait":"SayWorld"}
+      "Traits":{"ClassTypeRef":{"ClassName":"SayWorld"}}
     },
     "TraitsUse":{
-      "Traits":{"Trait":"A","Trait":"B"},
+      "Traits":{"ClassTypeRef":{"ClassName":"A"},"ClassTypeRef":{"ClassName":"B"}},
       "TraitAdaptationBlock":{
         "TraitAdaptationPrecedence":{"TraitMemberName":"B::foo","IgnoredTypes":{"IgnoredType":"A"}},
         "TraitAdaptationPrecedence":{"TraitMemberName":"A::bar","IgnoredTypes":{"IgnoredType":"B","IgnoredType":"A"}}

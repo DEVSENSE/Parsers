@@ -2531,7 +2531,7 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 			}
         return;
       case 246: // class_statement -> T_USE name_list trait_adaptations 
-{ yyval.Node = _astFactory.TraitUse(yypos, value_stack.array[value_stack.top-2].yyval.QualifiedNameRefList, value_stack.array[value_stack.top-1].yyval.Node); }
+{ yyval.Node = _astFactory.TraitUse(yypos, TypeRefListFromQNRList(value_stack.array[value_stack.top-2].yyval.QualifiedNameRefList), value_stack.array[value_stack.top-1].yyval.Node); }
         return;
       case 247: // class_statement -> method_modifiers function returns_ref identifier backup_doc_comment '(' parameter_list ')' return_type backup_fn_flags method_body backup_fn_flags 
 { yyval.Node = _astFactory.Method(yypos, value_stack.array[value_stack.top-10].yyval.Long == (long)FormalParam.Flags.IsByRef, (PhpMemberAttributes)value_stack.array[value_stack.top-12].yyval.Long, 

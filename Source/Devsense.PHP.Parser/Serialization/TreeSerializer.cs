@@ -724,8 +724,10 @@ namespace Devsense.PHP.Syntax.Ast.Serialization
         override public void VisitTraitsUse(TraitsUse x)
         {
             _serializer.StartSerialize(typeof(TraitsUse).Name, SerializeSpan(x.Span));
-            _serializer.Serialize("Traits", x.TraitsList.Select(t => new NodeObj("Trait", t.ToString())).ToArray());
-            base.VisitTraitsUse(x);
+            _serializer.StartSerialize("Traits");
+            VisitList(x.TraitsList);
+            _serializer.EndSerialize();
+            VisitElement(x.TraitAdaptationBlock);
             _serializer.EndSerialize();
         }
 
