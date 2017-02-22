@@ -216,12 +216,13 @@ namespace Devsense.PHP.Syntax.Ast
                 (BlockStmt)body, null, returnType);
         }
 
-        public virtual LangElement Lambda(Span span, Span headingSpan, bool aliasReturn, TypeRef returnType, IEnumerable<FormalParam> formalParams, 
+        public virtual LangElement Lambda(Span span, Span headingSpan, bool isStatic, bool aliasReturn,
+            TypeRef returnType, IEnumerable<FormalParam> formalParams, 
             Span formalParamsSpan, IEnumerable<FormalParam> lexicalVars, LangElement body)
         {
             return new LambdaFunctionExpr(span, headingSpan,
                 new Scope(), false, formalParams.ToList(), formalParamsSpan, lexicalVars.ToList(),
-                (BlockStmt)body, returnType);
+                (BlockStmt)body, returnType, isStatic);
         }
 
         public virtual FormalParam Parameter(Span span, string name, Span nameSpan, TypeRef typeOpt, FormalParam.Flags flags, Expression initValue)

@@ -343,8 +343,8 @@ namespace UnitTests
             public override LangElement Label(Span span, string label, Span labelSpan)
                  => CountLE(base.Label(span, label, labelSpan));
 
-            public override LangElement Lambda(Span span, Span headingSpan, bool aliasReturn, TypeRef returnType, IEnumerable<FormalParam> formalParams, Span formalParamsSpan, IEnumerable<FormalParam> lexicalVars, LangElement body)
-                 => CountLE(base.Lambda(span, headingSpan, aliasReturn, returnType, formalParams, formalParamsSpan, lexicalVars, body));
+            public override LangElement Lambda(Span span, Span headingSpan, bool isStatic, bool aliasReturn, TypeRef returnType, IEnumerable<FormalParam> formalParams, Span formalParamsSpan, IEnumerable<FormalParam> lexicalVars, LangElement body)
+                 => CountLE(base.Lambda(span, headingSpan, isStatic, aliasReturn, returnType, formalParams, formalParamsSpan, lexicalVars, body));
 
             public override LangElement LineComment(Span span, string content)
                  => CountLE(base.LineComment(span, content));

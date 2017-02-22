@@ -119,6 +119,7 @@ namespace Devsense.PHP.Syntax.Ast
         /// </summary>
         /// <param name="span">Entire element span.</param>
         /// <param name="headingSpan">Heading span - ends after return type.</param>
+        /// <param name="isStatic">Whether the function is declared as static.</param>
         /// <param name="aliasReturn">Whether the function returns an aliased value.</param>
         /// <param name="returnType">Optional. Function return type.</param>
         /// <param name="formalParams">Lambda parameters.</param>
@@ -126,7 +127,7 @@ namespace Devsense.PHP.Syntax.Ast
         /// <param name="lexicalVars">Variables from parent scope.</param>
         /// <param name="body">Lambda body.</param>
         /// <returns>Lambda node.</returns>
-        TNode Lambda(TSpan span, TSpan headingSpan, bool aliasReturn,
+        TNode Lambda(TSpan span, TSpan headingSpan, bool isStatic, bool aliasReturn,
             TypeRef returnType,
             IEnumerable<FormalParam> formalParams, TSpan formalParamsSpan,
             IEnumerable<FormalParam> lexicalVars, TNode body);

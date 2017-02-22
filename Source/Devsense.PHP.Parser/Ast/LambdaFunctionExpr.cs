@@ -62,13 +62,19 @@ namespace Devsense.PHP.Syntax.Ast
         public TypeRef ReturnType { get { return returnType; } }
         private TypeRef returnType;
 
+        /// <summary>
+        /// Gets value indicating the lambda function is declared "static" i.e. <c>$this</c> cannot be bound in this scope.
+        /// </summary>
+        public bool IsStatic { get { return this.isStatic; } }
+        private bool isStatic;
+
         #region Construction
 
         public LambdaFunctionExpr(
             Text.Span span, Text.Span headingSpan,
             Scope scope, bool aliasReturn, List<FormalParam>/*!*/ formalParams, 
             Text.Span paramSpan, List<FormalParam> useParams,
-            BlockStmt/*!*/ body, TypeRef returnType)
+            BlockStmt/*!*/ body, TypeRef returnType, bool isStatic)
             : base(span)
         {
             Debug.Assert(formalParams != null && body != null);
@@ -81,6 +87,7 @@ namespace Devsense.PHP.Syntax.Ast
             this.headingSpan = headingSpan;
             this.parametersSpan = paramSpan;
             this.returnType = returnType;
+            this.isStatic = isStatic;
         }
 
         #endregion

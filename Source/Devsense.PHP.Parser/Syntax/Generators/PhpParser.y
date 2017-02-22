@@ -1130,14 +1130,14 @@ expr_without_variable:
 	|	T_YIELD_FROM expr { $$ = _astFactory.YieldFrom(@$, $2); }
 	|	function returns_ref backup_doc_comment '(' parameter_list ')' lexical_vars return_type
 		backup_fn_flags enter_scope '{' inner_statement_list '}' exit_scope backup_fn_flags
-			{ $$ = _astFactory.Lambda(@$, CombineSpans(@1, @6, @7, @8), $2 == (long)FormalParam.Flags.IsByRef, $8, 
+			{ $$ = _astFactory.Lambda(@$, CombineSpans(@1, @6, @7, @8), false, $2 == (long)FormalParam.Flags.IsByRef, $8, 
 				$5, CombineSpans(@4, @6), 
 				$7, CreateBlock(CombineSpans(@11, @13), $12)); 
 				SetDoc($$);
 			}
 	|	T_STATIC function returns_ref backup_doc_comment '(' parameter_list ')' lexical_vars
 		return_type backup_fn_flags enter_scope '{' inner_statement_list '}' exit_scope backup_fn_flags
-			{ $$ = _astFactory.Lambda(@$, CombineSpans(@1, @7, @8, @9), $3 == (long)FormalParam.Flags.IsByRef, $9, 
+			{ $$ = _astFactory.Lambda(@$, CombineSpans(@1, @7, @8, @9), true, $3 == (long)FormalParam.Flags.IsByRef, $9, 
 				$6, CombineSpans(@5, @7), 
 				$8, CreateBlock(CombineSpans(@12, @14), $13)); 
 				SetDoc($$);
