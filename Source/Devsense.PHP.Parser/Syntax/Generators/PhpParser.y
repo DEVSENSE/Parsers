@@ -1004,10 +1004,11 @@ non_empty_for_exprs:
 
 anonymous_class:
         T_CLASS ctor_arguments
-		extends_from implements_list backup_doc_comment enter_scope '{' class_statement_list '}' exit_scope {
-			var typeRef = _astFactory.AnonymousTypeReference(@$, CombineSpans(@1, @2, @3, @4), isConditional, PhpMemberAttributes.None, null, (INamedTypeRef)$3, $4.Cast<INamedTypeRef>(), $8, CombineSpans(@7, @9));
+		extends_from { PushAnonymousClassContext($3); } implements_list backup_doc_comment enter_scope '{' class_statement_list '}' exit_scope {
+			var typeRef = _astFactory.AnonymousTypeReference(@$, CombineSpans(@1, @2, @3, @5), isConditional, PhpMemberAttributes.None, null, (INamedTypeRef)$3, $5.Cast<INamedTypeRef>(), $9, CombineSpans(@8, @10));
 			SetDoc(((AnonymousTypeRef)typeRef).TypeDeclaration);
 			$$ = new Tuple<TypeRef, List<ActualParam>>(typeRef, $2); 
+			PopClassContext();
 		}
 ;
 

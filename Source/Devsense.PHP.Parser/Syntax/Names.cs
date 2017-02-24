@@ -72,6 +72,7 @@ namespace Devsense.PHP.Syntax
         public static readonly Name DeclareHelperName = new Name("<Declare>");
         public static readonly Name LambdaFunctionName = new Name("<Lambda>");
         public static readonly Name ClosureFunctionName = new Name("{closure}");
+        public static readonly Name AnonymousClassName = new Name("class@anonymous");
 
         #region SpecialMethodNames
 

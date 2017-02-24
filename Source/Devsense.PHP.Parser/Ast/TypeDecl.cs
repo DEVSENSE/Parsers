@@ -317,7 +317,7 @@ namespace Devsense.PHP.Syntax.Ast
             var fname = unit?.FilePath ?? "<unknown>";  // TODO: (unit is EvalSourceUnit) => $"{fname}({line_number}) : eval()'d code"
 
             // TEMPLATE: class@anonymous{FILENAME}{BUFFER_POINTER,X8}
-            return $"class@anonymous\0{fname}{span.Start.ToString("X8")}";
+            return $"{Syntax.Name.AnonymousClassName.Value}\0{fname}{span.Start.ToString("X8")}";
         }
 
         /// <summary>

@@ -702,9 +702,9 @@ namespace Devsense.PHP.Syntax.Ast
         /// </summary>
         /// <param name="span">Entire element span.</param>
         /// <param name="className">Translated class name.</param>
-        /// <param name="origianType">Original type reference.</param>
+        /// <param name="originalType">Original type reference.</param>
         /// <returns>Type reference.</returns>
-        TypeRef AliasedTypeReference(TSpan span, QualifiedName className, TypeRef origianType);
+        TypeRef AliasedTypeReference(TSpan span, QualifiedName className, TypeRef originalType);
 
         /// <summary>
         /// Create <c>TypeRef</c> reference to a primitive type.

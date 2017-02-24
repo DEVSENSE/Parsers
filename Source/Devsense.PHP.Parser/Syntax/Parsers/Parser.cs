@@ -49,7 +49,12 @@ namespace Devsense.PHP.Syntax
 
         LangElement NullLangElement => null;
 
-        Stack<ClassContext> ClassContexts = new Stack<ClassContext>();
+        /// <summary>
+        /// Stack of class contexts used to resolve reserved type names and to determine whether we are inside or outside the class.
+        /// </summary>
+        Stack<ClassContext> ClassContexts { get { return _classContexts ?? (_classContexts = new Stack<ClassContext>()); } }
+        Stack<ClassContext> _classContexts = null;
+        bool IsInClassContext { get { return _classContexts != null && _classContexts.Count != 0; } }
 
         private struct ClassContext
         {
@@ -264,12 +269,21 @@ namespace Devsense.PHP.Syntax
             return new GroupUse(span, new QualifiedNameRef(prefixSpan, Name.EmptyBaseName, prefixNamespaces.ToArray()), uses);
         }
 
-        void PushClassContext(string name, TypeRef type)
+        void PushClassContext(string name, TypeRef baseType)
         {
             ClassContexts.Push(new ClassContext()
             {
                 Name = new QualifiedName(new Name(name), namingContext.CurrentNamespace.HasValue ? namingContext.CurrentNamespace.Value.Namespaces : Name.EmptyNames),
-                Base = type
+                Base = baseType
+            });
+        }
+
+        void PushAnonymousClassContext(TypeRef baseType)
+        {
+            ClassContexts.Push(new ClassContext()
+            {
+                Name = new QualifiedName(Name.AnonymousClassName),
+                Base = baseType
             });
         }
 
@@ -384,24 +398,46 @@ namespace Devsense.PHP.Syntax
                 if (ReservedTypeRef.ReservedTypes.TryGetValue(qname.Name, out reserved))
                 {
                     var reservedRef = _astFactory.ReservedTypeReference(span, reserved);
-                    if (ClassContexts.Count != 0)
+                    if (IsInClassContext)
                     {
                         var context = ClassContexts.Peek();
                         switch (reserved)
                         {
                             case ReservedTypeRef.ReservedType.parent:
-                                if (context.Base == null)
+                                if (context.Base != null)
+                                {
+                                    reservedRef = _astFactory.AliasedTypeReference(span, context.Base.QualifiedName.Value, reservedRef);
+                                }
+                                else
                                 {
                                     this.ErrorSink.Error(span, FatalErrors.ParentAccessedInParentlessClass);
-                                    return reservedRef;
                                 }
-                                return _astFactory.AliasedTypeReference(span, context.Base.QualifiedName.Value, reservedRef);
+                                break;
+
                             case ReservedTypeRef.ReservedType.self:
-                                return _astFactory.AliasedTypeReference(span, context.Name, reservedRef);
+
+                                // we don't translate {self} in the context of an anonymous type name
+                                // since the translated name is platform specific and may differ from how it is handled by caller
+
+                                if (context.Name.Name != Name.AnonymousClassName)
+                                {
+                                    reservedRef = _astFactory.AliasedTypeReference(span, context.Name, reservedRef);
+                                }
+                                break;
+
+                            case ReservedTypeRef.ReservedType.@static:
+                                // keep unbound
+                                break;
+
                             default:
                                 throw new ArgumentException();
                         }
                     }
+                    else
+                    {
+                        // TODO: Error: self|parent|static used outside a class context
+                    }
+
                     return reservedRef;
                 }
             }

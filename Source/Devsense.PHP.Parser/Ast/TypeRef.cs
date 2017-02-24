@@ -302,8 +302,11 @@ namespace Devsense.PHP.Syntax.Ast
             { Name.ParentClassName, ReservedType.parent }
         };
 
-        ReservedType Reserved => _reservedType;
-        ReservedType _reservedType;
+        /// <summary>
+        /// Gets the reserved type.
+        /// </summary>
+        public ReservedType Type => _reservedType;
+        readonly ReservedType _reservedType;
 
         public ReservedTypeRef(Span span, ReservedType type)
             : base(span)

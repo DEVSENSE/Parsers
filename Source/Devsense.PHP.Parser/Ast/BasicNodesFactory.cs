@@ -501,10 +501,10 @@ namespace Devsense.PHP.Syntax.Ast
             //Debug.Assert(!className.IsPrimitiveTypeName);
             return new ClassTypeRef(span, className);
         }
-        public virtual TypeRef AliasedTypeReference(Span span, QualifiedName className, TypeRef origianType)
+        public virtual TypeRef AliasedTypeReference(Span span, QualifiedName className, TypeRef originalType)
         {
             Debug.Assert(!className.IsPrimitiveTypeName);
-            return new TranslatedTypeRef(span, className, origianType);
+            return new TranslatedTypeRef(span, className, originalType);
         }
         public virtual TypeRef PrimitiveTypeReference(Span span, PrimitiveTypeRef.PrimitiveType tname)
         {
