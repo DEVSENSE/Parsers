@@ -275,7 +275,7 @@ namespace Devsense.PHP.Syntax.Ast
     /// <summary>
     /// Primitive type reference.
     /// </summary>
-    [DebuggerDisplay("{_typeName.Name,nq}")]
+    [DebuggerDisplay("{Type,nq}")]
     public sealed class ReservedTypeRef : TypeRef
     {
         public enum ReservedType
