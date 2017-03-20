@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>Devsense.Php.Parser</id>
-    <version>1.1.19</version>
+    <version>1.1.20</version>
     <title>PHP Syntax for .NET</title>
     <description>.NET implementation of PHP syntax.</description>
     <authors>Michal Brabec, Jakub Misek</authors>
