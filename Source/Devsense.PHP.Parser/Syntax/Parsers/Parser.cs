@@ -673,6 +673,13 @@ namespace Devsense.PHP.Syntax
             return new QualifiedName(new Name(suffix.Last()), namespaces, true);
         }
 
+        /// <summary>
+        /// Ensure that hte <see cref="TypeRef"/> implements <see cref="INamedTypeRef"/> without crashing.
+        /// If the <paramref name="type"/> already implements <see cref="INamedTypeRef"/> then it is just returned.
+        /// If the <paramref name="type"/> does not implement <see cref="INamedTypeRef"/> then a copy is created with the same name that does and an error is reported.
+        /// </summary>
+        /// <param name="type">Original <see cref="TypeRef"/>.</param>
+        /// <returns>Representation of the <paramref name="type"/> that implements <see cref="INamedTypeRef"/>.</returns>
         INamedTypeRef ConvertToNamedTypeRef(TypeRef type)
         {
             if (type == null || type is INamedTypeRef)

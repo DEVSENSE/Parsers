@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using UnitTests.TestImplementation;
 
@@ -17,6 +18,8 @@ namespace UnitTests
     public class VisitorTests
     {
         public TestContext TestContext { get; set; }
+
+        private Regex _errorRegex = new Regex(ParserTests.Pattern, RegexOptions.Compiled | RegexOptions.Singleline);
 
         [TestMethod]
         [DataSource("Microsoft.VisualStudio.TestTools.DataSource.CSV", "|DataDirectory|\\ParserTestData.csv", "ParserTestData#csv", DataAccessMethod.Sequential)]
@@ -32,19 +35,19 @@ namespace UnitTests
             var factory = new AstCounterFactory(sourceUnit);
             var errors = new TestErrorSink();
 
-            bool expectErrors = testparts[1].TrimStart().StartsWith(ParserTests.Errors);
-
             GlobalCode ast = null;
-
-            Parser parser = new Parser();
+            
             using (StringReader source_reader = new StringReader(testparts[0]))
             {
                 sourceUnit.Parse(factory, errors);
                 ast = sourceUnit.Ast;
             }
-            if (expectErrors)
+            if (testparts[1].TrimStart().StartsWith(ParserTests.Errors))
             {
-                Assert.AreEqual(1, errors.Count, path);
+                var matches = _errorRegex.Matches(testparts[1]);
+                var knownErrors = matches[0].Groups["Number"].Value.Split(',');
+                Assert.AreEqual(1, matches.Count, path);
+                Assert.AreEqual(knownErrors.Length, errors.Count, path);
             }
             else
             {

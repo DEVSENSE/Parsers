@@ -20,8 +20,8 @@ namespace UnitTests
     {
         public TestContext TestContext { get; set; }
         public const string Errors = "ERRORS:";
-        const string Pattern = @"\s*" + Errors + @"\s*(?<Number>\d*(, \d*)*)\s*(?<JSON>.*)";
-        private Regex ErrorRegex = new Regex(Pattern, RegexOptions.Compiled | RegexOptions.Singleline);
+        public const string Pattern = @"\s*" + Errors + @"\s*(?<Number>\d*(, \d*)*)\s*(?<JSON>.*)";
+        private Regex _errorRegex = new Regex(Pattern, RegexOptions.Compiled | RegexOptions.Singleline);
 
         [TestMethod]
         [DataSource("Microsoft.VisualStudio.TestTools.DataSource.CSV", "|DataDirectory|\\ParserTestData.csv", "ParserTestData#csv", DataAccessMethod.Sequential)]
@@ -46,7 +46,7 @@ namespace UnitTests
             }
             if (testparts[1].TrimStart().StartsWith(Errors))
             {
-                var matches = ErrorRegex.Matches(testparts[1]);
+                var matches = _errorRegex.Matches(testparts[1]);
                 var knownErrors = matches[0].Groups["Number"].Value.Split(',');
                 Assert.AreEqual(1, matches.Count, path);
                 Assert.AreEqual(knownErrors.Length, errors.Count, path);
