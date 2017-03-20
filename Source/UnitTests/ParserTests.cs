@@ -55,6 +55,7 @@ namespace UnitTests
                 {
                     Assert.IsTrue(int.TryParse(knownErrors[i], out errorid), path);
                     Assert.AreEqual(errorid, errors.Errors[i].Error.Id, path);
+                    Assert.IsNotNull(errors.Errors[i].ToString());
                 }
                 testparts[1] = matches[0].Groups["JSON"].Value;
             }

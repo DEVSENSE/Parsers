@@ -16,6 +16,8 @@ namespace UnitTests.TestImplementation
             public Span Span;
             public ErrorInfo Error;
             public string[] Args;
+
+            public override string ToString() => Error.ToString(Args);
         }
 
         public readonly List<ErrorInstance> Errors = new List<ErrorInstance>();

@@ -686,8 +686,9 @@ namespace Devsense.PHP.Syntax
             {
                 return type as INamedTypeRef;
             }
-            _errors.Error(type.Span, Errors.Errors.NonClassExtended);
-            return (INamedTypeRef)CreateNamedTypeRef(type.Span, type.QualifiedName.HasValue? type.QualifiedName.Value: new QualifiedName());
+            var name = type.QualifiedName.HasValue ? type.QualifiedName.Value : new QualifiedName();
+            _errors.Error(type.Span, Errors.Errors.NonClassExtended, name.ToString());
+            return (INamedTypeRef)CreateNamedTypeRef(type.Span, name);
         }
     }
 }
