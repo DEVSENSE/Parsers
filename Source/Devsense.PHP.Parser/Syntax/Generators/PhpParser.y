@@ -1028,6 +1028,8 @@ expr_without_variable:
 			{ $$ = _astFactory.Assignment(@$, $1, $3, Operations.AssignValue); }
 	|	variable '=' '&' variable
 			{ $$ = _astFactory.Assignment(@$, $1, $4, Operations.AssignRef); }
+	|	variable '=' '&' new_expr
+			{ $$ = _astFactory.Assignment(@$, $1, $4, Operations.AssignRef); _errors.Error(@$, Warnings.AssignNewByRefDeprecated); }
 	|	T_CLONE expr
 			{ $$ = _astFactory.UnaryOperation(@$, Operations.Clone,   (Expression)$2); }
 	|	variable T_PLUS_EQUAL expr
