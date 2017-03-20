@@ -608,14 +608,14 @@ class_declaration_statement:
 		class_modifiers T_CLASS T_STRING extends_from {PushClassContext($3, $4);} implements_list backup_doc_comment enter_scope '{' class_statement_list '}' exit_scope
 			{ 
 				$$ = _astFactory.Type(@$, CombineSpans(@1, @2, @3, @4, @6), isConditional, (PhpMemberAttributes)$1, new Name($3), @3, null, 
-				(INamedTypeRef)$4, $6.Cast<INamedTypeRef>(), $10, CombineSpans(@9, @11)); 
+				ConvertToNamedTypeRef($4), $6.Select(ConvertToNamedTypeRef), $10, CombineSpans(@9, @11)); 
 				SetDoc($$);
 				PopClassContext();
 			}
 	|	T_CLASS T_STRING extends_from {PushClassContext($2, $3);} implements_list backup_doc_comment enter_scope '{' class_statement_list '}' exit_scope
 			{ 
 				$$ = _astFactory.Type(@$, CombineSpans(@1, @2, @3, @5), isConditional, PhpMemberAttributes.None, new Name($2), @2, null, 
-				(INamedTypeRef)$3, $5.Cast<INamedTypeRef>(), $9, CombineSpans(@8, @10)); 
+				ConvertToNamedTypeRef($3), $5.Select(ConvertToNamedTypeRef), $9, CombineSpans(@8, @10)); 
 				SetDoc($$);
 				PopClassContext();
 			}
@@ -644,7 +644,7 @@ interface_declaration_statement:
 		T_INTERFACE T_STRING interface_extends_list backup_doc_comment enter_scope '{' class_statement_list '}' exit_scope
 			{ 
 				$$ = _astFactory.Type(@$, CombineSpans(@1, @2, @3), isConditional, PhpMemberAttributes.Interface, new Name($2), @2, null, 
-					null, $3.Cast<INamedTypeRef>(), $7, CombineSpans(@6, @8)); 
+					null, $3.Select(ConvertToNamedTypeRef), $7, CombineSpans(@6, @8)); 
 				SetDoc($$);
 			}
 ;
@@ -1005,7 +1005,7 @@ non_empty_for_exprs:
 anonymous_class:
         T_CLASS ctor_arguments
 		extends_from { PushAnonymousClassContext($3); } implements_list backup_doc_comment enter_scope '{' class_statement_list '}' exit_scope {
-			var typeRef = _astFactory.AnonymousTypeReference(@$, CombineSpans(@1, @2, @3, @5), isConditional, PhpMemberAttributes.None, null, (INamedTypeRef)$3, $5.Cast<INamedTypeRef>(), $9, CombineSpans(@8, @10));
+			var typeRef = _astFactory.AnonymousTypeReference(@$, CombineSpans(@1, @2, @3, @5), isConditional, PhpMemberAttributes.None, null, ConvertToNamedTypeRef($3), $5.Select(ConvertToNamedTypeRef), $9, CombineSpans(@8, @10));
 			SetDoc(((AnonymousTypeRef)typeRef).TypeDeclaration);
 			$$ = new Tuple<TypeRef, List<ActualParam>>(typeRef, $2); 
 			PopClassContext();

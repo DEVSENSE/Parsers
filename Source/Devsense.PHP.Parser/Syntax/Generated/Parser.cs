@@ -2269,7 +2269,7 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
       case 170: // class_declaration_statement -> class_modifiers T_CLASS T_STRING extends_from @4 implements_list backup_doc_comment enter_scope '{' class_statement_list '}' exit_scope 
 { 
 				yyval.Node = _astFactory.Type(yypos, CombineSpans(value_stack.array[value_stack.top-12].yypos, value_stack.array[value_stack.top-11].yypos, value_stack.array[value_stack.top-10].yypos, value_stack.array[value_stack.top-9].yypos, value_stack.array[value_stack.top-7].yypos), isConditional, (PhpMemberAttributes)value_stack.array[value_stack.top-12].yyval.Long, new Name(value_stack.array[value_stack.top-10].yyval.String), value_stack.array[value_stack.top-10].yypos, null, 
-				(INamedTypeRef)value_stack.array[value_stack.top-9].yyval.TypeReference, value_stack.array[value_stack.top-7].yyval.TypeRefList.Cast<INamedTypeRef>(), value_stack.array[value_stack.top-3].yyval.NodeList, CombineSpans(value_stack.array[value_stack.top-4].yypos, value_stack.array[value_stack.top-2].yypos)); 
+				ConvertToNamedTypeRef(value_stack.array[value_stack.top-9].yyval.TypeReference), value_stack.array[value_stack.top-7].yyval.TypeRefList.Select(ConvertToNamedTypeRef), value_stack.array[value_stack.top-3].yyval.NodeList, CombineSpans(value_stack.array[value_stack.top-4].yypos, value_stack.array[value_stack.top-2].yypos)); 
 				SetDoc(yyval.Node);
 				PopClassContext();
 			}
@@ -2280,7 +2280,7 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
       case 172: // class_declaration_statement -> T_CLASS T_STRING extends_from @5 implements_list backup_doc_comment enter_scope '{' class_statement_list '}' exit_scope 
 { 
 				yyval.Node = _astFactory.Type(yypos, CombineSpans(value_stack.array[value_stack.top-11].yypos, value_stack.array[value_stack.top-10].yypos, value_stack.array[value_stack.top-9].yypos, value_stack.array[value_stack.top-7].yypos), isConditional, PhpMemberAttributes.None, new Name(value_stack.array[value_stack.top-10].yyval.String), value_stack.array[value_stack.top-10].yypos, null, 
-				(INamedTypeRef)value_stack.array[value_stack.top-9].yyval.TypeReference, value_stack.array[value_stack.top-7].yyval.TypeRefList.Cast<INamedTypeRef>(), value_stack.array[value_stack.top-3].yyval.NodeList, CombineSpans(value_stack.array[value_stack.top-4].yypos, value_stack.array[value_stack.top-2].yypos)); 
+				ConvertToNamedTypeRef(value_stack.array[value_stack.top-9].yyval.TypeReference), value_stack.array[value_stack.top-7].yyval.TypeRefList.Select(ConvertToNamedTypeRef), value_stack.array[value_stack.top-3].yyval.NodeList, CombineSpans(value_stack.array[value_stack.top-4].yypos, value_stack.array[value_stack.top-2].yypos)); 
 				SetDoc(yyval.Node);
 				PopClassContext();
 			}
@@ -2307,7 +2307,7 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
       case 178: // interface_declaration_statement -> T_INTERFACE T_STRING interface_extends_list backup_doc_comment enter_scope '{' class_statement_list '}' exit_scope 
 { 
 				yyval.Node = _astFactory.Type(yypos, CombineSpans(value_stack.array[value_stack.top-9].yypos, value_stack.array[value_stack.top-8].yypos, value_stack.array[value_stack.top-7].yypos), isConditional, PhpMemberAttributes.Interface, new Name(value_stack.array[value_stack.top-8].yyval.String), value_stack.array[value_stack.top-8].yypos, null, 
-					null, value_stack.array[value_stack.top-7].yyval.TypeRefList.Cast<INamedTypeRef>(), value_stack.array[value_stack.top-3].yyval.NodeList, CombineSpans(value_stack.array[value_stack.top-4].yypos, value_stack.array[value_stack.top-2].yypos)); 
+					null, value_stack.array[value_stack.top-7].yyval.TypeRefList.Select(ConvertToNamedTypeRef), value_stack.array[value_stack.top-3].yyval.NodeList, CombineSpans(value_stack.array[value_stack.top-4].yypos, value_stack.array[value_stack.top-2].yypos)); 
 				SetDoc(yyval.Node);
 			}
         return;
@@ -2692,7 +2692,7 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
         return;
       case 295: // anonymous_class -> T_CLASS ctor_arguments extends_from @6 implements_list backup_doc_comment enter_scope '{' class_statement_list '}' exit_scope 
 {
-			var typeRef = _astFactory.AnonymousTypeReference(yypos, CombineSpans(value_stack.array[value_stack.top-11].yypos, value_stack.array[value_stack.top-10].yypos, value_stack.array[value_stack.top-9].yypos, value_stack.array[value_stack.top-7].yypos), isConditional, PhpMemberAttributes.None, null, (INamedTypeRef)value_stack.array[value_stack.top-9].yyval.TypeReference, value_stack.array[value_stack.top-7].yyval.TypeRefList.Cast<INamedTypeRef>(), value_stack.array[value_stack.top-3].yyval.NodeList, CombineSpans(value_stack.array[value_stack.top-4].yypos, value_stack.array[value_stack.top-2].yypos));
+			var typeRef = _astFactory.AnonymousTypeReference(yypos, CombineSpans(value_stack.array[value_stack.top-11].yypos, value_stack.array[value_stack.top-10].yypos, value_stack.array[value_stack.top-9].yypos, value_stack.array[value_stack.top-7].yypos), isConditional, PhpMemberAttributes.None, null, ConvertToNamedTypeRef(value_stack.array[value_stack.top-9].yyval.TypeReference), value_stack.array[value_stack.top-7].yyval.TypeRefList.Select(ConvertToNamedTypeRef), value_stack.array[value_stack.top-3].yyval.NodeList, CombineSpans(value_stack.array[value_stack.top-4].yypos, value_stack.array[value_stack.top-2].yypos));
 			SetDoc(((AnonymousTypeRef)typeRef).TypeDeclaration);
 			yyval.AnonymousClass = new Tuple<TypeRef, List<ActualParam>>(typeRef, value_stack.array[value_stack.top-10].yyval.ParamList); 
 			PopClassContext();

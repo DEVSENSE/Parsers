@@ -443,6 +443,11 @@ namespace Devsense.PHP.Syntax
             }
 
             // direct type reference
+            return CreateNamedTypeRef(span, tname);
+        }
+
+        private TypeRef CreateNamedTypeRef(Span span, QualifiedName tname)
+        {
             QualifiedName translated;
             return (TryTranslateAny(tname, out translated)) ?
                 _astFactory.AliasedTypeReference(span, translated, _astFactory.TypeReference(span, tname)) :
@@ -666,6 +671,16 @@ namespace Devsense.PHP.Syntax
             for (int i = currentNS.Namespaces.Length; i < namespaces.Length; i++)
                 namespaces[i] = new Name(suffix[i - currentNS.Namespaces.Length]); // loop otimization
             return new QualifiedName(new Name(suffix.Last()), namespaces, true);
+        }
+
+        INamedTypeRef ConvertToNamedTypeRef(TypeRef type)
+        {
+            if (type == null || type is INamedTypeRef)
+            {
+                return type as INamedTypeRef;
+            }
+            _errors.Error(type.Span, Errors.Errors.NonClassExtended);
+            return (INamedTypeRef)CreateNamedTypeRef(type.Span, type.QualifiedName.HasValue? type.QualifiedName.Value: new QualifiedName());
         }
     }
 }

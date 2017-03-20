@@ -20,7 +20,7 @@ namespace UnitTests
     {
         public TestContext TestContext { get; set; }
         public const string Errors = "ERRORS:";
-        const string Pattern = @"\s*" + Errors + @"\s*(?<Number>\d*)\s*(?<JSON>.*)";
+        const string Pattern = @"\s*" + Errors + @"\s*(?<Number>\d*(, \d*)*)\s*(?<JSON>.*)";
         private Regex ErrorRegex = new Regex(Pattern, RegexOptions.Compiled | RegexOptions.Singleline);
 
         [TestMethod]
@@ -39,7 +39,6 @@ namespace UnitTests
 
             GlobalCode ast = null;
 
-            Parser parser = new Parser();
             using (StringReader source_reader = new StringReader(testparts[0]))
             {
                 sourceUnit.Parse(factory, errors);
@@ -48,11 +47,15 @@ namespace UnitTests
             if (testparts[1].TrimStart().StartsWith(Errors))
             {
                 var matches = ErrorRegex.Matches(testparts[1]);
+                var knownErrors = matches[0].Groups["Number"].Value.Split(',');
                 Assert.AreEqual(1, matches.Count, path);
-                Assert.AreEqual(1, errors.Count, path);
+                Assert.AreEqual(knownErrors.Length, errors.Count, path);
                 int errorid = 0;
-                Assert.IsTrue(int.TryParse(matches[0].Groups["Number"].Value, out errorid), path);
-                Assert.AreEqual(errorid, errors.Errors.Single().Error.Id, path);
+                for (int i = 0; i < knownErrors.Length; i++)
+                {
+                    Assert.IsTrue(int.TryParse(knownErrors[i], out errorid), path);
+                    Assert.AreEqual(errorid, errors.Errors[i].Error.Id, path);
+                }
                 testparts[1] = matches[0].Groups["JSON"].Value;
             }
             else
