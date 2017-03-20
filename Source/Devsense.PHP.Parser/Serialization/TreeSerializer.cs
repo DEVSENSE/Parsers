@@ -551,7 +551,7 @@ namespace Devsense.PHP.Syntax.Ast.Serialization
         }
         override public void VisitNewEx(NewEx x)
         {
-            _serializer.StartSerialize(typeof(NewEx).Name, SerializeSpan(x.Span));
+            _serializer.StartSerialize(typeof(NewEx).Name, SerializeSpan(x.Span), new NodeObj("ByReference", x.ByReference.ToString()));
             base.VisitNewEx(x);
             _serializer.EndSerialize();
         }

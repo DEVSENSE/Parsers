@@ -12,6 +12,7 @@ nothrow:
     "LabelName" : "nothrow"
   },
   "NewEx":{
+    "ByReference":"False",
     "ClassTypeRef":{
       "ClassName":"Exception"
     },
