@@ -32,21 +32,17 @@ namespace Devsense.PHP.Syntax.Ast
 
 		private TypeRef/*!*/ classNameRef;
 		private CallSignature callSignature;
-        private bool byReference;
 		/// <summary>Type of class being instantiated</summary>
         public TypeRef /*!*/ ClassNameRef { get { return classNameRef; } }
         /// <summary>Call signature of constructor</summary>
         public CallSignature CallSignature { get { return callSignature; } }
-        /// <summary>Is new object explicitly returned by reference.</summary>
-        public bool ByReference { get { return byReference; } }
 
-        public NewEx(Text.Span span, TypeRef/*!*/ classNameRef, List<ActualParam>/*!*/ parameters, bool byReference)
+		public NewEx(Text.Span span, TypeRef/*!*/ classNameRef, List<ActualParam>/*!*/ parameters)
             : base(span)
 		{
 			Debug.Assert(classNameRef != null && parameters != null);
 			this.classNameRef = classNameRef;
 			this.callSignature = new CallSignature(parameters, GenericTypeRef.EmptyList);
-            this.byReference = byReference;
 		}
 
 		/// <summary>

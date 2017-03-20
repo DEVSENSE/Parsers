@@ -63,8 +63,6 @@ namespace UnitTests
                 Assert.AreEqual(0, errors.Count, path);
             }
 
-            Assert.IsNotNull(ast, path);
-
             var serializer = new JsonNodeWriter();
             TreeSerializer visitor = new TreeSerializer(serializer);
             ast.VisitMe(visitor);

@@ -13,36 +13,27 @@ new $x::$y;
 
 "GlobalCode":{
   "NamingContext":{},
-  "NewEx":{
-    "ByReference":"False",
-    "IndirectTypeRef":{
-      "DirectVarUse":{"VarName":"x"}
+  "NewEx":{"IndirectTypeRef":{
+    "DirectVarUse":{"VarName":"x"}}
+  },
+  "NewEx":{"IndirectTypeRef":{
+    "ItemUse":{
+      "Array":{"DirectVarUse":{"VarName":"x"}}}
     }
   },
-  "NewEx":{
-    "ByReference":"False",
-    "IndirectTypeRef":{
-      "ItemUse":{
-        "Array":{"DirectVarUse":{"VarName":"x"}}
-      }
+  "NewEx":{"IndirectTypeRef":{
+    "ItemUse":{
+      "Array":{"DirectVarUse":{"VarName":"x"}},
+      "Index":{"LongIntLiteral":{"Value":"1"}}}
     }
   },
-  "NewEx":{
-    "ByReference":"False",
-    "IndirectTypeRef":{
-      "ItemUse":{
-        "Array":{"DirectVarUse":{"VarName":"x"}},
-        "Index":{"LongIntLiteral":{"Value":"1"}}
-      }
-    }
-  },
-  "NewEx":{"ByReference":"False","IndirectTypeRef":{
+  "NewEx":{"IndirectTypeRef":{
     "DirectVarUse":{"VarName":"y","IsMemberOf":{"DirectVarUse":{"VarName":"x"}}}}
   },
-  "NewEx":{"ByReference":"False","IndirectTypeRef":{
+  "NewEx":{"IndirectTypeRef":{
     "DirectStFldUse":{"PropertyName":"y","ClassTypeRef":{"ClassName":"X"}}}
   },
-  "NewEx":{"ByReference":"False","IndirectTypeRef":{
+  "NewEx":{"IndirectTypeRef":{
     "DirectStFldUse":{"PropertyName":"y","IndirectTypeRef":{"DirectVarUse":{"VarName":"x"}}}}
   }
 }

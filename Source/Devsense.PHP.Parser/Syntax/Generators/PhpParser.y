@@ -1013,10 +1013,10 @@ anonymous_class:
 ;
 
 new_expr:
-		is_reference T_NEW class_name_reference ctor_arguments
-			{ $$ = _astFactory.New(@$, $3, $4, $1 != 0); }
-	|	is_reference T_NEW anonymous_class
-			{ $$ = _astFactory.New(@$, ((Tuple<TypeRef, List<ActualParam>>)$3).Item1, ((Tuple<TypeRef, List<ActualParam>>)$3).Item2, $1 != 0); }
+		T_NEW class_name_reference ctor_arguments
+			{ $$ = _astFactory.New(@$, $2, $3); }
+	|	T_NEW anonymous_class
+			{ $$ = _astFactory.New(@$, ((Tuple<TypeRef, List<ActualParam>>)$2).Item1, ((Tuple<TypeRef, List<ActualParam>>)$2).Item2); }
 ;
 
 expr_without_variable:

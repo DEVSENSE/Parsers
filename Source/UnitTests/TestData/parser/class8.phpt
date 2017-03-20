@@ -23,7 +23,6 @@ $x = new class(1, "world")
 "GlobalCode":{
   "NamingContext":{},
   "NewEx":{
-    "ByReference":"False",
     "ClassTypeRef":{"ClassName":"MyClass"},
     "ActualParam":{"IsUnpack":"False","LongIntLiteral":{"Value":"1"}},
     "ActualParam":{"IsUnpack":"False","StringLiteral":{"Value":"hello"}}
@@ -33,7 +32,6 @@ $x = new class(1, "world")
     "Operation":"AssignValue",
     "DirectVarUse":{"VarName":"x"},
     "NewEx":{
-      "ByReference":"False",
       "AnonymousTypeDecl":{
         "MemberAttributes":"Public",
         "IsConditional":"False",

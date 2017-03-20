@@ -355,9 +355,9 @@ namespace Devsense.PHP.Syntax.Ast
             return new UseStatement(span, uses.ToList(), kind);
         }
 
-        public virtual LangElement New(Span span, TypeRef classNameRef, IEnumerable<ActualParam> argsOpt, bool byReference)
+        public virtual LangElement New(Span span, TypeRef classNameRef, IEnumerable<ActualParam> argsOpt)
         {
-            return new NewEx(span, classNameRef, argsOpt.ToList(), byReference);
+            return new NewEx(span, classNameRef, argsOpt.ToList());
         }
 
         public virtual LangElement NewArray(Span span, IEnumerable<Item> itemsOpt)

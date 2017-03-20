@@ -896,7 +896,7 @@ namespace Devsense.PHP.Syntax.Ast
         /// <param name="classNameRef">Name of the instantiated class.</param>
         /// <param name="argsOpt">Optional. Class constructor arguments.</param>
         /// <returns>The new expression.</returns>
-        TNode New(TSpan span, TypeRef classNameRef, IEnumerable<ActualParam> argsOpt, bool byReference);
+        TNode New(TSpan span, TypeRef classNameRef, IEnumerable<ActualParam> argsOpt);
 
         /// <summary>
         /// Creates <c>instanceof</c> operation expression.
