@@ -41,7 +41,7 @@ namespace UnitTests
 
             using (StringReader source_reader = new StringReader(testparts[0]))
             {
-                sourceUnit.Parse(factory, errors);
+                sourceUnit.Parse(factory, errors, new TestErrorRecovery());
                 ast = sourceUnit.Ast;
             }
             if (testparts[1].TrimStart().StartsWith(Errors))
@@ -63,6 +63,8 @@ namespace UnitTests
             {
                 Assert.AreEqual(0, errors.Count, path);
             }
+
+            Assert.IsNotNull(ast);
 
             var serializer = new JsonNodeWriter();
             TreeSerializer visitor = new TreeSerializer(serializer);

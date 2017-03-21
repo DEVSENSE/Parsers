@@ -26,9 +26,10 @@ namespace Devsense.PHP.Syntax
 {
     public partial class Parser
     {
-        CompliantLexer _lexer;
+        BufferedLexer _lexer;
         INodesFactory<LangElement, Span> _astFactory;
         IErrorSink<Span> _errors;
+        IErrorRecovery _errorRecovery;
         Scope _currentScope;
         bool isConditional => !_currentScope.IsGlobal;
         NamespaceDecl _currentNamespace = null;
@@ -36,6 +37,9 @@ namespace Devsense.PHP.Syntax
         NamingContext namingContext => _context.Peek();
         AliasKind _contextType = AliasKind.Type;
         LanguageFeatures _languageFeatures;
+
+        int _recoveryCount = 0;
+        const int _recoveryLimit = 100;
 
         /// <summary>
         /// The root of AST.
@@ -92,6 +96,7 @@ namespace Devsense.PHP.Syntax
                 INodesFactory<LangElement, Span> astFactory,
                 LanguageFeatures language,
                 IErrorSink<Span> errors = null,
+                IErrorRecovery errorRecovery = null,
                 int positionShift = 0)
         {
             if (lexer == null)
@@ -102,9 +107,10 @@ namespace Devsense.PHP.Syntax
 
             // initialization:
             _languageFeatures = language;
-            _lexer = new CompliantLexer(lexer);
+            _lexer = new BufferedLexer(new CompliantLexer(lexer));
             _astFactory = astFactory;
             _errors = errors ?? new EmptyErrorSink<Span>();
+            _errorRecovery = errorRecovery ?? new EmptyErrorRecovery();
             //InitializeFields();
 
             _currentScope = new Scope(0);
@@ -689,6 +695,37 @@ namespace Devsense.PHP.Syntax
             var name = type.QualifiedName.HasValue ? type.QualifiedName.Value : new QualifiedName();
             _errors.Error(type.Span, Errors.Errors.NonClassExtended, name.ToString());
             return (INamedTypeRef)CreateNamedTypeRef(type.Span, name);
+        }
+
+        /// <summary>
+        /// Error recovery implementation.
+        /// Logic is provided by the caler as an implementation of the <see cref="IErrorRecovery"/> interface.
+        /// The error recovery object gets an instance of <see cref="ILexerState"/> that represents current lexer state that the <see cref="IErrorRecovery"/> can modify.
+        /// </summary>
+        /// <param name="token">Current token.</param>
+        /// <param name="state">Current parser state.</param>
+        /// <returns><c>True</c> if the error recovery succeeded, <c>False</c> otherwise.</returns>
+        protected override bool ErrorRecovery(int token, int state)
+        {
+            if (_recoveryCount == 0)
+            {
+                ReportError();
+            }
+
+            if (_recoveryCount++ < _recoveryLimit)
+            {
+                var next = new CompleteToken((Tokens)token, _lexer.TokenValue, _lexer.TokenPosition, _lexer.TokenText);
+                LexerState lexerState = new LexerState(state, states[state].parser_table, _lexer.PreviousToken, next, _lexer);
+
+                bool recovering = _errorRecovery.TryRecover(lexerState);
+                if (recovering)
+                {
+                    _lexer.AddNextTokens(lexerState.TokensBuffer, lexerState.PreviousToken);
+                    SetNextState(0, lexerState.CurrentState);
+                    return true;
+                }
+            }
+            return false;
         }
     }
 }

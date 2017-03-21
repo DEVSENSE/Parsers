@@ -39,7 +39,7 @@ namespace UnitTests
             
             using (StringReader source_reader = new StringReader(testparts[0]))
             {
-                sourceUnit.Parse(factory, errors);
+                sourceUnit.Parse(factory, errors, new TestErrorRecovery());
                 ast = sourceUnit.Ast;
             }
             if (testparts[1].TrimStart().StartsWith(ParserTests.Errors))
@@ -52,6 +52,7 @@ namespace UnitTests
             else
             {
                 Assert.AreEqual(0, errors.Count, path);
+                Assert.IsNotNull(ast);
 
                 // check every node has a parent
                 var checker = new TreeVisitorCheck();

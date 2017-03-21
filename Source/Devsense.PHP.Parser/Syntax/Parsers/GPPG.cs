@@ -295,7 +295,7 @@ namespace Devsense.PHP.Syntax
                 }
                 else if (action == 0)   // error
                 {
-                    if (!ErrorRecovery())
+                    if (!ErrorRecovery(next, current_state_index))
                         return false;
                 }
             }
@@ -423,7 +423,7 @@ namespace Devsense.PHP.Syntax
 		}
 
 
-		protected bool ErrorRecovery()
+		virtual protected bool ErrorRecovery(int token, int state)
 		{
 			if (!recovering) // if not recovering from previous error
 				ReportError();
@@ -437,10 +437,21 @@ namespace Devsense.PHP.Syntax
 			ShiftErrorToken();
 
 			return DiscardInvalidTokens();
-		}
+        }
+
+        /// <summary>
+        /// Set internal parser state after error recovery.
+        /// </summary>
+        /// <param name="token">New current token.</param>
+        /// <param name="state">New parser state.</param>
+        protected void SetNextState(int token, int state)
+        {
+            next = token;
+            current_state_index = state;
+        }
 
 
-		internal void ReportError()
+        internal void ReportError()
 		{
 			string[] expected_terminals = null;
 

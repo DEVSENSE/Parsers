@@ -85,6 +85,7 @@
     <Compile Include="Ast\YieldEx.cs" />
     <Compile Include="Errors\ErrorInfo.cs" />
     <Compile Include="Errors\Errors.cs" />
+    <Compile Include="Errors\IErrorRecovery.cs" />
     <Compile Include="Errors\IErrorSink.cs" />
     <Compile Include="Errors\Strings.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -95,8 +96,12 @@
     <Compile Include="Syntax\Convert.cs" />
     <Compile Include="Syntax\DocCommentList.cs" />
     <Compile Include="Syntax\NamesRef.cs" />
+    <Compile Include="Syntax\Parsers\BufferedLexer.cs" />
     <Compile Include="Syntax\Parsers\CompliantLexer.cs" />
+    <Compile Include="Syntax\Parsers\EmptyErrorRecovery.cs" />
     <Compile Include="Syntax\Parsers\EmptyErrorSink.cs" />
+    <Compile Include="Syntax\Parsers\ILexerState.cs" />
+    <Compile Include="Syntax\Parsers\LexerState.cs" />
     <Compile Include="Syntax\Parsers\TokensUtils.cs" />
     <Compile Include="Syntax\PropertyCollection.cs" />
     <Compile Include="Serialization\INodeWriter.cs" />

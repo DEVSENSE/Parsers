@@ -61,6 +61,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="LexerTests.cs" />
     <Compile Include="SerializerTreeVisitorTests.cs" />
+    <Compile Include="TestImplementation\TestErrorRecovery.cs" />
     <Compile Include="TestImplementation\TestErrorSink.cs" />
     <Compile Include="VisitorTests.cs" />
   </ItemGroup>
