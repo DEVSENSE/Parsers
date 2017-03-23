@@ -26,7 +26,7 @@ namespace Devsense.PHP.Syntax
 {
     public partial class Parser
     {
-        BufferedLexer _lexer;
+        ITokenProvider<SemanticValueType, Span> _lexer;
         INodesFactory<LangElement, Span> _astFactory;
         IErrorSink<Span> _errors;
         IErrorRecovery _errorRecovery;
@@ -107,7 +107,14 @@ namespace Devsense.PHP.Syntax
 
             // initialization:
             _languageFeatures = language;
-            _lexer = new BufferedLexer(new CompliantLexer(lexer));
+            if (errorRecovery != null)
+            {
+                _lexer = new BufferedLexer(new CompliantLexer(lexer));
+            }
+            else
+            {
+                _lexer = new CompliantLexer(lexer);
+            }
             _astFactory = astFactory;
             _errors = errors ?? new EmptyErrorSink<Span>();
             _errorRecovery = errorRecovery ?? new EmptyErrorRecovery();
@@ -712,15 +719,16 @@ namespace Devsense.PHP.Syntax
                 ReportError();
             }
 
-            if (_recoveryCount++ < _recoveryLimit)
+            if (_recoveryCount++ < _recoveryLimit && _lexer is BufferedLexer)
             {
+                BufferedLexer lexer = (BufferedLexer)_lexer;
                 var next = new CompleteToken((Tokens)token, _lexer.TokenValue, _lexer.TokenPosition, _lexer.TokenText);
-                LexerState lexerState = new LexerState(state, states[state].parser_table, _lexer.PreviousToken, next, _lexer);
+                LexerState lexerState = new LexerState(state, states[state].parser_table, lexer.PreviousToken, next, _lexer);
 
                 bool recovering = _errorRecovery.TryRecover(lexerState);
                 if (recovering)
                 {
-                    _lexer.AddNextTokens(lexerState.TokensBuffer, lexerState.PreviousToken);
+                    lexer.AddNextTokens(lexerState.TokensBuffer, lexerState.PreviousToken);
                     SetNextState(0, lexerState.CurrentState);
                     return true;
                 }

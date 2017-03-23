@@ -83,6 +83,8 @@ namespace Devsense.PHP.Syntax
         void SetDocBlock() => DocBlock = new PHPDocBlock(GetTokenString(), new Span(_charOffset, this.TokenLength));    // TokenPosition is not updated yet ta this point
         void ResetDocBlock() => DocBlock = null;
 
+        public DocCommentList DocBlockList => null;
+
         /// <summary>
         /// Lexer constructor that initializes all the necessary members
         /// </summary>

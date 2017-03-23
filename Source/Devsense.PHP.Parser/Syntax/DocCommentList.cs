@@ -9,7 +9,7 @@ namespace Devsense.PHP.Syntax
     /// Helper class containing list of DOC comments during tokenization.
     /// Provides searching for DOC comment above given position.
     /// </summary>
-    internal class DocCommentList
+    public class DocCommentList
     {
         private struct DocInfo
         {

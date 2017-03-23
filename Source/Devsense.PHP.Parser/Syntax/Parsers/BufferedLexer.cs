@@ -57,12 +57,12 @@ namespace Devsense.PHP.Syntax
 
     internal class BufferedLexer : ITokenProvider<SemanticValueType, Span>
     {
-        private CompliantLexer _provider;
+        private ITokenProvider<SemanticValueType, Span> _provider;
         private Stack<CompleteToken> _buffer = new Stack<CompleteToken>();
         int _currentToken;
         CompleteToken _previousToken;
 
-        public BufferedLexer(CompliantLexer provider)
+        public BufferedLexer(ITokenProvider<SemanticValueType, Span> provider)
         {
             _provider = provider;
         }
@@ -104,13 +104,9 @@ namespace Devsense.PHP.Syntax
             }
         }
 
-        public void ReportError(string[] expectedTokens) => _provider.ReportError(expectedTokens);
-
-        #endregion
-
-        #region CompliantLexer members
-
         public DocCommentList DocBlockList => _provider.DocBlockList;
+
+        public void ReportError(string[] expectedTokens) => _provider.ReportError(expectedTokens);
 
         #endregion
 
