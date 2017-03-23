@@ -68,7 +68,7 @@ namespace Devsense.PHP.Syntax
         /// <param name="previousToken">Previous token.</param>
         /// <param name="currentToken">Current token.</param>
         /// <param name="provider">Currently used lexer.</param>
-        public LexerState(int state, Dictionary<int, int> expectedTokens, CompleteToken previousToken, CompleteToken currentToken, ITokenProvider<SemanticValueType, Span> provider)
+        public LexerState(int state, Dictionary<int, int> expectedTokens, CompleteToken previousToken, CompleteToken currentToken, IParserTokenProvider<SemanticValueType, Span> provider)
         {
             CurrentState = state;
             _buffer = new List<CompleteToken>() { currentToken };

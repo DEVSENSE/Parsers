@@ -26,7 +26,7 @@ namespace Devsense.PHP.Syntax
 {
     public partial class Parser
     {
-        BufferedLexer _lexer;
+        IParserTokenProvider<SemanticValueType, Span> _lexer;
         INodesFactory<LangElement, Span> _astFactory;
         IErrorSink<Span> _errors;
         IErrorRecovery _errorRecovery;
@@ -107,7 +107,14 @@ namespace Devsense.PHP.Syntax
 
             // initialization:
             _languageFeatures = language;
-            _lexer = new BufferedLexer(new CompliantLexer(lexer));
+            if(errorRecovery != null)
+            {
+                _lexer = new BufferedLexer(new CompliantLexer(lexer));
+            }
+            else
+            {
+                _lexer = new CompliantLexer(lexer);
+            }
             _astFactory = astFactory;
             _errors = errors ?? new EmptyErrorSink<Span>();
             _errorRecovery = errorRecovery ?? new EmptyErrorRecovery();

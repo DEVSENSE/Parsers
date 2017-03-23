@@ -8,66 +8,20 @@ using System.Diagnostics;
 
 namespace Devsense.PHP.Syntax
 {
-    /// <summary>
-    /// Compact representation of a lexer token including its data and text.
-    /// </summary>
-    [DebuggerDisplay("{Token} - {TokenText} - {TokenPosition}")]
-    public struct CompleteToken
-    {
-        /// <summary>
-        /// Token.
-        /// </summary>
-        public readonly Tokens Token;
 
-        /// <summary>
-        /// Token data.
-        /// </summary>
-        public readonly SemanticValueType TokenValue;
-
-        /// <summary>
-        /// Token span.
-        /// </summary>
-        public readonly Span TokenPosition;
-
-        /// <summary>
-        /// Token text.
-        /// </summary>
-        public readonly string TokenText;
-
-        /// <summary>
-        /// Empty token singleton.
-        /// </summary>
-        public static readonly CompleteToken Empty = new CompleteToken(Tokens.T_ERROR, new SemanticValueType(), Span.Invalid, string.Empty);
-
-        /// <summary>
-        /// Create a token.
-        /// </summary>
-        /// <param name="token">Token.</param>
-        /// <param name="tokenValue">Token data.</param>
-        /// <param name="tokenPosition">Token span.</param>
-        /// <param name="tokenText">Token text.</param>
-        public CompleteToken(Tokens token, SemanticValueType tokenValue, Span tokenPosition, string tokenText)
-        {
-            Token = token;
-            TokenValue = tokenValue;
-            TokenPosition = tokenPosition;
-            TokenText = tokenText;
-        }
-    }
-
-    internal class BufferedLexer : ITokenProvider<SemanticValueType, Span>
+    internal class BufferedLexer : IParserTokenProvider<SemanticValueType, Span>
     {
         private CompliantLexer _provider;
         private Stack<CompleteToken> _buffer = new Stack<CompleteToken>();
-        int _currentToken;
-        CompleteToken _previousToken;
+        int _currentToken = (int)Tokens.END;
+        CompleteToken _previousToken = CompleteToken.Empty;
 
         public BufferedLexer(CompliantLexer provider)
         {
             _provider = provider;
         }
 
-        #region ITokenProvider members
+        #region IParserTokenProvider members
 
         public int GetNextToken()
         {
@@ -104,13 +58,9 @@ namespace Devsense.PHP.Syntax
             }
         }
 
-        public void ReportError(string[] expectedTokens) => _provider.ReportError(expectedTokens);
-
-        #endregion
-
-        #region CompliantLexer members
-
         public DocCommentList DocBlockList => _provider.DocBlockList;
+
+        public void ReportError(string[] expectedTokens) => _provider.ReportError(expectedTokens);
 
         #endregion
 
@@ -124,13 +74,13 @@ namespace Devsense.PHP.Syntax
             _buffer.Push(_previousToken = previous);
         }
 
-        public void AddNextTokens(IList<CompleteToken> tokens, CompleteToken previous)
+        public void AddNextTokens(IList<CompleteToken> tokensBuffer, CompleteToken previousToken)
         {
-            foreach (var item in tokens.Reverse())
+            foreach (var item in tokensBuffer.Reverse())
             {
                 _buffer.Push(item);
             }
-            _buffer.Push(_previousToken = previous);
+            _buffer.Push(_previousToken = previousToken);
         }
     }
 }

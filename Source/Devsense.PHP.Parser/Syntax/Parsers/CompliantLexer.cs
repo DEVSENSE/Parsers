@@ -14,8 +14,7 @@
 // permissions and limitations under the License.
 
 using System;
-
-using Devsense.PHP.Errors;
+using System.Collections.Generic;
 using Devsense.PHP.Text;
 
 namespace Devsense.PHP.Syntax
@@ -24,7 +23,7 @@ namespace Devsense.PHP.Syntax
     /// PHP lexer generated according to the PhpLexer.l grammar.
     /// Special implementation of the PHP lexer that skips empty nodes (open tag, comment, etc.), which is required by the PHP grammar.
     /// </summary>
-    internal class CompliantLexer : ITokenProvider<SemanticValueType, Span>
+    internal class CompliantLexer : IParserTokenProvider<SemanticValueType, Span>
     {
         ITokenProvider<SemanticValueType, Span> _provider;
 
@@ -103,5 +102,9 @@ namespace Devsense.PHP.Syntax
         {
             _provider.ReportError(expectedTokens);
         }
+
+        public CompleteToken PreviousToken => CompleteToken.Empty;
+
+        public void AddNextTokens(IList<CompleteToken> tokensBuffer, CompleteToken previousToken) { }
     }
 }
