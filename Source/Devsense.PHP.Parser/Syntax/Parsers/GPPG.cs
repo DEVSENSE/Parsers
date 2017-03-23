@@ -125,11 +125,6 @@ namespace Devsense.PHP.Syntax
         /// Gets current DOC block that will be assigned to the next declaration.
         /// </summary>
         PHPDocBlock DocBlock { get; set; }
-
-        /// <summary>
-        /// List of all the doc blocks analyzed by the lexer so far. List is <c>null</c>, when no blocks were parsed yet.
-        /// </summary>
-        DocCommentList DocBlockList { get; }
     }
 
 	#endregion
