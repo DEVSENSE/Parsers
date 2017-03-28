@@ -1135,8 +1135,7 @@ namespace Devsense.PHP.Syntax
         /// <remarks>Used when constructing naming context at runtime.</remarks>
         public bool AddAlias(Name alias, QualifiedName qualifiedName)
         {
-            Debug.Assert(!string.IsNullOrEmpty(qualifiedName.NamespacePhpName));
-            Debug.Assert(qualifiedName.NamespacePhpName[0] != QualifiedName.Separator);   // not starting with separator
+            Debug.Assert(string.IsNullOrEmpty(qualifiedName.NamespacePhpName) || qualifiedName.NamespacePhpName[0] != QualifiedName.Separator);   // not starting with separator
             
             return AddAlias(alias, AliasKind.Type, qualifiedName);
         }
