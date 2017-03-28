@@ -9,15 +9,13 @@ if not "%PackageVersion%" == "" (
    set version=-Version %PackageVersion%
 )
 
-set nunit="tools\nunit\nunit-console.exe"
-
 REM Build
-"%programfiles(x86)%\MSBuild\14.0\Bin\MSBuild.exe" Source\PhpParser.sln /p:Configuration="%config%" /p:SkipAfterBuild="true" /m /v:M /fl /flp:LogFile=msbuild.log;Verbosity=Normal /nr:false
+%MsBuildExe% Source\PhpParser.sln /p:Configuration="%config%" /p:SkipAfterBuild="true" /m /v:M /fl /flp:LogFile=msbuild.log;Verbosity=Normal /nr:false
 if not "%errorlevel%"=="0" goto failure
 
 REM Unit tests
-REM %mstestexe% Source\UnitTests\bin\%config%\UnitTests.dll
-REM if not "%errorlevel%"=="0" goto failure
+%mstestexe% Source\UnitTests\bin\%config%\UnitTests.dll
+if not "%errorlevel%"=="0" goto failure
 
 REM Package
 mkdir Build
