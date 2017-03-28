@@ -1,12 +1,12 @@
 @echo Off
 set config=%1
 if "%config%" == "" (
-   set config=Release
+  set config=Release
 )
 
-set version=
+set version="1.0.0.0"
 if not "%PackageVersion%" == "" (
-   set version=-Version %PackageVersion%
+  set version=-Version %PackageVersion%
 )
 
 REM Build
