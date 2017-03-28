@@ -12,7 +12,7 @@ if not "%PackageVersion%" == "" (
 set nunit="tools\nunit\nunit-console.exe"
 
 REM Build
-"%programfiles(x86)%\MSBuild\14.0\Bin\MSBuild.exe" Source\PhpParser.sln /p:Configuration="%config%" /m /v:M /fl /flp:LogFile=msbuild.log;Verbosity=Normal /nr:false
+"%programfiles(x86)%\MSBuild\14.0\Bin\MSBuild.exe" Source\PhpParser.sln /p:Configuration="%config%" /p:SkipAfterBuild="true" /m /v:M /fl /flp:LogFile=msbuild.log;Verbosity=Normal /nr:false
 if not "%errorlevel%"=="0" goto failure
 
 REM Unit tests
@@ -21,7 +21,7 @@ if not "%errorlevel%"=="0" goto failure
 
 REM Package
 mkdir Build
-call %nuget% "Source\Devsense.PHP.Parser\Devsense.PHP.Parser.nuspec"
+call %nuget% pack "Source\Devsense.PHP.Parser\Devsense.PHP.Parser.nuspec"
 if not "%errorlevel%"=="0" goto failure
 
 :success

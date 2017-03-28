@@ -156,7 +156,7 @@ rem "$(ProjectDir)Syntax\Generators\gppg.exe" /l $(ProjectDir)Syntax\Generators\
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
   </Target> -->
-  <Target Name="AfterBuild" Condition=" '$(Configuration)' == 'Release'">
+  <Target Name="AfterBuild" Condition=" '$(Configuration)' == 'Release' AND '$(SkipAfterBuild)' != 'true'">
     <!-- Only download a new copy of nuget.exe if we don't have a copy available -->
     <!-- WebDownload Condition="!Exists('nuget.exe')" Filename="nuget.exe" FileUri="https://dist.nuget.org/win-x86-commandline/latest/nuget.exe" / -->
     <Exec Command="..\..\tools\nuget pack .\Devsense.PHP.Parser.nuspec">
