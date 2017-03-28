@@ -10,16 +10,16 @@ if not "%PackageVersion%" == "" (
 )
 
 REM Build
-%MsBuildExe% Source\PhpParser.sln /p:Configuration="%config%" /p:SkipAfterBuild="true" /m /v:M /fl /flp:LogFile=msbuild.log;Verbosity=Normal /nr:false
+"%msbuildexe%" Source\PhpParser.sln /p:Configuration="%config%" /p:SkipAfterBuild="true" /m /v:M /fl /flp:LogFile=msbuild.log;Verbosity=Normal /nr:false
 if not "%errorlevel%"=="0" goto failure
 
 REM Unit tests
-%mstestexe% Source\UnitTests\bin\%config%\UnitTests.dll
+"%mstestexe%" Source\UnitTests\bin\%config%\UnitTests.dll
 if not "%errorlevel%"=="0" goto failure
 
 REM Package
 mkdir Build
-call %nuget% pack "Source\Devsense.PHP.Parser\Devsense.PHP.Parser.nuspec"
+call "%nuget%" pack "Source\Devsense.PHP.Parser\Devsense.PHP.Parser.nuspec"
 if not "%errorlevel%"=="0" goto failure
 
 :success
