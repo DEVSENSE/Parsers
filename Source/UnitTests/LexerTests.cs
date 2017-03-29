@@ -4,20 +4,30 @@ using System.IO;
 using Devsense.PHP.Text;
 using System.Diagnostics;
 using System.Text;
-using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using UnitTests.TestImplementation;
 using Devsense.PHP.Syntax;
-using System.Threading.Tasks;
 
 namespace UnitTests
 {
     [TestClass]
     [DeploymentItem("TestData.csv")]
-    [DeploymentItem(@"..\..\Tokens.php")]
+    [DeploymentItem("Tokens.php")]
     public class LexerTests
     {
+        const string BuildScript = "build.bat";
+
+        string GetRootDirectory()
+        {
+            var current = Directory.GetCurrentDirectory();
+            while (current != null && !File.Exists(Path.Combine(current, BuildScript)))
+            {
+                current = Path.GetDirectoryName(current);
+            }
+            return current;
+        }
+
         public TestContext TestContext { get; set; }
 
         private string ParseByPhp(string path)
@@ -25,12 +35,19 @@ namespace UnitTests
             Process process = new Process();
             StringBuilder output = new StringBuilder();
             // Configure the process using the StartInfo properties.
-            process.StartInfo.FileName = @"..\..\..\..\Tools\PHP v7.0\php.exe";
+            process.StartInfo.FileName = Path.Combine(GetRootDirectory(), @"Tools\PHP v7.0\php.exe");
             process.StartInfo.Arguments = "-f tokens.php " + path;
             process.StartInfo.RedirectStandardOutput = true;
             process.StartInfo.UseShellExecute = false;
             process.StartInfo.CreateNoWindow = true;
-            process.Start();
+            try
+            {
+                process.Start();
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException(ex.Message + " - " + process.StartInfo.FileName + "\nWorking directory - " + Directory.GetCurrentDirectory());
+            }
             while (!process.HasExited)
                 output.Append(process.StandardOutput.ReadToEnd());
             process.WaitForExit();// Waits here for the process to exit.
