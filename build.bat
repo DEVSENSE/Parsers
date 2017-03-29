@@ -20,7 +20,7 @@ if not "%errorlevel%"=="0" goto failure
 
 REM Package
 mkdir Build
-call "%nuget%" pack "Source\Devsense.PHP.Parser\Devsense.PHP.Parser.nuspec" -Version=%version%
+call "%nuget%" pack "Source\Devsense.PHP.Parser\Devsense.PHP.Parser.nuspec" %version%
 if not "%errorlevel%"=="0" goto failure
 
 :success
