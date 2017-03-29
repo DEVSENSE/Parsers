@@ -9,7 +9,7 @@ namespace UnitTests.TestImplementation
     /// <summary>
     /// Basic implementation of <see cref="IErrorRecovery"/> for unit tests.
     /// </summary>
-    class TestErrorRecovery : IErrorRecovery
+    class TestErrorRecovery : IErrorRecovery 
     {
         /// <summary>
         /// Basic error recovery that adds a samicolon if it is possible.
