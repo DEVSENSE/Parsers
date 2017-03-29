@@ -10,6 +10,7 @@ if not "%PackageVersion%" == "" (
 )
 
 REM Build
+%nuget% restore Source\PhpParser.sln
 "%msbuildexe%" Source\PhpParser.sln /p:Configuration="%config%" /p:SkipAfterBuild="true" /m /v:M /fl /flp:LogFile=msbuild.log;Verbosity=Normal /nr:false
 if not "%errorlevel%"=="0" goto failure
 
