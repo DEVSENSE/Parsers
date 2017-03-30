@@ -1310,10 +1310,10 @@ callable_variable:
 			if($3 is Name)
 			{
 				var name = new QualifiedName((Name)$3);
-				$$ = _astFactory.Call(@$, new TranslatedQualifiedName(name, @3, name, null), new CallSignature($4), $1);
+				$$ = _astFactory.Call(@$, new TranslatedQualifiedName(name, @3, name, null), new CallSignature($4), VerifyMemberOf($1));
 			}
 			else
-				$$ = _astFactory.Call(@$, (LangElement)$3, new CallSignature($4), $1);
+				$$ = _astFactory.Call(@$, (LangElement)$3, new CallSignature($4), VerifyMemberOf($1));
 		}
 	|	function_call { $$ = $1; }
 ;

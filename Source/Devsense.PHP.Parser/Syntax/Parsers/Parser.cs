@@ -686,6 +686,17 @@ namespace Devsense.PHP.Syntax
             return new QualifiedName(new Name(suffix.Last()), namespaces, true);
         }
 
+        VarLikeConstructUse VerifyMemberOf(LangElement memberOf)
+        {
+            if (memberOf != null && !(memberOf is VarLikeConstructUse))
+            {
+                _errors.Error(memberOf.Span, FatalErrors.CheckVarUseFault);
+                return null;
+            }
+            Debug.Assert(memberOf is VarLikeConstructUse);
+            return (VarLikeConstructUse)memberOf;
+        }
+
         /// <summary>
         /// Ensure that hte <see cref="TypeRef"/> implements <see cref="INamedTypeRef"/> without crashing.
         /// If the <paramref name="type"/> already implements <see cref="INamedTypeRef"/> then it is just returned.

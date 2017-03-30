@@ -3151,10 +3151,10 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 			if(value_stack.array[value_stack.top-2].yyval.Object is Name)
 			{
 				var name = new QualifiedName((Name)value_stack.array[value_stack.top-2].yyval.Object);
-				yyval.Node = _astFactory.Call(yypos, new TranslatedQualifiedName(name, value_stack.array[value_stack.top-2].yypos, name, null), new CallSignature(value_stack.array[value_stack.top-1].yyval.ParamList), value_stack.array[value_stack.top-4].yyval.Node);
+				yyval.Node = _astFactory.Call(yypos, new TranslatedQualifiedName(name, value_stack.array[value_stack.top-2].yypos, name, null), new CallSignature(value_stack.array[value_stack.top-1].yyval.ParamList), VerifyMemberOf(value_stack.array[value_stack.top-4].yyval.Node));
 			}
 			else
-				yyval.Node = _astFactory.Call(yypos, (LangElement)value_stack.array[value_stack.top-2].yyval.Object, new CallSignature(value_stack.array[value_stack.top-1].yyval.ParamList), value_stack.array[value_stack.top-4].yyval.Node);
+				yyval.Node = _astFactory.Call(yypos, (LangElement)value_stack.array[value_stack.top-2].yyval.Object, new CallSignature(value_stack.array[value_stack.top-1].yyval.ParamList), VerifyMemberOf(value_stack.array[value_stack.top-4].yyval.Node));
 		}
         return;
       case 441: // callable_variable -> function_call 
