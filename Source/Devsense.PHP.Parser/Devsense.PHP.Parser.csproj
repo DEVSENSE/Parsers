@@ -121,6 +121,8 @@
     <Compile Include="Syntax\PhpStringBuilder.cs" />
     <Compile Include="Syntax\PHPDocBlock.cs" />
     <Compile Include="Syntax\SourceUnit.cs" />
+    <Compile Include="Syntax\TokenVisitor.cs" />
+    <Compile Include="Syntax\TreeContextVisitor.cs" />
     <Compile Include="Syntax\TreeVisitor.cs" />
     <Compile Include="Syntax\Utils.cs" />
     <Compile Include="Text\ILineBreaks.cs" />
