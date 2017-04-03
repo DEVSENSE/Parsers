@@ -55,6 +55,7 @@ namespace Devsense.PHP.Syntax
             bool inString = CurrentLexicalState == Lexer.LexicalStates.ST_DOUBLE_QUOTES || 
                 CurrentLexicalState == Lexer.LexicalStates.ST_BACKQUOTE || 
                 CurrentLexicalState == Lexer.LexicalStates.ST_HEREDOC ||
+                CurrentLexicalState == Lexer.LexicalStates.ST_IN_HEREDOC ||
                 CurrentLexicalState == Lexer.LexicalStates.ST_IN_STRING ||
                 CurrentLexicalState == Lexer.LexicalStates.ST_IN_SHELL;
 
