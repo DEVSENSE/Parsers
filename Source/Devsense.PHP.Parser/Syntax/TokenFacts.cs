@@ -31,6 +31,13 @@ namespace Devsense.PHP.Syntax
                 case Tokens.T_LBRACKET: return "[";
                 case Tokens.T_RBRACKET: return "]";
 
+                case Tokens.T_LOGICAL_XOR: return "XOR";
+                case Tokens.T_LOGICAL_OR: return "OR";
+                case Tokens.T_LOGICAL_AND: return "AND";
+                case Tokens.T_BOOLEAN_AND: return "&&";
+                case Tokens.T_BOOLEAN_OR: return "||";
+                case Tokens.T_PIPE: return "|";
+                case Tokens.T_CARET: return "^";                
                 case Tokens.T_ELLIPSIS: return "...";
                 case Tokens.T_AMP: return "&";
                 case Tokens.T_DOUBLE_COLON: return "::";
@@ -61,10 +68,13 @@ namespace Devsense.PHP.Syntax
                 case Tokens.T_METHOD_C: return "__METHOD__";
                 case Tokens.T_FILE: return "__FILE__";
                 case Tokens.T_LINE: return "__LINE__";
-                case Tokens.T_DIR: return "__DIR__"; ;
+                case Tokens.T_DIR: return "__DIR__";
 
                 case Tokens.T_YIELD: return "yield";
                 case Tokens.T_YIELD_FROM: return "yield from";
+                case Tokens.T_GOTO: return "goto";
+
+                case Tokens.T_HALT_COMPILER: return "__halt_compiler";
 
                 default: throw new ArgumentException();
             }
@@ -130,12 +140,12 @@ namespace Devsense.PHP.Syntax
 
 
                 // binary:
-                case Operations.Xor:
-                case Operations.Or:
-                case Operations.And:
-                case Operations.BitOr:
-                case Operations.BitXor:
-                case Operations.BitAnd:
+                case Operations.Xor: return Tokens.T_LOGICAL_XOR;
+                case Operations.Or: return Tokens.T_BOOLEAN_OR;
+                case Operations.And: return Tokens.T_BOOLEAN_AND;
+                case Operations.BitOr: return Tokens.T_PIPE;
+                case Operations.BitXor: return Tokens.T_CARET;
+                case Operations.BitAnd: return Tokens.T_AMP;
                 case Operations.Equal: return Tokens.T_IS_EQUAL;
                 case Operations.NotEqual: return Tokens.T_IS_NOT_EQUAL;
                 case Operations.Identical: return Tokens.T_IS_IDENTICAL;

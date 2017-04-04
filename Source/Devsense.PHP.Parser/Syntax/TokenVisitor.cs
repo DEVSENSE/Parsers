@@ -223,9 +223,9 @@ namespace Devsense.PHP.Syntax
             VisitElement(x.FalseExpr);
         }
 
-        public override void VisitConditionalStmt(ConditionalStmt x)
+        public sealed override void VisitConditionalStmt(ConditionalStmt x)
         {
-            throw new NotImplementedException();
+            throw new InvalidOperationException();  // VisitIfStmt
         }
 
         public override void VisitConstantDecl(ConstantDecl x)
@@ -537,7 +537,39 @@ namespace Devsense.PHP.Syntax
 
         public override void VisitIfStmt(IfStmt x)
         {
-            throw new NotImplementedException();
+            // if (cond) stmt [else if] [else]
+            for (int i = 0; i < x.Conditions.Count; i++)
+            {
+                var cond = x.Conditions[i];
+                using (new ScopeHelper(this, cond))
+                {
+                    if (i == 0)
+                    {
+                        VisitToken(Tokens.T_IF);
+                    }
+                    else if (cond.Condition != null)
+                    {
+                        VisitToken(Tokens.T_ELSEIF);
+                    }
+                    else
+                    {
+                        VisitToken(Tokens.T_ELSE);
+                    }
+
+                    if (cond.Condition != null)
+                    {
+                        VisitToken(Tokens.T_LPAREN, "(");
+                        VisitElement(cond.Condition);
+                        VisitToken(Tokens.T_RPAREN, ")");
+                    }
+
+                    // TODO: ":" ?
+
+                    VisitElement(cond.Statement);
+                }
+            }
+
+            // TODO: ENDIF; ?
         }
 
         public override void VisitIncDecEx(IncDecEx x)
@@ -809,7 +841,7 @@ namespace Devsense.PHP.Syntax
 
         public override void VisitPHPDocBlock(PHPDocBlock x)
         {
-            throw new NotImplementedException();
+            // ignore
         }
 
         public override void VisitPHPDocStmt(PHPDocStmt x)
