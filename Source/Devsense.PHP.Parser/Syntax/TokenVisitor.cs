@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Devsense.PHP.Syntax.Ast;
 using System.Diagnostics;
+using System.Globalization;
 
 namespace Devsense.PHP.Syntax
 {
@@ -187,6 +188,7 @@ namespace Devsense.PHP.Syntax
                 VisitToken(Tokens.T_CATCH, "catch");
                 VisitToken(Tokens.T_LPAREN, "(");
                 VisitElement(x.TargetType);
+                VisitElement(x.Variable);
                 VisitToken(Tokens.T_RPAREN, ")");
                 VisitElement(x.Body);
             }
@@ -246,11 +248,14 @@ namespace Devsense.PHP.Syntax
 
         protected virtual void VisitModifiers(LangElement element, PhpMemberAttributes attrs)
         {
+            // TODO: order
+
             if ((attrs & PhpMemberAttributes.Private) != 0) VisitToken(Tokens.T_PRIVATE);
             if ((attrs & PhpMemberAttributes.Protected) != 0) VisitToken(Tokens.T_PROTECTED);
             // TODO: public ?
 
             if ((attrs & PhpMemberAttributes.Static) != 0) VisitToken(Tokens.T_STATIC);
+            if ((attrs & PhpMemberAttributes.Abstract) != 0) VisitToken(Tokens.T_ABSTRACT);
             if ((attrs & PhpMemberAttributes.Final) != 0) VisitToken(Tokens.T_FINAL);
         }
 
@@ -309,7 +314,7 @@ namespace Devsense.PHP.Syntax
 
         public override void VisitDoubleLiteral(DoubleLiteral x)
         {
-            throw new NotImplementedException();
+            VisitToken(Tokens.T_DNUMBER, x.Value.ToString(CultureInfo.InvariantCulture));
         }
 
         public override void VisitEchoStmt(EchoStmt x)
@@ -517,7 +522,8 @@ namespace Devsense.PHP.Syntax
         public override void VisitGlobalStmt(GlobalStmt x)
         {
             VisitToken(Tokens.T_GLOBAL);
-            throw new NotImplementedException();
+            VisitElementList(x.VarList, Tokens.T_COMMA, ",");
+            VisitToken(Tokens.T_SEMI, ";");
         }
 
         public override void VisitGotoStmt(GotoStmt x)
@@ -637,6 +643,8 @@ namespace Devsense.PHP.Syntax
                 VisitToken(Tokens.T_STRING, ns[i].Value);
                 VisitToken(Tokens.T_NS_SEPARATOR, QualifiedName.Separator.ToString());
             }
+
+            VisitToken(Tokens.T_STRING, qname.Name.Value);
         }
 
         public virtual void VisitCallSignature(CallSignature signature)
@@ -774,8 +782,7 @@ namespace Devsense.PHP.Syntax
 
         public override void VisitLongIntLiteral(LongIntLiteral x)
         {
-            //VisitToken(Tokens.T_LNUMBER, x.Value, ...)
-            throw new NotImplementedException();
+            VisitToken(Tokens.T_LNUMBER, x.Value.ToString(CultureInfo.InvariantCulture));
         }
 
         public override void VisitMethodDecl(MethodDecl x)
@@ -894,6 +901,9 @@ namespace Devsense.PHP.Syntax
 
         public override void VisitShellEx(ShellEx x)
         {
+            VisitToken(Tokens.T_BACKQUOTE);
+            // content
+            VisitToken(Tokens.T_BACKQUOTE);
             throw new NotImplementedException();
         }
 
@@ -922,7 +932,10 @@ namespace Devsense.PHP.Syntax
 
         public override void VisitStringLiteralDereferenceEx(StringLiteralDereferenceEx x)
         {
-            throw new NotImplementedException();
+            VisitElement(x.StringExpr);
+            VisitToken(Tokens.T_LBRACKET, "[");
+            VisitElement(x.KeyExpr);
+            VisitToken(Tokens.T_RBRACE, "]");
         }
 
         public sealed override void VisitSwitchItem(SwitchItem x)
@@ -1053,6 +1066,19 @@ namespace Devsense.PHP.Syntax
 
         public override void VisitUseStatement(UseStatement x)
         {
+            VisitToken(Tokens.T_USE, "use");
+            switch (x.Kind)
+            {
+                case AliasKind.Constant: VisitToken(Tokens.T_CONST, "const"); break;
+                case AliasKind.Function: VisitToken(Tokens.T_FUNCTION, "function"); break;
+            }
+
+            VisitElementList(x.Uses, VisitUse, Tokens.T_COMMA, ",");
+            VisitToken(Tokens.T_SEMI, ";");
+        }
+
+        protected virtual void VisitUse(UseBase use)
+        {
             throw new NotImplementedException();
         }
 
@@ -1064,7 +1090,7 @@ namespace Devsense.PHP.Syntax
             VisitElement(x.RValue);
         }
 
-        public override void VisitValueItem(ValueItem x)
+        public sealed override void VisitValueItem(ValueItem x)
         {
             throw new InvalidOperationException();  // VisitArrayItem
         }

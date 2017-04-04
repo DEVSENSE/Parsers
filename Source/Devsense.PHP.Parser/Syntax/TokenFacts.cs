@@ -37,20 +37,24 @@ namespace Devsense.PHP.Syntax
                 case Tokens.T_BOOLEAN_AND: return "&&";
                 case Tokens.T_BOOLEAN_OR: return "||";
                 case Tokens.T_PIPE: return "|";
-                case Tokens.T_CARET: return "^";                
+                case Tokens.T_CARET: return "^";
                 case Tokens.T_ELLIPSIS: return "...";
                 case Tokens.T_AMP: return "&";
                 case Tokens.T_DOUBLE_COLON: return "::";
                 case Tokens.T_OBJECT_OPERATOR: return "->";
                 case Tokens.T_DOUBLE_ARROW: return "=>";
+                case Tokens.T_BACKQUOTE: return "`";
+                case Tokens.T_DOUBLE_QUOTES: return "\"";
 
                 case Tokens.T_IS_EQUAL: return "==";
                 case Tokens.T_IS_NOT_EQUAL: return "!=";
                 case Tokens.T_COALESCE: return "??";
+                case Tokens.T_INSTANCEOF: return "instanceof";
 
                 case Tokens.T_GLOBAL: return "global";
                 case Tokens.T_STATIC: return "static";
                 case Tokens.T_FINAL: return "final";
+                case Tokens.T_ABSTRACT: return "abstract";
                 case Tokens.T_FUNCTION: return "function";
                 case Tokens.T_CONST: return "const";
                 case Tokens.T_VAR: return "var";
@@ -73,6 +77,9 @@ namespace Devsense.PHP.Syntax
                 case Tokens.T_YIELD: return "yield";
                 case Tokens.T_YIELD_FROM: return "yield from";
                 case Tokens.T_GOTO: return "goto";
+                case Tokens.T_DEFAULT: return "default";
+                case Tokens.T_CASE: return "case";
+                case Tokens.T_SWITCH: return "switch";
 
                 case Tokens.T_HALT_COMPILER: return "__halt_compiler";
 
