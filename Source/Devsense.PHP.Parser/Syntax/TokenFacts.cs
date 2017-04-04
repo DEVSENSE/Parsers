@@ -43,12 +43,16 @@ namespace Devsense.PHP.Syntax
 
                 case Tokens.T_GLOBAL: return "global";
                 case Tokens.T_STATIC: return "static";
+                case Tokens.T_FINAL: return "final";
                 case Tokens.T_FUNCTION: return "function";
                 case Tokens.T_CONST: return "const";
                 case Tokens.T_VAR: return "var";
                 case Tokens.T_PRIVATE: return "private";
                 case Tokens.T_PROTECTED: return "protected";
                 case Tokens.T_PUBLIC: return "public";
+
+                case Tokens.T_EXTENDS: return "extends";
+                case Tokens.T_IMPLEMENTS: return "implements";
 
                 case Tokens.T_CLASS_C: return "__CLASS__";
                 case Tokens.T_TRAIT_C: return "__TRAIT__";
@@ -58,6 +62,9 @@ namespace Devsense.PHP.Syntax
                 case Tokens.T_FILE: return "__FILE__";
                 case Tokens.T_LINE: return "__LINE__";
                 case Tokens.T_DIR: return "__DIR__"; ;
+
+                case Tokens.T_YIELD: return "yield";
+                case Tokens.T_YIELD_FROM: return "yield from";
 
                 default: throw new ArgumentException();
             }
