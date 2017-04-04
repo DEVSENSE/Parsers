@@ -798,6 +798,21 @@ namespace Devsense.PHP.Syntax
             return list;
         }
 
+        /// <summary>
+        /// Gets instance of <see cref="QualifiedName"/> with <see cref="QualifiedName.isFullyQualifiedName"/> set.
+        /// </summary>
+        public QualifiedName WithFullyQualified(bool fullyQualified)
+        {
+            if (fullyQualified == this.isFullyQualifiedName)
+            {
+                return this;
+            }
+            else
+            {
+                return new QualifiedName(this.name, this.namespaces, fullyQualified);
+            }
+        }
+
         #endregion
 
         #region Basic Overrides
