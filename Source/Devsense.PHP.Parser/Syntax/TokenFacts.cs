@@ -80,6 +80,9 @@ namespace Devsense.PHP.Syntax
                 case Tokens.T_DEFAULT: return "default";
                 case Tokens.T_CASE: return "case";
                 case Tokens.T_SWITCH: return "switch";
+                case Tokens.T_BREAK: return "break";
+                case Tokens.T_CONTINUE: return "continue";
+                case Tokens.T_RETURN: return "return";
 
                 case Tokens.T_HALT_COMPILER: return "__halt_compiler";
 

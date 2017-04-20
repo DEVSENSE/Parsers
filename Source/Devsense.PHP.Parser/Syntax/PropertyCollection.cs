@@ -116,7 +116,7 @@ namespace Devsense.PHP.Syntax
 
         private static readonly object TypeHashtable = new object();
         private static readonly object TypeList = new object();
-        
+
         /// <summary>
         /// If amount of properties exceeds this number, hashtable will be used instead of an array.
         /// </summary>
@@ -150,12 +150,12 @@ namespace Devsense.PHP.Syntax
                 if (p != null)
                 {
                     // non-empty container
-                    if (object.ReferenceEquals(p, TypeList))
+                    if (ReferenceEquals(p, TypeList))
                     {
                         Debug.Assert(o is DictionaryNode);
                         return (DictionaryNode)o;   // IEnumerable
                     }
-                    else if (object.ReferenceEquals(p, TypeHashtable))
+                    else if (ReferenceEquals(p, TypeHashtable))
                     {
                         Debug.Assert(o is Hashtable);
                         return (Hashtable)o;
@@ -232,12 +232,12 @@ namespace Devsense.PHP.Syntax
                 _obj = value;
             }
             // one item list, with the same key
-            else if (object.Equals(p, key))
+            else if (p.Equals(key))
             {
                 _obj = value;
             }
             // linked list
-            else if (object.ReferenceEquals(p, TypeList))
+            else if (ReferenceEquals(p, TypeList))
             {
                 Debug.Assert(o is DictionaryNode);
 
@@ -270,7 +270,7 @@ namespace Devsense.PHP.Syntax
                 }
             }
             // hashtable
-            else if (object.ReferenceEquals(p, TypeHashtable))
+            else if (ReferenceEquals(p, TypeHashtable))
             {
                 Debug.Assert(o is Hashtable);
                 ((Hashtable)o)[key] = value;
@@ -318,12 +318,12 @@ namespace Devsense.PHP.Syntax
             // empty container
             if (p != null)
             {
-                if (object.Equals(p, key))
+                if (p.Equals(key))
                 {
                     value = o;
                     return true;
                 }
-                else if (object.ReferenceEquals(p, TypeList))
+                else if (ReferenceEquals(p, TypeList))
                 {
                     Debug.Assert(o is DictionaryNode);
                     for (var node = (DictionaryNode)o; node != null; node = node.next)
@@ -335,7 +335,7 @@ namespace Devsense.PHP.Syntax
                         }
                     }
                 }
-                else if (object.ReferenceEquals(p, TypeHashtable))
+                else if (ReferenceEquals(p, TypeHashtable))
                 {
                     Debug.Assert(o is Hashtable);
                     return ((Hashtable)o).TryGetValue(key, out value);
@@ -403,7 +403,7 @@ namespace Devsense.PHP.Syntax
                     _obj = null;
                     return true;
                 }
-                else if (object.ReferenceEquals(p, TypeList))
+                else if (ReferenceEquals(p, TypeList))
                 {
                     Debug.Assert(o is DictionaryNode);
                     DictionaryNode prev = null;
@@ -422,7 +422,7 @@ namespace Devsense.PHP.Syntax
                             {
                                 prev.next = node.next;
                             }
-                            
+
                             return true;
                         }
 
@@ -430,7 +430,7 @@ namespace Devsense.PHP.Syntax
                         prev = node;
                     }
                 }
-                else if (object.ReferenceEquals(p, TypeHashtable))
+                else if (ReferenceEquals(p, TypeHashtable))
                 {
                     Debug.Assert(o is Hashtable);
                     var hashtable = (Hashtable)o;
@@ -499,7 +499,7 @@ namespace Devsense.PHP.Syntax
                 this.SetProperty(key, value);
             }
         }
-        
+
         #endregion
 
         #region Helper functions
@@ -547,7 +547,7 @@ namespace Devsense.PHP.Syntax
     /// Helper reference object implementing <see cref="IPropertyCollection"/>
     /// </summary>
     [DebuggerDisplay("Count = {_properties.Count}")]
-    public class PropertyCollectionClass : IPropertyCollection
+    public class PropertyCollectionClass : IPropertyCollection, IEnumerable<KeyValuePair<object, object>>
     {
         /// <summary>
         /// Internal collection (struct).
@@ -569,47 +569,74 @@ namespace Devsense.PHP.Syntax
 
         public void ClearProperties()
         {
-            _properties.ClearProperties();
+            lock (this)
+            {
+                _properties.ClearProperties();
+            }
         }
 
         public object GetProperty(object key)
         {
-            return _properties.GetProperty(key);
+            lock (this)
+            {
+                return _properties.GetProperty(key);
+            }
         }
 
         public T GetProperty<T>()
         {
-            return _properties.GetProperty<T>();
+            lock (this)
+            {
+                return _properties.GetProperty<T>();
+            }
         }
 
         public bool RemoveProperty(object key)
         {
-            return _properties.RemoveProperty(key);
+            lock (this)
+            {
+                return _properties.RemoveProperty(key);
+            }
         }
 
         public bool RemoveProperty<T>()
         {
-            return _properties.RemoveProperty<T>();
+            lock (this)
+            {
+                return _properties.RemoveProperty<T>();
+            }
         }
 
         public void SetProperty(object key, object value)
         {
-            _properties.SetProperty(key, value);
+            lock (this)
+            {
+                _properties.SetProperty(key, value);
+            }
         }
 
         public void SetProperty<T>(T value)
         {
-            _properties.SetProperty<T>(value);
+            lock (this)
+            {
+                _properties.SetProperty<T>(value);
+            }
         }
 
         public bool TryGetProperty(object key, out object value)
         {
-            return _properties.TryGetProperty(key, out value);
+            lock (this)
+            {
+                return _properties.TryGetProperty(key, out value);
+            }
         }
 
         public bool TryGetProperty<T>(out T value)
         {
-            return _properties.TryGetProperty<T>(out value);
+            lock (this)
+            {
+                return _properties.TryGetProperty<T>(out value);
+            }
         }
 
         /// <summary>
@@ -625,5 +652,32 @@ namespace Devsense.PHP.Syntax
 
             return value;
         }
+
+        /// <summary>
+        /// Gets amount of properties in the container.
+        /// </summary>
+        public int Count
+        {
+            get
+            {
+                lock (this)
+                {
+                    return _properties.Count;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Enumerates items in the collection.
+        /// </summary>
+        public IEnumerator<KeyValuePair<object, object>> GetEnumerator()
+        {
+            lock (this)
+            {
+                return _properties.GetEnumerator();
+            }
+        }
+
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
     }
 }

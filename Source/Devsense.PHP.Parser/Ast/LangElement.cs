@@ -47,58 +47,85 @@ namespace Devsense.PHP.Syntax.Ast
 
         void IPropertyCollection.SetProperty(object key, object value)
         {
-            _properties.SetProperty(key, value);
+            lock (this)
+            {
+                _properties.SetProperty(key, value);
+            }
         }
 
         object IPropertyCollection.GetProperty(object key)
         {
-            return _properties.GetProperty(key);
+            lock (this)
+            {
+                return _properties.GetProperty(key);
+            }
         }
 
         public void SetProperty<T>(T value)
         {
-            _properties.SetProperty<T>(value);
+            lock (this)
+            {
+                _properties.SetProperty<T>(value);
+            }
         }
 
         public T GetProperty<T>()
         {
-            return _properties.GetProperty<T>();
+            lock (this)
+            {
+                return _properties.GetProperty<T>();
+            }
         }
 
         bool IPropertyCollection.TryGetProperty(object key, out object value)
         {
-            return _properties.TryGetProperty(key, out value);
+            lock (this)
+            {
+                return _properties.TryGetProperty(key, out value);
+            }
         }
 
         bool IPropertyCollection.TryGetProperty<T>(out T value)
         {
-            return _properties.TryGetProperty<T>(out value);
+            lock (this)
+            {
+                return _properties.TryGetProperty<T>(out value);
+            }
         }
 
         bool IPropertyCollection.RemoveProperty(object key)
         {
-            return _properties.RemoveProperty(key);
+            lock (this)
+            {
+                return _properties.RemoveProperty(key);
+            }
         }
 
         bool IPropertyCollection.RemoveProperty<T>()
         {
-            return _properties.RemoveProperty<T>();
+            lock (this)
+            {
+                return _properties.RemoveProperty<T>();
+            }
         }
 
         void IPropertyCollection.ClearProperties()
         {
-            _properties.ClearProperties();
+            lock (this)
+            {
+                _properties.ClearProperties();
+            }
         }
 
         object IPropertyCollection.this[object key]
         {
             get
             {
-                return _properties.GetProperty(key);
+                return ((IPropertyCollection)this).GetProperty(key);
             }
             set
             {
-                _properties.SetProperty(key, value);
+                ((IPropertyCollection)this).SetProperty(key, value);
             }
         }
 
