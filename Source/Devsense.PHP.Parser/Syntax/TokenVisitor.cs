@@ -49,11 +49,11 @@ namespace Devsense.PHP.Syntax
     /// <summary>
     /// A default options implementation with default values.
     /// </summary>
-    public class DefaultTokenVisitorComposer : ITokenComposer
+    public class DefaultTokenComposer : ITokenComposer
     {
-        public static ITokenComposer Instance = new DefaultTokenVisitorComposer();
+        public static ITokenComposer Instance = new DefaultTokenComposer();
 
-        protected DefaultTokenVisitorComposer() { }
+        protected DefaultTokenComposer() { }
 
         /// <summary>
         /// Shortcut for <see cref="ConsumeToken(Tokens, string, int)"/>.
@@ -61,7 +61,7 @@ namespace Devsense.PHP.Syntax
         protected void ConsumeToken(Tokens token, int position = -1) => ConsumeToken(token, TokenFacts.GetTokenText(token), position);
 
         /// <inheritdoc />
-        public void ConsumeModifiers(LangElement element, PhpMemberAttributes modifiers, Span span)
+        public virtual void ConsumeModifiers(LangElement element, PhpMemberAttributes modifiers, Span span)
         {
             if ((modifiers & PhpMemberAttributes.Private) != 0) ConsumeToken(Tokens.T_PRIVATE, span.Start);
             if ((modifiers & PhpMemberAttributes.Protected) != 0) ConsumeToken(Tokens.T_PROTECTED, span.Start);
@@ -72,16 +72,16 @@ namespace Devsense.PHP.Syntax
         }
 
         /// <inheritdoc />
-        public void ConsumeToken(Tokens token, string text, int position)
+        public virtual void ConsumeToken(Tokens token, string text, int position)
         {
             // to be overwritten in derived class
             Debug.WriteLine("ConsumeToken {0}: {1}", token.ToString(), text);
         }
 
         /// <inheritdoc />
-        public bool IsOldArraySyntax(ArrayEx node) => false;
+        public virtual bool IsOldArraySyntax(ArrayEx node) => false;
 
-        public void ConsumeLiteral(Literal literal)
+        public virtual void ConsumeLiteral(Literal literal)
         {
             if (literal is BoolLiteral)
             {
@@ -115,7 +115,7 @@ namespace Devsense.PHP.Syntax
 
         public TokenVisitor(TreeContext initialContext, ITokenComposer composer) : base(initialContext)
         {
-            _composer = composer ?? DefaultTokenVisitorComposer.Instance;  // TODO: to TreeContext
+            _composer = composer ?? DefaultTokenComposer.Instance;  // TODO: to TreeContext
         }
 
         /// <summary>
