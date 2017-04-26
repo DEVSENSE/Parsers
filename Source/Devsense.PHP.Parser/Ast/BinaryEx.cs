@@ -15,6 +15,7 @@
 
 using System;
 using System.Diagnostics;
+using Devsense.PHP.Text;
 
 namespace Devsense.PHP.Syntax.Ast
 {
@@ -33,6 +34,11 @@ namespace Devsense.PHP.Syntax.Ast
 
         public override Operations Operation { get { return operation; } }
 		private Operations operation;
+
+        /// <summary>
+        /// Position of <see cref="Operation"/>.
+        /// </summary>
+        public int OperationPosition { get { return -1; } }
 
         #endregion
 

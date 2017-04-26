@@ -32,6 +32,11 @@ namespace Devsense.PHP.Syntax.Ast
         public Expression /*!*/ Expr { get { return expr; } internal set { expr = value; } }
         private Expression/*!*/ expr;
 
+        /// <summary>
+        /// Gets position of <see cref="Operation"/>.
+        /// </summary>
+        public int OperationPosition { get { return -1; } }
+
         #endregion
 
         #region Construction
