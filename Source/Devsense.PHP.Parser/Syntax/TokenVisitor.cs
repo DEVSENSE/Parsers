@@ -493,6 +493,11 @@ namespace Devsense.PHP.Syntax
             }
 
             VisitVariableName(x.Name.Name, x.Name.Span, true);
+            if (x.InitValue != null)
+            {
+                ConsumeToken(Tokens.T_EQ, "=");
+                VisitElement(x.InitValue);
+            }
         }
 
         public override void VisitFormalTypeParam(FormalTypeParam x)
