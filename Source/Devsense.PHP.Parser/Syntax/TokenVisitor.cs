@@ -351,7 +351,7 @@ namespace Devsense.PHP.Syntax
         {
             VisitElement(x.TargetType);
             ConsumeToken(Tokens.T_DOUBLE_COLON, "::");
-            VisitVariableName(x.PropertyName, x.NameSpan);  // $name
+            VisitVariableName(x.PropertyName, x.NameSpan, true);  // $name
         }
 
         public override void VisitDirectStMtdCall(DirectStMtdCall x)
@@ -365,7 +365,7 @@ namespace Devsense.PHP.Syntax
         public override void VisitDirectVarUse(DirectVarUse x)
         {
             VisitIsMemberOf(x.IsMemberOf);
-            VisitVariableName(x.VarName, x.Span);
+            VisitVariableName(x.VarName, x.Span, x.IsMemberOf == null);
         }
 
         public override void VisitDoubleLiteral(DoubleLiteral x)
@@ -424,7 +424,7 @@ namespace Devsense.PHP.Syntax
 
         public override void VisitFieldDecl(FieldDecl x)
         {
-            VisitVariableName(x.Name, x.NameSpan);
+            VisitVariableName(x.Name, x.NameSpan, true);
             if (x.Initializer != null)
             {
                 ConsumeToken(Tokens.T_EQ, "=");
@@ -492,7 +492,7 @@ namespace Devsense.PHP.Syntax
                 ConsumeToken(Tokens.T_ELLIPSIS, "...");
             }
 
-            VisitVariableName(x.Name.Name, x.Name.Span);
+            VisitVariableName(x.Name.Name, x.Name.Span, true);
         }
 
         public override void VisitFormalTypeParam(FormalTypeParam x)
@@ -681,9 +681,9 @@ namespace Devsense.PHP.Syntax
             VisitCallSignature(x.CallSignature);
         }
 
-        public virtual void VisitVariableName(VariableName name, Span span)
+        public virtual void VisitVariableName(VariableName name, Span span, bool dollar)
         {
-            ConsumeToken(Tokens.T_VARIABLE, "$" + name.Value, span.Start);
+            ConsumeToken(Tokens.T_VARIABLE, (dollar ? "$" : string.Empty) + name.Value, span.Start);
         }
 
         public virtual void VisitQualifiedName(QualifiedName qname)
@@ -972,7 +972,7 @@ namespace Devsense.PHP.Syntax
 
         public override void VisitStaticVarDecl(StaticVarDecl x)
         {
-            VisitVariableName(x.Variable, x.NameSpan);
+            VisitVariableName(x.Variable, x.NameSpan, true);
 
             if (x.Initializer != null)
             {
