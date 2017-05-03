@@ -197,6 +197,8 @@ namespace Devsense.PHP.Syntax
                 case Tokens.T_COLON:                // :
                 case Tokens.T_DOUBLE_ARROW:         // =>
                 case Tokens.T_ELLIPSIS:             // ...
+                case Tokens.T_COALESCE:             // ??
+                case Tokens.T_SPACESHIP:            // <=>
                     return TokenCategory.Operator;
 
                 #endregion

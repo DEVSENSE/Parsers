@@ -15,6 +15,7 @@
 
 using System;
 using System.Collections.Generic;
+using Devsense.PHP.Text;
 
 namespace Devsense.PHP.Syntax.Ast
 {
@@ -125,6 +126,7 @@ namespace Devsense.PHP.Syntax.Ast
         ShellCommand,
         IncDec,
         Yield,
+        Parenthesis,
 
         // lambda function:
         Closure,
@@ -199,6 +201,32 @@ namespace Devsense.PHP.Syntax.Ast
         internal override bool AllowsPassByReference { get { return true; } }
 
         protected VarLikeConstructUse(Text.Span p) : base(p) { }
+    }
+
+    #endregion
+
+    #region ParenthesisExpression
+
+    /// <summary>
+    /// Expression representing a parenthesis enclosed expression.
+    /// </summary>
+    public class ParenthesisExpression : Expression
+    {
+        public Expression Expression => _expression;
+
+        public override Operations Operation => Operations.Parenthesis;
+
+        protected Expression _expression;
+
+        public ParenthesisExpression(Span span, Expression expression) : base(span)
+        {
+            _expression = expression;
+        }
+
+        public override void VisitMe(TreeVisitor visitor)
+        {
+            visitor.VisitParenthesisExpression(this);
+        }
     }
 
     #endregion

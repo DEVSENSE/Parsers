@@ -167,7 +167,7 @@ namespace Devsense.PHP.Syntax.Ast
         }
         public virtual LangElement ParenthesisExpression(Span span, LangElement expression)
         {
-            return expression;
+            return new ParenthesisExpression(span, (Expression)expression);
         }
 
         public virtual LangElement Exit(Span span, LangElement statusOpt)

@@ -388,6 +388,13 @@ namespace Devsense.PHP.Syntax
             }
         }
 
+        public override void VisitParenthesisExpression(ParenthesisExpression x)
+        {
+            ConsumeToken(Tokens.T_LPAREN, "(", x.Span.Start);
+            VisitElement(x.Expression);
+            ConsumeToken(Tokens.T_RPAREN, ")", x.Span.End - 1);
+        }
+
         public override void VisitEmptyEx(EmptyEx x)
         {
             // empty(OPERAND)

@@ -381,7 +381,7 @@ namespace UnitTests
                  => (FormalParam)CountLE(base.Parameter(span, name, nameSpan, typeOpt, flags, initValue)); // TODO - replace definitions by interfaces
 
             public override LangElement ParenthesisExpression(Span span, LangElement expression)
-                 => base.ParenthesisExpression(span, expression); // TODO - expression is returned, no new expression is created
+                 => CountLE(base.ParenthesisExpression(span, expression));
 
             public override LangElement PHPDoc(Span span, LangElement content)
                  => CountLE(base.PHPDoc(span, content));
