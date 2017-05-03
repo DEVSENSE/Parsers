@@ -18,9 +18,17 @@ using System;
 namespace Devsense.PHP.Syntax.Ast
 {
     /// <summary>
+    /// Represents a generator creating expression. Either <c>YieldEx</c> or <c>YieldFromEx</c>.
+    /// </summary>
+    public interface IYieldLikeEx
+    {
+
+    }
+
+    /// <summary>
     /// Represents <c>yield</c> expression for the support for PHP Generator.
     /// </summary>
-    public sealed class YieldEx : Expression
+    public sealed class YieldEx : Expression, IYieldLikeEx
     {
         #region Fields & Properties
 
@@ -82,7 +90,7 @@ namespace Devsense.PHP.Syntax.Ast
     /// <summary>
     /// Represents <c>yield from</c> expression for the support for PHP Generator.
     /// </summary>
-    public sealed class YieldFromEx : Expression
+    public sealed class YieldFromEx : Expression, IYieldLikeEx
     {
         #region Fields & Properties
 
