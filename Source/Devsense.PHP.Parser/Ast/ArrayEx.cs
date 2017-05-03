@@ -27,8 +27,8 @@ namespace Devsense.PHP.Syntax.Ast
 		public override Operations Operation { get { return Operations.Array; } }
         internal override bool AllowsPassByReference { get { return false; } }
 
-        public Item[]/*!*/ Items { get { return items; } }
-        private readonly Item[]/*!*/items;
+        public Item[]/*!*/ Items { get { return items; } set { items = value; } }
+        private Item[]/*!*/items;
         
 		public ArrayEx(Text.Span span, IList<Item>/*!*/items)
 			: base(span)
