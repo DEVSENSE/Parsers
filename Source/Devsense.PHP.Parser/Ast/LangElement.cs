@@ -61,6 +61,14 @@ namespace Devsense.PHP.Syntax.Ast
             }
         }
 
+        bool IPropertyCollection.TryGetProperty<T>(out T value)
+        {
+            lock (this)
+            {
+                return _properties.TryGetProperty<T>(out value);
+            }
+        }
+
         public void SetProperty<T>(T value)
         {
             lock (this)
@@ -77,19 +85,19 @@ namespace Devsense.PHP.Syntax.Ast
             }
         }
 
+        public bool TryGetProperty<T>(out T value)
+        {
+            lock (this)
+            {
+                return _properties.TryGetProperty<T>(out value);
+            }
+        }
+
         bool IPropertyCollection.TryGetProperty(object key, out object value)
         {
             lock (this)
             {
                 return _properties.TryGetProperty(key, out value);
-            }
-        }
-
-        bool IPropertyCollection.TryGetProperty<T>(out T value)
-        {
-            lock (this)
-            {
-                return _properties.TryGetProperty<T>(out value);
             }
         }
 
