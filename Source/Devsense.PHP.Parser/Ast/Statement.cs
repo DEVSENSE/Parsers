@@ -25,7 +25,7 @@ namespace Devsense.PHP.Syntax.Ast
     /// <summary>
     /// Abstract base class representing all statements elements of PHP source file.
     /// </summary>
-    public abstract class Statement : LangElement
+    public abstract class Statement : LangElement, IStatement
     {
         protected Statement(Text.Span span)
             : base(span)

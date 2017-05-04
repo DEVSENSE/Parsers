@@ -19,11 +19,6 @@ using System.Collections.Generic;
 
 namespace Devsense.PHP.Syntax.Ast
 {
-    public interface IAstNode
-    {
-
-    }
-
     /// <summary>
     /// Base class for all AST nodes.
     /// </summary>
@@ -141,9 +136,9 @@ namespace Devsense.PHP.Syntax.Ast
     }
 
     /// <summary>
-	/// Base class for all AST nodes representing PHP language Elements - statements and expressions.
-	/// </summary>
-	public abstract class LangElement : AstNode
+    /// Base class for all AST nodes representing PHP language Elements - statements and expressions.
+    /// </summary>
+    public abstract class LangElement : AstNode, ILangElement
     {
         /// <summary>
         /// Immutable empty list of <see cref="LangElement"/>.
@@ -193,25 +188,25 @@ namespace Devsense.PHP.Syntax.Ast
         #endregion
 
         /// <summary>
-        /// Position of element in source file.
+        /// Position of the element in source file.
         /// </summary>
-        public Span Span { get; protected set; }
-		
-		/// <summary>
+        public Span Span { get; set; }
+
+        /// <summary>
         /// Initialize the LangElement.
         /// </summary>
         /// <param name="span">The position of the LangElement in the source code.</param>
-		protected LangElement(Span span)
-		{
-			this.Span = span;
-		}
+        protected LangElement(Span span)
+        {
+            this.Span = span;
+        }
 
         /// <summary>
         /// In derived classes, calls Visit* on the given visitor object.
         /// </summary>
         /// <param name="visitor">Visitor.</param>
         public abstract void VisitMe(TreeVisitor/*!*/visitor);
-	}
+    }
 
     #region Scope
 
