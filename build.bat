@@ -18,8 +18,9 @@ REM Unit tests
 "%programfiles(x86)%\Microsoft Visual Studio\2017\Community\Common7\IDE\MSTest.exe" /testcontainer:Source\UnitTests\bin\Release\UnitTests.dll
 if not "%errorlevel%"=="0" goto failure
 
-:failure
-exit -1
-
 :success
 echo "Success."
+exit 0
+
+:failure
+exit -1
