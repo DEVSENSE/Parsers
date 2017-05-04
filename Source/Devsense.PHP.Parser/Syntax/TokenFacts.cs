@@ -102,6 +102,14 @@ namespace Devsense.PHP.Syntax
                 case Tokens.T_IS_IDENTICAL: return "===";
                 case Tokens.T_IS_NOT_IDENTICAL: return "!==";
 
+                case Tokens.T_BOOL_CAST: return "(bool)";
+                case Tokens.T_INT_CAST: return "(int)";
+                case Tokens.T_DOUBLE_CAST: return "(double)";
+                case Tokens.T_STRING_CAST: return "(string)";
+                case Tokens.T_OBJECT_CAST: return "(object)";
+                case Tokens.T_ARRAY_CAST: return "(array)";
+                case Tokens.T_UNSET_CAST: return "(unset)";
+
                 case Tokens.T_HALT_COMPILER: return "__halt_compiler";
 
                 default: throw new ArgumentException();
