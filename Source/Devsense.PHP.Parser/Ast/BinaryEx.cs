@@ -19,21 +19,33 @@ using Devsense.PHP.Text;
 
 namespace Devsense.PHP.Syntax.Ast
 {
-	/// <summary>
-	/// Binary expression.
-	/// </summary>
-	public sealed class BinaryEx : Expression
+    /// <summary>
+    /// Binary expression.
+    /// </summary>
+    public sealed class BinaryEx : Expression, IBinaryExpression
     {
+        #region IBinaryExpression
+
+        IExpression IBinaryExpression.Left { get => LeftExpr; set => LeftExpr = (Expression)value; }
+
+        IExpression IBinaryExpression.Right { get => RightExpr; set => RightExpr = (Expression)value; }
+
+        Span IBinaryExpression.OperatorSpan => new Span(
+            OperationPosition,
+            TokenFacts.GetTokenText(TokenFacts.GetOperationToken(this.operation)).Length);
+
+        #endregion
+
         #region Fields & Properties
 
-        public Expression/*!*/ LeftExpr { get { return leftExpr; } internal set { leftExpr = value; } }
-		private Expression/*!*/ leftExpr;
+        public Expression/*!*/ LeftExpr { get { return leftExpr; } internal set { Debug.Assert(value != null); leftExpr = value; } }
+        private Expression/*!*/ leftExpr;
 
-        public Expression/*!*/ RightExpr { get { return rightExpr; } internal set { rightExpr = value; } }
-		private Expression/*!*/ rightExpr;
+        public Expression/*!*/ RightExpr { get { return rightExpr; } internal set { Debug.Assert(value != null); rightExpr = value; } }
+        private Expression/*!*/ rightExpr;
 
         public override Operations Operation { get { return operation; } }
-		private Operations operation;
+        private Operations operation;
 
         /// <summary>
         /// Position of <see cref="Operation"/>.
@@ -45,17 +57,16 @@ namespace Devsense.PHP.Syntax.Ast
         #region Construction
 
         public BinaryEx(Text.Span span, Operations operation, Expression/*!*/ leftExpr, Expression/*!*/ rightExpr)
-			: base(span)
-		{
-			Debug.Assert(leftExpr != null && rightExpr != null);
-			this.operation = operation;
-			this.leftExpr = leftExpr;
-			this.rightExpr = rightExpr;
-		}
+            : base(span)
+        {
+            this.operation = operation;
+            this.LeftExpr = leftExpr;
+            this.RightExpr = rightExpr;
+        }
 
-		#endregion
+        #endregion
 
-		/// <summary>
+        /// <summary>
         /// Call the right Visit* method on the given Visitor object.
         /// </summary>
         /// <param name="visitor">Visitor to be called.</param>
@@ -63,5 +74,5 @@ namespace Devsense.PHP.Syntax.Ast
         {
             visitor.VisitBinaryEx(this);
         }
-	}
+    }
 }

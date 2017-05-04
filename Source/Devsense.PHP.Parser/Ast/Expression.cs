@@ -139,7 +139,7 @@ namespace Devsense.PHP.Syntax.Ast
     /// <summary>
     /// Abstract base class for expressions.
     /// </summary>
-    public abstract class Expression : LangElement
+    public abstract class Expression : LangElement, IExpression
     {
         /// <summary>
         /// Immutable empty list of <see cref="Expression"/>.
