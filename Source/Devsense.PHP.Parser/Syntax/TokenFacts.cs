@@ -92,6 +92,14 @@ namespace Devsense.PHP.Syntax
                 case Tokens.T_POW: return "**";
                 case Tokens.T_DOT: return ".";
                 case Tokens.T_SPACESHIP: return "<=>";
+                case Tokens.T_IS_GREATER_OR_EQUAL: return ">=";
+                case Tokens.T_IS_SMALLER_OR_EQUAL: return "<=";
+                case Tokens.T_LT: return "<";
+                case Tokens.T_EQ: return "=";
+                case Tokens.T_GT: return ">";
+
+                case Tokens.T_IS_IDENTICAL: return "===";
+                case Tokens.T_IS_NOT_IDENTICAL: return "!==";
 
                 case Tokens.T_HALT_COMPILER: return "__halt_compiler";
 
