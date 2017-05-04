@@ -60,6 +60,7 @@ namespace UnitTests
                 Assert.AreEqual(factory.CreatedElements.Count, checker.VisitedElements.Count, path);
                 Assert.AreEqual(factory.ItemCount, checker.ItemCount, path);
                 Assert.AreEqual(factory.ForeachVarCount, checker.ForeachVarCount, path);
+                //var dictionary = factory.CreatedElements.GroupBy(t => t.GetType()).ToDictionary(g => g.Key);
             }
         }
 

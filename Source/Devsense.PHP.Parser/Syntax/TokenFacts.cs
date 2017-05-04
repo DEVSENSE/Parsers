@@ -84,6 +84,15 @@ namespace Devsense.PHP.Syntax
                 case Tokens.T_CONTINUE: return "continue";
                 case Tokens.T_RETURN: return "return";
 
+                case Tokens.T_PLUS: return "+";
+                case Tokens.T_MINUS: return "-";
+                case Tokens.T_MUL: return "*";
+                case Tokens.T_SLASH: return "/";
+                case Tokens.T_PERCENT: return "%";
+                case Tokens.T_POW: return "**";
+                case Tokens.T_DOT: return ".";
+                case Tokens.T_SPACESHIP: return "<=>";
+
                 case Tokens.T_HALT_COMPILER: return "__halt_compiler";
 
                 default: throw new ArgumentException();
