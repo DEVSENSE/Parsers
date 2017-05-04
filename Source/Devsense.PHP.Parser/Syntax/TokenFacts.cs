@@ -84,6 +84,7 @@ namespace Devsense.PHP.Syntax
                 case Tokens.T_CONTINUE: return "continue";
                 case Tokens.T_RETURN: return "return";
 
+                case Tokens.T_EXCLAM: return "!";
                 case Tokens.T_PLUS: return "+";
                 case Tokens.T_MINUS: return "-";
                 case Tokens.T_MUL: return "*";
