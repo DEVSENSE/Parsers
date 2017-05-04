@@ -20,6 +20,14 @@ using System.Diagnostics;
 
 namespace Devsense.PHP.Syntax.Ast
 {
+    /// <summary>
+    /// A statement.
+    /// </summary>
+    public interface IStatement : ILangElement
+    {
+
+    }
+
     #region Statement
 
     /// <summary>

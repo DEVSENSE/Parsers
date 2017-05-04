@@ -20,6 +20,27 @@ using Devsense.PHP.Text;
 namespace Devsense.PHP.Syntax.Ast
 {
     /// <summary>
+    /// A binary expression.
+    /// </summary>
+    public interface IBinaryExpression : IExpression
+    {
+        /// <summary>
+        /// Left operand.
+        /// </summary>
+        IExpression Left { get; set; }
+
+        /// <summary>
+        /// Right operand.
+        /// </summary>
+        IExpression Right { get; set; }
+
+        /// <summary>
+        /// The operator span.
+        /// </summary>
+        Span OperatorSpan { get; }
+    }
+
+    /// <summary>
     /// Binary expression.
     /// </summary>
     public sealed class BinaryEx : Expression, IBinaryExpression

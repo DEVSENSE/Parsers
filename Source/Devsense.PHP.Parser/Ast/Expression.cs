@@ -134,6 +134,14 @@ namespace Devsense.PHP.Syntax.Ast
 
     #endregion
 
+    /// <summary>
+    /// An expression.
+    /// </summary>
+    public interface IExpression : ILangElement
+    {
+        Operations Operation { get; }
+    }
+
     #region Expression
 
     /// <summary>

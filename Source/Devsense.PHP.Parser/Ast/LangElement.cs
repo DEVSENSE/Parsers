@@ -20,6 +20,17 @@ using System.Collections.Generic;
 namespace Devsense.PHP.Syntax.Ast
 {
     /// <summary>
+    /// Basic node interface - language elements and global code.
+    /// </summary>
+    public interface IAstNode
+    {
+        /// <summary>
+        /// Gets property collection associated with this node.
+        /// </summary>
+        IPropertyCollection Properties { get; }
+    }
+
+    /// <summary>
     /// Base class for all AST nodes.
     /// </summary>
     public abstract class AstNode : IAstNode, IPropertyCollection
@@ -133,6 +144,22 @@ namespace Devsense.PHP.Syntax.Ast
         }
 
         #endregion
+    }
+
+    /// <summary>
+    /// Represents all AST elements - statements and expressions.
+    /// </summary>
+    public interface ILangElement : IAstNode
+    {
+        /// <summary>
+        /// Position of the element in source file.
+        /// </summary>
+        Span Span { get; set; }
+
+        /// <summary>
+        /// Implements the visitor pattern.
+        /// </summary>
+        void VisitMe(TreeVisitor/*!*/visitor);
     }
 
     /// <summary>
