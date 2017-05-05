@@ -20,6 +20,8 @@ using System.Diagnostics;
 
 namespace Devsense.PHP.Syntax.Ast
 {
+    #region Statement
+
     /// <summary>
     /// A statement.
     /// </summary>
@@ -27,8 +29,6 @@ namespace Devsense.PHP.Syntax.Ast
     {
 
     }
-
-    #region Statement
 
     /// <summary>
     /// Abstract base class representing all statements elements of PHP source file.
@@ -53,13 +53,48 @@ namespace Devsense.PHP.Syntax.Ast
     #region BlockStmt
 
     /// <summary>
+    /// A block of statements enclosed in either curly braces or corresponding begin/end keywords.
+    /// </summary>
+    public interface IBlockStatement : IStatement
+    {
+        /// <summary>
+        /// Gets contained statements.
+        /// </summary>
+        IReadOnlyCollection<IStatement> Statements { get; }
+
+        /// <summary>
+        /// A token that introduces the block.
+        /// Can be <c>{</c>, <c>0</c> or <c>:</c>.
+        /// The block start position corresponds to this token.
+        /// </summary>
+        Tokens OpeningToken { get; }
+
+        /// <summary>
+        /// A token that closes the block.
+        /// Can be <c>}</c>, <c>0</c> or and <c>END*</c> token.
+        /// The block end position corresponds to this token.
+        /// </summary>
+        Tokens ClosingToken { get; }
+    }
+
+    /// <summary>
     /// Block statement.
     /// </summary>
-    public sealed class BlockStmt : Statement
+    public class BlockStmt : Statement, IBlockStatement
     {
-        private readonly Statement[]/*!*/_statements;
+        #region IBlockStatement
+
+        IReadOnlyCollection<IStatement> IBlockStatement.Statements => _statements;
+
+        public virtual Tokens OpeningToken => Tokens.T_LBRACE;
+
+        public virtual Tokens ClosingToken => Tokens.T_RBRACE;
+
+        #endregion
+
         /// <summary>Statements in block</summary>
         public Statement[]/*!*/ Statements { get { return _statements; } }
+        private readonly Statement[]/*!*/_statements;
 
         public BlockStmt(Text.Span span, IList<Statement>/*!*/body)
             : base(span)
@@ -89,6 +124,37 @@ namespace Devsense.PHP.Syntax.Ast
         }
     }
 
+    internal class SimpleBlockStmt : BlockStmt
+    {
+        public override Tokens OpeningToken => 0;
+        public override Tokens ClosingToken => 0;
+
+        public SimpleBlockStmt(Span span, IList<Statement> body) : base(span, body)
+        {
+        }
+    }
+
+    internal class ColonBlockStmt : BlockStmt
+    {
+        public override Tokens OpeningToken => Tokens.T_COLON;
+        public override Tokens ClosingToken => _closingToken;
+
+        private Tokens _closingToken;
+
+        public ColonBlockStmt(Span span, IList<Statement> body, Tokens closingToken) : base(span, body)
+        {
+            Debug.Assert(
+                closingToken == Tokens.T_ENDDECLARE ||
+                closingToken == Tokens.T_ENDFOR ||
+                closingToken == Tokens.T_ENDFOREACH ||
+                closingToken == Tokens.T_ENDIF ||
+                closingToken == Tokens.T_ENDSWITCH ||
+                closingToken == Tokens.T_ENDWHILE);
+
+            _closingToken = closingToken;
+        }
+    }
+
     #endregion
 
     #region ExpressionStmt
@@ -96,10 +162,24 @@ namespace Devsense.PHP.Syntax.Ast
     /// <summary>
     /// Expression statement.
     /// </summary>
-    public sealed class ExpressionStmt : Statement
+    public interface IExpressionStatement : IStatement
     {
+        /// <summary>
+        /// Gets containing expression.
+        /// </summary>
+        IExpression Expression { get; }
+    }
+
+    /// <summary>
+    /// Expression statement.
+    /// </summary>
+    public sealed class ExpressionStmt : Statement, IExpressionStatement
+    {
+        IExpression IExpressionStatement.Expression => this.expression;
+
         /// <summary>Expression that repesents this statement</summary>
         public Expression/*!*/ Expression { get { return expression; } internal set { expression = value; } }
+
         private Expression/*!*/ expression;
 
         public ExpressionStmt(Text.Span span, Expression/*!*/ expression)
@@ -292,7 +372,7 @@ namespace Devsense.PHP.Syntax.Ast
         /// <summary>Expression used to initialize static variable</summary>
         public Expression Initializer { get { return initializer; } internal set { initializer = value; } }
         private Expression initializer;
-        
+
         public StaticVarDecl(Text.Span span, VariableName variableName, Expression initializer)
             : base(span)
         {

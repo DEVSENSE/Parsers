@@ -147,7 +147,7 @@ namespace Devsense.PHP.Syntax.Ast
     }
 
     /// <summary>
-    /// Represents all AST elements - statements and expressions.
+    /// Represents all AST elements - statements, expressions and global code.
     /// </summary>
     public interface ILangElement : IAstNode
     {

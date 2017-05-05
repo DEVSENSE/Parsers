@@ -74,7 +74,14 @@ namespace Devsense.PHP.Syntax.Ast
 
         public virtual LangElement Block(Span span, IEnumerable<LangElement> statements)
         {
-            return new BlockStmt(span.IsValid || statements.Count() == 0? span: Span.FromBounds(statements.First().Span.Start, statements.Last().Span.End), ConvertList<Statement>(statements));
+            return new BlockStmt(BlockSpan(span, statements), ConvertList<Statement>(statements));
+        }
+
+        private static Span BlockSpan(Span span, IEnumerable<LangElement> statements)
+        {
+            return (span.IsValid || !statements.Any())
+                ? span
+                : Span.FromBounds(statements.First().Span.Start, statements.Last().Span.End);
         }
 
         public virtual LangElement TraitAdaptationBlock(Span span, IEnumerable<LangElement> adaptations)
@@ -123,11 +130,11 @@ namespace Devsense.PHP.Syntax.Ast
 
         public virtual LangElement ColonBlock(Span span, IEnumerable<LangElement> statements, Tokens endToken)
         {
-            return Block(span, statements);
+            return new ColonBlockStmt(BlockSpan(span, statements), ConvertList<Statement>(statements), endToken);
         }
         public virtual LangElement SimpleBlock(Span span, IEnumerable<LangElement> statements)
         {
-            return Block(span, statements);
+            return new SimpleBlockStmt(BlockSpan(span, statements), ConvertList<Statement>(statements));
         }
 
         public virtual LangElement Concat(Span span, IEnumerable<LangElement> expressions)

@@ -24,13 +24,31 @@ namespace Devsense.PHP.Syntax.Ast
     /// <summary>
     /// Represents a container for global statements.
     /// </summary>
+    public interface IGlobalCode : ILangElement, IBlockStatement
+    {
+
+    }
+
+    /// <summary>
+    /// Represents a container for global statements.
+    /// </summary>
     /// <remarks>
     /// PHP source file can contain global code definition which is represented in AST 
     /// by GlobalCode node. Finally, it is emitted into Main() method of concrete PHPPage 
     /// class. The sample code below illustrates a part of PHP global code
     /// </remarks>
-    public sealed class GlobalCode : LangElement
+    public sealed class GlobalCode : LangElement, IGlobalCode
     {
+        #region IGlobalCode
+
+        IReadOnlyCollection<IStatement> IBlockStatement.Statements => statements;
+
+        Tokens IBlockStatement.OpeningToken => 0;
+
+        Tokens IBlockStatement.ClosingToken => 0;
+
+        #endregion
+        
         /// <summary>
         /// Array of nodes representing statements in PHP global code
         /// </summary>
@@ -97,7 +115,8 @@ namespace Devsense.PHP.Syntax.Ast
         /// <summary>
         /// Naming context defining aliases.
         /// </summary>
-        public NamingContext/*!*/ Naming {
+        public NamingContext/*!*/ Naming
+        {
             get { return this.naming; }
             internal /* friend Parser */ set { this.naming = value; }
         }
@@ -216,7 +235,7 @@ namespace Devsense.PHP.Syntax.Ast
         /// </summary>
         public bool IsConditional { get; private set; }
 
-        public GlobalConstantDecl(Text.Span span, bool isConditional, 
+        public GlobalConstantDecl(Text.Span span, bool isConditional,
             string/*!*/ name, Text.Span namePos, Expression/*!*/ initializer)
             : base(span, name, namePos, initializer)
         {
