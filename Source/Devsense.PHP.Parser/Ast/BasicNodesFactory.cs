@@ -316,16 +316,16 @@ namespace Devsense.PHP.Syntax.Ast
             return new ListEx(span, targets.ToList());
         }
 
-        public virtual LangElement Literal(Span span, object value)
+        public virtual LangElement Literal(Span span, object value, Literal.LiteralFormat format)
         {
             if (value is long)
-                return new LongIntLiteral(span, (long)value);
+                return new LongIntLiteral(span, (long)value, format);
             else if(value is int)
-                return new LongIntLiteral(span, (int)value);
+                return new LongIntLiteral(span, (int)value, format);
             else if (value is double)
-                return new DoubleLiteral(span, (double)value);
+                return new DoubleLiteral(span, (double)value, format);
             else if (value is string)
-                return new StringLiteral(span, (string)value);
+                return new StringLiteral(span, (string)value, format);
             else if (value is byte[])
                 return new BinaryStringLiteral(span, (byte[])value);
             else if (value is bool)

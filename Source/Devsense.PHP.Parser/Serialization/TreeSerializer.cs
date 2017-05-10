@@ -120,17 +120,30 @@ namespace Devsense.PHP.Syntax.Ast.Serialization
 
         override public void VisitLongIntLiteral(LongIntLiteral x)
         {
-            _serializer.Serialize(typeof(LongIntLiteral).Name, SerializeSpan(x.Span), new NodeObj("Value", x.Value.ToString()));
+            //string format= "Decimal";
+            //switch (x.Format)
+            //{
+            //    case Literal.LiteralFormat.Binary: format = "Binary"; break;
+            //    case Literal.LiteralFormat.Octal: format = "Octal"; break;
+            //    case Literal.LiteralFormat.Hexadecimal: format = "Hexadecimal"; break;
+            //}
+            _serializer.Serialize(typeof(LongIntLiteral).Name, SerializeSpan(x.Span), new NodeObj("Value", x.Value.ToString())/*, new NodeObj("Format", format)*/);
         }
 
         override public void VisitDoubleLiteral(DoubleLiteral x)
         {
-            _serializer.Serialize(typeof(DoubleLiteral).Name, SerializeSpan(x.Span), new NodeObj("Value", x.Value.ToString(System.Globalization.NumberFormatInfo.InvariantInfo)));
+            //string format = "FloatingPoint";
+            //switch (x.Format)
+            //{
+            //    case Literal.LiteralFormat.ExponentialSmall: format = "ExponentialSmall"; break;
+            //    case Literal.LiteralFormat.ExponentialBig: format = "ExponentialBig"; break;
+            //}
+            _serializer.Serialize(typeof(DoubleLiteral).Name, SerializeSpan(x.Span), new NodeObj("Value", x.Value.ToString(System.Globalization.NumberFormatInfo.InvariantInfo))/*, new NodeObj("Format", format)*/);
         }
 
         override public void VisitStringLiteral(StringLiteral x)
         {
-            _serializer.Serialize(typeof(StringLiteral).Name, SerializeSpan(x.Span), new NodeObj("Value", x.Value));
+            _serializer.Serialize(typeof(StringLiteral).Name, SerializeSpan(x.Span), new NodeObj("Value", x.Value)/*, new NodeObj("Format", x.Format == Literal.LiteralFormat.SingleQuotes ? "SingleQuotes" : "DoubleQuotes")*/);
         }
 
         override public void VisitBinaryStringLiteral(BinaryStringLiteral x)
@@ -416,7 +429,7 @@ namespace Devsense.PHP.Syntax.Ast.Serialization
         {
             _serializer.StartSerialize(typeof(ForeachStmt).Name, SerializeSpan(x.Span));
             SerializeOptionalProperty("Enumeree", x.Enumeree);
-            if(x.KeyVariable != null) SerializeOptionalProperty("KeyVariable", x.KeyVariable.Target);
+            if (x.KeyVariable != null) SerializeOptionalProperty("KeyVariable", x.KeyVariable.Target);
             SerializeOptionalProperty("ValueVariable", x.ValueVariable.Target);
             SerializeOptionalProperty("Body", x.Body);
             _serializer.EndSerialize();
@@ -489,7 +502,7 @@ namespace Devsense.PHP.Syntax.Ast.Serialization
         }
         override public void VisitClassTypeRef(ClassTypeRef x)
         {
-            _serializer.Serialize(typeof(ClassTypeRef).Name, SerializeSpan(x.Span), 
+            _serializer.Serialize(typeof(ClassTypeRef).Name, SerializeSpan(x.Span),
                 new NodeObj("ClassName", x.QualifiedName.ToString()));
         }
         public override void VisitTranslatedTypeRef(TranslatedTypeRef x)
@@ -564,7 +577,7 @@ namespace Devsense.PHP.Syntax.Ast.Serialization
             foreach (FormalParam p in x.Signature.FormalParams)
                 VisitElement(p);
             _serializer.EndSerialize();
-            
+
             SerializeOptionalProperty("Body", x.Body);
 
             SerializeOptionalProperty("ReturnType", x.ReturnType);
@@ -606,7 +619,7 @@ namespace Devsense.PHP.Syntax.Ast.Serialization
         }
         override public void VisitFormalParam(FormalParam x)
         {
-            _serializer.StartSerialize(typeof(FormalParam).Name, SerializeSpan(x.Span), new NodeObj("Name", x.Name.Name.Value), 
+            _serializer.StartSerialize(typeof(FormalParam).Name, SerializeSpan(x.Span), new NodeObj("Name", x.Name.Name.Value),
                 new NodeObj("PassedByRef", x.PassedByRef.ToString()), new NodeObj("IsVariadic", x.IsVariadic.ToString()));
             SerializeOptionalProperty("TypeHint", x.TypeHint);
             SerializeOptionalProperty("InitValue", x.InitValue);
@@ -633,20 +646,20 @@ namespace Devsense.PHP.Syntax.Ast.Serialization
         public override void VisitUseStatement(UseStatement x)
         {
             _serializer.StartSerialize(typeof(UseStatement).Name, SerializeSpan(x.Span), new NodeObj("Kind", x.Kind.ToString()));
-            _serializer.Serialize("Aliases", x.Uses.All(u => u is SimpleUse)?
-                x.Uses.Where(u => u is SimpleUse).Select(u => new NodeObj(((SimpleUse)u).Alias.Name.Value, SerializeSpan(u.Span))).ToArray():
+            _serializer.Serialize("Aliases", x.Uses.All(u => u is SimpleUse) ?
+                x.Uses.Where(u => u is SimpleUse).Select(u => new NodeObj(((SimpleUse)u).Alias.Name.Value, SerializeSpan(u.Span))).ToArray() :
                 ((GroupUse)x.Uses.First(u => u is GroupUse)).Uses.Select(u => new NodeObj(u.Alias.Name.Value, SerializeSpan(u.Span))).ToArray());
             base.VisitUseStatement(x);
             _serializer.EndSerialize();
         }
         override public void VisitNamedTypeDecl(NamedTypeDecl x)
         {
-            _serializer.StartSerialize(typeof(NamedTypeDecl).Name, SerializeSpan(x.Span), 
+            _serializer.StartSerialize(typeof(NamedTypeDecl).Name, SerializeSpan(x.Span),
                 new NodeObj("Name", x.Name.Name.Value), new NodeObj("MemberAttributes", MemberAttributesToString(x.MemberAttributes)),
                 new NodeObj("IsConditional", x.IsConditional.ToString()));
             if (x.BaseClass != null)
                 _serializer.Serialize("BaseClassName", new NodeObj("Name", x.BaseClass.ClassName.ToString()),
-                    x.BaseClass is TranslatedTypeRef? new NodeObj("OriginalName", ((TranslatedTypeRef)x.BaseClass).OriginalType.QualifiedName.ToString()): NodeObj.Empty);
+                    x.BaseClass is TranslatedTypeRef ? new NodeObj("OriginalName", ((TranslatedTypeRef)x.BaseClass).OriginalType.QualifiedName.ToString()) : NodeObj.Empty);
             if (x.ImplementsList != null && x.ImplementsList.Length > 0)
                 _serializer.Serialize("ImplementsList", x.ImplementsList.Select(n => new NodeObj("Name", n.ClassName.ToString())).ToArray());
             SerializePHPDoc(x.PHPDoc);
@@ -700,7 +713,7 @@ namespace Devsense.PHP.Syntax.Ast.Serialization
         }
         override public void VisitMethodDecl(MethodDecl x)
         {
-            _serializer.StartSerialize(typeof(MethodDecl).Name, SerializeSpan(x.Span), new NodeObj("Name", x.Name.Name.Value), 
+            _serializer.StartSerialize(typeof(MethodDecl).Name, SerializeSpan(x.Span), new NodeObj("Name", x.Name.Name.Value),
                 new NodeObj("Modifiers", MemberAttributesToString(x.Modifiers)));
             SerializePHPDoc(x.PHPDoc);
             _serializer.StartSerialize("FormalParams");
@@ -708,7 +721,7 @@ namespace Devsense.PHP.Syntax.Ast.Serialization
             foreach (FormalParam p in x.Signature.FormalParams)
                 VisitElement(p);
             _serializer.EndSerialize();
-            
+
             SerializeOptionalProperty("Body", x.Body);
 
             SerializeOptionalProperty("ReturnType", x.ReturnType);
@@ -733,8 +746,8 @@ namespace Devsense.PHP.Syntax.Ast.Serialization
 
         override public void VisitTraitAdaptationPrecedence(TraitsUse.TraitAdaptationPrecedence x)
         {
-            _serializer.StartSerialize(typeof(TraitsUse.TraitAdaptationPrecedence).Name, SerializeSpan(x.Span), 
-                new NodeObj("TraitMemberName", (x.TraitMemberName.Item1.HasValue? x.TraitMemberName.Item1.ToString() + "::": string.Empty) + x.TraitMemberName.Item2.Name.Value));
+            _serializer.StartSerialize(typeof(TraitsUse.TraitAdaptationPrecedence).Name, SerializeSpan(x.Span),
+                new NodeObj("TraitMemberName", (x.TraitMemberName.Item1.HasValue ? x.TraitMemberName.Item1.ToString() + "::" : string.Empty) + x.TraitMemberName.Item2.Name.Value));
             _serializer.Serialize("IgnoredTypes", x.IgnoredTypes.Select(t => new NodeObj("IgnoredType", t.ToString())).ToArray());
             _serializer.EndSerialize();
         }
@@ -842,8 +855,8 @@ namespace Devsense.PHP.Syntax.Ast.Serialization
 
         override public void VisitIncludingEx(IncludingEx x)
         {
-            _serializer.StartSerialize(typeof(IncludingEx).Name, SerializeSpan(x.Span), 
-                new NodeObj("InclusionType", x.InclusionType.ToString()), 
+            _serializer.StartSerialize(typeof(IncludingEx).Name, SerializeSpan(x.Span),
+                new NodeObj("InclusionType", x.InclusionType.ToString()),
                 new NodeObj("IsConditional", x.IsConditional.ToString()));
             base.VisitIncludingEx(x);
             _serializer.EndSerialize();

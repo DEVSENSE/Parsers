@@ -29,7 +29,34 @@ namespace Devsense.PHP.Syntax.Ast
         /// </summary>
         internal abstract object ValueObj { get; }
 
-		protected Literal(Text.Span span)
+        /// <summary>
+        /// All available value formats for all literal types.
+        /// </summary>
+        [Flags]
+        public enum LiteralFormat
+        {
+            // default
+            None = 0,
+            // integer
+            Decimal = 0,
+            Binary = 1,
+            Octal = 2,
+            Hexadecimal = 4,
+            // real
+            FloatingPoint = 0,
+            ExponentialSmall = 1,
+            ExponentialBig = 2,
+            // string
+            SingleQuotes = 0,
+            DoubleQuotes = 1,
+        }
+
+        /// <summary>
+        /// Literal value format.
+        /// </summary>
+        public virtual LiteralFormat Format => LiteralFormat.None;
+
+        protected Literal(Text.Span span)
 			: base(span)
 		{
 		}
@@ -85,6 +112,12 @@ namespace Devsense.PHP.Syntax.Ast
 	/// </summary>
     public sealed class LongIntLiteral : Literal
 	{
+        /// <summary>
+        /// Literal value format.
+        /// </summary>
+        public override LiteralFormat Format => _format;
+        LiteralFormat _format = LiteralFormat.None;
+
         public override Operations Operation { get { return Operations.LongIntLiteral; } }
 
         /// <summary>
@@ -101,11 +134,12 @@ namespace Devsense.PHP.Syntax.Ast
 		/// <summary>
 		/// Initializes a new instance of the IntLiteral class.
 		/// </summary>
-		public LongIntLiteral(Text.Span span, long value)
+		public LongIntLiteral(Text.Span span, long value, LiteralFormat format = LiteralFormat.Decimal)
 			: base(span)
 		{
 			this.value = value;
-		}
+            this._format = format;
+        }
 
 		/// <summary>
         /// Call the right Visit* method on the given Visitor object.
@@ -125,7 +159,13 @@ namespace Devsense.PHP.Syntax.Ast
 	/// Double literal.
 	/// </summary>
     public sealed class DoubleLiteral : Literal
-	{
+    {
+        /// <summary>
+        /// Literal value format.
+        /// </summary>
+        public override LiteralFormat Format => _format;
+        LiteralFormat _format = LiteralFormat.None;
+
         public override Operations Operation { get { return Operations.DoubleLiteral; } }
 
         /// <summary>
@@ -139,16 +179,18 @@ namespace Devsense.PHP.Syntax.Ast
         public double Value { get { return value; } }
 		private double value;
 
-		/// <summary>
-		/// Initializes a new instance of the DoubleLiteral class.
-		/// </summary>
-		/// <param name="value">A double value to be stored in node.</param>
-		/// <param name="p">A position.</param>
-        public DoubleLiteral(Text.Span p, double value)
+        /// <summary>
+        /// Initializes a new instance of the DoubleLiteral class.
+        /// </summary>
+        /// <param name="value">A double value to be stored in node.</param>
+        /// <param name="p">A position.</param>
+        /// <param name="format">Value format.</param>
+        public DoubleLiteral(Text.Span p, double value, LiteralFormat format = LiteralFormat.Decimal)
 			: base(p)
 		{
 			this.value = value;
-		}
+            this._format = format;
+        }
 
 		/// <summary>
         /// Call the right Visit* method on the given Visitor object.
@@ -168,7 +210,13 @@ namespace Devsense.PHP.Syntax.Ast
 	/// String literal.
 	/// </summary>
     public sealed class StringLiteral : Literal
-	{
+    {
+        /// <summary>
+        /// Literal value format.
+        /// </summary>
+        public override LiteralFormat Format => _format;
+        LiteralFormat _format = LiteralFormat.None;
+
         public override Operations Operation { get { return Operations.StringLiteral; } }
 
         /// <summary>
@@ -189,11 +237,12 @@ namespace Devsense.PHP.Syntax.Ast
 		/// <summary>
 		/// Initializes a new instance of the StringLiteral class.
 		/// </summary>
-		public StringLiteral(Text.Span span, string value)
+		public StringLiteral(Text.Span span, string value, LiteralFormat format = LiteralFormat.Decimal)
 			: base(span)
 		{
 			this.value = value;
-		}
+            this._format = format;
+        }
 
 		/// <summary>
         /// Call the right Visit* method on the given Visitor object.
