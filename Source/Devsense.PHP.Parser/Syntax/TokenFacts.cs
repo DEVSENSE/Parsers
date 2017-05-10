@@ -201,6 +201,7 @@ namespace Devsense.PHP.Syntax
                 case Operations.Concat: return Tokens.T_DOT;
                 case Operations.Spaceship: return Tokens.T_SPACESHIP;
                 case Operations.Coalesce: return Tokens.T_COALESCE;
+                case Operations.AssignValue: return Tokens.T_EQ;
 
                 default:
                     throw new ArgumentException();

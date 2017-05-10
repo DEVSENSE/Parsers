@@ -132,7 +132,7 @@ using AnonymousClass = System.Tuple<Devsense.PHP.Syntax.Ast.TypeRef, System.Coll
 %token T_RPAREN 41 //')'
 %token T_MUL 42 //'*'
 %token T_PLUS 43 //'+'
-%token T_COMMA 44 //''
+%token T_COMMA 44 //','
 %token T_MINUS 45 //'-'
 %token T_DOT 46 //'.'
 %token T_SLASH 47 //'/'
