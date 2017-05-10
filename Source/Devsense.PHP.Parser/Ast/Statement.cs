@@ -141,6 +141,8 @@ namespace Devsense.PHP.Syntax.Ast
 
         private Tokens _closingToken;
 
+        public void SetClosingToken(Tokens token) => _closingToken = token;
+
         public ColonBlockStmt(Span span, IList<Statement> body, Tokens closingToken) : base(span, body)
         {
             Debug.Assert(
@@ -149,7 +151,8 @@ namespace Devsense.PHP.Syntax.Ast
                 closingToken == Tokens.T_ENDFOREACH ||
                 closingToken == Tokens.T_ENDIF ||
                 closingToken == Tokens.T_ENDSWITCH ||
-                closingToken == Tokens.T_ENDWHILE);
+                closingToken == Tokens.T_ENDWHILE ||
+                closingToken == Tokens.END); // END is used as replacement when end token is not yet known due to grammar structure
 
             _closingToken = closingToken;
         }

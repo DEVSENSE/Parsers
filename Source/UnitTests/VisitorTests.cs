@@ -231,7 +231,7 @@ namespace UnitTests
                  => CountLE(base.ClassConstUse(span, tref, name, nameSpan));
 
             public override LangElement ColonBlock(Span span, IEnumerable<LangElement> statements, Tokens endToken)
-                 => base.ColonBlock(span, statements, endToken); // TODO - ColonBlock calls Block
+                 => CountLE(base.ColonBlock(span, statements, endToken));
 
             public override LangElement Concat(Span span, IEnumerable<LangElement> expressions)
                  => CountLE(base.Concat(span, expressions));
@@ -394,7 +394,7 @@ namespace UnitTests
                  => CountLE(base.Shell(span, command));
 
             public override LangElement SimpleBlock(Span span, IEnumerable<LangElement> statements)
-                 => base.SimpleBlock(span, statements); // TODO - SimpleBlock calls Block
+                 => CountLE(base.SimpleBlock(span, statements));
 
             public override LangElement Static(Span span, IEnumerable<LangElement> staticVariables)
                  => CountLE(base.Static(span, staticVariables));

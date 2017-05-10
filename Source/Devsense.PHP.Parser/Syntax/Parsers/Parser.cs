@@ -107,7 +107,7 @@ namespace Devsense.PHP.Syntax
 
             // initialization:
             _languageFeatures = language;
-            if(errorRecovery != null)
+            if (errorRecovery != null)
             {
                 _lexer = new BufferedLexer(new CompliantLexer(lexer));
             }
@@ -333,7 +333,9 @@ namespace Devsense.PHP.Syntax
         {
             var ifList = ((List<Tuple<Span, LangElement, LangElement>>)condList);
             var block = ifList.Last();
-            ((BlockStmt)block.Item3).ExtendSpan(Span.FromBounds(block.Item3.Span.Start, end.Start));
+            var colon = ((ColonBlockStmt)block.Item3);
+            colon.ExtendSpan(Span.FromBounds(block.Item3.Span.Start, end.Start));
+            colon.SetClosingToken(token);
             ifList.Remove(block);
             ifList.Add(new Tuple<Span, LangElement, LangElement>(Span.FromBounds(block.Item1.Start, end.Start), block.Item2, block.Item3));
         }
