@@ -619,15 +619,15 @@ namespace Devsense.PHP.Syntax
                 {
                     if (i == 0)
                     {
-                        ConsumeToken(Tokens.T_IF);
+                        ConsumeToken(Tokens.T_IF, cond.Span.Start);
                     }
                     else if (cond.Condition != null)
                     {
-                        ConsumeToken(Tokens.T_ELSEIF);
+                        ConsumeToken(Tokens.T_ELSEIF, cond.Span.Start);
                     }
                     else
                     {
-                        ConsumeToken(Tokens.T_ELSE);
+                        ConsumeToken(Tokens.T_ELSE, cond.Span.Start);
                     }
 
                     if (cond.Condition != null)
