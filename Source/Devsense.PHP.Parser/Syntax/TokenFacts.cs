@@ -80,6 +80,7 @@ namespace Devsense.PHP.Syntax
                 case Tokens.T_DEFAULT: return "default";
                 case Tokens.T_CASE: return "case";
                 case Tokens.T_SWITCH: return "switch";
+                case Tokens.T_ENDSWITCH: return "endswitch";
                 case Tokens.T_BREAK: return "break";
                 case Tokens.T_CONTINUE: return "continue";
                 case Tokens.T_RETURN: return "return";
@@ -109,6 +110,26 @@ namespace Devsense.PHP.Syntax
                 case Tokens.T_OBJECT_CAST: return "(object)";
                 case Tokens.T_ARRAY_CAST: return "(array)";
                 case Tokens.T_UNSET_CAST: return "(unset)";
+
+                case Tokens.T_IF: return "if";
+                case Tokens.T_ELSEIF: return "elseif";
+                case Tokens.T_ELSE:  return "else";
+                case Tokens.T_ENDIF: return "endif";
+
+                case Tokens.T_DO: return "do";
+                case Tokens.T_WHILE: return "while";
+                case Tokens.T_ENDWHILE: return "endwhile";
+                case Tokens.T_FOR: return "for";
+                case Tokens.T_ENDFOR: return "endfo";
+                case Tokens.T_FOREACH: return "foreach";
+                case Tokens.T_ENDFOREACH: return "endforeach";
+                case Tokens.T_DECLARE: return "declare";
+                case Tokens.T_ENDDECLARE: return "enddeclare";
+                case Tokens.T_AS: return "as";
+                case Tokens.T_THROW: return "throw";
+                case Tokens.T_NEW: return "new";
+                case Tokens.T_ISSET: return "isset";
+                case Tokens.T_UNSET: return "unset";
 
                 case Tokens.T_HALT_COMPILER: return "__halt_compiler";
 
