@@ -203,8 +203,12 @@ namespace Devsense.PHP.Syntax
                             }
                             else
                             {
-                                ns.Body = (BlockStmt)_astFactory.SimpleBlock(new Span(ns.Span.End, 0), EmptyArray<Statement>.Instance);
+                                ns.Body = EmptyNamespaceBody(ns.Span);
                             }
+                        }
+                        else
+                        {
+                            ns.Body = EmptyNamespaceBody(ns.Span);
                         }
                     }
                     else
@@ -222,6 +226,11 @@ namespace Devsense.PHP.Syntax
                     hasStmt = true;
                 }
             }
+        }
+
+        private BlockStmt EmptyNamespaceBody(Span position)
+        {
+            return (BlockStmt)_astFactory.SimpleBlock(new Span(position.End, 0), EmptyArray<Statement>.Instance);
         }
 
         private SimpleUse AddAlias(Tuple<QualifiedNameRef, NameRef> alias)

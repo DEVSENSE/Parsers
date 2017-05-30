@@ -136,6 +136,10 @@ namespace UnitTests
                         inclusion.Add(element.Span);
                     base.VisitElement(element);
                     inclusion.RemoveAt(inclusion.Count - 1);
+                    if (element is NamespaceDecl)
+                    {
+                        Assert.IsNotNull(((NamespaceDecl)element).Body);
+                    }
                 }
             }
 
