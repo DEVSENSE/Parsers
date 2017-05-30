@@ -19,7 +19,7 @@ namespace Devsense.PHP.Syntax
         /// Whether to tokenize according to the old syntax <code>array(...)</code> or the new syntax <code>[...]</code>
         /// </summary>
         bool IsOldArraySyntax(ArrayEx node);
-        
+
         /// <summary>
         /// Consumes a literal.
         /// Calls corresponding <see cref="ConsumeToken"/>.
@@ -317,7 +317,7 @@ namespace Devsense.PHP.Syntax
 
         public override void VisitConstDeclList(ConstDeclList x)
         {
-            ConsumeModifiers(x, x.Modifiers, Span.FromBounds(x.Span.StartOrInvalid, x.Constants[0].Span.StartOrInvalid));
+            ConsumeModifiers(x, x.Modifiers, x.Span.IsValid && x.Constants[0].Span.IsValid ? Span.FromBounds(x.Span.StartOrInvalid, x.Constants[0].Span.StartOrInvalid) : Span.Invalid);
             ConsumeToken(Tokens.T_CONST, "const");
             VisitElementList(x.Constants, Tokens.T_COMMA, ",");
             ConsumeToken(Tokens.T_SEMI, ";");
@@ -441,7 +441,7 @@ namespace Devsense.PHP.Syntax
 
         public override void VisitFieldDeclList(FieldDeclList x)
         {
-            ConsumeModifiers(x, x.Modifiers, Span.FromBounds(x.Span.StartOrInvalid, x.Fields[0].Span.StartOrInvalid));
+            ConsumeModifiers(x, x.Modifiers, x.Span.IsValid && x.Fields[0].Span.IsValid ? Span.FromBounds(x.Span.StartOrInvalid, x.Fields[0].Span.StartOrInvalid) : Span.Invalid);
 
             if (x.Modifiers == 0)
             {
@@ -541,7 +541,7 @@ namespace Devsense.PHP.Syntax
             using (new ScopeHelper(this, element))
             {
                 // function &NAME SIGNATURE : RETURN_TYPE BODY
-                ConsumeModifiers(element, modifiers, Span.FromBounds(element.Span.StartOrInvalid, nameOpt.Span.StartOrInvalid));
+                ConsumeModifiers(element, modifiers, element.Span.IsValid && nameOpt.Span.IsValid ? Span.FromBounds(element.Span.StartOrInvalid, nameOpt.Span.StartOrInvalid) : Span.Invalid);
                 ConsumeToken(Tokens.T_FUNCTION, "function");
                 if (signature.AliasReturn) ConsumeToken(Tokens.T_AMP, "&");
                 if (nameOpt.HasValue) ConsumeToken(Tokens.T_STRING, nameOpt.Name.Value);
