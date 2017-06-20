@@ -25,7 +25,7 @@ namespace Devsense.PHP.Syntax.Ast
 	{
 		protected CallSignature callSignature;
         /// <summary>GetUserEntryPoint calling signature</summary>
-        public CallSignature CallSignature { get { return callSignature; } internal set { callSignature = value; } }
+        public CallSignature CallSignature { get { return callSignature; } set { callSignature = callSignature = value ?? throw new ArgumentNullException(nameof(value)); } }
 
 		/// <summary>
         /// Position of called function name in source code.

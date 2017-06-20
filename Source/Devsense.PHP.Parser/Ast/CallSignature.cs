@@ -143,7 +143,7 @@ namespace Devsense.PHP.Syntax.Ast
         /// <param name="genericParams">List of type parameters for generics.</param>
         public CallSignature(IList<ActualParam> parameters, IList<TypeRef> genericParams)
 		{
-			this.parameters = parameters.AsArray();
+			this.parameters = (parameters ?? throw new ArgumentNullException(nameof(parameters))).AsArray();
             this.GenericParams = genericParams.AsArray();
 		}        
     }
