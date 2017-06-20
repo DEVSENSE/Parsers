@@ -277,7 +277,7 @@ namespace Devsense.PHP.Syntax
 
         public override void VisitClassTypeRef(ClassTypeRef x)
         {
-            VisitQualifiedName(x.ClassName);
+            VisitQualifiedName(x.ClassName, x.Span.StartOrInvalid);
         }
 
         public override void VisitConcatEx(ConcatEx x)
@@ -343,7 +343,7 @@ namespace Devsense.PHP.Syntax
         public override void VisitDirectFcnCall(DirectFcnCall x)
         {
             VisitIsMemberOf(x.IsMemberOf);
-            VisitQualifiedName(x.FullName.OriginalName);
+            VisitQualifiedName(x.FullName.OriginalName, x.Span.StartOrInvalid);
             VisitCallSignature(x.CallSignature);
         }
 
@@ -584,7 +584,7 @@ namespace Devsense.PHP.Syntax
 
         public override void VisitGlobalConstUse(GlobalConstUse x)
         {
-            VisitQualifiedName(x.FullName.OriginalName);
+            VisitQualifiedName(x.FullName.OriginalName, x.Span.StartOrInvalid);
         }
 
         public override void VisitGlobalStmt(GlobalStmt x)
@@ -698,21 +698,21 @@ namespace Devsense.PHP.Syntax
             ConsumeToken(Tokens.T_VARIABLE, (dollar ? "$" : string.Empty) + name.Value, span.StartOrInvalid);
         }
 
-        public virtual void VisitQualifiedName(QualifiedName qname)
+        public virtual void VisitQualifiedName(QualifiedName qname, int position)
         {
             if (qname.IsFullyQualifiedName)
             {
-                ConsumeToken(Tokens.T_NS_SEPARATOR, QualifiedName.Separator.ToString());
+                ConsumeToken(Tokens.T_NS_SEPARATOR, QualifiedName.Separator.ToString(), position);
             }
 
             var ns = qname.Namespaces;
             for (int i = 0; i < ns.Length; i++)
             {
-                ConsumeToken(Tokens.T_STRING, ns[i].Value);
-                ConsumeToken(Tokens.T_NS_SEPARATOR, QualifiedName.Separator.ToString());
+                ConsumeToken(Tokens.T_STRING, ns[i].Value, position);
+                ConsumeToken(Tokens.T_NS_SEPARATOR, QualifiedName.Separator.ToString(), position);
             }
 
-            ConsumeToken(Tokens.T_STRING, qname.Name.Value);
+            ConsumeToken(Tokens.T_STRING, qname.Name.Value, position);
         }
 
         public virtual void VisitCallSignature(CallSignature signature)
@@ -879,7 +879,7 @@ namespace Devsense.PHP.Syntax
 
             if (x.QualifiedName.HasValue)
             {
-                VisitQualifiedName(x.QualifiedName.QualifiedName.WithFullyQualified(false));
+                VisitQualifiedName(x.QualifiedName.QualifiedName.WithFullyQualified(false), x.Span.StartOrInvalid);
             }
 
             if (x.IsSimpleSyntax)
@@ -926,7 +926,7 @@ namespace Devsense.PHP.Syntax
 
         public override void VisitPrimitiveTypeRef(PrimitiveTypeRef x)
         {
-            VisitQualifiedName(x.QualifiedName.Value);
+            VisitQualifiedName(x.QualifiedName.Value, x.Span.StartOrInvalid);
         }
 
         public override void VisitPseudoClassConstUse(PseudoClassConstUse x)
@@ -964,7 +964,7 @@ namespace Devsense.PHP.Syntax
 
         public override void VisitReservedTypeRef(ReservedTypeRef x)
         {
-            VisitQualifiedName(x.QualifiedName.Value);
+            VisitQualifiedName(x.QualifiedName.Value, x.Span.StartOrInvalid);
         }
 
         public override void VisitShellEx(ShellEx x)
