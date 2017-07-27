@@ -19,34 +19,34 @@ using System.Diagnostics;
 
 namespace Devsense.PHP.Syntax.Ast
 {
-	#region FunctionCall
+    #region FunctionCall
 
-	public abstract class FunctionCall : VarLikeConstructUse
-	{
-		protected CallSignature callSignature;
+    public abstract class FunctionCall : VarLikeConstructUse
+    {
+        protected CallSignature callSignature;
         /// <summary>GetUserEntryPoint calling signature</summary>
         public CallSignature CallSignature { get { return callSignature; } set { callSignature = callSignature = value ?? throw new ArgumentNullException(nameof(value)); } }
 
-		/// <summary>
+        /// <summary>
         /// Position of called function name in source code.
         /// </summary>
         public abstract Text.Span NameSpan { get; }
 
         public FunctionCall(Text.Span span, IList<ActualParam> parameters, IList<TypeRef> genericParams)
-			: base(span)
-		{
-			Debug.Assert(parameters != null);
+            : base(span)
+        {
+            Debug.Assert(parameters != null);
 
-			this.callSignature = new CallSignature(parameters, genericParams);
-		}
-	}
+            this.callSignature = new CallSignature(parameters, genericParams);
+        }
+    }
 
-	#endregion
+    #endregion
 
-	#region DirectFcnCall
+    #region DirectFcnCall
 
     public sealed class DirectFcnCall : FunctionCall
-	{
+    {
         public override Operations Operation { get { return Operations.DirectCall; } }
 
         /// <summary>
@@ -67,11 +67,11 @@ namespace Devsense.PHP.Syntax.Ast
         public DirectFcnCall(Text.Span span, TranslatedQualifiedName name,
             IList<ActualParam> parameters, IList<TypeRef> genericParams)
             : base(span, parameters, genericParams)
-		{
+        {
             _fullName = name;
         }
 
-		/// <summary>
+        /// <summary>
         /// Call the right Visit* method on the given Visitor object.
         /// </summary>
         /// <param name="visitor">Visitor to be called.</param>
@@ -79,27 +79,27 @@ namespace Devsense.PHP.Syntax.Ast
         {
             visitor.VisitDirectFcnCall(this);
         }
-	}
+    }
 
-	#endregion
+    #endregion
 
-	#region IndirectFcnCall
+    #region IndirectFcnCall
 
     public sealed class IndirectFcnCall : FunctionCall
-	{
+    {
         public override Operations Operation { get { return Operations.IndirectCall; } }
 
-		public Expression/*!*/ NameExpr { get { return nameExpr; } }
-		internal Expression/*!*/ nameExpr;
+        public Expression/*!*/ NameExpr { get { return nameExpr; } }
+        internal Expression/*!*/ nameExpr;
         public override Text.Span NameSpan => NameExpr.Span;
 
         public IndirectFcnCall(Text.Span p, Expression/*!*/ nameExpr, IList<ActualParam> parameters, IList<TypeRef> genericParams)
             : base(p, parameters, genericParams)
-		{
-			this.nameExpr = nameExpr;
-		}
+        {
+            this.nameExpr = nameExpr;
+        }
 
-		/// <summary>
+        /// <summary>
         /// Call the right Visit* method on the given Visitor object.
         /// </summary>
         /// <param name="visitor">Visitor to be called.</param>
@@ -107,14 +107,14 @@ namespace Devsense.PHP.Syntax.Ast
         {
             visitor.VisitIndirectFcnCall(this);
         }
-	}
+    }
 
-	#endregion
+    #endregion
 
-	#region StaticMtdCall
+    #region StaticMtdCall
 
-	public abstract class StaticMtdCall : FunctionCall
-	{
+    public abstract class StaticMtdCall : FunctionCall
+    {
         public TypeRef TargetType => this.typeRef;
         protected readonly TypeRef/*!*/typeRef;
 
@@ -128,8 +128,8 @@ namespace Devsense.PHP.Syntax.Ast
         /// <param name="genericParams">Generic parameters.</param>
         internal StaticMtdCall(Text.Span span, GenericQualifiedName className, Text.Span classNamePosition, IList<ActualParam> parameters, IList<TypeRef> genericParams)
             : this(span, TypeRef.FromGenericQualifiedName(classNamePosition, className), parameters, genericParams)
-		{	
-		}
+        {
+        }
 
         public StaticMtdCall(Text.Span span, TypeRef typeRef, IList<ActualParam> parameters, IList<TypeRef> genericParams)
             : base(span, parameters, genericParams)
@@ -138,35 +138,35 @@ namespace Devsense.PHP.Syntax.Ast
 
             this.typeRef = typeRef;
         }
-	}
+    }
 
-	#endregion
+    #endregion
 
-	#region DirectStMtdCall
+    #region DirectStMtdCall
 
-	public sealed class DirectStMtdCall : StaticMtdCall
-	{
+    public sealed class DirectStMtdCall : StaticMtdCall
+    {
         public override Operations Operation { get { return Operations.DirectStaticCall; } }
 
-		private NameRef methodName;
+        private NameRef methodName;
         public NameRef MethodName => methodName;
         public override Text.Span NameSpan => methodName.Span;
 
         public DirectStMtdCall(Text.Span span, ClassConstUse/*!*/ classConstant,
             IList<ActualParam>/*!*/ parameters, IList<TypeRef>/*!*/ genericParams)
-			: base(span, classConstant.TargetType, parameters, genericParams)
-		{
-			this.methodName = new NameRef(classConstant.NamePosition, classConstant.Name.Value);
-		}
+            : base(span, classConstant.TargetType, parameters, genericParams)
+        {
+            this.methodName = new NameRef(classConstant.NamePosition, classConstant.Name.Value);
+        }
 
         public DirectStMtdCall(Text.Span span, GenericQualifiedName className, Text.Span classNamePosition,
             Name methodName, Text.Span methodNamePosition, IList<ActualParam> parameters, IList<TypeRef> genericParams)
-			: base(span, className, classNamePosition, parameters, genericParams)
-		{
+            : base(span, className, classNamePosition, parameters, genericParams)
+        {
             this.methodName = new NameRef(methodNamePosition, methodName);
         }
 
-		/// <summary>
+        /// <summary>
         /// Call the right Visit* method on the given Visitor object.
         /// </summary>
         /// <param name="visitor">Visitor to be called.</param>
@@ -174,35 +174,37 @@ namespace Devsense.PHP.Syntax.Ast
         {
             visitor.VisitDirectStMtdCall(this);
         }
-	}
+    }
 
-	#endregion
+    #endregion
 
-	#region IndirectStMtdCall
+    #region IndirectStMtdCall
 
     public sealed class IndirectStMtdCall : StaticMtdCall
-	{
+    {
         public override Operations Operation { get { return Operations.IndirectStaticCall; } }
 
-		private CompoundVarUse/*!*/ methodNameVar;
-        /// <summary>Expression that represents name of method</summary>
-        public CompoundVarUse/*!*/ MethodNameVar { get { return methodNameVar; } }
-        public override Text.Span NameSpan => MethodNameVar.Span;
+        /// <summary>Expression that represents name of method.</summary>
+        public Expression/*!*/ MethodNameExpression => _methodNameExpr;
+        Expression/*!*/_methodNameExpr;
+
+        public override Text.Span NameSpan => _methodNameExpr.Span;
+
 
         public IndirectStMtdCall(Text.Span span,
-                                 GenericQualifiedName className, Text.Span classNamePosition, CompoundVarUse/*!*/ mtdNameVar,
-	                             IList<ActualParam> parameters, IList<TypeRef> genericParams)
+                                 GenericQualifiedName className, Text.Span classNamePosition, Expression/*!*/ nameExpr,
+                                 IList<ActualParam> parameters, IList<TypeRef> genericParams)
             : base(span, className, classNamePosition, parameters, genericParams)
-		{
-			this.methodNameVar = mtdNameVar;
-		}
+        {
+            _methodNameExpr = nameExpr;
+        }
 
         public IndirectStMtdCall(Text.Span span,
-                                 TypeRef/*!*/typeRef, CompoundVarUse/*!*/ mtdNameVar,
+                                 TypeRef/*!*/typeRef, Expression/*!*/ mtdNameVar,
                                  IList<ActualParam> parameters, IList<TypeRef> genericParams)
             : base(span, typeRef, parameters, genericParams)
         {
-            this.methodNameVar = mtdNameVar;
+            _methodNameExpr = mtdNameVar;
         }
 
         /// <summary>
@@ -213,7 +215,7 @@ namespace Devsense.PHP.Syntax.Ast
         {
             visitor.VisitIndirectStMtdCall(this);
         }
-	}
+    }
 
-	#endregion
+    #endregion
 }

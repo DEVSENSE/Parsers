@@ -740,7 +740,7 @@ namespace Devsense.PHP.Syntax
         {
             VisitElement(x.TargetType);
             ConsumeToken(Tokens.T_DOUBLE_COLON, "::");
-            VisitElement(x.MethodNameVar);  // TODO: { ... } ?
+            VisitElement(x.MethodNameExpression);  // TODO: { ... } ?
             VisitCallSignature(x.CallSignature);
         }
 

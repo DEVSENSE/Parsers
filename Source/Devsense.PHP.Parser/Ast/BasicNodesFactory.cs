@@ -96,8 +96,8 @@ namespace Devsense.PHP.Syntax.Ast
 
         public virtual LangElement Call(Span span, LangElement nameExpr, CallSignature signature, TypeRef typeRef)
         {
-            Debug.Assert(nameExpr is CompoundVarUse);
-            return new IndirectStMtdCall(span, typeRef, (CompoundVarUse)nameExpr, signature.Parameters, signature.GenericParams);
+            Debug.Assert(nameExpr is Expression);
+            return new IndirectStMtdCall(span, typeRef, (Expression)nameExpr, signature.Parameters, signature.GenericParams);
         }
 
         public virtual LangElement Call(Span span, LangElement nameExpr, CallSignature signature, LangElement memberOfOpt)

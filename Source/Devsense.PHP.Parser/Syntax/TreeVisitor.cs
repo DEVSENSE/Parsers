@@ -672,7 +672,7 @@ namespace Devsense.PHP.Syntax
         virtual public void VisitIndirectStMtdCall(IndirectStMtdCall x)
         {
             VisitElement(x.TargetType);
-            VisitElement(x.MethodNameVar);
+            VisitElement(x.MethodNameExpression);
             VisitFunctionCall(x);
         }
         virtual public void VisitDirectStFldUse(DirectStFldUse x)
