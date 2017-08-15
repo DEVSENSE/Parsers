@@ -787,7 +787,7 @@ namespace Devsense.PHP.Syntax
             Tokens token = GetTokenAsDecimalNumber(0, 10, ref _tokenSemantics);
             if (token == Tokens.T_DNUMBER)
             {
-                _tokenSemantics.Double = 0;
+                _tokenSemantics.Long = (long)_tokenSemantics.Double;    // we always treat T_NUM_STRING as Long
                 _tokenSemantics.Object = GetTokenString();
             }
             return (Tokens.T_NUM_STRING);

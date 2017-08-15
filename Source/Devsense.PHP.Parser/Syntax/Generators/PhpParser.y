@@ -120,7 +120,7 @@ using AnonymousClass = System.Tuple<Devsense.PHP.Syntax.Ast.TypeRef, System.Coll
 %token <Object> T_ENCAPSED_AND_WHITESPACE 322  //"quoted-string and whitespace (T_ENCAPSED_AND_WHITESPACE)"
 %token <Object> T_CONSTANT_ENCAPSED_STRING 323 //"quoted-string (T_CONSTANT_ENCAPSED_STRING)"
 %token <String> T_STRING_VARNAME 324 //"variable name (T_STRING_VARNAME)"
-%token <Double> T_NUM_STRING 325 //"number (T_NUM_STRING)"
+%token <Long> T_NUM_STRING 325 //"number (T_NUM_STRING)"
 
 /* Character tokens */
 %token T_EXCLAM 33 //'!'

@@ -14,7 +14,7 @@
     "StringLiteral":{"Value":""},
     "ItemUse":{"Array":{"DirectVarUse":{"VarName":"what"}},"Index":{"StringLiteral":{"Value":"a"}}}, 
     "StringLiteral":{"Value":""}, 
-    "ItemUse":{"Array":{"DirectVarUse":{"VarName":"what"}},"Index":{"DoubleLiteral":{"Value":"0"}}},
+    "ItemUse":{"Array":{"DirectVarUse":{"VarName":"what"}},"Index":{"LongIntLiteral":{"Value":"0"}}},
     "StringLiteral":{"Value":""},  
     "ItemUse":{"Array":{"DirectVarUse":{"VarName":"what"}},"Index":{"DirectVarUse":{"VarName":"a"}}},  
     "StringLiteral":{"Value":""},

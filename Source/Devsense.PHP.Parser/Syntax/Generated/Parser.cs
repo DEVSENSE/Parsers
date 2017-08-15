@@ -184,7 +184,7 @@ T_RPAREN=41,
 T_MUL=42,
 /// <summary>&#39;+&#39;</summary>
 T_PLUS=43,
-/// <summary>&#39;&#39;</summary>
+/// <summary>&#39;,&#39;</summary>
 T_COMMA=44,
 /// <summary>&#39;-&#39;</summary>
 T_MINUS=45,
@@ -3292,7 +3292,7 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 { yyval.Node = _astFactory.Literal(yypos, value_stack.array[value_stack.top-1].yyval.String); }
         return;
       case 485: // encaps_var_offset -> T_NUM_STRING 
-{ yyval.Node = _astFactory.Literal(yypos, value_stack.array[value_stack.top-1].yyval.Double); }
+{ yyval.Node = _astFactory.Literal(yypos, value_stack.array[value_stack.top-1].yyval.Long); }
         return;
       case 486: // encaps_var_offset -> T_VARIABLE 
 { yyval.Node = _astFactory.Variable(yypos, value_stack.array[value_stack.top-1].yyval.String, NullLangElement); }
