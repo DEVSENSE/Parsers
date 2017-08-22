@@ -44,21 +44,44 @@ namespace Devsense.PHP.Syntax
     /// </summary>
     public static class TokensExtension
     {
+        private static bool IsInString(Lexer.LexicalStates state)
+        {
+            switch (state)
+            {
+                case Lexer.LexicalStates.ST_DOUBLE_QUOTES:
+                case Lexer.LexicalStates.ST_BACKQUOTE:
+                case Lexer.LexicalStates.ST_HEREDOC:
+                case Lexer.LexicalStates.ST_IN_HEREDOC:
+                case Lexer.LexicalStates.ST_IN_STRING:
+                case Lexer.LexicalStates.ST_IN_SHELL:
+                    return true;
+                default:
+                    return false;
+            }
+
+
+        }
+
+        private static bool IsInString(Lexer lexer)
+        {
+            if(lexer.CurrentLexicalState == Lexer.LexicalStates.ST_LOOKING_FOR_PROPERTY)
+            {
+                return IsInString(lexer.PreviousLexicalState);
+            }
+            else
+            {
+                return IsInString(lexer.CurrentLexicalState);
+            }
+        }
+
         /// <summary>
         /// Gets category of a token in given lexical context.
         /// </summary>
         /// <param name="token">Token.</param>
-        /// <param name="CurrentLexicalState">Current lexical state.</param>
+        /// <param name="lexer">Current lexer.</param>
         /// <returns>A token category.</returns>
-        public static TokenCategory GetTokenCategory(this Tokens token, Lexer.LexicalStates CurrentLexicalState)
+        public static TokenCategory GetTokenCategory(this Tokens token, Lexer lexer)
         {
-            bool inString = CurrentLexicalState == Lexer.LexicalStates.ST_DOUBLE_QUOTES || 
-                CurrentLexicalState == Lexer.LexicalStates.ST_BACKQUOTE || 
-                CurrentLexicalState == Lexer.LexicalStates.ST_HEREDOC ||
-                CurrentLexicalState == Lexer.LexicalStates.ST_IN_HEREDOC ||
-                CurrentLexicalState == Lexer.LexicalStates.ST_IN_STRING ||
-                CurrentLexicalState == Lexer.LexicalStates.ST_IN_SHELL;
-
             switch (token)
             {
                 #region Special Keywords
@@ -255,10 +278,10 @@ namespace Devsense.PHP.Syntax
                 case Tokens.T_LBRACKET:                     // [
                 case Tokens.T_RBRACKET:                     // ]
                 case Tokens.T_LBRACE:                       // {
-                    return (inString) ? TokenCategory.String : TokenCategory.Delimiter;
+                    return IsInString(lexer) ? TokenCategory.String : TokenCategory.Delimiter;
 
                 case Tokens.T_RBRACE:                       // }
-                    if (inString)
+                    if (IsInString(lexer))
                         // we are in string:
                         return TokenCategory.StringCode;
                     else
@@ -266,14 +289,14 @@ namespace Devsense.PHP.Syntax
                         return TokenCategory.Delimiter;
 
                 case Tokens.T_STRING:                       // identifier
-                    return (inString) ? TokenCategory.String : TokenCategory.Identifier;
+                    return IsInString(lexer) ? TokenCategory.String : TokenCategory.Identifier;
 
                 case Tokens.T_DOLLAR:                       // isolated '$'
                 case Tokens.T_OBJECT_OPERATOR:              // ->
-                    return (inString) ? TokenCategory.StringCode : TokenCategory.Operator;
+                    return IsInString(lexer) ? TokenCategory.StringCode : TokenCategory.Operator;
 
                 case Tokens.T_VARIABLE:                     // identifier
-                    return (inString) ? TokenCategory.StringCode : TokenCategory.Variable;
+                    return IsInString(lexer) ? TokenCategory.StringCode : TokenCategory.Variable;
 
                 #endregion
 

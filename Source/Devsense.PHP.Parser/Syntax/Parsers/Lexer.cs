@@ -148,6 +148,8 @@ namespace Devsense.PHP.Syntax
             return token;
         }
 
+        public LexicalStates PreviousLexicalState => stateStack.Count != 0 ? yy_top_state() : (LexicalStates)(-1);
+
         protected void _yymore() { yymore(); }
 
         private void _yyless(int count)
