@@ -383,7 +383,7 @@ public partial struct SemanticValueType
 
 	public List<QualifiedNameRef> QualifiedNameRefList	{ get { return (List<QualifiedNameRef>)Object; }	set { Object = value; } }
 	public TypeRef TypeReference						{ get { return (TypeRef)Object; }					set { Object = value; } }
-	public List<TypeRef> TypeRefList					{ get { return (List<TypeRef>)Object; }				set { Object = value; } }
+	public IList<TypeRef> TypeRefList					{ get { return (IList<TypeRef>)Object; }			set { Object = value; } }
 	public LangElement Node								{ get { return (LangElement)Object; }				set { Object = value; } }
 	public List<LangElement> NodeList					{ get { return (List<LangElement>)Object; }			set { Object = value; } }
 	public string String								{ get { return (string)Object; }					set { Object = value; } }

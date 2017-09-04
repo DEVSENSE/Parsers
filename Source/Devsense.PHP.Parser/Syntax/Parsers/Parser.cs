@@ -307,6 +307,12 @@ namespace Devsense.PHP.Syntax
             ClassContexts.Pop();
         }
 
+        private IList<T> AddToList<T>(IList<T> list, T item)
+        {
+            list.Add(item);
+            return list;
+        }
+
         private List<T> AddToList<T>(List<T> list, T item)
         {
             list.Add(item);
@@ -471,12 +477,17 @@ namespace Devsense.PHP.Syntax
                 _astFactory.TypeReference(span, tname);
         }
 
-        List<TypeRef> TypeRefListFromQNRList(List<QualifiedNameRef> nrefList)
+        IList<TypeRef> TypeRefListFromQNRList(List<QualifiedNameRef> nrefList)
         {
-            TypeRef[] types = new TypeRef[nrefList.Count];
+            var types = new TypeRef[nrefList.Count];
+
             for (int i = 0; i < types.Length; i++)
-                types[i] = CreateTypeRef(nrefList[i].Span, nrefList[i]);
-            return types.ToList();
+            {
+                var qnr = nrefList[i];
+                types[i] = CreateTypeRef(qnr.Span, qnr);
+            }
+
+            return types;
         }
 
         LangElement CreateIncDec(Span span, LangElement variable, bool inc, bool post)
