@@ -104,6 +104,7 @@ namespace Devsense.PHP.Errors
         //public static readonly ErrorInfo TooManyLocalVariablesInFunction = new ErrorInfo_(10, "too_many_local_variables_function", WarningGroups.CompilerStrictOthers);
         //public static readonly ErrorInfo TooManyLocalVariablesInMethod = new ErrorInfo_(11, "too_many_local_variables_method", WarningGroups.CompilerStrictOthers);
         //public static readonly ErrorInfo UnoptimizedLocalsInFunction = new ErrorInfo_(12, "unoptimized_local_variables_function", WarningGroups.CompilerStrictOthers);
+        public static readonly ErrorInfo TooBigDouble = new ErrorInfo_(13, "too_big_double", ErrorSeverity.Information);
 
         //public static readonly ErrorInfo UnusedLabel = new ErrorInfo_(15, "unused_label", WarningGroups.CompilerStrictOthers);
 

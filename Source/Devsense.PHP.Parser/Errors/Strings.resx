@@ -2095,4 +2095,7 @@ non-infringement.
   <data name="invalid_halt_compiler" xml:space="preserve">
     <value>__HALT_COMPILER() can only be used from the outermost scope</value>
   </data>
+  <data name="too_big_double" xml:space="preserve">
+    <value>The floating-point number {0} is too big, considered as infinity instead</value>
+  </data>
 </root>

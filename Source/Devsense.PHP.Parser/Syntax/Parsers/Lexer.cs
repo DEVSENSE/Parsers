@@ -348,6 +348,9 @@ namespace Devsense.PHP.Syntax
             }
             catch (OverflowException)
             {
+                _errors.Error(_tokenPosition, Warnings.TooBigDouble, GetTokenString());
+
+                //
                 return (str.Length > 0 && str[0] == '-') ? double.NegativeInfinity : double.PositiveInfinity;
             }
         }
