@@ -27,28 +27,19 @@ namespace Devsense.PHP.Syntax.Ast
     /// </summary>
     internal sealed class UpdateParentVisitor : TreeVisitor
     {
-        readonly LinkedList<LangElement> _parents = new LinkedList<LangElement>();
+        readonly Stack<LangElement> _parents = new Stack<LangElement>();
 
         /// <summary>
         /// Gets the element on top of stack.
         /// </summary>
-        LangElement ContainingElement => _parents.First?.Value;
+        LangElement ContainingElement => _parents.Peek();
 
         public static void UpdateParents(GlobalCode x, LangElement root = null)
         {
             var visitor = new UpdateParentVisitor();
 
-            visitor.VisitElement(x);
-            x.ContainingElement = root;
-        }
-
-        public override void VisitGlobalCode(GlobalCode x)
-        {
-            _parents.AddFirst(x);
-
-            base.VisitGlobalCode(x);
-
-            _parents.RemoveFirst();
+            visitor._parents.Push(root);
+            visitor.VisitElement(x);            
         }
 
         public override void VisitElement(LangElement element)
@@ -57,12 +48,12 @@ namespace Devsense.PHP.Syntax.Ast
             {
                 element.ContainingElement = this.ContainingElement;
 
-                _parents.AddFirst(element);
+                _parents.Push(element);
 
                 base.VisitElement(element.GetPHPDoc());
                 base.VisitElement(element);
 
-                _parents.RemoveFirst();
+                _parents.Pop();
             }
         }
     }

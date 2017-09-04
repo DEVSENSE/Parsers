@@ -46,8 +46,8 @@ namespace Devsense.PHP.Syntax.Ast
         /// <summary>
         /// Parameters specified within <c>use</c> 
         /// </summary>
-        public List<FormalParam> UseParams { get { return useParams; } }
-        private readonly List<FormalParam> useParams;
+        public IList<FormalParam> UseParams { get { return useParams; } }
+        private readonly IList<FormalParam> useParams;
 
         //private readonly TypeSignature typeSignature;
         public BlockStmt/*!*/ Body { get { return body; } }
@@ -72,8 +72,8 @@ namespace Devsense.PHP.Syntax.Ast
 
         public LambdaFunctionExpr(
             Text.Span span, Text.Span headingSpan,
-            Scope scope, bool aliasReturn, List<FormalParam>/*!*/ formalParams, 
-            Text.Span paramSpan, List<FormalParam> useParams,
+            Scope scope, bool aliasReturn, IList<FormalParam>/*!*/ formalParams, 
+            Text.Span paramSpan, IList<FormalParam> useParams,
             BlockStmt/*!*/ body, TypeRef returnType, bool isStatic)
             : base(span)
         {

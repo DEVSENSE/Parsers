@@ -78,11 +78,11 @@ namespace Devsense.PHP.Syntax.Ast
 	{
         public override Operations Operation { get { return Operations.Isset; } }
 
-		private readonly List<VariableUse>/*!*/ varList;
+		private readonly IList<VariableUse>/*!*/ varList;
         /// <summary>List of variables to test</summary>
-        public List<VariableUse>/*!*/ VarList { get { return varList; } }
+        public IList<VariableUse>/*!*/ VarList { get { return varList; } }
 
-		public IssetEx(Text.Span span, List<VariableUse>/*!*/ varList)
+		public IssetEx(Text.Span span, IList<VariableUse>/*!*/ varList)
 			: base(span)
 		{
 			Debug.Assert(varList != null && varList.Count > 0);

@@ -516,8 +516,8 @@ namespace Devsense.PHP.Syntax.Ast
         /// <summary>
         /// List of types represented by this reference.
         /// </summary>
-        public IList<TypeRef>/*!*/ MultipleTypes { get { return this._types; } }
-        private readonly IList<TypeRef>/*!!*/ _types;
+        public TypeRef[]/*!*/ MultipleTypes { get { return _types; } }
+        private readonly TypeRef[]/*!!*/ _types;
 
         public override QualifiedName? QualifiedName => null;
 
@@ -527,10 +527,10 @@ namespace Devsense.PHP.Syntax.Ast
             Debug.Assert(multipleTypes != null);
             Debug.Assert(multipleTypes.All(x => x != null));
 
-            this._types = multipleTypes;
+            _types = multipleTypes.AsArray();
         }
 
-        public override string ToString() => string.Join(PHPDocBlock.TypeVarDescTag.TypeNamesSeparator.ToString(), _types);
+        public override string ToString() => string.Join(PHPDocBlock.TypeVarDescTag.TypeNamesSeparator.ToString(), (IEnumerable<TypeRef>)_types);
 
         /// <summary>
         /// Call the right Visit* method on the given Visitor object.
@@ -588,7 +588,7 @@ namespace Devsense.PHP.Syntax.Ast
 
             public override void VisitMultipleTypeRef(MultipleTypeRef x)
             {
-                if (x.MultipleTypes.Count == 1)
+                if (x.MultipleTypes.Length == 1)
                 {
                     VisitElement(x.MultipleTypes[0]);
                 }

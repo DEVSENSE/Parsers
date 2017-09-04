@@ -16,6 +16,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 
 namespace Devsense.PHP.Syntax.Ast
 {
@@ -136,8 +137,8 @@ namespace Devsense.PHP.Syntax.Ast
         /// <summary>
         /// Member declarations. Partial classes merged to the aggregate has this field <B>null</B>ed.
         /// </summary>
-        public List<TypeMemberDecl> Members { get { return members; } internal set { members = value; } }
-        private List<TypeMemberDecl> members;
+        public IList<TypeMemberDecl> Members { get { return members; } internal set { members = value; } }
+        private IList<TypeMemberDecl> members;
 
         /// <summary>
         /// Gets collection of CLR attributes annotating this statement.
@@ -171,8 +172,8 @@ namespace Devsense.PHP.Syntax.Ast
         public TypeDecl(
             Text.Span span, Text.Span headingSpan,
             bool isConditional, PhpMemberAttributes memberAttributes, bool isPartial,
-            List<FormalTypeParam>/*!*/ genericParams, INamedTypeRef baseClass,
-            List<INamedTypeRef>/*!*/ implementsList, List<TypeMemberDecl>/*!*/ elements, Text.Span bodySpan,
+            IList<FormalTypeParam>/*!*/ genericParams, INamedTypeRef baseClass,
+            IList<INamedTypeRef>/*!*/ implementsList, IList<TypeMemberDecl>/*!*/ elements, Text.Span bodySpan,
             List<CustomAttribute> attributes)
             : base(span)
         {
@@ -184,11 +185,13 @@ namespace Devsense.PHP.Syntax.Ast
             this.MemberAttributes = memberAttributes;
             this.IsConditional = isConditional;
             this.ImplementsList = implementsList.AsArray();
-            this.members = elements;
-            this.members.TrimExcess();
+            this.members = elements.AsArray();
 
             if (attributes != null && attributes.Count != 0)
+            {
                 this.Attributes = new CustomAttributes(attributes);
+            }
+
             this.headingSpan = headingSpan;
             this.bodySpan = bodySpan;
             this.partialKeyword = isPartial;
@@ -243,9 +246,8 @@ namespace Devsense.PHP.Syntax.Ast
 
         public NamedTypeDecl(
             Text.Span span, Text.Span headingSpan, bool isConditional, PhpMemberAttributes memberAttributes, bool isPartial,
-            NameRef className, List<FormalTypeParam>/*!*/ genericParams, INamedTypeRef baseClass,
-            List<INamedTypeRef>/*!*/ implementsList, List<TypeMemberDecl>/*!*/ elements, Text.Span bodySpan,
-
+            NameRef className, IList<FormalTypeParam>/*!*/ genericParams, INamedTypeRef baseClass,
+            IList<INamedTypeRef>/*!*/ implementsList, IList<TypeMemberDecl>/*!*/ elements, Text.Span bodySpan,
             List<CustomAttribute> attributes)
             : base(span, headingSpan, isConditional, 
                   memberAttributes, isPartial, genericParams, baseClass, implementsList, elements, bodySpan, attributes)
@@ -293,8 +295,8 @@ namespace Devsense.PHP.Syntax.Ast
         public AnonymousTypeDecl(
             Text.Span span, Text.Span headingSpan,
             bool isConditional, PhpMemberAttributes memberAttributes, bool isPartial,
-            List<FormalTypeParam>/*!*/ genericParams, INamedTypeRef baseClass,
-            List<INamedTypeRef>/*!*/ implementsList, List<TypeMemberDecl>/*!*/ elements, Text.Span bodySpan,
+            IList<FormalTypeParam>/*!*/ genericParams, INamedTypeRef baseClass,
+            IList<INamedTypeRef>/*!*/ implementsList, IList<TypeMemberDecl>/*!*/ elements, Text.Span bodySpan,
             List<CustomAttribute> attributes)
             : base(span, headingSpan, isConditional,
                   memberAttributes, isPartial, genericParams, baseClass, implementsList, elements, bodySpan, attributes)
@@ -410,7 +412,7 @@ namespace Devsense.PHP.Syntax.Ast
             this.signature = new Signature(aliasReturn, formalParams);
             this.typeSignature = new TypeSignature(genericParams);
             this.body = body;
-            this.baseCtorParams = (baseCtorParams != null) ? baseCtorParams.AsArray() : null;
+            this.baseCtorParams = baseCtorParams.AsArray();
             this.parametersSpan = paramsSpan;
             this.returnType = returnType;
         }
@@ -449,11 +451,11 @@ namespace Devsense.PHP.Syntax.Ast
 	/// </remarks>
 	public sealed class FieldDeclList : TypeMemberDecl
 	{
-		private readonly List<FieldDecl>/*!*/ fields;
+		private readonly IList<FieldDecl>/*!*/ fields;
         /// <summary>List of fields in this list</summary>
-        public List<FieldDecl> Fields/*!*/ { get { return fields; } }
+        public IList<FieldDecl> Fields/*!*/ { get { return fields; } }
 
-		public FieldDeclList(Text.Span span, PhpMemberAttributes modifiers, List<FieldDecl>/*!*/ fields,
+		public FieldDeclList(Text.Span span, PhpMemberAttributes modifiers, IList<FieldDecl>/*!*/ fields,
 			List<CustomAttribute> attributes)
             : base(span, modifiers, attributes)
 		{
@@ -550,10 +552,10 @@ namespace Devsense.PHP.Syntax.Ast
 	public sealed class ConstDeclList : TypeMemberDecl
 	{
 		/// <summary>List of constants in this list</summary>
-        public List<ClassConstantDecl>/*!*/ Constants { get { return constants; } }
-        private readonly List<ClassConstantDecl>/*!*/ constants;
+        public IList<ClassConstantDecl>/*!*/ Constants { get { return constants; } }
+        private readonly IList<ClassConstantDecl>/*!*/ constants;
         
-		public ConstDeclList(Text.Span span, PhpMemberAttributes modifiers, List<ClassConstantDecl>/*!*/ constants, List<CustomAttribute> attributes)
+		public ConstDeclList(Text.Span span, PhpMemberAttributes modifiers, IList<ClassConstantDecl>/*!*/ constants, List<CustomAttribute> attributes)
             : base(span, modifiers, attributes)
 		{
 			Debug.Assert(constants != null);
@@ -668,12 +670,12 @@ namespace Devsense.PHP.Syntax.Ast
             /// <summary>
             /// List of types which member <see cref="TraitAdaptation.TraitMemberName"/>.<c>Item2</c> will be ignored.
             /// </summary>
-            public List<QualifiedNameRef>/*!*/IgnoredTypes { get; private set; }
+            public QualifiedNameRef[]/*!*/IgnoredTypes { get; private set; }
 
-            public TraitAdaptationPrecedence(Text.Span span, Tuple<QualifiedNameRef, NameRef> traitMemberName, List<QualifiedNameRef>/*!*/ignoredTypes)
+            public TraitAdaptationPrecedence(Text.Span span, Tuple<QualifiedNameRef, NameRef> traitMemberName, IList<QualifiedNameRef>/*!*/ignoredTypes)
                 : base(span, traitMemberName)
             {
-                this.IgnoredTypes = ignoredTypes;
+                this.IgnoredTypes = ignoredTypes.AsArray();
             }
 
             public override void VisitMe(TreeVisitor visitor)
@@ -718,8 +720,8 @@ namespace Devsense.PHP.Syntax.Ast
         /// <summary>
         /// List of trait types to be used.
         /// </summary>
-        public List<TypeRef>/*!*/TraitsList { get { return traitsList; } }
-        private readonly List<TypeRef>/*!*/traitsList;
+        public TypeRef[]/*!*/TraitsList { get { return traitsList; } }
+        private readonly TypeRef[]/*!*/traitsList;
 
         /// <summary>
         /// List of trait adaptations modifying names of trait members. Can be <c>null</c> reference.
@@ -732,13 +734,13 @@ namespace Devsense.PHP.Syntax.Ast
         /// </summary>
         public int HeadingEndPosition => traitsList.Last().Span.End;
 
-        public TraitsUse(Text.Span span, List<TypeRef>/*!*/traitsList, TraitAdaptationBlock traitAdaptationBlock)
+        public TraitsUse(Text.Span span, IList<TypeRef>/*!*/traitsList, TraitAdaptationBlock traitAdaptationBlock)
             : base(span, PhpMemberAttributes.Public, null)
         {
             if (traitsList == null)
                 throw new ArgumentNullException("traitsList");
-            Debug.Assert(traitsList.TrueForAll(t => t is INamedTypeRef));
-            this.traitsList = traitsList;
+            Debug.Assert(traitsList.All(t => t is INamedTypeRef));
+            this.traitsList = traitsList.AsArray();
             this.traitAdaptationBlock = traitAdaptationBlock;
         }
 

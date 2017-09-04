@@ -46,7 +46,7 @@ namespace Devsense.PHP.Syntax.Ast
         public FinallyItem FinallyItem { get { return finallyItem; } }
         internal bool HasFinallyStatements { get { return finallyItem != null && finallyItem.Body.Statements.Length != 0; } }
 
-        public TryStmt(Text.Span p, BlockStmt/*!*/ body, List<CatchItem> catches, FinallyItem finallyItem)
+        public TryStmt(Text.Span p, BlockStmt/*!*/ body, IList<CatchItem> catches, FinallyItem finallyItem)
             : base(p)
         {
             Debug.Assert(body != null);

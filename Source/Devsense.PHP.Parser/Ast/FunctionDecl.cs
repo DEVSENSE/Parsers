@@ -192,7 +192,7 @@ namespace Devsense.PHP.Syntax.Ast
         public FunctionDecl(
             Text.Span span,
 			bool isConditional, PhpMemberAttributes memberAttributes, NameRef/*!*/ name,
-			bool aliasReturn, List<FormalParam>/*!*/ formalParams, Text.Span paramsSpan, List<FormalTypeParam>/*!*/ genericParams,
+			bool aliasReturn, IList<FormalParam>/*!*/ formalParams, Text.Span paramsSpan, IList<FormalTypeParam>/*!*/ genericParams,
             BlockStmt/*!*/ body, List<CustomAttribute> attributes, TypeRef returnType)
 			: base(span)
 		{
@@ -201,8 +201,10 @@ namespace Devsense.PHP.Syntax.Ast
 			this.name = name;
 			this.signature = new Signature(aliasReturn, formalParams);
 			this.typeSignature = new TypeSignature(genericParams);
-			if (attributes != null && attributes.Count != 0)
+            if (attributes != null && attributes.Count != 0)
+            {
                 this.Attributes = new CustomAttributes(attributes);
+            }
 			this.body = body;
             this.parametersSpan = paramsSpan;
             this.IsConditional = isConditional;

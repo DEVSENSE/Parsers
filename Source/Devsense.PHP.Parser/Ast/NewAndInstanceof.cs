@@ -37,12 +37,12 @@ namespace Devsense.PHP.Syntax.Ast
         /// <summary>Call signature of constructor</summary>
         public CallSignature CallSignature { get { return callSignature; } }
 
-		public NewEx(Text.Span span, TypeRef/*!*/ classNameRef, List<ActualParam>/*!*/ parameters)
+		public NewEx(Text.Span span, TypeRef/*!*/ classNameRef, IList<ActualParam>/*!*/ parameters)
             : base(span)
 		{
 			Debug.Assert(classNameRef != null && parameters != null);
 			this.classNameRef = classNameRef;
-			this.callSignature = new CallSignature(parameters, GenericTypeRef.EmptyList);
+			this.callSignature = new CallSignature(parameters, TypeRef.EmptyList);
 		}
 
 		/// <summary>

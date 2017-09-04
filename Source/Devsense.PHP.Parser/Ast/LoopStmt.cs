@@ -71,29 +71,30 @@ namespace Devsense.PHP.Syntax.Ast
     /// </summary>
     public sealed class ForStmt : Statement
     {
-        private readonly List<Expression>/*!*/ initExList;
-        private readonly List<Expression>/*!*/ condExList;
-        private readonly List<Expression>/*!*/ actionExList;
+        private readonly Expression[]/*!*/ initExList;
+        private readonly Expression[]/*!*/ condExList;
+        private readonly Expression[]/*!*/ actionExList;
         private Statement/*!*/ body;
 
         /// <summary>List of expressions used for initialization</summary>
-        public List<Expression> /*!*/ InitExList { get { return initExList; } }
+        public IList<Expression> /*!*/ InitExList { get { return initExList; } }
         /// <summary>List of expressions used as condition</summary>
-        public List<Expression> /*!*/ CondExList { get { return condExList; } }
+        public IList<Expression> /*!*/ CondExList { get { return condExList; } }
         /// <summary>List of expressions used to incrent iterator</summary>
-        public List<Expression> /*!*/ ActionExList { get { return actionExList; } }
+        public IList<Expression> /*!*/ ActionExList { get { return actionExList; } }
         /// <summary>Body of statement</summary>
         public Statement/*!*/ Body { get { return body; } internal set { body = value; } }
 
-        public ForStmt(Text.Span p, List<Expression>/*!*/ initExList, List<Expression>/*!*/ condExList,
-          List<Expression>/*!*/ actionExList, Statement/*!*/ body)
+        public ForStmt(Text.Span p,
+            IList<Expression>/*!*/ initExList, IList<Expression>/*!*/ condExList, IList<Expression>/*!*/ actionExList,
+            Statement/*!*/ body)
             : base(p)
         {
             Debug.Assert(initExList != null && condExList != null && actionExList != null && body != null);
 
-            this.initExList = initExList;
-            this.condExList = condExList;
-            this.actionExList = actionExList;
+            this.initExList = initExList.AsArray();
+            this.condExList = condExList.AsArray();
+            this.actionExList = actionExList.AsArray();
             this.body = body;
         }
 

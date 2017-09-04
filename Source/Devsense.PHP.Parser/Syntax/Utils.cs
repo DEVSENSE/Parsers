@@ -20,6 +20,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
+using System.Linq;
 
 namespace Devsense.PHP.Syntax
 {
@@ -1187,6 +1188,38 @@ namespace Devsense.PHP.Syntax
         /// <summary>
         /// Copies entries into new array, or gets empty array if the collection is empty.
         /// </summary>
+        public static T[]/*!*/AsArray<T>(this IEnumerable<T> enumerable)
+        {
+            if (enumerable is IList<T> list)
+            {
+                return AsArray(list);
+            }
+            else if (enumerable is ICollection collection)
+            {
+                if (collection.Count != 0)
+                {
+                    var array = new T[collection.Count];
+                    collection.CopyTo(array, 0);
+                    return array;
+                }
+                else
+                {
+                    return EmptyArray<T>.Instance;
+                }
+            }
+            else if (enumerable == null)
+            {
+                return EmptyArray<T>.Instance;
+            }
+            else
+            {
+                return enumerable.ToArray();
+            }
+        }
+
+        /// <summary>
+        /// Copies entries into new array, or gets empty array if the collection is empty.
+        /// </summary>
         public static T[]/*!*/AsArray<T>(this IList<T> list)
         {
             T[] result = list as T[];
@@ -1218,6 +1251,37 @@ namespace Devsense.PHP.Syntax
             for (int i = 0; i < list.Count; i++)
             {
                 action(list[i]);
+            }
+        }
+
+        public static TTarget[] CastToArray<TTarget>(this IEnumerable enumerable)
+        {
+            if (enumerable is ICollection collection)
+            {
+                return CastToArray<TTarget>(collection);
+            }
+            else if (enumerable == null)
+            {
+                return EmptyArray<TTarget>.Instance;
+            }
+            else
+            {
+                return enumerable.Cast<TTarget>().ToArray();
+            }
+        }
+
+        public static TTarget[] CastToArray<TTarget>(this ICollection collection)
+        {
+            var count = collection.Count;
+            if (count != 0)
+            {
+                var result = new TTarget[count];
+                collection.CopyTo(result, 0);
+                return result;
+            }
+            else
+            {
+                return EmptyArray<TTarget>.Instance;
             }
         }
     }

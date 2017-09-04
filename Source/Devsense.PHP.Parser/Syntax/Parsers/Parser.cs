@@ -102,9 +102,6 @@ namespace Devsense.PHP.Syntax
             if (lexer == null)
                 throw new ArgumentNullException(nameof(lexer));
 
-            if (astFactory == null)
-                throw new ArgumentNullException(nameof(astFactory));
-
             // initialization:
             _languageFeatures = language;
             if (errorRecovery != null)
@@ -115,7 +112,7 @@ namespace Devsense.PHP.Syntax
             {
                 _lexer = new CompliantLexer(lexer);
             }
-            _astFactory = astFactory;
+            _astFactory = astFactory ?? throw new ArgumentNullException(nameof(astFactory));
             _errors = errors ?? new EmptyErrorSink<Span>();
             _errorRecovery = errorRecovery ?? new EmptyErrorRecovery();
             //InitializeFields();
@@ -125,12 +122,8 @@ namespace Devsense.PHP.Syntax
             base.Scanner = _lexer;
             bool accept = base.Parse();
 
-            LangElement result = _astRoot;
-
-            // clean and let GC collect unused AST and other stuff:
-            //ClearFields();
-
-            return result;
+            //
+            return _astRoot;
         }
 
         void SetNamingContext(List<string> ns)
@@ -693,7 +686,10 @@ namespace Devsense.PHP.Syntax
             Name[] namespaces = new Name[currentNS.Namespaces.Length + suffix.Count - 1];
             currentNS.Namespaces.CopyTo(namespaces, 0);
             for (int i = currentNS.Namespaces.Length; i < namespaces.Length; i++)
+            {
                 namespaces[i] = new Name(suffix[i - currentNS.Namespaces.Length]); // loop otimization
+            }
+
             return new QualifiedName(new Name(suffix.Last()), namespaces, true);
         }
 

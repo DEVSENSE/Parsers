@@ -268,10 +268,10 @@ namespace Devsense.PHP.Syntax.Ast
     public sealed class UnsetStmt : Statement
     {
         /// <summary>List of variables to be unset</summary>
-        public List<VariableUse> /*!*/VarList { get { return varList; } }
-        private readonly List<VariableUse>/*!*/ varList;
+        public IList<VariableUse> /*!*/VarList { get { return varList; } }
+        private readonly IList<VariableUse>/*!*/ varList;
 
-        public UnsetStmt(Text.Span p, List<VariableUse>/*!*/ varList)
+        public UnsetStmt(Text.Span p, IList<VariableUse>/*!*/ varList)
             : base(p)
         {
             Debug.Assert(varList != null);
@@ -297,14 +297,14 @@ namespace Devsense.PHP.Syntax.Ast
     /// </summary>
     public sealed class GlobalStmt : Statement
     {
-        public List<SimpleVarUse>/*!*/ VarList { get { return varList; } }
-        private List<SimpleVarUse>/*!*/ varList;
+        public IList<SimpleVarUse>/*!*/ VarList { get { return varList; } }
+        private IList<SimpleVarUse>/*!*/ varList;
 
-        public GlobalStmt(Text.Span p, List<SimpleVarUse>/*!*/ varList)
+        public GlobalStmt(Text.Span p, IList<SimpleVarUse>/*!*/ varList)
             : base(p)
         {
             Debug.Assert(varList != null);
-            this.varList = varList;
+            this.varList = varList.AsArray();
         }
 
         /// <summary>
@@ -327,14 +327,14 @@ namespace Devsense.PHP.Syntax.Ast
     public sealed class StaticStmt : Statement
     {
         /// <summary>List of static variables</summary>
-        public List<StaticVarDecl>/*!*/ StVarList { get { return stVarList; } }
-        private List<StaticVarDecl>/*!*/ stVarList;
+        public IList<StaticVarDecl>/*!*/ StVarList { get { return stVarList; } }
+        private IList<StaticVarDecl>/*!*/ stVarList;
 
-        public StaticStmt(Text.Span p, List<StaticVarDecl>/*!*/ stVarList)
+        public StaticStmt(Text.Span p, IList<StaticVarDecl>/*!*/ stVarList)
             : base(p)
         {
             Debug.Assert(stVarList != null);
-            this.stVarList = stVarList;
+            this.stVarList = stVarList.AsArray();
         }
 
         /// <summary>
@@ -488,14 +488,14 @@ namespace Devsense.PHP.Syntax.Ast
         public SimpleUse[] Uses => _uses;
         private readonly SimpleUse[] _uses;
 
-        public GroupUse(Span span, QualifiedNameRef prefix, List<SimpleUse> uses)
+        public GroupUse(Span span, QualifiedNameRef prefix, IList<SimpleUse> uses)
             : base(span)
         {
             Debug.Assert(span.IsValid);
             Debug.Assert(uses != null);
 
             _prefix = prefix;
-            _uses = uses.ToArray();
+            _uses = uses.AsArray();
         }
     }
 
@@ -516,13 +516,13 @@ namespace Devsense.PHP.Syntax.Ast
         public UseBase[] Uses => _uses;
         private readonly UseBase[] _uses;
 
-        public UseStatement(Span span, List<UseBase> uses, AliasKind kind)
+        public UseStatement(Span span, IList<UseBase> uses, AliasKind kind)
             : base(span)
         {
             Debug.Assert(uses != null);
 
             _kind = kind;
-            _uses = uses.ToArray();
+            _uses = uses.AsArray();
         }
 
         public override void VisitMe(TreeVisitor visitor)

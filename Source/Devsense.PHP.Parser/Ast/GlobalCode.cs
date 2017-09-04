@@ -191,15 +191,15 @@ namespace Devsense.PHP.Syntax.Ast
             set { this.SetCustomAttributes(value); }
         }
 
-        public List<GlobalConstantDecl>/*!*/ Constants { get { return constants; } }
-        private readonly List<GlobalConstantDecl>/*!*/ constants;
+        public IList<GlobalConstantDecl>/*!*/ Constants { get { return constants; } }
+        private readonly IList<GlobalConstantDecl>/*!*/ constants;
 
         public Text.Span EntireDeclarationSpan
         {
             get { return this.Span; }
         }
 
-        public GlobalConstDeclList(Text.Span span, List<GlobalConstantDecl>/*!*/ constants, List<CustomAttribute> attributes)
+        public GlobalConstDeclList(Text.Span span, IList<GlobalConstantDecl>/*!*/ constants, List<CustomAttribute> attributes)
             : base(span)
         {
             Debug.Assert(constants != null);
