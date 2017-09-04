@@ -593,7 +593,7 @@ namespace Devsense.PHP.Syntax
 
         protected object GetTokenAsSinglyQuotedString(string text, Encoding/*!*/ encoding, bool forceBinaryString)
         {
-            PhpStringBuilder result = new PhpStringBuilder(encoding, forceBinaryString, TokenLength);
+            var result = new PhpStringBuilder(encoding, forceBinaryString, TokenLength);
 
             int pos = 1;
             char c;

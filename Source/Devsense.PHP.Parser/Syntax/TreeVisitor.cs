@@ -187,7 +187,10 @@ namespace Devsense.PHP.Syntax
         /// </summary>
         virtual public void VisitIfStmt(IfStmt x)
         {
-            x.Conditions.Foreach(VisitConditionalStmt);
+            for (int i = 0; i < x.Conditions.Count; i++)
+            {
+                VisitConditionalStmt(x.Conditions[i]);
+            }
         }
 
         /// <summary>
@@ -344,7 +347,10 @@ namespace Devsense.PHP.Syntax
         {
             if (items != null)
             {
-                items.Foreach(VisitElement);
+                for (int i = 0; i < items.Count; i++)
+                {
+                    VisitElement(items[i]);
+                }
             }
         }
 
@@ -691,7 +697,10 @@ namespace Devsense.PHP.Syntax
         /// <param name="x"></param>
         virtual public void VisitArrayEx(ArrayEx x)
         {
-            x.Items.Foreach(VisitArrayItem);
+            for (int i = 0; i < x.Items.Length; i++)
+            {
+                VisitArrayItem(x.Items[i]);
+            }
         }
 
         virtual public void VisitArrayItem(Item item)
@@ -811,7 +820,10 @@ namespace Devsense.PHP.Syntax
         /// <param name="x"></param>
         virtual public void VisitListEx(ListEx x)
         {
-            x.Items.Foreach(VisitArrayItem);
+            for (int i = 0; i < x.Items.Length; i++)
+            {
+                VisitArrayItem(x.Items[i]);
+            }
         }
 
         /// <summary>

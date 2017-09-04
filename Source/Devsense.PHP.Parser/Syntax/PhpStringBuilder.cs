@@ -33,8 +33,25 @@ namespace Devsense.PHP.Syntax
         /// </summary>
         private readonly Encoding/*!*/encoding;
 
-        private readonly byte[] encodeBytes = new byte[4];
-        private readonly char[] encodeChars = new char[5];
+        private byte[] BytesBuffer
+        {
+            get
+            {
+                if (_encodeBytes == null) _encodeBytes = new byte[4];
+                return _encodeBytes;
+            }
+        }
+        private byte[] _encodeBytes;
+
+        private char[] CharsBuffer
+        {
+            get
+            {
+                if (_encodeChars == null) _encodeChars = new char[5];
+                return _encodeChars;
+            }
+        }
+        private char[] _encodeChars;
 
         private StringBuilder _unicodeBuilder;
         private List<byte> _binaryBuilder;
@@ -115,9 +132,9 @@ namespace Devsense.PHP.Syntax
             get
             {
                 if (IsBinary)
-                    return BinaryBuilder.ToArray();
+                    return Length != 0 ? BinaryBuilder.ToArray() : EmptyArray<byte>.Instance;
                 else
-                    return UnicodeBuilder.ToString();
+                    return Length != 0 ? UnicodeBuilder.ToString() : string.Empty;
             }
         }
 
@@ -202,6 +219,9 @@ namespace Devsense.PHP.Syntax
                 UnicodeBuilder.Append(c);
             else
             {
+                var encodeBytes = BytesBuffer;
+                var encodeChars = CharsBuffer;
+
                 encodeChars[0] = c;
                 int count = encoding.GetBytes(encodeChars, 0, 1, encodeBytes, 0);
                 for (int i = 0; i < count; ++i)
@@ -220,6 +240,9 @@ namespace Devsense.PHP.Syntax
 
             if (IsUnicode)
             {
+                var encodeBytes = BytesBuffer;
+                var encodeChars = CharsBuffer;
+
                 encodeBytes[0] = b;
                 UnicodeBuilder.Append(encodeChars, 0, encoding.GetChars(encodeBytes, 0, 1, encodeChars, 0));
             }
