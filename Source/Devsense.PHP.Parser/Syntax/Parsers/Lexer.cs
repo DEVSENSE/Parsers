@@ -348,7 +348,7 @@ namespace Devsense.PHP.Syntax
             }
             catch (OverflowException)
             {
-                _errors.Error(_tokenPosition, Warnings.TooBigDouble, GetTokenString());
+                _errors.Error(new Span(_charOffset, this.TokenLength), Warnings.TooBigDouble, GetTokenString());
 
                 //
                 return (str.Length > 0 && str[0] == '-') ? double.NegativeInfinity : double.PositiveInfinity;
