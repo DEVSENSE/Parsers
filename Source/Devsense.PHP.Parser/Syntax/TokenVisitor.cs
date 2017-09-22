@@ -40,8 +40,9 @@ namespace Devsense.PHP.Syntax
         /// </summary>
         /// <param name="token">The token ID.</param>
         /// <param name="text">Token source code content - synthesized or passed from original source code.</param>
-        /// <param name="position">Optional. Original token position in source code if provided. Otherwise <c>default(Span)</c>.</param>
-        void ConsumeToken(Tokens token, string text, int position = -1);
+        /// <param name="position">Original token position in source code.</param>
+        /// <param name="originalSpan">Original position of the AST node in source code.</param>
+        void ConsumeToken(Tokens token, string text, int position, Span originalSpan);
     }
 
     #region DefaultTokenVisitorOptions
@@ -58,21 +59,21 @@ namespace Devsense.PHP.Syntax
         /// <summary>
         /// Shortcut for <see cref="ConsumeToken(Tokens, string, int)"/>.
         /// </summary>
-        protected void ConsumeToken(Tokens token, int position = -1) => ConsumeToken(token, TokenFacts.GetTokenText(token), position);
+        protected void ConsumeToken(Tokens token, int position, Span originalSpan) => ConsumeToken(token, TokenFacts.GetTokenText(token), position, originalSpan);
 
         /// <inheritdoc />
         public virtual void ConsumeModifiers(LangElement element, PhpMemberAttributes modifiers, Span span)
         {
-            if ((modifiers & PhpMemberAttributes.Private) != 0) ConsumeToken(Tokens.T_PRIVATE, span.StartOrInvalid);
-            if ((modifiers & PhpMemberAttributes.Protected) != 0) ConsumeToken(Tokens.T_PROTECTED, span.StartOrInvalid);
+            if ((modifiers & PhpMemberAttributes.Private) != 0) ConsumeToken(Tokens.T_PRIVATE, span.StartOrInvalid, span);
+            if ((modifiers & PhpMemberAttributes.Protected) != 0) ConsumeToken(Tokens.T_PROTECTED, span.StartOrInvalid, span);
 
-            if ((modifiers & PhpMemberAttributes.Static) != 0) ConsumeToken(Tokens.T_STATIC, span.StartOrInvalid);
-            if ((modifiers & PhpMemberAttributes.Abstract) != 0) ConsumeToken(Tokens.T_ABSTRACT, span.StartOrInvalid);
-            if ((modifiers & PhpMemberAttributes.Final) != 0) ConsumeToken(Tokens.T_FINAL, span.StartOrInvalid);
+            if ((modifiers & PhpMemberAttributes.Static) != 0) ConsumeToken(Tokens.T_STATIC, span.StartOrInvalid, span);
+            if ((modifiers & PhpMemberAttributes.Abstract) != 0) ConsumeToken(Tokens.T_ABSTRACT, span.StartOrInvalid, span);
+            if ((modifiers & PhpMemberAttributes.Final) != 0) ConsumeToken(Tokens.T_FINAL, span.StartOrInvalid, span);
         }
 
         /// <inheritdoc />
-        public virtual void ConsumeToken(Tokens token, string text, int position)
+        public virtual void ConsumeToken(Tokens token, string text, int position, Span originalSpan)
         {
             // to be overwritten in derived class
             Debug.WriteLine("ConsumeToken {0}: {1}", token.ToString(), text);
@@ -86,19 +87,19 @@ namespace Devsense.PHP.Syntax
             if (literal is BoolLiteral)
             {
                 var value = ((BoolLiteral)literal).Value.ToString();
-                ConsumeToken(Tokens.T_STRING, /*IsUpperCase(x) ? value.ToUpperInvariant() :*/ value.ToLowerInvariant(), literal.Span.StartOrInvalid);
+                ConsumeToken(Tokens.T_STRING, /*IsUpperCase(x) ? value.ToUpperInvariant() :*/ value.ToLowerInvariant(), literal.Span.StartOrInvalid, literal.Span);
             }
             else if (literal is DoubleLiteral)
             {
-                ConsumeToken(Tokens.T_DNUMBER, ((DoubleLiteral)literal).Value.ToString(CultureInfo.InvariantCulture), literal.Span.StartOrInvalid);
+                ConsumeToken(Tokens.T_DNUMBER, ((DoubleLiteral)literal).Value.ToString(CultureInfo.InvariantCulture), literal.Span.StartOrInvalid, literal.Span);
             }
             else if (literal is NullLiteral)
             {
-                ConsumeToken(Tokens.T_STRING, /*_composer.IsUpperCase(x) ? "NULL" :*/ "null", literal.Span.StartOrInvalid);
+                ConsumeToken(Tokens.T_STRING, /*_composer.IsUpperCase(x) ? "NULL" :*/ "null", literal.Span.StartOrInvalid, literal.Span);
             }
             else if (literal is LongIntLiteral)
             {
-                ConsumeToken(Tokens.T_LNUMBER, ((LongIntLiteral)literal).Value.ToString(CultureInfo.InvariantCulture), literal.Span.StartOrInvalid);
+                ConsumeToken(Tokens.T_LNUMBER, ((LongIntLiteral)literal).Value.ToString(CultureInfo.InvariantCulture), literal.Span.StartOrInvalid, literal.Span);
             }
             else
             {
@@ -124,9 +125,9 @@ namespace Devsense.PHP.Syntax
         /// <param name="token">Token id.</param>
         /// <param name="text">Textual representation of <paramref name="token"/>.</param>
         /// <param name="position">Optional. Original position in source code.</param>
-        public void ConsumeToken(Tokens token, string text, int position = -1)
+        public void ConsumeToken(Tokens token, string text, int position, Span originalSpan)
         {
-            _composer.ConsumeToken(token, text, position);
+            _composer.ConsumeToken(token, text, position, originalSpan);
         }
 
         protected void ConsumeModifiers(LangElement element, PhpMemberAttributes modifiers, Span span)
@@ -135,9 +136,9 @@ namespace Devsense.PHP.Syntax
         }
 
         /// <summary>
-        /// Shortcut for <see cref="ConsumeToken(Tokens, string, int)"/>.
+        /// Shortcut for <see cref="ConsumeToken(Tokens, string, int, Span)"/>.
         /// </summary>
-        protected void ConsumeToken(Tokens token, int position = -1) => ConsumeToken(token, TokenFacts.GetTokenText(token), position);
+        protected void ConsumeToken(Tokens token, int position, Span originalSpan) => ConsumeToken(token, TokenFacts.GetTokenText(token), position, originalSpan);
 
         #region Single Nodes Overrides
 
@@ -148,8 +149,8 @@ namespace Devsense.PHP.Syntax
 
         public override void VisitActualParam(ActualParam x)
         {
-            if (x.IsUnpack) ConsumeToken(Tokens.T_ELLIPSIS, "...");
-            if (x.Ampersand) ConsumeToken(Tokens.T_AMP, "&");
+            if (x.IsUnpack) ConsumeToken(Tokens.T_ELLIPSIS, "...", x.Span.StartOrInvalid, x.Span);
+            if (x.Ampersand) ConsumeToken(Tokens.T_AMP, "&", x.Span.StartOrInvalid, x.Span);
             VisitElement(x.Expression);
         }
 
@@ -167,16 +168,16 @@ namespace Devsense.PHP.Syntax
         {
             if (_composer.IsOldArraySyntax(x))
             {
-                ConsumeToken(Tokens.T_ARRAY, "array", x.Span.StartOrInvalid);
-                ConsumeToken(Tokens.T_LPAREN, "(");
+                ConsumeToken(Tokens.T_ARRAY, "array", x.Span.StartOrInvalid, x.Span);
+                ConsumeToken(Tokens.T_LPAREN, "(", x.Span.StartOrInvalid + 5, x.Span);
                 VisitElementList(x.Items, VisitArrayItem, Tokens.T_COMMA, ",");
-                ConsumeToken(Tokens.T_RPAREN, ")");
+                ConsumeToken(Tokens.T_RPAREN, ")", x.Span.End - 1, x.Span);
             }
             else
             {
-                ConsumeToken(Tokens.T_LBRACKET, "[", x.Span.StartOrInvalid);
+                ConsumeToken(Tokens.T_LBRACKET, "[", x.Span.StartOrInvalid, x.Span);
                 VisitElementList(x.Items, VisitArrayItem, Tokens.T_COMMA, ",");
-                ConsumeToken(Tokens.T_RBRACKET, "]", x.Span.End - 1);
+                ConsumeToken(Tokens.T_RBRACKET, "]", x.Span.End - 1, x.Span);
             }
         }
 
@@ -187,7 +188,7 @@ namespace Devsense.PHP.Syntax
                 if (item.Index != null)
                 {
                     VisitElement(item.Index);
-                    ConsumeToken(Tokens.T_DOUBLE_ARROW, "=>");
+                    ConsumeToken(Tokens.T_DOUBLE_ARROW, "=>", item.Index.Span.End, item.Index.Span);
                 }
 
                 if (item is ValueItem)
@@ -196,7 +197,7 @@ namespace Devsense.PHP.Syntax
                 }
                 else if (item is RefItem)
                 {
-                    ConsumeToken(Tokens.T_AMP, "&");
+                    ConsumeToken(Tokens.T_AMP, "&", item.Index.Span.StartOrInvalid, item.Index.Span);
                     VisitElement(((RefItem)item).RefToGet);
                 }
                 else
@@ -208,10 +209,10 @@ namespace Devsense.PHP.Syntax
 
         public override void VisitAssertEx(AssertEx x)
         {
-            ConsumeToken(Tokens.T_STRING, "assert", x.Span.StartOrInvalid);
-            ConsumeToken(Tokens.T_LPAREN, "(");
+            ConsumeToken(Tokens.T_STRING, "assert", x.Span.StartOrInvalid, x.Span);
+            ConsumeToken(Tokens.T_LPAREN, "(", x.Span.StartOrInvalid + 6, x.Span);
             VisitElement(x.CodeEx);
-            ConsumeToken(Tokens.T_RPAREN, ")", x.Span.End - 1);
+            ConsumeToken(Tokens.T_RPAREN, ")", x.Span.End - 1, x.Span);
         }
 
         public sealed override void VisitAssignEx(AssignEx x) { throw new InvalidOperationException(); }
@@ -219,7 +220,7 @@ namespace Devsense.PHP.Syntax
         public override void VisitBinaryEx(BinaryEx x)
         {
             VisitElement(x.LeftExpr);
-            ConsumeToken(TokenFacts.GetOperationToken(x.Operation), x.OperationPosition);
+            ConsumeToken(TokenFacts.GetOperationToken(x.Operation), x.OperationPosition, x.Span);
             VisitElement(x.RightExpr);
         }
 
@@ -230,9 +231,9 @@ namespace Devsense.PHP.Syntax
 
         public override void VisitBlockStmt(BlockStmt x)
         {
-            ConsumeToken(Tokens.T_LBRACE, "{", x.Span.StartOrInvalid);
+            ConsumeToken(Tokens.T_LBRACE, "{", x.Span.StartOrInvalid, x.Span);
             base.VisitBlockStmt(x);
-            ConsumeToken(Tokens.T_RBRACE, "}", x.Span.End - 1);
+            ConsumeToken(Tokens.T_RBRACE, "}", x.Span.End - 1, x.Span);
         }
 
         public override void VisitBoolLiteral(BoolLiteral x)
@@ -242,9 +243,9 @@ namespace Devsense.PHP.Syntax
 
         public override void VisitCaseItem(CaseItem x)
         {
-            ConsumeToken(Tokens.T_CASE, "case");
+            ConsumeToken(Tokens.T_CASE, "case", x.Span.StartOrInvalid, x.Span);
             VisitElement(x.CaseVal);
-            ConsumeToken(Tokens.T_COLON, ":");
+            ConsumeToken(Tokens.T_COLON, ":", x.Span.End - 1, x.Span);
 
             base.VisitCaseItem(x);
         }
@@ -254,11 +255,11 @@ namespace Devsense.PHP.Syntax
             // catch (TYPE VARIABLE) BLOCK
             using (new ScopeHelper(this, x))
             {
-                ConsumeToken(Tokens.T_CATCH, "catch");
-                ConsumeToken(Tokens.T_LPAREN, "(");
+                ConsumeToken(Tokens.T_CATCH, "catch", x.Span.StartOrInvalid, x.Span);
+                ConsumeToken(Tokens.T_LPAREN, "(", x.Span.StartOrInvalid + 5, x.Span);
                 VisitElement(x.TargetType);
                 VisitElement(x.Variable);
-                ConsumeToken(Tokens.T_RPAREN, ")");
+                ConsumeToken(Tokens.T_RPAREN, ")", x.Body.Span.StartOrInvalid - 1, x.Span);
                 VisitElement(x.Body);
             }
         }
@@ -271,13 +272,13 @@ namespace Devsense.PHP.Syntax
         public override void VisitClassConstUse(ClassConstUse x)
         {
             VisitElement(x.TargetType);
-            ConsumeToken(Tokens.T_DOUBLE_COLON, "::");
-            ConsumeToken(Tokens.T_STRING, x.Name.Value, x.NamePosition.StartOrInvalid);
+            ConsumeToken(Tokens.T_DOUBLE_COLON, "::", x.NamePosition.StartOrInvalid - 2, x.Span);
+            ConsumeToken(Tokens.T_STRING, x.Name.Value, x.NamePosition.StartOrInvalid, x.Span);
         }
 
         public override void VisitClassTypeRef(ClassTypeRef x)
         {
-            VisitQualifiedName(x.ClassName, x.Span.StartOrInvalid);
+            VisitQualifiedName(x.ClassName, x.Span.StartOrInvalid, x.Span);
         }
 
         public override void VisitConcatEx(ConcatEx x)
@@ -288,9 +289,9 @@ namespace Devsense.PHP.Syntax
         public override void VisitConditionalEx(ConditionalEx x)
         {
             VisitElement(x.CondExpr);
-            ConsumeToken(Tokens.T_QUESTION, "?");
+            ConsumeToken(Tokens.T_QUESTION, "?", x.CondExpr.Span.End, x.Span);
             VisitElement(x.TrueExpr);   // can be null
-            ConsumeToken(Tokens.T_COLON, ":");
+            ConsumeToken(Tokens.T_COLON, ":", x.TrueExpr.Span.End, x.Span);
             VisitElement(x.FalseExpr);
         }
 
@@ -301,11 +302,11 @@ namespace Devsense.PHP.Syntax
 
         public override void VisitConstantDecl(ConstantDecl x)
         {
-            ConsumeToken(Tokens.T_STRING, x.Name.Name.Value);
+            ConsumeToken(Tokens.T_STRING, x.Name.Name.Value, x.Name.Span.StartOrInvalid, x.Span);
 
             if (x.Initializer != null)  // always true
             {
-                ConsumeToken(Tokens.T_EQ, "=");
+                ConsumeToken(Tokens.T_EQ, "=", x.Name.Span.End, x.Span);
                 VisitElement(x.Initializer);
             }
         }
@@ -318,9 +319,9 @@ namespace Devsense.PHP.Syntax
         public override void VisitConstDeclList(ConstDeclList x)
         {
             ConsumeModifiers(x, x.Modifiers, x.Span.IsValid && x.Constants[0].Span.IsValid ? Span.FromBounds(x.Span.StartOrInvalid, x.Constants[0].Span.StartOrInvalid) : Span.Invalid);
-            ConsumeToken(Tokens.T_CONST, "const");
+            ConsumeToken(Tokens.T_CONST, "const", x.Span.StartOrInvalid, x.Span);
             VisitElementList(x.Constants, Tokens.T_COMMA, ",");
-            ConsumeToken(Tokens.T_SEMI, ";");
+            ConsumeToken(Tokens.T_SEMI, ";", x.Span.End - 1, x.Span);
         }
 
         public override void VisitCustomAttribute(CustomAttribute x)
@@ -335,30 +336,30 @@ namespace Devsense.PHP.Syntax
 
         public override void VisitDefaultItem(DefaultItem x)
         {
-            ConsumeToken(Tokens.T_DEFAULT, "default");
-            ConsumeToken(Tokens.T_COLON, ":");
+            ConsumeToken(Tokens.T_DEFAULT, "default", x.Span.StartOrInvalid, x.Span);
+            ConsumeToken(Tokens.T_COLON, ":", x.Span.StartOrInvalid + 7, x.Span);
             VisitList(x.Statements);
         }
 
         public override void VisitDirectFcnCall(DirectFcnCall x)
         {
             VisitIsMemberOf(x.IsMemberOf);
-            VisitQualifiedName(x.FullName.OriginalName, x.Span.StartOrInvalid);
+            VisitQualifiedName(x.FullName.OriginalName, x.Span.StartOrInvalid, x.Span);
             VisitCallSignature(x.CallSignature);
         }
 
         public override void VisitDirectStFldUse(DirectStFldUse x)
         {
             VisitElement(x.TargetType);
-            ConsumeToken(Tokens.T_DOUBLE_COLON, "::");
+            ConsumeToken(Tokens.T_DOUBLE_COLON, "::", x.NameSpan.StartOrInvalid - 2, x.Span);
             VisitVariableName(x.PropertyName, x.NameSpan, true);  // $name
         }
 
         public override void VisitDirectStMtdCall(DirectStMtdCall x)
         {
             VisitElement(x.TargetType);
-            ConsumeToken(Tokens.T_DOUBLE_COLON, "::");
-            ConsumeToken(Tokens.T_STRING, x.MethodName.Name.Value);
+            ConsumeToken(Tokens.T_DOUBLE_COLON, "::", x.MethodName.Span.StartOrInvalid - 2, x.Span);
+            ConsumeToken(Tokens.T_STRING, x.MethodName.Name.Value, x.MethodName.Span.StartOrInvalid, x.Span);
             VisitCallSignature(x.CallSignature);
         }
 
@@ -377,56 +378,56 @@ namespace Devsense.PHP.Syntax
         {
             if (x.IsHtmlCode)
             {
-                ConsumeToken(Tokens.T_INLINE_HTML, ((StringLiteral)x.Parameters[0]).Value, x.Span.StartOrInvalid);
+                ConsumeToken(Tokens.T_INLINE_HTML, ((StringLiteral)x.Parameters[0]).Value, x.Span.StartOrInvalid, x.Span);
             }
             else
             {
                 // echo PARAMETERS;
-                ConsumeToken(Tokens.T_ECHO, "echo", x.Span.StartOrInvalid);
+                ConsumeToken(Tokens.T_ECHO, "echo", x.Span.StartOrInvalid, x.Span);
                 VisitElementList(x.Parameters, Tokens.T_COMMA, ",");
-                ConsumeToken(Tokens.T_SEMI, ";");
+                ConsumeToken(Tokens.T_SEMI, ";", x.Span.End - 1, x.Span);
             }
         }
 
         public override void VisitParenthesisExpression(ParenthesisExpression x)
         {
-            ConsumeToken(Tokens.T_LPAREN, "(", x.Span.StartOrInvalid);
+            ConsumeToken(Tokens.T_LPAREN, "(", x.Span.StartOrInvalid, x.Span);
             VisitElement(x.Expression);
-            ConsumeToken(Tokens.T_RPAREN, ")", x.Span.End - 1);
+            ConsumeToken(Tokens.T_RPAREN, ")", x.Span.End - 1, x.Span);
         }
 
         public override void VisitEmptyEx(EmptyEx x)
         {
             // empty(OPERAND)
-            ConsumeToken(Tokens.T_EMPTY, "empty", x.Span.StartOrInvalid);
-            ConsumeToken(Tokens.T_LPAREN, "(");
+            ConsumeToken(Tokens.T_EMPTY, "empty", x.Span.StartOrInvalid, x.Span);
+            ConsumeToken(Tokens.T_LPAREN, "(", x.Span.StartOrInvalid + 5, x.Span);
             VisitElement(x.Expression);
-            ConsumeToken(Tokens.T_RPAREN, ")", x.Span.End - 1);
+            ConsumeToken(Tokens.T_RPAREN, ")", x.Span.End - 1, x.Span);
         }
 
         public override void VisitEmptyStmt(EmptyStmt x)
         {
-            ConsumeToken(Tokens.T_SEMI, ";", x.Span.StartOrInvalid);
+            ConsumeToken(Tokens.T_SEMI, ";", x.Span.StartOrInvalid, x.Span);
         }
 
         public override void VisitEvalEx(EvalEx x)
         {
-            ConsumeToken(Tokens.T_EVAL, "eval", x.Span.StartOrInvalid);
-            ConsumeToken(Tokens.T_LPAREN, "(");
+            ConsumeToken(Tokens.T_EVAL, "eval", x.Span.StartOrInvalid, x.Span);
+            ConsumeToken(Tokens.T_LPAREN, "(", x.Span.StartOrInvalid + 4, x.Span);
             VisitElement(x.Code);
-            ConsumeToken(Tokens.T_RPAREN, ")", x.Span.End - 1);
+            ConsumeToken(Tokens.T_RPAREN, ")", x.Span.End - 1, x.Span);
         }
 
         public override void VisitExitEx(ExitEx x)
         {
-            ConsumeToken(Tokens.T_EXIT, "exit", x.Span.StartOrInvalid);
+            ConsumeToken(Tokens.T_EXIT, "exit", x.Span.StartOrInvalid, x.Span);
             VisitElement(x.ResulExpr);
         }
 
         public override void VisitExpressionStmt(ExpressionStmt x)
         {
             base.VisitExpressionStmt(x);
-            ConsumeToken(Tokens.T_SEMI, ";", x.Span.End - 1);
+            ConsumeToken(Tokens.T_SEMI, ";", x.Span.End - 1, x.Span);
         }
 
         public override void VisitFieldDecl(FieldDecl x)
@@ -434,7 +435,7 @@ namespace Devsense.PHP.Syntax
             VisitVariableName(x.Name, x.NameSpan, true);
             if (x.Initializer != null)
             {
-                ConsumeToken(Tokens.T_EQ, "=");
+                ConsumeToken(Tokens.T_EQ, "=", x.Initializer.Span.StartOrInvalid - 1, x.Span);
                 VisitElement(x.Initializer);
             }
         }
@@ -445,11 +446,11 @@ namespace Devsense.PHP.Syntax
 
             if (x.Modifiers == 0)
             {
-                ConsumeToken(Tokens.T_VAR, "var");
+                ConsumeToken(Tokens.T_VAR, "var", x.Span.StartOrInvalid, x.Span);
             }
 
             VisitElementList(x.Fields, Tokens.T_COMMA, ",");
-            ConsumeToken(Tokens.T_SEMI, ";", x.Span.End - 1);
+            ConsumeToken(Tokens.T_SEMI, ";", x.Span.End - 1, x.Span);
         }
 
         public override void VisitFinallyItem(FinallyItem x)
@@ -457,7 +458,7 @@ namespace Devsense.PHP.Syntax
             // finally BLOCK
             using (new ScopeHelper(this, x))
             {
-                ConsumeToken(Tokens.T_FINAL, "finally", x.Span.StartOrInvalid);
+                ConsumeToken(Tokens.T_FINAL, "finally", x.Span.StartOrInvalid, x.Span);
                 VisitElement(x.Body);
             }
         }
@@ -466,24 +467,24 @@ namespace Devsense.PHP.Syntax
         {
             using (new ScopeHelper(this, x))
             {
-                ConsumeToken(Tokens.T_FOREACH, "foreach", x.Span.StartOrInvalid);
-                ConsumeToken(Tokens.T_LPAREN, "(");
+                ConsumeToken(Tokens.T_FOREACH, "foreach", x.Span.StartOrInvalid, x.Span);
+                ConsumeToken(Tokens.T_LPAREN, "(", x.Span.StartOrInvalid + 7, x.Span);
                 VisitElement(x.Enumeree);
-                ConsumeToken(Tokens.T_AS, "as");
+                ConsumeToken(Tokens.T_AS, "as", x.Enumeree.Span.End + 1, x.Span);
                 if (x.KeyVariable != null)
                 {
                     VisitForeachVar(x.KeyVariable);
-                    ConsumeToken(Tokens.T_DOUBLE_ARROW, "=>");
+                    ConsumeToken(Tokens.T_DOUBLE_ARROW, "=>", x.KeyVariable.Span.End + 1, x.Span);
                 }
                 VisitForeachVar(x.ValueVariable);
-                ConsumeToken(Tokens.T_RPAREN, ")");
+                ConsumeToken(Tokens.T_RPAREN, ")", x.Span.End - 1, x.Span);
                 VisitElement(x.Body);
             }
         }
 
         public override void VisitForeachVar(ForeachVar x)
         {
-            if (x.Alias) ConsumeToken(Tokens.T_AMP, "&", x.Span.StartOrInvalid);
+            if (x.Alias) ConsumeToken(Tokens.T_AMP, "&", x.Span.StartOrInvalid, x.Span);
             VisitElement(x.Target);
         }
 
@@ -492,17 +493,17 @@ namespace Devsense.PHP.Syntax
             VisitElement(x.TypeHint);
             if (x.PassedByRef)
             {
-                ConsumeToken(Tokens.T_AMP, "&");
+                ConsumeToken(Tokens.T_AMP, "&", x.Span.StartOrInvalid, x.Span);
             }
             if (x.IsVariadic)
             {
-                ConsumeToken(Tokens.T_ELLIPSIS, "...");
+                ConsumeToken(Tokens.T_ELLIPSIS, "...", x.Span.StartOrInvalid, x.Span);
             }
 
             VisitVariableName(x.Name.Name, x.Name.Span, true);
             if (x.InitValue != null)
             {
-                ConsumeToken(Tokens.T_EQ, "=");
+                ConsumeToken(Tokens.T_EQ, "=", x.InitValue.Span.StartOrInvalid - 1, x.Span);
                 VisitElement(x.InitValue);
             }
         }
@@ -516,16 +517,18 @@ namespace Devsense.PHP.Syntax
         {
             using (new ScopeHelper(this, x))
             {
-                ConsumeToken(Tokens.T_FOR, "for", x.Span.StartOrInvalid);
-                ConsumeToken(Tokens.T_LPAREN, "(");
+                ConsumeToken(Tokens.T_FOR, "for", x.Span.StartOrInvalid, x.Span);
+                ConsumeToken(Tokens.T_LPAREN, "(", x.Span.StartOrInvalid + 3, x.Span);
 
                 VisitElementList(x.InitExList, Tokens.T_COMMA, ",");
-                ConsumeToken(Tokens.T_SEMI, ";");
+                ConsumeToken(Tokens.T_SEMI, ";", x.InitExList.Count > 0 ?
+                    x.InitExList.Last().Span.End : x.Span.StartOrInvalid + 4, x.Span);
                 VisitElementList(x.CondExList, Tokens.T_COMMA, ",");
-                ConsumeToken(Tokens.T_SEMI, ";");
+                ConsumeToken(Tokens.T_SEMI, ";", x.CondExList.Count > 0 ?
+                    x.CondExList.Last().Span.End : x.Span.StartOrInvalid + 5, x.Span);
                 VisitElementList(x.ActionExList, Tokens.T_COMMA, ",");
 
-                ConsumeToken(Tokens.T_LPAREN, ")");
+                ConsumeToken(Tokens.T_LPAREN, ")", x.Span.End - 1, x.Span);
 
                 VisitElement(x.Body);
             }
@@ -542,13 +545,13 @@ namespace Devsense.PHP.Syntax
             {
                 // function &NAME SIGNATURE : RETURN_TYPE BODY
                 ConsumeModifiers(element, modifiers, element.Span.IsValid && nameOpt.Span.IsValid ? Span.FromBounds(element.Span.StartOrInvalid, nameOpt.Span.StartOrInvalid) : Span.Invalid);
-                ConsumeToken(Tokens.T_FUNCTION, "function");
-                if (signature.AliasReturn) ConsumeToken(Tokens.T_AMP, "&");
-                if (nameOpt.HasValue) ConsumeToken(Tokens.T_STRING, nameOpt.Name.Value);
+                ConsumeToken(Tokens.T_FUNCTION, "function", element.Span.StartOrInvalid, element.Span);
+                if (signature.AliasReturn) ConsumeToken(Tokens.T_AMP, "&", element.Span.StartOrInvalid + 8, element.Span);
+                if (nameOpt.HasValue) ConsumeToken(Tokens.T_STRING, nameOpt.Name.Value, nameOpt.Span.StartOrInvalid, element.Span);
                 VisitSignature(signature);
                 if (returnTypeOpt != null)
                 {
-                    ConsumeToken(Tokens.T_COLON, ":");
+                    ConsumeToken(Tokens.T_COLON, ":", returnTypeOpt.Span.StartOrInvalid - 1, element.Span);
                     VisitElement(returnTypeOpt);
                 }
                 VisitElement(body);
@@ -577,36 +580,36 @@ namespace Devsense.PHP.Syntax
 
         public override void VisitGlobalConstDeclList(GlobalConstDeclList x)
         {
-            ConsumeToken(Tokens.T_CONST, "const");
+            ConsumeToken(Tokens.T_CONST, "const", x.Span.StartOrInvalid, x.Span);
             VisitElementList(x.Constants, Tokens.T_COMMA, ",");
-            ConsumeToken(Tokens.T_SEMI, ";", x.Span.End - 1);
+            ConsumeToken(Tokens.T_SEMI, ";", x.Span.End - 1, x.Span);
         }
 
         public override void VisitGlobalConstUse(GlobalConstUse x)
         {
-            VisitQualifiedName(x.FullName.OriginalName, x.Span.StartOrInvalid);
+            VisitQualifiedName(x.FullName.OriginalName, x.Span.StartOrInvalid, x.Span);
         }
 
         public override void VisitGlobalStmt(GlobalStmt x)
         {
-            ConsumeToken(Tokens.T_GLOBAL, x.Span.StartOrInvalid);
+            ConsumeToken(Tokens.T_GLOBAL, x.Span.StartOrInvalid, x.Span);
             VisitElementList(x.VarList, Tokens.T_COMMA, ",");
-            ConsumeToken(Tokens.T_SEMI, ";", x.Span.End - 1);
+            ConsumeToken(Tokens.T_SEMI, ";", x.Span.End - 1, x.Span);
         }
 
         public override void VisitGotoStmt(GotoStmt x)
         {
-            ConsumeToken(Tokens.T_GOTO, "goto", x.Span.StartOrInvalid);
-            ConsumeToken(Tokens.T_STRING, x.LabelName.Name.Value);
-            ConsumeToken(Tokens.T_SEMI, ";", x.Span.End - 1);
+            ConsumeToken(Tokens.T_GOTO, "goto", x.Span.StartOrInvalid, x.Span);
+            ConsumeToken(Tokens.T_STRING, x.LabelName.Name.Value, x.LabelName.Span.StartOrInvalid, x.Span);
+            ConsumeToken(Tokens.T_SEMI, ";", x.Span.End - 1, x.Span);
         }
 
         public override void VisitHaltCompiler(HaltCompiler x)
         {
-            ConsumeToken(Tokens.T_HALT_COMPILER, "__halt_compiler", x.Span.StartOrInvalid);
-            ConsumeToken(Tokens.T_LPAREN, "(");
-            ConsumeToken(Tokens.T_RPAREN, ")");
-            ConsumeToken(Tokens.T_SEMI, ";");
+            ConsumeToken(Tokens.T_HALT_COMPILER, "__halt_compiler", x.Span.StartOrInvalid, x.Span);
+            ConsumeToken(Tokens.T_LPAREN, "(", x.Span.End - 3, x.Span);
+            ConsumeToken(Tokens.T_RPAREN, ")", x.Span.End - 2, x.Span);
+            ConsumeToken(Tokens.T_SEMI, ";", x.Span.End - 1, x.Span);
         }
 
         public override void VisitIfStmt(IfStmt x)
@@ -619,22 +622,22 @@ namespace Devsense.PHP.Syntax
                 {
                     if (i == 0)
                     {
-                        ConsumeToken(Tokens.T_IF, cond.Span.StartOrInvalid);
+                        ConsumeToken(Tokens.T_IF, cond.Span.StartOrInvalid, x.Span);
                     }
                     else if (cond.Condition != null)
                     {
-                        ConsumeToken(Tokens.T_ELSEIF, cond.Span.StartOrInvalid);
+                        ConsumeToken(Tokens.T_ELSEIF, cond.Span.StartOrInvalid, x.Span);
                     }
                     else
                     {
-                        ConsumeToken(Tokens.T_ELSE, cond.Span.StartOrInvalid);
+                        ConsumeToken(Tokens.T_ELSE, cond.Span.StartOrInvalid, x.Span);
                     }
 
                     if (cond.Condition != null)
                     {
-                        ConsumeToken(Tokens.T_LPAREN, "(");
+                        ConsumeToken(Tokens.T_LPAREN, "(", cond.Condition.Span.StartOrInvalid - 1, x.Span);
                         VisitElement(cond.Condition);
-                        ConsumeToken(Tokens.T_RPAREN, ")");
+                        ConsumeToken(Tokens.T_RPAREN, ")", cond.Condition.Span.End, x.Span);
                     }
 
                     // TODO: ":" ?
@@ -654,7 +657,7 @@ namespace Devsense.PHP.Syntax
             }
 
             // ++/--
-            ConsumeToken(x.Inc ? Tokens.T_INC : Tokens.T_DEC, x.Inc ? "++" : "--");
+            ConsumeToken(x.Inc ? Tokens.T_INC : Tokens.T_DEC, x.Inc ? "++" : "--", x.Post ? x.Span.End - 2 : x.Span.StartOrInvalid, x.Span);
 
             if (x.Post == false)
             {
@@ -667,16 +670,16 @@ namespace Devsense.PHP.Syntax
             switch (x.InclusionType)
             {
                 case InclusionTypes.Include:
-                    ConsumeToken(Tokens.T_INCLUDE, "include", x.Span.StartOrInvalid);
+                    ConsumeToken(Tokens.T_INCLUDE, "include", x.Span.StartOrInvalid, x.Span);
                     break;
                 case InclusionTypes.IncludeOnce:
-                    ConsumeToken(Tokens.T_INCLUDE_ONCE, "include_once", x.Span.StartOrInvalid);
+                    ConsumeToken(Tokens.T_INCLUDE_ONCE, "include_once", x.Span.StartOrInvalid, x.Span);
                     break;
                 case InclusionTypes.Require:
-                    ConsumeToken(Tokens.T_REQUIRE, "require", x.Span.StartOrInvalid);
+                    ConsumeToken(Tokens.T_REQUIRE, "require", x.Span.StartOrInvalid, x.Span);
                     break;
                 case InclusionTypes.RequireOnce:
-                    ConsumeToken(Tokens.T_REQUIRE_ONCE, "require_once", x.Span.StartOrInvalid);
+                    ConsumeToken(Tokens.T_REQUIRE_ONCE, "require_once", x.Span.StartOrInvalid, x.Span);
                     break;
 
                 default:
@@ -695,51 +698,57 @@ namespace Devsense.PHP.Syntax
 
         public virtual void VisitVariableName(VariableName name, Span span, bool dollar)
         {
-            ConsumeToken(Tokens.T_VARIABLE, (dollar ? "$" : string.Empty) + name.Value, span.StartOrInvalid);
+            ConsumeToken(Tokens.T_VARIABLE, (dollar ? "$" : string.Empty) + name.Value, span.StartOrInvalid, span);
         }
 
-        public virtual void VisitQualifiedName(QualifiedName qname, int position)
+        public virtual void VisitQualifiedName(QualifiedName qname, int position, Span originalSpan)
         {
             if (qname.IsFullyQualifiedName)
             {
-                ConsumeToken(Tokens.T_NS_SEPARATOR, QualifiedName.Separator.ToString(), position);
+                ConsumeToken(Tokens.T_NS_SEPARATOR, QualifiedName.Separator.ToString(), position, originalSpan);
             }
 
             var ns = qname.Namespaces;
             for (int i = 0; i < ns.Length; i++)
             {
-                ConsumeToken(Tokens.T_STRING, ns[i].Value, position);
-                ConsumeToken(Tokens.T_NS_SEPARATOR, QualifiedName.Separator.ToString(), position);
+                ConsumeToken(Tokens.T_STRING, ns[i].Value, position, originalSpan);
+                ConsumeToken(Tokens.T_NS_SEPARATOR, QualifiedName.Separator.ToString(), position, originalSpan);
             }
 
-            ConsumeToken(Tokens.T_STRING, qname.Name.Value, position);
+            ConsumeToken(Tokens.T_STRING, qname.Name.Value, position, originalSpan);
         }
 
         public virtual void VisitCallSignature(CallSignature signature)
         {
-            ConsumeToken(Tokens.T_LPAREN, "(");
+            var first = signature.Parameters.Length > 0 ? signature.Parameters[0] : null;
+            var last = signature.Parameters.Length > 0 ? signature.Parameters[signature.Parameters.Length - 1] : null;
+            var span = signature.Parameters.Length > 0 ? Span.FromBounds(first.Span.Start - 1, last.Span.End + 1) : Span.Invalid;
+            ConsumeToken(Tokens.T_LPAREN, "(", span.StartOrInvalid, span);
             VisitElementList(signature.Parameters, Tokens.T_COMMA, ",");
-            ConsumeToken(Tokens.T_RPAREN, ")");
+            ConsumeToken(Tokens.T_RPAREN, ")", span.End - 1, span);
         }
 
         public virtual void VisitSignature(Signature signature)
         {
-            ConsumeToken(Tokens.T_LPAREN, "(");
+            var first = signature.FormalParams.Length > 0 ? signature.FormalParams[0] : null;
+            var last = signature.FormalParams.Length > 0 ? signature.FormalParams[signature.FormalParams.Length - 1] : null;
+            var span = signature.FormalParams.Length > 0 ? Span.FromBounds(first.Span.Start - 1, last.Span.End + 1) : Span.Invalid;
+            ConsumeToken(Tokens.T_LPAREN, "(", span.StartOrInvalid, span);
             VisitElementList(signature.FormalParams, Tokens.T_COMMA, ",");
-            ConsumeToken(Tokens.T_RPAREN, ")");
+            ConsumeToken(Tokens.T_RPAREN, ")", span.End - 1, span);
         }
 
         public override void VisitIndirectStFldUse(IndirectStFldUse x)
         {
             VisitElement(x.TargetType);
-            ConsumeToken(Tokens.T_DOUBLE_COLON, "::");
+            ConsumeToken(Tokens.T_DOUBLE_COLON, "::", x.TargetType.Span.End, x.Span);
             VisitElement(x.FieldNameExpr);  // TODO: { ... } ?
         }
 
         public override void VisitIndirectStMtdCall(IndirectStMtdCall x)
         {
             VisitElement(x.TargetType);
-            ConsumeToken(Tokens.T_DOUBLE_COLON, "::");
+            ConsumeToken(Tokens.T_DOUBLE_COLON, "::", x.TargetType.Span.End, x.Span);
             VisitElement(x.MethodNameExpression);  // TODO: { ... } ?
             VisitCallSignature(x.CallSignature);
         }
@@ -758,25 +767,25 @@ namespace Devsense.PHP.Syntax
         public override void VisitInstanceOfEx(InstanceOfEx x)
         {
             VisitElement(x.Expression);
-            ConsumeToken(Tokens.T_INSTANCEOF, "instanceof");
+            ConsumeToken(Tokens.T_INSTANCEOF, "instanceof", x.Expression.Span.End, x.Span);
             VisitElement(x.ClassNameRef);
         }
 
         public override void VisitIssetEx(IssetEx x)
         {
-            ConsumeToken(Tokens.T_ISSET, "isset", x.Span.StartOrInvalid);
-            ConsumeToken(Tokens.T_LPAREN, "(");
+            ConsumeToken(Tokens.T_ISSET, "isset", x.Span.StartOrInvalid, x.Span);
+            ConsumeToken(Tokens.T_LPAREN, "(", x.Span.StartOrInvalid + 5, x.Span);
             VisitElementList(x.VarList, Tokens.T_COMMA, ",");
-            ConsumeToken(Tokens.T_RPAREN, ")");
+            ConsumeToken(Tokens.T_RPAREN, ")", x.Span.End - 1, x.Span);
         }
 
         public override void VisitItemUse(ItemUse x)
         {
             VisitIsMemberOf(x.IsMemberOf);
             VisitElement(x.Array);
-            ConsumeToken(Tokens.T_LBRACKET, "[");
+            ConsumeToken(Tokens.T_LBRACKET, "[", x.Index.Span.StartOrInvalid - 1, x.Span);
             VisitElement(x.Index);
-            ConsumeToken(Tokens.T_RBRACKET, "]");
+            ConsumeToken(Tokens.T_RBRACKET, "]", x.Span.End - 1, x.Span);
         }
 
         public virtual void VisitIsMemberOf(Expression isMemberOf)
@@ -784,7 +793,7 @@ namespace Devsense.PHP.Syntax
             if (isMemberOf != null)
             {
                 VisitElement(isMemberOf);
-                ConsumeToken(Tokens.T_OBJECT_OPERATOR, "->");
+                ConsumeToken(Tokens.T_OBJECT_OPERATOR, "->", isMemberOf.Span.End, isMemberOf.Span);
             }
         }
 
@@ -793,25 +802,25 @@ namespace Devsense.PHP.Syntax
             switch (x.Type)
             {
                 case JumpStmt.Types.Return:
-                    ConsumeToken(Tokens.T_RETURN, "return", x.Span.StartOrInvalid);
+                    ConsumeToken(Tokens.T_RETURN, "return", x.Span.StartOrInvalid, x.Span);
                     break;
                 case JumpStmt.Types.Continue:
-                    ConsumeToken(Tokens.T_CONTINUE, "continue", x.Span.StartOrInvalid);
+                    ConsumeToken(Tokens.T_CONTINUE, "continue", x.Span.StartOrInvalid, x.Span);
                     break;
                 case JumpStmt.Types.Break:
-                    ConsumeToken(Tokens.T_BREAK, "break", x.Span.StartOrInvalid);
+                    ConsumeToken(Tokens.T_BREAK, "break", x.Span.StartOrInvalid, x.Span);
                     break;
             }
 
             VisitElement(x.Expression);
 
-            ConsumeToken(Tokens.T_SEMI, ";", x.Span.End - 1);
+            ConsumeToken(Tokens.T_SEMI, ";", x.Span.End - 1, x.Span);
         }
 
         public override void VisitLabelStmt(LabelStmt x)
         {
-            ConsumeToken(Tokens.T_STRING, x.Name.Name.Value, x.Name.Span.StartOrInvalid);
-            ConsumeToken(Tokens.T_COLON, ":", x.Span.End - 1);
+            ConsumeToken(Tokens.T_STRING, x.Name.Name.Value, x.Name.Span.StartOrInvalid, x.Span);
+            ConsumeToken(Tokens.T_COLON, ":", x.Span.End - 1, x.Span);
         }
 
         public override void VisitLambdaFunctionExpr(LambdaFunctionExpr x)
@@ -823,15 +832,21 @@ namespace Devsense.PHP.Syntax
 
         public override void VisitListEx(ListEx x)
         {
-            ConsumeToken(Tokens.T_LIST, "list", x.Span.StartOrInvalid);
-            ConsumeToken(Tokens.T_LPAREN, "(");
+            ConsumeToken(Tokens.T_LIST, "list", x.Span.StartOrInvalid, x.Span);
+            ConsumeToken(Tokens.T_LPAREN, "(", x.Span.StartOrInvalid + 4, x.Span);
             VisitElementList(x.Items, VisitArrayItem, Tokens.T_COMMA, ",");
-            ConsumeToken(Tokens.T_RPAREN, ")", x.Span.End - 1);
+            ConsumeToken(Tokens.T_RPAREN, ")", x.Span.End - 1, x.Span);
         }
 
         protected virtual void VisitElementList<TElement>(IList<TElement> list, Tokens separatorToken, string separatorTokenText) where TElement : LangElement
         {
-            VisitElementList(list, VisitElement, separatorToken, separatorTokenText);
+            Debug.Assert(list != null, nameof(list));
+
+            for (int i = 0; i < list.Count; i++)
+            {
+                if (i != 0) ConsumeToken(separatorToken, separatorTokenText, list[i - 1].Span.End, list[i].Span);
+                VisitElement(list[i]);
+            }
         }
 
         protected virtual void VisitElementList<TElement>(IList<TElement> list, Action<TElement> action, Tokens separatorToken, string separatorTokenText)
@@ -841,7 +856,7 @@ namespace Devsense.PHP.Syntax
 
             for (int i = 0; i < list.Count; i++)
             {
-                if (i != 0) ConsumeToken(separatorToken, separatorTokenText);
+                if (i != 0) ConsumeToken(separatorToken, separatorTokenText, -1, Span.Invalid);
                 action(list[i]);
             }
         }
@@ -875,17 +890,17 @@ namespace Devsense.PHP.Syntax
 
         public override void VisitNamespaceDecl(NamespaceDecl x)
         {
-            ConsumeToken(Tokens.T_NAMESPACE, "namespace", x.Span.StartOrInvalid);
+            ConsumeToken(Tokens.T_NAMESPACE, "namespace", x.Span.StartOrInvalid, x.Span);
 
             if (x.QualifiedName.HasValue)
             {
-                VisitQualifiedName(x.QualifiedName.QualifiedName.WithFullyQualified(false), x.Span.StartOrInvalid);
+                VisitQualifiedName(x.QualifiedName.QualifiedName.WithFullyQualified(false), x.Span.StartOrInvalid, x.Span);
             }
 
             if (x.IsSimpleSyntax)
             {
                 // namespace QNAME; BODY
-                ConsumeToken(Tokens.T_SEMI, ";");
+                ConsumeToken(Tokens.T_SEMI, ";", x.Span.End - 1, x.Span);
                 VisitList(x.Body.Statements);
             }
             else
@@ -898,14 +913,14 @@ namespace Devsense.PHP.Syntax
 
         public override void VisitNewEx(NewEx x)
         {
-            ConsumeToken(Tokens.T_NEW, "new");
+            ConsumeToken(Tokens.T_NEW, "new", x.Span.StartOrInvalid, x.Span);
             VisitElement(x.ClassNameRef);
             VisitCallSignature(x.CallSignature);
         }
 
         public override void VisitNullableTypeRef(NullableTypeRef x)
         {
-            ConsumeToken(Tokens.T_QUESTION, "?");
+            ConsumeToken(Tokens.T_QUESTION, "?", x.Span.StartOrInvalid, x.Span);
             VisitElement(x.TargetType);
         }
 
@@ -926,17 +941,17 @@ namespace Devsense.PHP.Syntax
 
         public override void VisitPrimitiveTypeRef(PrimitiveTypeRef x)
         {
-            VisitQualifiedName(x.QualifiedName.Value, x.Span.StartOrInvalid);
+            VisitQualifiedName(x.QualifiedName.Value, x.Span.StartOrInvalid, x.Span);
         }
 
         public override void VisitPseudoClassConstUse(PseudoClassConstUse x)
         {
             VisitElement(x.TargetType);
-            ConsumeToken(Tokens.T_DOUBLE_COLON, "::");
+            ConsumeToken(Tokens.T_DOUBLE_COLON, "::", x.TargetType.Span.End, x.Span);
             switch (x.Type)
             {
                 case PseudoClassConstUse.Types.Class:
-                    ConsumeToken(Tokens.T_CLASS, "class", x.NamePosition.StartOrInvalid);
+                    ConsumeToken(Tokens.T_CLASS, "class", x.NamePosition.StartOrInvalid, x.Span);
                     break;
                 default:
                     throw new ArgumentException();
@@ -945,15 +960,15 @@ namespace Devsense.PHP.Syntax
 
         public override void VisitPseudoConstUse(PseudoConstUse x)
         {
-            ConsumeToken(TokenFacts.GetPseudoConstUseToken(x.Type), x.Span.StartOrInvalid);
+            ConsumeToken(TokenFacts.GetPseudoConstUseToken(x.Type), x.Span.StartOrInvalid, x.Span);
         }
 
         public override void VisitRefAssignEx(RefAssignEx x)
         {
             // L =& R
             VisitElement(x.LValue);
-            ConsumeToken(Tokens.T_EQ, "=");
-            ConsumeToken(Tokens.T_AMP, "&");
+            ConsumeToken(Tokens.T_EQ, "=", x.LValue.Span.End, x.Span);
+            ConsumeToken(Tokens.T_AMP, "&", x.LValue.Span.End + 1, x.Span);
             VisitElement(x.RValue);
         }
 
@@ -964,22 +979,22 @@ namespace Devsense.PHP.Syntax
 
         public override void VisitReservedTypeRef(ReservedTypeRef x)
         {
-            VisitQualifiedName(x.QualifiedName.Value, x.Span.StartOrInvalid);
+            VisitQualifiedName(x.QualifiedName.Value, x.Span.StartOrInvalid, x.Span);
         }
 
         public override void VisitShellEx(ShellEx x)
         {
-            ConsumeToken(Tokens.T_BACKQUOTE, x.Span.StartOrInvalid);
+            ConsumeToken(Tokens.T_BACKQUOTE, x.Span.StartOrInvalid, x.Span);
             // content
-            ConsumeToken(Tokens.T_BACKQUOTE, x.Span.End - 1);
+            ConsumeToken(Tokens.T_BACKQUOTE, x.Span.End - 1, x.Span);
             throw new NotImplementedException();
         }
 
         public override void VisitStaticStmt(StaticStmt x)
         {
-            ConsumeToken(Tokens.T_STATIC, "static", x.Span.StartOrInvalid);
+            ConsumeToken(Tokens.T_STATIC, "static", x.Span.StartOrInvalid, x.Span);
             VisitElementList(x.StVarList, Tokens.T_COMMA, ",");
-            ConsumeToken(Tokens.T_SEMI, ";", x.Span.End - 1);
+            ConsumeToken(Tokens.T_SEMI, ";", x.Span.End - 1, x.Span);
         }
 
         public override void VisitStaticVarDecl(StaticVarDecl x)
@@ -988,7 +1003,7 @@ namespace Devsense.PHP.Syntax
 
             if (x.Initializer != null)
             {
-                ConsumeToken(Tokens.T_EQ, "=");
+                ConsumeToken(Tokens.T_EQ, "=", x.Initializer.Span.StartOrInvalid - 1, x.Span);
                 VisitElement(x.Initializer);
             }
         }
@@ -1001,9 +1016,9 @@ namespace Devsense.PHP.Syntax
         public override void VisitStringLiteralDereferenceEx(StringLiteralDereferenceEx x)
         {
             VisitElement(x.StringExpr);
-            ConsumeToken(Tokens.T_LBRACKET, "[");
+            ConsumeToken(Tokens.T_LBRACKET, "[", x.KeyExpr.Span.StartOrInvalid - 1, x.Span);
             VisitElement(x.KeyExpr);
-            ConsumeToken(Tokens.T_RBRACE, "]");
+            ConsumeToken(Tokens.T_RBRACE, "]", x.KeyExpr.Span.End, x.Span);
         }
 
         public sealed override void VisitSwitchItem(SwitchItem x)
@@ -1014,22 +1029,22 @@ namespace Devsense.PHP.Syntax
         public override void VisitSwitchStmt(SwitchStmt x)
         {
             // switch(VALUE){CASES}
-            ConsumeToken(Tokens.T_SWITCH, "switch", x.Span.StartOrInvalid);
+            ConsumeToken(Tokens.T_SWITCH, "switch", x.Span.StartOrInvalid, x.Span);
             // TODO: ENDSWITCH or { }
-            ConsumeToken(Tokens.T_LPAREN, "(");
+            ConsumeToken(Tokens.T_LPAREN, "(", x.SwitchValue.Span.StartOrInvalid - 1, x.Span);
             VisitElement(x.SwitchValue);
-            ConsumeToken(Tokens.T_RPAREN, ")");
-            ConsumeToken(Tokens.T_LBRACE, "{");
+            ConsumeToken(Tokens.T_RPAREN, ")", x.SwitchValue.Span.End, x.Span);
+            ConsumeToken(Tokens.T_LBRACE, "{", x.SwitchValue.Span.End + 1, x.Span);
             VisitList(x.SwitchItems);
-            ConsumeToken(Tokens.T_RBRACE, "}");
+            ConsumeToken(Tokens.T_RBRACE, "}", x.Span.End - 1, x.Span);
         }
 
         public override void VisitThrowStmt(ThrowStmt x)
         {
             // throw EXPR;
-            ConsumeToken(Tokens.T_THROW, "throw", x.Span.StartOrInvalid);
+            ConsumeToken(Tokens.T_THROW, "throw", x.Span.StartOrInvalid, x.Span);
             VisitElement(x.Expression);
-            ConsumeToken(Tokens.T_SEMI, ";", x.Span.End - 1);
+            ConsumeToken(Tokens.T_SEMI, ";", x.Span.End - 1, x.Span);
         }
 
         public override void VisitTraitAdaptationAlias(TraitsUse.TraitAdaptationAlias x)
@@ -1061,7 +1076,7 @@ namespace Devsense.PHP.Syntax
         {
             using (new ScopeHelper(this, x))
             {
-                ConsumeToken(Tokens.T_TRY, "try", x.Span.StartOrInvalid);
+                ConsumeToken(Tokens.T_TRY, "try", x.Span.StartOrInvalid, x.Span);
                 VisitElement(x.Body);
                 VisitList(x.Catches);
                 VisitElement(x.FinallyItem);
@@ -1074,19 +1089,19 @@ namespace Devsense.PHP.Syntax
             {
                 // final class|interface|trait [NAME] extends ... implements ... { MEMBERS }
                 _composer.ConsumeModifiers(x, x.MemberAttributes);
-                if ((x.MemberAttributes & PhpMemberAttributes.Interface) != 0) ConsumeToken(Tokens.T_INTERFACE, "interface");
-                else if ((x.MemberAttributes & PhpMemberAttributes.Trait) != 0) ConsumeToken(Tokens.T_TRAIT, "trait");
-                else ConsumeToken(Tokens.T_CLASS, "class");
+                if ((x.MemberAttributes & PhpMemberAttributes.Interface) != 0) ConsumeToken(Tokens.T_INTERFACE, "interface", x.Span.StartOrInvalid, x.Span);
+                else if ((x.MemberAttributes & PhpMemberAttributes.Trait) != 0) ConsumeToken(Tokens.T_TRAIT, "trait", x.Span.StartOrInvalid, x.Span);
+                else ConsumeToken(Tokens.T_CLASS, "class", x.Span.StartOrInvalid, x.Span);
 
                 if (x.Name.HasValue)
                 {
-                    ConsumeToken(Tokens.T_STRING, x.Name.Name.Value, x.Name.Span.StartOrInvalid);
+                    ConsumeToken(Tokens.T_STRING, x.Name.Name.Value, x.Name.Span.StartOrInvalid, x.Span);
                 }
 
                 if (x.BaseClass != null)
                 {
                     // extends
-                    ConsumeToken(Tokens.T_EXTENDS, "extends");
+                    ConsumeToken(Tokens.T_EXTENDS, "extends", x.BaseClass.Span.StartOrInvalid - 8, x.Span);
                     VisitElement((TypeRef)x.BaseClass);
                 }
 
@@ -1095,20 +1110,20 @@ namespace Devsense.PHP.Syntax
                     // implements|extends
                     if ((x.MemberAttributes & PhpMemberAttributes.Interface) == 0)
                     {
-                        ConsumeToken(Tokens.T_IMPLEMENTS);
+                        ConsumeToken(Tokens.T_IMPLEMENTS, x.ImplementsList[0].Span.StartOrInvalid - 11, x.Span);
                     }
                     else
                     {
-                        ConsumeToken(Tokens.T_EXTENDS);
+                        ConsumeToken(Tokens.T_EXTENDS, x.ImplementsList[0].Span.StartOrInvalid - 8, x.Span);
                     }
 
                     VisitElementList(x.ImplementsList, VisitNamedTypeRef, Tokens.T_COMMA, ",");
                 }
 
 
-                ConsumeToken(Tokens.T_LBRACE, "{", x.BodySpan.StartOrInvalid);
+                ConsumeToken(Tokens.T_LBRACE, "{", x.BodySpan.StartOrInvalid, x.Span);
                 VisitList(x.Members);
-                ConsumeToken(Tokens.T_RBRACE, "}", x.BodySpan.End - 1);
+                ConsumeToken(Tokens.T_RBRACE, "}", x.BodySpan.End - 1, x.Span);
             }
         }
 
@@ -1119,30 +1134,30 @@ namespace Devsense.PHP.Syntax
 
         public override void VisitUnaryEx(UnaryEx x)
         {
-            ConsumeToken(TokenFacts.GetOperationToken(x.Operation), x.OperationPosition);
+            ConsumeToken(TokenFacts.GetOperationToken(x.Operation), x.OperationPosition, x.Span);
             VisitElement(x.Expr);
         }
 
         public override void VisitUnsetStmt(UnsetStmt x)
         {
-            ConsumeToken(Tokens.T_UNSET, "unset", x.Span.StartOrInvalid);
-            ConsumeToken(Tokens.T_LPAREN, "(");
+            ConsumeToken(Tokens.T_UNSET, "unset", x.Span.StartOrInvalid, x.Span);
+            ConsumeToken(Tokens.T_LPAREN, "(", x.Span.StartOrInvalid + 5, x.Span);
             VisitElementList(x.VarList, Tokens.T_COMMA, ",");
-            ConsumeToken(Tokens.T_RPAREN, ")");
-            ConsumeToken(Tokens.T_SEMI, ";", x.Span.End - 1);
+            ConsumeToken(Tokens.T_RPAREN, ")", x.Span.End - 2, x.Span);
+            ConsumeToken(Tokens.T_SEMI, ";", x.Span.End - 1, x.Span);
         }
 
         public override void VisitUseStatement(UseStatement x)
         {
-            ConsumeToken(Tokens.T_USE, "use", x.Span.StartOrInvalid);
+            ConsumeToken(Tokens.T_USE, "use", x.Span.StartOrInvalid, x.Span);
             switch (x.Kind)
             {
-                case AliasKind.Constant: ConsumeToken(Tokens.T_CONST, "const"); break;
-                case AliasKind.Function: ConsumeToken(Tokens.T_FUNCTION, "function"); break;
+                case AliasKind.Constant: ConsumeToken(Tokens.T_CONST, "const", x.Span.StartOrInvalid + 4, x.Span); break;
+                case AliasKind.Function: ConsumeToken(Tokens.T_FUNCTION, "function", x.Span.StartOrInvalid + 4, x.Span); break;
             }
 
             VisitElementList(x.Uses, VisitUse, Tokens.T_COMMA, ",");
-            ConsumeToken(Tokens.T_SEMI, ";", x.Span.End - 1);
+            ConsumeToken(Tokens.T_SEMI, ";", x.Span.End - 1, x.Span);
         }
 
         protected virtual void VisitUse(UseBase use)
@@ -1154,7 +1169,7 @@ namespace Devsense.PHP.Syntax
         {
             // L = R
             VisitElement(x.LValue);
-            ConsumeToken(Tokens.T_EQ, "=");
+            ConsumeToken(Tokens.T_EQ, "=", x.LValue.Span.End, x.Span);
             VisitElement(x.RValue);
         }
 
@@ -1172,22 +1187,22 @@ namespace Devsense.PHP.Syntax
         {
             using (new ScopeHelper(this, x))
             {
-                ConsumeToken(Tokens.T_WHILE, "while", x.Span.StartOrInvalid);
-                ConsumeToken(Tokens.T_LPAREN, "(");
+                ConsumeToken(Tokens.T_WHILE, "while", x.Span.StartOrInvalid, x.Span);
+                ConsumeToken(Tokens.T_LPAREN, "(", x.Span.StartOrInvalid + 5, x.Span);
                 VisitElement(x.CondExpr);
-                ConsumeToken(Tokens.T_RPAREN, ")");
+                ConsumeToken(Tokens.T_RPAREN, ")", x.Body.Span.StartOrInvalid - 1, x.Span);
                 VisitElement(x.Body);
             }
         }
 
         public override void VisitYieldEx(YieldEx x)
         {
-            ConsumeToken(Tokens.T_YIELD, "yield", x.Span.StartOrInvalid);
+            ConsumeToken(Tokens.T_YIELD, "yield", x.Span.StartOrInvalid, x.Span);
 
             if (x.KeyExpr != null)
             {
                 VisitElement(x.KeyExpr);
-                ConsumeToken(Tokens.T_DOUBLE_ARROW);
+                ConsumeToken(Tokens.T_DOUBLE_ARROW, x.KeyExpr.Span.End, x.Span);
             }
 
             VisitElement(x.ValueExpr);
@@ -1195,7 +1210,7 @@ namespace Devsense.PHP.Syntax
 
         public override void VisitYieldFromEx(YieldFromEx x)
         {
-            ConsumeToken(Tokens.T_YIELD_FROM, x.Span.StartOrInvalid);
+            ConsumeToken(Tokens.T_YIELD_FROM, x.Span.StartOrInvalid, x.Span);
             VisitElement(x.ValueExpr);
         }
 
