@@ -720,22 +720,16 @@ namespace Devsense.PHP.Syntax
 
         public virtual void VisitCallSignature(CallSignature signature)
         {
-            var first = signature.Parameters.Length > 0 ? signature.Parameters[0] : null;
-            var last = signature.Parameters.Length > 0 ? signature.Parameters[signature.Parameters.Length - 1] : null;
-            var span = signature.Parameters.Length > 0 ? Span.FromBounds(first.Span.Start - 1, last.Span.End + 1) : Span.Invalid;
-            ConsumeToken(Tokens.T_LPAREN, "(", span.StartOrInvalid, span);
+            ConsumeToken(Tokens.T_LPAREN, "(", -1, Span.Invalid);
             VisitElementList(signature.Parameters, Tokens.T_COMMA, ",");
-            ConsumeToken(Tokens.T_RPAREN, ")", span.End - 1, span);
+            ConsumeToken(Tokens.T_RPAREN, ")", -1, Span.Invalid);
         }
 
         public virtual void VisitSignature(Signature signature)
         {
-            var first = signature.FormalParams.Length > 0 ? signature.FormalParams[0] : null;
-            var last = signature.FormalParams.Length > 0 ? signature.FormalParams[signature.FormalParams.Length - 1] : null;
-            var span = signature.FormalParams.Length > 0 ? Span.FromBounds(first.Span.Start - 1, last.Span.End + 1) : Span.Invalid;
-            ConsumeToken(Tokens.T_LPAREN, "(", span.StartOrInvalid, span);
+            ConsumeToken(Tokens.T_LPAREN, "(", -1, Span.Invalid);
             VisitElementList(signature.FormalParams, Tokens.T_COMMA, ",");
-            ConsumeToken(Tokens.T_RPAREN, ")", span.End - 1, span);
+            ConsumeToken(Tokens.T_RPAREN, ")", -1, Span.Invalid);
         }
 
         public override void VisitIndirectStFldUse(IndirectStFldUse x)
