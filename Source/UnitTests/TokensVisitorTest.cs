@@ -32,7 +32,7 @@ namespace UnitTests
 
             var original = testparts[0].Replace('\t', ' ').TrimEnd(' ', '\t', '\n', '\r');
             var sourceUnit = new TestSourceUnit(original, path, Encoding.UTF8, Lexer.LexicalStates.INITIAL,
-                LanguageFeatures.Php71Set | LanguageFeatures.FullSpanInformation);
+                LanguageFeatures.Php71Set | LanguageFeatures.FullInformation);
             var factory = new BasicNodesFactory(sourceUnit);
             var errors = new TestErrorSink();
 
