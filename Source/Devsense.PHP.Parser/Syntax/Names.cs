@@ -178,6 +178,16 @@ namespace Devsense.PHP.Syntax
             get { return IsParentClassName || IsSelfClassName || IsStaticClassName; }
         }
 
+        /// <summary>
+        /// <c>true</c> if the name was generated for the 
+        /// <see cref="Devsense.PHP.Syntax.Ast.AnonymousTypeDecl"/>, 
+        /// <c>false</c> otherwise.
+        /// </summary>
+        public bool IsGenerated
+        {
+            get { return value.StartsWith(AnonymousClassName.Value); }
+        }
+
         #endregion
 
         /// <summary>

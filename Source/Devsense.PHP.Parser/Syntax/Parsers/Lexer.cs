@@ -363,6 +363,7 @@ namespace Devsense.PHP.Syntax
             Debug.Assert(text.Length == 0 || text[0] == '"');
             int pos = 1;
             char c;
+            result.Append('"');
             while (pos < text.Length)
             {
                 c = text[pos++];
@@ -457,12 +458,12 @@ namespace Devsense.PHP.Syntax
                 }
                 else
                 {
+                    result.Append(c);
                     if (c == '"')
                         break;
-                    result.Append(c);
                 }
             }
-
+            
             return result.Result;
         }
 
@@ -597,6 +598,7 @@ namespace Devsense.PHP.Syntax
 
             int pos = 1;
             char c;
+            result.Append('\'');
             while (pos < text.Length)
             {
                 c = text[pos++];
@@ -622,6 +624,7 @@ namespace Devsense.PHP.Syntax
                 }
             }
 
+            result.Append('\'');
             return result.Result;
         }
 

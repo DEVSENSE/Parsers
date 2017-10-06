@@ -65,21 +65,21 @@ namespace Devsense.PHP.Syntax.Ast
         /// <summary>
         /// Gets value indicating the lambda function is declared "static" i.e. <c>$this</c> cannot be bound in this scope.
         /// </summary>
-        public bool IsStatic { get { return this.isStatic; } }
-        private bool isStatic;
+        public PhpMemberAttributes Modifiers { get { return this.modifiers; } }
+        private PhpMemberAttributes modifiers;
 
         #region Construction
 
         public LambdaFunctionExpr(
             Text.Span span, Text.Span headingSpan,
-            Scope scope, bool aliasReturn, IList<FormalParam>/*!*/ formalParams, 
+            Scope scope, bool aliasReturn, IList<FormalParam>/*!*/ formalParams,
             Text.Span paramSpan, IList<FormalParam> useParams,
-            BlockStmt/*!*/ body, TypeRef returnType, bool isStatic)
+            BlockStmt/*!*/ body, TypeRef returnType, PhpMemberAttributes modifiers)
             : base(span)
         {
             Debug.Assert(formalParams != null && body != null);
-            
-            this.signature = new Signature(aliasReturn, formalParams);
+
+            this.signature = new Signature(aliasReturn, formalParams, paramSpan);
             this.useParams = useParams;
             //this.typeSignature = new TypeSignature(genericParams);
             //this.attributes = new CustomAttributes(attributes);
@@ -87,7 +87,7 @@ namespace Devsense.PHP.Syntax.Ast
             this.headingSpan = headingSpan;
             this.parametersSpan = paramSpan;
             this.returnType = returnType;
-            this.isStatic = isStatic;
+            this.modifiers = modifiers;
         }
 
         #endregion

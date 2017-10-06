@@ -19,13 +19,13 @@ using System.Collections.Generic;
 
 namespace Devsense.PHP.Syntax.Ast
 {
-	#region FormalParam
+    #region FormalParam
 
-	/// <summary>
-	/// Represents a formal parameter definition.
-	/// </summary>
-	public sealed class FormalParam : LangElement
-	{
+    /// <summary>
+    /// Represents a formal parameter definition.
+    /// </summary>
+    public sealed class FormalParam : LangElement
+    {
         [Flags]
         public enum Flags
         {
@@ -40,20 +40,31 @@ namespace Devsense.PHP.Syntax.Ast
         /// </summary>
         private Flags _flags;
 
-		/// <summary>
-		/// Name of the argument.
-		/// </summary>
-		public VariableNameRef Name { get { return _name; } }
-		private VariableNameRef _name;
+        /// <summary>
+        /// Name of the argument.
+        /// </summary>
+        public VariableNameRef Name { get { return _name; } }
+        private VariableNameRef _name;
 
-		/// <summary>
-		/// Whether the parameter is &amp;-modified.
-		/// </summary>
+        /// <summary>
+        /// Position of the comma separator following the item, <c>-1</c> if not present.
+        /// </summary>
+        public int CommaPosition
+        {
+            get { return _commaOffset < 0 ? -1 : Span.Start + _commaOffset; }
+            set { _commaOffset = value < 0 ? (short)-1 : (short)(value - Span.Start); }
+        }
+        public bool IsCommaPresent => _commaOffset >= 0;
+        private short _commaOffset = -1;
+
+        /// <summary>
+        /// Whether the parameter is &amp;-modified.
+        /// </summary>
         public bool PassedByRef { get { return (_flags & Flags.IsByRef) != 0; } }
 
-		/// <summary>
-		/// Whether the parameter is an out-parameter. Set by applying the [Out] attribute.
-		/// </summary>
+        /// <summary>
+        /// Whether the parameter is an out-parameter. Set by applying the [Out] attribute.
+        /// </summary>
         public bool IsOut
         {
             get { return (_flags & Flags.IsOut) != 0; }
@@ -69,17 +80,24 @@ namespace Devsense.PHP.Syntax.Ast
         /// </summary>
         public bool IsVariadic { get { return (_flags & Flags.IsVariadic) != 0; } }
 
-		/// <summary>
-		/// Initial value expression. Can be <B>null</B>.
-		/// </summary>
+        /// <summary>
+        /// Initial value expression. Can be <B>null</B>.
+        /// </summary>
         public Expression InitValue { get { return _initValue; } internal set { _initValue = value; } }
-		private Expression _initValue;
+        private Expression _initValue;
+
+        /// <summary>
+        /// Comma separator following the parameter.
+        /// </summary>
+        public int AssignPosition { get { return Span.Start + _assignRelative; } set { _assignRelative = (short)(value - Span.Start); } }
+        public bool FollowsAssign => _assignRelative >= 0;
+        private short _assignRelative = -1;
 
         /// <summary>
         /// Either <see cref="TypeRef"/> or <B>null</B>.
         /// </summary>
         public TypeRef TypeHint { get { return _typeHint; } }
-		private TypeRef _typeHint;
+        private TypeRef _typeHint;
 
         /// <summary>
         /// Gets collection of CLR attributes annotating this statement.
@@ -93,22 +111,22 @@ namespace Devsense.PHP.Syntax.Ast
         #region Construction
 
         public FormalParam(Text.Span span, string/*!*/ name, Text.Span nameSpan, TypeRef typeHint, Flags flags,
-				Expression initValue, List<CustomAttribute> attributes)
+                Expression initValue, List<CustomAttribute> attributes)
             : base(span)
-		{
-			_name = new VariableNameRef(nameSpan, name);
-			_typeHint = typeHint;
+        {
+            _name = new VariableNameRef(nameSpan, name);
+            _typeHint = typeHint;
             _flags = flags;
-			_initValue = initValue;
+            _initValue = initValue;
             if (attributes != null && attributes.Count != 0)
             {
                 this.Attributes = new CustomAttributes(attributes);
             }
-		}
+        }
 
-		#endregion
+        #endregion
 
-		/// <summary>
+        /// <summary>
         /// Call the right Visit* method on the given Visitor object.
         /// </summary>
         /// <param name="visitor">Visitor to be called.</param>
@@ -116,46 +134,53 @@ namespace Devsense.PHP.Syntax.Ast
         {
             visitor.VisitFormalParam(this);
         }
-	}
+    }
 
-	#endregion
+    #endregion
 
-	#region Signature
+    #region Signature
 
     public struct Signature
-	{
-		public bool AliasReturn { get { return aliasReturn; } }
-		private readonly bool aliasReturn;
+    {
+        public bool AliasReturn { get { return aliasReturn; } }
+        private readonly bool aliasReturn;
 
-		public FormalParam[]/*!*/ FormalParams { get { return formalParams; } }
-		private readonly FormalParam[]/*!*/ formalParams;
+        public FormalParam[]/*!*/ FormalParams { get { return formalParams; } }
+        private readonly FormalParam[]/*!*/ formalParams;
 
-		public Signature(bool aliasReturn, IList<FormalParam>/*!*/ formalParams)
-		{
-			this.aliasReturn = aliasReturn;
-			this.formalParams = formalParams.AsArray();
-		}
-	}
+        /// <summary>
+        /// Signature position including the parentheses.
+        /// </summary>
+        public Text.Span Span { get { return _span; } }
+        private Text.Span _span;
 
-	#endregion
+        public Signature(bool aliasReturn, IList<FormalParam>/*!*/ formalParams, Text.Span position)
+        {
+            this.aliasReturn = aliasReturn;
+            this.formalParams = formalParams.AsArray();
+            _span = position;
+        }
+    }
 
-	#region FunctionDecl
+    #endregion
 
-	/// <summary>
-	/// Represents a function declaration.
-	/// </summary>
+    #region FunctionDecl
+
+    /// <summary>
+    /// Represents a function declaration.
+    /// </summary>
     public sealed class FunctionDecl : Statement
-	{ 
-		internal override bool IsDeclaration { get { return true; } }
+    {
+        internal override bool IsDeclaration { get { return true; } }
 
-		public NameRef Name { get { return name; } }
-		private readonly NameRef name;
+        public NameRef Name { get { return name; } }
+        private readonly NameRef name;
 
         public Signature Signature { get { return signature; } }
         private readonly Signature signature;
 
         public TypeSignature TypeSignature { get { return typeSignature; } }
-		private readonly TypeSignature typeSignature;
+        private readonly TypeSignature typeSignature;
 
         public BlockStmt/*!*/ Body { get { return body; } }
         private readonly BlockStmt/*!*/ body;
@@ -169,7 +194,7 @@ namespace Devsense.PHP.Syntax.Ast
         /// Gets function declaration attributes.
         /// </summary>
         public PhpMemberAttributes MemberAttributes { get; private set; }
-        
+
         /// <summary>
         /// Gets collection of CLR attributes annotating this statement.
         /// </summary>
@@ -191,30 +216,30 @@ namespace Devsense.PHP.Syntax.Ast
 
         public FunctionDecl(
             Text.Span span,
-			bool isConditional, PhpMemberAttributes memberAttributes, NameRef/*!*/ name,
-			bool aliasReturn, IList<FormalParam>/*!*/ formalParams, Text.Span paramsSpan, IList<FormalTypeParam>/*!*/ genericParams,
+            bool isConditional, PhpMemberAttributes memberAttributes, NameRef/*!*/ name,
+            bool aliasReturn, IList<FormalParam>/*!*/ formalParams, Text.Span paramsSpan, IList<FormalTypeParam>/*!*/ genericParams,
             BlockStmt/*!*/ body, List<CustomAttribute> attributes, TypeRef returnType)
-			: base(span)
-		{
-			Debug.Assert(genericParams != null && formalParams != null && body != null);
+            : base(span)
+        {
+            Debug.Assert(genericParams != null && formalParams != null && body != null);
 
-			this.name = name;
-			this.signature = new Signature(aliasReturn, formalParams);
-			this.typeSignature = new TypeSignature(genericParams);
+            this.name = name;
+            this.signature = new Signature(aliasReturn, formalParams, parametersSpan);
+            this.typeSignature = new TypeSignature(genericParams);
             if (attributes != null && attributes.Count != 0)
             {
                 this.Attributes = new CustomAttributes(attributes);
             }
-			this.body = body;
+            this.body = body;
             this.parametersSpan = paramsSpan;
             this.IsConditional = isConditional;
             this.MemberAttributes = memberAttributes;
             this.returnType = returnType;
-		}
+        }
 
-		#endregion
+        #endregion
 
-		/// <summary>
+        /// <summary>
         /// Call the right Visit* method on the given Visitor object.
         /// </summary>
         /// <param name="visitor">Visitor to be called.</param>
@@ -231,7 +256,7 @@ namespace Devsense.PHP.Syntax.Ast
             get { return this.GetPHPDoc(); }
             set { this.SetPHPDoc(value); }
         }
-	}
+    }
 
-	#endregion
+    #endregion
 }

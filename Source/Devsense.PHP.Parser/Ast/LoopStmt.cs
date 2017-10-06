@@ -38,11 +38,17 @@ namespace Devsense.PHP.Syntax.Ast
         public Expression CondExpr { get { return condExpr; } internal set { condExpr = value; } }
         private Expression condExpr;
 
+        /// <summary>
+        /// Position of the header parentheses.
+        /// </summary>
+        public Text.Span ConditionPosition { get { return _conditionPosition; } }
+        private Text.Span _conditionPosition;
+
         /// <summary>Body of loop</summary>
         public Statement/*!*/ Body { get { return body; } internal set { body = value; } }
         private Statement/*!*/ body;
 
-        public WhileStmt(Text.Span span, Type type, Expression/*!*/ condExpr, Statement/*!*/ body)
+        public WhileStmt(Text.Span span, Type type, Expression/*!*/ condExpr, Text.Span conditionSpan, Statement/*!*/ body)
             : base(span)
         {
             Debug.Assert(condExpr != null && body != null);
@@ -50,6 +56,7 @@ namespace Devsense.PHP.Syntax.Ast
             this.type = type;
             this.condExpr = condExpr;
             this.body = body;
+            this._conditionPosition = conditionSpan;
         }
 
         /// <summary>
@@ -85,9 +92,15 @@ namespace Devsense.PHP.Syntax.Ast
         /// <summary>Body of statement</summary>
         public Statement/*!*/ Body { get { return body; } internal set { body = value; } }
 
+        /// <summary>
+        /// Position of the header parentheses.
+        /// </summary>
+        public Text.Span ConditionPosition { get { return _conditionPosition; } }
+        private Text.Span _conditionPosition;
+
         public ForStmt(Text.Span p,
             IList<Expression>/*!*/ initExList, IList<Expression>/*!*/ condExList, IList<Expression>/*!*/ actionExList,
-            Statement/*!*/ body)
+            Text.Span conditionSpan,Statement/*!*/ body)
             : base(p)
         {
             Debug.Assert(initExList != null && condExList != null && actionExList != null && body != null);
@@ -96,6 +109,7 @@ namespace Devsense.PHP.Syntax.Ast
             this.condExList = condExList.AsArray();
             this.actionExList = actionExList.AsArray();
             this.body = body;
+            this._conditionPosition = conditionSpan;
         }
 
         /// <summary>
@@ -180,8 +194,14 @@ namespace Devsense.PHP.Syntax.Ast
         /// <summary>Body - statement in loop</summary>
         public Statement/*!*/ Body { get { return body; } internal set { body = value; } }
 
+        /// <summary>
+        /// Position of the header parentheses.
+        /// </summary>
+        public Text.Span ConditionPosition { get { return _conditionPosition; } }
+        private Text.Span _conditionPosition;
+
         public ForeachStmt(Text.Span span, Expression/*!*/ enumeree, ForeachVar key, ForeachVar/*!*/ value,
-          Statement/*!*/ body)
+          Text.Span conditionSpan, Statement/*!*/ body)
             : base(span)
         {
             Debug.Assert(enumeree != null && value != null && body != null);
@@ -190,6 +210,7 @@ namespace Devsense.PHP.Syntax.Ast
             this.keyVariable = key;
             this.valueVariable = value;
             this.body = body;
+            this._conditionPosition = conditionSpan;
         }
 
         /// <summary>

@@ -28,6 +28,12 @@ namespace Devsense.PHP.Syntax.Ast
         /// Gets internal value of literal.
         /// </summary>
         internal abstract object ValueObj { get; }
+        
+        /// <summary>
+        /// Identifier used to store the original value in <see cref="Literal"/> properties 
+        /// when <see cref="LanguageFeatures.FullInformation"/> is set.
+        /// </summary>
+        public const string OrigianlValueProperty = "OrigianlValueProperty";
 
         /// <summary>
         /// All available value formats for all literal types.

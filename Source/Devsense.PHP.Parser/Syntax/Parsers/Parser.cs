@@ -24,6 +24,22 @@ using Devsense.PHP.Errors;
 
 namespace Devsense.PHP.Syntax
 {
+    internal struct IfStatement
+    {
+        public readonly Span Span;
+        public readonly LangElement Condition;
+        public readonly Span ConditionSpan;
+        public readonly LangElement Body;
+
+        public IfStatement(Span span, LangElement condition, Span conditionSpan, LangElement body)
+        {
+            Span = span;
+            Condition = condition;
+            ConditionSpan = conditionSpan;
+            Body = body;
+        }
+    }
+
     public partial class Parser
     {
         IParserTokenProvider<SemanticValueType, Span> _lexer;
@@ -337,15 +353,14 @@ namespace Devsense.PHP.Syntax
             return StatementsToBlock(Span.FromBounds(span.Start, endSpan.Start), statemenList, endToken);
         }
 
-        void RebuildLast(object condList, Span end, Tokens token)
+        void RebuildLast(List<IfStatement> condList, Span end, Tokens token)
         {
-            var ifList = ((List<Tuple<Span, LangElement, LangElement>>)condList);
-            var block = ifList.Last();
-            var colon = ((ColonBlockStmt)block.Item3);
-            colon.ExtendSpan(Span.FromBounds(block.Item3.Span.Start, end.Start));
+            var block = condList.Last();
+            var colon = ((ColonBlockStmt)block.Body);
+            colon.ExtendSpan(Span.FromBounds(block.Body.Span.Start, end.Start));
             colon.SetClosingToken(token);
-            ifList.Remove(block);
-            ifList.Add(new Tuple<Span, LangElement, LangElement>(Span.FromBounds(block.Item1.Start, end.Start), block.Item2, block.Item3));
+            condList.Remove(block);
+            condList.Add(new IfStatement(Span.FromBounds(block.Span.Start, end.Start), block.Condition, block.ConditionSpan, block.Body));
         }
 
         private LangElement CreateProperty(Span span, LangElement objectExpr, object name)
@@ -477,7 +492,7 @@ namespace Devsense.PHP.Syntax
                 _astFactory.TypeReference(span, tname);
         }
 
-        IList<TypeRef> TypeRefListFromQNRList(List<QualifiedNameRef> nrefList)
+        IList<TypeRef> TypeRefListFromQNRList(IList<QualifiedNameRef> nrefList)
         {
             var types = new TypeRef[nrefList.Count];
 
@@ -638,6 +653,23 @@ namespace Devsense.PHP.Syntax
             Debug.Assert(target != null);
             Debug.Assert(target is IPropertyCollection);
             _lexer.DocBlockList.Annotate((LangElement)target);
+        }
+
+        void SetModifiers(LangElement element, ModifierPosition modifier, int start)
+        {
+            KeyValuePair<PhpMemberAttributes, short>[] modifiers = null;
+            if (_languageFeatures.HasFeature(LanguageFeatures.FullInformation) && (modifiers = modifier.Modifiers(start)) != null)
+            {
+                element.Properties.SetProperty(TypeMemberDecl.ModifierPositionProperty, modifiers);
+            }
+        }
+
+        void SetOriginalValue(LangElement element, string originalValue)
+        {
+            if (_languageFeatures.HasFeature(LanguageFeatures.FullInformation))
+            {
+                element.Properties.SetProperty(Literal.OrigianlValueProperty, originalValue);
+            }
         }
 
         /// <summary>

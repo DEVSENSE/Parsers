@@ -63,6 +63,7 @@
     <Compile Include="SerializerTreeVisitorTests.cs" />
     <Compile Include="TestImplementation\TestErrorRecovery.cs" />
     <Compile Include="TestImplementation\TestErrorSink.cs" />
+    <Compile Include="TokensVisitorTest.cs" />
     <Compile Include="VisitorTests.cs" />
   </ItemGroup>
   <ItemGroup>

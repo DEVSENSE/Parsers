@@ -20,18 +20,18 @@ using System.Linq;
 
 namespace Devsense.PHP.Syntax.Ast
 {
-	#region FormalTypeParam
+    #region FormalTypeParam
 
-	public sealed class FormalTypeParam : LangElement
-	{
-		public Name Name { get { return name; } }
-		private readonly Name name;
+    public sealed class FormalTypeParam : LangElement
+    {
+        public Name Name { get { return name; } }
+        private readonly Name name;
 
         /// <summary>
         /// Either <see cref="QualifiedName"/>, <see cref="GenericQualifiedName"/>, or <B>null</B>.
         /// </summary>
         public object DefaultType { get { return defaultType; } }
-		private readonly object defaultType;
+        private readonly object defaultType;
 
         /// <summary>
         /// Gets collection of CLR attributes annotating this statement.
@@ -42,28 +42,28 @@ namespace Devsense.PHP.Syntax.Ast
             set { this.SetCustomAttributes(value); }
         }
 
-		/// <summary>
+        /// <summary>
         /// Singleton instance of an empty <see cref="List&lt;FormalTypeParam&gt;"/>.
         /// </summary>
         public new static readonly List<FormalTypeParam>/*!*/EmptyList = new List<FormalTypeParam>();
 
-		#region Construction
+        #region Construction
 
-		public FormalTypeParam(Text.Span span, Name name, object defaultType, List<CustomAttribute> attributes)
+        public FormalTypeParam(Text.Span span, Name name, object defaultType, List<CustomAttribute> attributes)
             : base(span)
-		{
+        {
             Debug.Assert(defaultType == null || defaultType is QualifiedName || defaultType is GenericQualifiedName);
 
-			this.name = name;
-			this.defaultType = defaultType;
+            this.name = name;
+            this.defaultType = defaultType;
 
-			if (attributes != null && attributes.Count != 0)
+            if (attributes != null && attributes.Count != 0)
                 this.Attributes = new CustomAttributes(attributes);
-		}
+        }
 
-		#endregion
+        #endregion
 
-		/// <summary>
+        /// <summary>
         /// Call the right Visit* method on the given Visitor object.
         /// </summary>
         /// <param name="visitor">Visitor to be called.</param>
@@ -71,27 +71,27 @@ namespace Devsense.PHP.Syntax.Ast
         {
             visitor.VisitFormalTypeParam(this);
         }
-	}
+    }
 
-	#endregion
+    #endregion
 
-	#region TypeSignature
+    #region TypeSignature
 
-	public struct TypeSignature
-	{
-		internal FormalTypeParam[]/*!!*/ TypeParams { get { return typeParams; } }
-		private readonly FormalTypeParam[]/*!!*/ typeParams;
+    public struct TypeSignature
+    {
+        internal FormalTypeParam[]/*!!*/ TypeParams { get { return typeParams; } }
+        private readonly FormalTypeParam[]/*!!*/ typeParams;
 
-		#region Construction
+        #region Construction
 
-		public TypeSignature(IList<FormalTypeParam>/*!!*/ typeParams)
-		{
-			Debug.Assert(typeParams != null);
-			this.typeParams = typeParams.AsArray();
-		}
+        public TypeSignature(IList<FormalTypeParam>/*!!*/ typeParams)
+        {
+            Debug.Assert(typeParams != null);
+            this.typeParams = typeParams.AsArray();
+        }
 
-		#endregion
-	}
+        #endregion
+    }
 
     #endregion
 
@@ -179,7 +179,7 @@ namespace Devsense.PHP.Syntax.Ast
         {
             Debug.Assert(genericParams != null && implementsList != null && elements != null);
             Debug.Assert((memberAttributes & PhpMemberAttributes.Trait) == 0 || (memberAttributes & PhpMemberAttributes.Interface) == 0, "Interface cannot be a trait");
-            
+
             this.typeSignature = new TypeSignature(genericParams);
             this.baseClass = baseClass;
             this.MemberAttributes = memberAttributes;
@@ -214,12 +214,12 @@ namespace Devsense.PHP.Syntax.Ast
     /// </summary>
     public sealed class NamedTypeDecl : TypeDecl
     {
-		#region Properties
-		/// <summary>
-		/// Name of the class.
-		/// </summary>
-		public override NameRef Name { get { return name; } }
-		private readonly NameRef name;
+        #region Properties
+        /// <summary>
+        /// Name of the class.
+        /// </summary>
+        public override NameRef Name { get { return name; } }
+        private readonly NameRef name;
 
         /// <summary>
         /// Fully qualified name.
@@ -249,14 +249,14 @@ namespace Devsense.PHP.Syntax.Ast
             NameRef className, IList<FormalTypeParam>/*!*/ genericParams, INamedTypeRef baseClass,
             IList<INamedTypeRef>/*!*/ implementsList, IList<TypeMemberDecl>/*!*/ elements, Text.Span bodySpan,
             List<CustomAttribute> attributes)
-            : base(span, headingSpan, isConditional, 
+            : base(span, headingSpan, isConditional,
                   memberAttributes, isPartial, genericParams, baseClass, implementsList, elements, bodySpan, attributes)
-		{
-			Debug.Assert(genericParams != null && implementsList != null && elements != null);
+        {
+            Debug.Assert(genericParams != null && implementsList != null && elements != null);
             Debug.Assert((memberAttributes & PhpMemberAttributes.Trait) == 0 || (memberAttributes & PhpMemberAttributes.Interface) == 0, "Interface cannot be a trait");
 
-			this.name = className;
-		}
+            this.name = className;
+        }
 
         #endregion
 
@@ -340,9 +340,15 @@ namespace Devsense.PHP.Syntax.Ast
     /// Represents a member declaration.
     /// </summary>
     public abstract class TypeMemberDecl : LangElement
-	{
+    {
         public PhpMemberAttributes Modifiers { get { return modifiers; } }
-		protected readonly PhpMemberAttributes modifiers;
+        protected readonly PhpMemberAttributes modifiers;
+
+        /// <summary>
+        /// Identifier of the modifier position propery assigned 
+        /// when <see cref="LanguageFeatures.FullInformation"/> is set.
+        /// </summary>
+        public const string ModifierPositionProperty = "ModifierPositionProperty";
 
         /// <summary>
         /// Gets collection of CLR attributes annotating this statement.
@@ -355,39 +361,39 @@ namespace Devsense.PHP.Syntax.Ast
 
         protected TypeMemberDecl(Text.Span span, PhpMemberAttributes modifiers, List<CustomAttribute> attributes)
             : base(span)
-		{
+        {
             if (attributes != null && attributes.Count != 0)
-			    this.Attributes = new CustomAttributes(attributes);
+                this.Attributes = new CustomAttributes(attributes);
             this.modifiers = modifiers;
-		}
-	}
+        }
+    }
 
-	#endregion
+    #endregion
 
-	#region Methods
+    #region Methods
 
-	/// <summary>
-	/// Represents a method declaration.
-	/// </summary>
+    /// <summary>
+    /// Represents a method declaration.
+    /// </summary>
     public sealed class MethodDecl : TypeMemberDecl
-	{
-		/// <summary>
-		/// Name of the method.
-		/// </summary>
-		public NameRef Name { get { return name; } }
-		private readonly NameRef name;
+    {
+        /// <summary>
+        /// Name of the method.
+        /// </summary>
+        public NameRef Name { get { return name; } }
+        private readonly NameRef name;
 
-		public Signature Signature { get { return signature; } }
-		private readonly Signature signature;
+        public Signature Signature { get { return signature; } }
+        private readonly Signature signature;
 
-		public TypeSignature TypeSignature { get { return typeSignature; } }
-		private readonly TypeSignature typeSignature;
+        public TypeSignature TypeSignature { get { return typeSignature; } }
+        private readonly TypeSignature typeSignature;
 
         public BlockStmt Body { get { return body; } internal set { body = value; } }
         private BlockStmt body;
 
         public ActualParam[] BaseCtorParams { get { return baseCtorParams; } internal set { baseCtorParams = value; } }
-		private ActualParam[] baseCtorParams;
+        private ActualParam[] baseCtorParams;
 
         public Text.Span ParametersSpan { get { return parametersSpan; } }
         private Text.Span parametersSpan;
@@ -397,29 +403,51 @@ namespace Devsense.PHP.Syntax.Ast
         public TypeRef ReturnType { get { return returnType; } }
         private TypeRef returnType;
 
+        /// <summary>
+        /// Position of the 'function' keyword.
+        /// </summary>
+        public int FunctionPosition
+        {
+            get { return Span.Start + _functionOffset; }
+            set { _functionOffset = (short)(value - Span.Start); }
+        }
+        private short _functionOffset = 0;
+
+        /// <summary>
+        /// Position of the first modifier, <c>-1</c> if none present.
+        /// </summary>
+        public int ModifierPosition
+        {
+            get { return _modifierOffset < 0 ? -1 : Span.Start + _modifierOffset; }
+            set { _modifierOffset = value < 0 ? (short)-1 : (short)(value - Span.Start); }
+        }
+        private short _modifierOffset = -1;
+
         #region Construction
 
-        public MethodDecl(Text.Span span, 
-			NameRef name, bool aliasReturn, IList<FormalParam>/*!*/ formalParams, Text.Span paramsSpan,
-            IList<FormalTypeParam>/*!*/ genericParams,  BlockStmt body,
-            PhpMemberAttributes modifiers, IList<ActualParam> baseCtorParams, 
-			List<CustomAttribute> attributes, TypeRef returnType)
+        public MethodDecl(Text.Span span,
+            NameRef name, bool aliasReturn, IList<FormalParam>/*!*/ formalParams, Text.Span paramsSpan,
+            IList<FormalTypeParam>/*!*/ genericParams, BlockStmt body,
+            PhpMemberAttributes modifiers, IList<ActualParam> baseCtorParams,
+            List<CustomAttribute> attributes, TypeRef returnType, int functionPosition, int modifierPosition)
             : base(span, modifiers, attributes)
         {
             Debug.Assert(genericParams != null && formalParams != null);
 
             this.name = name;
-            this.signature = new Signature(aliasReturn, formalParams);
+            this.signature = new Signature(aliasReturn, formalParams, paramsSpan);
             this.typeSignature = new TypeSignature(genericParams);
             this.body = body;
             this.baseCtorParams = baseCtorParams.AsArray();
             this.parametersSpan = paramsSpan;
             this.returnType = returnType;
+            FunctionPosition = functionPosition;
+            ModifierPosition = modifierPosition;
         }
 
-		#endregion
+        #endregion
 
-		/// <summary>
+        /// <summary>
         /// Call the right Visit* method on the given Visitor object.
         /// </summary>
         /// <param name="visitor">Visitor to be called.</param>
@@ -438,30 +466,30 @@ namespace Devsense.PHP.Syntax.Ast
         }
     }
 
-	#endregion
+    #endregion
 
-	#region Fields
+    #region Fields
 
-	/// <summary>
-	/// Represents a field multi-declaration.
-	/// </summary>
-	/// <remarks>
-	/// Is derived from LangElement because we need position to report field_in_interface error.
-	/// Else we would have to test ClassType in every FieldDecl and not only in FildDeclList
-	/// </remarks>
-	public sealed class FieldDeclList : TypeMemberDecl
-	{
-		private readonly IList<FieldDecl>/*!*/ fields;
+    /// <summary>
+    /// Represents a field multi-declaration.
+    /// </summary>
+    /// <remarks>
+    /// Is derived from LangElement because we need position to report field_in_interface error.
+    /// Else we would have to test ClassType in every FieldDecl and not only in FildDeclList
+    /// </remarks>
+    public sealed class FieldDeclList : TypeMemberDecl
+    {
+        private readonly IList<FieldDecl>/*!*/ fields;
         /// <summary>List of fields in this list</summary>
         public IList<FieldDecl> Fields/*!*/ { get { return fields; } }
 
-		public FieldDeclList(Text.Span span, PhpMemberAttributes modifiers, IList<FieldDecl>/*!*/ fields,
-			List<CustomAttribute> attributes)
+        public FieldDeclList(Text.Span span, PhpMemberAttributes modifiers, IList<FieldDecl>/*!*/ fields,
+            List<CustomAttribute> attributes)
             : base(span, modifiers, attributes)
-		{
-			Debug.Assert(fields != null);
-			this.fields = fields;
-		}
+        {
+            Debug.Assert(fields != null);
+            this.fields = fields;
+        }
 
         /// <summary>
         /// Call the right Visit* method on the given Visitor object.
@@ -480,50 +508,61 @@ namespace Devsense.PHP.Syntax.Ast
             get { return this.GetPHPDoc(); }
             set { this.SetPHPDoc(value); }
         }
-	}
+    }
 
-	/// <summary>
-	/// Represents a field declaration.
-	/// </summary>
-	public sealed class FieldDecl : LangElement
-	{
-		/// <summary>
-		/// Gets a name of the field.
-		/// </summary>
-		public VariableName Name { get { return name; } }
-		private VariableName name;
+    /// <summary>
+    /// Represents a field declaration.
+    /// </summary>
+    public sealed class FieldDecl : LangElement
+    {
+        /// <summary>
+        /// Gets a name of the field.
+        /// </summary>
+        public VariableName Name { get { return name; } }
+        private VariableName name;
 
         /// <summary>
         /// Span of the property name.
         /// </summary>
         public Text.Span NameSpan => new Text.Span(Span.Start, name.Value.Length + 1);
 
-		/// <summary>
-		/// Initial value of the field represented by compile time evaluated expression.
-		/// After analysis represented by Literal or ConstantUse or ArrayEx with constant parameters.
-		/// Can be null.
-		/// </summary>
-		private Expression initializer;
+        /// <summary>
+        /// Initial value of the field represented by compile time evaluated expression.
+        /// After analysis represented by Literal or ConstantUse or ArrayEx with constant parameters.
+        /// Can be null.
+        /// </summary>
+        private Expression initializer;
         /// <summary>
         /// Initial value of the field represented by compile time evaluated expression.
         /// After analysis represented by Literal or ConstantUse or ArrayEx with constant parameters.
         /// Can be null.
         /// </summary>
         public Expression Initializer { get { return initializer; } internal set { initializer = value; } }
-		
-		/// <summary>
-		/// Determines whether the field has an initializer.
-		/// </summary>
-		public bool HasInitVal { get { return initializer != null; } }
 
-		public FieldDecl(Text.Span span, string/*!*/ name, Expression initVal)
+        /// <summary>
+        /// Position of the assign operator used with initial value, <c>-1</c> if not present.
+        /// </summary>
+        public int AssignOperatorPosition
+        {
+            get { return _operatorOffset < 0 ? -1 : Span.Start + _operatorOffset; }
+            set { _operatorOffset = value < 0 ? (short)-1 : (short)(value - Span.Start); }
+        }
+        public bool IsAssignOperatorPresent => _operatorOffset >= 0;
+        private short _operatorOffset = -1;
+
+        /// <summary>
+        /// Determines whether the field has an initializer.
+        /// </summary>
+        public bool HasInitVal { get { return initializer != null; } }
+
+        public FieldDecl(Text.Span span, string/*!*/ name, Expression initVal)
             : base(span)
-		{
-			this.name = new VariableName(name);
-			this.initializer = initVal;
-		}
+        {
+            this.name = new VariableName(name);
+            this.initializer = initVal;
+        }
 
-		/// <summary>
+        /// <summary>
         /// Call the right Visit* method on the given Visitor object.
         /// </summary>
         /// <param name="visitor">Visitor to be called.</param>
@@ -542,25 +581,25 @@ namespace Devsense.PHP.Syntax.Ast
         }
     }
 
-	#endregion
+    #endregion
 
-	#region Class constants
+    #region Class constants
 
-	/// <summary>
-	/// Represents a class constant declaration.
-	/// </summary>
-	public sealed class ConstDeclList : TypeMemberDecl
-	{
-		/// <summary>List of constants in this list</summary>
+    /// <summary>
+    /// Represents a class constant declaration.
+    /// </summary>
+    public sealed class ConstDeclList : TypeMemberDecl
+    {
+        /// <summary>List of constants in this list</summary>
         public IList<ClassConstantDecl>/*!*/ Constants { get { return constants; } }
         private readonly IList<ClassConstantDecl>/*!*/ constants;
-        
-		public ConstDeclList(Text.Span span, PhpMemberAttributes modifiers, IList<ClassConstantDecl>/*!*/ constants, List<CustomAttribute> attributes)
+
+        public ConstDeclList(Text.Span span, PhpMemberAttributes modifiers, IList<ClassConstantDecl>/*!*/ constants, List<CustomAttribute> attributes)
             : base(span, modifiers, attributes)
-		{
-			Debug.Assert(constants != null);
-			this.constants = constants;
-		}
+        {
+            Debug.Assert(constants != null);
+            this.constants = constants;
+        }
 
         /// <summary>
         /// Call the right Visit* method on the given Visitor object.
@@ -579,16 +618,16 @@ namespace Devsense.PHP.Syntax.Ast
             get { return this.GetPHPDoc(); }
             set { this.SetPHPDoc(value); }
         }
-	}
+    }
 
-	public sealed class ClassConstantDecl : ConstantDecl
-	{
+    public sealed class ClassConstantDecl : ConstantDecl
+    {
         public ClassConstantDecl(Text.Span span, string/*!*/ name, Text.Span namePos, Expression/*!*/ initializer)
             : base(span, name, namePos, initializer)
-		{
-		}
+        {
+        }
 
-		/// <summary>
+        /// <summary>
         /// Call the right Visit* method on the given Visitor object.
         /// </summary>
         /// <param name="visitor">Visitor to be called.</param>
@@ -658,7 +697,7 @@ namespace Devsense.PHP.Syntax.Ast
             public TraitAdaptation(Text.Span span, Tuple<QualifiedNameRef, NameRef> traitMemberName)
                 : base(span)
             {
-                this.TraitMemberName = traitMemberName;                
+                this.TraitMemberName = traitMemberName;
             }
         }
 

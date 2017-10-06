@@ -29,7 +29,13 @@ namespace Devsense.PHP.Syntax.Ast
         /// <summary>Target of assignment</summary>
         public VarLikeConstructUse LValue { get { return lvalue; } }
 
-		protected AssignEx(Text.Span p) : base(p) { }
+        /// <summary>
+        /// Position of the assign operator.
+        /// </summary>
+        public int OperatorPosition { get { return Span.Start + _operatorOffset; } set { _operatorOffset = (short)(value - Span.Start); } }
+        private short _operatorOffset = 0;
+
+        protected AssignEx(Text.Span p) : base(p) { }
 	}
 
 	#region ValueAssignEx
@@ -78,7 +84,13 @@ namespace Devsense.PHP.Syntax.Ast
 	{
         public override Operations Operation { get { return Operations.AssignRef; } }
 
-		/// <summary>Expression being assigned</summary>
+        /// <summary>
+        /// Position of the reference operator.
+        /// </summary>
+        public int ReferencePosition { get { return Span.Start + _referenceOffset; } set { _referenceOffset = (short)(value - Span.Start); } }
+        private short _referenceOffset = 0;
+
+        /// <summary>Expression being assigned</summary>
         public Expression/*!*/RValue { get { return rvalue; } }
         internal Expression/*!*/ rvalue;
         

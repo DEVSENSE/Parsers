@@ -32,8 +32,10 @@ namespace Devsense.PHP.Syntax.Ast.Serialization
 
         string MemberAttributesToString(PhpMemberAttributes attr)
         {
-            //if (attr == PhpMemberAttributes.None)
-            //    return "None";
+
+
+
+
             switch (attr)
             {
                 case PhpMemberAttributes.Public:

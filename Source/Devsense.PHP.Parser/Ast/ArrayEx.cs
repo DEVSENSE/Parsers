@@ -60,9 +60,34 @@ namespace Devsense.PHP.Syntax.Ast
         public Expression Index { get { return index; } internal set { index = value; } }
         private Expression index; // can be null
 
-        protected Item(Expression index)
+        /// <summary>
+        /// Position of the arrow operator, <c>-1</c> if not present.
+        /// </summary>
+        public int ArrowPosition
+        {
+            get
+            {
+                return (_arrowOffset < 0 && index == null) ? -1 :
+                  Index.Span.Start + _arrowOffset;
+            }
+            set
+            {
+                _arrowOffset = value < 0 ?
+                  (short)-1 : (short)(value - Index.Span.Start);
+            }
+        }
+        public bool IsArrowPresent => _arrowOffset >= 0;
+        private short _arrowOffset = -1;
+
+        /// <summary>
+        /// Position of the comma separator following the item, <c>-1</c> if not present.
+        /// </summary>
+        public virtual int CommaPosition { get; set; }
+
+        protected Item(Expression index, int arrowPosition)
         {
             this.index = index;
+            ArrowPosition = arrowPosition;
         }
 
         internal bool HasKey { get { return (index != null); } }
@@ -83,8 +108,19 @@ namespace Devsense.PHP.Syntax.Ast
         public Expression ValueExpr { get { return valueExpr; } internal set { valueExpr = value; } }
         private Expression valueExpr;
 
-        public ValueItem(Expression index, Expression/*!*/ valueExpr)
-            : base(index)
+        /// <summary>
+        /// Position of the comma separator following the item, <c>-1</c> if not present.
+        /// </summary>
+        public override int CommaPosition
+        {
+            get { return _commaOffset < 0 ? -1 : valueExpr.Span.Start + _commaOffset; }
+            set { _commaOffset = value < 0 ? (short)-1 : (short)(value - valueExpr.Span.Start); }
+        }
+        public bool IsCommaPresent => _commaOffset >= 0;
+        private short _commaOffset = -1;
+
+        public ValueItem(Expression index, int operatorPosition, Expression/*!*/ valueExpr)
+            : base(index, operatorPosition)
         {
             Debug.Assert(valueExpr != null);
             this.valueExpr = valueExpr;
@@ -104,8 +140,19 @@ namespace Devsense.PHP.Syntax.Ast
         /// <summary>Object to obtain reference of</summary>
         public VariableUse/*!*/RefToGet { get { return this.refToGet; } }
 
-        public RefItem(Expression index, VariableUse refToGet)
-            : base(index)
+        /// <summary>
+        /// Position of the comma separator following the item, <c>-1</c> if not present.
+        /// </summary>
+        public override int CommaPosition
+        {
+            get { return _commaOffset < 0 ? -1 : refToGet.Span.Start + _commaOffset; }
+            set { _commaOffset = value < 0 ? (short)-1 : (short)(value - refToGet.Span.Start); }
+        }
+        public bool IsCommaPresent => _commaOffset >= 0;
+        private short _commaOffset = -1;
+
+        public RefItem(Expression index, int operatorPosition, int refPosition, VariableUse refToGet)
+            : base(index, operatorPosition)
         {
             Debug.Assert(refToGet != null);
             this.refToGet = refToGet;

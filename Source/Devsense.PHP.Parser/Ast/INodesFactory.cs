@@ -119,16 +119,16 @@ namespace Devsense.PHP.Syntax.Ast
         /// </summary>
         /// <param name="span">Entire element span.</param>
         /// <param name="headingSpan">Heading span - ends after return type.</param>
-        /// <param name="isStatic">Whether the function is declared as static.</param>
         /// <param name="aliasReturn">Whether the function returns an aliased value.</param>
         /// <param name="returnType">Optional. Function return type.</param>
+        /// <param name="modifiers">Whether the function is declared as static.</param>
         /// <param name="formalParams">Lambda parameters.</param>
         /// <param name="formalParamsSpan">Parameters enclosing parenthesis span.</param>
         /// <param name="lexicalVars">Variables from parent scope.</param>
         /// <param name="body">Lambda body.</param>
         /// <returns>Lambda node.</returns>
-        TNode Lambda(TSpan span, TSpan headingSpan, bool isStatic, bool aliasReturn,
-            TypeRef returnType,
+        TNode Lambda(TSpan span, TSpan headingSpan, bool aliasReturn,
+            TypeRef returnType, PhpMemberAttributes modifiers,
             IEnumerable<FormalParam> formalParams, TSpan formalParamsSpan,
             IEnumerable<FormalParam> lexicalVars, TNode body);
 
@@ -140,9 +140,10 @@ namespace Devsense.PHP.Syntax.Ast
         /// <param name="nameSpan">Parameter name span.</param>
         /// <param name="typeOpt">Parameter type.</param>
         /// <param name="flags">Parameter flags.</param>
-        /// <param name="initValue">Default value expression.</param>
+        /// <param name="assignSpan">Optional. Position of the assign operator.</param>
+        /// <param name="initValue">Optional. Default value expression.</param>
         /// <returns></returns>
-        FormalParam Parameter(Span span, string name, Span nameSpan, TypeRef typeOpt, FormalParam.Flags flags, Expression initValue);
+        FormalParam Parameter(TSpan span, string name, TSpan nameSpan, TypeRef typeOpt, FormalParam.Flags flags, TSpan assignSpan, Expression initValue);
 
         /// <summary>
         /// Creates type declaration node.
@@ -159,7 +160,7 @@ namespace Devsense.PHP.Syntax.Ast
         /// <param name="members">Enumeration of type members.</param>
         /// <param name="bodySpan">Span of block enclosing members (including <c>{</c> and <c>}</c>.</param>
         /// <returns>Type node.</returns>
-        TNode Type(TSpan span, Span headingSpan,
+        TNode Type(TSpan span, TSpan headingSpan,
             bool conditional, PhpMemberAttributes attributes,
             Name name, TSpan nameSpan, IEnumerable<FormalTypeParam> typeParamsOpt,
             INamedTypeRef baseClassOpt,
@@ -181,13 +182,15 @@ namespace Devsense.PHP.Syntax.Ast
         /// <param name="formalParamsSpan">Parameters enclosing parenthesis span.</param>
         /// <param name="baseCtorParams">Actual paramters of base constructor call.</param>
         /// <param name="body">Method body.</param>
+        /// <param name="functionPosition">Function keyword position.</param>
+        /// <param name="modifierPosition">Modifier position, <c>-1</c> if none present.</param>
         /// <returns>Method node.</returns>
         TNode Method(TSpan span,
             bool aliasReturn, PhpMemberAttributes attributes,
             TypeRef returnType, TSpan returnTypeSpan,
             string name, TSpan nameSpan, IEnumerable<FormalTypeParam> typeParamsOpt,
             IEnumerable<FormalParam> formalParams, TSpan formalParamsSpan,
-            IEnumerable<ActualParam> baseCtorParams, TNode body);
+            IEnumerable<ActualParam> baseCtorParams, TNode body, int functionPosition, int modifierPosition);
 
         /// <summary>
         /// Creates class trait use statement.
@@ -243,9 +246,10 @@ namespace Devsense.PHP.Syntax.Ast
         /// </summary>
         /// <param name="span">Entire element span.</param>
         /// <param name="name">Field name.</param>
+        /// <param name="assignSpan">Optional. Initializer assign operator position.</param>
         /// <param name="initializerOpt">Optional. Field initializer.</param>
         /// <returns>Field declaration.</returns>
-        TNode FieldDecl(TSpan span, VariableName name, TNode initializerOpt);
+        TNode FieldDecl(TSpan span, VariableName name, TSpan assignSpan, TNode initializerOpt);
 
         /// <summary>
         /// Creates class constant declaration.
@@ -416,17 +420,19 @@ namespace Devsense.PHP.Syntax.Ast
         /// <param name="span">Entire element span.</param>
         /// <param name="body">Loop body.</param>
         /// <param name="cond">Condition that breaks the loop.</param>
+        /// <param name="condSpan">Position of the condition parentheses.</param>
         /// <returns>Do statement.</returns>
-        TNode Do(TSpan span, TNode body, TNode cond);
+        TNode Do(TSpan span, TNode body, TNode cond, TSpan condSpan);
 
         /// <summary>
         /// Creates <c>while</c> statement.
         /// </summary>
         /// <param name="span">Entire element span.</param>
         /// <param name="cond">Condition that breaks the loop.</param>
+        /// <param name="condSpan">Position of the condition parentheses.</param>
         /// <param name="body">Loop body.</param>
         /// <returns>While statement.</returns>
-        TNode While(TSpan span, TNode cond, TNode body);
+        TNode While(TSpan span, TNode cond, TSpan condSpan, TNode body);
 
         /// <summary>
         /// Creates <c>for</c> statement.
@@ -435,9 +441,10 @@ namespace Devsense.PHP.Syntax.Ast
         /// <param name="init">Initializer expressions.</param>
         /// <param name="cond">Conditions, none, one or more. Only the last one breaks the loop.</param>
         /// <param name="action">Actions to be performed after each loop.</param>
+        /// <param name="condSpan">Position of the condition parentheses.</param>
         /// <param name="body">Loop body.</param>
         /// <returns>For statement.</returns>
-        TNode For(TSpan span, IEnumerable<TNode> init, IEnumerable<TNode> cond, IEnumerable<TNode> action, TNode body);
+        TNode For(TSpan span, IEnumerable<TNode> init, IEnumerable<TNode> cond, IEnumerable<TNode> action, TSpan condSpan, TNode body);
 
         /// <summary>
         /// Creates <c>foreach</c> statement.
@@ -446,20 +453,22 @@ namespace Devsense.PHP.Syntax.Ast
         /// <param name="enumeree">Expression being enumerated.</param>
         /// <param name="keyOpt">Optional. The key variable.</param>
         /// <param name="value">The value variable.</param>
+        /// <param name="condSpan">Position of the condition parentheses.</param>
         /// <param name="body">Loop body.</param>
         /// <returns>Foreach statement.</returns>
-        TNode Foreach(TSpan span, TNode enumeree, ForeachVar keyOpt, ForeachVar value, TNode body);
+        TNode Foreach(TSpan span, TNode enumeree, ForeachVar keyOpt, ForeachVar value, TSpan condSpan, TNode body);
 
         /// <summary>
         /// Creates <c>if</c> statement.
         /// </summary>
         /// <param name="span">Entire element span.</param>
         /// <param name="cond">Condition expression.</param>
+        /// <param name="condSpan">Span of the condition parentheses.</param>
         /// <param name="body">True branch statement.</param>
         /// <param name="elseOpt">Optional. False branch statement.
         /// Can be another <c>if</c> in case of <c>elseif</c>, another statement in case of <c>else</c> or <c>null</c>.</param>
         /// <returns>If statement.</returns>
-        TNode If(TSpan span, TNode cond, TNode body, TNode elseOpt);
+        TNode If(TSpan span, TNode cond, TSpan condSpan, TNode body, TNode elseOpt);
 
         /// <summary>
         /// Creates <c>switch</c> statement.
@@ -592,19 +601,21 @@ namespace Devsense.PHP.Syntax.Ast
         /// </summary>
         /// <param name="span">Entire element span.</param>
         /// <param name="operation">Binary expression operation.</param>
+        /// <param name="operatorSpan">Positin of the <paramref name="operation"/>.</param>
         /// <param name="leftExpression">Left expression.</param>
         /// <param name="rightExpression">Right expression.</param>
         /// <returns>Binary operation expression.</returns>
-        TNode BinaryOperation(TSpan span, Operations operation, TNode leftExpression, TNode rightExpression);
+        TNode BinaryOperation(TSpan span, Operations operation, Span operatorSpan, TNode leftExpression, TNode rightExpression);
 
         /// <summary>
         /// Creates unary operation expression.
         /// </summary>
         /// <param name="span">Entire element span.</param>
         /// <param name="operation">Unary expression operation.</param>
+        /// <param name="operatorSpan">Positin of the <paramref name="operation"/>.</param>
         /// <param name="expression">Operation parameter.</param>
         /// <returns>Unary operation expression.</returns>
-        TNode UnaryOperation(TSpan span, Operations operation, TNode expression);
+        TNode UnaryOperation(TSpan span, Operations operation, TSpan operatorSpan, TNode expression);
 
         /// <summary>
         /// Creates increment or decrement unary operation.
@@ -621,10 +632,12 @@ namespace Devsense.PHP.Syntax.Ast
         /// </summary>
         /// <param name="span">Entire element span.</param>
         /// <param name="condExpr">Condition expression.</param>
+        /// <param name="questionSpan">Position of the question mark.</param>
         /// <param name="trueExpr">True expression.</param>
+        /// <param name="colonSpan">Position of the colon.</param>
         /// <param name="falseExpr">False expression.</param>
         /// <returns>Conditional expression.</returns>
-        TNode ConditionalEx(TSpan span, TNode condExpr, TNode trueExpr, TNode falseExpr);
+        TNode ConditionalEx(TSpan span, TNode condExpr, TSpan questionSpan, TNode trueExpr, TSpan colonSpan, TNode falseExpr);
 
         /// <summary>
         /// Creates expression representing a string concatenation.
@@ -642,8 +655,10 @@ namespace Devsense.PHP.Syntax.Ast
         /// <param name="target">Target expression (variable reference).</param>
         /// <param name="value">Value expression.</param>
         /// <param name="assignOp">Assign operation.</param>
+        /// <param name="operationSpan">Positin of the assignment operator.</param>
+        /// <param name="refSpan">Optional. Position of the reference operator.</param>
         /// <returns>Assignment expression.</returns>
-        TNode Assignment(TSpan span, TNode target, TNode value, Operations assignOp);
+        TNode Assignment(TSpan span, TNode target, TNode value, Operations assignOp, TSpan operationSpan, TSpan refSpan);
 
         /// <summary>
         /// Direct variable or field.
@@ -876,19 +891,22 @@ namespace Devsense.PHP.Syntax.Ast
         /// Creates array value item initialization expression.
         /// </summary>
         /// <param name="span">Entire element span.</param>
+        /// <param name="operatorPosition">Operator position.</param>
         /// <param name="indexOpt">Optional. Expression representing an index.</param>
         /// <param name="valueExpr">Expression representing an item.</param>
         /// <returns>Array value item expression.</returns>
-        Item ArrayItemValue(TSpan span, TNode indexOpt, TNode valueExpr);
+        Item ArrayItemValue(TSpan span, TNode indexOpt, int operatorPosition, TNode valueExpr);
 
         /// <summary>
         /// Creates array reference item initialization expression.
         /// </summary>
         /// <param name="span">Entire element span.</param>
+        /// <param name="operatorPosition">Operator position.</param>
         /// <param name="indexOpt">Optional. Expression representing an index.</param>
         /// <param name="variable">Expression representing a variable.</param>
+        /// <param name="refPosition">Reference position.</param>
         /// <returns>Array reference item expression.</returns>
-        Item ArrayItemRef(TSpan span, TNode indexOpt, TNode variable);
+        Item ArrayItemRef(TSpan span, TNode indexOpt, int operatorPosition, int refPosition, TNode variable);
 
         /// <summary>
         /// Creates <c>new</c> expression.
@@ -896,17 +914,19 @@ namespace Devsense.PHP.Syntax.Ast
         /// <param name="span">Entire element span.</param>
         /// <param name="classNameRef">Name of the instantiated class.</param>
         /// <param name="argsOpt">Optional. Class constructor arguments.</param>
+        /// <param name="argsPosition">Aarguments position.</param>
         /// <returns>The new expression.</returns>
-        TNode New(TSpan span, TypeRef classNameRef, IEnumerable<ActualParam> argsOpt);
+        TNode New(TSpan span, TypeRef classNameRef, IEnumerable<ActualParam> argsOpt, Span argsPosition);
 
         /// <summary>
         /// Creates <c>instanceof</c> operation expression.
         /// </summary>
         /// <param name="span">Entire element span.</param>
+        /// <param name="operatorPosition">Position of the operator.</param>
         /// <param name="expression">Expression.</param>
         /// <param name="typeRef">Type reference.</param>
         /// <returns>The instanceof expression.</returns>
-        TNode InstanceOf(TSpan span, TNode expression, TypeRef typeRef);
+        TNode InstanceOf(TSpan span, int operatorPosition, TNode expression, TypeRef typeRef);
 
         /// <summary>
         /// Creates <c>list</c> expression used as a target of a value assignment.

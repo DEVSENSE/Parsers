@@ -113,7 +113,7 @@ namespace Devsense.PHP.Syntax
 
                 case Tokens.T_IF: return "if";
                 case Tokens.T_ELSEIF: return "elseif";
-                case Tokens.T_ELSE:  return "else";
+                case Tokens.T_ELSE: return "else";
                 case Tokens.T_ENDIF: return "endif";
 
                 case Tokens.T_DO: return "do";
@@ -130,8 +130,12 @@ namespace Devsense.PHP.Syntax
                 case Tokens.T_NEW: return "new";
                 case Tokens.T_ISSET: return "isset";
                 case Tokens.T_UNSET: return "unset";
+                case Tokens.T_USE: return "use";
 
                 case Tokens.T_HALT_COMPILER: return "__halt_compiler";
+                case Tokens.T_PRINT: return "print";
+                case Tokens.T_INTERFACE: return "interface";
+                case Tokens.T_TRAIT: return "trait";
 
                 default: throw new ArgumentException();
             }

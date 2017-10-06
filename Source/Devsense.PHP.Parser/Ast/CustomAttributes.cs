@@ -141,13 +141,13 @@ namespace Devsense.PHP.Syntax.Ast
         public List<NamedActualParam>/*!*/ NamedParameters { get { return namedParameters; } }
         private List<NamedActualParam>/*!*/ namedParameters;
 
-        public CustomAttribute(Text.Span span, QualifiedName qualifiedName, List<ActualParam>/*!*/ parameters,
-                List<NamedActualParam>/*!*/ namedParameters)
+        public CustomAttribute(Text.Span span, QualifiedName qualifiedName, List<ActualParam>/*!*/ parameters, Text.Span parametersSpan,
+                List<NamedActualParam>/*!*/ namedParameters, Text.Span namedParametersSpan)
             : base(span)
         {
             this.qualifiedName = qualifiedName;
             this.namedParameters = namedParameters;
-            this.callSignature = new CallSignature(parameters, GenericTypeRef.EmptyList);
+            this.callSignature = new CallSignature(parameters, GenericTypeRef.EmptyList, parametersSpan);
         }
 
         /// <summary>
