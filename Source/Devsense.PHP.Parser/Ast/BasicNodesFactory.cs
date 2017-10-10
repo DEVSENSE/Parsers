@@ -479,7 +479,7 @@ namespace Devsense.PHP.Syntax.Ast
                 (BlockStmt)body, attributes, baseCtorParams.AsArray(), null, returnType, functionPosition, modifierPosition);
         }
 
-        public virtual LangElement UnaryOperation(Span span, Operations operation, Span operatorSpan, LangElement expression)
+        public virtual LangElement UnaryOperation(Span span, Operations operation, LangElement expression)
         {
             Debug.Assert(expression is Expression);
             return new UnaryEx(span, operation, (Expression)expression);

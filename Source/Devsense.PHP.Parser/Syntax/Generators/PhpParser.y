@@ -1045,7 +1045,7 @@ expr_without_variable:
 	|	variable '=' '&' new_expr
 			{ $$ = _astFactory.Assignment(@$, $1, $4, Operations.AssignRef, @2, @3); _errors.Error(@$, Warnings.AssignNewByRefDeprecated); }
 	|	T_CLONE expr
-			{ $$ = _astFactory.UnaryOperation(@$, Operations.Clone, @1,   (Expression)$2); }
+			{ $$ = _astFactory.UnaryOperation(@$, Operations.Clone,   (Expression)$2); }
 	|	variable T_PLUS_EQUAL expr
 			{ $$ = _astFactory.Assignment(@$, $1, $3, Operations.AssignAdd, @2, Span.Invalid); }
 	|	variable T_MINUS_EQUAL expr
@@ -1096,10 +1096,10 @@ expr_without_variable:
 	|	expr '%' expr 	{ $$ = _astFactory.BinaryOperation(@$, Operations.Mod, @2,    $1, $3); }
 	| 	expr T_SL expr	{ $$ = _astFactory.BinaryOperation(@$, Operations.ShiftLeft, @2,  $1, $3); } 
 	|	expr T_SR expr	{ $$ = _astFactory.BinaryOperation(@$, Operations.ShiftRight, @2, $1, $3); } 
-	|	'+' expr %prec T_INC { $$ = _astFactory.UnaryOperation(@$, Operations.Plus, @1,   (Expression)$2); }
-	|	'-' expr %prec T_INC { $$ = _astFactory.UnaryOperation(@$, Operations.Minus, @1,   (Expression)$2); }
-	|	'!' expr { $$ = _astFactory.UnaryOperation(@$, Operations.LogicNegation, @1, (Expression)$2); }
-	|	'~' expr { $$ = _astFactory.UnaryOperation(@$, Operations.BitNegation, @1,   (Expression)$2); }
+	|	'+' expr %prec T_INC { $$ = _astFactory.UnaryOperation(@$, Operations.Plus,   (Expression)$2); }
+	|	'-' expr %prec T_INC { $$ = _astFactory.UnaryOperation(@$, Operations.Minus,   (Expression)$2); }
+	|	'!' expr { $$ = _astFactory.UnaryOperation(@$, Operations.LogicNegation, (Expression)$2); }
+	|	'~' expr { $$ = _astFactory.UnaryOperation(@$, Operations.BitNegation,   (Expression)$2); }
 	|	expr T_IS_IDENTICAL expr
 			{ $$ = _astFactory.BinaryOperation(@$, Operations.Identical, @2, $1, $3); }
 	|	expr T_IS_NOT_IDENTICAL expr
@@ -1129,18 +1129,18 @@ expr_without_variable:
 	|	expr T_COALESCE expr
 			{ $$ = _astFactory.BinaryOperation(@$, Operations.Coalesce, @2, $1, $3); }
 	|	internal_functions_in_yacc { $$ = $1; }
-	|	T_INT_CAST expr		{ $$ = _astFactory.UnaryOperation(@$, Operations.Int64Cast, @1,   (Expression)$2); }
-	|	T_DOUBLE_CAST expr	{ $$ = _astFactory.UnaryOperation(@$, Operations.DoubleCast, @1, (Expression)$2); }
-	|	T_STRING_CAST expr	{ $$ = _astFactory.UnaryOperation(@$, Operations.StringCast, @1, (Expression)$2); }
-	|	T_ARRAY_CAST expr	{ $$ = _astFactory.UnaryOperation(@$, Operations.ArrayCast, @1,  (Expression)$2); } 
-	|	T_OBJECT_CAST expr	{ $$ = _astFactory.UnaryOperation(@$, Operations.ObjectCast, @1, (Expression)$2); }
-	|	T_BOOL_CAST expr	{ $$ = _astFactory.UnaryOperation(@$, Operations.BoolCast, @1,   (Expression)$2); }
-	|	T_UNSET_CAST expr	{ $$ = _astFactory.UnaryOperation(@$, Operations.UnsetCast, @1,  (Expression)$2); }
+	|	T_INT_CAST expr		{ $$ = _astFactory.UnaryOperation(@$, Operations.Int64Cast,   (Expression)$2); }
+	|	T_DOUBLE_CAST expr	{ $$ = _astFactory.UnaryOperation(@$, Operations.DoubleCast, (Expression)$2); }
+	|	T_STRING_CAST expr	{ $$ = _astFactory.UnaryOperation(@$, Operations.StringCast, (Expression)$2); }
+	|	T_ARRAY_CAST expr	{ $$ = _astFactory.UnaryOperation(@$, Operations.ArrayCast,  (Expression)$2); } 
+	|	T_OBJECT_CAST expr	{ $$ = _astFactory.UnaryOperation(@$, Operations.ObjectCast, (Expression)$2); }
+	|	T_BOOL_CAST expr	{ $$ = _astFactory.UnaryOperation(@$, Operations.BoolCast,   (Expression)$2); }
+	|	T_UNSET_CAST expr	{ $$ = _astFactory.UnaryOperation(@$, Operations.UnsetCast,  (Expression)$2); }
 	|	T_EXIT exit_expr	{ $$ = _astFactory.Exit(@$, $2); }
-	|	'@' expr			{ $$ = _astFactory.UnaryOperation(@$, Operations.AtSign, @1,     (Expression)$2); }
+	|	'@' expr			{ $$ = _astFactory.UnaryOperation(@$, Operations.AtSign,     (Expression)$2); }
 	|	scalar { $$ = $1; }
 	|	'`' backticks_expr '`' { $$ = _astFactory.Shell(@$, $2 == null? _astFactory.Literal(new Span(@1.End, 0), string.Empty): $2); }
-	|	T_PRINT expr { $$ = _astFactory.UnaryOperation(@$, Operations.Print, @1, (Expression)$2); }
+	|	T_PRINT expr { $$ = _astFactory.UnaryOperation(@$, Operations.Print, (Expression)$2); }
 	|	T_YIELD { $$ = _astFactory.Yield(@$, null, null); }
 	|	T_YIELD expr { $$ = _astFactory.Yield(@$, null, $2); }
 	|	T_YIELD expr T_DOUBLE_ARROW expr { $$ = _astFactory.Yield(@$, $2, $4); }

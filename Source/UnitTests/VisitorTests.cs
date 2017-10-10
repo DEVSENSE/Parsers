@@ -453,8 +453,8 @@ namespace UnitTests
             public override TypeRef TypeReference(Span span, QualifiedName className)
                  => CountTR(base.TypeReference(span, className));
 
-            public override LangElement UnaryOperation(Span span, Operations operation, Span operatorSpan, LangElement expression)
-                 => CountLE(base.UnaryOperation(span, operation, operatorSpan, expression));
+            public override LangElement UnaryOperation(Span span, Operations operation, LangElement expression)
+                 => CountLE(base.UnaryOperation(span, operation, expression));
 
             public override LangElement Unset(Span span, IEnumerable<LangElement> variables)
                  => CountLE(base.Unset(span, variables));

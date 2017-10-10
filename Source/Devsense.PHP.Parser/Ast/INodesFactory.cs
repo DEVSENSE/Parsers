@@ -612,10 +612,9 @@ namespace Devsense.PHP.Syntax.Ast
         /// </summary>
         /// <param name="span">Entire element span.</param>
         /// <param name="operation">Unary expression operation.</param>
-        /// <param name="operatorSpan">Positin of the <paramref name="operation"/>.</param>
         /// <param name="expression">Operation parameter.</param>
         /// <returns>Unary operation expression.</returns>
-        TNode UnaryOperation(TSpan span, Operations operation, TSpan operatorSpan, TNode expression);
+        TNode UnaryOperation(TSpan span, Operations operation, TNode expression);
 
         /// <summary>
         /// Creates increment or decrement unary operation.
