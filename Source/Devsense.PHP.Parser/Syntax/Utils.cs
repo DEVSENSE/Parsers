@@ -568,7 +568,6 @@ namespace Devsense.PHP.Syntax
             return true;
         }
 
-
         internal static bool IsWhiteSpace(byte b)
         {
             return b == ' ' || (b >= '\t' && b <= '\r') || b == '\u00a0' || b == '\u0085';
