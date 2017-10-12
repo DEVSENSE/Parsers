@@ -22,6 +22,7 @@ using Devsense.PHP.Text;
 using Devsense.PHP.Errors;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using Devsense.PHP.Utilities;
 
 namespace Devsense.PHP.Syntax
 {
@@ -60,6 +61,8 @@ namespace Devsense.PHP.Syntax
         /// </summary>
         IErrorSink<Span> _errors;
 
+        private readonly StringTable _strings;
+
         /// <summary>
         /// Token postition
         /// </summary>
@@ -80,7 +83,7 @@ namespace Devsense.PHP.Syntax
         /// </summary>
         public PHPDocBlock DocBlock { get; set; }
 
-        void SetDocBlock() => DocBlock = new PHPDocBlock(GetTokenString(), new Span(_charOffset, this.TokenLength));    // TokenPosition is not updated yet ta this point
+        void SetDocBlock() => DocBlock = new PHPDocBlock(GetTokenString(intern: false), new Span(_charOffset, this.TokenLength));    // TokenPosition is not updated yet at this point
         void ResetDocBlock() => DocBlock = null;
 
         /// <summary>
@@ -104,6 +107,7 @@ namespace Devsense.PHP.Syntax
             _errors = errors ?? new EmptyErrorSink<Span>();
             _charOffset = positionShift;
             _allowShortTags = (features & LanguageFeatures.ShortOpenTags) != 0;
+            _strings = StringTable.GetInstance();
 
             Initialize(reader, initialState);
         }
@@ -167,29 +171,69 @@ namespace Devsense.PHP.Syntax
         protected char[] Buffer { get { return buffer; } }
         protected int BufferTokenStart { get { return token_start; } }
 
+        public string Intern(StringBuilder text)
+        {
+            return _strings.Add(text);
+        }
+
+        public string Intern(char[] array, int start, int length)
+        {
+            return _strings.Add(array, start, length);
+        }
+
+        public string GetText(int offset, int length, bool intern)
+        {
+            // PERF: Whether interning or not, there are some frequently occurring easy cases we can pick off easily.
+            switch (length)
+            {
+                case 0:
+                    return string.Empty;
+
+                case 1:
+                    switch (buffer[offset])
+                    {
+                        case ' ': return " ";
+                        case '\n': return "\n";
+                        case ';': return ";";
+                        case '(': return "(";
+                        case ')': return ")";
+                    }
+                    break;
+
+                case 2:
+                    if (buffer[offset] == '\r' && buffer[offset + 1] == '\n') return "\r\n";
+                    //if (buffer[offset] == '/' && buffer[offset + 1] == '/') return "//";
+                    break;
+            }
+
+            return intern
+                ? this.Intern(buffer, offset, length)
+                : new String(buffer, offset, length);
+        }
+
         protected char GetTokenChar(int index)
         {
             return buffer[token_start + index];
         }
 
-        protected string GetTokenString()
+        protected string GetTokenString(bool intern = true)
         {
-            return new String(buffer, token_start, token_end - token_start);
+            return GetText(token_start, TokenLength, intern);
         }
 
-        protected string GetTokenChunkString()
+        protected string GetTokenChunkString(bool intern = true)
         {
-            return new String(buffer, token_chunk_start, token_end - token_chunk_start);
+            return GetText(token_chunk_start, token_end - token_chunk_start, intern);
         }
 
-        protected string GetTokenSubstring(int startIndex)
+        protected string GetTokenSubstring(int startIndex, bool intern = true)
         {
-            return new String(buffer, token_start + startIndex, token_end - token_start - startIndex);
+            return GetText(token_start + startIndex, token_end - token_start - startIndex, intern);
         }
 
-        protected string GetTokenSubstring(int startIndex, int length)
+        protected string GetTokenSubstring(int startIndex, int length, bool intern = true)
         {
-            return new String(buffer, token_start + startIndex, length);
+            return GetText(token_start + startIndex, length, intern);
         }
 
         protected char GetTokenAsEscapedCharacter(int startIndex)
@@ -258,7 +302,7 @@ namespace Devsense.PHP.Syntax
             int result = 0;
             int buffer_pos = token_start + startIndex;
 
-            for (;;)
+            for (; ; )
             {
                 int digit = Convert.AlphaNumericToDigit(buffer[buffer_pos]);
                 if (digit >= @base) break;
@@ -269,7 +313,6 @@ namespace Devsense.PHP.Syntax
 
             return result;
         }
-
 
         /// <summary>
         /// Reads token as a number (accepts tokens with any reasonable base [0-9a-zA-Z]*).
@@ -329,7 +372,6 @@ namespace Devsense.PHP.Syntax
             }
         }
 
-
         // [0-9]*[.][0-9]+
         // [0-9]+[.][0-9]*
         // [0-9]*[.][0-9]+[eE][+-]?[0-9]+
@@ -337,7 +379,7 @@ namespace Devsense.PHP.Syntax
         // [0-9]+[eE][+-]?[0-9]+
         protected double GetTokenAsDouble(int startIndex)
         {
-            string str = new string(buffer, token_start, token_end - token_start);
+            string str = GetTokenSubstring(startIndex, true);
 
             try
             {
@@ -463,7 +505,7 @@ namespace Devsense.PHP.Syntax
                         break;
                 }
             }
-            
+
             return result.Result;
         }
 
