@@ -97,7 +97,9 @@ namespace Devsense.PHP.Syntax.Ast
         public virtual LangElement Call(Span span, LangElement nameExpr, CallSignature signature, TypeRef typeRef)
         {
             Debug.Assert(nameExpr is Expression);
-            return new IndirectStMtdCall(span, typeRef, (Expression)nameExpr, signature.Parameters, signature.Position, signature.GenericParams, Span.Invalid);
+            var call = new IndirectStMtdCall(span, typeRef, (Expression)nameExpr, signature.Parameters, signature.GenericParams);
+            call.CallSignature.Position = signature.Position;
+            return call;
         }
 
         public virtual LangElement Call(Span span, LangElement nameExpr, CallSignature signature, LangElement memberOfOpt)
@@ -110,7 +112,9 @@ namespace Devsense.PHP.Syntax.Ast
 
         public virtual LangElement Call(Span span, Name name, Span nameSpan, CallSignature signature, TypeRef typeRef)
         {
-            return new DirectStMtdCall(span, new ClassConstUse(span, typeRef, new VariableNameRef(nameSpan, name.Value)), signature.Parameters, signature.Position, signature.GenericParams, Span.Invalid);
+            var call = new DirectStMtdCall(span, new ClassConstUse(span, typeRef, new VariableNameRef(nameSpan, name.Value)), signature.Parameters, signature.GenericParams);
+            call.CallSignature.Position = signature.Position;
+            return call;
         }
 
         public virtual LangElement Call(Span span, TranslatedQualifiedName name, CallSignature signature, LangElement memberOfOpt)

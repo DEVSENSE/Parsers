@@ -151,7 +151,7 @@ namespace Devsense.PHP.Syntax.Ast
         private short _commaOffset = -1;
 
         /// <summary>
-        /// Position of the reference operator '&'.
+        /// Position of the reference operator.
         /// </summary>
         public int RefPosition
         {

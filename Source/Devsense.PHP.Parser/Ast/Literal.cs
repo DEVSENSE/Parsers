@@ -149,9 +149,8 @@ namespace Devsense.PHP.Syntax.Ast
         /// <summary>
         /// Initializes a new instance of the DoubleLiteral class.
         /// </summary>
-        /// <param name="value">A double value to be stored in node.</param>
         /// <param name="p">A position.</param>
-        /// <param name="format">Value format.</param>
+        /// <param name="value">A double value to be stored in node.</param>
         public DoubleLiteral(Text.Span p, double value)
 			: base(p)
 		{
