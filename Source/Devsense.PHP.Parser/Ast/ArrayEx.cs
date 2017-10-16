@@ -84,10 +84,9 @@ namespace Devsense.PHP.Syntax.Ast
         /// </summary>
         public virtual int CommaPosition { get; set; }
 
-        protected Item(Expression index, int arrowPosition)
+        protected Item(Expression index)
         {
             this.index = index;
-            ArrowPosition = arrowPosition;
         }
 
         internal bool HasKey { get { return (index != null); } }
@@ -119,8 +118,8 @@ namespace Devsense.PHP.Syntax.Ast
         public bool IsCommaPresent => _commaOffset >= 0;
         private short _commaOffset = -1;
 
-        public ValueItem(Expression index, int operatorPosition, Expression/*!*/ valueExpr)
-            : base(index, operatorPosition)
+        public ValueItem(Expression index, Expression/*!*/ valueExpr)
+            : base(index)
         {
             Debug.Assert(valueExpr != null);
             this.valueExpr = valueExpr;
@@ -151,8 +150,18 @@ namespace Devsense.PHP.Syntax.Ast
         public bool IsCommaPresent => _commaOffset >= 0;
         private short _commaOffset = -1;
 
-        public RefItem(Expression index, int operatorPosition, int refPosition, VariableUse refToGet)
-            : base(index, operatorPosition)
+        /// <summary>
+        /// Position of the reference operator '&'.
+        /// </summary>
+        public int RefPosition
+        {
+            get { return refToGet.Span.Start + _refOffset; }
+            set { _refOffset = (short)(value - refToGet.Span.Start); }
+        }
+        private short _refOffset = -1;
+
+        public RefItem(Expression index, VariableUse refToGet)
+            : base(index)
         {
             Debug.Assert(refToGet != null);
             this.refToGet = refToGet;

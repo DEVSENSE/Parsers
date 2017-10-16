@@ -592,9 +592,8 @@ namespace Devsense.PHP.Syntax.Ast
         /// </summary>
         /// <param name="span">Entire element span.</param>
         /// <param name="value">Literal value.</param>
-        /// <param name="format">Literal value format.</param>
         /// <returns>Literal expression.</returns>
-        TNode Literal(TSpan span, object value, Literal.LiteralFormat format = Ast.Literal.LiteralFormat.None);
+        TNode Literal(TSpan span, object value);
 
         /// <summary>
         /// Creates binary operation expression.

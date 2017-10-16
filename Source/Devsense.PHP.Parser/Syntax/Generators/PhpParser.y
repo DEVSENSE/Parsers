@@ -1207,23 +1207,23 @@ lexical_var:
 
 function_call:
 		name argument_list
-			{ $$ = _astFactory.Call(@$, TranslateQNRFunction($1), new CallSignature($2, @2), null); }
+			{ $$ = _astFactory.Call(@$, TranslateQNRFunction($1), new CallSignature($2) { Position = @2 }, null); }
 	|	class_name T_DOUBLE_COLON member_name argument_list
 			{
 				if($3 is Name)
-					$$ = _astFactory.Call(@$, (Name)$3, @3, new CallSignature($4, @4), $1); 
+					$$ = _astFactory.Call(@$, (Name)$3, @3, new CallSignature($4) { Position = @4 }, $1); 
 				else
-					$$ = _astFactory.Call(@$, (LangElement)$3, new CallSignature($4, @4), $1); 
+					$$ = _astFactory.Call(@$, (LangElement)$3, new CallSignature($4) { Position = @4 }, $1); 
 			}
 	|	variable_class_name T_DOUBLE_COLON member_name argument_list
 			{
 				if($3 is Name)
-					$$ = _astFactory.Call(@$, (Name)$3, @3, new CallSignature($4, @4), _astFactory.TypeReference(@1, $1)); 
+					$$ = _astFactory.Call(@$, (Name)$3, @3, new CallSignature($4) { Position = @4 }, _astFactory.TypeReference(@1, $1)); 
 				else
-					$$ = _astFactory.Call(@$, (LangElement)$3, new CallSignature($4, @4), _astFactory.TypeReference(@1, $1)); 
+					$$ = _astFactory.Call(@$, (LangElement)$3, new CallSignature($4) { Position = @4 }, _astFactory.TypeReference(@1, $1)); 
 			}
 	|	callable_expr argument_list
-			{ $$ = _astFactory.Call(@$, $1, new CallSignature($2, @2), NullLangElement);}
+			{ $$ = _astFactory.Call(@$, $1, new CallSignature($2) { Position = @2 }, NullLangElement);}
 ;
 
 class_name:
@@ -1328,10 +1328,10 @@ callable_variable:
 			if($3 is Name)
 			{
 				var name = new QualifiedName((Name)$3);
-				$$ = _astFactory.Call(@$, new TranslatedQualifiedName(name, @3, name, null), new CallSignature($4, @4), VerifyMemberOf($1));
+				$$ = _astFactory.Call(@$, new TranslatedQualifiedName(name, @3, name, null), new CallSignature($4) { Position = @4 }, VerifyMemberOf($1));
 			}
 			else
-				$$ = _astFactory.Call(@$, (LangElement)$3, new CallSignature($4, @4), VerifyMemberOf($1));
+				$$ = _astFactory.Call(@$, (LangElement)$3, new CallSignature($4) { Position = @4 }, VerifyMemberOf($1));
 		}
 	|	function_call { $$ = $1; }
 ;

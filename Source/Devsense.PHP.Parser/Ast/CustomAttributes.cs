@@ -147,7 +147,7 @@ namespace Devsense.PHP.Syntax.Ast
         {
             this.qualifiedName = qualifiedName;
             this.namedParameters = namedParameters;
-            this.callSignature = new CallSignature(parameters, GenericTypeRef.EmptyList, parametersSpan);
+            this.callSignature = new CallSignature(parameters, GenericTypeRef.EmptyList);
         }
 
         /// <summary>

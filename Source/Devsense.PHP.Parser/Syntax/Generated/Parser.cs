@@ -3001,26 +3001,26 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 { yyval.FormalParam = _astFactory.Parameter(yypos, value_stack.array[value_stack.top-1].yyval.String, value_stack.array[value_stack.top-1].yypos, null, FormalParam.Flags.IsByRef, Span.Invalid, null); }
         return;
       case 388: // function_call -> name argument_list 
-{ yyval.Node = _astFactory.Call(yypos, TranslateQNRFunction(value_stack.array[value_stack.top-2].yyval.QualifiedNameReference), new CallSignature(value_stack.array[value_stack.top-1].yyval.ParamList, value_stack.array[value_stack.top-1].yypos), null); }
+{ yyval.Node = _astFactory.Call(yypos, TranslateQNRFunction(value_stack.array[value_stack.top-2].yyval.QualifiedNameReference), new CallSignature(value_stack.array[value_stack.top-1].yyval.ParamList) { Position = value_stack.array[value_stack.top-1].yypos }, null); }
         return;
       case 389: // function_call -> class_name T_DOUBLE_COLON member_name argument_list 
 {
 				if(value_stack.array[value_stack.top-2].yyval.Object is Name)
-					yyval.Node = _astFactory.Call(yypos, (Name)value_stack.array[value_stack.top-2].yyval.Object, value_stack.array[value_stack.top-2].yypos, new CallSignature(value_stack.array[value_stack.top-1].yyval.ParamList, value_stack.array[value_stack.top-1].yypos), value_stack.array[value_stack.top-4].yyval.TypeReference); 
+					yyval.Node = _astFactory.Call(yypos, (Name)value_stack.array[value_stack.top-2].yyval.Object, value_stack.array[value_stack.top-2].yypos, new CallSignature(value_stack.array[value_stack.top-1].yyval.ParamList) { Position = value_stack.array[value_stack.top-1].yypos }, value_stack.array[value_stack.top-4].yyval.TypeReference); 
 				else
-					yyval.Node = _astFactory.Call(yypos, (LangElement)value_stack.array[value_stack.top-2].yyval.Object, new CallSignature(value_stack.array[value_stack.top-1].yyval.ParamList, value_stack.array[value_stack.top-1].yypos), value_stack.array[value_stack.top-4].yyval.TypeReference); 
+					yyval.Node = _astFactory.Call(yypos, (LangElement)value_stack.array[value_stack.top-2].yyval.Object, new CallSignature(value_stack.array[value_stack.top-1].yyval.ParamList) { Position = value_stack.array[value_stack.top-1].yypos }, value_stack.array[value_stack.top-4].yyval.TypeReference); 
 			}
         return;
       case 390: // function_call -> variable_class_name T_DOUBLE_COLON member_name argument_list 
 {
 				if(value_stack.array[value_stack.top-2].yyval.Object is Name)
-					yyval.Node = _astFactory.Call(yypos, (Name)value_stack.array[value_stack.top-2].yyval.Object, value_stack.array[value_stack.top-2].yypos, new CallSignature(value_stack.array[value_stack.top-1].yyval.ParamList, value_stack.array[value_stack.top-1].yypos), _astFactory.TypeReference(value_stack.array[value_stack.top-4].yypos, value_stack.array[value_stack.top-4].yyval.Node)); 
+					yyval.Node = _astFactory.Call(yypos, (Name)value_stack.array[value_stack.top-2].yyval.Object, value_stack.array[value_stack.top-2].yypos, new CallSignature(value_stack.array[value_stack.top-1].yyval.ParamList) { Position = value_stack.array[value_stack.top-1].yypos }, _astFactory.TypeReference(value_stack.array[value_stack.top-4].yypos, value_stack.array[value_stack.top-4].yyval.Node)); 
 				else
-					yyval.Node = _astFactory.Call(yypos, (LangElement)value_stack.array[value_stack.top-2].yyval.Object, new CallSignature(value_stack.array[value_stack.top-1].yyval.ParamList, value_stack.array[value_stack.top-1].yypos), _astFactory.TypeReference(value_stack.array[value_stack.top-4].yypos, value_stack.array[value_stack.top-4].yyval.Node)); 
+					yyval.Node = _astFactory.Call(yypos, (LangElement)value_stack.array[value_stack.top-2].yyval.Object, new CallSignature(value_stack.array[value_stack.top-1].yyval.ParamList) { Position = value_stack.array[value_stack.top-1].yypos }, _astFactory.TypeReference(value_stack.array[value_stack.top-4].yypos, value_stack.array[value_stack.top-4].yyval.Node)); 
 			}
         return;
       case 391: // function_call -> callable_expr argument_list 
-{ yyval.Node = _astFactory.Call(yypos, value_stack.array[value_stack.top-2].yyval.Node, new CallSignature(value_stack.array[value_stack.top-1].yyval.ParamList, value_stack.array[value_stack.top-1].yypos), NullLangElement);}
+{ yyval.Node = _astFactory.Call(yypos, value_stack.array[value_stack.top-2].yyval.Node, new CallSignature(value_stack.array[value_stack.top-1].yyval.ParamList) { Position = value_stack.array[value_stack.top-1].yypos }, NullLangElement);}
         return;
       case 392: // class_name -> T_STATIC 
 { yyval.TypeReference = _astFactory.ReservedTypeReference(yypos, _reservedTypeStatic); }
@@ -3171,10 +3171,10 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 			if(value_stack.array[value_stack.top-2].yyval.Object is Name)
 			{
 				var name = new QualifiedName((Name)value_stack.array[value_stack.top-2].yyval.Object);
-				yyval.Node = _astFactory.Call(yypos, new TranslatedQualifiedName(name, value_stack.array[value_stack.top-2].yypos, name, null), new CallSignature(value_stack.array[value_stack.top-1].yyval.ParamList, value_stack.array[value_stack.top-1].yypos), VerifyMemberOf(value_stack.array[value_stack.top-4].yyval.Node));
+				yyval.Node = _astFactory.Call(yypos, new TranslatedQualifiedName(name, value_stack.array[value_stack.top-2].yypos, name, null), new CallSignature(value_stack.array[value_stack.top-1].yyval.ParamList) { Position = value_stack.array[value_stack.top-1].yypos }, VerifyMemberOf(value_stack.array[value_stack.top-4].yyval.Node));
 			}
 			else
-				yyval.Node = _astFactory.Call(yypos, (LangElement)value_stack.array[value_stack.top-2].yyval.Object, new CallSignature(value_stack.array[value_stack.top-1].yyval.ParamList, value_stack.array[value_stack.top-1].yypos), VerifyMemberOf(value_stack.array[value_stack.top-4].yyval.Node));
+				yyval.Node = _astFactory.Call(yypos, (LangElement)value_stack.array[value_stack.top-2].yyval.Object, new CallSignature(value_stack.array[value_stack.top-1].yyval.ParamList) { Position = value_stack.array[value_stack.top-1].yypos }, VerifyMemberOf(value_stack.array[value_stack.top-4].yyval.Node));
 		}
         return;
       case 441: // callable_variable -> function_call 

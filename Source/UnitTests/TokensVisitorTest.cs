@@ -215,14 +215,7 @@ namespace UnitTests
                 }
                 else if (literal is StringLiteral)
                 {
-                    if (literal.Format == Literal.LiteralFormat.SingleQuotes)
-                    {
-                        ConsumeToken(Tokens.T_CONSTANT_ENCAPSED_STRING, origianl != null ? origianl : $"'{((StringLiteral)literal).Value}'", literal.Span.StartOrInvalid);
-                    }
-                    else
-                    {
-                        ConsumeToken(Tokens.T_CONSTANT_ENCAPSED_STRING, origianl != null ? origianl : $"\"{((StringLiteral)literal).Value}\"", literal.Span.StartOrInvalid);
-                    }
+                    ConsumeToken(Tokens.T_CONSTANT_ENCAPSED_STRING, origianl != null ? origianl : $"\"{((StringLiteral)literal).Value}\"", literal.Span.StartOrInvalid);
                 }
             }
 

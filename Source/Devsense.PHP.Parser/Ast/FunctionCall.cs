@@ -32,12 +32,12 @@ namespace Devsense.PHP.Syntax.Ast
         /// </summary>
         public abstract Text.Span NameSpan { get; }
 
-        public FunctionCall(Text.Span span, IList<ActualParam> parameters, Text.Span parametersSpan, IList<TypeRef> genericParams, Text.Span genericParametersSpan)
+        public FunctionCall(Text.Span span, IList<ActualParam> parameters, IList<TypeRef> genericParams)
             : base(span)
         {
             Debug.Assert(parameters != null);
 
-            this.callSignature = new CallSignature(parameters, genericParams, parametersSpan);
+            this.callSignature = new CallSignature(parameters, genericParams);
         }
     }
 
@@ -65,8 +65,8 @@ namespace Devsense.PHP.Syntax.Ast
         public override Text.Span NameSpan => _fullName.Span;
 
         public DirectFcnCall(Text.Span span, TranslatedQualifiedName name,
-            IList<ActualParam> parameters, Text.Span parametersSpan, IList<TypeRef> genericParams, Text.Span genericParametersSpan)
-            : base(span, parameters, parametersSpan, genericParams, genericParametersSpan)
+            IList<ActualParam> parameters, IList<TypeRef> genericParams)
+            : base(span, parameters, genericParams)
         {
             _fullName = name;
         }
@@ -93,8 +93,8 @@ namespace Devsense.PHP.Syntax.Ast
         internal Expression/*!*/ nameExpr;
         public override Text.Span NameSpan => NameExpr.Span;
 
-        public IndirectFcnCall(Text.Span p, Expression/*!*/ nameExpr, IList<ActualParam> parameters, Text.Span parametersSpan, IList<TypeRef> genericParams, Text.Span genericParametersSpan)
-            : base(p, parameters, parametersSpan, genericParams, genericParametersSpan)
+        public IndirectFcnCall(Text.Span p, Expression/*!*/ nameExpr, IList<ActualParam> parameters, IList<TypeRef> genericParams)
+            : base(p, parameters, genericParams)
         {
             this.nameExpr = nameExpr;
         }
@@ -134,7 +134,7 @@ namespace Devsense.PHP.Syntax.Ast
         }
 
         public StaticMtdCall(Text.Span span, TypeRef typeRef, IList<ActualParam> parameters, Text.Span parametersSpan, IList<TypeRef> genericParams, Text.Span genericParametersSpan)
-            : base(span, parameters, parametersSpan, genericParams, genericParametersSpan)
+            : base(span, parameters, genericParams)
         {
             Debug.Assert(typeRef != null);
 

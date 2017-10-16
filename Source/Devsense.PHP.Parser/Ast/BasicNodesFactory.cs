@@ -45,11 +45,11 @@ namespace Devsense.PHP.Syntax.Ast
         }
         public virtual Item ArrayItemValue(Span span, LangElement indexOpt, int operatorPosition, LangElement valueExpr)
         {
-            return new ValueItem((Expression)indexOpt, operatorPosition, (Expression)valueExpr);
+            return new ValueItem((Expression)indexOpt, (Expression)valueExpr) { ArrowPosition = operatorPosition };
         }
         public virtual Item ArrayItemRef(Span span, LangElement indexOpt, int operatorPosition, int refPosition, LangElement variable)
         {
-            return new RefItem((Expression)indexOpt, operatorPosition, refPosition, (VariableUse)variable);
+            return new RefItem((Expression)indexOpt, (VariableUse)variable) { ArrowPosition = operatorPosition, RefPosition = refPosition };
         }
 
         public virtual LangElement Assignment(Span span, LangElement target, LangElement value, Operations assignOp, Span operationSpan, Span refSpan)
@@ -103,7 +103,9 @@ namespace Devsense.PHP.Syntax.Ast
         public virtual LangElement Call(Span span, LangElement nameExpr, CallSignature signature, LangElement memberOfOpt)
         {
             Debug.Assert(nameExpr is Expression);
-            return new IndirectFcnCall(span, (Expression)nameExpr, signature.Parameters, signature.Position, signature.GenericParams, Span.Invalid) { IsMemberOf = (VarLikeConstructUse)memberOfOpt };
+            var call = new IndirectFcnCall(span, (Expression)nameExpr, signature.Parameters, signature.GenericParams) { IsMemberOf = (VarLikeConstructUse)memberOfOpt };
+            call.CallSignature.Position = signature.Position;
+            return call;
         }
 
         public virtual LangElement Call(Span span, Name name, Span nameSpan, CallSignature signature, TypeRef typeRef)
@@ -114,7 +116,9 @@ namespace Devsense.PHP.Syntax.Ast
         public virtual LangElement Call(Span span, TranslatedQualifiedName name, CallSignature signature, LangElement memberOfOpt)
         {
             Debug.Assert(memberOfOpt == null || memberOfOpt is VarLikeConstructUse);
-            return new DirectFcnCall(span, name, signature.Parameters, signature.Position, signature.GenericParams, Span.Invalid) { IsMemberOf = (VarLikeConstructUse)memberOfOpt };
+            var call = new DirectFcnCall(span, name, signature.Parameters, signature.GenericParams) { IsMemberOf = (VarLikeConstructUse)memberOfOpt };
+            call.CallSignature.Position = signature.Position;
+            return call;
         }
         public virtual ActualParam ActualParameter(Span span, LangElement expr, ActualParam.Flags flags)
         {
@@ -318,14 +322,14 @@ namespace Devsense.PHP.Syntax.Ast
             return new ListEx(span, targets.AsArray());
         }
 
-        public virtual LangElement Literal(Span span, object value, Literal.LiteralFormat format)
+        public virtual LangElement Literal(Span span, object value)
         {
             if (value is long)
-                return new LongIntLiteral(span, (long)value, format);
+                return new LongIntLiteral(span, (long)value);
             else if (value is int)
-                return new LongIntLiteral(span, (int)value, format);
+                return new LongIntLiteral(span, (int)value);
             else if (value is double)
-                return new DoubleLiteral(span, (double)value, format);
+                return new DoubleLiteral(span, (double)value);
             else if (value is string)
             {
                 var text = (string)value;
@@ -335,7 +339,7 @@ namespace Devsense.PHP.Syntax.Ast
                 {
                     text = text.Substring(1, text.Length - 2);
                 }
-                return new StringLiteral(span, text, format);
+                return new StringLiteral(span, text);
             }
             else if (value is byte[])
                 return new BinaryStringLiteral(span, (byte[])value);
@@ -375,7 +379,9 @@ namespace Devsense.PHP.Syntax.Ast
 
         public virtual LangElement New(Span span, TypeRef classNameRef, IEnumerable<ActualParam> argsOpt, Span argsPosition)
         {
-            return new NewEx(span, classNameRef, argsOpt.AsArray(), argsPosition);
+            var call = new NewEx(span, classNameRef, argsOpt.AsArray());
+            call.CallSignature.Position = argsPosition;
+            return call;
         }
 
         public virtual LangElement NewArray(Span span, IEnumerable<Item> itemsOpt)

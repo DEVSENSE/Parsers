@@ -126,7 +126,7 @@ namespace Devsense.PHP.Syntax.Ast
         /// <summary>
         /// Signature position including the parentheses.
         /// </summary>
-        public Text.Span Position { get { return _position; } }
+        public Text.Span Position { get { return _position; } set { _position = value; } }
         private Text.Span _position;
 
         /// <summary>
@@ -148,9 +148,8 @@ namespace Devsense.PHP.Syntax.Ast
         /// Initialize new instance of <see cref="CallSignature"/>.
         /// </summary>
         /// <param name="parameters">List of parameters.</param>
-        /// <param name="position">Span containing the open and close parentheses.</param>
-        public CallSignature(IList<ActualParam> parameters, Text.Span position)
-            : this(parameters, null, position)
+        public CallSignature(IList<ActualParam> parameters)
+            : this(parameters, null)
         {
         }
 
@@ -159,12 +158,10 @@ namespace Devsense.PHP.Syntax.Ast
         /// </summary>
         /// <param name="parameters">List of parameters.</param>
         /// <param name="genericParams">List of type parameters for generics.</param>
-        /// <param name="position">Span containing the open and close parentheses.</param>
-        public CallSignature(IList<ActualParam> parameters, IList<TypeRef> genericParams, Text.Span position)
+        public CallSignature(IList<ActualParam> parameters, IList<TypeRef> genericParams)
         {
             this.parameters = (parameters ?? throw new ArgumentNullException(nameof(parameters))).AsArray();
             this.GenericParams = genericParams.AsArray();
-            _position = position;
         }
     }
 
