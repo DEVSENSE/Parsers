@@ -366,9 +366,9 @@ namespace Devsense.PHP.Syntax
         private LangElement CreateProperty(Span span, LangElement objectExpr, object name)
         {
             if (name is Name)
-                return _astFactory.Variable(span, ((Name)name).Value, objectExpr);
+                return _astFactory.Variable(span, ((Name)name).Value, VerifyMemberOf(objectExpr));
             else
-                return _astFactory.Variable(span, (LangElement)name, objectExpr);
+                return _astFactory.Variable(span, (LangElement)name, VerifyMemberOf(objectExpr));
         }
 
         private LangElement CreateStaticProperty(Span span, TypeRef objectName, Span objectNamePos, object name)
@@ -658,7 +658,9 @@ namespace Devsense.PHP.Syntax
         void SetModifiers(LangElement element, ModifierPosition modifier, int start)
         {
             KeyValuePair<PhpMemberAttributes, short>[] modifiers = null;
-            if (_languageFeatures.HasFeature(LanguageFeatures.FullInformation) && (modifiers = modifier.Modifiers(start)) != null)
+            if (/*_languageFeatures.HasFeature(LanguageFeatures.FullInformation) && */
+                (modifiers = modifier.Modifiers(start)) != null &&
+                (!(element is MethodDecl) || modifiers.Length > 1))
             {
                 element.Properties.SetProperty(TypeMemberDecl.ModifierPositionProperty, modifiers);
             }
