@@ -361,7 +361,7 @@ namespace Devsense.PHP.Syntax.Ast
     /// 
     /// That's why we dont'need to know Position => is not child of LangElement
     /// </remarks>
-    public class StaticVarDecl : LangElement
+    public class StaticVarDecl : LangElement, ISeparatedElements
     {
         /// <summary>Static variable being declared</summary>
         public VariableName/*!*/ Variable { get { return variable; } }
@@ -371,6 +371,17 @@ namespace Devsense.PHP.Syntax.Ast
         /// Span of the static variable name.
         /// </summary>
         public Text.Span NameSpan => new Text.Span(Span.Start, variable.Value.Length + 1);
+
+        /// <summary>
+        /// Position of the comma separator following the item, <c>-1</c> if not present.
+        /// </summary>
+        public int SeparatorPosition
+        {
+            get { return _separatorOffset < 0 ? -1 : Span.Start + _separatorOffset; }
+            set { _separatorOffset = value < 0 ? (short)-1 : (short)(value - Span.Start); }
+        }
+        public bool IsSeparatorPresent => _separatorOffset >= 0;
+        private short _separatorOffset = -1;
 
         /// <summary>Expression used to initialize static variable</summary>
         public Expression Initializer { get { return initializer; } internal set { initializer = value; } }
@@ -423,10 +434,21 @@ namespace Devsense.PHP.Syntax.Ast
 
     #region UseStatement
 
-    public abstract class UseBase
+    public abstract class UseBase : ISeparatedElements
     {
         public Span Span => _span;
         private readonly Span _span;
+
+        /// <summary>
+        /// Position of the comma separator following the item, <c>-1</c> if not present.
+        /// </summary>
+        public int SeparatorPosition
+        {
+            get { return _separatorOffset < 0 ? -1 : Span.Start + _separatorOffset; }
+            set { _separatorOffset = value < 0 ? (short)-1 : (short)(value - Span.Start); }
+        }
+        public bool IsSeparatorPresent => _separatorOffset >= 0;
+        private short _separatorOffset = -1;
 
         public UseBase(Span span)
         {

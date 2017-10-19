@@ -224,8 +224,8 @@ namespace UnitTests
             public override LangElement Catch(Span span, TypeRef typeOpt, DirectVarUse variable, LangElement block)
                  => CountLE(base.Catch(span, typeOpt, variable, block));
 
-            public override LangElement ClassConstDecl(Span span, VariableName name, Span nameSpan, LangElement initializer)
-                 => CountLE(base.ClassConstDecl(span, name, nameSpan, initializer));
+            public override LangElement ClassConstDecl(Span span, VariableName name, Span nameSpan, Span operatorSpan, LangElement initializer)
+                 => CountLE(base.ClassConstDecl(span, name, nameSpan, operatorSpan, initializer));
 
             public override LangElement ClassConstUse(Span span, TypeRef tref, Name name, Span nameSpan)
                  => CountLE(base.ClassConstUse(span, tref, name, nameSpan));
@@ -254,8 +254,8 @@ namespace UnitTests
                 return CountLE(base.Declare(span, decls, statementOpt));
             }
 
-            public override LangElement DeclList(Span span, PhpMemberAttributes attributes, IEnumerable<LangElement> decls)
-                 => CountLE(base.DeclList(span, attributes, decls));
+            public override LangElement DeclList(Span span, PhpMemberAttributes attributes, int contPos, IEnumerable<LangElement> decls)
+                 => CountLE(base.DeclList(span, attributes, contPos, decls));
 
             public override LangElement Do(Span span, LangElement body, LangElement cond, Span condSpan)
                  => CountLE(base.Do(span, body, cond, condSpan));
@@ -305,8 +305,8 @@ namespace UnitTests
             public override LangElement GlobalCode(Span span, IEnumerable<LangElement> statements, NamingContext context)
                  => CountLE(base.GlobalCode(span, statements, context));
 
-            public override LangElement GlobalConstDecl(Span span, bool conditional, VariableName name, Span nameSpan, LangElement initializer)
-                 => CountLE(base.GlobalConstDecl(span, conditional, name, nameSpan, initializer));
+            public override LangElement GlobalConstDecl(Span span, bool conditional, VariableName name, Span nameSpan, Span operatorSpan, LangElement initializer)
+                 => CountLE(base.GlobalConstDecl(span, conditional, name, nameSpan, operatorSpan, initializer));
 
             public override LangElement Goto(Span span, string label, Span labelSpan)
                  => CountLE(base.Goto(span, label, labelSpan));
@@ -414,7 +414,7 @@ namespace UnitTests
             public override LangElement TraitAdaptationBlock(Span span, IEnumerable<LangElement> adaptations)
                  => CountLE(base.TraitAdaptationBlock(span, adaptations));
 
-            public override LangElement TraitAdaptationPrecedence(Span span, Tuple<QualifiedNameRef, NameRef> name, IEnumerable<QualifiedNameRef> precedences)
+            public override LangElement TraitAdaptationPrecedence(Span span, Tuple<QualifiedNameRef, NameRef> name, IEnumerable<TypeRef> precedences)
                  => CountLE(base.TraitAdaptationPrecedence(span, name, precedences));
 
             public override LangElement TraitUse(Span span, IEnumerable<TypeRef> traits, LangElement adaptationsBlock)

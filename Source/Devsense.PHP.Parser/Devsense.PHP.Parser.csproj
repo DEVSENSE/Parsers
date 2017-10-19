@@ -27,6 +27,7 @@
   </PropertyGroup>
   <PropertyGroup>
     <PreBuildEvent>rem "$(ProjectDir)Syntax\Generators\CsLex.exe" $(ProjectDir)Syntax\Generators\PhpLexer.lex $(ProjectDir)Syntax\Generated\Lexer.cs /version:2
-rem "$(ProjectDir)Syntax\Generators\gppg.exe" /l $(ProjectDir)Syntax\Generators\PhpParser.y $(ProjectDir)Syntax\Generated\Parser.cs</PreBuildEvent>
+rem "$(ProjectDir)Syntax\Generators\gppg.exe" /l $(ProjectDir)Syntax\Generators\PhpParser.y $(ProjectDir)Syntax\Generated\Parser.cs
+rem call $(ProjectDir)Syntax\Generators\generate.bat</PreBuildEvent>
   </PropertyGroup>
 </Project>

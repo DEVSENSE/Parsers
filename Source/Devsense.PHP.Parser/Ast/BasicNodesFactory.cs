@@ -130,10 +130,10 @@ namespace Devsense.PHP.Syntax.Ast
             return new ActualParam(span, (Expression)expr, flags);
         }
 
-        public virtual LangElement ClassConstDecl(Span span, VariableName name, Span nameSpan, LangElement initializer)
+        public virtual LangElement ClassConstDecl(Span span, VariableName name, Span nameSpan, Span operatorSpan, LangElement initializer)
         {
             Debug.Assert(initializer == null || initializer is Expression);
-            return new ClassConstantDecl(span, name.Value, nameSpan, (Expression)initializer);
+            return new ClassConstantDecl(span, name.Value, nameSpan, (Expression)initializer) { AssignmentPosition = operatorSpan.StartOrInvalid };
         }
 
         public virtual LangElement ColonBlock(Span span, IEnumerable<LangElement> statements, Tokens endToken)
@@ -150,13 +150,13 @@ namespace Devsense.PHP.Syntax.Ast
             return new ConcatEx(span, expressions.CastToArray<Expression>());
         }
 
-        public virtual LangElement DeclList(Span span, PhpMemberAttributes attributes, IEnumerable<LangElement> decls)
+        public virtual LangElement DeclList(Span span, PhpMemberAttributes attributes, int constPos, IEnumerable<LangElement> decls)
         {
             Debug.Assert(decls.All(e => e is FieldDecl) || decls.All(e => e is GlobalConstantDecl) || decls.All(e => e is ClassConstantDecl));
             if (decls.All(e => e is GlobalConstantDecl))
-                return new GlobalConstDeclList(span, decls.CastToArray<GlobalConstantDecl>(), null);
+                return new GlobalConstDeclList(span, decls.CastToArray<GlobalConstantDecl>(), null) { ConstPosition = constPos };
             else if (decls.All(e => e is ClassConstantDecl))
-                return new ConstDeclList(span, attributes, decls.CastToArray<ClassConstantDecl>(), null);
+                return new ConstDeclList(span, attributes, decls.CastToArray<ClassConstantDecl>(), null) { ConstPosition = constPos };
             else //if (decls.All(e => e is FieldDecl))
                 return new FieldDeclList(span, attributes, decls.CastToArray<FieldDecl>(), null);
         }
@@ -243,7 +243,7 @@ namespace Devsense.PHP.Syntax.Ast
 
         public virtual FormalParam Parameter(Span span, string name, Span nameSpan, TypeRef typeOpt, FormalParam.Flags flags, Span assignSpan, Expression initValue)
         {
-            return new FormalParam(span, name, nameSpan, typeOpt, flags, initValue, null) { AssignPosition = assignSpan.StartOrInvalid };
+            return new FormalParam(span, name, nameSpan, typeOpt, flags, initValue, null) { AssignmentPosition = assignSpan.StartOrInvalid };
         }
 
         public virtual LangElement GlobalCode(Span span, IEnumerable<LangElement> statements, NamingContext context)
@@ -258,9 +258,9 @@ namespace Devsense.PHP.Syntax.Ast
             return ast;
         }
 
-        public virtual LangElement GlobalConstDecl(Span span, bool conditional, VariableName name, Span nameSpan, LangElement initializer)
+        public virtual LangElement GlobalConstDecl(Span span, bool conditional, VariableName name, Span nameSpan, Span operatorSpan, LangElement initializer)
         {
-            return new GlobalConstantDecl(span, conditional, name.Value, nameSpan, (Expression)initializer);
+            return new GlobalConstantDecl(span, conditional, name.Value, nameSpan, (Expression)initializer) { AssignmentPosition = operatorSpan.StartOrInvalid };
         }
 
         public virtual LangElement Goto(Span span, string label, Span labelSpan)
@@ -424,7 +424,7 @@ namespace Devsense.PHP.Syntax.Ast
             return new TraitsUse(span, traits.AsArray(), (TraitAdaptationBlock)adaptationsBlock);
         }
 
-        public virtual LangElement TraitAdaptationPrecedence(Span span, Tuple<QualifiedNameRef, NameRef> name, IEnumerable<QualifiedNameRef> precedences)
+        public virtual LangElement TraitAdaptationPrecedence(Span span, Tuple<QualifiedNameRef, NameRef> name, IEnumerable<TypeRef> precedences)
         {
             Debug.Assert(precedences != null);
             return new TraitsUse.TraitAdaptationPrecedence(span, name, precedences.AsArray());

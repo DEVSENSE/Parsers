@@ -379,6 +379,14 @@ namespace Devsense.PHP.Syntax
                 return _astFactory.Variable(span, ((IndirectVarUse)name).VarNameEx, objectName);
         }
 
+        private void SetComma(ISeparatedElements node, int position)
+        {
+            if (node != null)
+            {
+                node.SeparatorPosition = position;
+            }
+        }
+
         private LangElement CreateStaticProperty(Span span, LangElement objectExpr, Span objectNamePos, object name) =>
             CreateStaticProperty(span, _astFactory.TypeReference(objectNamePos, objectExpr), objectNamePos, name);
 
@@ -490,19 +498,6 @@ namespace Devsense.PHP.Syntax
             return (TryTranslateAny(tname, out translated)) ?
                 _astFactory.AliasedTypeReference(span, translated, _astFactory.TypeReference(span, tname)) :
                 _astFactory.TypeReference(span, tname);
-        }
-
-        IList<TypeRef> TypeRefListFromQNRList(IList<QualifiedNameRef> nrefList)
-        {
-            var types = new TypeRef[nrefList.Count];
-
-            for (int i = 0; i < types.Length; i++)
-            {
-                var qnr = nrefList[i];
-                types[i] = CreateTypeRef(qnr.Span, qnr);
-            }
-
-            return types;
         }
 
         LangElement CreateIncDec(Span span, LangElement variable, bool inc, bool post)

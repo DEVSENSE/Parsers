@@ -191,6 +191,16 @@ namespace Devsense.PHP.Syntax.Ast
             set { this.SetCustomAttributes(value); }
         }
 
+        /// <summary>
+        /// Position of the 'function' keyword.
+        /// </summary>
+        public int ConstPosition
+        {
+            get { return Span.Start + _constOffset; }
+            set { _constOffset = (short)(value - Span.Start); }
+        }
+        private short _constOffset = 0;
+
         public IList<GlobalConstantDecl>/*!*/ Constants { get { return constants; } }
         private readonly IList<GlobalConstantDecl>/*!*/ constants;
 

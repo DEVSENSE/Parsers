@@ -208,7 +208,7 @@ namespace Devsense.PHP.Syntax.Ast
         /// <param name="name">Member affected by the precedence.</param>
         /// <param name="precedences">The renamed types and members.</param>
         /// <returns>TraitAdaptationPrecedence expression</returns>
-        TNode TraitAdaptationPrecedence(TSpan span, Tuple<QualifiedNameRef, NameRef> name, IEnumerable<QualifiedNameRef> precedences);
+        TNode TraitAdaptationPrecedence(TSpan span, Tuple<QualifiedNameRef, NameRef> name, IEnumerable<TypeRef> precedences);
 
         /// <summary>
         /// Create <c>TraitAdaptationAlias</c> expression.
@@ -237,9 +237,10 @@ namespace Devsense.PHP.Syntax.Ast
         /// </summary>
         /// <param name="span">Entire element span.</param>
         /// <param name="attributes">Type member attributes.</param>
+        /// <param name="constPos">Position of the const keyword, <c>-1</c> if not present.</param>
         /// <param name="decls">Enumeration of declarations.</param>
         /// <returns>Declaration list.</returns>
-        TNode DeclList(TSpan span, PhpMemberAttributes attributes, IEnumerable<TNode> decls);
+        TNode DeclList(TSpan span, PhpMemberAttributes attributes, int constPos, IEnumerable<TNode> decls);
 
         /// <summary>
         /// Creates field declaration.
@@ -257,9 +258,10 @@ namespace Devsense.PHP.Syntax.Ast
         /// <param name="span">Entire element span.</param>
         /// <param name="name">Constant name.</param>
         /// <param name="nameSpan">Complete name span.</param>
+        /// <param name="operatorSpan">Position of the assignment operator is present.</param>
         /// <param name="initializer">Constant value expression.</param>
         /// <returns>Class constant declaration.</returns>
-        TNode ClassConstDecl(TSpan span, VariableName name, TSpan nameSpan, TNode initializer);
+        TNode ClassConstDecl(TSpan span, VariableName name, TSpan nameSpan, Span operatorSpan, TNode initializer);
 
         /// <summary>
         /// Creates global constant declaration.
@@ -268,11 +270,12 @@ namespace Devsense.PHP.Syntax.Ast
         /// <param name="conditional">Whether the declaration is conditional.</param>
         /// <param name="name">Constant name.</param>
         /// <param name="nameSpan">Complete name span.</param>
+        /// <param name="operatorSpan">Position of the assignment operator is present.</param>
         /// <param name="initializer">Constant value expression.</param>
         /// <returns>Global constant declaration.</returns>
         TNode GlobalConstDecl(TSpan span,
             bool conditional,
-            VariableName name, TSpan nameSpan, TNode initializer);
+            VariableName name, TSpan nameSpan, Span operatorSpan, TNode initializer);
 
         /// <summary>
         /// Creates block of code enclosed in braces (<c>{</c> ... <c>}</c>).

@@ -147,7 +147,7 @@ namespace Devsense.PHP.Syntax.Ast
     /// <summary>
     /// Abstract base class for expressions.
     /// </summary>
-    public abstract class Expression : LangElement, IExpression
+    public abstract class Expression : LangElement, IExpression, ISeparatedElements
     {
         /// <summary>
         /// Immutable empty list of <see cref="Expression"/>.
@@ -157,6 +157,24 @@ namespace Devsense.PHP.Syntax.Ast
         public abstract Operations Operation { get; }
 
         protected Expression(Text.Span span) : base(span) { }
+
+        /// <summary>
+        /// Position of the comma separator following the item, <c>-1</c> if not present.
+        /// </summary>
+        public int SeparatorPosition
+        {
+            get
+            {
+                object value;
+                if (Properties.TryGetProperty(PropertiesIdentifiers.SeparatorPosition, out value))
+                {
+                    short offset = (short)value;
+                    return offset < 0 ? -1 : Span.Start + offset;
+                }
+                else return -1;
+            }
+            set { Properties.SetProperty(PropertiesIdentifiers.SeparatorPosition, value < 0 ? (short)-1 : (short)(value - Span.Start)); }
+        }
 
         /// <summary>
         /// Compressed type information used by eventual type analysis.
@@ -178,13 +196,30 @@ namespace Devsense.PHP.Syntax.Ast
 
     #region ConstantDecl
 
-    public abstract class ConstantDecl : LangElement
+    public abstract class ConstantDecl : LangElement, ISeparatedElements, IInitializedElements
     {
         public VariableNameRef Name { get { return name; } }
         protected VariableNameRef name;
 
         public Expression/*!*/ Initializer { get { return initializer; } internal set { initializer = value; } }
         private Expression/*!*/ initializer;
+
+        /// <summary>
+        /// Position of the comma separator following the item, <c>-1</c> if not present.
+        /// </summary>
+        public int SeparatorPosition
+        {
+            get { return _separatorOffset < 0 ? -1 : Span.Start + _separatorOffset; }
+            set { _separatorOffset = value < 0 ? (short)-1 : (short)(value - Span.Start); }
+        }
+        public bool IsSeparatorPresent => _separatorOffset >= 0;
+        private short _separatorOffset = -1;
+
+        /// <summary>
+        /// Comma separator following the parameter.
+        /// </summary>
+        public int AssignmentPosition { get { return Span.Start + _assignRelative; } set { _assignRelative = (short)(value - Span.Start); } }
+        private short _assignRelative = -1;
 
         public ConstantDecl(Text.Span span, string/*!*/ name, Text.Span namePos, Expression/*!*/ initializer)
             : base(span)

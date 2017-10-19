@@ -136,8 +136,13 @@ namespace Devsense.PHP.Syntax
                 case Tokens.T_PRINT: return "print";
                 case Tokens.T_INTERFACE: return "interface";
                 case Tokens.T_TRAIT: return "trait";
+                case Tokens.T_SL: return "<<";
+                case Tokens.T_SR: return ">>";
+                case Tokens.T_TILDE: return "~";
+                case Tokens.T_CLONE: return "clone";
+                case Tokens.T_AT: return "at";
 
-                default: throw new ArgumentException();
+                default: throw new ArgumentException(t.ToString());
             }
         }
 

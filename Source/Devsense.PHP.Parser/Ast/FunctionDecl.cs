@@ -24,7 +24,7 @@ namespace Devsense.PHP.Syntax.Ast
     /// <summary>
     /// Represents a formal parameter definition.
     /// </summary>
-    public sealed class FormalParam : LangElement
+    public sealed class FormalParam : LangElement, ISeparatedElements, IInitializedElements
     {
         [Flags]
         public enum Flags
@@ -49,7 +49,7 @@ namespace Devsense.PHP.Syntax.Ast
         /// <summary>
         /// Position of the comma separator following the item, <c>-1</c> if not present.
         /// </summary>
-        public int CommaPosition
+        public int SeparatorPosition
         {
             get { return _commaOffset < 0 ? -1 : Span.Start + _commaOffset; }
             set { _commaOffset = value < 0 ? (short)-1 : (short)(value - Span.Start); }
@@ -89,8 +89,7 @@ namespace Devsense.PHP.Syntax.Ast
         /// <summary>
         /// Comma separator following the parameter.
         /// </summary>
-        public int AssignPosition { get { return Span.Start + _assignRelative; } set { _assignRelative = (short)(value - Span.Start); } }
-        public bool FollowsAssign => _assignRelative >= 0;
+        public int AssignmentPosition { get { return Span.Start + _assignRelative; } set { _assignRelative = (short)(value - Span.Start); } }
         private short _assignRelative = -1;
 
         /// <summary>
@@ -204,8 +203,7 @@ namespace Devsense.PHP.Syntax.Ast
             set { this.SetCustomAttributes(value); }
         }
 
-        public Text.Span ParametersSpan { get { return parametersSpan; } }
-        private Text.Span parametersSpan;
+        public Text.Span ParametersSpan { get { return Signature.Span; } }
 
         public Text.Span HeadingSpan => Text.Span.FromBounds(Span.Start, ((returnType != null) ? returnType.Span : ParametersSpan).End);
 
@@ -224,14 +222,13 @@ namespace Devsense.PHP.Syntax.Ast
             Debug.Assert(genericParams != null && formalParams != null && body != null);
 
             this.name = name;
-            this.signature = new Signature(aliasReturn, formalParams, parametersSpan);
+            this.signature = new Signature(aliasReturn, formalParams, paramsSpan);
             this.typeSignature = new TypeSignature(genericParams);
             if (attributes != null && attributes.Count != 0)
             {
                 this.Attributes = new CustomAttributes(attributes);
             }
             this.body = body;
-            this.parametersSpan = paramsSpan;
             this.IsConditional = isConditional;
             this.MemberAttributes = memberAttributes;
             this.returnType = returnType;

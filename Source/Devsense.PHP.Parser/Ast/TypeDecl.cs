@@ -513,13 +513,30 @@ namespace Devsense.PHP.Syntax.Ast
     /// <summary>
     /// Represents a field declaration.
     /// </summary>
-    public sealed class FieldDecl : LangElement
+    public sealed class FieldDecl : LangElement, ISeparatedElements, IInitializedElements
     {
         /// <summary>
         /// Gets a name of the field.
         /// </summary>
         public VariableName Name { get { return name; } }
         private VariableName name;
+
+        /// <summary>
+        /// Position of the comma separator following the item, <c>-1</c> if not present.
+        /// </summary>
+        public int SeparatorPosition
+        {
+            get { return _separatorOffset < 0 ? -1 : Span.Start + _separatorOffset; }
+            set { _separatorOffset = value < 0 ? (short)-1 : (short)(value - Span.Start); }
+        }
+        public bool IsSeparatorPresent => _separatorOffset >= 0;
+        private short _separatorOffset = -1;
+
+        /// <summary>
+        /// Comma separator following the parameter.
+        /// </summary>
+        public int AssignmentPosition { get { return Span.Start + _assignRelative; } set { _assignRelative = (short)(value - Span.Start); } }
+        private short _assignRelative = -1;
 
         /// <summary>
         /// Span of the property name.
@@ -593,6 +610,16 @@ namespace Devsense.PHP.Syntax.Ast
         /// <summary>List of constants in this list</summary>
         public IList<ClassConstantDecl>/*!*/ Constants { get { return constants; } }
         private readonly IList<ClassConstantDecl>/*!*/ constants;
+
+        /// <summary>
+        /// Position of the 'function' keyword.
+        /// </summary>
+        public int ConstPosition
+        {
+            get { return Span.Start + _constOffset; }
+            set { _constOffset = (short)(value - Span.Start); }
+        }
+        private short _constOffset = 0;
 
         public ConstDeclList(Text.Span span, PhpMemberAttributes modifiers, IList<ClassConstantDecl>/*!*/ constants, List<CustomAttribute> attributes)
             : base(span, modifiers, attributes)
@@ -709,9 +736,9 @@ namespace Devsense.PHP.Syntax.Ast
             /// <summary>
             /// List of types which member <see cref="TraitAdaptation.TraitMemberName"/>.<c>Item2</c> will be ignored.
             /// </summary>
-            public QualifiedNameRef[]/*!*/IgnoredTypes { get; private set; }
+            public TypeRef[]/*!*/IgnoredTypes { get; private set; }
 
-            public TraitAdaptationPrecedence(Text.Span span, Tuple<QualifiedNameRef, NameRef> traitMemberName, IList<QualifiedNameRef>/*!*/ignoredTypes)
+            public TraitAdaptationPrecedence(Text.Span span, Tuple<QualifiedNameRef, NameRef> traitMemberName, IList<TypeRef>/*!*/ignoredTypes)
                 : base(span, traitMemberName)
             {
                 this.IgnoredTypes = ignoredTypes.AsArray();

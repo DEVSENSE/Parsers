@@ -55,7 +55,7 @@ namespace Devsense.PHP.Syntax.Ast
     /// <summary>
     /// Base class for item of an array defined by <c>array</c> constructor.
     /// </summary>
-    public abstract class Item : AstNode
+    public abstract class Item : AstNode, ISeparatedElements
     {
         public Expression Index { get { return index; } internal set { index = value; } }
         private Expression index; // can be null
@@ -82,7 +82,7 @@ namespace Devsense.PHP.Syntax.Ast
         /// <summary>
         /// Position of the comma separator following the item, <c>-1</c> if not present.
         /// </summary>
-        public virtual int CommaPosition { get; set; }
+        public virtual int SeparatorPosition { get; set; }
 
         protected Item(Expression index)
         {
@@ -110,13 +110,13 @@ namespace Devsense.PHP.Syntax.Ast
         /// <summary>
         /// Position of the comma separator following the item, <c>-1</c> if not present.
         /// </summary>
-        public override int CommaPosition
+        public override int SeparatorPosition
         {
-            get { return _commaOffset < 0 ? -1 : valueExpr.Span.Start + _commaOffset; }
-            set { _commaOffset = value < 0 ? (short)-1 : (short)(value - valueExpr.Span.Start); }
+            get { return _separatorOffset < 0 ? -1 : valueExpr.Span.Start + _separatorOffset; }
+            set { _separatorOffset = value < 0 ? (short)-1 : (short)(value - valueExpr.Span.Start); }
         }
-        public bool IsCommaPresent => _commaOffset >= 0;
-        private short _commaOffset = -1;
+        public bool IsSeparatorPresent => _separatorOffset >= 0;
+        private short _separatorOffset = -1;
 
         public ValueItem(Expression index, Expression/*!*/ valueExpr)
             : base(index)
@@ -142,13 +142,13 @@ namespace Devsense.PHP.Syntax.Ast
         /// <summary>
         /// Position of the comma separator following the item, <c>-1</c> if not present.
         /// </summary>
-        public override int CommaPosition
+        public override int SeparatorPosition
         {
-            get { return _commaOffset < 0 ? -1 : refToGet.Span.Start + _commaOffset; }
-            set { _commaOffset = value < 0 ? (short)-1 : (short)(value - refToGet.Span.Start); }
+            get { return _separatorOffset < 0 ? -1 : RefToGet.Span.Start + _separatorOffset; }
+            set { _separatorOffset = value < 0 ? (short)-1 : (short)(value - RefToGet.Span.Start); }
         }
-        public bool IsCommaPresent => _commaOffset >= 0;
-        private short _commaOffset = -1;
+        public bool IsSeparatorPresent => _separatorOffset >= 0;
+        private short _separatorOffset = -1;
 
         /// <summary>
         /// Position of the reference operator.

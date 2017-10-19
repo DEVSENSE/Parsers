@@ -21,7 +21,7 @@ using Devsense.PHP.Errors;
 
 using CompleteAlias = System.Tuple<Devsense.PHP.Syntax.QualifiedNameRef, Devsense.PHP.Syntax.NameRef>;
 using ContextAlias = System.Tuple<Devsense.PHP.Syntax.QualifiedNameRef, Devsense.PHP.Syntax.NameRef, Devsense.PHP.Syntax.AliasKind>;
-using AnonymousClass = System.Tuple<Devsense.PHP.Syntax.Ast.TypeRef, System.Collections.Generic.List<Devsense.PHP.Syntax.Ast.ActualParam>>;
+using AnonymousClass = System.Tuple<Devsense.PHP.Syntax.Ast.TypeRef, System.Collections.Generic.List<Devsense.PHP.Syntax.Ast.ActualParam>, Devsense.PHP.Text.Span>;
 
 %%
 
@@ -52,7 +52,6 @@ using AnonymousClass = System.Tuple<Devsense.PHP.Syntax.Ast.TypeRef, System.Coll
 	[FieldOffset(8)]
 	public object Object;
 
-	public List<QualifiedNameRef> QualifiedNameRefList	{ get { return (List<QualifiedNameRef>)Object; }	set { Object = value; } }
 	public TypeRef TypeReference						{ get { return (TypeRef)Object; }					set { Object = value; } }
 	public IList<TypeRef> TypeRefList					{ get { return (IList<TypeRef>)Object; }			set { Object = value; } }
 	public LangElement Node								{ get { return (LangElement)Object; }				set { Object = value; } }
@@ -292,12 +291,10 @@ using AnonymousClass = System.Tuple<Devsense.PHP.Syntax.Ast.TypeRef, System.Coll
 
 %type <QualifiedNameReference> name
 
-%type <QualifiedNameRefList> name_list
-
 %type <TypeReference> type return_type type_expr optional_type extends_from
 %type <TypeReference> class_name_reference class_name
 
-%type <TypeRefList> catch_name_list implements_list interface_extends_list
+%type <TypeRefList> name_list catch_name_list implements_list interface_extends_list
 
 %type <Node> top_statement statement function_declaration_statement class_declaration_statement 
 %type <Node> trait_declaration_statement interface_declaratioimplements_listn_statement 
@@ -427,7 +424,7 @@ top_statement:
 	|	T_USE use_type use_declarations ';'			{ $$ = _astFactory.Use(@$, $3, $2); _contextType = AliasKind.Type;				/* TODO: Error - must contain only simple uses		  */	}				
 	|	T_CONST const_list ';'	
 		{
-			SetDoc($$ = _astFactory.DeclList(@$, PhpMemberAttributes.None, $2));
+			SetDoc($$ = _astFactory.DeclList(@$, PhpMemberAttributes.None, @1.StartOrInvalid, $2));
 		}
 ;
 
@@ -495,7 +492,7 @@ use_declaration:
 ;
 
 const_list:
-		const_list ',' const_decl { $$ = AddToList<LangElement>($1, $3); }
+		const_list ',' const_decl { SetComma((ISeparatedElements)$1.Last(), @2.Start); $$ = AddToList<LangElement>($1, $3); }
 	|	const_decl { $$ = new List<LangElement>() { $1 }; }
 ;
 
@@ -662,12 +659,12 @@ extends_from:
 
 interface_extends_list:
 		/* empty */			{ $$ = TypeRef.EmptyList; }
-	|	T_EXTENDS name_list { $$ = TypeRefListFromQNRList($2); }
+	|	T_EXTENDS name_list { $$ = $2; }
 ;
 
 implements_list:
 		/* empty */				{ $$ = TypeRef.EmptyList; }
-	|	T_IMPLEMENTS name_list	{ $$ = TypeRefListFromQNRList($2); }
+	|	T_IMPLEMENTS name_list	{ $$ = $2; }
 ;
 
 foreach_variable:
@@ -779,7 +776,7 @@ non_empty_parameter_list:
 		parameter
 			{ $$ = new List<FormalParam>() { (FormalParam)$1 }; }
 	|	non_empty_parameter_list ',' parameter
-			{ $1.Last().CommaPosition = @2.Start; $$ = AddToList<FormalParam>($1, $3); }
+			{ SetComma($1.Last(), @2.Start); $$ = AddToList<FormalParam>($1, $3); }
 ;
 
 parameter:
@@ -808,7 +805,7 @@ type:
 
 return_type:
 		/* empty */	{ $$ = null; }
-	|	':' type_expr	{ $$ = $2; }
+	|	':' type_expr	{ SetComma($2, @1.Start); $$ = $2; }
 ;
 
 argument_list:
@@ -820,7 +817,7 @@ non_empty_argument_list:
 		argument
 			{ $$ = new List<ActualParam>() { $1 }; }
 	|	non_empty_argument_list ',' argument
-			{ $1.Last().CommaPosition = @2.Start; $$ = AddToList<ActualParam>($1, $3); }
+			{ SetComma($1.Last(), @2.Start); $$ = AddToList<ActualParam>($1, $3); }
 ;
 
 argument:
@@ -861,18 +858,18 @@ class_statement_list:
 class_statement:
 		variable_modifiers property_list ';'
 			{ 
-				$$ = _astFactory.DeclList(@$, $1.CombinedModifier, $2); 
+				$$ = _astFactory.DeclList(@$, $1.CombinedModifier, -1, $2); 
 				SetDoc($$);
 				SetModifiers($$, $1, @$.Start);
 			}
 	|	method_modifiers T_CONST class_const_list ';'
 			{ 
-				$$ = _astFactory.DeclList(@$, $1.CombinedModifier, $3); 
+				$$ = _astFactory.DeclList(@$, $1.CombinedModifier, @2.StartOrInvalid, $3); 
 				SetDoc($$);
 				SetModifiers($$, $1, @$.Start);
 			}
 	|	T_USE name_list trait_adaptations
-			{ $$ = _astFactory.TraitUse(@$, TypeRefListFromQNRList($2), $3); }
+			{ $$ = _astFactory.TraitUse(@$, $2, $3); }
 	|	method_modifiers function returns_ref identifier backup_doc_comment '(' parameter_list ')'
 		return_type backup_fn_flags method_body backup_fn_flags
 			{	
@@ -884,8 +881,8 @@ class_statement:
 ;
 
 name_list:
-		name { $$ = new List<QualifiedNameRef>() { $1 }; }
-	|	name_list ',' name { $$ = AddToList<QualifiedNameRef>($1, $3); }
+		name { $$ = new List<TypeRef>() { CreateTypeRef(@1, $1) }; }
+	|	name_list ',' name { SetComma((ISeparatedElements)$1.Last(), @2.Start); $$ = AddToList<TypeRef>($1, CreateTypeRef(@3, $3)); }
 ;
 
 trait_adaptations:
@@ -971,7 +968,7 @@ member_modifier:
 ;
 
 property_list:
-		property_list ',' property { $$ = AddToList<LangElement>($1, $3); }
+		property_list ',' property { SetComma((ISeparatedElements)$1.Last(), @2.Start);  $$ = AddToList<LangElement>($1, $3); }
 	|	property { $$ = new List<LangElement>() { $1 }; }
 ;
 
@@ -981,19 +978,19 @@ property:
 ;
 
 class_const_list:
-		class_const_list ',' class_const_decl { $$ = AddToList<LangElement>($1, $3); }
+		class_const_list ',' class_const_decl { SetComma((ISeparatedElements)$1.Last(), @2.Start); $$ = AddToList<LangElement>($1, $3); }
 	|	class_const_decl { $$ = new List<LangElement>() { $1 }; }
 ;
 
 class_const_decl:
 	identifier '=' expr backup_doc_comment {
-		$$ = _astFactory.ClassConstDecl(@$, new VariableName($1), @1, $3); 
+		$$ = _astFactory.ClassConstDecl(@$, new VariableName($1), @1, @2, $3); 
 		SetMemberDoc($$);
 	}
 ;
 
 const_decl:
-	T_STRING '=' expr backup_doc_comment { $$ = _astFactory.GlobalConstDecl(@$, false, new VariableName($1), @1, $3); 
+	T_STRING '=' expr backup_doc_comment { $$ = _astFactory.GlobalConstDecl(@$, false, new VariableName($1), @1, @2, $3); 
 		SetMemberDoc($$);
 	}
 ;
@@ -1021,7 +1018,7 @@ anonymous_class:
 		extends_from { PushAnonymousClassContext($3); } implements_list backup_doc_comment enter_scope '{' class_statement_list '}' exit_scope {
 			var typeRef = _astFactory.AnonymousTypeReference(@$, CombineSpans(@1, @2, @3, @5), isConditional, PhpMemberAttributes.None, null, ConvertToNamedTypeRef($3), $5.Select(ConvertToNamedTypeRef), $9, CombineSpans(@8, @10));
 			SetDoc(((AnonymousTypeRef)typeRef).TypeDeclaration);
-			$$ = new Tuple<TypeRef, List<ActualParam>>(typeRef, $2); 
+			$$ = new AnonymousClass(typeRef, $2, @2); 
 			PopClassContext();
 		}
 ;
@@ -1030,7 +1027,7 @@ new_expr:
 		T_NEW class_name_reference ctor_arguments
 			{ $$ = _astFactory.New(@$, $2, $3, @3); }
 	|	T_NEW anonymous_class
-			{ $$ = _astFactory.New(@$, ((Tuple<TypeRef, List<ActualParam>>)$2).Item1, ((Tuple<TypeRef, List<ActualParam>>)$2).Item2, Span.Invalid); }
+			{ $$ = _astFactory.New(@$, ((AnonymousClass)$2).Item1, ((AnonymousClass)$2).Item2, ((AnonymousClass)$2).Item3); }
 ;
 
 expr_without_variable:
@@ -1243,7 +1240,7 @@ exit_expr:
 
 backticks_expr:
 		/* empty */ { $$ = null; }
-	|	T_ENCAPSED_AND_WHITESPACE { $$ = _astFactory.Literal(@$, $1); SetOriginalValue($$, $1); }
+	|	T_ENCAPSED_AND_WHITESPACE { $$ = _astFactory.Literal(@$, $1); SetOriginalValue($$, _lexer.TokenText); }
 	|	encaps_list { $$ = _astFactory.Concat(@$, $1); }
 ;
 
@@ -1257,7 +1254,7 @@ ctor_arguments:
 dereferencable_scalar:
 		T_ARRAY '(' array_pair_list ')'	{ $$ = _astFactory.NewArray(@$, $3); }
 	|	'[' array_pair_list ']'			{ $$ = _astFactory.NewArray(@$, $2); }
-	|	T_CONSTANT_ENCAPSED_STRING		{ $$ = _astFactory.Literal(@$, $1); SetOriginalValue($$, $1); }
+	|	T_CONSTANT_ENCAPSED_STRING		{ $$ = _astFactory.Literal(@$, $1); SetOriginalValue($$, _lexer.TokenText); }
 ;
 
 scalar:
@@ -1397,7 +1394,7 @@ possible_array_pair:
 
 non_empty_array_pair_list:
 		non_empty_array_pair_list ',' possible_array_pair
-			{ if($1[$1.Count - 1] != null) $1[$1.Count - 1].CommaPosition = @2.Start; $$ = AddToList<Item>($1, $3); }
+			{ if($1[$1.Count - 1] != null) SetComma($1.Last(), @2.Start); $$ = AddToList<Item>($1, $3); }
 	|	possible_array_pair
 			{ $$ = new List<Item>() { $1 }; }
 ;
@@ -1421,7 +1418,7 @@ encaps_list:
 		encaps_list encaps_var
 			{ $$ = AddToList<LangElement>($1, $2); }
 	|	encaps_list T_ENCAPSED_AND_WHITESPACE
-			{ $$ = AddToList<LangElement>($1, _astFactory.Literal(@2, $2)); SetOriginalValue($$.Last(), $2); }
+			{ $$ = AddToList<LangElement>($1, _astFactory.Literal(@2, $2)); SetOriginalValue($$.Last(), _lexer.TokenText); }
 	|	encaps_var
 			{ $$ = new List<LangElement>() { $1 }; }
 	|	T_ENCAPSED_AND_WHITESPACE encaps_var

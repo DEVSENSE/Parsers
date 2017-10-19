@@ -26,7 +26,7 @@ namespace Devsense.PHP.Syntax.Ast
     /// <summary>
     /// A common interface for a direct class reference (translated, class or generic).
     /// </summary>
-    public interface INamedTypeRef
+    public interface INamedTypeRef : ISeparatedElements
     {
         /// <summary>
         /// Position of the element in the source file.
@@ -46,7 +46,7 @@ namespace Devsense.PHP.Syntax.Ast
     /// <summary>
     /// Represents a use of a class name.
     /// </summary>
-    public abstract class TypeRef : LangElement
+    public abstract class TypeRef : LangElement, ISeparatedElements
     {
         /// <summary>
         /// Immutable empty list of <see cref="TypeRef"/>.
@@ -62,6 +62,23 @@ namespace Devsense.PHP.Syntax.Ast
         /// Gets textual representation of the type name.
         /// </summary>
         public override abstract string ToString();
+
+        /// <summary>
+        /// Position of the comma separator following the item, <c>-1</c> if not present.
+        /// </summary>
+        public int SeparatorPosition
+        {
+            get {
+                object value;
+                if (Properties.TryGetProperty(PropertiesIdentifiers.SeparatorPosition, out value))
+                {
+                    short offset = (short)value;
+                    return Span.Start + offset;
+                }
+                else return -1;
+            }
+            set { Properties.SetProperty(PropertiesIdentifiers.SeparatorPosition, value < 0 ? (short)-1 : (short)(value - Span.Start)); }
+        }
 
         protected TypeRef(Span span)
             : base(span)
