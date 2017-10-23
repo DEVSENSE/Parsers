@@ -24,7 +24,7 @@ namespace Devsense.PHP.Syntax.Ast
     /// <summary>
     /// Represents a function declaration.
     /// </summary>
-    public sealed class LambdaFunctionExpr : Expression
+    public sealed class LambdaFunctionExpr : Expression, IAliasReturn
     {
         public override Operations Operation
         {
@@ -61,6 +61,16 @@ namespace Devsense.PHP.Syntax.Ast
 
         public TypeRef ReturnType { get { return returnType; } }
         private TypeRef returnType;
+
+        /// <summary>
+        /// Position of the reference symbol, <c>-1</c> if none present.
+        /// </summary>
+        public int ReferencePosition
+        {
+            get { return _referenceOffset < 0 ? -1 : Span.Start + _referenceOffset; }
+            set { _referenceOffset = value < 0 ? (short)-1 : (short)(value - Span.Start); }
+        }
+        private short _referenceOffset = -1;
 
         /// <summary>
         /// Gets value indicating the lambda function is declared "static" i.e. <c>$this</c> cannot be bound in this scope.

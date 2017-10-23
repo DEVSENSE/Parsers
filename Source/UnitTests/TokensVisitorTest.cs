@@ -30,6 +30,11 @@ namespace UnitTests
             string[] testparts = testcontent.Split(new string[] { "<<<TEST>>>" }, StringSplitOptions.RemoveEmptyEntries);
             Assert.IsTrue(testparts.Length >= 2);
 
+            if(testparts[1].Contains("ERRORS"))
+            {
+                return;
+            }
+
             var original = testparts[0].Replace('\t', ' ').TrimEnd(' ', '\t', '\n', '\r');
             var sourceUnit = new TestSourceUnit(original, path, Encoding.UTF8, Lexer.LexicalStates.INITIAL,
                 LanguageFeatures.Php71Set | LanguageFeatures.FullInformation);
@@ -77,17 +82,17 @@ namespace UnitTests
                     }
                 }
 
-                //var result = code.ToString();
+                var result = code.ToString();
                 //File.WriteAllText(Path.Combine(Directory.GetParent(path).FullName, "original.txt"), original);
                 //File.WriteAllText(Path.Combine(Directory.GetParent(path).FullName, "result.txt"), result);
-                //Assert.AreEqual(original.Length, result.Length);
-                //for (int i = 0; i < original.Length; i++)
-                //{
-                //    Assert.AreEqual(original[i], result[i]);
-                //}
-                //Assert.AreEqual(original, result);
+                Assert.AreEqual(original.Length, result.Length);
+                for (int i = 0; i < original.Length; i++)
+                {
+                    Assert.AreEqual(original[i], result[i]);
+                }
+                Assert.AreEqual(original, result);
             }
-            catch (NotImplementedException)
+            catch (Exception)
             {
 
             }
@@ -226,45 +231,20 @@ namespace UnitTests
                 }
             }
 
-            private Tokens ModifierToToken(PhpMemberAttributes attributes)
-            {
-                switch (attributes)
-                {
-                    case PhpMemberAttributes.Public:
-                        return Tokens.T_PUBLIC;
-                    case PhpMemberAttributes.Private:
-                        return Tokens.T_PRIVATE;
-                    case PhpMemberAttributes.Protected:
-                        return Tokens.T_PROTECTED;
-                    case PhpMemberAttributes.Static:
-                        return Tokens.T_STATIC;
-                    case PhpMemberAttributes.Abstract:
-                        return Tokens.T_ABSTRACT;
-                    case PhpMemberAttributes.Final:
-                        return Tokens.T_FINAL;
-                    case PhpMemberAttributes.Interface:
-                        return Tokens.T_INTERFACE;
-                    case PhpMemberAttributes.Trait:
-                        return Tokens.T_TRAIT;
-                    default:
-                        return Tokens.T_ERROR;
-                }
-            }
-
             public void ConsumeModifiers(LangElement element, PhpMemberAttributes modifiers, Span span = default(Span))
             {
                 object modifier;
                 if (element.Properties.TryGetProperty(TypeMemberDecl.ModifierPositionProperty, out modifier))
                 {
-                    var position = (KeyValuePair<PhpMemberAttributes, short>[])modifier;
+                    var position = (KeyValuePair<Tokens, short>[])modifier;
                     for (int i = 0; i < position.Length; i++)
                     {
-                        ConsumeToken(ModifierToToken(position[i].Key), span.StartOrInvalid + position[i].Value);
+                        ConsumeToken(position[i].Key, span.StartOrInvalid + position[i].Value);
                     }
                 }
                 else if(element is MethodDecl && ((MethodDecl)element).ModifierPosition >=0)
                 {
-                    ConsumeToken(ModifierToToken(((MethodDecl)element).Modifiers), ((MethodDecl)element).ModifierPosition);
+                    ConsumeToken(((MethodDecl)element).Modifiers.ToToken(), ((MethodDecl)element).ModifierPosition);
                 }
             }
 

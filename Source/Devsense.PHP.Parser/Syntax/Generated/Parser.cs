@@ -2248,7 +2248,7 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 { 
 			yyval.Node = _astFactory.Function(yypos, isConditional, value_stack.array[value_stack.top-14].yyval.Long == (long)FormalParam.Flags.IsByRef, PhpMemberAttributes.None, value_stack.array[value_stack.top-8].yyval.TypeReference, 
 			new Name(value_stack.array[value_stack.top-13].yyval.String), value_stack.array[value_stack.top-13].yypos, null, value_stack.array[value_stack.top-10].yyval.FormalParamList, CombineSpans(value_stack.array[value_stack.top-11].yypos, value_stack.array[value_stack.top-9].yypos), 
-			CreateBlock(CombineSpans(value_stack.array[value_stack.top-5].yypos, value_stack.array[value_stack.top-3].yypos), value_stack.array[value_stack.top-4].yyval.NodeList)); 
+			CreateBlock(CombineSpans(value_stack.array[value_stack.top-5].yypos, value_stack.array[value_stack.top-3].yypos), value_stack.array[value_stack.top-4].yyval.NodeList), value_stack.array[value_stack.top-14].yyval.Long == 0? Span.Invalid: value_stack.array[value_stack.top-14].yypos); 
 			SetDoc(yyval.Node);
 		}
         return;
@@ -2294,14 +2294,14 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 { yyval.Modifier = value_stack.array[value_stack.top-2].yyval.Modifier; yyval.Modifier.AddModifier(value_stack.array[value_stack.top-1].yyval.Modifier); }
         return;
       case 175: // class_modifier -> T_ABSTRACT 
-{ yyval.Modifier = new ModifierPosition(PhpMemberAttributes.Abstract, value_stack.array[value_stack.top-1].yypos.Start); }
+{ yyval.Modifier = new ModifierPosition(Tokens.T_ABSTRACT, value_stack.array[value_stack.top-1].yypos.Start); }
         return;
       case 176: // class_modifier -> T_FINAL 
-{ yyval.Modifier = new ModifierPosition(PhpMemberAttributes.Final, value_stack.array[value_stack.top-1].yypos.Start); }
+{ yyval.Modifier = new ModifierPosition(Tokens.T_FINAL, value_stack.array[value_stack.top-1].yypos.Start); }
         return;
       case 177: // trait_declaration_statement -> T_TRAIT T_STRING backup_doc_comment enter_scope '{' class_statement_list '}' exit_scope 
 { 
-				var modifier = new ModifierPosition(PhpMemberAttributes.Trait, 0);
+				var modifier = new ModifierPosition(Tokens.T_TRAIT, 0);
 				yyval.Node = _astFactory.Type(yypos, CombineSpans(value_stack.array[value_stack.top-8].yypos, value_stack.array[value_stack.top-7].yypos), isConditional, modifier.CombinedModifier, 
 					new Name(value_stack.array[value_stack.top-7].yyval.String), value_stack.array[value_stack.top-7].yypos, null, null, new List<INamedTypeRef>(), value_stack.array[value_stack.top-3].yyval.NodeList, CombineSpans(value_stack.array[value_stack.top-4].yypos, value_stack.array[value_stack.top-2].yypos)); 
 				SetDoc(yyval.Node);
@@ -2310,7 +2310,7 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
         return;
       case 178: // interface_declaration_statement -> T_INTERFACE T_STRING interface_extends_list backup_doc_comment enter_scope '{' class_statement_list '}' exit_scope 
 { 
-				var modifier = new ModifierPosition(PhpMemberAttributes.Interface, 0);
+				var modifier = new ModifierPosition(Tokens.T_INTERFACE, 0);
 				yyval.Node = _astFactory.Type(yypos, CombineSpans(value_stack.array[value_stack.top-9].yypos, value_stack.array[value_stack.top-8].yypos, value_stack.array[value_stack.top-7].yypos), isConditional, modifier.CombinedModifier, 
 					new Name(value_stack.array[value_stack.top-8].yyval.String), value_stack.array[value_stack.top-8].yypos, null, null, value_stack.array[value_stack.top-7].yyval.TypeRefList.Select(ConvertToNamedTypeRef), value_stack.array[value_stack.top-3].yyval.NodeList, CombineSpans(value_stack.array[value_stack.top-4].yypos, value_stack.array[value_stack.top-2].yypos)); 
 				SetDoc(yyval.Node);
@@ -2547,7 +2547,7 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
       case 247: // class_statement -> method_modifiers function returns_ref identifier backup_doc_comment '(' parameter_list ')' return_type backup_fn_flags method_body backup_fn_flags 
 {	
 				yyval.Node = _astFactory.Method(yypos, value_stack.array[value_stack.top-10].yyval.Long == (long)FormalParam.Flags.IsByRef, value_stack.array[value_stack.top-12].yyval.Modifier.CombinedModifier, 
-					value_stack.array[value_stack.top-4].yyval.TypeReference, value_stack.array[value_stack.top-4].yypos, value_stack.array[value_stack.top-9].yyval.String, value_stack.array[value_stack.top-9].yypos, null, value_stack.array[value_stack.top-6].yyval.FormalParamList, CombineSpans(value_stack.array[value_stack.top-7].yypos, value_stack.array[value_stack.top-5].yypos), null, value_stack.array[value_stack.top-2].yyval.Node, value_stack.array[value_stack.top-11].yypos.Start, value_stack.array[value_stack.top-12].yypos.Start);
+					value_stack.array[value_stack.top-4].yyval.TypeReference, value_stack.array[value_stack.top-4].yypos, value_stack.array[value_stack.top-9].yyval.String, value_stack.array[value_stack.top-9].yypos, null, value_stack.array[value_stack.top-6].yyval.FormalParamList, CombineSpans(value_stack.array[value_stack.top-7].yypos, value_stack.array[value_stack.top-5].yypos), null, value_stack.array[value_stack.top-2].yyval.Node, value_stack.array[value_stack.top-11].yypos, value_stack.array[value_stack.top-12].yypos, value_stack.array[value_stack.top-10].yyval.Long == 0? Span.Invalid: value_stack.array[value_stack.top-10].yypos);
 				SetDoc(yyval.Node);
 				SetModifiers(yyval.Node, value_stack.array[value_stack.top-12].yyval.Modifier, yypos.Start);
 			}
@@ -2635,22 +2635,22 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 { yyval.Modifier = value_stack.array[value_stack.top-2].yyval.Modifier; yyval.Modifier.AddModifier(value_stack.array[value_stack.top-1].yyval.Modifier); }
         return;
       case 273: // member_modifier -> T_PUBLIC 
-{ yyval.Modifier = new ModifierPosition(PhpMemberAttributes.Public, value_stack.array[value_stack.top-1].yypos.Start); }
+{ yyval.Modifier = new ModifierPosition(Tokens.T_PUBLIC, value_stack.array[value_stack.top-1].yypos.Start); }
         return;
       case 274: // member_modifier -> T_PROTECTED 
-{ yyval.Modifier = new ModifierPosition(PhpMemberAttributes.Protected, value_stack.array[value_stack.top-1].yypos.Start); }
+{ yyval.Modifier = new ModifierPosition(Tokens.T_PROTECTED, value_stack.array[value_stack.top-1].yypos.Start); }
         return;
       case 275: // member_modifier -> T_PRIVATE 
-{ yyval.Modifier = new ModifierPosition(PhpMemberAttributes.Private, value_stack.array[value_stack.top-1].yypos.Start); }
+{ yyval.Modifier = new ModifierPosition(Tokens.T_PRIVATE, value_stack.array[value_stack.top-1].yypos.Start); }
         return;
       case 276: // member_modifier -> T_STATIC 
-{ yyval.Modifier = new ModifierPosition(PhpMemberAttributes.Static, value_stack.array[value_stack.top-1].yypos.Start); }
+{ yyval.Modifier = new ModifierPosition(Tokens.T_STATIC, value_stack.array[value_stack.top-1].yypos.Start); }
         return;
       case 277: // member_modifier -> T_ABSTRACT 
-{ yyval.Modifier = new ModifierPosition(PhpMemberAttributes.Abstract, value_stack.array[value_stack.top-1].yypos.Start); }
+{ yyval.Modifier = new ModifierPosition(Tokens.T_ABSTRACT, value_stack.array[value_stack.top-1].yypos.Start); }
         return;
       case 278: // member_modifier -> T_FINAL 
-{ yyval.Modifier = new ModifierPosition(PhpMemberAttributes.Final, value_stack.array[value_stack.top-1].yypos.Start); }
+{ yyval.Modifier = new ModifierPosition(Tokens.T_FINAL, value_stack.array[value_stack.top-1].yypos.Start); }
         return;
       case 279: // property_list -> property_list ',' property 
 { SetComma((ISeparatedElements)value_stack.array[value_stack.top-3].yyval.NodeList.Last(), value_stack.array[value_stack.top-2].yypos.Start);  yyval.NodeList = AddToList<LangElement>(value_stack.array[value_stack.top-3].yyval.NodeList, value_stack.array[value_stack.top-1].yyval.Node); }
@@ -2948,16 +2948,16 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 { 
 				yyval.Node = _astFactory.Lambda(yypos, CombineSpans(value_stack.array[value_stack.top-15].yypos, value_stack.array[value_stack.top-10].yypos, value_stack.array[value_stack.top-9].yypos, value_stack.array[value_stack.top-8].yypos), value_stack.array[value_stack.top-14].yyval.Long == (long)FormalParam.Flags.IsByRef, value_stack.array[value_stack.top-8].yyval.TypeReference, PhpMemberAttributes.None, 
 				value_stack.array[value_stack.top-11].yyval.FormalParamList, CombineSpans(value_stack.array[value_stack.top-12].yypos, value_stack.array[value_stack.top-10].yypos), 
-				value_stack.array[value_stack.top-9].yyval.FormalParamList, CreateBlock(CombineSpans(value_stack.array[value_stack.top-5].yypos, value_stack.array[value_stack.top-3].yypos), value_stack.array[value_stack.top-4].yyval.NodeList)); 
+				value_stack.array[value_stack.top-9].yyval.FormalParamList, CreateBlock(CombineSpans(value_stack.array[value_stack.top-5].yypos, value_stack.array[value_stack.top-3].yypos), value_stack.array[value_stack.top-4].yyval.NodeList), value_stack.array[value_stack.top-14].yyval.Long == 0? Span.Invalid: value_stack.array[value_stack.top-14].yypos); 
 				SetDoc(yyval.Node);
 			}
         return;
       case 374: // expr_without_variable -> T_STATIC function returns_ref backup_doc_comment '(' parameter_list ')' lexical_vars return_type backup_fn_flags enter_scope '{' inner_statement_list '}' exit_scope backup_fn_flags 
 { 
-				var modifier = new ModifierPosition(PhpMemberAttributes.Static, value_stack.array[value_stack.top-16].yypos.Start);
+				var modifier = new ModifierPosition(Tokens.T_STATIC, value_stack.array[value_stack.top-16].yypos.Start);
 				yyval.Node = _astFactory.Lambda(yypos, CombineSpans(value_stack.array[value_stack.top-16].yypos, value_stack.array[value_stack.top-10].yypos, value_stack.array[value_stack.top-9].yypos, value_stack.array[value_stack.top-8].yypos), value_stack.array[value_stack.top-14].yyval.Long == (long)FormalParam.Flags.IsByRef, value_stack.array[value_stack.top-8].yyval.TypeReference, modifier.CombinedModifier, 
 				value_stack.array[value_stack.top-11].yyval.FormalParamList, CombineSpans(value_stack.array[value_stack.top-12].yypos, value_stack.array[value_stack.top-10].yypos), 
-				value_stack.array[value_stack.top-9].yyval.FormalParamList, CreateBlock(CombineSpans(value_stack.array[value_stack.top-5].yypos, value_stack.array[value_stack.top-3].yypos), value_stack.array[value_stack.top-4].yyval.NodeList)); 
+				value_stack.array[value_stack.top-9].yyval.FormalParamList, CreateBlock(CombineSpans(value_stack.array[value_stack.top-5].yypos, value_stack.array[value_stack.top-3].yypos), value_stack.array[value_stack.top-4].yyval.NodeList), value_stack.array[value_stack.top-14].yyval.Long == 0? Span.Invalid: value_stack.array[value_stack.top-14].yypos); 
 				SetDoc(yyval.Node);
 				SetModifiers(yyval.Node, modifier, yypos.Start);
 			}
@@ -3045,7 +3045,7 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 { yyval.Node = _astFactory.Literal(yypos, value_stack.array[value_stack.top-1].yyval.String); SetOriginalValue(yyval.Node, _lexer.TokenText); }
         return;
       case 400: // backticks_expr -> encaps_list 
-{ yyval.Node = _astFactory.Concat(yypos, value_stack.array[value_stack.top-1].yyval.NodeList); }
+{ yyval.Node = _astFactory.Concat(yypos, value_stack.array[value_stack.top-1].yyval.NodeList, "`"); }
         return;
       case 401: // ctor_arguments -> 
 { yyval.ParamList = new List<ActualParam>(); }
@@ -3099,10 +3099,10 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 { yyval.Node = _astFactory.Literal(new Span(value_stack.array[value_stack.top-2].yypos.End, 0), string.Empty); }
         return;
       case 418: // scalar -> '"' encaps_list '"' 
-{ yyval.Node = _astFactory.Concat(yypos, value_stack.array[value_stack.top-2].yyval.NodeList); }
+{ yyval.Node = _astFactory.Concat(yypos, value_stack.array[value_stack.top-2].yyval.NodeList, "\""); }
         return;
       case 419: // scalar -> T_START_HEREDOC encaps_list T_END_HEREDOC 
-{ yyval.Node = _astFactory.Concat(yypos, value_stack.array[value_stack.top-2].yyval.NodeList); }
+{ yyval.Node = _astFactory.Concat(yypos, value_stack.array[value_stack.top-2].yyval.NodeList, _lexer.TokenText); }
         return;
       case 420: // scalar -> dereferencable_scalar 
 { yyval.Node = value_stack.array[value_stack.top-1].yyval.Node; }
@@ -3294,17 +3294,20 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 { yyval.Node = CreateProperty(yypos, _astFactory.Variable(value_stack.array[value_stack.top-3].yypos, value_stack.array[value_stack.top-3].yyval.String, NullLangElement), new Name(value_stack.array[value_stack.top-1].yyval.String)); }
         return;
       case 480: // encaps_var -> T_DOLLAR_OPEN_CURLY_BRACES expr '}' 
-{ yyval.Node = _astFactory.Variable(yypos, value_stack.array[value_stack.top-2].yyval.Node, NullLangElement); }
+{ yyval.Node = _astFactory.Variable(yypos, value_stack.array[value_stack.top-2].yyval.Node, NullLangElement);
+				SetDelimiters(yyval.Node, Tokens.T_DOLLAR_OPEN_CURLY_BRACES, value_stack.array[value_stack.top-3].yypos, (Tokens)'}', value_stack.array[value_stack.top-1].yypos); }
         return;
       case 481: // encaps_var -> T_DOLLAR_OPEN_CURLY_BRACES T_STRING_VARNAME '}' 
-{ yyval.Node = _astFactory.Variable(yypos, value_stack.array[value_stack.top-2].yyval.String, NullLangElement); }
+{ yyval.Node = _astFactory.Variable(yypos, value_stack.array[value_stack.top-2].yyval.String, NullLangElement);
+				SetDelimiters(yyval.Node, Tokens.T_DOLLAR_OPEN_CURLY_BRACES, value_stack.array[value_stack.top-3].yypos, (Tokens)'}', value_stack.array[value_stack.top-1].yypos); }
         return;
       case 482: // encaps_var -> T_DOLLAR_OPEN_CURLY_BRACES T_STRING_VARNAME '[' expr ']' '}' 
 { yyval.Node = _astFactory.ArrayItem(yypos, 
-					_astFactory.Variable(value_stack.array[value_stack.top-5].yypos, value_stack.array[value_stack.top-5].yyval.String, NullLangElement), value_stack.array[value_stack.top-3].yyval.Node); }
+					_astFactory.Variable(value_stack.array[value_stack.top-5].yypos, value_stack.array[value_stack.top-5].yyval.String, NullLangElement), value_stack.array[value_stack.top-3].yyval.Node);
+				SetDelimiters(yyval.Node, Tokens.T_DOLLAR_OPEN_CURLY_BRACES, value_stack.array[value_stack.top-6].yypos, (Tokens)'}', value_stack.array[value_stack.top-4].yypos); }
         return;
       case 483: // encaps_var -> T_CURLY_OPEN variable '}' 
-{ yyval.Node = value_stack.array[value_stack.top-2].yyval.Node; }
+{ yyval.Node = value_stack.array[value_stack.top-2].yyval.Node; SetDelimiters(yyval.Node, Tokens.T_CURLY_OPEN, value_stack.array[value_stack.top-3].yypos, (Tokens)'}', value_stack.array[value_stack.top-1].yypos); }
         return;
       case 484: // encaps_var_offset -> T_STRING 
 { yyval.Node = _astFactory.Literal(yypos, value_stack.array[value_stack.top-1].yyval.String); SetOriginalValue(yyval.Node, value_stack.array[value_stack.top-1].yyval.String); }

@@ -105,6 +105,7 @@ namespace Devsense.PHP.Syntax.Ast
         /// <param name="typeParamsOpt">Optional. Generic type parameters.</param>
         /// <param name="formalParams">Function parameters.</param>
         /// <param name="formalParamsSpan">Parameters enclosing parenthesis span.</param>
+        /// <param name="byRefPosition">Position of the reference symbol, <c>-1</c> if not present.</param>
         /// <param name="body">Function body.</param>
         /// <returns>Function node.</returns>
         TNode Function(TSpan span,
@@ -112,7 +113,7 @@ namespace Devsense.PHP.Syntax.Ast
             TypeRef returnType,
             Name name, TSpan nameSpan, IEnumerable<FormalTypeParam> typeParamsOpt,
             IEnumerable<FormalParam> formalParams, TSpan formalParamsSpan,
-            TNode body);
+            TNode body, TSpan byRefPosition);
 
         /// <summary>
         /// Creates a lambda declaration node.
@@ -126,11 +127,12 @@ namespace Devsense.PHP.Syntax.Ast
         /// <param name="formalParamsSpan">Parameters enclosing parenthesis span.</param>
         /// <param name="lexicalVars">Variables from parent scope.</param>
         /// <param name="body">Lambda body.</param>
+        /// <param name="byRefPosition">Position of the reference symbol, <c>-1</c> if not present.</param>
         /// <returns>Lambda node.</returns>
         TNode Lambda(TSpan span, TSpan headingSpan, bool aliasReturn,
             TypeRef returnType, PhpMemberAttributes modifiers,
             IEnumerable<FormalParam> formalParams, TSpan formalParamsSpan,
-            IEnumerable<FormalParam> lexicalVars, TNode body);
+            IEnumerable<FormalParam> lexicalVars, TNode body, TSpan byRefPosition);
 
         /// <summary>
         /// Creates <c>FormalParam</c> for a function of method declaration.
@@ -184,13 +186,15 @@ namespace Devsense.PHP.Syntax.Ast
         /// <param name="body">Method body.</param>
         /// <param name="functionPosition">Function keyword position.</param>
         /// <param name="modifierPosition">Modifier position, <c>-1</c> if none present.</param>
+        /// <param name="byRefPosition">Position of the reference symbol, <c>-1</c> if not present.</param>
         /// <returns>Method node.</returns>
         TNode Method(TSpan span,
             bool aliasReturn, PhpMemberAttributes attributes,
             TypeRef returnType, TSpan returnTypeSpan,
             string name, TSpan nameSpan, IEnumerable<FormalTypeParam> typeParamsOpt,
             IEnumerable<FormalParam> formalParams, TSpan formalParamsSpan,
-            IEnumerable<ActualParam> baseCtorParams, TNode body, int functionPosition, int modifierPosition);
+            IEnumerable<ActualParam> baseCtorParams, TNode body, 
+            TSpan functionPosition, TSpan modifierPosition, TSpan byRefPosition);
 
         /// <summary>
         /// Creates class trait use statement.
@@ -645,9 +649,10 @@ namespace Devsense.PHP.Syntax.Ast
         /// </summary>
         /// <param name="span">Entire element span.</param>
         /// <param name="expressions">Enumeration of expression.</param>
+        /// <param name="label">Opening and closing label.</param>
         /// <returns>Expression resulting in a concatenated string (<c>ConcatEx</c> or a reduced expression.).</returns>
         /// <remarks>A factory implementation may reduce the expression into a literal or a binary operation.</remarks>
-        TNode Concat(TSpan span, IEnumerable<TNode> expressions);
+        TNode Concat(TSpan span, IEnumerable<TNode> expressions, string label);
 
         /// <summary>
         /// Creates assignment operation.

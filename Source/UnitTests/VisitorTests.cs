@@ -127,6 +127,12 @@ namespace UnitTests
                     VisitElement((TypeRef)item);
                 base.VisitTypeDecl(x);
             }
+
+            public override void VisitTraitAdaptationPrecedence(TraitsUse.TraitAdaptationPrecedence x)
+            {
+                base.VisitTraitAdaptationPrecedence(x);
+                VisitList(x.IgnoredTypes);
+            }
         }
 
         sealed class AstCounterFactory : BasicNodesFactory
@@ -233,8 +239,8 @@ namespace UnitTests
             public override LangElement ColonBlock(Span span, IEnumerable<LangElement> statements, Tokens endToken)
                  => CountLE(base.ColonBlock(span, statements, endToken));
 
-            public override LangElement Concat(Span span, IEnumerable<LangElement> expressions)
-                 => CountLE(base.Concat(span, expressions));
+            public override LangElement Concat(Span span, IEnumerable<LangElement> expressions, string label)
+                 => CountLE(base.Concat(span, expressions, label));
 
             public override LangElement ConditionalEx(Span span, LangElement condExpr, Span questionSpan, LangElement trueExpr, Span colonSpan, LangElement falseExpr)
                  => CountLE(base.ConditionalEx(span, condExpr, questionSpan, trueExpr, colonSpan, falseExpr));
@@ -293,8 +299,8 @@ namespace UnitTests
             public override ForeachVar ForeachVariable(Span span, LangElement variable, bool alias = false)
                  => CountFV(base.ForeachVariable(span, variable, alias));
 
-            public override LangElement Function(Span span, bool conditional, bool aliasReturn, PhpMemberAttributes attributes, TypeRef returnType, Name name, Span nameSpan, IEnumerable<FormalTypeParam> typeParamsOpt, IEnumerable<FormalParam> formalParams, Span formalParamsSpan, LangElement body)
-                => CountLE(base.Function(span, conditional, aliasReturn, attributes, returnType, name, nameSpan, typeParamsOpt, formalParams, formalParamsSpan, body));
+            public override LangElement Function(Span span, bool conditional, bool aliasReturn, PhpMemberAttributes attributes, TypeRef returnType, Name name, Span nameSpan, IEnumerable<FormalTypeParam> typeParamsOpt, IEnumerable<FormalParam> formalParams, Span formalParamsSpan, LangElement body, Span byRefPosition)
+                => CountLE(base.Function(span, conditional, aliasReturn, attributes, returnType, name, nameSpan, typeParamsOpt, formalParams, formalParamsSpan, body, byRefPosition));
 
             public override TypeRef GenericTypeReference(Span span, LangElement className, List<TypeRef> genericParams)
                  => CountTR(base.GenericTypeReference(span, className, genericParams));
@@ -348,8 +354,8 @@ namespace UnitTests
             public override LangElement Label(Span span, string label, Span labelSpan)
                  => CountLE(base.Label(span, label, labelSpan));
 
-            public override LangElement Lambda(Span span, Span headingSpan, bool aliasReturn, TypeRef returnType, PhpMemberAttributes modifiers, IEnumerable<FormalParam> formalParams, Span formalParamsSpan, IEnumerable<FormalParam> lexicalVars, LangElement body)
-                 => CountLE(base.Lambda(span, headingSpan, aliasReturn, returnType, modifiers, formalParams, formalParamsSpan, lexicalVars, body));
+            public override LangElement Lambda(Span span, Span headingSpan, bool aliasReturn, TypeRef returnType, PhpMemberAttributes modifiers, IEnumerable<FormalParam> formalParams, Span formalParamsSpan, IEnumerable<FormalParam> lexicalVars, LangElement body, Span byRefPosition)
+                 => CountLE(base.Lambda(span, headingSpan, aliasReturn, returnType, modifiers, formalParams, formalParamsSpan, lexicalVars, body, byRefPosition));
 
             public override LangElement LineComment(Span span, string content)
                  => CountLE(base.LineComment(span, content));
@@ -360,8 +366,8 @@ namespace UnitTests
             public override LangElement Literal(Span span, object value)
                  => CountLE(base.Literal(span, value));
 
-            public override LangElement Method(Span span, bool aliasReturn, PhpMemberAttributes attributes, TypeRef returnType, Span returnTypeSpan, string name, Span nameSpan, IEnumerable<FormalTypeParam> typeParamsOpt, IEnumerable<FormalParam> formalParams, Span formalParamsSpan, IEnumerable<ActualParam> baseCtorParams, LangElement body, int functionPosition, int modifierPosition)
-                 => CountLE(base.Method(span, aliasReturn, attributes, returnType, returnTypeSpan, name, nameSpan, typeParamsOpt, formalParams, formalParamsSpan, baseCtorParams, body, functionPosition, modifierPosition));
+            public override LangElement Method(Span span, bool aliasReturn, PhpMemberAttributes attributes, TypeRef returnType, Span returnTypeSpan, string name, Span nameSpan, IEnumerable<FormalTypeParam> typeParamsOpt, IEnumerable<FormalParam> formalParams, Span formalParamsSpan, IEnumerable<ActualParam> baseCtorParams, LangElement body, Span functionPosition, Span modifierPosition, Span byRefPosition)
+                 => CountLE(base.Method(span, aliasReturn, attributes, returnType, returnTypeSpan, name, nameSpan, typeParamsOpt, formalParams, formalParamsSpan, baseCtorParams, body, functionPosition, modifierPosition, byRefPosition));
 
             public override LangElement Namespace(Span span, QualifiedName? name, Span nameSpan, NamingContext context)
                  => CountLE(base.Namespace(span, name, nameSpan, context));

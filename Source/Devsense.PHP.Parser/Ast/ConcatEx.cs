@@ -24,6 +24,19 @@ namespace Devsense.PHP.Syntax.Ast
     /// </summary>
     public sealed class ConcatEx : Expression
     {
+        /// <summary>
+        /// Identifier of the modifier position propery assigned 
+        /// when <see cref="LanguageFeatures.FullInformation"/> is set.
+        /// </summary>
+        public const string DelimitersPosition = "DelimitersPosition";
+
+        /// <summary>
+        /// Opening and closing label.
+        /// " or ` for stirngs and label for heredoc.
+        /// </summary>
+        public string Label { get { return _label; } internal set { _label = value; } }
+        private string _label;
+
         public override Operations Operation { get { return Operations.ConcatN; } }
 
         public Expression[]/*!*/ Expressions { get { return this.expressions; } internal set { this.expressions = value; } }

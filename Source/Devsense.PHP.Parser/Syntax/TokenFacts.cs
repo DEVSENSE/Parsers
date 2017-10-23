@@ -142,6 +142,8 @@ namespace Devsense.PHP.Syntax
                 case Tokens.T_CLONE: return "clone";
                 case Tokens.T_AT: return "at";
 
+                case Tokens.T_CURLY_OPEN: return "{$";
+
                 default: throw new ArgumentException(t.ToString());
             }
         }

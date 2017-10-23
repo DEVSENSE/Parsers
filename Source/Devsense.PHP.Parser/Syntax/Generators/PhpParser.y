@@ -587,7 +587,7 @@ function_declaration_statement:
 		{ 
 			$$ = _astFactory.Function(@$, isConditional, $2 == (long)FormalParam.Flags.IsByRef, PhpMemberAttributes.None, $8, 
 			new Name($3), @3, null, $6, CombineSpans(@5, @7), 
-			CreateBlock(CombineSpans(@11, @13), $12)); 
+			CreateBlock(CombineSpans(@11, @13), $12), $2 == 0? Span.Invalid: @2); 
 			SetDoc($$);
 		}
 ;
@@ -626,14 +626,14 @@ class_modifiers:
 ;
 
 class_modifier:
-		T_ABSTRACT 		{ $$ = new ModifierPosition(PhpMemberAttributes.Abstract, @1.Start); }
-	|	T_FINAL 		{ $$ = new ModifierPosition(PhpMemberAttributes.Final, @1.Start); }
+		T_ABSTRACT 		{ $$ = new ModifierPosition(Tokens.T_ABSTRACT, @1.Start); }
+	|	T_FINAL 		{ $$ = new ModifierPosition(Tokens.T_FINAL, @1.Start); }
 ;
 
 trait_declaration_statement:
 		T_TRAIT T_STRING backup_doc_comment enter_scope '{' class_statement_list '}' exit_scope
 			{ 
-				var modifier = new ModifierPosition(PhpMemberAttributes.Trait, 0);
+				var modifier = new ModifierPosition(Tokens.T_TRAIT, 0);
 				$$ = _astFactory.Type(@$, CombineSpans(@1, @2), isConditional, modifier.CombinedModifier, 
 					new Name($2), @2, null, null, new List<INamedTypeRef>(), $6, CombineSpans(@5, @7)); 
 				SetDoc($$);
@@ -644,7 +644,7 @@ trait_declaration_statement:
 interface_declaration_statement:
 		T_INTERFACE T_STRING interface_extends_list backup_doc_comment enter_scope '{' class_statement_list '}' exit_scope
 			{ 
-				var modifier = new ModifierPosition(PhpMemberAttributes.Interface, 0);
+				var modifier = new ModifierPosition(Tokens.T_INTERFACE, 0);
 				$$ = _astFactory.Type(@$, CombineSpans(@1, @2, @3), isConditional, modifier.CombinedModifier, 
 					new Name($2), @2, null, null, $3.Select(ConvertToNamedTypeRef), $7, CombineSpans(@6, @8)); 
 				SetDoc($$);
@@ -874,7 +874,7 @@ class_statement:
 		return_type backup_fn_flags method_body backup_fn_flags
 			{	
 				$$ = _astFactory.Method(@$, $3 == (long)FormalParam.Flags.IsByRef, $1.CombinedModifier, 
-					$9, @9, $4, @4, null, $7, CombineSpans(@6, @8), null, $11, @2.Start, @1.Start);
+					$9, @9, $4, @4, null, $7, CombineSpans(@6, @8), null, $11, @2, @1, $3 == 0? Span.Invalid: @3);
 				SetDoc($$);
 				SetModifiers($$, $1, @$.Start);
 			}
@@ -959,12 +959,12 @@ non_empty_member_modifiers:
 ;
 
 member_modifier:
-		T_PUBLIC				{ $$ = new ModifierPosition(PhpMemberAttributes.Public, @1.Start); }
-	|	T_PROTECTED				{ $$ = new ModifierPosition(PhpMemberAttributes.Protected, @1.Start); }
-	|	T_PRIVATE				{ $$ = new ModifierPosition(PhpMemberAttributes.Private, @1.Start); }
-	|	T_STATIC				{ $$ = new ModifierPosition(PhpMemberAttributes.Static, @1.Start); }
-	|	T_ABSTRACT				{ $$ = new ModifierPosition(PhpMemberAttributes.Abstract, @1.Start); }
-	|	T_FINAL					{ $$ = new ModifierPosition(PhpMemberAttributes.Final, @1.Start); }
+		T_PUBLIC				{ $$ = new ModifierPosition(Tokens.T_PUBLIC, @1.Start); }
+	|	T_PROTECTED				{ $$ = new ModifierPosition(Tokens.T_PROTECTED, @1.Start); }
+	|	T_PRIVATE				{ $$ = new ModifierPosition(Tokens.T_PRIVATE, @1.Start); }
+	|	T_STATIC				{ $$ = new ModifierPosition(Tokens.T_STATIC, @1.Start); }
+	|	T_ABSTRACT				{ $$ = new ModifierPosition(Tokens.T_ABSTRACT, @1.Start); }
+	|	T_FINAL					{ $$ = new ModifierPosition(Tokens.T_FINAL, @1.Start); }
 ;
 
 property_list:
@@ -1147,16 +1147,16 @@ expr_without_variable:
 			{ 
 				$$ = _astFactory.Lambda(@$, CombineSpans(@1, @6, @7, @8), $2 == (long)FormalParam.Flags.IsByRef, $8, PhpMemberAttributes.None, 
 				$5, CombineSpans(@4, @6), 
-				$7, CreateBlock(CombineSpans(@11, @13), $12)); 
+				$7, CreateBlock(CombineSpans(@11, @13), $12), $2 == 0? Span.Invalid: @2); 
 				SetDoc($$);
 			}
 	|	T_STATIC function returns_ref backup_doc_comment '(' parameter_list ')' lexical_vars
 		return_type backup_fn_flags enter_scope '{' inner_statement_list '}' exit_scope backup_fn_flags
 			{ 
-				var modifier = new ModifierPosition(PhpMemberAttributes.Static, @1.Start);
+				var modifier = new ModifierPosition(Tokens.T_STATIC, @1.Start);
 				$$ = _astFactory.Lambda(@$, CombineSpans(@1, @7, @8, @9), $3 == (long)FormalParam.Flags.IsByRef, $9, modifier.CombinedModifier, 
 				$6, CombineSpans(@5, @7), 
-				$8, CreateBlock(CombineSpans(@12, @14), $13)); 
+				$8, CreateBlock(CombineSpans(@12, @14), $13), $3 == 0? Span.Invalid: @3); 
 				SetDoc($$);
 				SetModifiers($$, modifier, @$.Start);
 			}
@@ -1241,7 +1241,7 @@ exit_expr:
 backticks_expr:
 		/* empty */ { $$ = null; }
 	|	T_ENCAPSED_AND_WHITESPACE { $$ = _astFactory.Literal(@$, $1); SetOriginalValue($$, _lexer.TokenText); }
-	|	encaps_list { $$ = _astFactory.Concat(@$, $1); }
+	|	encaps_list { $$ = _astFactory.Concat(@$, $1, "`"); }
 ;
 
 
@@ -1270,8 +1270,8 @@ scalar:
 	|	T_CLASS_C	{ $$ = _astFactory.PseudoConstUse(@$, PseudoConstUse.Types.Class); }    
 	|	T_START_HEREDOC T_ENCAPSED_AND_WHITESPACE T_END_HEREDOC { $$ = _astFactory.Literal(@$, $2); SetOriginalValue($$, $2); }
 	|	T_START_HEREDOC T_END_HEREDOC { $$ = _astFactory.Literal(new Span(@1.End, 0), string.Empty); }
-	|	'"' encaps_list '"' 	{ $$ = _astFactory.Concat(@$, $2); }
-	|	T_START_HEREDOC encaps_list T_END_HEREDOC { $$ = _astFactory.Concat(@$, $2); }
+	|	'"' encaps_list '"' 	{ $$ = _astFactory.Concat(@$, $2, "\""); }
+	|	T_START_HEREDOC encaps_list T_END_HEREDOC { $$ = _astFactory.Concat(@$, $2, _lexer.TokenText); }
 	|	dereferencable_scalar	{ $$ = $1; }
 	|	constant			{ $$ = $1; }
 ;
@@ -1434,13 +1434,16 @@ encaps_var:
 	|	T_VARIABLE T_OBJECT_OPERATOR T_STRING
 			{ $$ = CreateProperty(@$, _astFactory.Variable(@1, $1, NullLangElement), new Name($3)); }
 	|	T_DOLLAR_OPEN_CURLY_BRACES expr '}'
-			{ $$ = _astFactory.Variable(@$, $2, NullLangElement); }
+			{ $$ = _astFactory.Variable(@$, $2, NullLangElement);
+				SetDelimiters($$, Tokens.T_DOLLAR_OPEN_CURLY_BRACES, @1, (Tokens)'}', @3); }
 	|	T_DOLLAR_OPEN_CURLY_BRACES T_STRING_VARNAME '}'
-			{ $$ = _astFactory.Variable(@$, $2, NullLangElement); }
+			{ $$ = _astFactory.Variable(@$, $2, NullLangElement);
+				SetDelimiters($$, Tokens.T_DOLLAR_OPEN_CURLY_BRACES, @1, (Tokens)'}', @3); }
 	|	T_DOLLAR_OPEN_CURLY_BRACES T_STRING_VARNAME '[' expr ']' '}'
 			{ $$ = _astFactory.ArrayItem(@$, 
-					_astFactory.Variable(@2, $2, NullLangElement), $4); }
-	|	T_CURLY_OPEN variable '}' { $$ = $2; }
+					_astFactory.Variable(@2, $2, NullLangElement), $4);
+				SetDelimiters($$, Tokens.T_DOLLAR_OPEN_CURLY_BRACES, @1, (Tokens)'}', @3); }
+	|	T_CURLY_OPEN variable '}' { $$ = $2; SetDelimiters($$, Tokens.T_CURLY_OPEN, @1, (Tokens)'}', @3); }
 ;
 
 encaps_var_offset:

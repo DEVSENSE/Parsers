@@ -230,11 +230,15 @@ namespace Devsense.PHP.Syntax
 
         public override void VisitBlockStmt(BlockStmt x)
         {
-            if(x is ColonBlockStmt)
+            if (x is ColonBlockStmt)
             {
                 ConsumeToken(((ColonBlockStmt)x).OpeningToken, x.Span.StartOrInvalid);
                 base.VisitBlockStmt(x);
-                ConsumeToken(((ColonBlockStmt)x).ClosingToken, x.Span.End - TokenFacts.GetTokenText(((ColonBlockStmt)x).ClosingToken).Length);
+                ConsumeToken(((ColonBlockStmt)x).ClosingToken, x.Span.End/* - TokenFacts.GetTokenText(((ColonBlockStmt)x).ClosingToken).Length*/);
+                if (((ColonBlockStmt)x).ClosingToken == Tokens.T_ENDIF)
+                {
+                    ConsumeToken(Tokens.T_SEMI, x.Span.End + TokenFacts.GetTokenText(((ColonBlockStmt)x).ClosingToken).Length);
+                }
             }
             else
             {
@@ -291,7 +295,36 @@ namespace Devsense.PHP.Syntax
 
         public override void VisitConcatEx(ConcatEx x)
         {
+            if (x.Label.Length > 1)
+            {
+                ConsumeToken(Tokens.T_START_HEREDOC, "<<<" + x.Label, x.Span.Start);
+            }
+            else if(x.Label.Length == 1)
+            {
+                ConsumeToken((Tokens)x.Label[0], x.Span.Start);
+            }
             VisitElementList(x.Expressions, Tokens.T_DOT, ".");
+            if (x.Label.Length > 1)
+            {
+                ConsumeToken(Tokens.T_END_HEREDOC, x.Label, x.Span.End - x.Label.Length);
+            }
+            else if (x.Label.Length == 1)
+            {
+                ConsumeToken((Tokens)x.Label[0], x.Span.End - x.Label.Length);
+            }
+            object obj;
+            if(x.Properties.TryGetProperty(ConcatEx.DelimitersPosition, out obj) &&
+                obj is KeyValuePair<Tokens, short>[])
+            {
+                var delimiters = (KeyValuePair<Tokens, short>[])obj;
+                for (int i = 0; i < delimiters.Length; i++)
+                {
+                    if(delimiters[i].Key != Tokens.T_ERROR)
+                    {
+                        ConsumeToken(delimiters[i].Key, x.Span.Start + delimiters[i].Value);
+                    }
+                }
+            }
         }
 
         public override void VisitConditionalEx(ConditionalEx x)
@@ -556,7 +589,7 @@ namespace Devsense.PHP.Syntax
                     element.Span.StartOrInvalid >= 0 && nameOpt.Span.StartOrInvalid > element.Span.StartOrInvalid ?
                     Span.FromBounds(element.Span.StartOrInvalid, nameOpt.Span.StartOrInvalid) : Span.Invalid);
                 ConsumeToken(Tokens.T_FUNCTION, element is MethodDecl ? ((MethodDecl)element).FunctionPosition : element.Span.StartOrInvalid);
-                if (signature.AliasReturn) ConsumeToken(Tokens.T_AMP, "&", element.Span.StartOrInvalid + 8);
+                if (signature.AliasReturn && element is IAliasReturn) ConsumeToken(Tokens.T_AMP, "&", ((IAliasReturn)element).ReferencePosition);
                 if (nameOpt.HasValue) ConsumeToken(Tokens.T_STRING, nameOpt.Name.Value, nameOpt.Span.StartOrInvalid);
                 VisitSignature(signature);
                 if (returnTypeOpt != null)

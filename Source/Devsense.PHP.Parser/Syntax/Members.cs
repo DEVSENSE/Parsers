@@ -80,44 +80,44 @@ namespace Devsense.PHP.Syntax
     internal struct ModifierPosition
     {
         private PhpMemberAttributes _combinedModifiers;
-        private List<KeyValuePair<PhpMemberAttributes, int>> _modifiers;
+        private List<KeyValuePair<Tokens, int>> _modifiers;
 
-        public ModifierPosition(PhpMemberAttributes modifier, int position)
+        public ModifierPosition(Tokens modifier, int position)
         {
-            _modifiers = new List<KeyValuePair<PhpMemberAttributes, int>>()
-            { new KeyValuePair<PhpMemberAttributes, int>(modifier, position) };
-            _combinedModifiers = modifier;
+            _modifiers = new List<KeyValuePair<Tokens, int>>()
+            { new KeyValuePair<Tokens, int>(modifier, position) };
+            _combinedModifiers = modifier.ToModifier();
         }
 
         public void AddModifier(ModifierPosition modifier)
         {
             if (_modifiers == null)
             {
-                _modifiers = new List<KeyValuePair<PhpMemberAttributes, int>>();
+                _modifiers = new List<KeyValuePair<Tokens, int>>();
             }
             _modifiers.AddRange(modifier._modifiers);
             for (int i = 0; i < modifier._modifiers.Count; i++)
             {
-                _combinedModifiers |= modifier._modifiers[i].Key;
+                _combinedModifiers |= modifier._modifiers[i].Key.ToModifier();
             }
         }
 
-        public void AddModifier(PhpMemberAttributes modifier, int position)
+        public void AddModifier(Tokens modifier, int position)
         {
             if (_modifiers == null)
             {
-                _modifiers = new List<KeyValuePair<PhpMemberAttributes, int>>();
+                _modifiers = new List<KeyValuePair<Tokens, int>>();
             }
-            _modifiers.Add(new KeyValuePair<PhpMemberAttributes, int>(modifier, position));
-            _combinedModifiers |= modifier;
+            _modifiers.Add(new KeyValuePair<Tokens, int>(modifier, position));
+            _combinedModifiers |= modifier.ToModifier();
         }
 
         public bool IsNone => _modifiers == null || _modifiers.Count == 0;
 
         public PhpMemberAttributes CombinedModifier => _combinedModifiers;
 
-        public KeyValuePair<PhpMemberAttributes, short>[] Modifiers(int start) => _modifiers == null ? null :
-            _modifiers.Select(p => new KeyValuePair<PhpMemberAttributes, short>(p.Key, (short)(p.Value - start))).ToArray();
+        public KeyValuePair<Tokens, short>[] Modifiers(int start) => _modifiers == null ? null :
+            _modifiers.Select(p => new KeyValuePair<Tokens, short>(p.Key, (short)(p.Value - start))).ToArray();
     }
 
     #endregion

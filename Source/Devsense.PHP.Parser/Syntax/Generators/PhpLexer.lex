@@ -787,11 +787,15 @@ ST_HALT_COMPILER1,ST_HALT_COMPILER2,ST_HALT_COMPILER3>{EOF} {
     return (Tokens.T_START_HEREDOC);
 }
 
+<ST_END_HEREDOC>^{LABEL}(";")?{NEWLINE} {
+	BEGIN(LexicalStates.ST_IN_SCRIPTING);
+	_yyless(LabelTrailLength());
+	this._tokenSemantics.Object = this._hereDocLabel;
+	return Tokens.T_END_HEREDOC;
+}
 
 <ST_END_HEREDOC>{ANY_CHAR} {
-	BEGIN(LexicalStates.ST_IN_SCRIPTING);
-	this._tokenSemantics.Object = this._hereDocLabel;
-	return (Tokens.T_END_HEREDOC);
+	return Tokens.T_ERROR;
 }
 
 <ST_NOWDOC>^{LABEL}(";")?{NEWLINE} {

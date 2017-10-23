@@ -145,9 +145,30 @@ namespace Devsense.PHP.Syntax.Ast
             return new SimpleBlockStmt(BlockSpan(span, statements), statements.CastToArray<Statement>());
         }
 
-        public virtual LangElement Concat(Span span, IEnumerable<LangElement> expressions)
+        public virtual LangElement Concat(Span span, IEnumerable<LangElement> expressions, string label)
         {
-            return new ConcatEx(span, expressions.CastToArray<Expression>());
+            var concat = new ConcatEx(span, expressions.CastToArray<Expression>()) { Label = label };
+            var delimiters = new KeyValuePair<Tokens, short>[concat.Expressions.Length * 2];
+            for (int i = 0; i < concat.Expressions.Length; i++)
+            {
+                object obj;
+                if (concat.Expressions[i].Properties.TryGetProperty(ConcatEx.DelimitersPosition, out obj) &&
+                    obj is KeyValuePair<Tokens, short>[])
+                {
+                    var separators = (KeyValuePair<Tokens, short>[])obj;
+                    delimiters[2 * i] = new KeyValuePair<Tokens, short>(separators[0].Key,
+                        (short)(separators[0].Value + concat.Expressions[i].Span.Start - span.Start));
+                    delimiters[2 * i + 1] = new KeyValuePair<Tokens, short>(separators[1].Key,
+                        (short)(separators[1].Value + concat.Expressions[i].Span.Start - span.Start));
+                }
+                else
+                {
+                    delimiters[2 * i] = new KeyValuePair<Tokens, short>(Tokens.T_ERROR, 0);
+                    delimiters[2 * i + 1] = new KeyValuePair<Tokens, short>(Tokens.T_ERROR, 0);
+                }
+            }
+            concat.Properties.SetProperty(ConcatEx.DelimitersPosition, delimiters);
+            return concat;
         }
 
         public virtual LangElement DeclList(Span span, PhpMemberAttributes attributes, int constPos, IEnumerable<LangElement> decls)
@@ -225,20 +246,22 @@ namespace Devsense.PHP.Syntax.Ast
         }
 
         public virtual LangElement Function(Span span, bool conditional, bool aliasReturn, PhpMemberAttributes attributes, TypeRef returnType,
-            Name name, Span nameSpan, IEnumerable<FormalTypeParam> typeParamsOpt, IEnumerable<FormalParam> formalParams, Span formalParamsSpan, LangElement body)
+            Name name, Span nameSpan, IEnumerable<FormalTypeParam> typeParamsOpt, IEnumerable<FormalParam> formalParams, Span formalParamsSpan, LangElement body, Span byRefPosition)
         {
             return new FunctionDecl(span, conditional, attributes, new NameRef(nameSpan, name.Value), aliasReturn,
                 formalParams.AsArray(), formalParamsSpan, typeParamsOpt.AsArray(),
-                (BlockStmt)body, null, returnType);
+                (BlockStmt)body, null, returnType)
+            { ReferencePosition = byRefPosition.StartOrInvalid };
         }
 
         public virtual LangElement Lambda(Span span, Span headingSpan, bool aliasReturn,
             TypeRef returnType, PhpMemberAttributes modifiers, IEnumerable<FormalParam> formalParams,
-            Span formalParamsSpan, IEnumerable<FormalParam> lexicalVars, LangElement body)
+            Span formalParamsSpan, IEnumerable<FormalParam> lexicalVars, LangElement body, Span byRefPosition)
         {
             return new LambdaFunctionExpr(span, headingSpan,
                 new Scope(), false, formalParams.AsArray(), formalParamsSpan, lexicalVars.AsArray(),
-                (BlockStmt)body, returnType, modifiers);
+                (BlockStmt)body, returnType, modifiers)
+            { ReferencePosition = byRefPosition.StartOrInvalid };
         }
 
         public virtual FormalParam Parameter(Span span, string name, Span nameSpan, TypeRef typeOpt, FormalParam.Flags flags, Span assignSpan, Expression initValue)
@@ -482,11 +505,16 @@ namespace Devsense.PHP.Syntax.Ast
                 bodySpan, null));
         }
 
-        public virtual LangElement Method(Span span, bool aliasReturn, PhpMemberAttributes attributes, TypeRef returnType, Span returnTypeSpan, string name, Span nameSpan, IEnumerable<FormalTypeParam> typeParamsOpt, IEnumerable<FormalParam> formalParams, Span formalParamsSpan, IEnumerable<ActualParam> baseCtorParams, LangElement body, int functionPosition, int modifierPosition)
+        public virtual LangElement Method(Span span, bool aliasReturn, PhpMemberAttributes attributes, TypeRef returnType, Span returnTypeSpan, string name, Span nameSpan, IEnumerable<FormalTypeParam> typeParamsOpt, IEnumerable<FormalParam> formalParams, Span formalParamsSpan, IEnumerable<ActualParam> baseCtorParams, LangElement body, Span functionPosition, Span modifierPosition, Span byRefPosition)
         {
             return new MethodDecl(span, new NameRef(nameSpan, name), aliasReturn, formalParams.AsArray(),
                 formalParamsSpan, typeParamsOpt.AsArray(),
-                (BlockStmt)body, attributes, baseCtorParams.AsArray(), null, returnType, functionPosition, modifierPosition);
+                (BlockStmt)body, attributes, baseCtorParams.AsArray(), null, returnType)
+            {
+                FunctionPosition = functionPosition.StartOrInvalid,
+                ModifierPosition = modifierPosition.StartOrInvalid,
+                ReferencePosition = byRefPosition.StartOrInvalid
+            };
         }
 
         public virtual LangElement UnaryOperation(Span span, Operations operation, LangElement expression)

@@ -853,10 +853,10 @@ namespace Devsense.PHP.Syntax
         {
             BEGIN(LexicalStates.ST_END_HEREDOC);
             string label = GetTokenString();
-            label = label.TrimEnd(new char[] { ' ', '\t', '\r', '\n', ';' });
+            int trail = LabelTrailLength();
             // move back at the end of the heredoc label - yyless does not work properly (requires additional condition for the optional ';')
-            lookahead_index = token_end = lookahead_index - (TokenLength - label.Length) - 1;
-            string text = f(label.Substring(0, label.Length - _hereDocLabel.Length));
+            lookahead_index = token_end = lookahead_index - _hereDocLabel.Length - trail;
+            string text = f(label.Substring(0, label.Length - _hereDocLabel.Length - trail));
             _tokenSemantics.Object = text;
             if (text.EndsWith("\r\n"))
             {
@@ -866,7 +866,25 @@ namespace Devsense.PHP.Syntax
             {
                 _tokenSemantics.Object = text.Remove(text.Length - 1);
             }
-            return label.Length - _hereDocLabel.Length > 0;
+            return text.Length > 0;
+        }
+
+        int LabelTrailLength()
+        {
+            int length = 0;
+            for (int i = token_end - 1; i >= token_start; i--)
+            {
+                if (buffer[i] == ';' || buffer[i] == '\n' ||
+                    buffer[i] == ' ' || buffer[i] == '\r' || buffer[i] == '\t')
+                {
+                    length++;
+                }
+                else
+                {
+                    break;
+                }
+            }
+            return length;
         }
 
         Tokens ProcessStringEOF()

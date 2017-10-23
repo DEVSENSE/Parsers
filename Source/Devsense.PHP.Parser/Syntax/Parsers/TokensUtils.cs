@@ -74,6 +74,55 @@ namespace Devsense.PHP.Syntax
             }
         }
 
+        public static Tokens ToToken(this PhpMemberAttributes attributes)
+        {
+            switch (attributes)
+            {
+                case PhpMemberAttributes.Public:
+                    return Tokens.T_PUBLIC;
+                case PhpMemberAttributes.Private:
+                    return Tokens.T_PRIVATE;
+                case PhpMemberAttributes.Protected:
+                    return Tokens.T_PROTECTED;
+                case PhpMemberAttributes.Static:
+                    return Tokens.T_STATIC;
+                case PhpMemberAttributes.Abstract:
+                    return Tokens.T_ABSTRACT;
+                case PhpMemberAttributes.Final:
+                    return Tokens.T_FINAL;
+                case PhpMemberAttributes.Interface:
+                    return Tokens.T_INTERFACE;
+                case PhpMemberAttributes.Trait:
+                    return Tokens.T_TRAIT;
+                default:
+                    return Tokens.T_ERROR;
+            }
+        }
+        public static PhpMemberAttributes ToModifier(this Tokens token)
+        {
+            switch (token)
+            {
+                case Tokens.T_PUBLIC:
+                    return PhpMemberAttributes.Public;
+                case Tokens.T_PRIVATE:
+                    return PhpMemberAttributes.Private;
+                case Tokens.T_PROTECTED:
+                    return PhpMemberAttributes.Protected;
+                case Tokens.T_STATIC:
+                    return PhpMemberAttributes.Static;
+                case Tokens.T_ABSTRACT:
+                    return PhpMemberAttributes.Abstract;
+                case Tokens.T_FINAL:
+                    return PhpMemberAttributes.Final;
+                case Tokens.T_INTERFACE:
+                    return PhpMemberAttributes.Interface;
+                case Tokens.T_TRAIT:
+                    return PhpMemberAttributes.Trait;
+                default:
+                    return PhpMemberAttributes.None;
+            }
+        }
+
         /// <summary>
         /// Gets category of a token in given lexical context.
         /// </summary>

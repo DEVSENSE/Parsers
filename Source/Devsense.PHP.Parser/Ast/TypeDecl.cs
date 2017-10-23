@@ -375,7 +375,7 @@ namespace Devsense.PHP.Syntax.Ast
     /// <summary>
     /// Represents a method declaration.
     /// </summary>
-    public sealed class MethodDecl : TypeMemberDecl
+    public sealed class MethodDecl : TypeMemberDecl, IAliasReturn
     {
         /// <summary>
         /// Name of the method.
@@ -423,13 +423,23 @@ namespace Devsense.PHP.Syntax.Ast
         }
         private short _modifierOffset = -1;
 
+        /// <summary>
+        /// Position of the reference symbol, <c>-1</c> if none present.
+        /// </summary>
+        public int ReferencePosition
+        {
+            get { return _referenceOffset < 0 ? -1 : Span.Start + _referenceOffset; }
+            set { _referenceOffset = value < 0 ? (short)-1 : (short)(value - Span.Start); }
+        }
+        private short _referenceOffset = -1;
+
         #region Construction
 
         public MethodDecl(Text.Span span,
             NameRef name, bool aliasReturn, IList<FormalParam>/*!*/ formalParams, Text.Span paramsSpan,
             IList<FormalTypeParam>/*!*/ genericParams, BlockStmt body,
             PhpMemberAttributes modifiers, IList<ActualParam> baseCtorParams,
-            List<CustomAttribute> attributes, TypeRef returnType, int functionPosition, int modifierPosition)
+            List<CustomAttribute> attributes, TypeRef returnType)
             : base(span, modifiers, attributes)
         {
             Debug.Assert(genericParams != null && formalParams != null);
@@ -441,8 +451,6 @@ namespace Devsense.PHP.Syntax.Ast
             this.baseCtorParams = baseCtorParams.AsArray();
             this.parametersSpan = paramsSpan;
             this.returnType = returnType;
-            FunctionPosition = functionPosition;
-            ModifierPosition = modifierPosition;
         }
 
         #endregion

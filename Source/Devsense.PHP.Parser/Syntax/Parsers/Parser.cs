@@ -652,12 +652,24 @@ namespace Devsense.PHP.Syntax
 
         void SetModifiers(LangElement element, ModifierPosition modifier, int start)
         {
-            KeyValuePair<PhpMemberAttributes, short>[] modifiers = null;
+            KeyValuePair<Tokens, short>[] modifiers = null;
             if (/*_languageFeatures.HasFeature(LanguageFeatures.FullInformation) && */
                 (modifiers = modifier.Modifiers(start)) != null &&
                 (!(element is MethodDecl) || modifiers.Length > 1))
             {
                 element.Properties.SetProperty(TypeMemberDecl.ModifierPositionProperty, modifiers);
+            }
+        }
+
+        void SetDelimiters(LangElement element, Tokens opening, Span openingSpan,
+            Tokens closing, Span closingSpan)
+        {
+            if (openingSpan.IsValid && closingSpan.IsValid)
+            {
+                var delimiters = new ModifierPosition(opening, openingSpan.Start);
+                delimiters.AddModifier(closing, closingSpan.Start);
+                element.Properties.SetProperty(ConcatEx.DelimitersPosition,
+                    delimiters.Modifiers(element.Span.Start));
             }
         }
 

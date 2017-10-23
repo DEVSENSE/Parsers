@@ -168,7 +168,7 @@ namespace Devsense.PHP.Syntax.Ast
     /// <summary>
     /// Represents a function declaration.
     /// </summary>
-    public sealed class FunctionDecl : Statement
+    public sealed class FunctionDecl : Statement, IAliasReturn
     {
         internal override bool IsDeclaration { get { return true; } }
 
@@ -183,6 +183,16 @@ namespace Devsense.PHP.Syntax.Ast
 
         public BlockStmt/*!*/ Body { get { return body; } }
         private readonly BlockStmt/*!*/ body;
+
+        /// <summary>
+        /// Position of the reference symbol, <c>-1</c> if none present.
+        /// </summary>
+        public int ReferencePosition
+        {
+            get { return _referenceOffset < 0 ? -1 : Span.Start + _referenceOffset; }
+            set { _referenceOffset = value < 0 ? (short)-1 : (short)(value - Span.Start); }
+        }
+        private short _referenceOffset = -1;
 
         /// <summary>
         /// Gets value indicating whether the function is declared conditionally.
