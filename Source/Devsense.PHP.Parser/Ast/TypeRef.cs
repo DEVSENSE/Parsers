@@ -238,7 +238,13 @@ namespace Devsense.PHP.Syntax.Ast
             /// <summary>
             /// Iterable.
             /// </summary>
-            iterable
+            iterable,
+
+            /// <summary>
+            /// Object.
+            /// </summary>
+            /// <remarks>PHP 7.2+</remarks>
+            @object
         }
 
         #endregion
@@ -276,6 +282,7 @@ namespace Devsense.PHP.Syntax.Ast
                     case PrimitiveType.callable: return Syntax.QualifiedName.Callable;
                     case PrimitiveType.@void: return Syntax.QualifiedName.Void;
                     case PrimitiveType.iterable: return Syntax.QualifiedName.Iterable;
+                    case PrimitiveType.@object: return Syntax.QualifiedName.Object;
                     default:
                         throw new InvalidOperationException();  // invalid _typeName
                 }

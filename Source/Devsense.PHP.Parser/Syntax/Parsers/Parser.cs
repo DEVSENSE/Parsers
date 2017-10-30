@@ -406,17 +406,20 @@ namespace Devsense.PHP.Syntax
 
         public static readonly Dictionary<QualifiedName, PrimitiveTypeRef.PrimitiveType> PHP56PrimitiveTypes = new Dictionary<QualifiedName, PrimitiveTypeRef.PrimitiveType>() {
             { QualifiedName.Array, PrimitiveTypeRef.PrimitiveType.array },
-            { QualifiedName.Callable, PrimitiveTypeRef.PrimitiveType.callable }
+            { QualifiedName.Callable, PrimitiveTypeRef.PrimitiveType.callable },
         };
         public static readonly Dictionary<QualifiedName, PrimitiveTypeRef.PrimitiveType> PHP70PrimitiveTypes = new Dictionary<QualifiedName, PrimitiveTypeRef.PrimitiveType>() {
             { QualifiedName.Int, PrimitiveTypeRef.PrimitiveType.@int },
             { QualifiedName.Float, PrimitiveTypeRef.PrimitiveType.@float },
             { QualifiedName.String, PrimitiveTypeRef.PrimitiveType.@string },
-            { QualifiedName.Bool, PrimitiveTypeRef.PrimitiveType.@bool }
+            { QualifiedName.Bool, PrimitiveTypeRef.PrimitiveType.@bool },
         };
         public static readonly Dictionary<QualifiedName, PrimitiveTypeRef.PrimitiveType> PHP71PrimitiveTypes = new Dictionary<QualifiedName, PrimitiveTypeRef.PrimitiveType>() {
             { QualifiedName.Void, PrimitiveTypeRef.PrimitiveType.@void },
-            { QualifiedName.Iterable, PrimitiveTypeRef.PrimitiveType.iterable }
+            { QualifiedName.Iterable, PrimitiveTypeRef.PrimitiveType.iterable },
+        };
+        public static readonly Dictionary<QualifiedName, PrimitiveTypeRef.PrimitiveType> PHP72PrimitiveTypes = new Dictionary<QualifiedName, PrimitiveTypeRef.PrimitiveType>() {
+            { QualifiedName.Object, PrimitiveTypeRef.PrimitiveType.@object },
         };
 
         ReservedTypeRef.ReservedType _reservedTypeStatic => ReservedTypeRef.ReservedType.@static;
@@ -429,6 +432,10 @@ namespace Devsense.PHP.Syntax
             {
                 ReservedTypeRef.ReservedType reserved;
                 PrimitiveTypeRef.PrimitiveType primitive;
+                if ((_languageFeatures.HasFeature(LanguageFeatures.Php72Set)) && PHP72PrimitiveTypes.TryGetValue(qname, out primitive))
+                {
+                    return _astFactory.PrimitiveTypeReference(span, primitive);
+                }
                 if ((_languageFeatures.HasFeature(LanguageFeatures.Php71Set)) && PHP71PrimitiveTypes.TryGetValue(qname, out primitive))
                 {
                     return _astFactory.PrimitiveTypeReference(span, primitive);
