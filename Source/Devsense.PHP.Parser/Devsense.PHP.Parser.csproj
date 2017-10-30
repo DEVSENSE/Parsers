@@ -1,11 +1,11 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <VersionPrefix Condition=" '$(VersionPrefix)'=='' ">1.3.20</VersionPrefix>
+    <VersionPrefix Condition=" '$(VersionPrefix)'=='' ">1.4.0</VersionPrefix>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-	<GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-	<Company>Devsense</Company>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Company>Devsense</Company>
     <Copyright>(c) Devsense 2017</Copyright>
     <ProjectGuid>{4F3BE9D7-1E3D-4BE4-999A-32CCE715AB40}</ProjectGuid>
     <OutputType>Library</OutputType>
@@ -14,10 +14,10 @@
     <AssemblyName>Devsense.PHP.Parser</AssemblyName>
     <DefaultLanguage>en-US</DefaultLanguage>
     <FileAlignment>512</FileAlignment>
-	<DebugSymbols>true</DebugSymbols>
+    <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <TargetFrameworks>netstandard1.0;net45</TargetFrameworks>
-	<NoWarn>1701;1702;1705;1591</NoWarn>
+    <NoWarn>1701;1702;1705;1591</NoWarn>
   </PropertyGroup>
   <PropertyGroup>
     <PublicSign Condition="'$(OS)' != 'Windows_NT'">true</PublicSign>
@@ -26,8 +26,10 @@
     <AssemblyOriginatorKeyFile>key.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <PropertyGroup>
-    <PreBuildEvent>rem "$(ProjectDir)Syntax\Generators\CsLex.exe" $(ProjectDir)Syntax\Generators\PhpLexer.lex $(ProjectDir)Syntax\Generated\Lexer.cs /version:2
-rem "$(ProjectDir)Syntax\Generators\gppg.exe" /l $(ProjectDir)Syntax\Generators\PhpParser.y $(ProjectDir)Syntax\Generated\Parser.cs
-rem call $(ProjectDir)Syntax\Generators\generate.bat</PreBuildEvent>
+    <PreBuildEvent>
+      rem "$(ProjectDir)Syntax\Generators\CsLex.exe" $(ProjectDir)Syntax\Generators\PhpLexer.lex $(ProjectDir)Syntax\Generated\Lexer.cs /version:2
+      rem "$(ProjectDir)Syntax\Generators\gppg.exe" /l $(ProjectDir)Syntax\Generators\PhpParser.y $(ProjectDir)Syntax\Generated\Parser.cs
+      rem call $(ProjectDir)Syntax\Generators\generate.bat
+    </PreBuildEvent>
   </PropertyGroup>
 </Project>
