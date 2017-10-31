@@ -31,9 +31,9 @@ namespace Devsense.PHP.Syntax
                 case Tokens.T_LBRACKET: return "[";
                 case Tokens.T_RBRACKET: return "]";
 
-                case Tokens.T_LOGICAL_XOR: return "XOR";
-                case Tokens.T_LOGICAL_OR: return "OR";
-                case Tokens.T_LOGICAL_AND: return "AND";
+                case Tokens.T_LOGICAL_XOR: return "xor";
+                case Tokens.T_LOGICAL_OR: return "or";
+                case Tokens.T_LOGICAL_AND: return "and";
                 case Tokens.T_BOOLEAN_AND: return "&&";
                 case Tokens.T_BOOLEAN_OR: return "||";
                 case Tokens.T_PIPE: return "|";
@@ -120,7 +120,7 @@ namespace Devsense.PHP.Syntax
                 case Tokens.T_WHILE: return "while";
                 case Tokens.T_ENDWHILE: return "endwhile";
                 case Tokens.T_FOR: return "for";
-                case Tokens.T_ENDFOR: return "endfo";
+                case Tokens.T_ENDFOR: return "endfor";
                 case Tokens.T_FOREACH: return "foreach";
                 case Tokens.T_ENDFOREACH: return "endforeach";
                 case Tokens.T_DECLARE: return "declare";
@@ -140,9 +140,25 @@ namespace Devsense.PHP.Syntax
                 case Tokens.T_SR: return ">>";
                 case Tokens.T_TILDE: return "~";
                 case Tokens.T_CLONE: return "clone";
-                case Tokens.T_AT: return "at";
+                case Tokens.T_AT: return "@";
+                case Tokens.T_NAMESPACE: return "namespace";
 
                 case Tokens.T_CURLY_OPEN: return "{$";
+                case Tokens.T_DOLLAR: return "$";
+                case Tokens.T_DOLLAR_OPEN_CURLY_BRACES: return "${";
+
+                case Tokens.T_PLUS_EQUAL: return "+=";
+                case Tokens.T_MINUS_EQUAL: return "-=";
+                case Tokens.T_MUL_EQUAL: return "*=";
+                case Tokens.T_POW_EQUAL: return "**=";
+                case Tokens.T_DIV_EQUAL: return "/=";
+                case Tokens.T_MOD_EQUAL: return "%=";
+                case Tokens.T_AND_EQUAL: return "&=";
+                case Tokens.T_OR_EQUAL: return "|=";
+                case Tokens.T_XOR_EQUAL: return "^=";
+                case Tokens.T_CONCAT_EQUAL: return ".=";
+                case Tokens.T_SL_EQUAL: return "<<=";
+                case Tokens.T_SR_EQUAL: return ">>=";
 
                 default: throw new ArgumentException(t.ToString());
             }
@@ -211,6 +227,8 @@ namespace Devsense.PHP.Syntax
                 case Operations.Xor: return Tokens.T_LOGICAL_XOR;
                 case Operations.Or: return Tokens.T_BOOLEAN_OR;
                 case Operations.And: return Tokens.T_BOOLEAN_AND;
+                case Operations.LogicalOr: return Tokens.T_LOGICAL_OR;
+                case Operations.LogicalAnd: return Tokens.T_LOGICAL_AND;
                 case Operations.BitOr: return Tokens.T_PIPE;
                 case Operations.BitXor: return Tokens.T_CARET;
                 case Operations.BitAnd: return Tokens.T_AMP;

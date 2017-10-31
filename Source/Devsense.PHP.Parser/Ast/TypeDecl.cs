@@ -104,6 +104,16 @@ namespace Devsense.PHP.Syntax.Ast
     {
         #region Properties
 
+        /// <summary>
+        /// Position of the 'function' keyword.
+        /// </summary>
+        public int KeyworPosition
+        {
+            get { return Span.Start + _keywordOffset; }
+            set { _keywordOffset = (short)(value - Span.Start); }
+        }
+        private short _keywordOffset = 0;
+
         internal override bool IsDeclaration { get { return true; } }
 
         /// <summary>

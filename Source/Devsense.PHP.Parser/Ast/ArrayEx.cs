@@ -27,6 +27,9 @@ namespace Devsense.PHP.Syntax.Ast
         public override Operations Operation { get { return Operations.Array; } }
         internal override bool AllowsPassByReference { get { return false; } }
 
+        public bool IsOldNotation => _isOldNotation;
+        private readonly bool _isOldNotation;
+
         public Item[]/*!*/ Items
         {
             get { return items; }
@@ -34,10 +37,11 @@ namespace Devsense.PHP.Syntax.Ast
         }
         private Item[]/*!*/items;
 
-        public ArrayEx(Text.Span span, IList<Item>/*!*/items)
+        public ArrayEx(Text.Span span, IList<Item>/*!*/items, bool isOldNotation)
             : base(span)
         {
             this.Items = items.AsArray();
+            _isOldNotation = isOldNotation;
         }
 
         /// <summary>

@@ -53,7 +53,7 @@ namespace Devsense.PHP.Syntax.Ast
         UnsetCast,
 
         // binary ops:
-        Xor, Or, And,
+        Xor, Or, And, LogicalOr, LogicalAnd,
         BitOr, BitXor, BitAnd,
         Equal, NotEqual,
         Identical, NotIdentical,
@@ -238,12 +238,42 @@ namespace Devsense.PHP.Syntax.Ast
     /// </summary>
     public abstract class VarLikeConstructUse : Expression
     {
-        public VarLikeConstructUse IsMemberOf { get { return isMemberOf; } set { isMemberOf = value; } }
-        protected VarLikeConstructUse isMemberOf;
+        public Expression IsMemberOf { get { return isMemberOf; } set { isMemberOf = value; } }
+        protected Expression isMemberOf;
 
         internal override bool AllowsPassByReference { get { return true; } }
 
         protected VarLikeConstructUse(Text.Span p) : base(p) { }
+    }
+
+    #endregion
+
+    #region EncapsedExpression
+
+    /// <summary>
+    /// Expression representing an enclosed expression.
+    /// </summary>
+    public abstract class EncapsedExpression : Expression
+    {
+        public abstract Tokens OpenToken { get; }
+
+        public abstract Tokens CloseToken { get; }
+
+        public Expression Expression => _expression;
+
+        public override Operations Operation => Operations.Parenthesis;
+
+        protected Expression _expression;
+
+        public EncapsedExpression(Span span, Expression expression) : base(span)
+        {
+            _expression = expression;
+        }
+
+        public override void VisitMe(TreeVisitor visitor)
+        {
+            visitor.VisitEncapsedExpression(this);
+        }
     }
 
     #endregion
@@ -253,22 +283,53 @@ namespace Devsense.PHP.Syntax.Ast
     /// <summary>
     /// Expression representing a parenthesis enclosed expression.
     /// </summary>
-    public class ParenthesisExpression : Expression
+    public class ParenthesisExpression : EncapsedExpression
     {
-        public Expression Expression => _expression;
+        public override Tokens OpenToken => Tokens.T_LPAREN;
 
-        public override Operations Operation => Operations.Parenthesis;
+        public override Tokens CloseToken => Tokens.T_RPAREN;
 
-        protected Expression _expression;
-
-        public ParenthesisExpression(Span span, Expression expression) : base(span)
+        public ParenthesisExpression(Span span, Expression expression) : base(span, expression)
         {
             _expression = expression;
         }
+    }
 
-        public override void VisitMe(TreeVisitor visitor)
+    #endregion
+
+    #region BracesExpression
+
+    /// <summary>
+    /// Expression representing a parenthesis enclosed expression.
+    /// </summary>
+    public class BracesExpression : EncapsedExpression
+    {
+        public override Tokens OpenToken => Tokens.T_LBRACE;
+
+        public override Tokens CloseToken => Tokens.T_RBRACE;
+
+        public BracesExpression(Span span, Expression expression) : base(span, expression)
         {
-            visitor.VisitParenthesisExpression(this);
+            _expression = expression;
+        }
+    }
+
+    #endregion
+
+    #region DollarBracesExpression
+
+    /// <summary>
+    /// Expression representing a parenthesis enclosed expression.
+    /// </summary>
+    public class DollarBracesExpression : EncapsedExpression
+    {
+        public override Tokens OpenToken => Tokens.T_DOLLAR_OPEN_CURLY_BRACES;
+
+        public override Tokens CloseToken => Tokens.T_RBRACE;
+
+        public DollarBracesExpression(Span span, Expression expression) : base(span, expression)
+        {
+            _expression = expression;
         }
     }
 

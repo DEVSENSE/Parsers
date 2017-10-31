@@ -5,13 +5,12 @@
 ?>
 <<<TEST>>>
 
-ERRORS: 2015
-
 "GlobalCode":{
   "NamingContext":{},
   "DirectFcnCall":{
     "Name":"hello",
     "OrigianlName":"hello",
-    "FallbackQualifiedName":""
+    "FallbackQualifiedName":"",
+    "IsMemberOf":{"StringLiteral":{"Value":"test"}}
   }
 }

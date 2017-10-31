@@ -92,6 +92,12 @@ namespace Devsense.PHP.Syntax.Ast
         public TypeRef TargetType { get { return this.tref; } }
         private readonly TypeRef tref;
 
+        /// <summary>
+        /// Signature position including the parentheses.
+        /// </summary>
+        public Text.Span SignaturePosition { get { return _position; } set { _position = value; } }
+        private Text.Span _position;
+
         public CatchItem(Text.Span p, TypeRef tref, DirectVarUse/*!*/ variable,
             BlockStmt body)
             : base(p)

@@ -25,39 +25,46 @@ namespace Devsense.PHP.Syntax.Ast
 	/// Access to an item of a structured variable by [] PHP operator.
 	/// </summary>
 	public sealed class ItemUse : CompoundVarUse
-	{
+    {
         public override Operations Operation { get { return Operations.ItemUse; } }
 
         /// <summary>
         /// Whether this represents function array dereferencing.
         /// </summary>
-        public bool IsFunctionArrayDereferencing { get { return this.functionArrayDereferencing; } }
-        private readonly bool functionArrayDereferencing = false;
+        public bool IsFunctionArrayDereferencing => _functionArrayDereferencing;
+        private readonly bool _functionArrayDereferencing = false;
 
-		/// <summary>
-		/// Variable used as an array identifier.
-		/// </summary>
-        public Expression Array { get { return array; } set { array = value; } }
-        private Expression/*!*/ array;
+        /// <summary>
+        /// <c>True</c> if the array is accessed using '{}', false if using '[]'.
+        /// </summary>
+        public bool IsBraces => this._isBraces;
+        private readonly bool _isBraces = false;
 
-		/// <summary>
-		/// Expression used as an array index. 
-		/// A <B>null</B> reference means key-less array operator (write context only).
-		/// </summary>
+        /// <summary>
+        /// Variable used as an array identifier.
+        /// </summary>
+        public Expression Array { get { return _array; } set { _array = value; } }
+        private Expression/*!*/ _array;
+
+        /// <summary>
+        /// Expression used as an array index. 
+        /// A <B>null</B> reference means key-less array operator (write context only).
+        /// </summary>
         public Expression Index { get { return index; } internal set { index = value; } }
-		private Expression index;
+        private Expression index;
 
-        public ItemUse(Text.Span p, Expression/*!*/ array, Expression index, bool functionArrayDereferencing = false)
-			: base(p)
-		{
-			Debug.Assert(array != null);
+        public ItemUse(Text.Span p, Expression/*!*/ array, Expression index, bool functionArrayDereferencing = false, bool isBraces = false)
+            : base(p)
+        {
+            Debug.Assert(array != null);
 
-			this.array = array;
-			this.index = index;
-            this.functionArrayDereferencing = functionArrayDereferencing;
-		}
+            this._array = array;
+            this.index = index;
+            _functionArrayDereferencing = functionArrayDereferencing;
+            _isBraces = isBraces;
+        }
 
-		/// <summary>
+        /// <summary>
         /// Call the right Visit* method on the given Visitor object.
         /// </summary>
         /// <param name="visitor">Visitor to be called.</param>
@@ -65,7 +72,7 @@ namespace Devsense.PHP.Syntax.Ast
         {
             visitor.VisitItemUse(this);
         }
-	}
+    }
 
     #endregion
 

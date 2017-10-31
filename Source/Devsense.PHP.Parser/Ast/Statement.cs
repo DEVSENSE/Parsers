@@ -361,7 +361,7 @@ namespace Devsense.PHP.Syntax.Ast
     /// 
     /// That's why we dont'need to know Position => is not child of LangElement
     /// </remarks>
-    public class StaticVarDecl : LangElement, ISeparatedElements
+    public class StaticVarDecl : LangElement, ISeparatedElements, IInitializedElements
     {
         /// <summary>Static variable being declared</summary>
         public VariableName/*!*/ Variable { get { return variable; } }
@@ -382,6 +382,12 @@ namespace Devsense.PHP.Syntax.Ast
         }
         public bool IsSeparatorPresent => _separatorOffset >= 0;
         private short _separatorOffset = -1;
+
+        /// <summary>
+        /// Comma separator following the parameter.
+        /// </summary>
+        public int AssignmentPosition { get { return Span.Start + _assignRelative; } set { _assignRelative = (short)(value - Span.Start); } }
+        private short _assignRelative = -1;
 
         /// <summary>Expression used to initialize static variable</summary>
         public Expression Initializer { get { return initializer; } internal set { initializer = value; } }

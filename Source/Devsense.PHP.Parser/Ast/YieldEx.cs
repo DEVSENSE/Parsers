@@ -51,6 +51,16 @@ namespace Devsense.PHP.Syntax.Ast
         /// </summary>
         private Expression _keyEx, _valueEx;
 
+        /// <summary>
+        /// Position of the arrow operator.
+        /// </summary>
+        public int OperatorPosition
+        {
+            get { return _operatorOffset < 0 ? -1 : Span.Start + _operatorOffset; }
+            set { _operatorOffset = value < 0 ? (short)-1 : (short)(value - Span.Start); }
+        }
+        private short _operatorOffset = -1;
+
         #endregion
 
         #region Initialization

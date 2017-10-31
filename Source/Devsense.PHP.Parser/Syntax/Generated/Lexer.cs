@@ -228,7 +228,7 @@ using System.Collections.Generic;
 					break;
 					
 				case 12:
-					// #line 906
+					// #line 907
 					{
 						//zend_error(E_COMPILE_WARNING,"Unexpected character in input:  '%c' (ASCII=%d) state=%d", yytext[0], yytext[0], YYSTATE);
 						return Tokens.T_ERROR;
@@ -270,17 +270,17 @@ using System.Collections.Generic;
 					break;
 					
 				case 17:
-					// #line 882
+					// #line 883
 					{ BEGIN(LexicalStates.ST_BACKQUOTE); return Tokens.T_BACKQUOTE; }
 					break;
 					
 				case 18:
-					// #line 872
+					// #line 873
 					{ BEGIN(LexicalStates.ST_DOUBLE_QUOTES); yymore(); break; }
 					break;
 					
 				case 19:
-					// #line 821
+					// #line 822
 					{ BEGIN(LexicalStates.ST_SINGLE_QUOTES); yymore(); break; }
 					break;
 					
@@ -823,6 +823,7 @@ using System.Collections.Generic;
 							BEGIN(LexicalStates.ST_HEREDOC);
 						}
 					    this._hereDocLabel = GetTokenSubstring(s, length);
+						this._tokenSemantics.Object = tokenString[s-1] == '\''? GetTokenSubstring(s-1, length+2): this._hereDocLabel;
 					    return (Tokens.T_START_HEREDOC);
 					}
 					break;
@@ -1170,37 +1171,37 @@ using System.Collections.Generic;
 					break;
 					
 				case 143:
-					// #line 880
+					// #line 881
 					{ yymore(); break; }
 					break;
 					
 				case 144:
-					// #line 878
-					{ yymore(); break; }
-					break;
-					
-				case 145:
-					// #line 876
-					{ Tokens token; if (ProcessString(1, out token)) return token; else break; }
-					break;
-					
-				case 146:
 					// #line 879
 					{ yymore(); break; }
 					break;
 					
+				case 145:
+					// #line 877
+					{ Tokens token; if (ProcessString(1, out token)) return token; else break; }
+					break;
+					
+				case 146:
+					// #line 880
+					{ yymore(); break; }
+					break;
+					
 				case 147:
-					// #line 875
+					// #line 876
 					{ Tokens token; if (ProcessString(2, out token)) return token; else break; }
 					break;
 					
 				case 148:
-					// #line 874
+					// #line 875
 					{ Tokens token; if (ProcessString(2, out token)) return token; else break; }
 					break;
 					
 				case 149:
-					// #line 873
+					// #line 874
 					{ Tokens token; if (ProcessString(2, out token)) return token; else break; }
 					break;
 					
@@ -1212,97 +1213,97 @@ using System.Collections.Generic;
 					break;
 					
 				case 151:
-					// #line 825
+					// #line 826
 					{ yymore(); break; }
 					break;
 					
 				case 152:
-					// #line 824
+					// #line 825
 					{ yymore(); break; }
 					break;
 					
 				case 153:
-					// #line 823
+					// #line 824
 					{ BEGIN(LexicalStates.ST_IN_SCRIPTING); return ProcessSingleQuotedString(); }
 					break;
 					
 				case 154:
-					// #line 822
+					// #line 823
 					{ yymore(); break; }
 					break;
 					
 				case 155:
-					// #line 890
+					// #line 891
 					{ yymore(); break; }
 					break;
 					
 				case 156:
-					// #line 888
-					{ yymore(); break; }
-					break;
-					
-				case 157:
-					// #line 886
-					{ Tokens token; if (ProcessShell(1, out token)) return token; else break; }
-					break;
-					
-				case 158:
 					// #line 889
 					{ yymore(); break; }
 					break;
 					
+				case 157:
+					// #line 887
+					{ Tokens token; if (ProcessShell(1, out token)) return token; else break; }
+					break;
+					
+				case 158:
+					// #line 890
+					{ yymore(); break; }
+					break;
+					
 				case 159:
-					// #line 885
+					// #line 886
 					{ Tokens token; if (ProcessShell(2, out token)) return token; else break; }
 					break;
 					
 				case 160:
-					// #line 884
+					// #line 885
 					{ Tokens token; if (ProcessShell(2, out token)) return token; else break; }
 					break;
 					
 				case 161:
-					// #line 883
+					// #line 884
 					{ Tokens token; if (ProcessShell(2, out token)) return token; else break; }
 					break;
 					
 				case 162:
-					// #line 899
+					// #line 900
 					{ yymore(); break; }
 					break;
 					
 				case 163:
-					// #line 898
+					// #line 899
 					{ yymore(); break; }
 					break;
 					
 				case 164:
-					// #line 896
-					{ yymore(); break; }
-					break;
-					
-				case 165:
 					// #line 897
 					{ yymore(); break; }
 					break;
 					
+				case 165:
+					// #line 898
+					{ yymore(); break; }
+					break;
+					
 				case 166:
-					// #line 894
+					// #line 895
 					{ Tokens token; if (ProcessHeredoc(2, out token)) return token; else break; }
 					break;
 					
 				case 167:
-					// #line 893
+					// #line 894
 					{ Tokens token; if (ProcessHeredoc(2, out token)) return token; else break; }
 					break;
 					
 				case 168:
-					// #line 892
+					// #line 893
 					{ Tokens token; if (ProcessHeredoc(2, out token)) return token; else break; }
 					break;
 					
 				case 169:
-					// #line 810
+					// #line 811
 					{
 					    if(!string.IsNullOrEmpty(this._hereDocLabel) && GetTokenString().Contains(this._hereDocLabel))
 						{
@@ -1407,7 +1408,7 @@ using System.Collections.Generic;
 					break;
 					
 				case 183:
-					// #line 904
+					// #line 905
 					{ yymore(); break; }
 					break;
 					
@@ -1419,17 +1420,17 @@ using System.Collections.Generic;
 					break;
 					
 				case 185:
-					// #line 903
+					// #line 904
 					{ yymore(); break; }
 					break;
 					
 				case 186:
-					// #line 901
+					// #line 902
 					{ yy_pop_state(); return Tokens.T_COMMENT; }
 					break;
 					
 				case 187:
-					// #line 902
+					// #line 903
 					{ _yyless(2); yy_pop_state(); return Tokens.T_COMMENT; }
 					break;
 					
@@ -1464,14 +1465,14 @@ using System.Collections.Generic;
 					break;
 					
 				case 192:
-					// #line 797
+					// #line 798
 					{
 						return Tokens.T_ERROR;
 					}
 					break;
 					
 				case 193:
-					// #line 790
+					// #line 791
 					{
 						BEGIN(LexicalStates.ST_IN_SCRIPTING);
 						_yyless(LabelTrailLength());
@@ -1481,12 +1482,12 @@ using System.Collections.Generic;
 					break;
 					
 				case 194:
-					// #line 819
+					// #line 820
 					{ yymore(); break; }
 					break;
 					
 				case 195:
-					// #line 801
+					// #line 802
 					{
 					    if(!string.IsNullOrEmpty(this._hereDocLabel) && GetTokenString().Contains(this._hereDocLabel))
 						{
@@ -1550,7 +1551,7 @@ using System.Collections.Generic;
 					break;
 					
 				case 204:
-					// #line 866
+					// #line 867
 					{ 
 						_yyless(1); 
 						yy_pop_state(); 
@@ -1559,7 +1560,7 @@ using System.Collections.Generic;
 					break;
 					
 				case 205:
-					// #line 855
+					// #line 856
 					{
 						yy_pop_state();
 						BEGIN(LexicalStates.ST_IN_SCRIPTING);
@@ -1568,7 +1569,7 @@ using System.Collections.Generic;
 					break;
 					
 				case 206:
-					// #line 849
+					// #line 850
 					{
 						yy_push_state(LexicalStates.ST_IN_SCRIPTING);
 						_yyless(1);
@@ -1577,7 +1578,7 @@ using System.Collections.Generic;
 					break;
 					
 				case 207:
-					// #line 844
+					// #line 845
 					{
 						yy_pop_state();
 						return ProcessVariable();
@@ -1585,7 +1586,7 @@ using System.Collections.Generic;
 					break;
 					
 				case 208:
-					// #line 827
+					// #line 828
 					{
 						yy_push_state(LexicalStates.ST_LOOKING_FOR_VARNAME);
 						return (Tokens.T_DOLLAR_OPEN_CURLY_BRACES);
@@ -1593,7 +1594,7 @@ using System.Collections.Generic;
 					break;
 					
 				case 209:
-					// #line 838
+					// #line 839
 					{
 						_yyless(1);
 						yy_push_state(LexicalStates.ST_VAR_OFFSET);
@@ -1602,7 +1603,7 @@ using System.Collections.Generic;
 					break;
 					
 				case 210:
-					// #line 832
+					// #line 833
 					{
 						_yyless(3);
 						yy_push_state(LexicalStates.ST_LOOKING_FOR_PROPERTY);
@@ -1611,7 +1612,7 @@ using System.Collections.Generic;
 					break;
 					
 				case 211:
-					// #line 860
+					// #line 861
 					{
 						yy_pop_state();
 						BEGIN(LexicalStates.ST_IN_SCRIPTING);

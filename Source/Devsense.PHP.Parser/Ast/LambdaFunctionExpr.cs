@@ -73,10 +73,36 @@ namespace Devsense.PHP.Syntax.Ast
         private short _referenceOffset = -1;
 
         /// <summary>
-        /// Gets value indicating the lambda function is declared "static" i.e. <c>$this</c> cannot be bound in this scope.
+        /// Position of the reference symbol, <c>-1</c> if none present.
         /// </summary>
-        public PhpMemberAttributes Modifiers { get { return this.modifiers; } }
-        private PhpMemberAttributes modifiers;
+        public int FunctionPosition
+        {
+            get { return _functionOffset < 0 ? -1 : Span.Start + _functionOffset; }
+            set { _functionOffset = value < 0 ? (short)-1 : (short)(value - Span.Start); }
+        }
+        private short _functionOffset = -1;
+
+        public PhpMemberAttributes Modifiers => FunctionPosition == Span.Start ? PhpMemberAttributes.None : PhpMemberAttributes.Static;
+
+        /// <summary>
+        /// Position of the reference symbol, <c>-1</c> if none present.
+        /// </summary>
+        public int UsePosition
+        {
+            get { return _useOffset < 0 ? -1 : Span.Start + _useOffset; }
+            set { _useOffset = value < 0 ? (short)-1 : (short)(value - Span.Start); }
+        }
+        private short _useOffset = -1;
+
+        /// <summary>
+        /// Position of the reference symbol, <c>-1</c> if none present.
+        /// </summary>
+        public Text.Span UseSignaturePosition
+        {
+            get { return _useSignatureOffset; }
+            set { _useSignatureOffset = value; }
+        }
+        private Text.Span _useSignatureOffset;
 
         #region Construction
 
@@ -84,7 +110,7 @@ namespace Devsense.PHP.Syntax.Ast
             Text.Span span, Text.Span headingSpan,
             Scope scope, bool aliasReturn, IList<FormalParam>/*!*/ formalParams,
             Text.Span paramSpan, IList<FormalParam> useParams,
-            BlockStmt/*!*/ body, TypeRef returnType, PhpMemberAttributes modifiers)
+            BlockStmt/*!*/ body, TypeRef returnType)
             : base(span)
         {
             Debug.Assert(formalParams != null && body != null);
@@ -92,12 +118,10 @@ namespace Devsense.PHP.Syntax.Ast
             this.signature = new Signature(aliasReturn, formalParams, paramSpan);
             this.useParams = useParams;
             //this.typeSignature = new TypeSignature(genericParams);
-            //this.attributes = new CustomAttributes(attributes);
             this.body = body;
             this.headingSpan = headingSpan;
             this.parametersSpan = paramSpan;
             this.returnType = returnType;
-            this.modifiers = modifiers;
         }
 
         #endregion

@@ -482,7 +482,7 @@ namespace Devsense.PHP.Syntax
         /// Visit <see cref="ParenthesisExpression"/>.
         /// </summary>
         /// <param name="x">Enclosed expression.</param>
-        virtual public void VisitParenthesisExpression(ParenthesisExpression x)
+        virtual public void VisitEncapsedExpression(EncapsedExpression x)
         {
             VisitElement(x.Expression);
         }

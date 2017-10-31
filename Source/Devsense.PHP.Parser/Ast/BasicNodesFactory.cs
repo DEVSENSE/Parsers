@@ -39,9 +39,9 @@ namespace Devsense.PHP.Syntax.Ast
             _sourceUnit = sourceUnit;
         }
 
-        public virtual LangElement ArrayItem(Span span, LangElement expression, LangElement indexOpt)
+        public virtual LangElement ArrayItem(Span span, bool braces, LangElement expression, LangElement indexOpt)
         {
-            return new ItemUse(span, (Expression)expression, (Expression)indexOpt);
+            return new ItemUse(span, (Expression)expression, (Expression)indexOpt, isBraces: braces);
         }
         public virtual Item ArrayItemValue(Span span, LangElement indexOpt, int operatorPosition, LangElement valueExpr)
         {
@@ -105,7 +105,7 @@ namespace Devsense.PHP.Syntax.Ast
         public virtual LangElement Call(Span span, LangElement nameExpr, CallSignature signature, LangElement memberOfOpt)
         {
             Debug.Assert(nameExpr is Expression);
-            var call = new IndirectFcnCall(span, (Expression)nameExpr, signature.Parameters, signature.GenericParams) { IsMemberOf = (VarLikeConstructUse)memberOfOpt };
+            var call = new IndirectFcnCall(span, (Expression)nameExpr, signature.Parameters, signature.GenericParams) { IsMemberOf = (Expression)memberOfOpt };
             call.CallSignature.Position = signature.Position;
             return call;
         }
@@ -119,8 +119,8 @@ namespace Devsense.PHP.Syntax.Ast
 
         public virtual LangElement Call(Span span, TranslatedQualifiedName name, CallSignature signature, LangElement memberOfOpt)
         {
-            Debug.Assert(memberOfOpt == null || memberOfOpt is VarLikeConstructUse);
-            var call = new DirectFcnCall(span, name, signature.Parameters, signature.GenericParams) { IsMemberOf = (VarLikeConstructUse)memberOfOpt };
+            Debug.Assert(memberOfOpt == null || memberOfOpt is Expression);
+            var call = new DirectFcnCall(span, name, signature.Parameters, signature.GenericParams) { IsMemberOf = (Expression)memberOfOpt };
             call.CallSignature.Position = signature.Position;
             return call;
         }
@@ -147,28 +147,7 @@ namespace Devsense.PHP.Syntax.Ast
 
         public virtual LangElement Concat(Span span, IEnumerable<LangElement> expressions, string label)
         {
-            var concat = new ConcatEx(span, expressions.CastToArray<Expression>()) { Label = label };
-            var delimiters = new KeyValuePair<Tokens, short>[concat.Expressions.Length * 2];
-            for (int i = 0; i < concat.Expressions.Length; i++)
-            {
-                object obj;
-                if (concat.Expressions[i].Properties.TryGetProperty(ConcatEx.DelimitersPosition, out obj) &&
-                    obj is KeyValuePair<Tokens, short>[])
-                {
-                    var separators = (KeyValuePair<Tokens, short>[])obj;
-                    delimiters[2 * i] = new KeyValuePair<Tokens, short>(separators[0].Key,
-                        (short)(separators[0].Value + concat.Expressions[i].Span.Start - span.Start));
-                    delimiters[2 * i + 1] = new KeyValuePair<Tokens, short>(separators[1].Key,
-                        (short)(separators[1].Value + concat.Expressions[i].Span.Start - span.Start));
-                }
-                else
-                {
-                    delimiters[2 * i] = new KeyValuePair<Tokens, short>(Tokens.T_ERROR, 0);
-                    delimiters[2 * i + 1] = new KeyValuePair<Tokens, short>(Tokens.T_ERROR, 0);
-                }
-            }
-            concat.Properties.SetProperty(ConcatEx.DelimitersPosition, delimiters);
-            return concat;
+            return new ConcatEx(span, expressions.CastToArray<Expression>()) { Label = label };
         }
 
         public virtual LangElement DeclList(Span span, PhpMemberAttributes attributes, int constPos, IEnumerable<LangElement> decls)
@@ -182,9 +161,10 @@ namespace Devsense.PHP.Syntax.Ast
                 return new FieldDeclList(span, attributes, decls.CastToArray<FieldDecl>(), null);
         }
 
-        public virtual LangElement Do(Span span, LangElement body, LangElement cond, Span condSpan)
+        public virtual LangElement Do(Span span, Span whileSpan, LangElement body, LangElement cond, Span condSpan)
         {
-            return new WhileStmt(span, WhileStmt.Type.Do, (Expression)cond, condSpan, (Statement)body);
+            return new WhileStmt(span, WhileStmt.Type.Do, (Expression)cond, condSpan, (Statement)body)
+            { WhilePosition = whileSpan.StartOrInvalid };
         }
 
         public virtual LangElement Echo(Span span, IEnumerable<LangElement> parameters)
@@ -201,9 +181,19 @@ namespace Devsense.PHP.Syntax.Ast
         {
             return new EvalEx(span, (Expression)code);
         }
-        public virtual LangElement ParenthesisExpression(Span span, LangElement expression)
+        public virtual LangElement EncapsedExpression(Span span, LangElement expression, Tokens openDelimiter)
         {
-            return new ParenthesisExpression(span, (Expression)expression);
+            switch (openDelimiter)
+            {
+                case Tokens.T_LPAREN:
+                    return new ParenthesisExpression(span, (Expression)expression);
+                case Tokens.T_LBRACE:
+                    return new BracesExpression(span, (Expression)expression);
+                case Tokens.T_DOLLAR_OPEN_CURLY_BRACES:
+                    return new DollarBracesExpression(span, (Expression)expression);
+                default:
+                    return expression;
+            }
         }
 
         public virtual LangElement Exit(Span span, LangElement statusOpt)
@@ -255,13 +245,19 @@ namespace Devsense.PHP.Syntax.Ast
         }
 
         public virtual LangElement Lambda(Span span, Span headingSpan, bool aliasReturn,
-            TypeRef returnType, PhpMemberAttributes modifiers, IEnumerable<FormalParam> formalParams,
-            Span formalParamsSpan, IEnumerable<FormalParam> lexicalVars, LangElement body, Span byRefPosition)
+            TypeRef returnType, Span functionSpan, IEnumerable<FormalParam> formalParams,
+            Span formalParamsSpan, IEnumerable<FormalParam> lexicalVars, Span useSpan,
+            Span lexicalSpan, LangElement body, Span byRefPosition)
         {
             return new LambdaFunctionExpr(span, headingSpan,
                 new Scope(), false, formalParams.AsArray(), formalParamsSpan, lexicalVars.AsArray(),
-                (BlockStmt)body, returnType, modifiers)
-            { ReferencePosition = byRefPosition.StartOrInvalid };
+                (BlockStmt)body, returnType)
+            {
+                ReferencePosition = byRefPosition.StartOrInvalid,
+                FunctionPosition = functionSpan.StartOrInvalid,
+                UsePosition = useSpan.StartOrInvalid,
+                UseSignaturePosition = lexicalSpan
+            };
         }
 
         public virtual FormalParam Parameter(Span span, string name, Span nameSpan, TypeRef typeOpt, FormalParam.Flags flags, Span assignSpan, Expression initValue)
@@ -291,9 +287,9 @@ namespace Devsense.PHP.Syntax.Ast
             return new GotoStmt(span, new VariableNameRef(labelSpan, label));
         }
 
-        public virtual LangElement HaltCompiler(Span span)
+        public virtual LangElement HaltCompiler(Span span, Span singatureSpan)
         {
-            return new HaltCompiler(span);
+            return new HaltCompiler(span) { SignaturePosition = singatureSpan };
         }
 
         public virtual LangElement If(Span span, LangElement cond, Span condSpan, LangElement body, LangElement elseOpt)
@@ -411,9 +407,9 @@ namespace Devsense.PHP.Syntax.Ast
             return call;
         }
 
-        public virtual LangElement NewArray(Span span, IEnumerable<Item> itemsOpt)
+        public virtual LangElement NewArray(Span span, IEnumerable<Item> itemsOpt, bool isOldNotation)
         {
-            return new ArrayEx(span, itemsOpt.AsArray());
+            return new ArrayEx(span, itemsOpt.AsArray(), isOldNotation);
         }
 
         public virtual LangElement PHPDoc(Span span, LangElement block)
@@ -469,10 +465,10 @@ namespace Devsense.PHP.Syntax.Ast
             return new TryStmt(span, (BlockStmt)body, catches.CastToArray<CatchItem>(), (FinallyItem)finallyBlockOpt);
         }
 
-        public virtual LangElement Catch(Span span, TypeRef typeOpt, DirectVarUse variable, LangElement block)
+        public virtual LangElement Catch(Span span, Span singatureSpan, TypeRef typeOpt, DirectVarUse variable, LangElement block)
         {
             Debug.Assert(block is BlockStmt && typeOpt != null);
-            return new CatchItem(span, typeOpt, variable, (BlockStmt)block);
+            return new CatchItem(span, typeOpt, variable, (BlockStmt)block) { SignaturePosition = singatureSpan };
         }
 
         public virtual LangElement Finally(Span span, LangElement block)
@@ -487,22 +483,24 @@ namespace Devsense.PHP.Syntax.Ast
             return new ThrowStmt(span, (Expression)expression);
         }
 
-        public virtual LangElement Type(Span span, Span headingSpan, bool conditional, PhpMemberAttributes attributes, Name name, Span nameSpan, IEnumerable<FormalTypeParam> typeParamsOpt, INamedTypeRef baseClassOpt, IEnumerable<INamedTypeRef> implements, IEnumerable<LangElement> members, Span bodySpan)
+        public virtual LangElement Type(Span span, Span keywordSpan, Span headingSpan, bool conditional, PhpMemberAttributes attributes, Name name, Span nameSpan, IEnumerable<FormalTypeParam> typeParamsOpt, INamedTypeRef baseClassOpt, IEnumerable<INamedTypeRef> implements, IEnumerable<LangElement> members, Span bodySpan)
         {
             Debug.Assert(members != null && implements != null);
             return new NamedTypeDecl(span, headingSpan, conditional, attributes, false,
                 new NameRef(nameSpan, name), typeParamsOpt.AsArray(),
                 baseClassOpt, implements.AsArray(), members.CastToArray<TypeMemberDecl>(),
-                bodySpan, null);
+                bodySpan, null)
+            { KeyworPosition = keywordSpan.StartOrInvalid };
         }
 
-        public virtual TypeRef AnonymousTypeReference(Span span, Span headingSpan, bool conditional, PhpMemberAttributes attributes, IEnumerable<FormalTypeParam> typeParamsOpt, INamedTypeRef baseClassOpt, IEnumerable<INamedTypeRef> implements, IEnumerable<LangElement> members, Span bodySpan)
+        public virtual TypeRef AnonymousTypeReference(Span span, Span keywordSpan, Span headingSpan, bool conditional, PhpMemberAttributes attributes, IEnumerable<FormalTypeParam> typeParamsOpt, INamedTypeRef baseClassOpt, IEnumerable<INamedTypeRef> implements, IEnumerable<LangElement> members, Span bodySpan)
         {
             Debug.Assert(members != null && implements != null);
             return new AnonymousTypeRef(span, new AnonymousTypeDecl(span, headingSpan,
                 conditional, attributes, false, typeParamsOpt.AsArray(),
                 baseClassOpt, implements.AsArray(), members.CastToArray<TypeMemberDecl>(),
-                bodySpan, null));
+                bodySpan, null)
+            { KeyworPosition = keywordSpan.StartOrInvalid });
         }
 
         public virtual LangElement Method(Span span, bool aliasReturn, PhpMemberAttributes attributes, TypeRef returnType, Span returnTypeSpan, string name, Span nameSpan, IEnumerable<FormalTypeParam> typeParamsOpt, IEnumerable<FormalParam> formalParams, Span formalParamsSpan, IEnumerable<ActualParam> baseCtorParams, LangElement body, Span functionPosition, Span modifierPosition, Span byRefPosition)
@@ -531,7 +529,7 @@ namespace Devsense.PHP.Syntax.Ast
 
         public virtual LangElement Variable(Span span, LangElement nameExpr, LangElement memberOfOpt)
         {
-            return new IndirectVarUse(span, 1, (Expression)nameExpr) { IsMemberOf = (VarLikeConstructUse)memberOfOpt };
+            return new IndirectVarUse(span, 1, (Expression)nameExpr) { IsMemberOf = (Expression)memberOfOpt };
         }
 
         public virtual LangElement Variable(Span span, string name, TypeRef typeRef)
@@ -540,15 +538,17 @@ namespace Devsense.PHP.Syntax.Ast
             return new DirectStFldUse(span, typeRef, new VariableName(name), new Span(span.End - name.Length - 1, name.Length + 1));
         }
 
-        public virtual LangElement Variable(Span span, string name, LangElement memberOfOpt)
+        public virtual LangElement Variable(Span span, string name, LangElement memberOfOpt, bool hasDollar)
         {
-            int nameLength = name.Length + (memberOfOpt == null ? 1 : 0);
-            return new DirectVarUse(new Span(span.End - nameLength, nameLength), name) { IsMemberOf = (VarLikeConstructUse)memberOfOpt };
+            int nameLength = name.Length + (hasDollar ? 1 : 0);
+            return new DirectVarUse(new Span(span.End - nameLength, nameLength), name) { IsMemberOf = (Expression)memberOfOpt };
         }
         public virtual ForeachVar ForeachVariable(Span span, LangElement variable, bool alias)
         {
             if (variable is ListEx)
                 return new ForeachVar((ListEx)variable);
+            else if (variable is ArrayEx)
+                return new ForeachVar((ArrayEx)variable);
             else
                 return new ForeachVar((VariableUse)variable, alias);
         }
@@ -600,12 +600,13 @@ namespace Devsense.PHP.Syntax.Ast
         public virtual LangElement While(Span span, LangElement cond, Span condSpan, LangElement body)
         {
             Debug.Assert(cond is Expression && body is Statement);
-            return new WhileStmt(span, WhileStmt.Type.While, (Expression)cond, condSpan, (Statement)body);
+            return new WhileStmt(span, WhileStmt.Type.While, (Expression)cond, condSpan, (Statement)body)
+            { WhilePosition = span.Start };
         }
 
-        public virtual LangElement Yield(Span span, LangElement keyOpt, LangElement valueOpt)
+        public virtual LangElement Yield(Span span, LangElement keyOpt, Span operatorSpan, LangElement valueOpt)
         {
-            return new YieldEx(span, (Expression)keyOpt, (Expression)valueOpt);
+            return new YieldEx(span, (Expression)keyOpt, (Expression)valueOpt) { OperatorPosition = operatorSpan.StartOrInvalid };
         }
 
         public virtual LangElement YieldFrom(Span span, LangElement fromExpr)
@@ -627,10 +628,10 @@ namespace Devsense.PHP.Syntax.Ast
         {
             return new StaticStmt(span, staticVariables.CastToArray<StaticVarDecl>());
         }
-        public virtual LangElement StaticVarDecl(Span span, VariableName name, LangElement initializerOpt)
+        public virtual LangElement StaticVarDecl(Span span, VariableName name, Span operatorSpan, LangElement initializerOpt)
         {
             Debug.Assert(initializerOpt == null || initializerOpt is Expression);
-            return new StaticVarDecl(span, name, (Expression)initializerOpt);
+            return new StaticVarDecl(span, name, (Expression)initializerOpt) { AssignmentPosition = operatorSpan.StartOrInvalid };
         }
 
         public virtual LangElement ConstUse(Span span, TranslatedQualifiedName name)

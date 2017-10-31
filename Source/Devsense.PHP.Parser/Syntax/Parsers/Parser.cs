@@ -166,6 +166,17 @@ namespace Devsense.PHP.Syntax
             }
         }
 
+        Span SignatureSpan(IList<FormalParam> parameters)
+        {
+            if (parameters != null && parameters.Count > 0)
+            {
+                var last = parameters[parameters.Count - 1];
+                parameters.RemoveAt(parameters.Count - 1);
+                return last.Span;
+            }
+            return Span.Invalid;
+        }
+
         void AssignStatements(List<LangElement> statements)
         {
             Debug.Assert(statements.All(s => s != null && s is Statement), "Code contains an invalid statement.");
@@ -365,10 +376,11 @@ namespace Devsense.PHP.Syntax
 
         private LangElement CreateProperty(Span span, LangElement objectExpr, object name)
         {
+            var parent = VerifyMemberOf(objectExpr);
             if (name is Name)
-                return _astFactory.Variable(span, ((Name)name).Value, VerifyMemberOf(objectExpr));
+                return _astFactory.Variable(span, ((Name)name).Value, parent, parent == null);
             else
-                return _astFactory.Variable(span, (LangElement)name, VerifyMemberOf(objectExpr));
+                return _astFactory.Variable(span, (LangElement)name, parent);
         }
 
         private LangElement CreateStaticProperty(Span span, TypeRef objectName, Span objectNamePos, object name)
@@ -421,6 +433,7 @@ namespace Devsense.PHP.Syntax
         public static readonly Dictionary<QualifiedName, PrimitiveTypeRef.PrimitiveType> PHP72PrimitiveTypes = new Dictionary<QualifiedName, PrimitiveTypeRef.PrimitiveType>() {
             { QualifiedName.Object, PrimitiveTypeRef.PrimitiveType.@object },
         };
+
 
         ReservedTypeRef.ReservedType _reservedTypeStatic => ReservedTypeRef.ReservedType.@static;
 
@@ -680,6 +693,20 @@ namespace Devsense.PHP.Syntax
             }
         }
 
+        void SetDelimiters(LangElement element, Tokens opening1, Span openingSpan1,
+            Tokens opening2, Span openingSpan2,
+            Tokens closing, Span closingSpan)
+        {
+            if (openingSpan1.IsValid && openingSpan2.IsValid && closingSpan.IsValid)
+            {
+                var delimiters = new ModifierPosition(opening1, openingSpan1.Start);
+                delimiters.AddModifier(opening2, openingSpan2.Start);
+                delimiters.AddModifier(closing, closingSpan.Start);
+                element.Properties.SetProperty(ConcatEx.DelimitersPosition,
+                    delimiters.Modifiers(element.Span.Start));
+            }
+        }
+
         void SetOriginalValue(LangElement element, string originalValue)
         {
             if (_languageFeatures.HasFeature(LanguageFeatures.FullInformation))
@@ -752,15 +779,15 @@ namespace Devsense.PHP.Syntax
             return new QualifiedName(new Name(suffix.Last()), namespaces, true);
         }
 
-        VarLikeConstructUse VerifyMemberOf(LangElement memberOf)
+        Expression VerifyMemberOf(LangElement memberOf)
         {
-            if (memberOf != null && !(memberOf is VarLikeConstructUse))
-            {
-                _errors.Error(memberOf.Span, FatalErrors.CheckVarUseFault);
-                return null;
-            }
-            Debug.Assert(memberOf is VarLikeConstructUse);
-            return (VarLikeConstructUse)memberOf;
+            //if (memberOf != null && !(memberOf is VarLikeConstructUse))
+            //{
+            //    _errors.Error(memberOf.Span, FatalErrors.CheckVarUseFault);
+            //    return null;
+            //}
+            Debug.Assert(memberOf is Expression);
+            return (Expression)memberOf;
         }
 
         /// <summary>

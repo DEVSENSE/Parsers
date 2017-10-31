@@ -130,6 +130,7 @@ namespace UnitTests
 
             public override void VisitTraitAdaptationPrecedence(TraitsUse.TraitAdaptationPrecedence x)
             {
+                // TODO - visit adaptations
                 base.VisitTraitAdaptationPrecedence(x);
                 VisitList(x.IgnoredTypes);
             }
@@ -179,16 +180,16 @@ namespace UnitTests
             public override ActualParam ActualParameter(Span span, LangElement expr, ActualParam.Flags flags)
                 => (ActualParam)CountLE(base.ActualParameter(span, expr, flags)); // TODO - replace definitions by interfaces
 
-            public override TypeRef AnonymousTypeReference(Span span, Span headingSpan, bool conditional, PhpMemberAttributes attributes, IEnumerable<FormalTypeParam> typeParamsOpt, INamedTypeRef baseClassOpt, IEnumerable<INamedTypeRef> implements, IEnumerable<LangElement> members, Span blockSpan)
+            public override TypeRef AnonymousTypeReference(Span span, Span keywordSpan, Span headingSpan, bool conditional, PhpMemberAttributes attributes, IEnumerable<FormalTypeParam> typeParamsOpt, INamedTypeRef baseClassOpt, IEnumerable<INamedTypeRef> implements, IEnumerable<LangElement> members, Span blockSpan)
             {
                 // TODO - AnonymousTypeRef internaly creates AnonymousTypeDecl
-                var reference = CountTR(base.AnonymousTypeReference(span, headingSpan, conditional, attributes, typeParamsOpt, baseClassOpt, implements, members, blockSpan));
+                var reference = CountTR(base.AnonymousTypeReference(span, keywordSpan, headingSpan, conditional, attributes, typeParamsOpt, baseClassOpt, implements, members, blockSpan));
                 _createdElements.Add(((AnonymousTypeRef)reference).TypeDeclaration);
                 return reference;
             }
 
-            public override LangElement ArrayItem(Span span, LangElement expression, LangElement indexOpt)
-                => CountLE(base.ArrayItem(span, expression, indexOpt));
+            public override LangElement ArrayItem(Span span, bool braces, LangElement expression, LangElement indexOpt)
+                => CountLE(base.ArrayItem(span, braces, expression, indexOpt));
 
             public override Item ArrayItemRef(Span span, LangElement indexOpt, int operatorPosition, int refPosition, LangElement variable)
                 => CountI(base.ArrayItemRef(span, indexOpt, operatorPosition, refPosition, variable));
@@ -227,8 +228,8 @@ namespace UnitTests
                 return CountLE(base.Case(span, valueOpt, block));
             }
 
-            public override LangElement Catch(Span span, TypeRef typeOpt, DirectVarUse variable, LangElement block)
-                 => CountLE(base.Catch(span, typeOpt, variable, block));
+            public override LangElement Catch(Span span, Span signatureSpan, TypeRef typeOpt, DirectVarUse variable, LangElement block)
+                 => CountLE(base.Catch(span, signatureSpan, typeOpt, variable, block));
 
             public override LangElement ClassConstDecl(Span span, VariableName name, Span nameSpan, Span operatorSpan, LangElement initializer)
                  => CountLE(base.ClassConstDecl(span, name, nameSpan, operatorSpan, initializer));
@@ -263,8 +264,8 @@ namespace UnitTests
             public override LangElement DeclList(Span span, PhpMemberAttributes attributes, int contPos, IEnumerable<LangElement> decls)
                  => CountLE(base.DeclList(span, attributes, contPos, decls));
 
-            public override LangElement Do(Span span, LangElement body, LangElement cond, Span condSpan)
-                 => CountLE(base.Do(span, body, cond, condSpan));
+            public override LangElement Do(Span span, Span whileSpan, LangElement body, LangElement cond, Span condSpan)
+                 => CountLE(base.Do(span, whileSpan, body, cond, condSpan));
 
             public override LangElement Echo(Span span, IEnumerable<LangElement> parameters)
                  => CountLE(base.Echo(span, parameters));
@@ -317,8 +318,8 @@ namespace UnitTests
             public override LangElement Goto(Span span, string label, Span labelSpan)
                  => CountLE(base.Goto(span, label, labelSpan));
 
-            public override LangElement HaltCompiler(Span span)
-                 => CountLE(base.HaltCompiler(span));
+            public override LangElement HaltCompiler(Span span, Span signatureSpan)
+                 => CountLE(base.HaltCompiler(span, signatureSpan));
 
             public override LangElement If(Span span, LangElement cond, Span condSpan, LangElement body, LangElement elseOpt)
             {
@@ -354,8 +355,8 @@ namespace UnitTests
             public override LangElement Label(Span span, string label, Span labelSpan)
                  => CountLE(base.Label(span, label, labelSpan));
 
-            public override LangElement Lambda(Span span, Span headingSpan, bool aliasReturn, TypeRef returnType, PhpMemberAttributes modifiers, IEnumerable<FormalParam> formalParams, Span formalParamsSpan, IEnumerable<FormalParam> lexicalVars, LangElement body, Span byRefPosition)
-                 => CountLE(base.Lambda(span, headingSpan, aliasReturn, returnType, modifiers, formalParams, formalParamsSpan, lexicalVars, body, byRefPosition));
+            public override LangElement Lambda(Span span, Span headingSpan, bool aliasReturn, TypeRef returnType, Span functionSpan, IEnumerable<FormalParam> formalParams, Span formalParamsSpan, IEnumerable<FormalParam> lexicalVars, Span useSpan, Span lexicalSpan, LangElement body, Span byRefPosition)
+                 => CountLE(base.Lambda(span, headingSpan, aliasReturn, returnType, functionSpan, formalParams, formalParamsSpan, lexicalVars, useSpan, lexicalSpan, body, byRefPosition));
 
             public override LangElement LineComment(Span span, string content)
                  => CountLE(base.LineComment(span, content));
@@ -378,8 +379,8 @@ namespace UnitTests
             public override LangElement New(Span span, TypeRef classNameRef, IEnumerable<ActualParam> argsOpt, Span argsSpan)
                  => CountLE(base.New(span, classNameRef, argsOpt, argsSpan));
 
-            public override LangElement NewArray(Span span, IEnumerable<Item> itemsOpt)
-                 => CountLE(base.NewArray(span, itemsOpt));
+            public override LangElement NewArray(Span span, IEnumerable<Item> itemsOpt, bool isOldNotation)
+                 => CountLE(base.NewArray(span, itemsOpt, isOldNotation));
 
             public override TypeRef NullableTypeReference(Span span, LangElement className)
                  => CountTR(base.NullableTypeReference(span, className));
@@ -387,8 +388,8 @@ namespace UnitTests
             public override FormalParam Parameter(Span span, string name, Span nameSpan, TypeRef typeOpt, FormalParam.Flags flags, Span assignSpan, Expression initValue)
                  => (FormalParam)CountLE(base.Parameter(span, name, nameSpan, typeOpt, flags, assignSpan, initValue)); // TODO - replace definitions by interfaces
 
-            public override LangElement ParenthesisExpression(Span span, LangElement expression)
-                 => CountLE(base.ParenthesisExpression(span, expression));
+            public override LangElement EncapsedExpression(Span span, LangElement expression, Tokens delimiter)
+                 => CountLE(base.EncapsedExpression(span, expression, delimiter));
 
             public override LangElement PHPDoc(Span span, LangElement content)
                  => CountLE(base.PHPDoc(span, content));
@@ -405,8 +406,8 @@ namespace UnitTests
             public override LangElement Static(Span span, IEnumerable<LangElement> staticVariables)
                  => CountLE(base.Static(span, staticVariables));
 
-            public override LangElement StaticVarDecl(Span span, VariableName name, LangElement initializerOpt)
-                 => CountLE(base.StaticVarDecl(span, name, initializerOpt));
+            public override LangElement StaticVarDecl(Span span, VariableName name, Span operatorSpan, LangElement initializerOpt)
+                 => CountLE(base.StaticVarDecl(span, name, operatorSpan, initializerOpt));
 
             public override LangElement Switch(Span span, LangElement value, List<LangElement> block)
                  => CountLE(base.Switch(span, value, block));
@@ -429,10 +430,10 @@ namespace UnitTests
             public override LangElement TryCatch(Span span, LangElement body, IEnumerable<LangElement> catches, LangElement finallyBlockOpt)
                  => CountLE(base.TryCatch(span, body, catches, finallyBlockOpt));
 
-            public override LangElement Type(Span span, Span headingSpan, bool conditional, PhpMemberAttributes attributes, Name name, Span nameSpan, IEnumerable<FormalTypeParam> typeParamsOpt, INamedTypeRef baseClassOpt, IEnumerable<INamedTypeRef> implements, IEnumerable<LangElement> members, Span bodySpan)
+            public override LangElement Type(Span span, Span keywordSpan, Span headingSpan, bool conditional, PhpMemberAttributes attributes, Name name, Span nameSpan, IEnumerable<FormalTypeParam> typeParamsOpt, INamedTypeRef baseClassOpt, IEnumerable<INamedTypeRef> implements, IEnumerable<LangElement> members, Span bodySpan)
             {
                 var imp = implements != null ? implements.ToList() : null;
-                return CountLE(base.Type(span, headingSpan, conditional, attributes, name, nameSpan, typeParamsOpt, baseClassOpt, imp, members, bodySpan));
+                return CountLE(base.Type(span, keywordSpan, headingSpan, conditional, attributes, name, nameSpan, typeParamsOpt, baseClassOpt, imp, members, bodySpan));
             }
 
             public override TypeRef TypeReference(Span span, IEnumerable<LangElement> classes)
@@ -482,14 +483,14 @@ namespace UnitTests
                 return CountLE(base.Variable(span, nameExpr, typeRef));
             }
 
-            public override LangElement Variable(Span span, string name, LangElement memberOfOpt)
-                 => CountLE(base.Variable(span, name, memberOfOpt));
+            public override LangElement Variable(Span span, string name, LangElement memberOfOpt, bool hasDollar)
+                 => CountLE(base.Variable(span, name, memberOfOpt, hasDollar));
 
             public override LangElement While(Span span, LangElement cond, Span condSpan, LangElement body)
                  => CountLE(base.While(span, cond, condSpan, body));
 
-            public override LangElement Yield(Span span, LangElement keyOpt, LangElement valueOpt)
-                 => CountLE(base.Yield(span, keyOpt, valueOpt));
+            public override LangElement Yield(Span span, LangElement keyOpt, Span operatorSpan, LangElement valueOpt)
+                 => CountLE(base.Yield(span, keyOpt, operatorSpan, valueOpt));
 
             public override LangElement YieldFrom(Span span, LangElement fromExpr)
                  => CountLE(base.YieldFrom(span, fromExpr));

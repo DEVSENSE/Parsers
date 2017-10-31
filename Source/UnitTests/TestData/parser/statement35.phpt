@@ -14,7 +14,7 @@ foreach($a as [$b, $c] => $d)
   },
   "ForeachStmt":{
     "Enumeree":{"DirectVarUse":{"VarName":"a"}},
-    "KeyVariable":{"ListEx":{"Item":{"ValueExpr":{"DirectVarUse":{"VarName":"b"}}},"Item":{"ValueExpr":{"DirectVarUse":{"VarName":"c"}}}}},
+    "KeyVariable":{"ArrayEx":{"Item":{"ValueExpr":{"DirectVarUse":{"VarName":"b"}}},"Item":{"ValueExpr":{"DirectVarUse":{"VarName":"c"}}}}},
     "ValueVariable":{"DirectVarUse":{"VarName":"d"}},
     "Body":{"EchoStmt":{"StringLiteral":{"Value":"hello"}}}
   }

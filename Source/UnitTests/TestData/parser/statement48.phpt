@@ -3,14 +3,15 @@
 ?>
 <<<TEST>>>
 
-ERRORS: 2015
-
 "GlobalCode":
 {
   "NamingContext":{},
   "ValueAssignEx":{
     "Operation":"AssignValue",
-    "DirectVarUse":{"VarName":"new"},
+    "DirectVarUse":{
+      "VarName":"new",
+      "IsMemberOf":{"UnaryEx":{"Operation":"Minus","LongIntLiteral":{"Value":"5"}}}
+    },
     "LongIntLiteral":{"Value":"5"}
   }
 }
