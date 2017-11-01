@@ -114,7 +114,7 @@ namespace Devsense.PHP.Syntax
         public TokenVisitor(TreeContext initialContext, ITokenComposer composer, ISourceTokenProvider tokenProvider) : base(initialContext)
         {
             _composer = composer ?? DefaultTokenComposer.Instance;  // TODO: to TreeContext
-            _provider = tokenProvider ?? SourceTokenProviderFactory.DefaultProvider;
+            _provider = tokenProvider ?? SourceTokenProviderFactory.CreateEmptyProvider();
         }
 
         /// <summary>

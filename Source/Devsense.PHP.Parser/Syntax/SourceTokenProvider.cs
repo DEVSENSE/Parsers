@@ -108,8 +108,6 @@ namespace Devsense.PHP.Syntax
     /// </summary>
     public class SourceTokenProviderFactory
     {
-        public static readonly ISourceTokenProvider DefaultProvider = new EmptyProvider();
-
         sealed class EmptyProvider : ISourceTokenProvider
         {
             public IEnumerable<ISourceToken> GetTokens(Span span) => EmptyArray<ISourceToken>.Instance;
@@ -163,12 +161,12 @@ namespace Devsense.PHP.Syntax
             }
         }
 
-        public ISourceTokenProvider CreateEmptyProvider()
+        public static ISourceTokenProvider CreateEmptyProvider()
         {
             return new EmptyProvider();
         }
 
-        public ISourceTokenProvider CreateProvider(IEnumerable<ISourceToken> tokens)
+        public static ISourceTokenProvider CreateProvider(IEnumerable<ISourceToken> tokens)
         {
             if (tokens == null)
             {
