@@ -2344,10 +2344,10 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 { yyval.ForeachVar = _astFactory.ForeachVariable(yypos, value_stack.array[value_stack.top-1].yyval.Node, true); }
         return;
       case 187: // foreach_variable -> T_LIST '(' array_pair_list ')' 
-{ yyval.ForeachVar = _astFactory.ForeachVariable(yypos, _astFactory.List(yypos, value_stack.array[value_stack.top-2].yyval.ItemList)); }
+{ yyval.ForeachVar = _astFactory.ForeachVariable(yypos, _astFactory.List(yypos, value_stack.array[value_stack.top-2].yyval.ItemList, true)); }
         return;
       case 188: // foreach_variable -> '[' array_pair_list ']' 
-{ yyval.ForeachVar = _astFactory.ForeachVariable(yypos, _astFactory.NewArray(yypos, value_stack.array[value_stack.top-2].yyval.ItemList, false)); }
+{ yyval.ForeachVar = _astFactory.ForeachVariable(yypos, _astFactory.List(yypos, value_stack.array[value_stack.top-2].yyval.ItemList, false)); }
         return;
       case 189: // for_statement -> statement 
 { yyval.Node = value_stack.array[value_stack.top-1].yyval.Node; }
@@ -2722,10 +2722,10 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 { yyval.Node = _astFactory.New(yypos, ((AnonymousClass)value_stack.array[value_stack.top-1].yyval.AnonymousClass).Item1, ((AnonymousClass)value_stack.array[value_stack.top-1].yyval.AnonymousClass).Item2, ((AnonymousClass)value_stack.array[value_stack.top-1].yyval.AnonymousClass).Item3); }
         return;
       case 298: // expr_without_variable -> T_LIST '(' array_pair_list ')' '=' expr 
-{ yyval.Node = _astFactory.Assignment(yypos, _astFactory.List(Span.Combine(value_stack.array[value_stack.top-6].yypos, value_stack.array[value_stack.top-3].yypos), value_stack.array[value_stack.top-4].yyval.ItemList), value_stack.array[value_stack.top-1].yyval.Node, Operations.AssignValue, value_stack.array[value_stack.top-2].yypos, Span.Invalid); }
+{ yyval.Node = _astFactory.Assignment(yypos, _astFactory.List(Span.Combine(value_stack.array[value_stack.top-6].yypos, value_stack.array[value_stack.top-3].yypos), value_stack.array[value_stack.top-4].yyval.ItemList, true), value_stack.array[value_stack.top-1].yyval.Node, Operations.AssignValue, value_stack.array[value_stack.top-2].yypos, Span.Invalid); }
         return;
       case 299: // expr_without_variable -> '[' array_pair_list ']' '=' expr 
-{ yyval.Node = _astFactory.Assignment(yypos, _astFactory.NewArray(CombineSpans(value_stack.array[value_stack.top-5].yypos, value_stack.array[value_stack.top-3].yypos), value_stack.array[value_stack.top-4].yyval.ItemList, false), value_stack.array[value_stack.top-1].yyval.Node, Operations.AssignValue, value_stack.array[value_stack.top-2].yypos, Span.Invalid); }
+{ yyval.Node = _astFactory.Assignment(yypos, _astFactory.List(CombineSpans(value_stack.array[value_stack.top-5].yypos, value_stack.array[value_stack.top-3].yypos), value_stack.array[value_stack.top-4].yyval.ItemList, false), value_stack.array[value_stack.top-1].yyval.Node, Operations.AssignValue, value_stack.array[value_stack.top-2].yypos, Span.Invalid); }
         return;
       case 300: // expr_without_variable -> variable '=' expr 
 { yyval.Node = _astFactory.Assignment(yypos, value_stack.array[value_stack.top-3].yyval.Node, value_stack.array[value_stack.top-1].yyval.Node, Operations.AssignValue, value_stack.array[value_stack.top-2].yypos, Span.Invalid); }
@@ -3268,10 +3268,10 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 { yyval.Item = _astFactory.ArrayItemRef(yypos, null, -1, value_stack.array[value_stack.top-2].yypos.Start, value_stack.array[value_stack.top-1].yyval.Node); }
         return;
       case 471: // array_pair -> expr T_DOUBLE_ARROW T_LIST '(' array_pair_list ')' 
-{ yyval.Item = _astFactory.ArrayItemValue(yypos, value_stack.array[value_stack.top-6].yyval.Node, value_stack.array[value_stack.top-5].yypos.Start, _astFactory.List(Span.Combine(value_stack.array[value_stack.top-4].yypos, value_stack.array[value_stack.top-1].yypos), value_stack.array[value_stack.top-2].yyval.ItemList)); }
+{ yyval.Item = _astFactory.ArrayItemValue(yypos, value_stack.array[value_stack.top-6].yyval.Node, value_stack.array[value_stack.top-5].yypos.Start, _astFactory.List(Span.Combine(value_stack.array[value_stack.top-4].yypos, value_stack.array[value_stack.top-1].yypos), value_stack.array[value_stack.top-2].yyval.ItemList, true)); }
         return;
       case 472: // array_pair -> T_LIST '(' array_pair_list ')' 
-{ yyval.Item = _astFactory.ArrayItemValue(yypos, null, -1, _astFactory.List(Span.Combine(value_stack.array[value_stack.top-4].yypos, value_stack.array[value_stack.top-1].yypos), value_stack.array[value_stack.top-2].yyval.ItemList)); }
+{ yyval.Item = _astFactory.ArrayItemValue(yypos, null, -1, _astFactory.List(Span.Combine(value_stack.array[value_stack.top-4].yypos, value_stack.array[value_stack.top-1].yypos), value_stack.array[value_stack.top-2].yyval.ItemList, true)); }
         return;
       case 473: // encaps_list -> encaps_list encaps_var 
 { yyval.NodeList = AddToList<LangElement>(value_stack.array[value_stack.top-2].yyval.NodeList, value_stack.array[value_stack.top-1].yyval.Node); }

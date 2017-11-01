@@ -35,7 +35,13 @@ namespace Devsense.PHP.Syntax.Ast
         public Item[]/*!*/ Items => _items;
         private readonly Item[]/*!*/_items;
 
-        public ListEx(Text.Span p, IList<Item>/*!*/lvalues)
+        /// <summary>
+        /// <c>true</c> if the list is declared in the old notation 'list(...)', <c>false</c> if the new new notation '[...]' is used
+        /// </summary>
+        public bool IsOldNotation => _isOldNotation;
+        private readonly bool _isOldNotation;
+
+        public ListEx(Text.Span p, IList<Item>/*!*/lvalues, bool isOldNotation)
             : base(p)
         {
             Debug.Assert(lvalues != null);
@@ -45,6 +51,7 @@ namespace Devsense.PHP.Syntax.Ast
             //    ((ValueItem)item).ValueExpr is ListEx)));
 
             _items = lvalues.AsArray();
+            _isOldNotation = isOldNotation;
         }
 
         /// <summary>

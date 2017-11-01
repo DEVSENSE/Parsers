@@ -893,7 +893,7 @@ namespace Devsense.PHP.Syntax.Ast
         /// </summary>
         /// <param name="span">Entire element span.</param>
         /// <param name="itemsOpt">Optional. Enumeration of array items.</param>
-        /// <param name="isOldNotation">Decide if the array is defined using the old notation array().</param>
+        /// <param name="isOldNotation">Decide if the array is defined using the old notation 'array(...)'.</param>
         /// <returns>Array expression.</returns>
         TNode NewArray(TSpan span, IEnumerable<Item> itemsOpt, bool isOldNotation);
 
@@ -956,8 +956,9 @@ namespace Devsense.PHP.Syntax.Ast
         /// </summary>
         /// <param name="span">Entire element span.</param>
         /// <param name="targets">Enumeration of reference expressions (variables, fields, array items) or other <c>list</c> expressions.</param>
+        /// <param name="isOldNotation">Decide if the list is defined using the old notation 'list(...)'.</param>
         /// <returns>List expression.</returns>
-        TNode List(TSpan span, IEnumerable<Item> targets);
+        TNode List(TSpan span, IEnumerable<Item> targets, bool isOldNotation);
 
         /// <summary>
         /// Creates shell expression.

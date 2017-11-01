@@ -340,9 +340,9 @@ namespace Devsense.PHP.Syntax.Ast
             throw new NotImplementedException();
         }
 
-        public virtual LangElement List(Span span, IEnumerable<Item> targets)
+        public virtual LangElement List(Span span, IEnumerable<Item> targets, bool isOldNotation)
         {
-            return new ListEx(span, targets.AsArray());
+            return new ListEx(span, targets.AsArray(), isOldNotation);
         }
 
         public virtual LangElement Literal(Span span, object value)
@@ -547,8 +547,6 @@ namespace Devsense.PHP.Syntax.Ast
         {
             if (variable is ListEx)
                 return new ForeachVar((ListEx)variable);
-            else if (variable is ArrayEx)
-                return new ForeachVar((ArrayEx)variable);
             else
                 return new ForeachVar((VariableUse)variable, alias);
         }

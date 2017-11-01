@@ -361,8 +361,8 @@ namespace UnitTests
             public override LangElement LineComment(Span span, string content)
                  => CountLE(base.LineComment(span, content));
 
-            public override LangElement List(Span span, IEnumerable<Item> targets)
-                 => CountLE(base.List(span, targets));
+            public override LangElement List(Span span, IEnumerable<Item> targets, bool isOldNotation)
+                 => CountLE(base.List(span, targets, isOldNotation));
 
             public override LangElement Literal(Span span, object value)
                  => CountLE(base.Literal(span, value));

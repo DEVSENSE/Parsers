@@ -931,10 +931,19 @@ namespace Devsense.PHP.Syntax
 
         public override void VisitListEx(ListEx x)
         {
-            ConsumeToken(Tokens.T_LIST, "list", x.Span.StartOrInvalid);
-            ConsumeToken(Tokens.T_LPAREN, "(", x.Span.StartOrInvalid + 4);
-            VisitElementList(x.Items, t => VisitArrayItem((Item)t), Tokens.T_COMMA, ",");
-            ConsumeToken(Tokens.T_RPAREN, ")", x.Span.End - 1);
+            if (x.IsOldNotation)
+            {
+                ConsumeToken(Tokens.T_LIST, "list", x.Span.StartOrInvalid);
+                ConsumeToken(Tokens.T_LPAREN, "(", x.Span.StartOrInvalid + 4);
+                VisitElementList(x.Items, t => VisitArrayItem((Item)t), Tokens.T_COMMA, ",");
+                ConsumeToken(Tokens.T_RPAREN, ")", x.Span.End - 1);
+            }
+            else
+            {
+                ConsumeToken(Tokens.T_LBRACKET, x.Span.StartOrInvalid);
+                VisitElementList(x.Items, t => VisitArrayItem((Item)t), Tokens.T_COMMA, ",");
+                ConsumeToken(Tokens.T_RBRACKET, x.Span.End - 1);
+            }
         }
 
         protected virtual void VisitElementList<TElement>(IList<TElement> list, Tokens separatorToken, string separatorTokenText) where TElement : LangElement, ISeparatedElements

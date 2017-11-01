@@ -27,6 +27,10 @@ namespace Devsense.PHP.Syntax.Ast
         public override Operations Operation { get { return Operations.Array; } }
         internal override bool AllowsPassByReference { get { return false; } }
 
+
+        /// <summary>
+        /// <c>true</c> if the list is declared in the old notation 'list(...)', <c>false</c> if the new new notation '[...]' is used
+        /// </summary>
         public bool IsOldNotation => _isOldNotation;
         private readonly bool _isOldNotation;
 

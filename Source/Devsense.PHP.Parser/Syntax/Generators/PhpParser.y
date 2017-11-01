@@ -670,8 +670,8 @@ implements_list:
 foreach_variable:
 		variable			{ $$ = _astFactory.ForeachVariable(@$, $1); }
 	|	'&' variable		{ $$ = _astFactory.ForeachVariable(@$, $2, true); }
-	|	T_LIST '(' array_pair_list ')' { $$ = _astFactory.ForeachVariable(@$, _astFactory.List(@$, $3)); }
-	|	'[' array_pair_list ']' { $$ = _astFactory.ForeachVariable(@$, _astFactory.NewArray(@$, $2, false)); }
+	|	T_LIST '(' array_pair_list ')' { $$ = _astFactory.ForeachVariable(@$, _astFactory.List(@$, $3, true)); }
+	|	'[' array_pair_list ']' { $$ = _astFactory.ForeachVariable(@$, _astFactory.List(@$, $2, false)); }
 ;
 
 for_statement:
@@ -1032,9 +1032,9 @@ new_expr:
 
 expr_without_variable:
 		T_LIST '(' array_pair_list ')' '=' expr
-			{ $$ = _astFactory.Assignment(@$, _astFactory.List(Span.Combine(@1, @4), $3), $6, Operations.AssignValue, @5, Span.Invalid); }
+			{ $$ = _astFactory.Assignment(@$, _astFactory.List(Span.Combine(@1, @4), $3, true), $6, Operations.AssignValue, @5, Span.Invalid); }
 	|	'[' array_pair_list ']' '=' expr
-			{ $$ = _astFactory.Assignment(@$, _astFactory.NewArray(CombineSpans(@1, @3), $2, false), $5, Operations.AssignValue, @4, Span.Invalid); }
+			{ $$ = _astFactory.Assignment(@$, _astFactory.List(CombineSpans(@1, @3), $2, false), $5, Operations.AssignValue, @4, Span.Invalid); }
 	|	variable '=' expr
 			{ $$ = _astFactory.Assignment(@$, $1, $3, Operations.AssignValue, @2, Span.Invalid); }
 	|	variable '=' '&' variable
@@ -1409,9 +1409,9 @@ array_pair:
 	|	'&' variable
 			{ $$ = _astFactory.ArrayItemRef(@$, null, -1, @1.Start, $2); }
 	|	expr T_DOUBLE_ARROW T_LIST '(' array_pair_list ')'
-			{ $$ = _astFactory.ArrayItemValue(@$, $1, @2.Start, _astFactory.List(Span.Combine(@3, @6), $5)); }
+			{ $$ = _astFactory.ArrayItemValue(@$, $1, @2.Start, _astFactory.List(Span.Combine(@3, @6), $5, true)); }
 	|	T_LIST '(' array_pair_list ')'
-			{ $$ = _astFactory.ArrayItemValue(@$, null, -1, _astFactory.List(Span.Combine(@1, @4), $3)); }
+			{ $$ = _astFactory.ArrayItemValue(@$, null, -1, _astFactory.List(Span.Combine(@1, @4), $3, true)); }
 ;
 
 encaps_list:
