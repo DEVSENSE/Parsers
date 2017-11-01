@@ -91,13 +91,13 @@ namespace UnitTests
                 }
 
                 var result = code.ToString();
-                File.WriteAllText(Path.Combine(Directory.GetParent(path).FullName, "original.txt"), original);
-                File.WriteAllText(Path.Combine(Directory.GetParent(path).FullName, "result.txt"), result);
+                //File.WriteAllText(Path.Combine(Directory.GetParent(path).FullName, "original.txt"), original);
+                //File.WriteAllText(Path.Combine(Directory.GetParent(path).FullName, "result.txt"), result);
                 Assert.AreEqual(original.Length, result.Length);
-                for (int i = 0; i < original.Length; i++)
-                {
-                    Assert.AreEqual(original[i], result[i]);
-                }
+                //for (int i = 0; i < original.Length; i++)
+                //{
+                //    Assert.AreEqual(original[i], result[i]);
+                //}
                 Assert.AreEqual(original, result);
             }
             catch (NotImplementedException)
