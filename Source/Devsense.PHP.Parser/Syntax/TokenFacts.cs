@@ -160,6 +160,9 @@ namespace Devsense.PHP.Syntax
                 case Tokens.T_SL_EQUAL: return "<<=";
                 case Tokens.T_SR_EQUAL: return ">>=";
 
+                case Tokens.T_ARRAY: return "array";
+                case Tokens.T_LIST: return "list";
+
                 default: throw new ArgumentException(t.ToString());
             }
         }

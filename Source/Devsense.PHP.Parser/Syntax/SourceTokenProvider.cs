@@ -39,7 +39,7 @@ namespace Devsense.PHP.Syntax
     /// <summary>
     /// <see cref="ISourceToken"/> immutable implementation.
     /// </summary>
-    internal class SourceToken : ISourceToken
+    public sealed class SourceToken : ISourceToken
     {
         public Tokens Token { get; }
 
@@ -108,6 +108,8 @@ namespace Devsense.PHP.Syntax
     /// </summary>
     public class SourceTokenProviderFactory
     {
+        public static readonly ISourceTokenProvider DefaultProvider = new EmptyProvider();
+
         sealed class EmptyProvider : ISourceTokenProvider
         {
             public IEnumerable<ISourceToken> GetTokens(Span span) => EmptyArray<ISourceToken>.Instance;

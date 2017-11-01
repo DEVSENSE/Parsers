@@ -60,7 +60,8 @@ namespace UnitTests
             var newlineLength = original.Contains("\r\n");
             var lines = LineBreaks.Create(original);
             var composer = new TestComposer();
-            var visitor = new TokenVisitor(new TreeContext(ast), composer);
+            var tokenFactory = new SourceTokenProviderFactory();
+            var visitor = new TokenVisitor(new TreeContext(ast), composer, tokenFactory.CreateProvider(sourceUnit.SourceLexer.AllTokens));
             try
             {
                 visitor.VisitElement(ast);
@@ -90,13 +91,13 @@ namespace UnitTests
                 }
 
                 var result = code.ToString();
-                //File.WriteAllText(Path.Combine(Directory.GetParent(path).FullName, "original.txt"), original);
-                //File.WriteAllText(Path.Combine(Directory.GetParent(path).FullName, "result.txt"), result);
+                File.WriteAllText(Path.Combine(Directory.GetParent(path).FullName, "original.txt"), original);
+                File.WriteAllText(Path.Combine(Directory.GetParent(path).FullName, "result.txt"), result);
                 Assert.AreEqual(original.Length, result.Length);
-                //for (int i = 0; i < original.Length; i++)
-                //{
-                //    Assert.AreEqual(original[i], result[i]);
-                //}
+                for (int i = 0; i < original.Length; i++)
+                {
+                    Assert.AreEqual(original[i], result[i]);
+                }
                 Assert.AreEqual(original, result);
             }
             catch (NotImplementedException)
@@ -115,6 +116,8 @@ namespace UnitTests
             private CollectionLexer _lexer;
             private LanguageFeatures _features;
             public List<Comment> Comments => _lexer.Comments;
+
+            public CollectionLexer SourceLexer => _lexer;
 
             public TestSourceUnit(string/*!*/ code, string/*!*/ filePath,
                 Encoding/*!*/ encoding,
@@ -139,6 +142,7 @@ namespace UnitTests
             List<Comment> _comments = new List<Comment>();
             ITokenProvider<SemanticValueType, Span> _provider;
             public List<Comment> Comments => _comments;
+            List<ISourceToken> _tokens = new List<ISourceToken>();
 
             /// <summary>
             /// Lexer constructor that initializes all the necessary members
@@ -155,6 +159,8 @@ namespace UnitTests
 
             public SemanticValueType TokenValue => _provider.TokenValue;
 
+            public List<ISourceToken> AllTokens => _tokens;
+
             /// <summary>
             /// Get next token and store its actual position in the source unit.
             /// This implementation supports the functionality of zendlex, which skips empty nodes (open tag, comment, etc.).
@@ -165,6 +171,7 @@ namespace UnitTests
                 do
                 {
                     Tokens token = (Tokens)_provider.GetNextToken();
+                    _tokens.Add(new SourceToken(token, TokenPosition));
 
                     // origianl zendlex() functionality - skip open and close tags because they are not in the PHP grammar
                     switch (token)
@@ -218,27 +225,27 @@ namespace UnitTests
                 if (literal is BoolLiteral)
                 {
                     var value = ((BoolLiteral)literal).Value.ToString();
-                    ConsumeToken(Tokens.T_STRING, origianl != null ? origianl : value.ToLowerInvariant(), literal.Span.StartOrInvalid);
+                    ConsumeToken(Tokens.T_STRING, origianl != null ? origianl : value.ToLowerInvariant(), literal.Span);
                 }
                 else if (literal is DoubleLiteral)
                 {
-                    ConsumeToken(Tokens.T_DNUMBER, origianl != null ? origianl : ((DoubleLiteral)literal).Value.ToString(CultureInfo.InvariantCulture), literal.Span.StartOrInvalid);
+                    ConsumeToken(Tokens.T_DNUMBER, origianl != null ? origianl : ((DoubleLiteral)literal).Value.ToString(CultureInfo.InvariantCulture), literal.Span);
                 }
                 else if (literal is NullLiteral)
                 {
-                    ConsumeToken(Tokens.T_STRING, origianl != null ? origianl : "null", literal.Span.StartOrInvalid);
+                    ConsumeToken(Tokens.T_STRING, origianl != null ? origianl : "null", literal.Span);
                 }
                 else if (literal is LongIntLiteral)
                 {
-                    ConsumeToken(Tokens.T_LNUMBER, origianl != null ? origianl : ((LongIntLiteral)literal).Value.ToString(CultureInfo.InvariantCulture), literal.Span.StartOrInvalid);
+                    ConsumeToken(Tokens.T_LNUMBER, origianl != null ? origianl : ((LongIntLiteral)literal).Value.ToString(CultureInfo.InvariantCulture), literal.Span);
                 }
                 else if (literal is StringLiteral)
                 {
-                    ConsumeToken(Tokens.T_CONSTANT_ENCAPSED_STRING, origianl != null ? origianl : $"\"{((StringLiteral)literal).Value}\"", literal.Span.StartOrInvalid);
+                    ConsumeToken(Tokens.T_CONSTANT_ENCAPSED_STRING, origianl != null ? origianl : $"\"{((StringLiteral)literal).Value}\"", literal.Span);
                 }
             }
 
-            public void ConsumeModifiers(LangElement element, PhpMemberAttributes modifiers, Span span = default(Span))
+            public void ConsumeModifiers(LangElement element, PhpMemberAttributes modifiers, Span span)
             {
                 object modifier;
                 if (element.Properties.TryGetProperty(TypeMemberDecl.ModifierPositionProperty, out modifier))
@@ -246,18 +253,18 @@ namespace UnitTests
                     var position = (KeyValuePair<Tokens, short>[])modifier;
                     for (int i = 0; i < position.Length; i++)
                     {
-                        ConsumeToken(position[i].Key, span.StartOrInvalid + position[i].Value);
+                        ConsumeToken(position[i].Key, new Span(span.StartOrInvalid + position[i].Value, 5));
                     }
                 }
                 else if (element is MethodDecl && ((MethodDecl)element).ModifierPosition >= 0)
                 {
-                    ConsumeToken(((MethodDecl)element).Modifiers.ToToken(), ((MethodDecl)element).ModifierPosition);
+                    ConsumeToken(((MethodDecl)element).Modifiers.ToToken(), new Span(((MethodDecl)element).ModifierPosition, 5));
                 }
             }
 
-            public void ConsumeToken(Tokens token, string text, int position)
+            public void ConsumeToken(Tokens token, string text, Span position)
             {
-                var start = position;
+                var start = position.StartOrInvalid;
                 var end = start + text.Length;
                 if (_builder.Length <= end)
                 {
@@ -269,7 +276,7 @@ namespace UnitTests
                 }
             }
 
-            protected void ConsumeToken(Tokens token, int position) => ConsumeToken(token, TokenFacts.GetTokenText(token), position);
+            protected void ConsumeToken(Tokens token, Span position) => ConsumeToken(token, TokenFacts.GetTokenText(token), position);
         }
     }
 }
