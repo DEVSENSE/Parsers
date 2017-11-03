@@ -162,6 +162,8 @@ namespace Devsense.PHP.Syntax
 
                 case Tokens.T_ARRAY: return "array";
                 case Tokens.T_LIST: return "list";
+                case Tokens.T_CATCH: return "catch";
+                case Tokens.T_FINALLY: return "finally";
 
                 default: throw new ArgumentException(t.ToString());
             }

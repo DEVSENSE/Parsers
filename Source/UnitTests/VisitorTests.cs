@@ -200,8 +200,8 @@ namespace UnitTests
             public override LangElement Assignment(Span span, LangElement target, LangElement value, Operations assignOp, Span operationSpan, Span refSpan)
                 => CountLE(base.Assignment(span, target, value, assignOp, operationSpan, refSpan));
 
-            public override LangElement BinaryOperation(Span span, Operations operation, Span operatorSpan, LangElement leftExpression, LangElement rightExpression)
-                 => CountLE(base.BinaryOperation(span, operation, operatorSpan, leftExpression, rightExpression));
+            public override LangElement BinaryOperation(Span span, Operations operation, LangElement leftExpression, LangElement rightExpression)
+                 => CountLE(base.BinaryOperation(span, operation, leftExpression, rightExpression));
 
             public override LangElement Block(Span span, IEnumerable<LangElement> statements)
                  => CountLE(base.Block(span, statements));
@@ -228,8 +228,8 @@ namespace UnitTests
                 return CountLE(base.Case(span, valueOpt, block));
             }
 
-            public override LangElement Catch(Span span, Span signatureSpan, TypeRef typeOpt, DirectVarUse variable, LangElement block)
-                 => CountLE(base.Catch(span, signatureSpan, typeOpt, variable, block));
+            public override LangElement Catch(Span span, TypeRef typeOpt, DirectVarUse variable, LangElement block)
+                 => CountLE(base.Catch(span, typeOpt, variable, block));
 
             public override LangElement ClassConstDecl(Span span, VariableName name, Span nameSpan, Span operatorSpan, LangElement initializer)
                  => CountLE(base.ClassConstDecl(span, name, nameSpan, operatorSpan, initializer));

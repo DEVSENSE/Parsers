@@ -557,7 +557,7 @@ catch_list:
 			{ $$ = new List<LangElement>(); }
 	|	catch_list T_CATCH '(' catch_name_list T_VARIABLE ')' '{' inner_statement_list '}'
 			{ 
-				$$ = AddToList<LangElement>($1, _astFactory.Catch(CombineSpans(@2, @9), CombineSpans(@3, @6), _astFactory.TypeReference(@4, $4), 
+				$$ = AddToList<LangElement>($1, _astFactory.Catch(CombineSpans(@2, @9), _astFactory.TypeReference(@4, $4), 
 					(DirectVarUse)_astFactory.Variable(@5, $5, NullLangElement, true), CreateBlock(CombineSpans(@7, @9), $8))); 
 			}
 ;
@@ -1072,49 +1072,49 @@ expr_without_variable:
 	|	variable T_DEC { $$ = CreateIncDec(@$, $1, false, true); }
 	|	T_DEC variable { $$ = CreateIncDec(@$, $2, false, false); }
 	|	expr T_BOOLEAN_OR expr
-			{ $$ = _astFactory.BinaryOperation(@$, Operations.Or, @2,   $1, $3); }
+			{ $$ = _astFactory.BinaryOperation(@$, Operations.Or,   $1, $3); }
 	|	expr T_BOOLEAN_AND expr
-			{ $$ = _astFactory.BinaryOperation(@$, Operations.And, @2,  $1, $3); }
+			{ $$ = _astFactory.BinaryOperation(@$, Operations.And,  $1, $3); }
 	|	expr T_LOGICAL_OR expr
-			{ $$ = _astFactory.BinaryOperation(@$, Operations.LogicalOr, @2,   $1, $3); }
+			{ $$ = _astFactory.BinaryOperation(@$, Operations.LogicalOr,   $1, $3); }
 	|	expr T_LOGICAL_AND expr
-			{ $$ = _astFactory.BinaryOperation(@$, Operations.LogicalAnd, @2,  $1, $3); }
+			{ $$ = _astFactory.BinaryOperation(@$, Operations.LogicalAnd,  $1, $3); }
 	|	expr T_LOGICAL_XOR expr
-			{ $$ = _astFactory.BinaryOperation(@$, Operations.Xor, @2,  $1, $3); }
-	|	expr '|' expr	{ $$ = _astFactory.BinaryOperation(@$, Operations.BitOr, @2,  $1, $3); }
-	|	expr '&' expr	{ $$ = _astFactory.BinaryOperation(@$, Operations.BitAnd, @2, $1, $3); }
-	|	expr '^' expr	{ $$ = _astFactory.BinaryOperation(@$, Operations.BitXor, @2, $1, $3); }
-	|	expr '.' expr 	{ $$ = _astFactory.BinaryOperation(@$, Operations.Concat, @2, $1, $3); }
-	|	expr '+' expr 	{ $$ = _astFactory.BinaryOperation(@$, Operations.Add, @2,    $1, $3); }
-	|	expr '-' expr 	{ $$ = _astFactory.BinaryOperation(@$, Operations.Sub, @2,    $1, $3); }
-	|	expr '*' expr	{ $$ = _astFactory.BinaryOperation(@$, Operations.Mul, @2,    $1, $3); }
-	|	expr T_POW expr	{ $$ = _astFactory.BinaryOperation(@$, Operations.Pow, @2,    $1, $3); }
-	|	expr '/' expr	{ $$ = _astFactory.BinaryOperation(@$, Operations.Div, @2,    $1, $3); }
-	|	expr '%' expr 	{ $$ = _astFactory.BinaryOperation(@$, Operations.Mod, @2,    $1, $3); }
-	| 	expr T_SL expr	{ $$ = _astFactory.BinaryOperation(@$, Operations.ShiftLeft, @2,  $1, $3); } 
-	|	expr T_SR expr	{ $$ = _astFactory.BinaryOperation(@$, Operations.ShiftRight, @2, $1, $3); } 
+			{ $$ = _astFactory.BinaryOperation(@$, Operations.Xor,  $1, $3); }
+	|	expr '|' expr	{ $$ = _astFactory.BinaryOperation(@$, Operations.BitOr,  $1, $3); }
+	|	expr '&' expr	{ $$ = _astFactory.BinaryOperation(@$, Operations.BitAnd, $1, $3); }
+	|	expr '^' expr	{ $$ = _astFactory.BinaryOperation(@$, Operations.BitXor, $1, $3); }
+	|	expr '.' expr 	{ $$ = _astFactory.BinaryOperation(@$, Operations.Concat, $1, $3); }
+	|	expr '+' expr 	{ $$ = _astFactory.BinaryOperation(@$, Operations.Add,    $1, $3); }
+	|	expr '-' expr 	{ $$ = _astFactory.BinaryOperation(@$, Operations.Sub,    $1, $3); }
+	|	expr '*' expr	{ $$ = _astFactory.BinaryOperation(@$, Operations.Mul,    $1, $3); }
+	|	expr T_POW expr	{ $$ = _astFactory.BinaryOperation(@$, Operations.Pow,    $1, $3); }
+	|	expr '/' expr	{ $$ = _astFactory.BinaryOperation(@$, Operations.Div,    $1, $3); }
+	|	expr '%' expr 	{ $$ = _astFactory.BinaryOperation(@$, Operations.Mod,    $1, $3); }
+	| 	expr T_SL expr	{ $$ = _astFactory.BinaryOperation(@$, Operations.ShiftLeft,  $1, $3); } 
+	|	expr T_SR expr	{ $$ = _astFactory.BinaryOperation(@$, Operations.ShiftRight, $1, $3); } 
 	|	'+' expr %prec T_INC { $$ = _astFactory.UnaryOperation(@$, Operations.Plus,   (Expression)$2); }
 	|	'-' expr %prec T_INC { $$ = _astFactory.UnaryOperation(@$, Operations.Minus,   (Expression)$2); }
 	|	'!' expr { $$ = _astFactory.UnaryOperation(@$, Operations.LogicNegation, (Expression)$2); }
 	|	'~' expr { $$ = _astFactory.UnaryOperation(@$, Operations.BitNegation,   (Expression)$2); }
 	|	expr T_IS_IDENTICAL expr
-			{ $$ = _astFactory.BinaryOperation(@$, Operations.Identical, @2, $1, $3); }
+			{ $$ = _astFactory.BinaryOperation(@$, Operations.Identical, $1, $3); }
 	|	expr T_IS_NOT_IDENTICAL expr
-			{ $$ = _astFactory.BinaryOperation(@$, Operations.NotIdentical, @2, $1, $3); }
+			{ $$ = _astFactory.BinaryOperation(@$, Operations.NotIdentical, $1, $3); }
 	|	expr T_IS_EQUAL expr
-			{ $$ = _astFactory.BinaryOperation(@$, Operations.Equal, @2, $1, $3); }
+			{ $$ = _astFactory.BinaryOperation(@$, Operations.Equal, $1, $3); }
 	|	expr T_IS_NOT_EQUAL expr
-			{ $$ = _astFactory.BinaryOperation(@$, Operations.NotEqual, @2, $1, $3); }
+			{ $$ = _astFactory.BinaryOperation(@$, Operations.NotEqual, $1, $3); }
 	|	expr '<' expr
-			{ $$ = _astFactory.BinaryOperation(@$, Operations.LessThan, @2, $1, $3); }
+			{ $$ = _astFactory.BinaryOperation(@$, Operations.LessThan, $1, $3); }
 	|	expr T_IS_SMALLER_OR_EQUAL expr
-			{ $$ = _astFactory.BinaryOperation(@$, Operations.LessThanOrEqual, @2, $1, $3); }
+			{ $$ = _astFactory.BinaryOperation(@$, Operations.LessThanOrEqual, $1, $3); }
 	|	expr '>' expr
-			{ $$ = _astFactory.BinaryOperation(@$, Operations.GreaterThan, @2, $1, $3); }
+			{ $$ = _astFactory.BinaryOperation(@$, Operations.GreaterThan, $1, $3); }
 	|	expr T_IS_GREATER_OR_EQUAL expr
-			{ $$ = _astFactory.BinaryOperation(@$, Operations.GreaterThanOrEqual, @2, $1, $3); }
+			{ $$ = _astFactory.BinaryOperation(@$, Operations.GreaterThanOrEqual, $1, $3); }
 	|	expr T_SPACESHIP expr
-			{ $$ = _astFactory.BinaryOperation(@$, Operations.Spaceship, @2, $1, $3); }
+			{ $$ = _astFactory.BinaryOperation(@$, Operations.Spaceship, $1, $3); }
 	|	expr T_INSTANCEOF class_name_reference
 			{ $$ = _astFactory.InstanceOf(@$, @2.Start, $1, $3); }
 	|	'(' expr ')' { $$ = _astFactory.EncapsedExpression(@$, $2, Tokens.T_LPAREN); }
@@ -1124,7 +1124,7 @@ expr_without_variable:
 	|	expr '?' ':' expr
 			{ $$ = _astFactory.ConditionalEx(@$, $1, @2, null, @3, $4); }
 	|	expr T_COALESCE expr
-			{ $$ = _astFactory.BinaryOperation(@$, Operations.Coalesce, @2, $1, $3); }
+			{ $$ = _astFactory.BinaryOperation(@$, Operations.Coalesce, $1, $3); }
 	|	internal_functions_in_yacc { $$ = $1; }
 	|	T_INT_CAST expr		{ $$ = _astFactory.UnaryOperation(@$, Operations.Int64Cast,   (Expression)$2); }
 	|	T_DOUBLE_CAST expr	{ $$ = _astFactory.UnaryOperation(@$, Operations.DoubleCast, (Expression)$2); }
@@ -1282,7 +1282,7 @@ constant:
 	|	class_name T_DOUBLE_COLON identifier
 			{ $$ = _astFactory.ClassConstUse(@$, $1, new Name($3), @3); }
 	|	variable_class_name T_DOUBLE_COLON identifier
-			{ $$ = _astFactory.ClassConstUse(@$, _astFactory.TypeReference(@$, $1), new Name($3), @3); }
+			{ $$ = _astFactory.ClassConstUse(@$, _astFactory.TypeReference(@1, $1), new Name($3), @3); }
 ;
 
 expr:

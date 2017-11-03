@@ -66,10 +66,9 @@ namespace Devsense.PHP.Syntax.Ast
             }
         }
 
-        public virtual LangElement BinaryOperation(Span span, Operations operation, Span operatorSpan, LangElement leftExpression, LangElement rightExpression)
+        public virtual LangElement BinaryOperation(Span span, Operations operation, LangElement leftExpression, LangElement rightExpression)
         {
-            return new BinaryEx(span, operation, (Expression)leftExpression, (Expression)rightExpression)
-            { OperatorPosition = operatorSpan.Start };
+            return new BinaryEx(span, operation, (Expression)leftExpression, (Expression)rightExpression);
         }
 
         public virtual LangElement Block(Span span, IEnumerable<LangElement> statements)
@@ -465,10 +464,10 @@ namespace Devsense.PHP.Syntax.Ast
             return new TryStmt(span, (BlockStmt)body, catches.CastToArray<CatchItem>(), (FinallyItem)finallyBlockOpt);
         }
 
-        public virtual LangElement Catch(Span span, Span singatureSpan, TypeRef typeOpt, DirectVarUse variable, LangElement block)
+        public virtual LangElement Catch(Span span, TypeRef typeOpt, DirectVarUse variable, LangElement block)
         {
             Debug.Assert(block is BlockStmt && typeOpt != null);
-            return new CatchItem(span, typeOpt, variable, (BlockStmt)block) { SignaturePosition = singatureSpan };
+            return new CatchItem(span, typeOpt, variable, (BlockStmt)block);
         }
 
         public virtual LangElement Finally(Span span, LangElement block)

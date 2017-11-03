@@ -359,12 +359,11 @@ namespace Devsense.PHP.Syntax.Ast
         /// Creates <c>catch</c> block according to the optional parameters.
         /// </summary>
         /// <param name="span">Entire element span.</param>
-        /// <param name="singatureSpan">Parentheses span.</param>
         /// <param name="typeOpt">Exception type.</param>
         /// <param name="variable">Exception variable.</param>
         /// <param name="block">Statements of the block.</param>
         /// <returns>Catch clause.</returns>
-        TNode Catch(TSpan span, TSpan singatureSpan, TypeRef typeOpt, DirectVarUse variable, TNode block);
+        TNode Catch(TSpan span, TypeRef typeOpt, DirectVarUse variable, TNode block);
 
         /// <summary>
         /// Creates <c>finally</c> block.
@@ -617,11 +616,10 @@ namespace Devsense.PHP.Syntax.Ast
         /// </summary>
         /// <param name="span">Entire element span.</param>
         /// <param name="operation">Binary expression operation.</param>
-        /// <param name="operatorSpan">Positin of the <paramref name="operation"/>.</param>
         /// <param name="leftExpression">Left expression.</param>
         /// <param name="rightExpression">Right expression.</param>
         /// <returns>Binary operation expression.</returns>
-        TNode BinaryOperation(TSpan span, Operations operation, Span operatorSpan, TNode leftExpression, TNode rightExpression);
+        TNode BinaryOperation(TSpan span, Operations operation, TNode leftExpression, TNode rightExpression);
 
         /// <summary>
         /// Creates unary operation expression.

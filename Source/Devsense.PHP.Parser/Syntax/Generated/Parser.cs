@@ -2221,7 +2221,7 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
         return;
       case 156: // catch_list -> catch_list T_CATCH '(' catch_name_list T_VARIABLE ')' '{' inner_statement_list '}' 
 { 
-				yyval.NodeList = AddToList<LangElement>(value_stack.array[value_stack.top-9].yyval.NodeList, _astFactory.Catch(CombineSpans(value_stack.array[value_stack.top-8].yypos, value_stack.array[value_stack.top-1].yypos), CombineSpans(value_stack.array[value_stack.top-7].yypos, value_stack.array[value_stack.top-4].yypos), _astFactory.TypeReference(value_stack.array[value_stack.top-6].yypos, value_stack.array[value_stack.top-6].yyval.TypeRefList), 
+				yyval.NodeList = AddToList<LangElement>(value_stack.array[value_stack.top-9].yyval.NodeList, _astFactory.Catch(CombineSpans(value_stack.array[value_stack.top-8].yypos, value_stack.array[value_stack.top-1].yypos), _astFactory.TypeReference(value_stack.array[value_stack.top-6].yypos, value_stack.array[value_stack.top-6].yyval.TypeRefList), 
 					(DirectVarUse)_astFactory.Variable(value_stack.array[value_stack.top-5].yypos, value_stack.array[value_stack.top-5].yyval.String, NullLangElement, true), CreateBlock(CombineSpans(value_stack.array[value_stack.top-3].yypos, value_stack.array[value_stack.top-1].yypos), value_stack.array[value_stack.top-2].yyval.NodeList))); 
 			}
         return;
@@ -2788,55 +2788,55 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 { yyval.Node = CreateIncDec(yypos, value_stack.array[value_stack.top-1].yyval.Node, false, false); }
         return;
       case 320: // expr_without_variable -> expr T_BOOLEAN_OR expr 
-{ yyval.Node = _astFactory.BinaryOperation(yypos, Operations.Or, value_stack.array[value_stack.top-2].yypos,   value_stack.array[value_stack.top-3].yyval.Node, value_stack.array[value_stack.top-1].yyval.Node); }
+{ yyval.Node = _astFactory.BinaryOperation(yypos, Operations.Or,   value_stack.array[value_stack.top-3].yyval.Node, value_stack.array[value_stack.top-1].yyval.Node); }
         return;
       case 321: // expr_without_variable -> expr T_BOOLEAN_AND expr 
-{ yyval.Node = _astFactory.BinaryOperation(yypos, Operations.And, value_stack.array[value_stack.top-2].yypos,  value_stack.array[value_stack.top-3].yyval.Node, value_stack.array[value_stack.top-1].yyval.Node); }
+{ yyval.Node = _astFactory.BinaryOperation(yypos, Operations.And,  value_stack.array[value_stack.top-3].yyval.Node, value_stack.array[value_stack.top-1].yyval.Node); }
         return;
       case 322: // expr_without_variable -> expr T_LOGICAL_OR expr 
-{ yyval.Node = _astFactory.BinaryOperation(yypos, Operations.LogicalOr, value_stack.array[value_stack.top-2].yypos,   value_stack.array[value_stack.top-3].yyval.Node, value_stack.array[value_stack.top-1].yyval.Node); }
+{ yyval.Node = _astFactory.BinaryOperation(yypos, Operations.LogicalOr,   value_stack.array[value_stack.top-3].yyval.Node, value_stack.array[value_stack.top-1].yyval.Node); }
         return;
       case 323: // expr_without_variable -> expr T_LOGICAL_AND expr 
-{ yyval.Node = _astFactory.BinaryOperation(yypos, Operations.LogicalAnd, value_stack.array[value_stack.top-2].yypos,  value_stack.array[value_stack.top-3].yyval.Node, value_stack.array[value_stack.top-1].yyval.Node); }
+{ yyval.Node = _astFactory.BinaryOperation(yypos, Operations.LogicalAnd,  value_stack.array[value_stack.top-3].yyval.Node, value_stack.array[value_stack.top-1].yyval.Node); }
         return;
       case 324: // expr_without_variable -> expr T_LOGICAL_XOR expr 
-{ yyval.Node = _astFactory.BinaryOperation(yypos, Operations.Xor, value_stack.array[value_stack.top-2].yypos,  value_stack.array[value_stack.top-3].yyval.Node, value_stack.array[value_stack.top-1].yyval.Node); }
+{ yyval.Node = _astFactory.BinaryOperation(yypos, Operations.Xor,  value_stack.array[value_stack.top-3].yyval.Node, value_stack.array[value_stack.top-1].yyval.Node); }
         return;
       case 325: // expr_without_variable -> expr '|' expr 
-{ yyval.Node = _astFactory.BinaryOperation(yypos, Operations.BitOr, value_stack.array[value_stack.top-2].yypos,  value_stack.array[value_stack.top-3].yyval.Node, value_stack.array[value_stack.top-1].yyval.Node); }
+{ yyval.Node = _astFactory.BinaryOperation(yypos, Operations.BitOr,  value_stack.array[value_stack.top-3].yyval.Node, value_stack.array[value_stack.top-1].yyval.Node); }
         return;
       case 326: // expr_without_variable -> expr '&' expr 
-{ yyval.Node = _astFactory.BinaryOperation(yypos, Operations.BitAnd, value_stack.array[value_stack.top-2].yypos, value_stack.array[value_stack.top-3].yyval.Node, value_stack.array[value_stack.top-1].yyval.Node); }
+{ yyval.Node = _astFactory.BinaryOperation(yypos, Operations.BitAnd, value_stack.array[value_stack.top-3].yyval.Node, value_stack.array[value_stack.top-1].yyval.Node); }
         return;
       case 327: // expr_without_variable -> expr '^' expr 
-{ yyval.Node = _astFactory.BinaryOperation(yypos, Operations.BitXor, value_stack.array[value_stack.top-2].yypos, value_stack.array[value_stack.top-3].yyval.Node, value_stack.array[value_stack.top-1].yyval.Node); }
+{ yyval.Node = _astFactory.BinaryOperation(yypos, Operations.BitXor, value_stack.array[value_stack.top-3].yyval.Node, value_stack.array[value_stack.top-1].yyval.Node); }
         return;
       case 328: // expr_without_variable -> expr '.' expr 
-{ yyval.Node = _astFactory.BinaryOperation(yypos, Operations.Concat, value_stack.array[value_stack.top-2].yypos, value_stack.array[value_stack.top-3].yyval.Node, value_stack.array[value_stack.top-1].yyval.Node); }
+{ yyval.Node = _astFactory.BinaryOperation(yypos, Operations.Concat, value_stack.array[value_stack.top-3].yyval.Node, value_stack.array[value_stack.top-1].yyval.Node); }
         return;
       case 329: // expr_without_variable -> expr '+' expr 
-{ yyval.Node = _astFactory.BinaryOperation(yypos, Operations.Add, value_stack.array[value_stack.top-2].yypos,    value_stack.array[value_stack.top-3].yyval.Node, value_stack.array[value_stack.top-1].yyval.Node); }
+{ yyval.Node = _astFactory.BinaryOperation(yypos, Operations.Add,    value_stack.array[value_stack.top-3].yyval.Node, value_stack.array[value_stack.top-1].yyval.Node); }
         return;
       case 330: // expr_without_variable -> expr '-' expr 
-{ yyval.Node = _astFactory.BinaryOperation(yypos, Operations.Sub, value_stack.array[value_stack.top-2].yypos,    value_stack.array[value_stack.top-3].yyval.Node, value_stack.array[value_stack.top-1].yyval.Node); }
+{ yyval.Node = _astFactory.BinaryOperation(yypos, Operations.Sub,    value_stack.array[value_stack.top-3].yyval.Node, value_stack.array[value_stack.top-1].yyval.Node); }
         return;
       case 331: // expr_without_variable -> expr '*' expr 
-{ yyval.Node = _astFactory.BinaryOperation(yypos, Operations.Mul, value_stack.array[value_stack.top-2].yypos,    value_stack.array[value_stack.top-3].yyval.Node, value_stack.array[value_stack.top-1].yyval.Node); }
+{ yyval.Node = _astFactory.BinaryOperation(yypos, Operations.Mul,    value_stack.array[value_stack.top-3].yyval.Node, value_stack.array[value_stack.top-1].yyval.Node); }
         return;
       case 332: // expr_without_variable -> expr T_POW expr 
-{ yyval.Node = _astFactory.BinaryOperation(yypos, Operations.Pow, value_stack.array[value_stack.top-2].yypos,    value_stack.array[value_stack.top-3].yyval.Node, value_stack.array[value_stack.top-1].yyval.Node); }
+{ yyval.Node = _astFactory.BinaryOperation(yypos, Operations.Pow,    value_stack.array[value_stack.top-3].yyval.Node, value_stack.array[value_stack.top-1].yyval.Node); }
         return;
       case 333: // expr_without_variable -> expr '/' expr 
-{ yyval.Node = _astFactory.BinaryOperation(yypos, Operations.Div, value_stack.array[value_stack.top-2].yypos,    value_stack.array[value_stack.top-3].yyval.Node, value_stack.array[value_stack.top-1].yyval.Node); }
+{ yyval.Node = _astFactory.BinaryOperation(yypos, Operations.Div,    value_stack.array[value_stack.top-3].yyval.Node, value_stack.array[value_stack.top-1].yyval.Node); }
         return;
       case 334: // expr_without_variable -> expr '%' expr 
-{ yyval.Node = _astFactory.BinaryOperation(yypos, Operations.Mod, value_stack.array[value_stack.top-2].yypos,    value_stack.array[value_stack.top-3].yyval.Node, value_stack.array[value_stack.top-1].yyval.Node); }
+{ yyval.Node = _astFactory.BinaryOperation(yypos, Operations.Mod,    value_stack.array[value_stack.top-3].yyval.Node, value_stack.array[value_stack.top-1].yyval.Node); }
         return;
       case 335: // expr_without_variable -> expr T_SL expr 
-{ yyval.Node = _astFactory.BinaryOperation(yypos, Operations.ShiftLeft, value_stack.array[value_stack.top-2].yypos,  value_stack.array[value_stack.top-3].yyval.Node, value_stack.array[value_stack.top-1].yyval.Node); }
+{ yyval.Node = _astFactory.BinaryOperation(yypos, Operations.ShiftLeft,  value_stack.array[value_stack.top-3].yyval.Node, value_stack.array[value_stack.top-1].yyval.Node); }
         return;
       case 336: // expr_without_variable -> expr T_SR expr 
-{ yyval.Node = _astFactory.BinaryOperation(yypos, Operations.ShiftRight, value_stack.array[value_stack.top-2].yypos, value_stack.array[value_stack.top-3].yyval.Node, value_stack.array[value_stack.top-1].yyval.Node); }
+{ yyval.Node = _astFactory.BinaryOperation(yypos, Operations.ShiftRight, value_stack.array[value_stack.top-3].yyval.Node, value_stack.array[value_stack.top-1].yyval.Node); }
         return;
       case 337: // expr_without_variable -> '+' expr 
 { yyval.Node = _astFactory.UnaryOperation(yypos, Operations.Plus,   (Expression)value_stack.array[value_stack.top-1].yyval.Node); }
@@ -2851,31 +2851,31 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 { yyval.Node = _astFactory.UnaryOperation(yypos, Operations.BitNegation,   (Expression)value_stack.array[value_stack.top-1].yyval.Node); }
         return;
       case 341: // expr_without_variable -> expr T_IS_IDENTICAL expr 
-{ yyval.Node = _astFactory.BinaryOperation(yypos, Operations.Identical, value_stack.array[value_stack.top-2].yypos, value_stack.array[value_stack.top-3].yyval.Node, value_stack.array[value_stack.top-1].yyval.Node); }
+{ yyval.Node = _astFactory.BinaryOperation(yypos, Operations.Identical, value_stack.array[value_stack.top-3].yyval.Node, value_stack.array[value_stack.top-1].yyval.Node); }
         return;
       case 342: // expr_without_variable -> expr T_IS_NOT_IDENTICAL expr 
-{ yyval.Node = _astFactory.BinaryOperation(yypos, Operations.NotIdentical, value_stack.array[value_stack.top-2].yypos, value_stack.array[value_stack.top-3].yyval.Node, value_stack.array[value_stack.top-1].yyval.Node); }
+{ yyval.Node = _astFactory.BinaryOperation(yypos, Operations.NotIdentical, value_stack.array[value_stack.top-3].yyval.Node, value_stack.array[value_stack.top-1].yyval.Node); }
         return;
       case 343: // expr_without_variable -> expr T_IS_EQUAL expr 
-{ yyval.Node = _astFactory.BinaryOperation(yypos, Operations.Equal, value_stack.array[value_stack.top-2].yypos, value_stack.array[value_stack.top-3].yyval.Node, value_stack.array[value_stack.top-1].yyval.Node); }
+{ yyval.Node = _astFactory.BinaryOperation(yypos, Operations.Equal, value_stack.array[value_stack.top-3].yyval.Node, value_stack.array[value_stack.top-1].yyval.Node); }
         return;
       case 344: // expr_without_variable -> expr T_IS_NOT_EQUAL expr 
-{ yyval.Node = _astFactory.BinaryOperation(yypos, Operations.NotEqual, value_stack.array[value_stack.top-2].yypos, value_stack.array[value_stack.top-3].yyval.Node, value_stack.array[value_stack.top-1].yyval.Node); }
+{ yyval.Node = _astFactory.BinaryOperation(yypos, Operations.NotEqual, value_stack.array[value_stack.top-3].yyval.Node, value_stack.array[value_stack.top-1].yyval.Node); }
         return;
       case 345: // expr_without_variable -> expr '<' expr 
-{ yyval.Node = _astFactory.BinaryOperation(yypos, Operations.LessThan, value_stack.array[value_stack.top-2].yypos, value_stack.array[value_stack.top-3].yyval.Node, value_stack.array[value_stack.top-1].yyval.Node); }
+{ yyval.Node = _astFactory.BinaryOperation(yypos, Operations.LessThan, value_stack.array[value_stack.top-3].yyval.Node, value_stack.array[value_stack.top-1].yyval.Node); }
         return;
       case 346: // expr_without_variable -> expr T_IS_SMALLER_OR_EQUAL expr 
-{ yyval.Node = _astFactory.BinaryOperation(yypos, Operations.LessThanOrEqual, value_stack.array[value_stack.top-2].yypos, value_stack.array[value_stack.top-3].yyval.Node, value_stack.array[value_stack.top-1].yyval.Node); }
+{ yyval.Node = _astFactory.BinaryOperation(yypos, Operations.LessThanOrEqual, value_stack.array[value_stack.top-3].yyval.Node, value_stack.array[value_stack.top-1].yyval.Node); }
         return;
       case 347: // expr_without_variable -> expr '>' expr 
-{ yyval.Node = _astFactory.BinaryOperation(yypos, Operations.GreaterThan, value_stack.array[value_stack.top-2].yypos, value_stack.array[value_stack.top-3].yyval.Node, value_stack.array[value_stack.top-1].yyval.Node); }
+{ yyval.Node = _astFactory.BinaryOperation(yypos, Operations.GreaterThan, value_stack.array[value_stack.top-3].yyval.Node, value_stack.array[value_stack.top-1].yyval.Node); }
         return;
       case 348: // expr_without_variable -> expr T_IS_GREATER_OR_EQUAL expr 
-{ yyval.Node = _astFactory.BinaryOperation(yypos, Operations.GreaterThanOrEqual, value_stack.array[value_stack.top-2].yypos, value_stack.array[value_stack.top-3].yyval.Node, value_stack.array[value_stack.top-1].yyval.Node); }
+{ yyval.Node = _astFactory.BinaryOperation(yypos, Operations.GreaterThanOrEqual, value_stack.array[value_stack.top-3].yyval.Node, value_stack.array[value_stack.top-1].yyval.Node); }
         return;
       case 349: // expr_without_variable -> expr T_SPACESHIP expr 
-{ yyval.Node = _astFactory.BinaryOperation(yypos, Operations.Spaceship, value_stack.array[value_stack.top-2].yypos, value_stack.array[value_stack.top-3].yyval.Node, value_stack.array[value_stack.top-1].yyval.Node); }
+{ yyval.Node = _astFactory.BinaryOperation(yypos, Operations.Spaceship, value_stack.array[value_stack.top-3].yyval.Node, value_stack.array[value_stack.top-1].yyval.Node); }
         return;
       case 350: // expr_without_variable -> expr T_INSTANCEOF class_name_reference 
 { yyval.Node = _astFactory.InstanceOf(yypos, value_stack.array[value_stack.top-2].yypos.Start, value_stack.array[value_stack.top-3].yyval.Node, value_stack.array[value_stack.top-1].yyval.TypeReference); }
@@ -2893,7 +2893,7 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 { yyval.Node = _astFactory.ConditionalEx(yypos, value_stack.array[value_stack.top-4].yyval.Node, value_stack.array[value_stack.top-3].yypos, null, value_stack.array[value_stack.top-2].yypos, value_stack.array[value_stack.top-1].yyval.Node); }
         return;
       case 355: // expr_without_variable -> expr T_COALESCE expr 
-{ yyval.Node = _astFactory.BinaryOperation(yypos, Operations.Coalesce, value_stack.array[value_stack.top-2].yypos, value_stack.array[value_stack.top-3].yyval.Node, value_stack.array[value_stack.top-1].yyval.Node); }
+{ yyval.Node = _astFactory.BinaryOperation(yypos, Operations.Coalesce, value_stack.array[value_stack.top-3].yyval.Node, value_stack.array[value_stack.top-1].yyval.Node); }
         return;
       case 356: // expr_without_variable -> internal_functions_in_yacc 
 { yyval.Node = value_stack.array[value_stack.top-1].yyval.Node; }
@@ -3119,7 +3119,7 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 { yyval.Node = _astFactory.ClassConstUse(yypos, value_stack.array[value_stack.top-3].yyval.TypeReference, new Name(value_stack.array[value_stack.top-1].yyval.String), value_stack.array[value_stack.top-1].yypos); }
         return;
       case 424: // constant -> variable_class_name T_DOUBLE_COLON identifier 
-{ yyval.Node = _astFactory.ClassConstUse(yypos, _astFactory.TypeReference(yypos, value_stack.array[value_stack.top-3].yyval.Node), new Name(value_stack.array[value_stack.top-1].yyval.String), value_stack.array[value_stack.top-1].yypos); }
+{ yyval.Node = _astFactory.ClassConstUse(yypos, _astFactory.TypeReference(value_stack.array[value_stack.top-3].yypos, value_stack.array[value_stack.top-3].yyval.Node), new Name(value_stack.array[value_stack.top-1].yyval.String), value_stack.array[value_stack.top-1].yypos); }
         return;
       case 425: // expr -> variable 
 { yyval.Node = value_stack.array[value_stack.top-1].yyval.Node; }

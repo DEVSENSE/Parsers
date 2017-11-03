@@ -51,9 +51,7 @@ namespace Devsense.PHP.Syntax.Ast
 
         IExpression IBinaryExpression.Right { get => RightExpr; set => RightExpr = (Expression)value; }
 
-        Span IBinaryExpression.OperatorSpan => new Span(
-            OperatorPosition,
-            TokenFacts.GetTokenText(TokenFacts.GetOperationToken(this.operation)).Length);
+        public Span OperatorSpan => SpanUtils.SpanIntermission(leftExpr.Span, rightExpr.Span);
 
         #endregion
 
@@ -67,12 +65,6 @@ namespace Devsense.PHP.Syntax.Ast
 
         public override Operations Operation { get { return operation; } }
         private Operations operation;
-
-        /// <summary>
-        /// Position of the operator.
-        /// </summary>
-        public int OperatorPosition { get { return Span.Start + _operatorOffset; } set { _operatorOffset = (short)(value - Span.Start); } }
-        private short _operatorOffset = 0;
 
         #endregion
 

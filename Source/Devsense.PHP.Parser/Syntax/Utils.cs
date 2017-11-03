@@ -24,6 +24,72 @@ using System.Linq;
 
 namespace Devsense.PHP.Syntax
 {
+    #region Spans
+
+    /// <summary>
+    /// Utilities for span manipulation.
+    /// </summary>
+    internal static class SpanUtils
+    {
+        public static Text.Span SafeSpan(int start, int length) => start < 0 || length < 0 ? Text.Span.Invalid : new Text.Span(start, length);
+
+        public static Text.Span SafeCombineSpan(Text.Span previous, Text.Span next)
+        {
+            if(!previous.IsValid)
+            {
+                return next;
+            }
+            else if(!next.IsValid)
+            {
+                return previous;
+            }
+            else
+            {
+                return previous.StartOrInvalid <= next.End ? Text.Span.Combine(previous, next) : Text.Span.Invalid;
+            }
+        }
+
+        public static Text.Span SpanIntermission(Text.Span previous, Text.Span next) =>
+            previous.IsValid && next.IsValid && previous.End <= next.Start ? Text.Span.FromBounds(previous.End, next.Start) : Text.Span.Invalid;
+
+        public static Text.Span SpanIntermission(int previous, Text.Span next) =>
+            previous >= 0 && next.IsValid && previous <= next.Start ? Text.Span.FromBounds(previous, next.Start) : Text.Span.Invalid;
+
+        public static Text.Span SpanIntermission(Text.Span previous, int next) =>
+            previous.IsValid && next >= 0 && previous.End <= next ? Text.Span.FromBounds(previous.End, next) : Text.Span.Invalid;
+
+        private static Text.Span ItemSpan(this Ast.Item item) => SafeCombineSpan(
+            item.HasKey ? item.Index.Span: Text.Span.Invalid, 
+            item is Ast.ValueItem ? ((Ast.ValueItem)item).ValueExpr.Span : ((Ast.RefItem)item).RefToGet.Span);
+
+        public static Text.Span ItemsSpan(this IList<Ast.Item> items)
+        {
+            Ast.Item first = null;
+            Ast.Item last = null;
+            for (int i = 0; i < items.Count; i++)
+            {
+                if (items[i] != null)
+                {
+                    last = items[i];
+                    if (first == null)
+                    {
+                        first = items[i];
+                    }
+                }
+            }
+            if (first != null && last != null)
+            {
+                return SafeCombineSpan(first.ItemSpan(), last.ItemSpan());
+            }
+            else
+            {
+                return Text.Span.Invalid;
+            }
+        }
+    }
+
+    #endregion
+
     #region Strings
 
     /// <summary>

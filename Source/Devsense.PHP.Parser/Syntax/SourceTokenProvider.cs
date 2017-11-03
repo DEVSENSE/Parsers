@@ -129,7 +129,7 @@ namespace Devsense.PHP.Syntax
             {
                 foreach (var t in _tokens)
                 {
-                    if (t.Span.IntersectsWith(span))
+                    if (t.Span.OverlapsWith(span))
                     {
                         yield return t;
                     }
@@ -138,7 +138,12 @@ namespace Devsense.PHP.Syntax
 
             public ISourceToken GetTokenAt(Span span, Tokens predicate, ISourceToken @default)
             {
-                return GetTokens(span).FirstOrDefault() ?? @default;
+                foreach ( var t in GetTokens(span))
+                {
+                    if (t.Token == predicate) return t;
+                }
+
+                return @default;
             }
 
             public IEnumerable<ISourceToken> GetTokens(Span span, Func<ISourceToken, bool> predicate, IEnumerable<ISourceToken> @default)
