@@ -248,20 +248,11 @@ namespace UnitTests
                 }
             }
 
-            public void ConsumeModifiers(LangElement element, PhpMemberAttributes modifiers, Span span)
+            public void ConsumeModifiers(LangElement element, PhpMemberAttributes modifiers, ISourceToken[] tokens, Span span)
             {
-                object modifier;
-                if (element.Properties.TryGetProperty(TypeMemberDecl.ModifierPositionProperty, out modifier))
+                foreach (var item in tokens)
                 {
-                    var position = (KeyValuePair<Tokens, short>[])modifier;
-                    for (int i = 0; i < position.Length; i++)
-                    {
-                        ConsumeToken(position[i].Key, new Span(span.StartOrInvalid + position[i].Value, 5));
-                    }
-                }
-                else if (element is MethodDecl && ((MethodDecl)element).ModifierPosition >= 0)
-                {
-                    ConsumeToken(((MethodDecl)element).Modifiers.ToToken(), new Span(((MethodDecl)element).ModifierPosition, 5));
+                    ConsumeToken(item.Token, item.Span);
                 }
             }
 

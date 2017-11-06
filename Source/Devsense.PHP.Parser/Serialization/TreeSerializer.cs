@@ -32,10 +32,6 @@ namespace Devsense.PHP.Syntax.Ast.Serialization
 
         string MemberAttributesToString(PhpMemberAttributes attr)
         {
-
-
-
-
             switch (attr)
             {
                 case PhpMemberAttributes.Public:
@@ -63,7 +59,7 @@ namespace Devsense.PHP.Syntax.Ast.Serialization
                 case PhpMemberAttributes.InactiveConditional:
                     return "InactiveConditional";
                 default:
-                    return "Error";
+                    return "Multiple";
             }
         }
 

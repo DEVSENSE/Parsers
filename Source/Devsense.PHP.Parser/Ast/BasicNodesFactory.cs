@@ -131,10 +131,10 @@ namespace Devsense.PHP.Syntax.Ast
             return new ActualParam(span, (Expression)expr, flags);
         }
 
-        public virtual LangElement ClassConstDecl(Span span, VariableName name, Span nameSpan, Span operatorSpan, LangElement initializer)
+        public virtual LangElement ClassConstDecl(Span span, VariableName name, Span nameSpan, LangElement initializer)
         {
             Debug.Assert(initializer == null || initializer is Expression);
-            return new ClassConstantDecl(span, name.Value, nameSpan, (Expression)initializer) { AssignmentPosition = operatorSpan.StartOrInvalid };
+            return new ClassConstantDecl(span, name.Value, nameSpan, (Expression)initializer);
         }
 
         public virtual LangElement ColonBlock(Span span, IEnumerable<LangElement> statements, Tokens endToken)
@@ -148,16 +148,16 @@ namespace Devsense.PHP.Syntax.Ast
 
         public virtual LangElement Concat(Span span, IEnumerable<LangElement> expressions, string label)
         {
-            return new ConcatEx(span, expressions.CastToArray<Expression>()) { Label = label };
+            return new ConcatEx(span, expressions.CastToArray<Expression>(), label);
         }
 
-        public virtual LangElement DeclList(Span span, PhpMemberAttributes attributes, int constPos, IEnumerable<LangElement> decls)
+        public virtual LangElement DeclList(Span span, PhpMemberAttributes attributes, IEnumerable<LangElement> decls)
         {
             Debug.Assert(decls.All(e => e is FieldDecl) || decls.All(e => e is GlobalConstantDecl) || decls.All(e => e is ClassConstantDecl));
             if (decls.All(e => e is GlobalConstantDecl))
-                return new GlobalConstDeclList(span, decls.CastToArray<GlobalConstantDecl>(), null) { ConstPosition = constPos };
+                return new GlobalConstDeclList(span, decls.CastToArray<GlobalConstantDecl>(), null);
             else if (decls.All(e => e is ClassConstantDecl))
-                return new ConstDeclList(span, attributes, decls.CastToArray<ClassConstantDecl>(), null) { ConstPosition = constPos };
+                return new ConstDeclList(span, attributes, decls.CastToArray<ClassConstantDecl>(), null);
             else //if (decls.All(e => e is FieldDecl))
                 return new FieldDeclList(span, attributes, decls.CastToArray<FieldDecl>(), null);
         }
@@ -278,9 +278,9 @@ namespace Devsense.PHP.Syntax.Ast
             return ast;
         }
 
-        public virtual LangElement GlobalConstDecl(Span span, bool conditional, VariableName name, Span nameSpan, Span operatorSpan, LangElement initializer)
+        public virtual LangElement GlobalConstDecl(Span span, bool conditional, VariableName name, Span nameSpan, LangElement initializer)
         {
-            return new GlobalConstantDecl(span, conditional, name.Value, nameSpan, (Expression)initializer) { AssignmentPosition = operatorSpan.StartOrInvalid };
+            return new GlobalConstantDecl(span, conditional, name.Value, nameSpan, (Expression)initializer);
         }
 
         public virtual LangElement Goto(Span span, string label, Span labelSpan)

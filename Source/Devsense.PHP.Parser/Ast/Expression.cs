@@ -196,34 +196,31 @@ namespace Devsense.PHP.Syntax.Ast
 
     #region ConstantDecl
 
-    public abstract class ConstantDecl : LangElement, ISeparatedElements, IInitializedElements
+    public abstract class ConstantDecl : LangElement
     {
+        /// <summary>
+        /// Constant name.
+        /// </summary>
         public VariableNameRef Name { get { return name; } }
         protected VariableNameRef name;
 
+        /// <summary>
+        /// Initial value of the constant.
+        /// </summary>
         public Expression/*!*/ Initializer { get { return initializer; } internal set { initializer = value; } }
         private Expression/*!*/ initializer;
 
         /// <summary>
-        /// Position of the comma separator following the item, <c>-1</c> if not present.
+        /// Constant construtor
         /// </summary>
-        public int SeparatorPosition
-        {
-            get { return _separatorOffset < 0 ? -1 : Span.Start + _separatorOffset; }
-            set { _separatorOffset = value < 0 ? (short)-1 : (short)(value - Span.Start); }
-        }
-        public bool IsSeparatorPresent => _separatorOffset >= 0;
-        private short _separatorOffset = -1;
-
-        /// <summary>
-        /// Comma separator following the parameter.
-        /// </summary>
-        public int AssignmentPosition { get { return Span.Start + _assignRelative; } set { _assignRelative = (short)(value - Span.Start); } }
-        private short _assignRelative = -1;
-
+        /// <param name="span">Declaration span.</param>
+        /// <param name="name">Constant name.</param>
+        /// <param name="namePos">Position of the name.</param>
+        /// <param name="initializer">Initial value of the ocnstant.</param>
         public ConstantDecl(Text.Span span, string/*!*/ name, Text.Span namePos, Expression/*!*/ initializer)
             : base(span)
         {
+            System.Diagnostics.Debug.Assert(initializer != null);
             this.name = new VariableNameRef(namePos, name);
             this.initializer = initializer;
         }

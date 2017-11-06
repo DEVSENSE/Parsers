@@ -662,17 +662,6 @@ namespace Devsense.PHP.Syntax
             _lexer.DocBlockList.Annotate((LangElement)target);
         }
 
-        void SetModifiers(LangElement element, ModifierPosition modifier, int start)
-        {
-            KeyValuePair<Tokens, short>[] modifiers = null;
-            if (/*_languageFeatures.HasFeature(LanguageFeatures.FullInformation) && */
-                (modifiers = modifier.Modifiers(start)) != null &&
-                (!(element is MethodDecl) || modifiers.Length > 1))
-            {
-                element.Properties.SetProperty(TypeMemberDecl.ModifierPositionProperty, modifiers);
-            }
-        }
-
         void SetOriginalValue(LangElement element, string originalValue)
         {
             if (_languageFeatures.HasFeature(LanguageFeatures.FullInformation))

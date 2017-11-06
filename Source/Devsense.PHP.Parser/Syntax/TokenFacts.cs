@@ -164,6 +164,12 @@ namespace Devsense.PHP.Syntax
                 case Tokens.T_LIST: return "list";
                 case Tokens.T_CATCH: return "catch";
                 case Tokens.T_FINALLY: return "finally";
+                case Tokens.T_QUESTION: return "?";
+
+                case Tokens.T_ECHO: return "echo";
+                case Tokens.T_EVAL: return "eval";
+                case Tokens.T_EXIT: return "exit";
+                case Tokens.T_EMPTY: return "empty";
 
                 default: throw new ArgumentException(t.ToString());
             }

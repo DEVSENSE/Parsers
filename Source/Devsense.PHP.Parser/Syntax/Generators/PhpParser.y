@@ -73,7 +73,6 @@ using AnonymousClass = System.Tuple<Devsense.PHP.Syntax.Ast.TypeRef, System.Coll
 	public AnonymousClass AnonymousClass				{ get { return (AnonymousClass)Object; }			set { Object = value; } }
 	public UseBase Use									{ get { return (UseBase)Object; }					set { Object = value; } }
 	public List<UseBase> UseList						{ get { return (List<UseBase>)Object; }				set { Object = value; } }
-	internal ModifierPosition Modifier					{ get { return (ModifierPosition)Object; }			set { Object = value; } }
 }
 
 
@@ -283,8 +282,8 @@ using AnonymousClass = System.Tuple<Devsense.PHP.Syntax.Ast.TypeRef, System.Coll
 // type safe declaration
 %type <Object> property_name member_name
 
-%type <Long> returns_ref is_reference is_variadic 
-%type <Modifier> variable_modifiers method_modifiers non_empty_member_modifiers member_modifier class_modifier class_modifiers function
+%type <Long> returns_ref is_reference is_variadic variable_modifiers method_modifiers 
+%type <Long> non_empty_member_modifiers member_modifier class_modifier class_modifiers function
 %type <Kind> use_type
 
 %type <Object> backup_doc_comment enter_scope exit_scope
@@ -424,7 +423,7 @@ top_statement:
 	|	T_USE use_type use_declarations ';'			{ $$ = _astFactory.Use(@$, $3, $2); _contextType = AliasKind.Type;				/* TODO: Error - must contain only simple uses		  */	}				
 	|	T_CONST const_list ';'	
 		{
-			SetDoc($$ = _astFactory.DeclList(@$, PhpMemberAttributes.None, @1.StartOrInvalid, $2));
+			SetDoc($$ = _astFactory.DeclList(@$, PhpMemberAttributes.None, $2));
 		}
 ;
 
@@ -492,7 +491,7 @@ use_declaration:
 ;
 
 const_list:
-		const_list ',' const_decl { SetComma((ISeparatedElements)$1.Last(), @2.Start); $$ = AddToList<LangElement>($1, $3); }
+		const_list ',' const_decl { $$ = AddToList<LangElement>($1, $3); }
 	|	const_decl { $$ = new List<LangElement>() { $1 }; }
 ;
 
@@ -605,10 +604,9 @@ is_variadic:
 class_declaration_statement:
 		class_modifiers T_CLASS T_STRING extends_from {PushClassContext($3, $4);} implements_list backup_doc_comment enter_scope '{' class_statement_list '}' exit_scope
 			{ 
-				$$ = _astFactory.Type(@$, @2, CombineSpans(@1, @2, @3, @4, @6), isConditional, $1.CombinedModifier, new Name($3), @3, null, 
+				$$ = _astFactory.Type(@$, @2, CombineSpans(@1, @2, @3, @4, @6), isConditional, (PhpMemberAttributes)$1, new Name($3), @3, null, 
 				ConvertToNamedTypeRef($4), $6.Select(ConvertToNamedTypeRef), $10, CombineSpans(@9, @11)); 
 				SetDoc($$);
-				SetModifiers($$, $1, @$.Start);
 				PopClassContext();
 			}
 	|	T_CLASS T_STRING extends_from {PushClassContext($2, $3);} implements_list backup_doc_comment enter_scope '{' class_statement_list '}' exit_scope
@@ -622,33 +620,29 @@ class_declaration_statement:
 
 class_modifiers:
 		class_modifier 					{ $$ = $1; }
-	|	class_modifiers class_modifier 	{ $$ = $1; $$.AddModifier($2); }
+	|	class_modifiers class_modifier 	{ $$ = $1 | $2; }
 ;
 
 class_modifier:
-		T_ABSTRACT 		{ $$ = new ModifierPosition(Tokens.T_ABSTRACT, @1.Start); }
-	|	T_FINAL 		{ $$ = new ModifierPosition(Tokens.T_FINAL, @1.Start); }
+		T_ABSTRACT 		{ $$ = (long)PhpMemberAttributes.Abstract; }
+	|	T_FINAL 		{ $$ = (long)PhpMemberAttributes.Final; }
 ;
 
 trait_declaration_statement:
 		T_TRAIT T_STRING backup_doc_comment enter_scope '{' class_statement_list '}' exit_scope
 			{ 
-				var modifier = new ModifierPosition(Tokens.T_TRAIT, 0);
-				$$ = _astFactory.Type(@$, @1, CombineSpans(@1, @2), isConditional, modifier.CombinedModifier, 
+				$$ = _astFactory.Type(@$, @1, CombineSpans(@1, @2), isConditional, PhpMemberAttributes.Trait, 
 					new Name($2), @2, null, null, new List<INamedTypeRef>(), $6, CombineSpans(@5, @7)); 
 				SetDoc($$);
-				SetModifiers($$, modifier, @$.Start);
 			}
 ;
 
 interface_declaration_statement:
 		T_INTERFACE T_STRING interface_extends_list backup_doc_comment enter_scope '{' class_statement_list '}' exit_scope
 			{ 
-				var modifier = new ModifierPosition(Tokens.T_INTERFACE, @$.Start);
-				$$ = _astFactory.Type(@$, @1, CombineSpans(@1, @2, @3), isConditional, modifier.CombinedModifier, 
+				$$ = _astFactory.Type(@$, @1, CombineSpans(@1, @2, @3), isConditional, PhpMemberAttributes.Interface, 
 					new Name($2), @2, null, null, $3.Select(ConvertToNamedTypeRef), $7, CombineSpans(@6, @8)); 
 				SetDoc($$);
-				SetModifiers($$, modifier, @$.Start);
 			}
 ;
 
@@ -858,25 +852,22 @@ class_statement_list:
 class_statement:
 		variable_modifiers property_list ';'
 			{ 
-				$$ = _astFactory.DeclList(@$, $1.CombinedModifier, -1, $2); 
+				$$ = _astFactory.DeclList(@$, (PhpMemberAttributes)$1, $2); 
 				SetDoc($$);
-				SetModifiers($$, $1, @$.Start);
 			}
 	|	method_modifiers T_CONST class_const_list ';'
 			{ 
-				$$ = _astFactory.DeclList(@$, $1.CombinedModifier, @2.StartOrInvalid, $3); 
+				$$ = _astFactory.DeclList(@$, (PhpMemberAttributes)$1, $3); 
 				SetDoc($$);
-				SetModifiers($$, $1, @$.Start);
 			}
 	|	T_USE name_list trait_adaptations
 			{ $$ = _astFactory.TraitUse(@$, $2, $3); }
 	|	method_modifiers function returns_ref identifier backup_doc_comment '(' parameter_list ')'
 		return_type backup_fn_flags method_body backup_fn_flags
 			{	
-				$$ = _astFactory.Method(@$, $3 == (long)FormalParam.Flags.IsByRef, $1.CombinedModifier, 
+				$$ = _astFactory.Method(@$, $3 == (long)FormalParam.Flags.IsByRef, (PhpMemberAttributes)$1, 
 					$9, @9, $4, @4, null, $7, CombineSpans(@6, @8), null, $11, @2, @1, $3 == 0? Span.Invalid: @3);
 				SetDoc($$);
-				SetModifiers($$, $1, @$.Start);
 			}
 ;
 
@@ -916,13 +907,11 @@ trait_alias:
 			{ $$ = _astFactory.TraitAdaptationAlias(@$, $1, new NameRef(@3, $3), null); }
 	|	trait_method_reference T_AS member_modifier identifier ';'
 			{ 
-				$$ = _astFactory.TraitAdaptationAlias(@$, $1, new NameRef(@4, $4), $3.CombinedModifier); 
-				SetModifiers($$, $3, @$.Start);
+				$$ = _astFactory.TraitAdaptationAlias(@$, $1, new NameRef(@4, $4), (PhpMemberAttributes)$3); 
 			}
 	|	trait_method_reference T_AS member_modifier ';'
 			{ 
-				$$ = _astFactory.TraitAdaptationAlias(@$, $1, NameRef.Invalid, $3.CombinedModifier); 
-				SetModifiers($$, $3, @$.Start);
+				$$ = _astFactory.TraitAdaptationAlias(@$, $1, NameRef.Invalid, (PhpMemberAttributes)$3); 
 			}
 ;
 
@@ -944,27 +933,27 @@ method_body:
 
 variable_modifiers:
 		non_empty_member_modifiers		{ $$ = $1; }
-	|	T_VAR							{ $$ = new ModifierPosition(); }
+	|	T_VAR							{ $$ = (long)PhpMemberAttributes.None; }
 ;
 
 method_modifiers:
-		/* empty */						{ $$ = new ModifierPosition(); }
+		/* empty */						{ $$ = (long)PhpMemberAttributes.None; }
 	|	non_empty_member_modifiers		{ $$ = $1; }
 ;
 
 non_empty_member_modifiers:
 		member_modifier			{ $$ = $1; }
 	|	non_empty_member_modifiers member_modifier
-			{ $$ = $1; $$.AddModifier($2); }
+			{ $$ = $1 | $2; }
 ;
 
 member_modifier:
-		T_PUBLIC				{ $$ = new ModifierPosition(Tokens.T_PUBLIC, @1.Start); }
-	|	T_PROTECTED				{ $$ = new ModifierPosition(Tokens.T_PROTECTED, @1.Start); }
-	|	T_PRIVATE				{ $$ = new ModifierPosition(Tokens.T_PRIVATE, @1.Start); }
-	|	T_STATIC				{ $$ = new ModifierPosition(Tokens.T_STATIC, @1.Start); }
-	|	T_ABSTRACT				{ $$ = new ModifierPosition(Tokens.T_ABSTRACT, @1.Start); }
-	|	T_FINAL					{ $$ = new ModifierPosition(Tokens.T_FINAL, @1.Start); }
+		T_PUBLIC				{ $$ = (long)PhpMemberAttributes.Public; }
+	|	T_PROTECTED				{ $$ = (long)PhpMemberAttributes.Protected; }
+	|	T_PRIVATE				{ $$ = (long)PhpMemberAttributes.Private; }
+	|	T_STATIC				{ $$ = (long)PhpMemberAttributes.Static; }
+	|	T_ABSTRACT				{ $$ = (long)PhpMemberAttributes.Abstract; }
+	|	T_FINAL					{ $$ = (long)PhpMemberAttributes.Final; }
 ;
 
 property_list:
@@ -978,19 +967,19 @@ property:
 ;
 
 class_const_list:
-		class_const_list ',' class_const_decl { SetComma((ISeparatedElements)$1.Last(), @2.Start); $$ = AddToList<LangElement>($1, $3); }
+		class_const_list ',' class_const_decl { $$ = AddToList<LangElement>($1, $3); }
 	|	class_const_decl { $$ = new List<LangElement>() { $1 }; }
 ;
 
 class_const_decl:
 	identifier '=' expr backup_doc_comment {
-		$$ = _astFactory.ClassConstDecl(@$, new VariableName($1), @1, @2, $3); 
+		$$ = _astFactory.ClassConstDecl(@$, new VariableName($1), @1, $3); 
 		SetMemberDoc($$);
 	}
 ;
 
 const_decl:
-	T_STRING '=' expr backup_doc_comment { $$ = _astFactory.GlobalConstDecl(@$, false, new VariableName($1), @1, @2, $3); 
+	T_STRING '=' expr backup_doc_comment { $$ = _astFactory.GlobalConstDecl(@$, false, new VariableName($1), @1, $3); 
 		SetMemberDoc($$);
 	}
 ;

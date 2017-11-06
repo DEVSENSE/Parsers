@@ -36,8 +36,8 @@ $x = new class(1, "world")
         "MemberAttributes":"Public",
         "IsConditional":"False",
         "FieldDeclList":{
-          "FieldDecl":{"Name":"var","MemberAttributes":"Private","PHPDoc":{"Comment":"propertydeclaration"},"StringLiteral":{"Value":"adefaultvalue"}},
-          "FieldDecl":{"Name":"vara","MemberAttributes":"Private","PHPDoc":{"Comment":"seconddoc"},"LongIntLiteral":{"Value":"10"}}
+          "FieldDecl":{"Name":"var","MemberAttributes":"Multiple","PHPDoc":{"Comment":"propertydeclaration"},"StringLiteral":{"Value":"adefaultvalue"}},
+          "FieldDecl":{"Name":"vara","MemberAttributes":"Multiple","PHPDoc":{"Comment":"seconddoc"},"LongIntLiteral":{"Value":"10"}}
         },
         "FieldDeclList":{
           "PHPDoc":{"Comment":"defaultpropertydeclaration"},

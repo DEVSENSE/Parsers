@@ -192,18 +192,14 @@ namespace Devsense.PHP.Syntax.Ast
         }
 
         /// <summary>
-        /// Position of the 'function' keyword.
+        /// Declared constants.
         /// </summary>
-        public int ConstPosition
-        {
-            get { return Span.Start + _constOffset; }
-            set { _constOffset = (short)(value - Span.Start); }
-        }
-        private short _constOffset = 0;
-
         public IList<GlobalConstantDecl>/*!*/ Constants { get { return constants; } }
         private readonly IList<GlobalConstantDecl>/*!*/ constants;
 
+        /// <summary>
+        /// Span of the entire declaration.
+        /// </summary>
         public Text.Span EntireDeclarationSpan
         {
             get { return this.Span; }

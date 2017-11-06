@@ -24,30 +24,54 @@ namespace Devsense.PHP.Syntax.Ast
     /// </summary>
     public sealed class ConcatEx : Expression
     {
-
-        /// <summary>
-        /// Opening and closing label.
-        /// " or ` for stirngs and label for heredoc.
-        /// </summary>
-        public string Label { get { return _label; } internal set { _label = value; } }
         private string _label;
 
+        /// <summary>
+        /// Token used to initiate the concat expression.
+        /// </summary>
+        public Tokens OpenToken => _label.Length == 1 ? (Tokens)_label[0] : Tokens.T_START_HEREDOC;
+
+        /// <summary>
+        /// Token used to terminate the concat expression.
+        /// </summary>
+        public Tokens CloseToken => _label.Length == 1 ? (Tokens)_label[0] : Tokens.T_END_HEREDOC;
+
+        /// <summary>
+        /// Text initiate the concat (label for heredoc).
+        /// </summary>
+        public string OpenLabel => _label.Length == 1 ? _label : $"<<<{_label}";
+
+        /// <summary>
+        /// Text terminating the concat.
+        /// </summary>
+        public string CloseLabel => _label;
+
+
+        /// <summary>
+        /// Operation used to concatenate the expressions.
+        /// </summary>
         public override Operations Operation { get { return Operations.ConcatN; } }
 
-        public Expression[]/*!*/ Expressions { get { return this.expressions; } internal set { this.expressions = value; } }
-        private Expression[]/*!*/ expressions;
+        /// <summary>
+        /// Expressions represented by the <see cref="ConcatEx"/>.
+        /// </summary>
+        public Expression[]/*!*/ Expressions { get { return this._expressions; } internal set { this._expressions = value; } }
+        private Expression[]/*!*/ _expressions;
 
         /// <summary>
         /// Initialize the ConcatEx AST node and optimize the subtree if possible. Look for child expressions and chain possible concatenations. This prevents StackOverflowException in case of huge concatenation expressions.
         /// </summary>
         /// <param name="span"></param>
         /// <param name="expressions">List of expressions to concatenate.</param>
+        /// <param name="label">Label used to initiate and terminate the concatenation.</param>
         /// <remarks>This method tries to propagate child concatenations and chain them.</remarks>
-        public ConcatEx(Text.Span span, IList<Expression>/*!*/ expressions)
+        public ConcatEx(Text.Span span, IList<Expression>/*!*/ expressions, string/*!*/label)
             : base(span)
         {
             Debug.Assert(expressions != null);
-            this.expressions = expressions.AsArray();
+            Debug.Assert(!string.IsNullOrEmpty(label));
+            this._expressions = expressions.AsArray();
+            this._label = label;
         }
 
         /// <summary>

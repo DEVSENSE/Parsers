@@ -355,12 +355,6 @@ namespace Devsense.PHP.Syntax.Ast
         protected readonly PhpMemberAttributes modifiers;
 
         /// <summary>
-        /// Identifier of the modifier position propery assigned 
-        /// when <see cref="LanguageFeatures.FullInformation"/> is set.
-        /// </summary>
-        public const string ModifierPositionProperty = "ModifierPositionProperty";
-
-        /// <summary>
         /// Gets collection of CLR attributes annotating this statement.
         /// </summary>
         public CustomAttributes Attributes
@@ -628,16 +622,6 @@ namespace Devsense.PHP.Syntax.Ast
         /// <summary>List of constants in this list</summary>
         public IList<ClassConstantDecl>/*!*/ Constants { get { return constants; } }
         private readonly IList<ClassConstantDecl>/*!*/ constants;
-
-        /// <summary>
-        /// Position of the 'function' keyword.
-        /// </summary>
-        public int ConstPosition
-        {
-            get { return Span.Start + _constOffset; }
-            set { _constOffset = (short)(value - Span.Start); }
-        }
-        private short _constOffset = 0;
 
         public ConstDeclList(Text.Span span, PhpMemberAttributes modifiers, IList<ClassConstantDecl>/*!*/ constants, List<CustomAttribute> attributes)
             : base(span, modifiers, attributes)
