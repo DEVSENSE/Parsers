@@ -24,11 +24,6 @@ namespace Devsense.PHP.Syntax.Ast
     /// </summary>
     public sealed class ConcatEx : Expression
     {
-        /// <summary>
-        /// Identifier of the modifier position propery assigned 
-        /// when <see cref="LanguageFeatures.FullInformation"/> is set.
-        /// </summary>
-        public const string DelimitersPosition = "DelimitersPosition";
 
         /// <summary>
         /// Opening and closing label.

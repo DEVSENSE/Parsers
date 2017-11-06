@@ -191,11 +191,11 @@ namespace UnitTests
             public override LangElement ArrayItem(Span span, bool braces, LangElement expression, LangElement indexOpt)
                 => CountLE(base.ArrayItem(span, braces, expression, indexOpt));
 
-            public override Item ArrayItemRef(Span span, LangElement indexOpt, int operatorPosition, int refPosition, LangElement variable)
-                => CountI(base.ArrayItemRef(span, indexOpt, operatorPosition, refPosition, variable));
+            public override Item ArrayItemRef(Span span, LangElement indexOpt, LangElement variable)
+                => CountI(base.ArrayItemRef(span, indexOpt, variable));
 
-            public override Item ArrayItemValue(Span span, LangElement indexOpt, int operatorPosition, LangElement valueExpr)
-                => CountI(base.ArrayItemValue(span, indexOpt, operatorPosition, valueExpr));
+            public override Item ArrayItemValue(Span span, LangElement indexOpt, LangElement valueExpr)
+                => CountI(base.ArrayItemValue(span, indexOpt, valueExpr));
 
             public override LangElement Assignment(Span span, LangElement target, LangElement value, Operations assignOp, Span operationSpan, Span refSpan)
                 => CountLE(base.Assignment(span, target, value, assignOp, operationSpan, refSpan));

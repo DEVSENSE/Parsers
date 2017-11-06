@@ -207,9 +207,9 @@ namespace Devsense.PHP.Syntax
                 VisitArrayItem(list[i], previous);
                 if (i + 1 != list.Count)
                 {
-                    previous = ProcessToken(separatorToken, SpanUtils.SpanIntermission(
-                        list[i] != null ? list[i].ItemSpan() : previous.Span,
-                        list[i + 1] != null ? list[i + 1].ItemSpan() : terminal));
+                    previous = ProcessToken(separatorToken, list[i + 1] != null ? 
+                        SpanUtils.SpanIntermission(list[i] != null ? list[i].ItemSpan() : previous.Span, list[i + 1].ItemSpan()) :
+                        terminal);
                 }
             }
         }
@@ -351,19 +351,6 @@ namespace Devsense.PHP.Syntax
             else if (x.Label.Length == 1)
             {
                 ConsumeToken((Tokens)x.Label[0], SpanUtils.SafeSpan(x.Span.End - x.Label.Length, 0));
-            }
-            object obj;
-            if (x.Properties.TryGetProperty(ConcatEx.DelimitersPosition, out obj) &&
-                obj is KeyValuePair<Tokens, short>[])
-            {
-                var delimiters = (KeyValuePair<Tokens, short>[])obj;
-                for (int i = 0; i < delimiters.Length; i++)
-                {
-                    if (delimiters[i].Key != Tokens.T_ERROR)
-                    {
-                        ConsumeToken(delimiters[i].Key, SpanUtils.SafeSpan(x.Span.Start + delimiters[i].Value, 0));
-                    }
-                }
             }
         }
 

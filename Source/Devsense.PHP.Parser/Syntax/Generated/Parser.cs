@@ -3241,7 +3241,7 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 { yyval.Object = value_stack.array[value_stack.top-1].yyval.Node; }
         return;
       case 462: // array_pair_list -> non_empty_array_pair_list 
-{ yyval.ItemList = RightTrimList(value_stack.array[value_stack.top-1].yyval.ItemList);  }
+{ yyval.ItemList = value_stack.array[value_stack.top-1].yyval.ItemList;  }
         return;
       case 463: // possible_array_pair -> 
 { yyval.Item = null; }
@@ -3250,28 +3250,28 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 { yyval.Item = value_stack.array[value_stack.top-1].yyval.Item; }
         return;
       case 465: // non_empty_array_pair_list -> non_empty_array_pair_list ',' possible_array_pair 
-{ if(value_stack.array[value_stack.top-3].yyval.ItemList[value_stack.array[value_stack.top-3].yyval.ItemList.Count - 1] != null) SetComma(value_stack.array[value_stack.top-3].yyval.ItemList.Last(), value_stack.array[value_stack.top-2].yypos.Start); yyval.ItemList = AddToList<Item>(value_stack.array[value_stack.top-3].yyval.ItemList, value_stack.array[value_stack.top-1].yyval.Item); }
+{ yyval.ItemList = AddToList<Item>(value_stack.array[value_stack.top-3].yyval.ItemList, value_stack.array[value_stack.top-1].yyval.Item); }
         return;
       case 466: // non_empty_array_pair_list -> possible_array_pair 
 { yyval.ItemList = new List<Item>() { value_stack.array[value_stack.top-1].yyval.Item }; }
         return;
       case 467: // array_pair -> expr T_DOUBLE_ARROW expr 
-{ yyval.Item = _astFactory.ArrayItemValue(yypos, value_stack.array[value_stack.top-3].yyval.Node, value_stack.array[value_stack.top-2].yypos.Start, value_stack.array[value_stack.top-1].yyval.Node); }
+{ yyval.Item = _astFactory.ArrayItemValue(yypos, value_stack.array[value_stack.top-3].yyval.Node, value_stack.array[value_stack.top-1].yyval.Node); }
         return;
       case 468: // array_pair -> expr 
-{ yyval.Item = _astFactory.ArrayItemValue(yypos, null, -1, value_stack.array[value_stack.top-1].yyval.Node); }
+{ yyval.Item = _astFactory.ArrayItemValue(yypos, null, value_stack.array[value_stack.top-1].yyval.Node); }
         return;
       case 469: // array_pair -> expr T_DOUBLE_ARROW '&' variable 
-{ yyval.Item = _astFactory.ArrayItemRef(yypos, value_stack.array[value_stack.top-4].yyval.Node, value_stack.array[value_stack.top-3].yypos.Start, value_stack.array[value_stack.top-2].yypos.Start, value_stack.array[value_stack.top-1].yyval.Node); }
+{ yyval.Item = _astFactory.ArrayItemRef(yypos, value_stack.array[value_stack.top-4].yyval.Node, value_stack.array[value_stack.top-1].yyval.Node); }
         return;
       case 470: // array_pair -> '&' variable 
-{ yyval.Item = _astFactory.ArrayItemRef(yypos, null, -1, value_stack.array[value_stack.top-2].yypos.Start, value_stack.array[value_stack.top-1].yyval.Node); }
+{ yyval.Item = _astFactory.ArrayItemRef(yypos, null, value_stack.array[value_stack.top-1].yyval.Node); }
         return;
       case 471: // array_pair -> expr T_DOUBLE_ARROW T_LIST '(' array_pair_list ')' 
-{ yyval.Item = _astFactory.ArrayItemValue(yypos, value_stack.array[value_stack.top-6].yyval.Node, value_stack.array[value_stack.top-5].yypos.Start, _astFactory.List(Span.Combine(value_stack.array[value_stack.top-4].yypos, value_stack.array[value_stack.top-1].yypos), value_stack.array[value_stack.top-2].yyval.ItemList, true)); }
+{ yyval.Item = _astFactory.ArrayItemValue(yypos, value_stack.array[value_stack.top-6].yyval.Node, _astFactory.List(Span.Combine(value_stack.array[value_stack.top-4].yypos, value_stack.array[value_stack.top-1].yypos), value_stack.array[value_stack.top-2].yyval.ItemList, true)); }
         return;
       case 472: // array_pair -> T_LIST '(' array_pair_list ')' 
-{ yyval.Item = _astFactory.ArrayItemValue(yypos, null, -1, _astFactory.List(Span.Combine(value_stack.array[value_stack.top-4].yypos, value_stack.array[value_stack.top-1].yypos), value_stack.array[value_stack.top-2].yyval.ItemList, true)); }
+{ yyval.Item = _astFactory.ArrayItemValue(yypos, null, _astFactory.List(Span.Combine(value_stack.array[value_stack.top-4].yypos, value_stack.array[value_stack.top-1].yypos), value_stack.array[value_stack.top-2].yyval.ItemList, true)); }
         return;
       case 473: // encaps_list -> encaps_list encaps_var 
 { yyval.NodeList = AddToList<LangElement>(value_stack.array[value_stack.top-2].yyval.NodeList, value_stack.array[value_stack.top-1].yyval.Node); }

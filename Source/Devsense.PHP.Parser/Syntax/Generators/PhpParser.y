@@ -1383,8 +1383,7 @@ property_name:
 ;
 
 array_pair_list:
-		non_empty_array_pair_list
-			{ $$ = RightTrimList($1);  }
+		non_empty_array_pair_list { $$ = $1;  }
 ;
 
 possible_array_pair:
@@ -1394,24 +1393,24 @@ possible_array_pair:
 
 non_empty_array_pair_list:
 		non_empty_array_pair_list ',' possible_array_pair
-			{ if($1[$1.Count - 1] != null) SetComma($1.Last(), @2.Start); $$ = AddToList<Item>($1, $3); }
+			{ $$ = AddToList<Item>($1, $3); }
 	|	possible_array_pair
 			{ $$ = new List<Item>() { $1 }; }
 ;
 
 array_pair:
 		expr T_DOUBLE_ARROW expr
-			{ $$ = _astFactory.ArrayItemValue(@$, $1, @2.Start, $3); }
+			{ $$ = _astFactory.ArrayItemValue(@$, $1, $3); }
 	|	expr
-			{ $$ = _astFactory.ArrayItemValue(@$, null, -1, $1); }
+			{ $$ = _astFactory.ArrayItemValue(@$, null, $1); }
 	|	expr T_DOUBLE_ARROW '&' variable
-			{ $$ = _astFactory.ArrayItemRef(@$, $1, @2.Start, @3.Start, $4); }
+			{ $$ = _astFactory.ArrayItemRef(@$, $1, $4); }
 	|	'&' variable
-			{ $$ = _astFactory.ArrayItemRef(@$, null, -1, @1.Start, $2); }
+			{ $$ = _astFactory.ArrayItemRef(@$, null, $2); }
 	|	expr T_DOUBLE_ARROW T_LIST '(' array_pair_list ')'
-			{ $$ = _astFactory.ArrayItemValue(@$, $1, @2.Start, _astFactory.List(Span.Combine(@3, @6), $5, true)); }
+			{ $$ = _astFactory.ArrayItemValue(@$, $1, _astFactory.List(Span.Combine(@3, @6), $5, true)); }
 	|	T_LIST '(' array_pair_list ')'
-			{ $$ = _astFactory.ArrayItemValue(@$, null, -1, _astFactory.List(Span.Combine(@1, @4), $3, true)); }
+			{ $$ = _astFactory.ArrayItemValue(@$, null, _astFactory.List(Span.Combine(@1, @4), $3, true)); }
 ;
 
 encaps_list:

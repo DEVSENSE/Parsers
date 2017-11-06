@@ -34,6 +34,8 @@ namespace Devsense.PHP.Syntax.Ast
         public SourceUnit SourceUnit => _sourceUnit;
         readonly SourceUnit _sourceUnit;
 
+        private static bool IsNull<T>(T obj) => obj == null;
+
         public BasicNodesFactory(SourceUnit sourceUnit)
         {
             _sourceUnit = sourceUnit;
@@ -43,13 +45,13 @@ namespace Devsense.PHP.Syntax.Ast
         {
             return new ItemUse(span, (Expression)expression, (Expression)indexOpt, isBraces: braces);
         }
-        public virtual Item ArrayItemValue(Span span, LangElement indexOpt, int operatorPosition, LangElement valueExpr)
+        public virtual Item ArrayItemValue(Span span, LangElement indexOpt, LangElement valueExpr)
         {
-            return new ValueItem((Expression)indexOpt, (Expression)valueExpr) { ArrowPosition = operatorPosition };
+            return new ValueItem((Expression)indexOpt, (Expression)valueExpr);
         }
-        public virtual Item ArrayItemRef(Span span, LangElement indexOpt, int operatorPosition, int refPosition, LangElement variable)
+        public virtual Item ArrayItemRef(Span span, LangElement indexOpt, LangElement variable)
         {
-            return new RefItem((Expression)indexOpt, (VariableUse)variable) { ArrowPosition = operatorPosition, RefPosition = refPosition };
+            return new RefItem((Expression)indexOpt, (VariableUse)variable);
         }
 
         public virtual LangElement Assignment(Span span, LangElement target, LangElement value, Operations assignOp, Span operationSpan, Span refSpan)
@@ -341,7 +343,8 @@ namespace Devsense.PHP.Syntax.Ast
 
         public virtual LangElement List(Span span, IEnumerable<Item> targets, bool isOldNotation)
         {
-            return new ListEx(span, targets.AsArray(), isOldNotation);
+            var items = targets.AsArray();
+            return new ListEx(span, items.All(IsNull) ? null : items, isOldNotation);
         }
 
         public virtual LangElement Literal(Span span, object value)
@@ -408,7 +411,8 @@ namespace Devsense.PHP.Syntax.Ast
 
         public virtual LangElement NewArray(Span span, IEnumerable<Item> itemsOpt, bool isOldNotation)
         {
-            return new ArrayEx(span, itemsOpt.AsArray(), isOldNotation);
+            var items = itemsOpt.AsArray();
+            return new ArrayEx(span, items.All(IsNull) ? null : items, isOldNotation);
         }
 
         public virtual LangElement PHPDoc(Span span, LangElement block)

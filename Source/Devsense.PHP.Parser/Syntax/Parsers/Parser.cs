@@ -402,14 +402,6 @@ namespace Devsense.PHP.Syntax
         private LangElement CreateStaticProperty(Span span, LangElement objectExpr, Span objectNamePos, object name) =>
             CreateStaticProperty(span, _astFactory.TypeReference(objectNamePos, objectExpr), objectNamePos, name);
 
-        private List<T> RightTrimList<T>(List<T> list)
-        {
-            T elem;
-            if (list.Count > 0 && (elem = list.Last()) == null)
-                list.Remove(elem);
-            return list;
-        }
-
         private Span CombineSpans(params Span[] spans)
         {
             var validSpans = spans.Where(s => s.IsValid);
@@ -678,32 +670,6 @@ namespace Devsense.PHP.Syntax
                 (!(element is MethodDecl) || modifiers.Length > 1))
             {
                 element.Properties.SetProperty(TypeMemberDecl.ModifierPositionProperty, modifiers);
-            }
-        }
-
-        void SetDelimiters(LangElement element, Tokens opening, Span openingSpan,
-            Tokens closing, Span closingSpan)
-        {
-            if (openingSpan.IsValid && closingSpan.IsValid)
-            {
-                var delimiters = new ModifierPosition(opening, openingSpan.Start);
-                delimiters.AddModifier(closing, closingSpan.Start);
-                element.Properties.SetProperty(ConcatEx.DelimitersPosition,
-                    delimiters.Modifiers(element.Span.Start));
-            }
-        }
-
-        void SetDelimiters(LangElement element, Tokens opening1, Span openingSpan1,
-            Tokens opening2, Span openingSpan2,
-            Tokens closing, Span closingSpan)
-        {
-            if (openingSpan1.IsValid && openingSpan2.IsValid && closingSpan.IsValid)
-            {
-                var delimiters = new ModifierPosition(opening1, openingSpan1.Start);
-                delimiters.AddModifier(opening2, openingSpan2.Start);
-                delimiters.AddModifier(closing, closingSpan.Start);
-                element.Properties.SetProperty(ConcatEx.DelimitersPosition,
-                    delimiters.Modifiers(element.Span.Start));
             }
         }
 

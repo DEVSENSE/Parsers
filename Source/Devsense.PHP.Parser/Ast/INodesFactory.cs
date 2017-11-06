@@ -909,22 +909,19 @@ namespace Devsense.PHP.Syntax.Ast
         /// Creates array value item initialization expression.
         /// </summary>
         /// <param name="span">Entire element span.</param>
-        /// <param name="operatorPosition">Operator position.</param>
         /// <param name="indexOpt">Optional. Expression representing an index.</param>
         /// <param name="valueExpr">Expression representing an item.</param>
         /// <returns>Array value item expression.</returns>
-        Item ArrayItemValue(TSpan span, TNode indexOpt, int operatorPosition, TNode valueExpr);
+        Item ArrayItemValue(TSpan span, TNode indexOpt, TNode valueExpr);
 
         /// <summary>
         /// Creates array reference item initialization expression.
         /// </summary>
         /// <param name="span">Entire element span.</param>
-        /// <param name="operatorPosition">Operator position.</param>
         /// <param name="indexOpt">Optional. Expression representing an index.</param>
         /// <param name="variable">Expression representing a variable.</param>
-        /// <param name="refPosition">Reference position.</param>
         /// <returns>Array reference item expression.</returns>
-        Item ArrayItemRef(TSpan span, TNode indexOpt, int operatorPosition, int refPosition, TNode variable);
+        Item ArrayItemRef(TSpan span, TNode indexOpt, TNode variable);
 
         /// <summary>
         /// Creates <c>new</c> expression.

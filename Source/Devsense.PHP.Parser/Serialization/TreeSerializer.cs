@@ -87,10 +87,13 @@ namespace Devsense.PHP.Syntax.Ast.Serialization
 
         void SerializeItem(RefItem item)
         {
-            _serializer.StartSerialize("Item");
-            SerializeOptionalProperty("Index", item.Index);
-            SerializeOptionalProperty("RefToGet", item.RefToGet);
-            _serializer.EndSerialize();
+            if (item != null)
+            {
+                _serializer.StartSerialize("Item");
+                SerializeOptionalProperty("Index", item.Index);
+                SerializeOptionalProperty("RefToGet", item.RefToGet);
+                _serializer.EndSerialize();
+            }
         }
 
         void SerializePHPDoc(PHPDocBlock doc)
