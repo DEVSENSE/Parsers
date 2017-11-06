@@ -1,0 +1,7 @@
+<?php
+try {
+    echo 'hello';   
+} catch (TestEx $e) {
+    echo 'world';
+}
+?>

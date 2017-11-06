@@ -58,7 +58,7 @@ namespace Devsense.PHP.Syntax
         public static Text.Span SpanIntermission(Text.Span previous, int next) =>
             previous.IsValid && next >= 0 && previous.End <= next ? Text.Span.FromBounds(previous.End, next) : Text.Span.Invalid;
 
-        private static Text.Span ItemSpan(this Ast.Item item) => SafeCombineSpan(
+        public static Text.Span ItemSpan(this Ast.Item item) => SafeCombineSpan(
             item.HasKey ? item.Index.Span: Text.Span.Invalid, 
             item is Ast.ValueItem ? ((Ast.ValueItem)item).ValueExpr.Span : ((Ast.RefItem)item).RefToGet.Span);
 

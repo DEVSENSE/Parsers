@@ -109,16 +109,18 @@ namespace Devsense.PHP.Syntax
         readonly ITokenComposer _composer;
         readonly ISourceTokenProvider _provider;
 
-        private void ProcessToken(Tokens target, Span span)
+        private ISourceToken ProcessToken(Tokens target, Span span)
         {
             var token = _provider.GetTokenAt(span, target, new SourceToken(target, Span.Invalid));
             ConsumeToken(token.Token, token.Span);
+            return token;
         }
 
-        private void ProcessToken(Tokens target, string text, Span span)
+        private ISourceToken ProcessToken(Tokens target, string text, Span span)
         {
             var token = _provider.GetTokenAt(span, target, new SourceToken(target, Span.Invalid));
             ConsumeToken(token.Token, text, token.Span);
+            return token;
         }
 
         public TokenVisitor(TreeContext initialContext, ITokenComposer composer, ISourceTokenProvider tokenProvider) : base(initialContext)
@@ -181,22 +183,38 @@ namespace Devsense.PHP.Syntax
         public override void VisitArrayEx(ArrayEx x)
         {
             var itemSpan = x.Items.ItemsSpan();
+            var terminalSpan = itemSpan.IsValid ? SpanUtils.SpanIntermission(itemSpan, x.Span.End) : x.Span;
             if (x.IsOldNotation)
             {
                 ProcessToken(Tokens.T_ARRAY, itemSpan.IsValid ? SpanUtils.SpanIntermission(x.Span.StartOrInvalid, itemSpan) : x.Span);
-                ProcessToken(Tokens.T_LPAREN, itemSpan.IsValid ? SpanUtils.SpanIntermission(x.Span.StartOrInvalid, itemSpan) : x.Span);
-                VisitElementList(x.Items, t => VisitArrayItem((Item)t), Tokens.T_COMMA, ",");
-                ProcessToken(Tokens.T_RPAREN, itemSpan.IsValid ? SpanUtils.SpanIntermission(itemSpan, x.Span.End) : x.Span);
+                var previous = ProcessToken(Tokens.T_LPAREN, itemSpan.IsValid ? SpanUtils.SpanIntermission(x.Span.StartOrInvalid, itemSpan) : x.Span);
+                VisitItemList(x.Items, Tokens.T_COMMA, previous, terminalSpan);
+                ProcessToken(Tokens.T_RPAREN, terminalSpan);
             }
             else
             {
-                ProcessToken(Tokens.T_LBRACKET, itemSpan.IsValid ? SpanUtils.SpanIntermission(x.Span.StartOrInvalid, itemSpan) : x.Span);
-                VisitElementList(x.Items, t => VisitArrayItem((Item)t), Tokens.T_COMMA, ",");
-                ProcessToken(Tokens.T_RBRACKET, itemSpan.IsValid ? SpanUtils.SpanIntermission(itemSpan, x.Span.End) : x.Span);
+                var previous = ProcessToken(Tokens.T_LBRACKET, itemSpan.IsValid ? SpanUtils.SpanIntermission(x.Span.StartOrInvalid, itemSpan) : x.Span);
+                VisitItemList(x.Items, Tokens.T_COMMA, previous, terminalSpan);
+                ProcessToken(Tokens.T_RBRACKET, terminalSpan);
             }
         }
 
-        public override void VisitArrayItem(Item item)
+        protected virtual void VisitItemList(IList<Item> list, Tokens separatorToken, ISourceToken previous, Span terminal)
+        {
+            Debug.Assert(list != null, nameof(list));
+            for (int i = 0; i < list.Count; i++)
+            {
+                VisitArrayItem(list[i], previous);
+                if (i + 1 != list.Count)
+                {
+                    previous = ProcessToken(separatorToken, SpanUtils.SpanIntermission(
+                        list[i] != null ? list[i].ItemSpan() : previous.Span,
+                        list[i + 1] != null ? list[i + 1].ItemSpan() : terminal));
+                }
+            }
+        }
+
+        public void VisitArrayItem(Item item, ISourceToken previous)
         {
             if (item != null)
             {
@@ -204,7 +222,7 @@ namespace Devsense.PHP.Syntax
                 if (item.Index != null)
                 {
                     VisitElement(item.Index);
-                    ProcessToken(Tokens.T_DOUBLE_ARROW, SpanUtils.SpanIntermission(item.Index.Span, valueSpan));
+                    previous = ProcessToken(Tokens.T_DOUBLE_ARROW, SpanUtils.SpanIntermission(item.Index.Span, valueSpan));
                 }
 
                 if (item is ValueItem)
@@ -213,10 +231,8 @@ namespace Devsense.PHP.Syntax
                 }
                 else if (item is RefItem)
                 {
-                    // TODO - fix items
-                    var tokens = _provider.GetTokens(SpanUtils.SafeSpan(0, valueSpan.StartOrInvalid));
-                    var amp = tokens.LastOrDefault(t => t.Token == Tokens.T_AMP) ?? new SourceToken(Tokens.T_AMP, Span.Invalid);
-                    ConsumeToken(amp.Token, amp.Span);
+                    ProcessToken(Tokens.T_AMP, SpanUtils.SpanIntermission(
+                        item.HasKey ? item.Index.Span : previous.Span, valueSpan));
                     VisitElement(((RefItem)item).RefToGet);
                 }
                 else
@@ -228,7 +244,7 @@ namespace Devsense.PHP.Syntax
 
         public override void VisitAssertEx(AssertEx x)
         {
-            ProcessToken(Tokens.T_STRING, "assert", SpanUtils.SpanIntermission(x.Span.StartOrInvalid, x.CodeEx.Span));
+            ConsumeToken(Tokens.T_STRING, "assert", SpanUtils.SafeSpan(x.Span.StartOrInvalid, 6));
             ProcessToken(Tokens.T_LPAREN, SpanUtils.SpanIntermission(x.Span.StartOrInvalid, x.CodeEx.Span));
             VisitElement(x.CodeEx);
             ProcessToken(Tokens.T_RPAREN, SpanUtils.SpanIntermission(x.CodeEx.Span, x.Span.End));
@@ -719,13 +735,9 @@ namespace Devsense.PHP.Syntax
                         ConsumeToken(Tokens.T_RPAREN, ")", SpanUtils.SafeSpan(cond.ConditionPosition.End - 1, 0));
                     }
 
-                    // TODO: ":" ?
-
                     VisitElement(cond.Statement);
                 }
             }
-
-            // TODO: ENDIF; ?
         }
 
         public override void VisitIncDecEx(IncDecEx x)
@@ -959,18 +971,20 @@ namespace Devsense.PHP.Syntax
 
         public override void VisitListEx(ListEx x)
         {
+            var itemSpan = x.Items.ItemsSpan();
+            var terminalSpan = itemSpan.IsValid ? SpanUtils.SpanIntermission(itemSpan, x.Span.End) : x.Span;
             if (x.IsOldNotation)
             {
-                ConsumeToken(Tokens.T_LIST, "list", x.Span);
-                ConsumeToken(Tokens.T_LPAREN, "(", SpanUtils.SafeSpan(x.Span.StartOrInvalid + 4, 0));
-                VisitElementList(x.Items, t => VisitArrayItem((Item)t), Tokens.T_COMMA, ",");
-                ConsumeToken(Tokens.T_RPAREN, ")", SpanUtils.SafeSpan(x.Span.End - 1, 0));
+                ProcessToken(Tokens.T_LIST, itemSpan.IsValid ? SpanUtils.SpanIntermission(x.Span.StartOrInvalid, itemSpan) : x.Span);
+                var previous = ProcessToken(Tokens.T_LPAREN, itemSpan.IsValid ? SpanUtils.SpanIntermission(x.Span.StartOrInvalid, itemSpan) : x.Span);
+                VisitItemList(x.Items, Tokens.T_COMMA, previous, terminalSpan);
+                ProcessToken(Tokens.T_RPAREN, terminalSpan);
             }
             else
             {
-                ConsumeToken(Tokens.T_LBRACKET, x.Span);
-                VisitElementList(x.Items, t => VisitArrayItem((Item)t), Tokens.T_COMMA, ",");
-                ConsumeToken(Tokens.T_RBRACKET, SpanUtils.SafeSpan(x.Span.End - 1, 0));
+                var previous = ProcessToken(Tokens.T_LBRACKET, itemSpan.IsValid ? SpanUtils.SpanIntermission(x.Span.StartOrInvalid, itemSpan) : x.Span);
+                VisitItemList(x.Items, Tokens.T_COMMA, previous, terminalSpan);
+                ProcessToken(Tokens.T_RBRACKET, terminalSpan);
             }
         }
 
