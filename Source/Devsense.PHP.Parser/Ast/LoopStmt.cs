@@ -26,6 +26,9 @@ namespace Devsense.PHP.Syntax.Ast
     /// </summary>
     public sealed class WhileStmt : Statement
     {
+        /// <summary>
+        /// Loop type.
+        /// </summary>
         public enum Type { While, Do };
 
         /// <summary>Type of statement</summary>
@@ -49,15 +52,13 @@ namespace Devsense.PHP.Syntax.Ast
         private Statement/*!*/ body;
 
         /// <summary>
-        /// Position of the 'function' keyword.
+        /// Create loop.
         /// </summary>
-        public int WhilePosition
-        {
-            get { return Span.Start + _whileOffset; }
-            set { _whileOffset = (short)(value - Span.Start); }
-        }
-        private short _whileOffset = 0;
-
+        /// <param name="span">Entire span.</param>
+        /// <param name="type">Loop type.</param>
+        /// <param name="condExpr">Loop condition.</param>
+        /// <param name="conditionSpan">Condition span.</param>
+        /// <param name="body">Loop body.</param>
         public WhileStmt(Text.Span span, Type type, Expression/*!*/ condExpr, Text.Span conditionSpan, Statement/*!*/ body)
             : base(span)
         {
@@ -105,12 +106,12 @@ namespace Devsense.PHP.Syntax.Ast
         /// <summary>
         /// Position of the header parentheses.
         /// </summary>
-        public Text.Span ConditionPosition { get { return _conditionPosition; } }
-        private Text.Span _conditionPosition;
+        public Text.Span ConditionSpan { get { return _conditionSpan; } }
+        private Text.Span _conditionSpan;
 
         public ForStmt(Text.Span p,
             IList<Expression>/*!*/ initExList, IList<Expression>/*!*/ condExList, IList<Expression>/*!*/ actionExList,
-            Text.Span conditionSpan,Statement/*!*/ body)
+            Text.Span conditionSpan, Statement/*!*/ body)
             : base(p)
         {
             Debug.Assert(initExList != null && condExList != null && actionExList != null && body != null);
@@ -119,7 +120,7 @@ namespace Devsense.PHP.Syntax.Ast
             this.condExList = condExList.AsArray();
             this.actionExList = actionExList.AsArray();
             this.body = body;
-            this._conditionPosition = conditionSpan;
+            this._conditionSpan = conditionSpan;
         }
 
         /// <summary>

@@ -24,7 +24,7 @@ namespace Devsense.PHP.Syntax.Ast
     /// <summary>
     /// Represents a formal parameter definition.
     /// </summary>
-    public sealed class FormalParam : LangElement, ISeparatedElements, IInitializedElements
+    public sealed class FormalParam : LangElement
     {
         [Flags]
         public enum Flags
@@ -45,17 +45,6 @@ namespace Devsense.PHP.Syntax.Ast
         /// </summary>
         public VariableNameRef Name { get { return _name; } }
         private VariableNameRef _name;
-
-        /// <summary>
-        /// Position of the comma separator following the item, <c>-1</c> if not present.
-        /// </summary>
-        public int SeparatorPosition
-        {
-            get { return _commaOffset < 0 ? -1 : Span.Start + _commaOffset; }
-            set { _commaOffset = value < 0 ? (short)-1 : (short)(value - Span.Start); }
-        }
-        public bool IsCommaPresent => _commaOffset >= 0;
-        private short _commaOffset = -1;
 
         /// <summary>
         /// Whether the parameter is &amp;-modified.
@@ -85,12 +74,6 @@ namespace Devsense.PHP.Syntax.Ast
         /// </summary>
         public Expression InitValue { get { return _initValue; } internal set { _initValue = value; } }
         private Expression _initValue;
-
-        /// <summary>
-        /// Comma separator following the parameter.
-        /// </summary>
-        public int AssignmentPosition { get { return Span.Start + _assignRelative; } set { _assignRelative = (short)(value - Span.Start); } }
-        private short _assignRelative = -1;
 
         /// <summary>
         /// Either <see cref="TypeRef"/> or <B>null</B>.
@@ -168,7 +151,7 @@ namespace Devsense.PHP.Syntax.Ast
     /// <summary>
     /// Represents a function declaration.
     /// </summary>
-    public sealed class FunctionDecl : Statement, IAliasReturn
+    public sealed class FunctionDecl : Statement
     {
         internal override bool IsDeclaration { get { return true; } }
 
@@ -183,16 +166,6 @@ namespace Devsense.PHP.Syntax.Ast
 
         public BlockStmt/*!*/ Body { get { return body; } }
         private readonly BlockStmt/*!*/ body;
-
-        /// <summary>
-        /// Position of the reference symbol, <c>-1</c> if none present.
-        /// </summary>
-        public int ReferencePosition
-        {
-            get { return _referenceOffset < 0 ? -1 : Span.Start + _referenceOffset; }
-            set { _referenceOffset = value < 0 ? (short)-1 : (short)(value - Span.Start); }
-        }
-        private short _referenceOffset = -1;
 
         /// <summary>
         /// Gets value indicating whether the function is declared conditionally.

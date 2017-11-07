@@ -24,8 +24,11 @@ namespace Devsense.PHP.Syntax.Ast
     /// <summary>
     /// Represents a function declaration.
     /// </summary>
-    public sealed class LambdaFunctionExpr : Expression, IAliasReturn
+    public sealed class LambdaFunctionExpr : Expression
     {
+        /// <summary>
+        /// Expression operation.
+        /// </summary>
         public override Operations Operation
         {
             get { return Operations.Closure; }
@@ -49,66 +52,40 @@ namespace Devsense.PHP.Syntax.Ast
         public IList<FormalParam> UseParams { get { return useParams; } }
         private readonly IList<FormalParam> useParams;
 
-        //private readonly TypeSignature typeSignature;
+        /// <summary>
+        /// Lambda body.
+        /// </summary>
         public BlockStmt/*!*/ Body { get { return body; } }
         private readonly BlockStmt/*!*/ body;
 
+        /// <summary>
+        /// Span of the lambda header.
+        /// </summary>
         public Text.Span HeadingSpan { get { return headingSpan; } }
         private Text.Span headingSpan;
 
-        public Text.Span ParametersSpan { get { return parametersSpan; } }
-        private Text.Span parametersSpan;
+        /// <summary>
+        /// Span of the parameters and the parentheses.
+        /// </summary>
+        public Text.Span ParametersSpan => signature.Span;
 
+        /// <summary>
+        /// Return type if present.
+        /// </summary>
         public TypeRef ReturnType { get { return returnType; } }
         private TypeRef returnType;
 
         /// <summary>
-        /// Position of the reference symbol, <c>-1</c> if none present.
+        /// Modifiers, <see cref="PhpMemberAttributes.Static"/> or none.
         /// </summary>
-        public int ReferencePosition
-        {
-            get { return _referenceOffset < 0 ? -1 : Span.Start + _referenceOffset; }
-            set { _referenceOffset = value < 0 ? (short)-1 : (short)(value - Span.Start); }
-        }
-        private short _referenceOffset = -1;
-
-        /// <summary>
-        /// Position of the reference symbol, <c>-1</c> if none present.
-        /// </summary>
-        public int FunctionPosition
-        {
-            get { return _functionOffset < 0 ? -1 : Span.Start + _functionOffset; }
-            set { _functionOffset = value < 0 ? (short)-1 : (short)(value - Span.Start); }
-        }
-        private short _functionOffset = -1;
-
-        public PhpMemberAttributes Modifiers => FunctionPosition == Span.Start ? PhpMemberAttributes.None : PhpMemberAttributes.Static;
-
-        /// <summary>
-        /// Position of the reference symbol, <c>-1</c> if none present.
-        /// </summary>
-        public int UsePosition
-        {
-            get { return _useOffset < 0 ? -1 : Span.Start + _useOffset; }
-            set { _useOffset = value < 0 ? (short)-1 : (short)(value - Span.Start); }
-        }
-        private short _useOffset = -1;
-
-        /// <summary>
-        /// Position of the reference symbol, <c>-1</c> if none present.
-        /// </summary>
-        public Text.Span UseSignaturePosition
-        {
-            get { return _useSignatureOffset; }
-            set { _useSignatureOffset = value; }
-        }
-        private Text.Span _useSignatureOffset;
+        public PhpMemberAttributes Modifiers => _modifiers;
+        private PhpMemberAttributes _modifiers;
 
         #region Construction
 
         public LambdaFunctionExpr(
             Text.Span span, Text.Span headingSpan,
-            Scope scope, bool aliasReturn, IList<FormalParam>/*!*/ formalParams,
+            Scope scope, bool aliasReturn, PhpMemberAttributes modifiers, IList<FormalParam>/*!*/ formalParams,
             Text.Span paramSpan, IList<FormalParam> useParams,
             BlockStmt/*!*/ body, TypeRef returnType)
             : base(span)
@@ -120,8 +97,8 @@ namespace Devsense.PHP.Syntax.Ast
             //this.typeSignature = new TypeSignature(genericParams);
             this.body = body;
             this.headingSpan = headingSpan;
-            this.parametersSpan = paramSpan;
             this.returnType = returnType;
+            _modifiers = modifiers;
         }
 
         #endregion

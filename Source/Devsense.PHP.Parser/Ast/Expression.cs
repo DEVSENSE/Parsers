@@ -147,34 +147,19 @@ namespace Devsense.PHP.Syntax.Ast
     /// <summary>
     /// Abstract base class for expressions.
     /// </summary>
-    public abstract class Expression : LangElement, IExpression, ISeparatedElements
+    public abstract class Expression : LangElement, IExpression
     {
         /// <summary>
         /// Immutable empty list of <see cref="Expression"/>.
         /// </summary>
         internal new static readonly List<Expression>/*!*/EmptyList = new List<Expression>();
 
+        /// <summary>
+        /// Operation represented by the expression
+        /// </summary>
         public abstract Operations Operation { get; }
 
         protected Expression(Text.Span span) : base(span) { }
-
-        /// <summary>
-        /// Position of the comma separator following the item, <c>-1</c> if not present.
-        /// </summary>
-        public int SeparatorPosition
-        {
-            get
-            {
-                object value;
-                if (Properties.TryGetProperty(PropertiesIdentifiers.SeparatorPosition, out value))
-                {
-                    short offset = (short)value;
-                    return offset < 0 ? -1 : Span.Start + offset;
-                }
-                else return -1;
-            }
-            set { Properties.SetProperty(PropertiesIdentifiers.SeparatorPosition, value < 0 ? (short)-1 : (short)(value - Span.Start)); }
-        }
 
         /// <summary>
         /// Compressed type information used by eventual type analysis.

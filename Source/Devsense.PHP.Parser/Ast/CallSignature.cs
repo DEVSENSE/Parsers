@@ -21,7 +21,7 @@ namespace Devsense.PHP.Syntax.Ast
 {
     #region ActualParam
 
-    public sealed class ActualParam : LangElement, ISeparatedElements
+    public sealed class ActualParam : LangElement
     {
         [Flags]
         public enum Flags
@@ -48,17 +48,6 @@ namespace Devsense.PHP.Syntax.Ast
         /// Flags describing use of the parameter.
         /// </summary>
         private Flags _flags;
-
-        /// <summary>
-        /// Position of the comma separator following the item, <c>-1</c> if not present.
-        /// </summary>
-        public int SeparatorPosition
-        {
-            get { return _separatorOffset < 0 ? -1 : Span.Start + _separatorOffset; }
-            set { _separatorOffset = value < 0 ? (short)-1 : (short)(value - Span.Start); }
-        }
-        public bool IsSeparatorPresent => _separatorOffset >= 0;
-        private short _separatorOffset = -1;
 
         public ActualParam(Text.Span p, Expression param)
             : this(p, param, Flags.Default)

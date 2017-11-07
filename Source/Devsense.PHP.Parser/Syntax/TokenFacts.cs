@@ -171,6 +171,15 @@ namespace Devsense.PHP.Syntax
                 case Tokens.T_EXIT: return "exit";
                 case Tokens.T_EMPTY: return "empty";
 
+                case Tokens.T_INCLUDE: return "include";
+                case Tokens.T_REQUIRE: return "require";
+                case Tokens.T_INCLUDE_ONCE: return "include_once";
+                case Tokens.T_REQUIRE_ONCE: return "require_once";
+                case Tokens.T_NS_SEPARATOR:return "\\";
+                case Tokens.T_CALLABLE: return "callable";
+                case Tokens.T_TRY: return "try";
+                case Tokens.T_CLASS: return "class";
+
                 default: throw new ArgumentException(t.ToString());
             }
         }
@@ -262,7 +271,23 @@ namespace Devsense.PHP.Syntax
                 case Operations.Concat: return Tokens.T_DOT;
                 case Operations.Spaceship: return Tokens.T_SPACESHIP;
                 case Operations.Coalesce: return Tokens.T_COALESCE;
-                case Operations.AssignValue: return Tokens.T_EQ;
+
+                case Operations.AssignAdd:  return Tokens.T_PLUS_EQUAL;
+                case Operations.AssignSub: return Tokens.T_MINUS_EQUAL;
+                case Operations.AssignMul: return Tokens.T_MUL_EQUAL;
+                case Operations.AssignPow: return Tokens.T_POW_EQUAL;
+                case Operations.AssignDiv: return Tokens.T_DIV_EQUAL;
+                case Operations.AssignMod: return Tokens.T_MOD_EQUAL;
+                case Operations.AssignAnd: return Tokens.T_AND_EQUAL;
+                case Operations.AssignOr: return Tokens.T_OR_EQUAL;
+                case Operations.AssignXor: return Tokens.T_XOR_EQUAL;
+                case Operations.AssignShiftLeft: return Tokens.T_SL_EQUAL;
+                case Operations.AssignShiftRight: return Tokens.T_SR_EQUAL;
+                case Operations.AssignAppend: return Tokens.T_CONCAT_EQUAL;
+
+                case Operations.AssignValue:
+                case Operations.AssignRef:
+                    return Tokens.T_EQ;
 
                 default:
                     throw new ArgumentException();

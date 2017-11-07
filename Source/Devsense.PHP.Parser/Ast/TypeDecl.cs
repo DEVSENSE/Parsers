@@ -104,16 +104,6 @@ namespace Devsense.PHP.Syntax.Ast
     {
         #region Properties
 
-        /// <summary>
-        /// Position of the 'function' keyword.
-        /// </summary>
-        public int KeyworPosition
-        {
-            get { return Span.Start + _keywordOffset; }
-            set { _keywordOffset = (short)(value - Span.Start); }
-        }
-        private short _keywordOffset = 0;
-
         internal override bool IsDeclaration { get { return true; } }
 
         /// <summary>
@@ -379,7 +369,7 @@ namespace Devsense.PHP.Syntax.Ast
     /// <summary>
     /// Represents a method declaration.
     /// </summary>
-    public sealed class MethodDecl : TypeMemberDecl, IAliasReturn
+    public sealed class MethodDecl : TypeMemberDecl
     {
         /// <summary>
         /// Name of the method.
@@ -387,58 +377,62 @@ namespace Devsense.PHP.Syntax.Ast
         public NameRef Name { get { return name; } }
         private readonly NameRef name;
 
+        /// <summary>
+        /// Method signature containing all the parameters and parentheses.
+        /// </summary>
         public Signature Signature { get { return signature; } }
         private readonly Signature signature;
 
+        /// <summary>
+        /// Type parameter signatture for generics.
+        /// </summary>
         public TypeSignature TypeSignature { get { return typeSignature; } }
         private readonly TypeSignature typeSignature;
 
+        /// <summary>
+        /// Method content.
+        /// </summary>
         public BlockStmt Body { get { return body; } internal set { body = value; } }
         private BlockStmt body;
 
+        /// <summary>
+        /// Paramters used to initialize the base class.
+        /// </summary>
         public ActualParam[] BaseCtorParams { get { return baseCtorParams; } internal set { baseCtorParams = value; } }
         private ActualParam[] baseCtorParams;
 
-        public Text.Span ParametersSpan { get { return parametersSpan; } }
-        private Text.Span parametersSpan;
+        /// <summary>
+        /// Span of the entire signature.
+        /// </summary>
+        public Text.Span ParametersSpan { get { return Signature.Span; } }
 
+        /// <summary>
+        /// Span of the entire method header.
+        /// </summary>
         public Text.Span HeadingSpan => Text.Span.FromBounds(Span.Start, ((returnType != null) ? returnType.Span : ParametersSpan).End);
 
+        /// <summary>
+        /// Return type hint, optional.
+        /// </summary>
         public TypeRef ReturnType { get { return returnType; } }
         private TypeRef returnType;
 
-        /// <summary>
-        /// Position of the 'function' keyword.
-        /// </summary>
-        public int FunctionPosition
-        {
-            get { return Span.Start + _functionOffset; }
-            set { _functionOffset = (short)(value - Span.Start); }
-        }
-        private short _functionOffset = 0;
-
-        /// <summary>
-        /// Position of the first modifier, <c>-1</c> if none present.
-        /// </summary>
-        public int ModifierPosition
-        {
-            get { return _modifierOffset < 0 ? -1 : Span.Start + _modifierOffset; }
-            set { _modifierOffset = value < 0 ? (short)-1 : (short)(value - Span.Start); }
-        }
-        private short _modifierOffset = -1;
-
-        /// <summary>
-        /// Position of the reference symbol, <c>-1</c> if none present.
-        /// </summary>
-        public int ReferencePosition
-        {
-            get { return _referenceOffset < 0 ? -1 : Span.Start + _referenceOffset; }
-            set { _referenceOffset = value < 0 ? (short)-1 : (short)(value - Span.Start); }
-        }
-        private short _referenceOffset = -1;
-
         #region Construction
 
+        /// <summary>
+        /// Create new method declaration.
+        /// </summary>
+        /// <param name="span">Entire span.</param>
+        /// <param name="name">Method name.</param>
+        /// <param name="aliasReturn"><c>true</c> if method returns alias, <c>false</c> otherwise.</param>
+        /// <param name="formalParams">Parameters.</param>
+        /// <param name="paramsSpan">Span of the parameters including parentheses.</param>
+        /// <param name="genericParams">Generic parameters.</param>
+        /// <param name="body">Method content.</param>
+        /// <param name="modifiers">Method modifiers, visibility etc.</param>
+        /// <param name="baseCtorParams">Parameters for the base class constructor.</param>
+        /// <param name="attributes">Method attributes.</param>
+        /// <param name="returnType">Return type hint, optional.</param>
         public MethodDecl(Text.Span span,
             NameRef name, bool aliasReturn, IList<FormalParam>/*!*/ formalParams, Text.Span paramsSpan,
             IList<FormalTypeParam>/*!*/ genericParams, BlockStmt body,
@@ -453,7 +447,6 @@ namespace Devsense.PHP.Syntax.Ast
             this.typeSignature = new TypeSignature(genericParams);
             this.body = body;
             this.baseCtorParams = baseCtorParams.AsArray();
-            this.parametersSpan = paramsSpan;
             this.returnType = returnType;
         }
 
@@ -525,30 +518,13 @@ namespace Devsense.PHP.Syntax.Ast
     /// <summary>
     /// Represents a field declaration.
     /// </summary>
-    public sealed class FieldDecl : LangElement, ISeparatedElements, IInitializedElements
+    public sealed class FieldDecl : LangElement
     {
         /// <summary>
         /// Gets a name of the field.
         /// </summary>
         public VariableName Name { get { return name; } }
         private VariableName name;
-
-        /// <summary>
-        /// Position of the comma separator following the item, <c>-1</c> if not present.
-        /// </summary>
-        public int SeparatorPosition
-        {
-            get { return _separatorOffset < 0 ? -1 : Span.Start + _separatorOffset; }
-            set { _separatorOffset = value < 0 ? (short)-1 : (short)(value - Span.Start); }
-        }
-        public bool IsSeparatorPresent => _separatorOffset >= 0;
-        private short _separatorOffset = -1;
-
-        /// <summary>
-        /// Comma separator following the parameter.
-        /// </summary>
-        public int AssignmentPosition { get { return Span.Start + _assignRelative; } set { _assignRelative = (short)(value - Span.Start); } }
-        private short _assignRelative = -1;
 
         /// <summary>
         /// Span of the property name.
@@ -567,17 +543,6 @@ namespace Devsense.PHP.Syntax.Ast
         /// Can be null.
         /// </summary>
         public Expression Initializer { get { return initializer; } internal set { initializer = value; } }
-
-        /// <summary>
-        /// Position of the assign operator used with initial value, <c>-1</c> if not present.
-        /// </summary>
-        public int AssignOperatorPosition
-        {
-            get { return _operatorOffset < 0 ? -1 : Span.Start + _operatorOffset; }
-            set { _operatorOffset = value < 0 ? (short)-1 : (short)(value - Span.Start); }
-        }
-        public bool IsAssignOperatorPresent => _operatorOffset >= 0;
-        private short _operatorOffset = -1;
 
         /// <summary>
         /// Determines whether the field has an initializer.

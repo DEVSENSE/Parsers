@@ -25,26 +25,6 @@ namespace Devsense.PHP.Syntax.Ast
     {
         public override Operations Operation { get { return Operations.Conditional; } }
 
-        /// <summary>
-        /// Position of the '?' operator.
-        /// </summary>
-        public int QuestionPosition
-        {
-            get { return Span.Start + _questionOffset; }
-            set { _questionOffset = (short)(value - Span.Start); }
-        }
-        private short _questionOffset = 0;
-
-        /// <summary>
-        /// Position of the ':' operator.
-        /// </summary>
-        public int ColonPosition
-        {
-            get { return Span.Start + _colonOffset; }
-            set { _colonOffset = (short)(value - Span.Start); }
-        }
-        private short _colonOffset = 0;
-
         private Expression/*!*/ condExpr;
         private Expression trueExpr;
         private Expression/*!*/ falseExpr;

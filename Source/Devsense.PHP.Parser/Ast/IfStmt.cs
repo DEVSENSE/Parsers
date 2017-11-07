@@ -57,12 +57,6 @@ namespace Devsense.PHP.Syntax.Ast
 		public Expression Condition { get { return condition; } internal set { condition = value; } }
 		private Expression condition;
 
-        /// <summary>
-        /// Position of the condition including the parentheses.
-        /// </summary>
-        public Text.Span ConditionPosition { get { return _positionOffset; } }
-        private Text.Span _positionOffset;
-
         public Statement/*!*/ Statement { get { return statement; } internal set { statement = value; } }
 		private Statement/*!*/ statement;
 
@@ -71,13 +65,11 @@ namespace Devsense.PHP.Syntax.Ast
         /// </summary>
         public readonly Text.Span Span;
 
-        public ConditionalStmt(Text.Span span, Expression condition, Text.Span conditionSpan, Statement/*!*/ statement)
+        public ConditionalStmt(Text.Span span, Expression condition, Statement/*!*/ statement)
 		{
             this.Span = span;
 			this.condition = condition;
 			this.statement = statement;
-            this._positionOffset = conditionSpan;
-
         }
 
         /// <summary>

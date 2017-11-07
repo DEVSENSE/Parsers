@@ -20,11 +20,9 @@ namespace Devsense.PHP.Syntax.Ast
     public sealed class HaltCompiler : Statement
     {
         /// <summary>
-        /// Signature position including the parentheses.
+        /// 
         /// </summary>
-        public Text.Span SignaturePosition { get { return _position; } set { _position = value; } }
-        private Text.Span _position;
-
+        /// <param name="span"></param>
         public HaltCompiler(Text.Span span) : base(span)
         {
         }

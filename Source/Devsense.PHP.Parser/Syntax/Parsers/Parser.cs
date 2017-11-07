@@ -28,14 +28,12 @@ namespace Devsense.PHP.Syntax
     {
         public readonly Span Span;
         public readonly LangElement Condition;
-        public readonly Span ConditionSpan;
         public readonly LangElement Body;
 
-        public IfStatement(Span span, LangElement condition, Span conditionSpan, LangElement body)
+        public IfStatement(Span span, LangElement condition, LangElement body)
         {
             Span = span;
             Condition = condition;
-            ConditionSpan = conditionSpan;
             Body = body;
         }
     }
@@ -371,7 +369,7 @@ namespace Devsense.PHP.Syntax
             colon.ExtendSpan(Span.FromBounds(block.Body.Span.Start, end.Start));
             colon.SetClosingToken(token);
             condList.Remove(block);
-            condList.Add(new IfStatement(Span.FromBounds(block.Span.Start, end.Start), block.Condition, block.ConditionSpan, block.Body));
+            condList.Add(new IfStatement(Span.FromBounds(block.Span.Start, end.Start), block.Condition, block.Body));
         }
 
         private LangElement CreateProperty(Span span, LangElement objectExpr, object name)
@@ -389,14 +387,6 @@ namespace Devsense.PHP.Syntax
                 return _astFactory.Variable(span, ((DirectVarUse)name).VarName.Value, objectName);
             else
                 return _astFactory.Variable(span, ((IndirectVarUse)name).VarNameEx, objectName);
-        }
-
-        private void SetComma(ISeparatedElements node, int position)
-        {
-            if (node != null)
-            {
-                node.SeparatorPosition = position;
-            }
         }
 
         private LangElement CreateStaticProperty(Span span, LangElement objectExpr, Span objectNamePos, object name) =>

@@ -54,17 +54,15 @@ namespace Devsense.PHP.Syntax.Ast
             return new RefItem((Expression)indexOpt, (VariableUse)variable);
         }
 
-        public virtual LangElement Assignment(Span span, LangElement target, LangElement value, Operations assignOp, Span operationSpan, Span refSpan)
+        public virtual LangElement Assignment(Span span, LangElement target, LangElement value, Operations assignOp)
         {
             if (assignOp == Operations.AssignRef)
             {
-                return new RefAssignEx(span, (VarLikeConstructUse)target, (Expression)value)
-                { OperatorPosition = operationSpan.Start, ReferencePosition = refSpan.Start };
+                return new RefAssignEx(span, (VarLikeConstructUse)target, (Expression)value);
             }
             else
             {
-                return new ValueAssignEx(span, assignOp, (VarLikeConstructUse)target, (Expression)value)
-                { OperatorPosition = operationSpan.Start };
+                return new ValueAssignEx(span, assignOp, (VarLikeConstructUse)target, (Expression)value);
             }
         }
 
@@ -162,10 +160,9 @@ namespace Devsense.PHP.Syntax.Ast
                 return new FieldDeclList(span, attributes, decls.CastToArray<FieldDecl>(), null);
         }
 
-        public virtual LangElement Do(Span span, Span whileSpan, LangElement body, LangElement cond, Span condSpan)
+        public virtual LangElement Do(Span span, LangElement body, LangElement cond, Span condSpan)
         {
-            return new WhileStmt(span, WhileStmt.Type.Do, (Expression)cond, condSpan, (Statement)body)
-            { WhilePosition = whileSpan.StartOrInvalid };
+            return new WhileStmt(span, WhileStmt.Type.Do, (Expression)cond, condSpan, (Statement)body);
         }
 
         public virtual LangElement Echo(Span span, IEnumerable<LangElement> parameters)
@@ -219,11 +216,10 @@ namespace Devsense.PHP.Syntax.Ast
             return new IssetEx(span, variables.CastToArray<VariableUse>());
         }
 
-        public virtual LangElement FieldDecl(Span span, VariableName name, Span assignSpan, LangElement initializerOpt)
+        public virtual LangElement FieldDecl(Span span, VariableName name, LangElement initializerOpt)
         {
             Debug.Assert(initializerOpt == null || initializerOpt is Expression);
-            return new FieldDecl(span, name.Value, (Expression)initializerOpt)
-            { AssignOperatorPosition = assignSpan.StartOrInvalid };
+            return new FieldDecl(span, name.Value, (Expression)initializerOpt);
         }
 
         public virtual LangElement For(Span span, IEnumerable<LangElement> init, IEnumerable<LangElement> cond, IEnumerable<LangElement> action, Span condSpan, LangElement body)
@@ -237,33 +233,24 @@ namespace Devsense.PHP.Syntax.Ast
         }
 
         public virtual LangElement Function(Span span, bool conditional, bool aliasReturn, PhpMemberAttributes attributes, TypeRef returnType,
-            Name name, Span nameSpan, IEnumerable<FormalTypeParam> typeParamsOpt, IEnumerable<FormalParam> formalParams, Span formalParamsSpan, LangElement body, Span byRefPosition)
+            Name name, Span nameSpan, IEnumerable<FormalTypeParam> typeParamsOpt, IEnumerable<FormalParam> formalParams, Span formalParamsSpan, LangElement body)
         {
             return new FunctionDecl(span, conditional, attributes, new NameRef(nameSpan, name.Value), aliasReturn,
                 formalParams.AsArray(), formalParamsSpan, typeParamsOpt.AsArray(),
-                (BlockStmt)body, null, returnType)
-            { ReferencePosition = byRefPosition.StartOrInvalid };
+                (BlockStmt)body, null, returnType);
         }
 
         public virtual LangElement Lambda(Span span, Span headingSpan, bool aliasReturn,
-            TypeRef returnType, Span functionSpan, IEnumerable<FormalParam> formalParams,
-            Span formalParamsSpan, IEnumerable<FormalParam> lexicalVars, Span useSpan,
-            Span lexicalSpan, LangElement body, Span byRefPosition)
+            PhpMemberAttributes modifiers, TypeRef returnType, IEnumerable<FormalParam> formalParams,
+            Span formalParamsSpan, IEnumerable<FormalParam> lexicalVars, LangElement body)
         {
-            return new LambdaFunctionExpr(span, headingSpan,
-                new Scope(), false, formalParams.AsArray(), formalParamsSpan, lexicalVars.AsArray(),
-                (BlockStmt)body, returnType)
-            {
-                ReferencePosition = byRefPosition.StartOrInvalid,
-                FunctionPosition = functionSpan.StartOrInvalid,
-                UsePosition = useSpan.StartOrInvalid,
-                UseSignaturePosition = lexicalSpan
-            };
+            return new LambdaFunctionExpr(span, headingSpan, new Scope(), false, modifiers, formalParams.AsArray(), 
+                formalParamsSpan, lexicalVars.AsArray(), (BlockStmt)body, returnType);
         }
 
-        public virtual FormalParam Parameter(Span span, string name, Span nameSpan, TypeRef typeOpt, FormalParam.Flags flags, Span assignSpan, Expression initValue)
+        public virtual FormalParam Parameter(Span span, string name, Span nameSpan, TypeRef typeOpt, FormalParam.Flags flags, Expression initValue)
         {
-            return new FormalParam(span, name, nameSpan, typeOpt, flags, initValue, null) { AssignmentPosition = assignSpan.StartOrInvalid };
+            return new FormalParam(span, name, nameSpan, typeOpt, flags, initValue, null);
         }
 
         public virtual LangElement GlobalCode(Span span, IEnumerable<LangElement> statements, NamingContext context)
@@ -288,14 +275,14 @@ namespace Devsense.PHP.Syntax.Ast
             return new GotoStmt(span, new VariableNameRef(labelSpan, label));
         }
 
-        public virtual LangElement HaltCompiler(Span span, Span singatureSpan)
+        public virtual LangElement HaltCompiler(Span span)
         {
-            return new HaltCompiler(span) { SignaturePosition = singatureSpan };
+            return new HaltCompiler(span);
         }
 
-        public virtual LangElement If(Span span, LangElement cond, Span condSpan, LangElement body, LangElement elseOpt)
+        public virtual LangElement If(Span span, LangElement cond, LangElement body, LangElement elseOpt)
         {
-            var conditions = new List<ConditionalStmt>() { new ConditionalStmt(span, (Expression)cond, condSpan, (Statement)body) };
+            var conditions = new List<ConditionalStmt>() { new ConditionalStmt(span, (Expression)cond, (Statement)body) };
             if (elseOpt != null)
             {
                 Debug.Assert(elseOpt is IfStmt);
@@ -320,10 +307,9 @@ namespace Devsense.PHP.Syntax.Ast
             return new EchoStmt(span, html);
         }
 
-        public virtual LangElement InstanceOf(Span span, int operatorPosition, LangElement expression, TypeRef typeRef)
+        public virtual LangElement InstanceOf(Span span, LangElement expression, TypeRef typeRef)
         {
-            return new InstanceOfEx(span, (Expression)expression, typeRef)
-            { OperatorPosition = operatorPosition };
+            return new InstanceOfEx(span, (Expression)expression, typeRef);
         }
 
         public virtual LangElement Jump(Span span, JumpStmt.Types type, LangElement exprOpt)
@@ -486,36 +472,31 @@ namespace Devsense.PHP.Syntax.Ast
             return new ThrowStmt(span, (Expression)expression);
         }
 
-        public virtual LangElement Type(Span span, Span keywordSpan, Span headingSpan, bool conditional, PhpMemberAttributes attributes, Name name, Span nameSpan, IEnumerable<FormalTypeParam> typeParamsOpt, INamedTypeRef baseClassOpt, IEnumerable<INamedTypeRef> implements, IEnumerable<LangElement> members, Span bodySpan)
+        public virtual LangElement Type(Span span, Span headingSpan, bool conditional, PhpMemberAttributes attributes, Name name, Span nameSpan, IEnumerable<FormalTypeParam> typeParamsOpt, INamedTypeRef baseClassOpt, IEnumerable<INamedTypeRef> implements, IEnumerable<LangElement> members, Span bodySpan)
         {
             Debug.Assert(members != null && implements != null);
             return new NamedTypeDecl(span, headingSpan, conditional, attributes, false,
                 new NameRef(nameSpan, name), typeParamsOpt.AsArray(),
                 baseClassOpt, implements.AsArray(), members.CastToArray<TypeMemberDecl>(),
-                bodySpan, null)
-            { KeyworPosition = keywordSpan.StartOrInvalid };
+                bodySpan, null);
         }
 
-        public virtual TypeRef AnonymousTypeReference(Span span, Span keywordSpan, Span headingSpan, bool conditional, PhpMemberAttributes attributes, IEnumerable<FormalTypeParam> typeParamsOpt, INamedTypeRef baseClassOpt, IEnumerable<INamedTypeRef> implements, IEnumerable<LangElement> members, Span bodySpan)
+        public virtual TypeRef AnonymousTypeReference(Span span, Span headingSpan, bool conditional, PhpMemberAttributes attributes, IEnumerable<FormalTypeParam> typeParamsOpt, INamedTypeRef baseClassOpt, IEnumerable<INamedTypeRef> implements, IEnumerable<LangElement> members, Span bodySpan)
         {
             Debug.Assert(members != null && implements != null);
             return new AnonymousTypeRef(span, new AnonymousTypeDecl(span, headingSpan,
                 conditional, attributes, false, typeParamsOpt.AsArray(),
                 baseClassOpt, implements.AsArray(), members.CastToArray<TypeMemberDecl>(),
-                bodySpan, null)
-            { KeyworPosition = keywordSpan.StartOrInvalid });
+                bodySpan, null));
         }
 
-        public virtual LangElement Method(Span span, bool aliasReturn, PhpMemberAttributes attributes, TypeRef returnType, Span returnTypeSpan, string name, Span nameSpan, IEnumerable<FormalTypeParam> typeParamsOpt, IEnumerable<FormalParam> formalParams, Span formalParamsSpan, IEnumerable<ActualParam> baseCtorParams, LangElement body, Span functionPosition, Span modifierPosition, Span byRefPosition)
+        public virtual LangElement Method(Span span, bool aliasReturn, PhpMemberAttributes attributes, TypeRef returnType, 
+            Span returnTypeSpan, string name, Span nameSpan, IEnumerable<FormalTypeParam> typeParamsOpt, 
+            IEnumerable<FormalParam> formalParams, Span formalParamsSpan, IEnumerable<ActualParam> baseCtorParams, LangElement body)
         {
             return new MethodDecl(span, new NameRef(nameSpan, name), aliasReturn, formalParams.AsArray(),
                 formalParamsSpan, typeParamsOpt.AsArray(),
-                (BlockStmt)body, attributes, baseCtorParams.AsArray(), null, returnType)
-            {
-                FunctionPosition = functionPosition.StartOrInvalid,
-                ModifierPosition = modifierPosition.StartOrInvalid,
-                ReferencePosition = byRefPosition.StartOrInvalid
-            };
+                (BlockStmt)body, attributes, baseCtorParams.AsArray(), null, returnType);
         }
 
         public virtual LangElement UnaryOperation(Span span, Operations operation, LangElement expression)
@@ -601,13 +582,12 @@ namespace Devsense.PHP.Syntax.Ast
         public virtual LangElement While(Span span, LangElement cond, Span condSpan, LangElement body)
         {
             Debug.Assert(cond is Expression && body is Statement);
-            return new WhileStmt(span, WhileStmt.Type.While, (Expression)cond, condSpan, (Statement)body)
-            { WhilePosition = span.Start };
+            return new WhileStmt(span, WhileStmt.Type.While, (Expression)cond, condSpan, (Statement)body);
         }
 
-        public virtual LangElement Yield(Span span, LangElement keyOpt, Span operatorSpan, LangElement valueOpt)
+        public virtual LangElement Yield(Span span, LangElement keyOpt, LangElement valueOpt)
         {
-            return new YieldEx(span, (Expression)keyOpt, (Expression)valueOpt) { OperatorPosition = operatorSpan.StartOrInvalid };
+            return new YieldEx(span, (Expression)keyOpt, (Expression)valueOpt);
         }
 
         public virtual LangElement YieldFrom(Span span, LangElement fromExpr)
@@ -629,10 +609,10 @@ namespace Devsense.PHP.Syntax.Ast
         {
             return new StaticStmt(span, staticVariables.CastToArray<StaticVarDecl>());
         }
-        public virtual LangElement StaticVarDecl(Span span, VariableName name, Span operatorSpan, LangElement initializerOpt)
+        public virtual LangElement StaticVarDecl(Span span, VariableName name, LangElement initializerOpt)
         {
             Debug.Assert(initializerOpt == null || initializerOpt is Expression);
-            return new StaticVarDecl(span, name, (Expression)initializerOpt) { AssignmentPosition = operatorSpan.StartOrInvalid };
+            return new StaticVarDecl(span, name, (Expression)initializerOpt);
         }
 
         public virtual LangElement ConstUse(Span span, TranslatedQualifiedName name)
@@ -645,10 +625,9 @@ namespace Devsense.PHP.Syntax.Ast
             return new ClassConstUse(span, tref, new VariableNameRef(nameSpan, name.Value));
         }
 
-        public virtual LangElement ConditionalEx(Span span, LangElement condExpr, Span questionSpan, LangElement trueExpr, Span colonSpan, LangElement falseExpr)
+        public virtual LangElement ConditionalEx(Span span, LangElement condExpr, LangElement trueExpr, LangElement falseExpr)
         {
-            return new ConditionalEx(span, (Expression)condExpr, (Expression)trueExpr, (Expression)falseExpr)
-            { QuestionPosition = questionSpan.Start, ColonPosition = colonSpan.Start };
+            return new ConditionalEx(span, (Expression)condExpr, (Expression)trueExpr, (Expression)falseExpr);
         }
     }
 }

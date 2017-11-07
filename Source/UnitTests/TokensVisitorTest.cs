@@ -37,9 +37,9 @@ namespace UnitTests
                 return; // TODO fix all input files
             }
 
-            if (testparts[1].Contains("ERRORS") || testparts[0].Contains("new namespace"))
+            if (testparts[1].Contains("ERRORS"))
             {
-                return; // TODO handle errors and namespaces
+                return; // TODO handle errors 
             }
 
             var original = testparts[0].Replace('\t', ' ').TrimEnd(' ', '\t', '\n', '\r'); // TODO handle whitespaces

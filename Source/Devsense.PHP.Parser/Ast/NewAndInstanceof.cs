@@ -66,16 +66,6 @@ namespace Devsense.PHP.Syntax.Ast
     {
         public override Operations Operation { get { return Operations.InstanceOf; } }
 
-        /// <summary>
-        /// Position of the instanceof operator.
-        /// </summary>
-        public int OperatorPosition
-        {
-            get { return Span.Start + _operatorOffset; }
-            set { _operatorOffset = (short)(value - Span.Start); }
-        }
-        private short _operatorOffset = 0;
-
         private Expression/*!*/ expression;
         /// <summary>Expression being tested</summary>
         public Expression /*!*/ Expression { get { return expression; } internal set { expression = value; } }

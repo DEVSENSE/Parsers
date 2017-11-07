@@ -361,7 +361,7 @@ namespace Devsense.PHP.Syntax.Ast
     /// 
     /// That's why we dont'need to know Position => is not child of LangElement
     /// </remarks>
-    public class StaticVarDecl : LangElement, ISeparatedElements, IInitializedElements
+    public class StaticVarDecl : LangElement
     {
         /// <summary>Static variable being declared</summary>
         public VariableName/*!*/ Variable { get { return variable; } }
@@ -373,26 +373,17 @@ namespace Devsense.PHP.Syntax.Ast
         public Text.Span NameSpan => new Text.Span(Span.Start, variable.Value.Length + 1);
 
         /// <summary>
-        /// Position of the comma separator following the item, <c>-1</c> if not present.
+        /// Expression used to initialize static variable
         /// </summary>
-        public int SeparatorPosition
-        {
-            get { return _separatorOffset < 0 ? -1 : Span.Start + _separatorOffset; }
-            set { _separatorOffset = value < 0 ? (short)-1 : (short)(value - Span.Start); }
-        }
-        public bool IsSeparatorPresent => _separatorOffset >= 0;
-        private short _separatorOffset = -1;
-
-        /// <summary>
-        /// Comma separator following the parameter.
-        /// </summary>
-        public int AssignmentPosition { get { return Span.Start + _assignRelative; } set { _assignRelative = (short)(value - Span.Start); } }
-        private short _assignRelative = -1;
-
-        /// <summary>Expression used to initialize static variable</summary>
         public Expression Initializer { get { return initializer; } internal set { initializer = value; } }
         private Expression initializer;
 
+        /// <summary>
+        /// Create new declaration.
+        /// </summary>
+        /// <param name="span">Entire span.</param>
+        /// <param name="variableName">Variable name.</param>
+        /// <param name="initializer">Initial value, optional.</param>
         public StaticVarDecl(Text.Span span, VariableName variableName, Expression initializer)
             : base(span)
         {
@@ -440,22 +431,18 @@ namespace Devsense.PHP.Syntax.Ast
 
     #region UseStatement
 
-    public abstract class UseBase : ISeparatedElements
+    public abstract class UseBase
     {
+        /// <summary>
+        /// Use position.
+        /// </summary>
         public Span Span => _span;
         private readonly Span _span;
 
         /// <summary>
-        /// Position of the comma separator following the item, <c>-1</c> if not present.
+        /// Create new use.
         /// </summary>
-        public int SeparatorPosition
-        {
-            get { return _separatorOffset < 0 ? -1 : Span.Start + _separatorOffset; }
-            set { _separatorOffset = value < 0 ? (short)-1 : (short)(value - Span.Start); }
-        }
-        public bool IsSeparatorPresent => _separatorOffset >= 0;
-        private short _separatorOffset = -1;
-
+        /// <param name="span">Entire span.</param>
         public UseBase(Span span)
         {
             Debug.Assert(span.IsValid);
