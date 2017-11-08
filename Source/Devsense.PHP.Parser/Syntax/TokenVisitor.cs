@@ -951,7 +951,7 @@ namespace Devsense.PHP.Syntax
         {
             VisitIsMemberOf(x.IsMemberOf, x.Array.Span);
             VisitElement(x.Array);
-            ProcessToken(x.IsBraces ? Tokens.T_LBRACE : Tokens.T_LBRACKET, SpanUtils.SpanIntermission(x.Array.Span, 
+            ProcessToken(x.IsBraces ? Tokens.T_LBRACE : Tokens.T_LBRACKET, SpanUtils.SpanIntermission(x.Array.Span,
                 x.Index != null ? x.Index.Span.StartOrInvalid : x.Span.End));
             VisitElement(x.Index);
             ConsumeToken(x.IsBraces ? Tokens.T_RBRACE : Tokens.T_RBRACKET, SpanUtils.SafeSpan(x.Span.End - 1, 1));
@@ -1037,16 +1037,17 @@ namespace Devsense.PHP.Syntax
             var terminalSpan = itemSpan.IsValid ? SpanUtils.SpanIntermission(itemSpan, x.Span.End) : x.Span;
             if (x.IsOldNotation)
             {
-                ProcessToken(Tokens.T_LIST, itemSpan.IsValid ? SpanUtils.SpanIntermission(x.Span.StartOrInvalid, itemSpan) : x.Span);
+                ConsumeToken(Tokens.T_LIST, SpanUtils.SafeSpan(x.Span.StartOrInvalid, 1));
                 var previous = ProcessToken(Tokens.T_LPAREN, itemSpan.IsValid ? SpanUtils.SpanIntermission(x.Span.StartOrInvalid, itemSpan) : x.Span);
                 VisitItemList(x.Items, Tokens.T_COMMA, previous, terminalSpan);
-                ProcessToken(Tokens.T_RPAREN, terminalSpan);
+                ProcessToken(Tokens.T_RPAREN, SpanUtils.SafeSpan(x.Span.End - 1, 1));
             }
             else
             {
-                var previous = ProcessToken(Tokens.T_LBRACKET, itemSpan.IsValid ? SpanUtils.SpanIntermission(x.Span.StartOrInvalid, itemSpan) : x.Span);
-                VisitItemList(x.Items, Tokens.T_COMMA, previous, terminalSpan);
-                ProcessToken(Tokens.T_RBRACKET, terminalSpan);
+                var openSpan = SpanUtils.SafeSpan(x.Span.StartOrInvalid, 1);
+                ConsumeToken(Tokens.T_LBRACKET, openSpan);
+                VisitItemList(x.Items, Tokens.T_COMMA, new SourceToken(Tokens.T_LBRACKET, openSpan), terminalSpan);
+                ConsumeToken(Tokens.T_RBRACKET, SpanUtils.SafeSpan(x.Span.End - 1, 1));
             }
         }
 
