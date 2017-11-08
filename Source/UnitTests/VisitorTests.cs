@@ -294,8 +294,8 @@ namespace UnitTests
             public override LangElement For(Span span, IEnumerable<LangElement> init, IEnumerable<LangElement> cond, IEnumerable<LangElement> action, Span condSpan, LangElement body)
                  => CountLE(base.For(span, init, cond, action, condSpan, body));
 
-            public override LangElement Foreach(Span span, LangElement enumeree, ForeachVar keyOpt, ForeachVar value, Span condSpan, LangElement body)
-                 => CountLE(base.Foreach(span, enumeree, keyOpt, value, condSpan, body));
+            public override LangElement Foreach(Span span, LangElement enumeree, ForeachVar keyOpt, ForeachVar value, LangElement body)
+                 => CountLE(base.Foreach(span, enumeree, keyOpt, value, body));
 
             public override ForeachVar ForeachVariable(Span span, LangElement variable, bool alias = false)
                  => CountFV(base.ForeachVariable(span, variable, alias));

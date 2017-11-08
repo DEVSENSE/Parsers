@@ -137,8 +137,9 @@ namespace Devsense.PHP.Syntax.Ast
         /// Initialize new instance of <see cref="CallSignature"/>.
         /// </summary>
         /// <param name="parameters">List of parameters.</param>
-        public CallSignature(IList<ActualParam> parameters)
-            : this(parameters, null)
+        /// <param name="position">Signature position.</param>
+        public CallSignature(IList<ActualParam> parameters, Text.Span position)
+            : this(parameters, null, position)
         {
         }
 
@@ -147,10 +148,12 @@ namespace Devsense.PHP.Syntax.Ast
         /// </summary>
         /// <param name="parameters">List of parameters.</param>
         /// <param name="genericParams">List of type parameters for generics.</param>
-        public CallSignature(IList<ActualParam> parameters, IList<TypeRef> genericParams)
+        /// <param name="position">Signature position.</param>
+        public CallSignature(IList<ActualParam> parameters, IList<TypeRef> genericParams, Text.Span position)
         {
             this.parameters = (parameters ?? throw new ArgumentNullException(nameof(parameters))).AsArray();
             this.GenericParams = genericParams.AsArray();
+            _position = position;
         }
     }
 

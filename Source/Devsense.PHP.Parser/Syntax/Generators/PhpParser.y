@@ -538,9 +538,9 @@ statement:
 	|	expr ';' { $$ = _astFactory.ExpressionStmt(@$, $1); }
 	|	T_UNSET '(' unset_variables ')' ';' { $$ = _astFactory.Unset(@$, $3); }
 	|	T_FOREACH '(' expr T_AS foreach_variable ')' enter_scope foreach_statement exit_scope
-			{ $$ = _astFactory.Foreach(@$, $3, null, $5, CombineSpans(@2, @6), $8); }
+			{ $$ = _astFactory.Foreach(@$, $3, null, $5, $8); }
 	|	T_FOREACH '(' expr T_AS foreach_variable T_DOUBLE_ARROW foreach_variable ')' enter_scope foreach_statement exit_scope
-			{ $$ = _astFactory.Foreach(@$, $3, $5, $7, CombineSpans(@2, @8), $10); }
+			{ $$ = _astFactory.Foreach(@$, $3, $5, $7, $10); }
 	|	T_DECLARE '(' const_list ')' declare_statement
 			{ $$ = _astFactory.Declare(@$, $3, $5); }
 	|	';'	/* empty statement */ { $$ = _astFactory.EmptyStmt(@$); }
@@ -1188,23 +1188,23 @@ lexical_var:
 
 function_call:
 		name argument_list
-			{ $$ = _astFactory.Call(@$, TranslateQNRFunction($1), new CallSignature($2) { Position = @2 }, null); }
+			{ $$ = _astFactory.Call(@$, TranslateQNRFunction($1), new CallSignature($2, @2) { Position = @2 }, null); }
 	|	class_name T_DOUBLE_COLON member_name argument_list
 			{
 				if($3 is Name)
-					$$ = _astFactory.Call(@$, (Name)$3, @3, new CallSignature($4) { Position = @4 }, $1); 
+					$$ = _astFactory.Call(@$, (Name)$3, @3, new CallSignature($4, @4) { Position = @4 }, $1); 
 				else
-					$$ = _astFactory.Call(@$, (LangElement)$3, new CallSignature($4) { Position = @4 }, $1); 
+					$$ = _astFactory.Call(@$, (LangElement)$3, new CallSignature($4, @4) { Position = @4 }, $1); 
 			}
 	|	variable_class_name T_DOUBLE_COLON member_name argument_list
 			{
 				if($3 is Name)
-					$$ = _astFactory.Call(@$, (Name)$3, @3, new CallSignature($4) { Position = @4 }, _astFactory.TypeReference(@1, $1)); 
+					$$ = _astFactory.Call(@$, (Name)$3, @3, new CallSignature($4, @4) { Position = @4 }, _astFactory.TypeReference(@1, $1)); 
 				else
-					$$ = _astFactory.Call(@$, (LangElement)$3, new CallSignature($4) { Position = @4 }, _astFactory.TypeReference(@1, $1)); 
+					$$ = _astFactory.Call(@$, (LangElement)$3, new CallSignature($4, @4) { Position = @4 }, _astFactory.TypeReference(@1, $1)); 
 			}
 	|	callable_expr argument_list
-			{ $$ = _astFactory.Call(@$, $1, new CallSignature($2) { Position = @2 }, NullLangElement);}
+			{ $$ = _astFactory.Call(@$, $1, new CallSignature($2, @2) { Position = @2 }, NullLangElement);}
 ;
 
 class_name:
@@ -1309,10 +1309,10 @@ callable_variable:
 			if($3 is Name)
 			{
 				var name = new QualifiedName((Name)$3);
-				$$ = _astFactory.Call(@$, new TranslatedQualifiedName(name, @3, name, null), new CallSignature($4) { Position = @4 }, VerifyMemberOf($1));
+				$$ = _astFactory.Call(@$, new TranslatedQualifiedName(name, @3, name, null), new CallSignature($4, @4) { Position = @4 }, VerifyMemberOf($1));
 			}
 			else
-				$$ = _astFactory.Call(@$, (LangElement)$3, new CallSignature($4) { Position = @4 }, VerifyMemberOf($1));
+				$$ = _astFactory.Call(@$, (LangElement)$3, new CallSignature($4, @4) { Position = @4 }, VerifyMemberOf($1));
 		}
 	|	function_call { $$ = $1; }
 ;

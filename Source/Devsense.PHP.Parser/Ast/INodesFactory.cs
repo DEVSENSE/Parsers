@@ -447,10 +447,9 @@ namespace Devsense.PHP.Syntax.Ast
         /// <param name="enumeree">Expression being enumerated.</param>
         /// <param name="keyOpt">Optional. The key variable.</param>
         /// <param name="value">The value variable.</param>
-        /// <param name="condSpan">Position of the condition parentheses.</param>
         /// <param name="body">Loop body.</param>
         /// <returns>Foreach statement.</returns>
-        TNode Foreach(TSpan span, TNode enumeree, ForeachVar keyOpt, ForeachVar value, TSpan condSpan, TNode body);
+        TNode Foreach(TSpan span, TNode enumeree, ForeachVar keyOpt, ForeachVar value, TNode body);
 
         /// <summary>
         /// Creates <c>if</c> statement.

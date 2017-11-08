@@ -96,32 +96,24 @@ namespace Devsense.PHP.Syntax.Ast
         public virtual LangElement Call(Span span, LangElement nameExpr, CallSignature signature, TypeRef typeRef)
         {
             Debug.Assert(nameExpr is Expression);
-            var call = new IndirectStMtdCall(span, typeRef, (Expression)nameExpr, signature.Parameters, signature.GenericParams);
-            call.CallSignature.Position = signature.Position;
-            return call;
+            return new IndirectStMtdCall(span, typeRef, (Expression)nameExpr, signature.Parameters, signature.Position, signature.GenericParams);
         }
 
         public virtual LangElement Call(Span span, LangElement nameExpr, CallSignature signature, LangElement memberOfOpt)
         {
             Debug.Assert(nameExpr is Expression);
-            var call = new IndirectFcnCall(span, (Expression)nameExpr, signature.Parameters, signature.GenericParams) { IsMemberOf = (Expression)memberOfOpt };
-            call.CallSignature.Position = signature.Position;
-            return call;
+            return new IndirectFcnCall(span, (Expression)nameExpr, signature.Parameters, signature.Position, signature.GenericParams) { IsMemberOf = (Expression)memberOfOpt };
         }
 
         public virtual LangElement Call(Span span, Name name, Span nameSpan, CallSignature signature, TypeRef typeRef)
         {
-            var call = new DirectStMtdCall(span, new ClassConstUse(span, typeRef, new VariableNameRef(nameSpan, name.Value)), signature.Parameters, signature.GenericParams);
-            call.CallSignature.Position = signature.Position;
-            return call;
+            return new DirectStMtdCall(span, new ClassConstUse(span, typeRef, new VariableNameRef(nameSpan, name.Value)), signature.Parameters, signature.Position, signature.GenericParams);
         }
 
         public virtual LangElement Call(Span span, TranslatedQualifiedName name, CallSignature signature, LangElement memberOfOpt)
         {
             Debug.Assert(memberOfOpt == null || memberOfOpt is Expression);
-            var call = new DirectFcnCall(span, name, signature.Parameters, signature.GenericParams) { IsMemberOf = (Expression)memberOfOpt };
-            call.CallSignature.Position = signature.Position;
-            return call;
+            return new DirectFcnCall(span, name, signature.Parameters, signature.Position, signature.GenericParams) { IsMemberOf = (Expression)memberOfOpt };
         }
         public virtual ActualParam ActualParameter(Span span, LangElement expr, ActualParam.Flags flags)
         {
@@ -227,9 +219,9 @@ namespace Devsense.PHP.Syntax.Ast
             return new ForStmt(span, init.CastToArray<Expression>(), cond.CastToArray<Expression>(), action.CastToArray<Expression>(), condSpan, (Statement)body);
         }
 
-        public virtual LangElement Foreach(Span span, LangElement enumeree, ForeachVar keyOpt, ForeachVar value, Span condSpan, LangElement body)
+        public virtual LangElement Foreach(Span span, LangElement enumeree, ForeachVar keyOpt, ForeachVar value, LangElement body)
         {
-            return new ForeachStmt(span, (Expression)enumeree, keyOpt, value, condSpan, (Statement)body);
+            return new ForeachStmt(span, (Expression)enumeree, keyOpt, value, (Statement)body);
         }
 
         public virtual LangElement Function(Span span, bool conditional, bool aliasReturn, PhpMemberAttributes attributes, TypeRef returnType,
@@ -390,9 +382,7 @@ namespace Devsense.PHP.Syntax.Ast
 
         public virtual LangElement New(Span span, TypeRef classNameRef, IEnumerable<ActualParam> argsOpt, Span argsPosition)
         {
-            var call = new NewEx(span, classNameRef, argsOpt.AsArray());
-            call.CallSignature.Position = argsPosition;
-            return call;
+            return new NewEx(span, classNameRef, argsOpt.AsArray(), argsPosition);
         }
 
         public virtual LangElement NewArray(Span span, IEnumerable<Item> itemsOpt, bool isOldNotation)

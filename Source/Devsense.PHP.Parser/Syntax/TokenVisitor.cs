@@ -406,7 +406,7 @@ namespace Devsense.PHP.Syntax
             ConsumeModifiers(x, x.Modifiers, constSpan);
             ProcessToken(Tokens.T_CONST, constSpan);
             VisitElementList(x.Constants, Tokens.T_COMMA);
-            ConsumeToken(Tokens.T_SEMI, SpanUtils.SafeSpan(x.Span.End - 1, 0));
+            ConsumeToken(Tokens.T_SEMI, SpanUtils.SafeSpan(x.Span.End - 1, 1));
         }
 
         public override void VisitCustomAttribute(CustomAttribute x)
@@ -544,7 +544,7 @@ namespace Devsense.PHP.Syntax
                 ProcessToken(Tokens.T_VAR, varSpan);
             }
             VisitElementList(x.Fields, Tokens.T_COMMA);
-            ConsumeToken(Tokens.T_SEMI, SpanUtils.SafeSpan(x.Span.End - 1, 0));
+            ConsumeToken(Tokens.T_SEMI, SpanUtils.SafeSpan(x.Span.End - 1, 1));
         }
 
         public override void VisitFinallyItem(FinallyItem x)
@@ -951,9 +951,10 @@ namespace Devsense.PHP.Syntax
         {
             VisitIsMemberOf(x.IsMemberOf, x.Array.Span);
             VisitElement(x.Array);
-            ConsumeToken(x.IsBraces ? Tokens.T_LBRACE : Tokens.T_LBRACKET, SpanUtils.SafeSpan(x.Array.Span.End, 0));
+            ProcessToken(x.IsBraces ? Tokens.T_LBRACE : Tokens.T_LBRACKET, SpanUtils.SpanIntermission(x.Array.Span, 
+                x.Index != null ? x.Index.Span.StartOrInvalid : x.Span.End));
             VisitElement(x.Index);
-            ConsumeToken(x.IsBraces ? Tokens.T_RBRACE : Tokens.T_RBRACKET, SpanUtils.SafeSpan(x.Span.End - 1, 0));
+            ConsumeToken(x.IsBraces ? Tokens.T_RBRACE : Tokens.T_RBRACKET, SpanUtils.SafeSpan(x.Span.End - 1, 1));
         }
 
         public virtual void VisitIsMemberOf(Expression isMemberOf, Span next)
@@ -1025,7 +1026,7 @@ namespace Devsense.PHP.Syntax
                 }
                 else
                 {
-                    ConsumeToken(Tokens.T_SEMI, SpanUtils.SafeSpan(element.Span.End - 1, 0));
+                    ConsumeToken(Tokens.T_SEMI, SpanUtils.SafeSpan(element.Span.End - 1, 1));
                 }
             }
         }

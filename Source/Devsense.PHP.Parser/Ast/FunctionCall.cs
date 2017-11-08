@@ -32,12 +32,12 @@ namespace Devsense.PHP.Syntax.Ast
         /// </summary>
         public abstract Text.Span NameSpan { get; }
 
-        public FunctionCall(Text.Span span, IList<ActualParam> parameters, IList<TypeRef> genericParams)
+        public FunctionCall(Text.Span span, IList<ActualParam> parameters, Text.Span parametersSpan, IList<TypeRef> genericParams)
             : base(span)
         {
             Debug.Assert(parameters != null);
 
-            this.callSignature = new CallSignature(parameters, genericParams);
+            this.callSignature = new CallSignature(parameters, genericParams, parametersSpan);
         }
     }
 
@@ -65,8 +65,8 @@ namespace Devsense.PHP.Syntax.Ast
         public override Text.Span NameSpan => _fullName.Span;
 
         public DirectFcnCall(Text.Span span, TranslatedQualifiedName name,
-            IList<ActualParam> parameters, IList<TypeRef> genericParams)
-            : base(span, parameters, genericParams)
+            IList<ActualParam> parameters, Text.Span parametersSpan, IList<TypeRef> genericParams)
+            : base(span, parameters, parametersSpan, genericParams)
         {
             _fullName = name;
         }
@@ -93,8 +93,8 @@ namespace Devsense.PHP.Syntax.Ast
         internal Expression/*!*/ nameExpr;
         public override Text.Span NameSpan => NameExpr.Span;
 
-        public IndirectFcnCall(Text.Span p, Expression/*!*/ nameExpr, IList<ActualParam> parameters, IList<TypeRef> genericParams)
-            : base(p, parameters, genericParams)
+        public IndirectFcnCall(Text.Span p, Expression/*!*/ nameExpr, IList<ActualParam> parameters, Text.Span parametersSpan, IList<TypeRef> genericParams)
+            : base(p, parameters, parametersSpan, genericParams)
         {
             this.nameExpr = nameExpr;
         }
@@ -125,14 +125,15 @@ namespace Devsense.PHP.Syntax.Ast
         /// <param name="className">Name of the containing class.</param>
         /// <param name="classNamePosition">Class name position.</param>
         /// <param name="parameters">Actual parameters.</param>
+        /// <param name="parametersSpan">Parameter span.</param>
         /// <param name="genericParams">Generic parameters.</param>
-        internal StaticMtdCall(Text.Span span, GenericQualifiedName className, Text.Span classNamePosition, IList<ActualParam> parameters, IList<TypeRef> genericParams)
-            : this(span, TypeRef.FromGenericQualifiedName(classNamePosition, className), parameters, genericParams)
+        internal StaticMtdCall(Text.Span span, GenericQualifiedName className, Text.Span classNamePosition, IList<ActualParam> parameters, Text.Span parametersSpan, IList<TypeRef> genericParams)
+            : this(span, TypeRef.FromGenericQualifiedName(classNamePosition, className), parameters, parametersSpan, genericParams)
         {
         }
 
-        public StaticMtdCall(Text.Span span, TypeRef typeRef, IList<ActualParam> parameters, IList<TypeRef> genericParams)
-            : base(span, parameters, genericParams)
+        public StaticMtdCall(Text.Span span, TypeRef typeRef, IList<ActualParam> parameters, Text.Span parametersSpan, IList<TypeRef> genericParams)
+            : base(span, parameters, parametersSpan, genericParams)
         {
             Debug.Assert(typeRef != null);
 
@@ -153,16 +154,16 @@ namespace Devsense.PHP.Syntax.Ast
         public override Text.Span NameSpan => methodName.Span;
 
         public DirectStMtdCall(Text.Span span, ClassConstUse/*!*/ classConstant,
-            IList<ActualParam>/*!*/ parameters, IList<TypeRef>/*!*/ genericParams)
-            : base(span, classConstant.TargetType, parameters, genericParams)
+            IList<ActualParam>/*!*/ parameters, Text.Span parametersSpan, IList<TypeRef>/*!*/ genericParams)
+            : base(span, classConstant.TargetType, parameters, parametersSpan, genericParams)
         {
             this.methodName = new NameRef(classConstant.NamePosition, classConstant.Name.Value);
         }
 
         public DirectStMtdCall(Text.Span span, GenericQualifiedName className, Text.Span classNamePosition,
-            Name methodName, Text.Span methodNamePosition, IList<ActualParam> parameters, 
-            IList<TypeRef> genericParams)
-            : base(span, className, classNamePosition, parameters, genericParams)
+            Name methodName, Text.Span methodNamePosition, IList<ActualParam> parameters,
+            Text.Span parametersSpan, IList<TypeRef> genericParams)
+            : base(span, className, classNamePosition, parameters, parametersSpan, genericParams)
         {
             this.methodName = new NameRef(methodNamePosition, methodName);
         }
@@ -194,16 +195,16 @@ namespace Devsense.PHP.Syntax.Ast
 
         public IndirectStMtdCall(Text.Span span,
                                  GenericQualifiedName className, Text.Span classNamePosition, Expression/*!*/ nameExpr,
-                                 IList<ActualParam> parameters, IList<TypeRef> genericParams)
-            : base(span, className, classNamePosition, parameters, genericParams)
+                                 IList<ActualParam> parameters, Text.Span parametersSpan, IList<TypeRef> genericParams)
+            : base(span, className, classNamePosition, parameters, parametersSpan, genericParams)
         {
             _methodNameExpr = nameExpr;
         }
 
         public IndirectStMtdCall(Text.Span span,
                                  TypeRef/*!*/typeRef, Expression/*!*/ mtdNameVar,
-                                 IList<ActualParam> parameters, IList<TypeRef> genericParams)
-            : base(span, typeRef, parameters, genericParams)
+                                 IList<ActualParam> parameters, Text.Span parametersSpan, IList<TypeRef> genericParams)
+            : base(span, typeRef, parameters, parametersSpan, genericParams)
         {
             _methodNameExpr = mtdNameVar;
         }
