@@ -281,11 +281,35 @@ namespace Devsense.PHP.Syntax
 
         public sealed override void VisitAssignEx(AssignEx x) { throw new InvalidOperationException(); }
 
+
+
         public override void VisitBinaryEx(BinaryEx x)
         {
             VisitElement(x.LeftExpr);
-            ProcessToken(TokenFacts.GetOperationToken(x.Operation), x.OperatorSpan);
+            if (x.Operation == Operations.And)
+            {
+                ConsumeLogicalOperator(x.OperatorSpan, Tokens.T_BOOLEAN_AND, Tokens.T_LOGICAL_AND);
+            }
+            else if (x.Operation == Operations.Or)
+            {
+                ConsumeLogicalOperator(x.OperatorSpan, Tokens.T_BOOLEAN_OR, Tokens.T_LOGICAL_OR);
+            }
+            else
+            {
+                ProcessToken(TokenFacts.GetOperationToken(x.Operation), x.OperatorSpan);
+            }
             VisitElement(x.RightExpr);
+        }
+
+        private void ConsumeLogicalOperator(Span span, Tokens symbolic, Tokens verbose)
+        {
+            ISourceToken token = new SourceToken(symbolic, Span.Invalid);
+            var tokens = _provider.GetTokens(span, t => t.Token == symbolic || t.Token == verbose, new[] { token });
+            if (tokens.Count() == 1)
+            {
+                token = tokens.Single();
+            }
+            ConsumeToken(token.Token, token.Span);
         }
 
         public override void VisitBinaryStringLiteral(BinaryStringLiteral x)

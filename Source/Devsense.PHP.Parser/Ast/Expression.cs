@@ -53,7 +53,7 @@ namespace Devsense.PHP.Syntax.Ast
         UnsetCast,
 
         // binary ops:
-        Xor, Or, And, LogicalOr, LogicalAnd,
+        Xor, Or, And,
         BitOr, BitXor, BitAnd,
         Equal, NotEqual,
         Identical, NotIdentical,

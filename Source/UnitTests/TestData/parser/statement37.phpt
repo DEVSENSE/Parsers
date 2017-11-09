@@ -81,8 +81,8 @@ $a? : $b;
   
   "BinaryEx":{"Operation":"And","DirectVarUse":{"VarName":"a"},"DirectVarUse":{"VarName":"b"}},
   "BinaryEx":{"Operation":"Or","DirectVarUse":{"VarName":"a"},"DirectVarUse":{"VarName":"b"}},
-  "BinaryEx":{"Operation":"LogicalAnd","DirectVarUse":{"VarName":"a"},"DirectVarUse":{"VarName":"b"}},
-  "BinaryEx":{"Operation":"LogicalOr","DirectVarUse":{"VarName":"a"},"DirectVarUse":{"VarName":"b"}},
+  "BinaryEx":{"Operation":"And","DirectVarUse":{"VarName":"a"},"DirectVarUse":{"VarName":"b"}},
+  "BinaryEx":{"Operation":"Or","DirectVarUse":{"VarName":"a"},"DirectVarUse":{"VarName":"b"}},
   "BinaryEx":{"Operation":"Xor","DirectVarUse":{"VarName":"a"},"DirectVarUse":{"VarName":"b"}},
   "BinaryEx":{"Operation":"BitAnd","DirectVarUse":{"VarName":"a"},"DirectVarUse":{"VarName":"b"}},
   "BinaryEx":{"Operation":"BitOr","DirectVarUse":{"VarName":"a"},"DirectVarUse":{"VarName":"b"}},

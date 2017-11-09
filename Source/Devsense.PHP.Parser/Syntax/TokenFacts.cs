@@ -247,8 +247,6 @@ namespace Devsense.PHP.Syntax
                 case Operations.Xor: return Tokens.T_LOGICAL_XOR;
                 case Operations.Or: return Tokens.T_BOOLEAN_OR;
                 case Operations.And: return Tokens.T_BOOLEAN_AND;
-                case Operations.LogicalOr: return Tokens.T_LOGICAL_OR;
-                case Operations.LogicalAnd: return Tokens.T_LOGICAL_AND;
                 case Operations.BitOr: return Tokens.T_PIPE;
                 case Operations.BitXor: return Tokens.T_CARET;
                 case Operations.BitAnd: return Tokens.T_AMP;

@@ -2782,10 +2782,10 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 { yyval.Node = _astFactory.BinaryOperation(yypos, Operations.And,  value_stack.array[value_stack.top-3].yyval.Node, value_stack.array[value_stack.top-1].yyval.Node); }
         return;
       case 322: // expr_without_variable -> expr T_LOGICAL_OR expr 
-{ yyval.Node = _astFactory.BinaryOperation(yypos, Operations.LogicalOr,   value_stack.array[value_stack.top-3].yyval.Node, value_stack.array[value_stack.top-1].yyval.Node); }
+{ yyval.Node = _astFactory.BinaryOperation(yypos, Operations.Or,   value_stack.array[value_stack.top-3].yyval.Node, value_stack.array[value_stack.top-1].yyval.Node); }
         return;
       case 323: // expr_without_variable -> expr T_LOGICAL_AND expr 
-{ yyval.Node = _astFactory.BinaryOperation(yypos, Operations.LogicalAnd,  value_stack.array[value_stack.top-3].yyval.Node, value_stack.array[value_stack.top-1].yyval.Node); }
+{ yyval.Node = _astFactory.BinaryOperation(yypos, Operations.And,  value_stack.array[value_stack.top-3].yyval.Node, value_stack.array[value_stack.top-1].yyval.Node); }
         return;
       case 324: // expr_without_variable -> expr T_LOGICAL_XOR expr 
 { yyval.Node = _astFactory.BinaryOperation(yypos, Operations.Xor,  value_stack.array[value_stack.top-3].yyval.Node, value_stack.array[value_stack.top-1].yyval.Node); }

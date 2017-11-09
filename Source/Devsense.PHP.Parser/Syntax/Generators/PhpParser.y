@@ -1064,9 +1064,9 @@ expr_without_variable:
 	|	expr T_BOOLEAN_AND expr
 			{ $$ = _astFactory.BinaryOperation(@$, Operations.And,  $1, $3); }
 	|	expr T_LOGICAL_OR expr
-			{ $$ = _astFactory.BinaryOperation(@$, Operations.LogicalOr,   $1, $3); }
+			{ $$ = _astFactory.BinaryOperation(@$, Operations.Or,   $1, $3); }
 	|	expr T_LOGICAL_AND expr
-			{ $$ = _astFactory.BinaryOperation(@$, Operations.LogicalAnd,  $1, $3); }
+			{ $$ = _astFactory.BinaryOperation(@$, Operations.And,  $1, $3); }
 	|	expr T_LOGICAL_XOR expr
 			{ $$ = _astFactory.BinaryOperation(@$, Operations.Xor,  $1, $3); }
 	|	expr '|' expr	{ $$ = _astFactory.BinaryOperation(@$, Operations.BitOr,  $1, $3); }
