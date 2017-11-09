@@ -16,6 +16,7 @@
 using System;
 using System.Collections.Generic;
 using Devsense.PHP.Text;
+using System.Diagnostics;
 
 namespace Devsense.PHP.Syntax.Ast
 {
@@ -249,6 +250,7 @@ namespace Devsense.PHP.Syntax.Ast
 
         public EncapsedExpression(Span span, Expression expression) : base(span)
         {
+            Debug.Assert(expression != null);
             _expression = expression;
         }
 
@@ -265,7 +267,7 @@ namespace Devsense.PHP.Syntax.Ast
     /// <summary>
     /// Expression representing a parenthesis enclosed expression.
     /// </summary>
-    public class ParenthesisExpression : EncapsedExpression
+    public sealed class ParenthesisExpression : EncapsedExpression
     {
         public override Tokens OpenToken => Tokens.T_LPAREN;
 
@@ -284,7 +286,7 @@ namespace Devsense.PHP.Syntax.Ast
     /// <summary>
     /// Expression representing a parenthesis enclosed expression.
     /// </summary>
-    public class BracesExpression : EncapsedExpression
+    public sealed class BracesExpression : EncapsedExpression
     {
         public override Tokens OpenToken => Tokens.T_LBRACE;
 
@@ -303,7 +305,7 @@ namespace Devsense.PHP.Syntax.Ast
     /// <summary>
     /// Expression representing a parenthesis enclosed expression.
     /// </summary>
-    public class DollarBracesExpression : EncapsedExpression
+    public sealed class DollarBracesExpression : EncapsedExpression
     {
         public override Tokens OpenToken => Tokens.T_DOLLAR_OPEN_CURLY_BRACES;
 

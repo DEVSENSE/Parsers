@@ -1219,7 +1219,7 @@ class_name_reference:
 
 exit_expr:
 		/* empty */				{ $$ = null; }
-	|	'(' optional_expr ')'	{ $$ = _astFactory.EncapsedExpression(@$, $2, Tokens.T_LPAREN); }
+	|	'(' optional_expr ')'	{ $$ = $2 == null? null: _astFactory.EncapsedExpression(@$, $2, Tokens.T_LPAREN); }
 ;
 
 backticks_expr:

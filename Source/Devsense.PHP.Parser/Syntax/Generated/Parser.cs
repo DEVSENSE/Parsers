@@ -3022,7 +3022,7 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 { yyval.Node = null; }
         return;
       case 397: // exit_expr -> '(' optional_expr ')' 
-{ yyval.Node = _astFactory.EncapsedExpression(yypos, value_stack.array[value_stack.top-2].yyval.Node, Tokens.T_LPAREN); }
+{ yyval.Node = value_stack.array[value_stack.top-2].yyval.Node == null? null: _astFactory.EncapsedExpression(yypos, value_stack.array[value_stack.top-2].yyval.Node, Tokens.T_LPAREN); }
         return;
       case 398: // backticks_expr -> '`' '`' 
 { yyval.Node = _astFactory.Literal(yypos, string.Empty); SetOriginalValue(yyval.Node, "``"); }

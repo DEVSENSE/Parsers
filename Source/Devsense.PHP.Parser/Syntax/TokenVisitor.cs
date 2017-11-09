@@ -538,8 +538,19 @@ namespace Devsense.PHP.Syntax
 
         public override void VisitExitEx(ExitEx x)
         {
-            ConsumeToken(Tokens.T_EXIT, SpanUtils.SafeSpan(x.Span.StartOrInvalid, 4));
+            var exitSpan = SpanUtils.SafeSpan(x.Span.StartOrInvalid, 4);
+            ConsumeToken(Tokens.T_EXIT, exitSpan);
+            var paren = _provider.GetTokenAt(x.ResulExpr != null ? SpanUtils.SpanIntermission(exitSpan, x.ResulExpr.Span) : x.Span, Tokens.T_LPAREN, null);
+            if (paren != null)
+            {
+                ConsumeToken(paren.Token, paren.Span);
+            }
             VisitElement(x.ResulExpr);
+            paren = _provider.GetTokenAt(x.ResulExpr != null ? SpanUtils.SpanIntermission(x.ResulExpr.Span, x.Span.End) : x.Span, Tokens.T_RPAREN, null);
+            if (paren != null)
+            {
+                ConsumeToken(paren.Token, paren.Span);
+            }
         }
 
         public override void VisitExpressionStmt(ExpressionStmt x)

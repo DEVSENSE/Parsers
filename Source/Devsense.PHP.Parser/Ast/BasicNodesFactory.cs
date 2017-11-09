@@ -182,7 +182,7 @@ namespace Devsense.PHP.Syntax.Ast
                 case Tokens.T_DOLLAR_OPEN_CURLY_BRACES:
                     return new DollarBracesExpression(span, (Expression)expression);
                 default:
-                    return expression;
+                    throw new ArgumentOutOfRangeException(nameof(openDelimiter), openDelimiter, string.Empty);
             }
         }
 
