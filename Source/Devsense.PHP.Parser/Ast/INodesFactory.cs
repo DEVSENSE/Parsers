@@ -533,10 +533,20 @@ namespace Devsense.PHP.Syntax.Ast
         /// </summary>
         /// <param name="span">Entire element span.</param>
         /// <param name="expression">Enclosed expression.</param>
-        /// <param name="delimiter">One of the enclosing parentheses.</param>
+        /// <param name="openDelimiter">Opening delimiter.</param>
         /// <returns>Expression.</returns>
-        /// <remarks>In case parenthesis are not needed, original <paramref name="expression"/> may be returned.</remarks>
-        TNode EncapsedExpression(TSpan span, TNode expression, Tokens delimiter);
+        /// <remarks>Encapsed expression.</remarks>
+        TNode EncapsedExpression(TSpan span, TNode expression, Tokens openDelimiter);
+
+        /// <summary>
+        /// Encloses expression in a string - single quoted, double quoted, heredoc, nowdoc
+        /// </summary>
+        /// <param name="span">Entire element span.</param>
+        /// <param name="expression">String expression.</param>
+        /// <param name="openDelimiter">Opening delimiter.</param>
+        /// <param name="label">Label used to initiate the string.</param>
+        /// <returns>Encapsed string expression.</returns>
+        TNode StringEncapsedExpression(TSpan span, TNode expression, Tokens openDelimiter, string label);
 
         /// <summary>
         /// Creates <c>exit</c> expression with optional result status expression.
@@ -632,10 +642,9 @@ namespace Devsense.PHP.Syntax.Ast
         /// </summary>
         /// <param name="span">Entire element span.</param>
         /// <param name="expressions">Enumeration of expression.</param>
-        /// <param name="label">Opening and closing label.</param>
         /// <returns>Expression resulting in a concatenated string (<c>ConcatEx</c> or a reduced expression.).</returns>
         /// <remarks>A factory implementation may reduce the expression into a literal or a binary operation.</remarks>
-        TNode Concat(TSpan span, IEnumerable<TNode> expressions, string label);
+        TNode Concat(TSpan span, IEnumerable<TNode> expressions);
 
         /// <summary>
         /// Creates assignment operation.

@@ -126,6 +126,7 @@ using AnonymousClass = System.Tuple<Devsense.PHP.Syntax.Ast.TypeRef, System.Coll
 %token T_DOLLAR 36 //'$'
 %token T_PERCENT 37 //'%'
 %token T_AMP 38 //'&'
+%token T_SINGLE_QUOTES 39 //'\''
 %token T_LPAREN 40 //'('
 %token T_RPAREN 41 //')'
 %token T_MUL 42 //'*'
@@ -1225,9 +1226,8 @@ exit_expr:
 backticks_expr:
 		'`' '`' { $$ = _astFactory.Literal(@$, string.Empty); SetOriginalValue($$, "``"); }
 	|	'`' T_ENCAPSED_AND_WHITESPACE '`' { $$ = _astFactory.Literal(@$, $2); SetOriginalValue($$, string.Format("`{0}`", $2.Replace("\n", "\\n").Replace("\"", "\\\""))); }
-	|	'`' encaps_list '`' { $$ = _astFactory.Concat(@$, $2, "`"); }
+	|	'`' encaps_list '`' { $$ = _astFactory.StringEncapsedExpression(@$, _astFactory.Concat(@2, $2), Tokens.T_BACKQUOTE, "`"); }
 ;
-
 
 ctor_arguments:
 		/* empty */	{ $$ = new List<ActualParam>(); }
@@ -1254,8 +1254,8 @@ scalar:
 	|	T_CLASS_C	{ $$ = _astFactory.PseudoConstUse(@$, PseudoConstUse.Types.Class); }    
 	|	T_START_HEREDOC T_ENCAPSED_AND_WHITESPACE T_END_HEREDOC { $$ = _astFactory.Literal(@$, $2); SetOriginalValue($$, string.Format("<<<{0}  {1}  {2}", $1, $2, $3)); }
 	|	T_START_HEREDOC T_END_HEREDOC { $$ = _astFactory.Literal(@$, string.Empty); SetOriginalValue($$, string.Format("<<<{0}  {1}", $1, $2)); }
-	|	'"' encaps_list '"' 	{ $$ = _astFactory.Concat(@$, $2, "\""); }
-	|	T_START_HEREDOC encaps_list T_END_HEREDOC { $$ = _astFactory.Concat(@$, $2, _lexer.TokenText); }
+	|	'"' encaps_list '"' 	{ $$ = _astFactory.StringEncapsedExpression(@$, _astFactory.Concat(@2, $2), Tokens.T_DOUBLE_QUOTES, "\""); }
+	|	T_START_HEREDOC encaps_list T_END_HEREDOC { $$ = _astFactory.StringEncapsedExpression(@$, _astFactory.Concat(@2, $2), Tokens.T_START_HEREDOC, $1); }
 	|	dereferencable_scalar	{ $$ = $1; }
 	|	constant			{ $$ = $1; }
 ;

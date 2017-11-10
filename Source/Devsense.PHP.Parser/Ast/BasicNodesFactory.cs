@@ -136,9 +136,9 @@ namespace Devsense.PHP.Syntax.Ast
             return new SimpleBlockStmt(BlockSpan(span, statements), statements.CastToArray<Statement>());
         }
 
-        public virtual LangElement Concat(Span span, IEnumerable<LangElement> expressions, string label)
+        public virtual LangElement Concat(Span span, IEnumerable<LangElement> expressions)
         {
-            return new ConcatEx(span, expressions.CastToArray<Expression>(), label);
+            return new ConcatEx(span, expressions.CastToArray<Expression>());
         }
 
         public virtual LangElement DeclList(Span span, PhpMemberAttributes attributes, IEnumerable<LangElement> decls)
@@ -181,6 +181,25 @@ namespace Devsense.PHP.Syntax.Ast
                     return new BracesExpression(span, (Expression)expression);
                 case Tokens.T_DOLLAR_OPEN_CURLY_BRACES:
                     return new DollarBracesExpression(span, (Expression)expression);
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(openDelimiter), openDelimiter, string.Empty);
+            }
+        }
+
+        public virtual LangElement StringEncapsedExpression(Span span, LangElement expression, Tokens openDelimiter, string label)
+        {
+            switch (openDelimiter)
+            {
+                case Tokens.T_SINGLE_QUOTES:
+                    return new SingleQuotedExpression(span, (Expression)expression);
+                case Tokens.T_DOUBLE_QUOTES:
+                    return new DoubleQuotedExpression(span, (Expression)expression);
+                case Tokens.T_BACKQUOTE:
+                    return new BackQuotedExpression(span, (Expression)expression);
+                case Tokens.T_START_HEREDOC:
+                    return label.StartsWith("'")? 
+                        (StringEncapsedExpression)new NowDocExpression(span, (Expression)expression, label) :
+                        (StringEncapsedExpression)new HereDocExpression(span, (Expression)expression, label);
                 default:
                     throw new ArgumentOutOfRangeException(nameof(openDelimiter), openDelimiter, string.Empty);
             }

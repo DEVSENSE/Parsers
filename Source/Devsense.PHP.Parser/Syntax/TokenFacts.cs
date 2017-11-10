@@ -43,8 +43,6 @@ namespace Devsense.PHP.Syntax
                 case Tokens.T_DOUBLE_COLON: return "::";
                 case Tokens.T_OBJECT_OPERATOR: return "->";
                 case Tokens.T_DOUBLE_ARROW: return "=>";
-                case Tokens.T_BACKQUOTE: return "`";
-                case Tokens.T_DOUBLE_QUOTES: return "\"";
 
                 case Tokens.T_IS_EQUAL: return "==";
                 case Tokens.T_IS_NOT_EQUAL: return "!=";
@@ -179,6 +177,9 @@ namespace Devsense.PHP.Syntax
                 case Tokens.T_CALLABLE: return "callable";
                 case Tokens.T_TRY: return "try";
                 case Tokens.T_CLASS: return "class";
+                case Tokens.T_BACKQUOTE: return "`";
+                case Tokens.T_SINGLE_QUOTES: return "'";
+                case Tokens.T_DOUBLE_QUOTES: return "\"";
 
                 default: throw new ArgumentException(t.ToString());
             }

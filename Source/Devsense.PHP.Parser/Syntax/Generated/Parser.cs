@@ -175,6 +175,8 @@ T_DOLLAR=36,
 T_PERCENT=37,
 /// <summary>&#39;&amp;&#39;</summary>
 T_AMP=38,
+/// <summary>&#39;\&#39;&#39;</summary>
+T_SINGLE_QUOTES=39,
 /// <summary>&#39;(&#39;</summary>
 T_LPAREN=40,
 /// <summary>&#39;)&#39;</summary>
@@ -3031,7 +3033,7 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 { yyval.Node = _astFactory.Literal(yypos, value_stack.array[value_stack.top-2].yyval.String); SetOriginalValue(yyval.Node, string.Format("`{0}`", value_stack.array[value_stack.top-2].yyval.String.Replace("\n", "\\n").Replace("\"", "\\\""))); }
         return;
       case 400: // backticks_expr -> '`' encaps_list '`' 
-{ yyval.Node = _astFactory.Concat(yypos, value_stack.array[value_stack.top-2].yyval.NodeList, "`"); }
+{ yyval.Node = _astFactory.StringEncapsedExpression(yypos, _astFactory.Concat(value_stack.array[value_stack.top-2].yypos, value_stack.array[value_stack.top-2].yyval.NodeList), Tokens.T_BACKQUOTE, "`"); }
         return;
       case 401: // ctor_arguments -> 
 { yyval.ParamList = new List<ActualParam>(); }
@@ -3085,10 +3087,10 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 { yyval.Node = _astFactory.Literal(yypos, string.Empty); SetOriginalValue(yyval.Node, string.Format("<<<{0}  {1}", value_stack.array[value_stack.top-2].yyval.String, value_stack.array[value_stack.top-1].yyval.String)); }
         return;
       case 418: // scalar -> '"' encaps_list '"' 
-{ yyval.Node = _astFactory.Concat(yypos, value_stack.array[value_stack.top-2].yyval.NodeList, "\""); }
+{ yyval.Node = _astFactory.StringEncapsedExpression(yypos, _astFactory.Concat(value_stack.array[value_stack.top-2].yypos, value_stack.array[value_stack.top-2].yyval.NodeList), Tokens.T_DOUBLE_QUOTES, "\""); }
         return;
       case 419: // scalar -> T_START_HEREDOC encaps_list T_END_HEREDOC 
-{ yyval.Node = _astFactory.Concat(yypos, value_stack.array[value_stack.top-2].yyval.NodeList, _lexer.TokenText); }
+{ yyval.Node = _astFactory.StringEncapsedExpression(yypos, _astFactory.Concat(value_stack.array[value_stack.top-2].yypos, value_stack.array[value_stack.top-2].yyval.NodeList), Tokens.T_START_HEREDOC, value_stack.array[value_stack.top-3].yyval.String); }
         return;
       case 420: // scalar -> dereferencable_scalar 
 { yyval.Node = value_stack.array[value_stack.top-1].yyval.Node; }

@@ -388,11 +388,7 @@ namespace Devsense.PHP.Syntax
 
         public override void VisitConcatEx(ConcatEx x)
         {
-            var label = x.OpenLabel;
-            ConsumeToken(x.OpenToken, label, SpanUtils.SafeSpan(x.Span.StartOrInvalid, label.Length));
-            VisitElementList(x.Expressions, Tokens.T_DOT);
-            label = x.CloseLabel;
-            ConsumeToken(x.CloseToken, label, SpanUtils.SafeSpan(x.Span.End - label.Length, label.Length));
+            VisitElementList(x.Expressions);
         }
 
         public override void VisitConditionalEx(ConditionalEx x)
@@ -506,10 +502,10 @@ namespace Devsense.PHP.Syntax
 
         public override void VisitEncapsedExpression(EncapsedExpression x)
         {
-            var text = TokenFacts.GetTokenText(x.OpenToken);
+            var text = x is StringEncapsedExpression ? ((StringEncapsedExpression)x).OpenLabel : TokenFacts.GetTokenText(x.OpenToken);
             ConsumeToken(x.OpenToken, text, SpanUtils.SafeSpan(x.Span.StartOrInvalid, text.Length));
             VisitElement(x.Expression);
-            text = TokenFacts.GetTokenText(x.CloseToken);
+            text = x is StringEncapsedExpression ? ((StringEncapsedExpression)x).CloseLabel : TokenFacts.GetTokenText(x.CloseToken);
             ConsumeToken(x.CloseToken, text, SpanUtils.SafeSpan(x.Span.End - text.Length, text.Length));
         }
 
@@ -1097,6 +1093,15 @@ namespace Devsense.PHP.Syntax
                     SpanUtils.SpanIntermission(
                         list[i - 1] != null ? list[i - 1].Span : Span.Invalid,
                         list[i] != null ? list[i].Span : Span.Invalid));
+                VisitElement(list[i]);
+            }
+        }
+
+        protected virtual void VisitElementList<TElement>(IList<TElement> list) where TElement : LangElement
+        {
+            Debug.Assert(list != null, nameof(list));
+            for (int i = 0; i < list.Count; i++)
+            {
                 VisitElement(list[i]);
             }
         }

@@ -240,8 +240,8 @@ namespace UnitTests
             public override LangElement ColonBlock(Span span, IEnumerable<LangElement> statements, Tokens endToken)
                  => CountLE(base.ColonBlock(span, statements, endToken));
 
-            public override LangElement Concat(Span span, IEnumerable<LangElement> expressions, string label)
-                 => CountLE(base.Concat(span, expressions, label));
+            public override LangElement Concat(Span span, IEnumerable<LangElement> expressions)
+                 => CountLE(base.Concat(span, expressions));
 
             public override LangElement ConditionalEx(Span span, LangElement condExpr, LangElement trueExpr, LangElement falseExpr)
                  => CountLE(base.ConditionalEx(span, condExpr, trueExpr, falseExpr));
@@ -388,8 +388,11 @@ namespace UnitTests
             public override FormalParam Parameter(Span span, string name, Span nameSpan, TypeRef typeOpt, FormalParam.Flags flags, Expression initValue)
                  => (FormalParam)CountLE(base.Parameter(span, name, nameSpan, typeOpt, flags, initValue)); // TODO - replace definitions by interfaces
 
-            public override LangElement EncapsedExpression(Span span, LangElement expression, Tokens delimiter)
-                 => CountLE(base.EncapsedExpression(span, expression, delimiter));
+            public override LangElement EncapsedExpression(Span span, LangElement expression, Tokens openDelimiter)
+                 => CountLE(base.EncapsedExpression(span, expression, openDelimiter));
+
+            public override LangElement StringEncapsedExpression(Span span, LangElement expression, Tokens openDelimiter, string label)
+                 => CountLE(base.StringEncapsedExpression(span, expression, openDelimiter, label));
 
             public override LangElement PHPDoc(Span span, LangElement content)
                  => CountLE(base.PHPDoc(span, content));

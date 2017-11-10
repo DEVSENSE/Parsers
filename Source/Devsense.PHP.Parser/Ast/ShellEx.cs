@@ -32,7 +32,7 @@ namespace Devsense.PHP.Syntax.Ast
 		public ShellEx(Text.Span span, Expression/*!*/ command)
             : base(span)
 		{
-            Debug.Assert(command is StringLiteral || command is ConcatEx || command is BinaryStringLiteral);
+            Debug.Assert(command is StringEncapsedExpression || command is StringLiteral);
 			this.command = command;
 		}
 

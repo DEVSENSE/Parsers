@@ -24,29 +24,6 @@ namespace Devsense.PHP.Syntax.Ast
     /// </summary>
     public sealed class ConcatEx : Expression
     {
-        private string _label;
-
-        /// <summary>
-        /// Token used to initiate the concat expression.
-        /// </summary>
-        public Tokens OpenToken => _label.Length == 1 ? (Tokens)_label[0] : Tokens.T_START_HEREDOC;
-
-        /// <summary>
-        /// Token used to terminate the concat expression.
-        /// </summary>
-        public Tokens CloseToken => _label.Length == 1 ? (Tokens)_label[0] : Tokens.T_END_HEREDOC;
-
-        /// <summary>
-        /// Text initiate the concat (label for heredoc).
-        /// </summary>
-        public string OpenLabel => _label.Length == 1 ? _label : $"<<<{_label}";
-
-        /// <summary>
-        /// Text terminating the concat.
-        /// </summary>
-        public string CloseLabel => _label;
-
-
         /// <summary>
         /// Operation used to concatenate the expressions.
         /// </summary>
@@ -63,15 +40,12 @@ namespace Devsense.PHP.Syntax.Ast
         /// </summary>
         /// <param name="span"></param>
         /// <param name="expressions">List of expressions to concatenate.</param>
-        /// <param name="label">Label used to initiate and terminate the concatenation.</param>
         /// <remarks>This method tries to propagate child concatenations and chain them.</remarks>
-        public ConcatEx(Text.Span span, IList<Expression>/*!*/ expressions, string/*!*/label)
+        public ConcatEx(Text.Span span, IList<Expression>/*!*/ expressions)
             : base(span)
         {
             Debug.Assert(expressions != null);
-            Debug.Assert(!string.IsNullOrEmpty(label));
             this._expressions = expressions.AsArray();
-            this._label = label;
         }
 
         /// <summary>
