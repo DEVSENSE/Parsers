@@ -180,6 +180,7 @@ namespace Devsense.PHP.Syntax
                 case Tokens.T_BACKQUOTE: return "`";
                 case Tokens.T_SINGLE_QUOTES: return "'";
                 case Tokens.T_DOUBLE_QUOTES: return "\"";
+                case Tokens.T_INSTEADOF: return "insteadof";
 
                 default: throw new ArgumentException(t.ToString());
             }

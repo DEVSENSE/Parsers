@@ -39,13 +39,6 @@ namespace Devsense.PHP.Syntax
         ShortOpenTags = 1,
 
         /// <summary>
-        /// Enables the collection of advanced information by parser,
-        /// including spans of operators, delimiters, modifiers and
-        /// original values of literals.
-        /// </summary>
-        FullInformation = 2,
-
-        /// <summary>
         /// Allows using short open tags in the script.
         /// </summary>
         Php54Set = 16,

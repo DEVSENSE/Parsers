@@ -97,6 +97,14 @@ namespace Devsense.PHP.Syntax
         /// <param name="default">Default set to be returned if tokens are not available at given span. Cannot be <c>null</c>.</param>
         /// <returns>Set of tokens matching given predicate. Gets <paramref name="default"/> in case tokens are not available at given span.</returns>
         IEnumerable<ISourceToken> GetTokens(Span span, Func<ISourceToken, bool> predicate, IEnumerable<ISourceToken> @default);
+
+        /// <summary>
+        /// Gets the text represented by the token.
+        /// </summary>
+        /// <param name="token">Token.</param>
+        /// <param name="default">Default text returned, when the token is null, or has an invalid position</param>
+        /// <returns>Token text.</returns>
+        string GetTokenText(ISourceToken token, string @default);
     }
 
     #endregion
@@ -113,16 +121,19 @@ namespace Devsense.PHP.Syntax
             public IEnumerable<ISourceToken> GetTokens(Span span) => EmptyArray<ISourceToken>.Instance;
             public ISourceToken GetTokenAt(Span span, Tokens predicate, ISourceToken @default) => @default;
             public IEnumerable<ISourceToken> GetTokens(Span span, Func<ISourceToken, bool> predicate, IEnumerable<ISourceToken> @default) => @default;
+            public string GetTokenText(ISourceToken token, string @default) => @default;
         }
 
         sealed class ListProvider : ISourceTokenProvider
         {
             readonly ISourceToken[] _tokens;
+            readonly string _text;
 
-            public ListProvider(IEnumerable<ISourceToken> tokens)
+            public ListProvider(IEnumerable<ISourceToken> tokens, string text)
             {
                 Debug.Assert(tokens != null);
                 _tokens = tokens.ToArray();
+                _text = text;
             }
 
             public IEnumerable<ISourceToken> GetTokens(Span span)
@@ -164,6 +175,9 @@ namespace Devsense.PHP.Syntax
                     foreach (var t in @default) yield return t;
                 }
             }
+            public string GetTokenText(ISourceToken token, string @default) => 
+                token == null || !token.Span.IsValid || token.Span.End >  _text.Length? 
+                @default: _text.Substring(token.Span.Start, token.Span.Length);
         }
 
         public static ISourceTokenProvider CreateEmptyProvider()
@@ -171,14 +185,14 @@ namespace Devsense.PHP.Syntax
             return new EmptyProvider();
         }
 
-        public static ISourceTokenProvider CreateProvider(IEnumerable<ISourceToken> tokens)
+        public static ISourceTokenProvider CreateProvider(IEnumerable<ISourceToken> tokens, string text)
         {
             if (tokens == null)
             {
                 new ArgumentNullException(nameof(tokens));
             }
 
-            return new ListProvider(tokens);
+            return new ListProvider(tokens, text);
         }
     }
 

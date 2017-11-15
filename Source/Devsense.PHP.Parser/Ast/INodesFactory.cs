@@ -79,9 +79,9 @@ namespace Devsense.PHP.Syntax.Ast
         /// </summary>
         /// <param name="span">Entire element span.</param>
         /// <param name="decls">List of constant declarations.</param>
-        /// <param name="statementOpt">List of statements within the namespace.</param>
+        /// <param name="statement">Declare statement.</param>
         /// <returns>Declare statement.</returns>
-        TNode Declare(TSpan span, IEnumerable<LangElement> decls, TNode statementOpt);
+        TNode Declare(TSpan span, IEnumerable<LangElement> decls, TNode statement);
 
         /// <summary>
         /// Create use statement.
@@ -595,8 +595,9 @@ namespace Devsense.PHP.Syntax.Ast
         /// </summary>
         /// <param name="span">Entire element span.</param>
         /// <param name="value">Literal value.</param>
+        /// <param name="originalValue">Literal original value.</param>
         /// <returns>Literal expression.</returns>
-        TNode Literal(TSpan span, object value);
+        TNode Literal(TSpan span, object value, string originalValue = null);
 
         /// <summary>
         /// Creates binary operation expression.

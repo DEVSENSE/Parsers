@@ -211,10 +211,6 @@ namespace Devsense.PHP.Syntax.Ast
     /// </summary>
     public sealed class EmptyStmt : Statement
     {
-        public static readonly EmptyStmt Unreachable = new EmptyStmt(Text.Span.Invalid);
-        public static readonly EmptyStmt Skipped = new EmptyStmt(Text.Span.Invalid);
-        public static readonly EmptyStmt PartialMergeResiduum = new EmptyStmt(Text.Span.Invalid);
-
         internal override bool SkipInPureGlobalCode()
         {
             return true;
@@ -412,13 +408,21 @@ namespace Devsense.PHP.Syntax.Ast
         /// <summary>
         /// Inner statement.
         /// </summary>
-        public Statement Statement { get { return this.stmt; } }
-        private readonly Statement/*!*/stmt;
+        public GlobalConstantDecl[] ConstantDeclarations { get { return this._declarations; } }
+        private readonly GlobalConstantDecl[]/*!*/_declarations;
 
-        public DeclareStmt(Text.Span p, Statement statement)
+        /// <summary>
+        /// Inner statement.
+        /// </summary>
+        public Statement Statement => _stmt;
+        private readonly Statement/*!*/_stmt;
+
+        public DeclareStmt(Text.Span p, GlobalConstantDecl[]/*!*/declarations, Statement/*!*/statement)
             : base(p)
         {
-            this.stmt = statement;
+            Debug.Assert(declarations != null && declarations.Length != 0);
+            _stmt = statement;
+            _declarations = declarations;
         }
 
         public override void VisitMe(TreeVisitor visitor)
@@ -480,8 +484,13 @@ namespace Devsense.PHP.Syntax.Ast
         public QualifiedName QualifiedName => _qualifiedName;
         private readonly QualifiedName _qualifiedName;
 
-        public SimpleUse(Span aliasSpan, Span qnameSpan, Alias alias, QualifiedName qualifiedName)
-            : base(aliasSpan.IsValid ? Span.Combine(qnameSpan, aliasSpan) : qnameSpan)
+        /// <summary>
+        /// Indicates if the alias is defined by the user (using the 'as' keyword) or derived from the name by the parser.
+        /// </summary>
+        public bool HasSeparateAlias => _aliasSpan.IsValid && !_nameSpan.Contains(_aliasSpan);
+
+        public SimpleUse(Span span, Span aliasSpan, Span qnameSpan, Alias alias, QualifiedName qualifiedName)
+            : base(span)
         {
             Debug.Assert(qnameSpan.IsValid);
 

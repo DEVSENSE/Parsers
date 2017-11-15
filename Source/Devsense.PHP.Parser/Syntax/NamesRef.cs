@@ -159,8 +159,8 @@ namespace Devsense.PHP.Syntax
         /// </summary>
         public static QualifiedNameRef Invalid => new QualifiedNameRef(Span.Invalid, Syntax.Name.EmptyBaseName, Syntax.Name.EmptyNames);
 
-        public QualifiedNameRef(Span span, Name name, Name[] namespaces)
-            : this(span, new QualifiedName(name, namespaces))
+        public QualifiedNameRef(Span span, Name name, Name[] namespaces, bool fullyQualified = false)
+            : this(span, new QualifiedName(name, namespaces, fullyQualified))
         {
         }
 

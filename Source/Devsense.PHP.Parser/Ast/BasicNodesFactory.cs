@@ -197,7 +197,7 @@ namespace Devsense.PHP.Syntax.Ast
                 case Tokens.T_BACKQUOTE:
                     return new BackQuotedExpression(span, (Expression)expression);
                 case Tokens.T_START_HEREDOC:
-                    return label.StartsWith("'")? 
+                    return label.StartsWith("'") ?
                         (StringEncapsedExpression)new NowDocExpression(span, (Expression)expression, label) :
                         (StringEncapsedExpression)new HereDocExpression(span, (Expression)expression, label);
                 default:
@@ -220,7 +220,7 @@ namespace Devsense.PHP.Syntax.Ast
         /// </summary>
         /// <param name="span">Semicolon position.</param>
         /// <returns>Empty statement.</returns>
-        public virtual LangElement EmptyStmt(Span span) => new EmptyStmt(span);
+        public virtual LangElement EmptyStmt(Span span) => span.Length == 1 ? new EmptyStmt(span) : null;
 
         public virtual LangElement Isset(Span span, IEnumerable<LangElement> variables)
         {
@@ -255,7 +255,7 @@ namespace Devsense.PHP.Syntax.Ast
             PhpMemberAttributes modifiers, TypeRef returnType, IEnumerable<FormalParam> formalParams,
             Span formalParamsSpan, IEnumerable<FormalParam> lexicalVars, LangElement body)
         {
-            return new LambdaFunctionExpr(span, headingSpan, new Scope(), false, modifiers, formalParams.AsArray(), 
+            return new LambdaFunctionExpr(span, headingSpan, new Scope(), false, modifiers, formalParams.AsArray(),
                 formalParamsSpan, lexicalVars.AsArray(), (BlockStmt)body, returnType);
         }
 
@@ -344,14 +344,21 @@ namespace Devsense.PHP.Syntax.Ast
             return new ListEx(span, items.All(IsNull) ? null : items, isOldNotation);
         }
 
-        public virtual LangElement Literal(Span span, object value)
+        public virtual LangElement Literal(Span span, object value, string originalValue)
         {
+            Literal result;
             if (value is long)
-                return new LongIntLiteral(span, (long)value);
+            {
+                result = new LongIntLiteral(span, (long)value);
+            }
             else if (value is int)
-                return new LongIntLiteral(span, (int)value);
+            {
+                result = new LongIntLiteral(span, (int)value);
+            }
             else if (value is double)
-                return new DoubleLiteral(span, (double)value);
+            {
+                result = new DoubleLiteral(span, (double)value);
+            }
             else if (value is string)
             {
                 var text = (string)value;
@@ -361,15 +368,26 @@ namespace Devsense.PHP.Syntax.Ast
                 {
                     text = text.Substring(1, text.Length - 2);
                 }
-                return new StringLiteral(span, text);
+                result = new StringLiteral(span, text);
             }
             else if (value is byte[])
-                return new BinaryStringLiteral(span, (byte[])value);
+            {
+                result = new BinaryStringLiteral(span, (byte[])value);
+            }
             else if (value is bool)
-                return new BoolLiteral(span, (bool)value);
+            {
+                result = new BoolLiteral(span, (bool)value);
+            }
             else if (value == null)
-                return new NullLiteral(span);
-            throw new ArgumentException("Value does not have supported type.");
+            {
+                result = new NullLiteral(span);
+            }
+            else
+            {
+                throw new ArgumentException("Value does not have supported type.");
+            }
+            result.OriginalValue = originalValue;
+            return result;
         }
 
         public virtual LangElement Namespace(Span span, QualifiedName? name, Span nameSpan, NamingContext context)
@@ -388,10 +406,10 @@ namespace Devsense.PHP.Syntax.Ast
             return space;
         }
 
-        public virtual LangElement Declare(Span span, IEnumerable<LangElement> decls, LangElement statementOpt)
+        public virtual LangElement Declare(Span span, IEnumerable<LangElement> decls, LangElement statement)
         {
-            Debug.Assert(statementOpt == null || statementOpt is Statement);
-            return new DeclareStmt(span, (Statement)statementOpt);
+            Debug.Assert(statement == null || statement is Statement);
+            return new DeclareStmt(span, decls.CastToArray<GlobalConstantDecl>(), (Statement)statement);
         }
 
         public virtual LangElement Use(Span span, IEnumerable<UseBase> uses, AliasKind kind)
@@ -429,6 +447,7 @@ namespace Devsense.PHP.Syntax.Ast
         public virtual LangElement Case(Span span, LangElement valueOpt, LangElement block)
         {
             Debug.Assert(block is BlockStmt);
+            span = span.IsValid && block.Span.IsValid && span.Start <= block.Span.End ? Span.FromBounds(span.Start, block.Span.End) : Span.Invalid;
             if (valueOpt != null)
                 return new CaseItem(span, (Expression)valueOpt, ((BlockStmt)block).Statements);
             else
@@ -499,8 +518,8 @@ namespace Devsense.PHP.Syntax.Ast
                 bodySpan, null));
         }
 
-        public virtual LangElement Method(Span span, bool aliasReturn, PhpMemberAttributes attributes, TypeRef returnType, 
-            Span returnTypeSpan, string name, Span nameSpan, IEnumerable<FormalTypeParam> typeParamsOpt, 
+        public virtual LangElement Method(Span span, bool aliasReturn, PhpMemberAttributes attributes, TypeRef returnType,
+            Span returnTypeSpan, string name, Span nameSpan, IEnumerable<FormalTypeParam> typeParamsOpt,
             IEnumerable<FormalParam> formalParams, Span formalParamsSpan, IEnumerable<ActualParam> baseCtorParams, LangElement body)
         {
             return new MethodDecl(span, new NameRef(nameSpan, name), aliasReturn, formalParams.AsArray(),

@@ -415,7 +415,7 @@ namespace Devsense.PHP.Syntax.Ast
 
         public override Tokens CloseToken => Tokens.T_END_HEREDOC;
 
-        public override string OpenLabel => $"<<<'{Label}'";
+        public override string OpenLabel => $"<<<'{Label}'\r\n";
 
         public override string CloseLabel => $"{Label};";
 
@@ -445,7 +445,7 @@ namespace Devsense.PHP.Syntax.Ast
 
         public override Tokens CloseToken => Tokens.T_END_HEREDOC;
 
-        public override string OpenLabel => $"<<<{Label}";
+        public override string OpenLabel => $"<<<{Label}\r\n";
 
         public override string CloseLabel => Label;
 

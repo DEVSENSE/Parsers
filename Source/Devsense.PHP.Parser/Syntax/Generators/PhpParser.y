@@ -20,7 +20,7 @@ using Devsense.PHP.Text;
 using Devsense.PHP.Errors;
 
 using CompleteAlias = System.Tuple<Devsense.PHP.Syntax.QualifiedNameRef, Devsense.PHP.Syntax.NameRef>;
-using ContextAlias = System.Tuple<Devsense.PHP.Syntax.QualifiedNameRef, Devsense.PHP.Syntax.NameRef, Devsense.PHP.Syntax.AliasKind>;
+using ContextAlias = System.Tuple<Devsense.PHP.Text.Span, Devsense.PHP.Syntax.QualifiedNameRef, Devsense.PHP.Syntax.NameRef, Devsense.PHP.Syntax.AliasKind>;
 using AnonymousClass = System.Tuple<Devsense.PHP.Syntax.Ast.TypeRef, System.Collections.Generic.List<Devsense.PHP.Syntax.Ast.ActualParam>, Devsense.PHP.Text.Span>;
 
 %%
@@ -376,7 +376,7 @@ identifier:
 ;
 
 top_statement_list:
-		top_statement_list top_statement { $$ = AddToList<LangElement>($1, $2); }
+		top_statement_list top_statement { $$ = AddToTopStatementList<LangElement>($1, $2); }
 	|	/* empty */ { $$ = new List<LangElement>(); }
 ;
 
@@ -435,16 +435,16 @@ use_type:
 
 group_use_declaration:
 		namespace_name T_NS_SEPARATOR '{' unprefixed_use_declarations '}'
-			{ $$ = new List<UseBase>() { AddAliases(@$, $1, @1, $4) }; }
+			{ $$ = new List<UseBase>() { AddAliases(@$, $1, CombineSpans(@1, @2), $4, false) }; }
 	|	T_NS_SEPARATOR namespace_name T_NS_SEPARATOR '{' unprefixed_use_declarations '}'
-			{ $$ = new List<UseBase>() { AddAliases(@$, $2, @2, $5) }; }
+			{ $$ = new List<UseBase>() { AddAliases(@$, $2, CombineSpans(@1, @2, @3), $5, true) }; }
 ;
 
 mixed_group_use_declaration:
 		namespace_name T_NS_SEPARATOR '{' inline_use_declarations '}'
-			{ $$ = new List<UseBase>() { AddAliases(@$, $1, @1, $4) }; }
+			{ $$ = new List<UseBase>() { AddAliases(@$, $1, CombineSpans(@1, @2), $4, false) }; }
 	|	T_NS_SEPARATOR namespace_name T_NS_SEPARATOR '{' inline_use_declarations '}'
-			{ $$ = new List<UseBase>() { AddAliases(@$, $2, @2, $5) }; }
+			{ $$ = new List<UseBase>() { AddAliases(@$, $2, CombineSpans(@1, @2, @3), $5, true) }; }
 ;
 
 inline_use_declarations:
@@ -469,8 +469,8 @@ use_declarations:
 ;
 
 inline_use_declaration:
-		unprefixed_use_declaration { $$ = JoinTuples($1, AliasKind.Type); }
-	|	use_type unprefixed_use_declaration { $$ = JoinTuples($2, (AliasKind)$1);  }
+		unprefixed_use_declaration { $$ = JoinTuples(@$, $1, AliasKind.Type); }
+	|	use_type unprefixed_use_declaration { $$ = JoinTuples(@$, $2, (AliasKind)$1);  }
 ;
 
 unprefixed_use_declaration:
@@ -694,11 +694,11 @@ switch_case_list:
 case_list:
 		/* empty */ { $$ = new List<LangElement>(); }
 	|	case_list T_CASE expr case_separator inner_statement_list
-			{ $$ = AddToList<LangElement>($1, _astFactory.Case(Span.FromBounds(@2.Start, ($5).Count > 0? ($5).Last().Span.End: @$.End), 
-				$3, CreateCaseBlock(@4, $5))); }
+			{ $$ = AddToList<LangElement>($1, _astFactory.Case(CombineSpans(@2, @3, @4, @5), 
+				$3, CreateCaseBlock(CombineSpans(@4, @5), $5))); }
 	|	case_list T_DEFAULT case_separator inner_statement_list
-			{ $$ = AddToList<LangElement>($1, _astFactory.Case(Span.FromBounds(@2.Start, ($4).Count > 0? ($4).Last().Span.End: @$.End), 
-				null, CreateCaseBlock(@3, $4))); }
+			{ $$ = AddToList<LangElement>($1, _astFactory.Case(CombineSpans(@2, @3, @4), 
+				null, CreateCaseBlock(CombineSpans(@3, @4), $4))); }
 ;
 
 case_separator:
@@ -1224,8 +1224,8 @@ exit_expr:
 ;
 
 backticks_expr:
-		'`' '`' { $$ = _astFactory.Literal(@$, string.Empty); SetOriginalValue($$, "``"); }
-	|	'`' T_ENCAPSED_AND_WHITESPACE '`' { $$ = _astFactory.Literal(@$, $2); SetOriginalValue($$, string.Format("`{0}`", $2.Replace("\n", "\\n").Replace("\"", "\\\""))); }
+		'`' '`' { $$ = _astFactory.Literal(@$, string.Empty, "``"); }
+	|	'`' T_ENCAPSED_AND_WHITESPACE '`' { $$ = _astFactory.Literal(@$, $2, string.Format("`{0}`", $2.Replace("\n", "\\n").Replace("\"", "\\\""))); }
 	|	'`' encaps_list '`' { $$ = _astFactory.StringEncapsedExpression(@$, _astFactory.Concat(@2, $2), Tokens.T_BACKQUOTE, "`"); }
 ;
 
@@ -1238,12 +1238,12 @@ ctor_arguments:
 dereferencable_scalar:
 		T_ARRAY '(' array_pair_list ')'	{ $$ = _astFactory.NewArray(@$, $3, true); }
 	|	'[' array_pair_list ']'			{ $$ = _astFactory.NewArray(@$, $2, false); }
-	|	T_CONSTANT_ENCAPSED_STRING		{ $$ = _astFactory.Literal(@$, $1); SetOriginalValue($$, _lexer.TokenText); }
+	|	T_CONSTANT_ENCAPSED_STRING		{ $$ = _astFactory.Literal(@$, $1, _lexer.TokenText); }
 ;
 
 scalar:
-		T_LNUMBER 	{ $$ = _astFactory.Literal(@$, $1); SetOriginalValue($$, _lexer.TokenText); }
-	|	T_DNUMBER 	{ $$ = _astFactory.Literal(@$, $1); SetOriginalValue($$, _lexer.TokenText); }
+		T_LNUMBER 	{ $$ = _astFactory.Literal(@$, $1, _lexer.TokenText); }
+	|	T_DNUMBER 	{ $$ = _astFactory.Literal(@$, $1, _lexer.TokenText); }
 	|	T_LINE 		{ $$ = _astFactory.PseudoConstUse(@$, PseudoConstUse.Types.Line); }
 	|	T_FILE 		{ $$ = _astFactory.PseudoConstUse(@$, PseudoConstUse.Types.File); }     
 	|	T_DIR   	{ $$ = _astFactory.PseudoConstUse(@$, PseudoConstUse.Types.Dir); }      
@@ -1252,8 +1252,8 @@ scalar:
 	|	T_FUNC_C	{ $$ = _astFactory.PseudoConstUse(@$, PseudoConstUse.Types.Function); } 
 	|	T_NS_C		{ $$ = _astFactory.PseudoConstUse(@$, PseudoConstUse.Types.Namespace); }
 	|	T_CLASS_C	{ $$ = _astFactory.PseudoConstUse(@$, PseudoConstUse.Types.Class); }    
-	|	T_START_HEREDOC T_ENCAPSED_AND_WHITESPACE T_END_HEREDOC { $$ = _astFactory.Literal(@$, $2); SetOriginalValue($$, string.Format("<<<{0}  {1}  {2}", $1, $2, $3)); }
-	|	T_START_HEREDOC T_END_HEREDOC { $$ = _astFactory.Literal(@$, string.Empty); SetOriginalValue($$, string.Format("<<<{0}  {1}", $1, $2)); }
+	|	T_START_HEREDOC T_ENCAPSED_AND_WHITESPACE T_END_HEREDOC { $$ = _astFactory.Literal(@$, $2, string.Format("<<<{0}\r\n{1}\r\n{2}", $1, $2, $3)); }
+	|	T_START_HEREDOC T_END_HEREDOC { $$ = _astFactory.Literal(@$, string.Empty, string.Format("<<<{0}\r\n{1}", $1, $2)); }
 	|	'"' encaps_list '"' 	{ $$ = _astFactory.StringEncapsedExpression(@$, _astFactory.Concat(@2, $2), Tokens.T_DOUBLE_QUOTES, "\""); }
 	|	T_START_HEREDOC encaps_list T_END_HEREDOC { $$ = _astFactory.StringEncapsedExpression(@$, _astFactory.Concat(@2, $2), Tokens.T_START_HEREDOC, $1); }
 	|	dereferencable_scalar	{ $$ = $1; }
@@ -1401,11 +1401,11 @@ encaps_list:
 		encaps_list encaps_var
 			{ $$ = AddToList<LangElement>($1, $2); }
 	|	encaps_list T_ENCAPSED_AND_WHITESPACE
-			{ $$ = AddToList<LangElement>($1, _astFactory.Literal(@2, $2)); SetOriginalValue($$.Last(), _lexer.TokenText); }
+			{ $$ = AddToList<LangElement>($1, _astFactory.Literal(@2, $2, _lexer.TokenText)); }
 	|	encaps_var
 			{ $$ = new List<LangElement>() { $1 }; }
 	|	T_ENCAPSED_AND_WHITESPACE encaps_var
-			{ $$ = new List<LangElement>() { _astFactory.Literal(@1, $1), $2 }; SetOriginalValue($$.First(), $1); }
+			{ $$ = new List<LangElement>() { _astFactory.Literal(@1, $1, $1), $2 }; }
 ;
 
 encaps_var:
@@ -1427,8 +1427,8 @@ encaps_var:
 ;
 
 encaps_var_offset:
-		T_STRING		{ $$ = _astFactory.Literal(@$, $1); SetOriginalValue($$, $1); }
-	|	T_NUM_STRING	{ $$ = _astFactory.Literal(@$, $1); SetOriginalValue($$, _lexer.TokenText); }
+		T_STRING		{ $$ = _astFactory.Literal(@$, $1, _lexer.TokenText); }
+	|	T_NUM_STRING	{ $$ = _astFactory.Literal(@$, $1, _lexer.TokenText); }
 	|	T_VARIABLE		{ $$ = _astFactory.Variable(@$, $1, NullLangElement, true); }
 ;
 
