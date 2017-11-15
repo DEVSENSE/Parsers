@@ -183,15 +183,6 @@ namespace Devsense.PHP.Syntax.Ast
     public sealed class GlobalConstDeclList : Statement
     {
         /// <summary>
-        /// Gets collection of CLR attributes annotating this statement.
-        /// </summary>
-        public CustomAttributes Attributes
-        {
-            get { return this.GetCustomAttributes(); }
-            set { this.SetCustomAttributes(value); }
-        }
-
-        /// <summary>
         /// Declared constants.
         /// </summary>
         public IList<GlobalConstantDecl>/*!*/ Constants { get { return constants; } }
@@ -205,14 +196,12 @@ namespace Devsense.PHP.Syntax.Ast
             get { return this.Span; }
         }
 
-        public GlobalConstDeclList(Text.Span span, IList<GlobalConstantDecl>/*!*/ constants, List<CustomAttribute> attributes)
+        public GlobalConstDeclList(Text.Span span, IList<GlobalConstantDecl>/*!*/ constants)
             : base(span)
         {
             Debug.Assert(constants != null);
 
             this.constants = constants;
-            if (attributes != null && attributes.Count != 0)
-                this.Attributes = new CustomAttributes(attributes);
         }
 
         /// <summary>

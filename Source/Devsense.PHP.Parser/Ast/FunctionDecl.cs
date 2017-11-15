@@ -81,29 +81,16 @@ namespace Devsense.PHP.Syntax.Ast
         public TypeRef TypeHint { get { return _typeHint; } }
         private TypeRef _typeHint;
 
-        /// <summary>
-        /// Gets collection of CLR attributes annotating this statement.
-        /// </summary>
-        public CustomAttributes Attributes
-        {
-            get { return this.GetCustomAttributes(); }
-            set { this.SetCustomAttributes(value); }
-        }
-
         #region Construction
 
         public FormalParam(Text.Span span, string/*!*/ name, Text.Span nameSpan, TypeRef typeHint, Flags flags,
-                Expression initValue, List<CustomAttribute> attributes)
+                Expression initValue)
             : base(span)
         {
             _name = new VariableNameRef(nameSpan, name);
             _typeHint = typeHint;
             _flags = flags;
             _initValue = initValue;
-            if (attributes != null && attributes.Count != 0)
-            {
-                this.Attributes = new CustomAttributes(attributes);
-            }
         }
 
         #endregion
@@ -177,15 +164,6 @@ namespace Devsense.PHP.Syntax.Ast
         /// </summary>
         public PhpMemberAttributes MemberAttributes { get; private set; }
 
-        /// <summary>
-        /// Gets collection of CLR attributes annotating this statement.
-        /// </summary>
-        public CustomAttributes Attributes
-        {
-            get { return this.GetCustomAttributes(); }
-            set { this.SetCustomAttributes(value); }
-        }
-
         public Text.Span ParametersSpan { get { return Signature.Span; } }
 
         public Text.Span HeadingSpan => Text.Span.FromBounds(Span.Start, ((returnType != null) ? returnType.Span : ParametersSpan).End);
@@ -199,7 +177,7 @@ namespace Devsense.PHP.Syntax.Ast
             Text.Span span,
             bool isConditional, PhpMemberAttributes memberAttributes, NameRef/*!*/ name,
             bool aliasReturn, IList<FormalParam>/*!*/ formalParams, Text.Span paramsSpan, IList<FormalTypeParam>/*!*/ genericParams,
-            BlockStmt/*!*/ body, List<CustomAttribute> attributes, TypeRef returnType)
+            BlockStmt/*!*/ body, TypeRef returnType)
             : base(span)
         {
             Debug.Assert(genericParams != null && formalParams != null && body != null);
@@ -207,10 +185,6 @@ namespace Devsense.PHP.Syntax.Ast
             this.name = name;
             this.signature = new Signature(aliasReturn, formalParams, paramsSpan);
             this.typeSignature = new TypeSignature(genericParams);
-            if (attributes != null && attributes.Count != 0)
-            {
-                this.Attributes = new CustomAttributes(attributes);
-            }
             this.body = body;
             this.IsConditional = isConditional;
             this.MemberAttributes = memberAttributes;

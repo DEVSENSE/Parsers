@@ -145,11 +145,11 @@ namespace Devsense.PHP.Syntax.Ast
         {
             Debug.Assert(decls.All(e => e is FieldDecl) || decls.All(e => e is GlobalConstantDecl) || decls.All(e => e is ClassConstantDecl));
             if (decls.All(e => e is GlobalConstantDecl))
-                return new GlobalConstDeclList(span, decls.CastToArray<GlobalConstantDecl>(), null);
+                return new GlobalConstDeclList(span, decls.CastToArray<GlobalConstantDecl>());
             else if (decls.All(e => e is ClassConstantDecl))
-                return new ConstDeclList(span, attributes, decls.CastToArray<ClassConstantDecl>(), null);
+                return new ConstDeclList(span, attributes, decls.CastToArray<ClassConstantDecl>());
             else //if (decls.All(e => e is FieldDecl))
-                return new FieldDeclList(span, attributes, decls.CastToArray<FieldDecl>(), null);
+                return new FieldDeclList(span, attributes, decls.CastToArray<FieldDecl>());
         }
 
         public virtual LangElement Do(Span span, LangElement body, LangElement cond, Span condSpan)
@@ -248,7 +248,7 @@ namespace Devsense.PHP.Syntax.Ast
         {
             return new FunctionDecl(span, conditional, attributes, new NameRef(nameSpan, name.Value), aliasReturn,
                 formalParams.AsArray(), formalParamsSpan, typeParamsOpt.AsArray(),
-                (BlockStmt)body, null, returnType);
+                (BlockStmt)body, returnType);
         }
 
         public virtual LangElement Lambda(Span span, Span headingSpan, bool aliasReturn,
@@ -261,7 +261,7 @@ namespace Devsense.PHP.Syntax.Ast
 
         public virtual FormalParam Parameter(Span span, string name, Span nameSpan, TypeRef typeOpt, FormalParam.Flags flags, Expression initValue)
         {
-            return new FormalParam(span, name, nameSpan, typeOpt, flags, initValue, null);
+            return new FormalParam(span, name, nameSpan, typeOpt, flags, initValue);
         }
 
         public virtual LangElement GlobalCode(Span span, IEnumerable<LangElement> statements, NamingContext context)
@@ -506,7 +506,7 @@ namespace Devsense.PHP.Syntax.Ast
             return new NamedTypeDecl(span, headingSpan, conditional, attributes, false,
                 new NameRef(nameSpan, name), typeParamsOpt.AsArray(),
                 baseClassOpt, implements.AsArray(), members.CastToArray<TypeMemberDecl>(),
-                bodySpan, null);
+                bodySpan);
         }
 
         public virtual TypeRef AnonymousTypeReference(Span span, Span headingSpan, bool conditional, PhpMemberAttributes attributes, IEnumerable<FormalTypeParam> typeParamsOpt, INamedTypeRef baseClassOpt, IEnumerable<INamedTypeRef> implements, IEnumerable<LangElement> members, Span bodySpan)
@@ -515,7 +515,7 @@ namespace Devsense.PHP.Syntax.Ast
             return new AnonymousTypeRef(span, new AnonymousTypeDecl(span, headingSpan,
                 conditional, attributes, false, typeParamsOpt.AsArray(),
                 baseClassOpt, implements.AsArray(), members.CastToArray<TypeMemberDecl>(),
-                bodySpan, null));
+                bodySpan));
         }
 
         public virtual LangElement Method(Span span, bool aliasReturn, PhpMemberAttributes attributes, TypeRef returnType,
@@ -524,7 +524,7 @@ namespace Devsense.PHP.Syntax.Ast
         {
             return new MethodDecl(span, new NameRef(nameSpan, name), aliasReturn, formalParams.AsArray(),
                 formalParamsSpan, typeParamsOpt.AsArray(),
-                (BlockStmt)body, attributes, baseCtorParams.AsArray(), null, returnType);
+                (BlockStmt)body, attributes, baseCtorParams.AsArray(), returnType);
         }
 
         public virtual LangElement UnaryOperation(Span span, Operations operation, LangElement expression)

@@ -414,11 +414,6 @@ namespace Devsense.PHP.Syntax
             ConsumeToken(Tokens.T_SEMI, SpanUtils.SafeSpan(x.Span.End - 1, 1));
         }
 
-        public override void VisitCustomAttribute(CustomAttribute x)
-        {
-            throw new NotImplementedException();
-        }
-
         public override void VisitDeclareStmt(DeclareStmt x)
         {
             ConsumeToken(Tokens.T_DECLARE, SpanUtils.SafeSpan(x.Span.StartOrInvalid, 7));

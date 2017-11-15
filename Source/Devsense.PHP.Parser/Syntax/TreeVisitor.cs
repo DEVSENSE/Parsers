@@ -932,15 +932,6 @@ namespace Devsense.PHP.Syntax
         }
 
         /// <summary>
-        /// Visit custom attributes NamedParameters.
-        /// </summary>
-        /// <param name="x"></param>
-        virtual public void VisitCustomAttribute(CustomAttribute x)
-        {
-            VisitList(x.NamedParameters);
-        }
-
-        /// <summary>
         /// Visit formal parameter initializer expression.
         /// </summary>
         /// <param name="x"></param>

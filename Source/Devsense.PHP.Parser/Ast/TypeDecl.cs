@@ -32,16 +32,7 @@ namespace Devsense.PHP.Syntax.Ast
         /// </summary>
         public object DefaultType { get { return defaultType; } }
         private readonly object defaultType;
-
-        /// <summary>
-        /// Gets collection of CLR attributes annotating this statement.
-        /// </summary>
-        public CustomAttributes Attributes
-        {
-            get { return this.GetCustomAttributes(); }
-            set { this.SetCustomAttributes(value); }
-        }
-
+        
         /// <summary>
         /// Singleton instance of an empty <see cref="List&lt;FormalTypeParam&gt;"/>.
         /// </summary>
@@ -49,16 +40,13 @@ namespace Devsense.PHP.Syntax.Ast
 
         #region Construction
 
-        public FormalTypeParam(Text.Span span, Name name, object defaultType, List<CustomAttribute> attributes)
+        public FormalTypeParam(Text.Span span, Name name, object defaultType)
             : base(span)
         {
             Debug.Assert(defaultType == null || defaultType is QualifiedName || defaultType is GenericQualifiedName);
 
             this.name = name;
             this.defaultType = defaultType;
-
-            if (attributes != null && attributes.Count != 0)
-                this.Attributes = new CustomAttributes(attributes);
         }
 
         #endregion
@@ -140,15 +128,6 @@ namespace Devsense.PHP.Syntax.Ast
         public IList<TypeMemberDecl> Members { get { return members; } internal set { members = value; } }
         private IList<TypeMemberDecl> members;
 
-        /// <summary>
-        /// Gets collection of CLR attributes annotating this statement.
-        /// </summary>
-        public CustomAttributes Attributes
-        {
-            get { return this.GetCustomAttributes(); }
-            set { this.SetCustomAttributes(value); }
-        }
-
         public Text.Span HeadingSpan { get { return headingSpan; } }
         private Text.Span headingSpan;
 
@@ -173,8 +152,7 @@ namespace Devsense.PHP.Syntax.Ast
             Text.Span span, Text.Span headingSpan,
             bool isConditional, PhpMemberAttributes memberAttributes, bool isPartial,
             IList<FormalTypeParam>/*!*/ genericParams, INamedTypeRef baseClass,
-            IList<INamedTypeRef>/*!*/ implementsList, IList<TypeMemberDecl>/*!*/ elements, Text.Span bodySpan,
-            List<CustomAttribute> attributes)
+            IList<INamedTypeRef>/*!*/ implementsList, IList<TypeMemberDecl>/*!*/ elements, Text.Span bodySpan)
             : base(span)
         {
             Debug.Assert(genericParams != null && implementsList != null && elements != null);
@@ -186,12 +164,6 @@ namespace Devsense.PHP.Syntax.Ast
             this.IsConditional = isConditional;
             this.ImplementsList = implementsList.AsArray();
             this.members = elements.AsArray();
-
-            if (attributes != null && attributes.Count != 0)
-            {
-                this.Attributes = new CustomAttributes(attributes);
-            }
-
             this.headingSpan = headingSpan;
             this.bodySpan = bodySpan;
             this.partialKeyword = isPartial;
@@ -247,10 +219,9 @@ namespace Devsense.PHP.Syntax.Ast
         public NamedTypeDecl(
             Text.Span span, Text.Span headingSpan, bool isConditional, PhpMemberAttributes memberAttributes, bool isPartial,
             NameRef className, IList<FormalTypeParam>/*!*/ genericParams, INamedTypeRef baseClass,
-            IList<INamedTypeRef>/*!*/ implementsList, IList<TypeMemberDecl>/*!*/ elements, Text.Span bodySpan,
-            List<CustomAttribute> attributes)
+            IList<INamedTypeRef>/*!*/ implementsList, IList<TypeMemberDecl>/*!*/ elements, Text.Span bodySpan)
             : base(span, headingSpan, isConditional,
-                  memberAttributes, isPartial, genericParams, baseClass, implementsList, elements, bodySpan, attributes)
+                  memberAttributes, isPartial, genericParams, baseClass, implementsList, elements, bodySpan)
         {
             Debug.Assert(genericParams != null && implementsList != null && elements != null);
             Debug.Assert((memberAttributes & PhpMemberAttributes.Trait) == 0 || (memberAttributes & PhpMemberAttributes.Interface) == 0, "Interface cannot be a trait");
@@ -296,10 +267,9 @@ namespace Devsense.PHP.Syntax.Ast
             Text.Span span, Text.Span headingSpan,
             bool isConditional, PhpMemberAttributes memberAttributes, bool isPartial,
             IList<FormalTypeParam>/*!*/ genericParams, INamedTypeRef baseClass,
-            IList<INamedTypeRef>/*!*/ implementsList, IList<TypeMemberDecl>/*!*/ elements, Text.Span bodySpan,
-            List<CustomAttribute> attributes)
+            IList<INamedTypeRef>/*!*/ implementsList, IList<TypeMemberDecl>/*!*/ elements, Text.Span bodySpan)
             : base(span, headingSpan, isConditional,
-                  memberAttributes, isPartial, genericParams, baseClass, implementsList, elements, bodySpan, attributes)
+                  memberAttributes, isPartial, genericParams, baseClass, implementsList, elements, bodySpan)
         {
         }
 
@@ -344,20 +314,9 @@ namespace Devsense.PHP.Syntax.Ast
         public PhpMemberAttributes Modifiers { get { return modifiers; } }
         protected readonly PhpMemberAttributes modifiers;
 
-        /// <summary>
-        /// Gets collection of CLR attributes annotating this statement.
-        /// </summary>
-        public CustomAttributes Attributes
-        {
-            get { return this.GetCustomAttributes(); }
-            set { this.SetCustomAttributes(value); }
-        }
-
-        protected TypeMemberDecl(Text.Span span, PhpMemberAttributes modifiers, List<CustomAttribute> attributes)
+        protected TypeMemberDecl(Text.Span span, PhpMemberAttributes modifiers)
             : base(span)
         {
-            if (attributes != null && attributes.Count != 0)
-                this.Attributes = new CustomAttributes(attributes);
             this.modifiers = modifiers;
         }
     }
@@ -431,14 +390,12 @@ namespace Devsense.PHP.Syntax.Ast
         /// <param name="body">Method content.</param>
         /// <param name="modifiers">Method modifiers, visibility etc.</param>
         /// <param name="baseCtorParams">Parameters for the base class constructor.</param>
-        /// <param name="attributes">Method attributes.</param>
         /// <param name="returnType">Return type hint, optional.</param>
         public MethodDecl(Text.Span span,
             NameRef name, bool aliasReturn, IList<FormalParam>/*!*/ formalParams, Text.Span paramsSpan,
             IList<FormalTypeParam>/*!*/ genericParams, BlockStmt body,
-            PhpMemberAttributes modifiers, IList<ActualParam> baseCtorParams,
-            List<CustomAttribute> attributes, TypeRef returnType)
-            : base(span, modifiers, attributes)
+            PhpMemberAttributes modifiers, IList<ActualParam> baseCtorParams, TypeRef returnType)
+            : base(span, modifiers)
         {
             Debug.Assert(genericParams != null && formalParams != null);
 
@@ -488,9 +445,8 @@ namespace Devsense.PHP.Syntax.Ast
         /// <summary>List of fields in this list</summary>
         public IList<FieldDecl> Fields/*!*/ { get { return fields; } }
 
-        public FieldDeclList(Text.Span span, PhpMemberAttributes modifiers, IList<FieldDecl>/*!*/ fields,
-            List<CustomAttribute> attributes)
-            : base(span, modifiers, attributes)
+        public FieldDeclList(Text.Span span, PhpMemberAttributes modifiers, IList<FieldDecl>/*!*/ fields)
+            : base(span, modifiers)
         {
             Debug.Assert(fields != null);
             this.fields = fields;
@@ -588,8 +544,8 @@ namespace Devsense.PHP.Syntax.Ast
         public IList<ClassConstantDecl>/*!*/ Constants { get { return constants; } }
         private readonly IList<ClassConstantDecl>/*!*/ constants;
 
-        public ConstDeclList(Text.Span span, PhpMemberAttributes modifiers, IList<ClassConstantDecl>/*!*/ constants, List<CustomAttribute> attributes)
-            : base(span, modifiers, attributes)
+        public ConstDeclList(Text.Span span, PhpMemberAttributes modifiers, IList<ClassConstantDecl>/*!*/ constants)
+            : base(span, modifiers)
         {
             Debug.Assert(constants != null);
             this.constants = constants;
@@ -768,7 +724,7 @@ namespace Devsense.PHP.Syntax.Ast
         public int HeadingEndPosition => traitsList.Last().Span.End;
 
         public TraitsUse(Text.Span span, IList<TypeRef>/*!*/traitsList, TraitAdaptationBlock traitAdaptationBlock)
-            : base(span, PhpMemberAttributes.Public, null)
+            : base(span, PhpMemberAttributes.Public)
         {
             if (traitsList == null)
                 throw new ArgumentNullException("traitsList");
