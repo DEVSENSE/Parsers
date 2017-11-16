@@ -498,7 +498,7 @@ const_list:
 
 inner_statement_list:
 		inner_statement_list inner_statement
-			{ $$ = AddToList<LangElement>($1, $2); }
+			{ $$ = AddToTopStatementList<LangElement>($1, $2); }
 	|	/* empty */
 			{ $$ = new List<LangElement>(); }
 ;

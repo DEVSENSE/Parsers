@@ -1422,6 +1422,14 @@ namespace Devsense.PHP.Syntax
             {
                 ConsumeToken(Tokens.T_INCLUDE, span);
             }
+            else if (value.EqualsOrdinalIgnoreCase("list"))
+            {
+                ConsumeToken(Tokens.T_LIST, span);
+            }
+            else if (value.EqualsOrdinalIgnoreCase("class"))
+            {
+                ConsumeToken(Tokens.T_CLASS, span);
+            }
             else
             {
                 // TODO - add all the keywords

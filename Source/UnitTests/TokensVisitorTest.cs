@@ -15,12 +15,14 @@ using Devsense.PHP.Errors;
 namespace UnitTests
 {
     [TestClass]
+    //[DeploymentItem("TestData.csv")] // TODO - extend for lexer tests
     [DeploymentItem("ParserTestData.csv")]
     public class TokensVisitorTests
     {
         public TestContext TestContext { get; set; }
 
         [TestMethod]
+        //[DataSource("Microsoft.VisualStudio.TestTools.DataSource.CSV", "|DataDirectory|\\TestData.csv", "TestData#csv", DataAccessMethod.Sequential)]
         [DataSource("Microsoft.VisualStudio.TestTools.DataSource.CSV", "|DataDirectory|\\ParserTestData.csv", "ParserTestData#csv", DataAccessMethod.Sequential)]
         public void TokensVisitorTest()
         {
@@ -32,15 +34,10 @@ namespace UnitTests
             if (testparts.Length >= 2)
             {
                 testcontent = testparts[0];
-                if (testparts[1].Contains("ERRORS"))
+                if (path.Contains("functions1.phpt"))
                 {
-                    return; // TODO handle errors 
+                    return; // TODO - too slow test 
                 }
-            }
-
-            if (testcontent.Contains("die;") || testcontent.Contains("die("))
-            {
-                return; // TODO handle die and other tokens with multiple strings (not equal, cast)
             }
 
             var original = testcontent;
@@ -54,6 +51,10 @@ namespace UnitTests
             using (StringReader source_reader = new StringReader(original))
             {
                 sourceUnit.Parse(factory, errors, new TestErrorRecovery());
+                if(errors.Count != 0)
+                {
+                    return;// TODO - handle errors
+                }
                 ast = sourceUnit.Ast;
             }
 
@@ -215,13 +216,9 @@ namespace UnitTests
             public void ConsumeToken(Tokens token, string text, Span position)
             {
                 ProcessWhitespaces(position);
-                if (token != Tokens.T_SEMI || _tokens.GetTokenAt(position, Tokens.T_SEMI, null) != null)
+                if (token != Tokens.T_SEMI || _tokens.GetTokenAt(position, Tokens.T_SEMI, null) != null) // TODO - last element without semicolon
                 {
-                    ProcessToken(token, text, position);
-                }
-                else
-                {
-
+                    ProcessToken(token, _tokens.GetTokenText(new SourceToken(token, position), string.Empty), position);
                 }
             }
 

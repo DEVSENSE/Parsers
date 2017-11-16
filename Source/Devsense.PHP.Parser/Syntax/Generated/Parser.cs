@@ -2119,7 +2119,7 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 { yyval.NodeList = new List<LangElement>() { value_stack.array[value_stack.top-1].yyval.Node }; }
         return;
       case 123: // inner_statement_list -> inner_statement_list inner_statement 
-{ yyval.NodeList = AddToList<LangElement>(value_stack.array[value_stack.top-2].yyval.NodeList, value_stack.array[value_stack.top-1].yyval.Node); }
+{ yyval.NodeList = AddToTopStatementList<LangElement>(value_stack.array[value_stack.top-2].yyval.NodeList, value_stack.array[value_stack.top-1].yyval.Node); }
         return;
       case 124: // inner_statement_list -> 
 { yyval.NodeList = new List<LangElement>(); }

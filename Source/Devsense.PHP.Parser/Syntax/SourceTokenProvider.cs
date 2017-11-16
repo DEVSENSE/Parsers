@@ -39,6 +39,7 @@ namespace Devsense.PHP.Syntax
     /// <summary>
     /// <see cref="ISourceToken"/> immutable implementation.
     /// </summary>
+    [DebuggerDisplay("{Token} - {Span}")]
     public sealed class SourceToken : ISourceToken
     {
         public Tokens Token { get; }
