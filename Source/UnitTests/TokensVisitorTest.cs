@@ -74,6 +74,13 @@ namespace UnitTests
             //    Assert.AreEqual(original[i], result[i]);
             //}
             Assert.AreEqual(original, result);
+            var tokens = provider.GetTokens(new Span(0, original.Length)).AsArray();
+            Assert.AreEqual(tokens.Length, whitespace.Processed.Count);
+            for (int i = 0; i < tokens.Length; i++)
+            {
+                Assert.AreEqual(tokens[i].Token, whitespace.Processed[i].Token);
+                Assert.AreEqual(tokens[i].Span, whitespace.Processed[i].Span);
+            }
         }
         internal struct Comment
         {
@@ -179,6 +186,9 @@ namespace UnitTests
             public StringBuilder Code { get { ProcessWhitespaces(new Span(int.MaxValue, 0)); return _builder; } }
             private StringBuilder _builder = new StringBuilder();
 
+            public List<ISourceToken> Processed => _processed;
+            private List<ISourceToken> _processed = new List<ISourceToken>();
+
             private Span _previous = Span.Invalid;
             private ISourceTokenProvider _tokens;
 
@@ -198,6 +208,7 @@ namespace UnitTests
                 if (start >= 0 && text.Length >= 0)
                 {
                     _builder.Replace(start, text.Length, text);
+                    _processed.Add(new SourceToken(token, position));
                 }
             }
 
@@ -228,8 +239,8 @@ namespace UnitTests
                             ProcessToken(item.Token, _tokens.GetTokenText(item, string.Empty), item.Span);
                         }
                     }
+                    _previous = position;
                 }
-                _previous = position;
             }
         }
 
