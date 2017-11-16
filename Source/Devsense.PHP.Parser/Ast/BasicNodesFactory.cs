@@ -20,6 +20,7 @@ using System.Linq;
 
 using Devsense.PHP.Errors;
 using Devsense.PHP.Text;
+using static Devsense.PHP.Syntax.Ast.EncapsedExpression;
 
 namespace Devsense.PHP.Syntax.Ast
 {
@@ -255,7 +256,7 @@ namespace Devsense.PHP.Syntax.Ast
             PhpMemberAttributes modifiers, TypeRef returnType, IEnumerable<FormalParam> formalParams,
             Span formalParamsSpan, IEnumerable<FormalParam> lexicalVars, LangElement body)
         {
-            return new LambdaFunctionExpr(span, headingSpan, new Scope(), false, modifiers, formalParams.AsArray(),
+            return new LambdaFunctionExpr(span, headingSpan, aliasReturn, modifiers, formalParams.AsArray(),
                 formalParamsSpan, lexicalVars.AsArray(), (BlockStmt)body, returnType);
         }
 

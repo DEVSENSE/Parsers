@@ -7,6 +7,7 @@ using Devsense.PHP.Syntax.Ast;
 using System.Diagnostics;
 using System.Globalization;
 using Devsense.PHP.Text;
+using static Devsense.PHP.Syntax.Ast.EncapsedExpression;
 
 namespace Devsense.PHP.Syntax
 {

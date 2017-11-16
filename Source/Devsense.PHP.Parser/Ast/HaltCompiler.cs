@@ -17,12 +17,14 @@ using System;
 
 namespace Devsense.PHP.Syntax.Ast
 {
+    /// <summary>
+    /// <c>__halt_compiler</c> element.
+    /// </summary>
     public sealed class HaltCompiler : Statement
     {
         /// <summary>
-        /// 
+        /// Initializes the element.
         /// </summary>
-        /// <param name="span"></param>
         public HaltCompiler(Text.Span span) : base(span)
         {
         }

@@ -32,7 +32,7 @@ namespace Devsense.PHP.Syntax.Ast
         /// <summary>
         /// Expressions represented by the <see cref="ConcatEx"/>.
         /// </summary>
-        public Expression[]/*!*/ Expressions { get { return this._expressions; } internal set { this._expressions = value; } }
+        public Expression[]/*!*/ Expressions { get { return _expressions; } }
         private Expression[]/*!*/ _expressions;
 
         /// <summary>
@@ -45,7 +45,7 @@ namespace Devsense.PHP.Syntax.Ast
             : base(span)
         {
             Debug.Assert(expressions != null);
-            this._expressions = expressions.AsArray();
+            _expressions = expressions.AsArray();
         }
 
         /// <summary>

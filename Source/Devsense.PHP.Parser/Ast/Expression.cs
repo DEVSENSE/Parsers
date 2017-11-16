@@ -140,6 +140,9 @@ namespace Devsense.PHP.Syntax.Ast
     /// </summary>
     public interface IExpression : ILangElement
     {
+        /// <summary>
+        /// Operation represented by the expression
+        /// </summary>
         Operations Operation { get; }
     }
 
@@ -171,11 +174,6 @@ namespace Devsense.PHP.Syntax.Ast
         /// Whether the expression is allowed to be passed by reference to a routine.
         /// </summary>
         internal virtual bool AllowsPassByReference { get { return false; } }
-
-        /// <summary>
-        /// Whether to mark sequence point when the expression appears in an expression statement.
-        /// </summary>
-        internal virtual bool DoMarkSequencePoint { get { return true; } }
     }
 
     #endregion
@@ -234,10 +232,212 @@ namespace Devsense.PHP.Syntax.Ast
     #region EncapsedExpression
 
     /// <summary>
-    /// Expression representing an enclosed expression.
+    /// Expression representing an enclosed expression in parenthesis, braces or quotes.
     /// </summary>
     public abstract class EncapsedExpression : Expression
     {
+        #region ParenthesisExpression
+
+        /// <summary>
+        /// Expression representing a parenthesis enclosed expression.
+        /// </summary>
+        public sealed class ParenthesisExpression : EncapsedExpression
+        {
+            public override Tokens OpenToken => Tokens.T_LPAREN;
+
+            public override Tokens CloseToken => Tokens.T_RPAREN;
+
+            public ParenthesisExpression(Span span, Expression expression) : base(span, expression)
+            {
+                _expression = expression;
+            }
+        }
+
+        #endregion
+
+        #region BracesExpression
+
+        /// <summary>
+        /// Expression representing a parenthesis enclosed expression.
+        /// </summary>
+        public sealed class BracesExpression : EncapsedExpression
+        {
+            public override Tokens OpenToken => Tokens.T_LBRACE;
+
+            public override Tokens CloseToken => Tokens.T_RBRACE;
+
+            public BracesExpression(Span span, Expression expression) : base(span, expression)
+            {
+                _expression = expression;
+            }
+        }
+
+        #endregion
+
+        #region DollarBracesExpression
+
+        /// <summary>
+        /// Expression representing a parenthesis enclosed expression.
+        /// </summary>
+        public sealed class DollarBracesExpression : EncapsedExpression
+        {
+            public override Tokens OpenToken => Tokens.T_DOLLAR_OPEN_CURLY_BRACES;
+
+            public override Tokens CloseToken => Tokens.T_RBRACE;
+
+            public DollarBracesExpression(Span span, Expression expression) : base(span, expression)
+            {
+                _expression = expression;
+            }
+        }
+
+        #endregion
+
+        #region StringEncapsedExpression
+
+        /// <summary>
+        /// Expression representing a concat expression enclosed in quotes or labels.
+        /// </summary>
+        public abstract class StringEncapsedExpression : EncapsedExpression
+        {
+            public abstract string OpenLabel { get; }
+
+            public abstract string CloseLabel { get; }
+
+            public StringEncapsedExpression(Span span, Expression expression) : base(span, expression) { }
+        }
+
+        #endregion
+
+        #region SingleQuotedExpression
+
+        /// <summary>
+        /// Expression representing a single-quote enclosed expression.
+        /// </summary>
+        public sealed class SingleQuotedExpression : StringEncapsedExpression
+        {
+            public override Tokens OpenToken => Tokens.T_SINGLE_QUOTES;
+
+            public override Tokens CloseToken => Tokens.T_SINGLE_QUOTES;
+
+            public override string OpenLabel => "'";
+
+            public override string CloseLabel => "'";
+
+            public SingleQuotedExpression(Span span, Expression expression) : base(span, expression)
+            {
+                _expression = expression;
+            }
+        }
+
+        #endregion
+
+        #region DoubleQuotedExpression
+
+        /// <summary>
+        /// Expression representing a double-quote enclosed expression.
+        /// </summary>
+        public sealed class DoubleQuotedExpression : StringEncapsedExpression
+        {
+            public override Tokens OpenToken => Tokens.T_DOUBLE_QUOTES;
+
+            public override Tokens CloseToken => Tokens.T_DOUBLE_QUOTES;
+
+            public override string OpenLabel => @"""";
+
+            public override string CloseLabel => @"""";
+
+            public DoubleQuotedExpression(Span span, Expression expression) : base(span, expression)
+            {
+                _expression = expression;
+            }
+        }
+
+        #endregion
+
+        #region BackQuotedExpression
+
+        /// <summary>
+        /// Expression representing a back-ticks enclosed expression.
+        /// </summary>
+        public sealed class BackQuotedExpression : StringEncapsedExpression
+        {
+            public override Tokens OpenToken => Tokens.T_BACKQUOTE;
+
+            public override Tokens CloseToken => Tokens.T_BACKQUOTE;
+
+            public override string OpenLabel => "`";
+
+            public override string CloseLabel => "`";
+
+            public BackQuotedExpression(Span span, Expression expression) : base(span, expression)
+            {
+                _expression = expression;
+            }
+        }
+
+        #endregion
+
+        #region NowDocExpression
+
+        /// <summary>
+        /// Expression representing a nowdoc expression.
+        /// </summary>
+        public sealed class NowDocExpression : StringEncapsedExpression
+        {
+            public override Tokens OpenToken => Tokens.T_START_HEREDOC;
+
+            public override Tokens CloseToken => Tokens.T_END_HEREDOC;
+
+            public override string OpenLabel => $"<<<'{Label}'\r\n";
+
+            public override string CloseLabel => $"{Label};";
+
+            /// <summary>
+            /// NOWDOC label
+            /// </summary>
+            public string Label => _label;
+            private string _label;
+
+            public NowDocExpression(Span span, Expression expression, string label) : base(span, expression)
+            {
+                _expression = expression;
+                _label = label;
+            }
+        }
+
+        #endregion
+
+        #region HereDocExpression
+
+        /// <summary>
+        /// Expression representing a heredoc expression.
+        /// </summary>
+        public sealed class HereDocExpression : StringEncapsedExpression
+        {
+            public override Tokens OpenToken => Tokens.T_START_HEREDOC;
+
+            public override Tokens CloseToken => Tokens.T_END_HEREDOC;
+
+            public override string OpenLabel => $"<<<{Label}\r\n";
+
+            public override string CloseLabel => Label;
+
+            /// <summary>
+            /// NOWDOC label
+            /// </summary>
+            public string Label => _label;
+            private string _label;
+
+            public HereDocExpression(Span span, Expression expression, string label) : base(span, expression)
+            {
+                _expression = expression;
+                _label = label;
+            }
+        }
+
+        #endregion
+
         public abstract Tokens OpenToken { get; }
 
         public abstract Tokens CloseToken { get; }
@@ -257,208 +457,6 @@ namespace Devsense.PHP.Syntax.Ast
         public override void VisitMe(TreeVisitor visitor)
         {
             visitor.VisitEncapsedExpression(this);
-        }
-    }
-
-    #endregion
-
-    #region ParenthesisExpression
-
-    /// <summary>
-    /// Expression representing a parenthesis enclosed expression.
-    /// </summary>
-    public sealed class ParenthesisExpression : EncapsedExpression
-    {
-        public override Tokens OpenToken => Tokens.T_LPAREN;
-
-        public override Tokens CloseToken => Tokens.T_RPAREN;
-
-        public ParenthesisExpression(Span span, Expression expression) : base(span, expression)
-        {
-            _expression = expression;
-        }
-    }
-
-    #endregion
-
-    #region BracesExpression
-
-    /// <summary>
-    /// Expression representing a parenthesis enclosed expression.
-    /// </summary>
-    public sealed class BracesExpression : EncapsedExpression
-    {
-        public override Tokens OpenToken => Tokens.T_LBRACE;
-
-        public override Tokens CloseToken => Tokens.T_RBRACE;
-
-        public BracesExpression(Span span, Expression expression) : base(span, expression)
-        {
-            _expression = expression;
-        }
-    }
-
-    #endregion
-
-    #region DollarBracesExpression
-
-    /// <summary>
-    /// Expression representing a parenthesis enclosed expression.
-    /// </summary>
-    public sealed class DollarBracesExpression : EncapsedExpression
-    {
-        public override Tokens OpenToken => Tokens.T_DOLLAR_OPEN_CURLY_BRACES;
-
-        public override Tokens CloseToken => Tokens.T_RBRACE;
-
-        public DollarBracesExpression(Span span, Expression expression) : base(span, expression)
-        {
-            _expression = expression;
-        }
-    }
-
-    #endregion
-
-    #region StringEncapsedExpression
-
-    /// <summary>
-    /// Expression representing a concat expression enclosed in quotes or labels.
-    /// </summary>
-    public abstract class StringEncapsedExpression : EncapsedExpression
-    {
-        public abstract string OpenLabel { get; }
-
-        public abstract string CloseLabel { get; }
-
-        public StringEncapsedExpression(Span span, Expression expression) : base(span, expression) { }
-    }
-
-    #endregion
-
-    #region SingleQuotedExpression
-
-    /// <summary>
-    /// Expression representing a single-quote enclosed expression.
-    /// </summary>
-    public sealed class SingleQuotedExpression : StringEncapsedExpression
-    {
-        public override Tokens OpenToken => Tokens.T_SINGLE_QUOTES;
-
-        public override Tokens CloseToken => Tokens.T_SINGLE_QUOTES;
-
-        public override string OpenLabel => "'";
-
-        public override string CloseLabel => "'";
-
-        public SingleQuotedExpression(Span span, Expression expression) : base(span, expression)
-        {
-            _expression = expression;
-        }
-    }
-
-    #endregion
-
-    #region DoubleQuotedExpression
-
-    /// <summary>
-    /// Expression representing a double-quote enclosed expression.
-    /// </summary>
-    public sealed class DoubleQuotedExpression : StringEncapsedExpression
-    {
-        public override Tokens OpenToken => Tokens.T_DOUBLE_QUOTES;
-
-        public override Tokens CloseToken => Tokens.T_DOUBLE_QUOTES;
-
-        public override string OpenLabel => @"""";
-
-        public override string CloseLabel => @"""";
-
-        public DoubleQuotedExpression(Span span, Expression expression) : base(span, expression)
-        {
-            _expression = expression;
-        }
-    }
-
-    #endregion
-
-    #region BackQuotedExpression
-
-    /// <summary>
-    /// Expression representing a back-ticks enclosed expression.
-    /// </summary>
-    public sealed class BackQuotedExpression : StringEncapsedExpression
-    {
-        public override Tokens OpenToken => Tokens.T_BACKQUOTE;
-
-        public override Tokens CloseToken => Tokens.T_BACKQUOTE;
-
-        public override string OpenLabel => "`";
-
-        public override string CloseLabel => "`";
-
-        public BackQuotedExpression(Span span, Expression expression) : base(span, expression)
-        {
-            _expression = expression;
-        }
-    }
-
-    #endregion
-
-    #region NowDocExpression
-
-    /// <summary>
-    /// Expression representing a nowdoc expression.
-    /// </summary>
-    public sealed class NowDocExpression : StringEncapsedExpression
-    {
-        public override Tokens OpenToken => Tokens.T_START_HEREDOC;
-
-        public override Tokens CloseToken => Tokens.T_END_HEREDOC;
-
-        public override string OpenLabel => $"<<<'{Label}'\r\n";
-
-        public override string CloseLabel => $"{Label};";
-
-        /// <summary>
-        /// NOWDOC label
-        /// </summary>
-        public string Label => _label;
-        private string _label;
-
-        public NowDocExpression(Span span, Expression expression, string label) : base(span, expression)
-        {
-            _expression = expression;
-            _label = label;
-        }
-    }
-
-    #endregion
-
-    #region HereDocExpression
-
-    /// <summary>
-    /// Expression representing a heredoc expression.
-    /// </summary>
-    public sealed class HereDocExpression : StringEncapsedExpression
-    {
-        public override Tokens OpenToken => Tokens.T_START_HEREDOC;
-
-        public override Tokens CloseToken => Tokens.T_END_HEREDOC;
-
-        public override string OpenLabel => $"<<<{Label}\r\n";
-
-        public override string CloseLabel => Label;
-
-        /// <summary>
-        /// NOWDOC label
-        /// </summary>
-        public string Label => _label;
-        private string _label;
-
-        public HereDocExpression(Span span, Expression expression, string label) : base(span, expression)
-        {
-            _expression = expression;
-            _label = label;
         }
     }
 

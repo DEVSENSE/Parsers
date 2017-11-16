@@ -85,7 +85,7 @@ namespace Devsense.PHP.Syntax.Ast
 
         public LambdaFunctionExpr(
             Text.Span span, Text.Span headingSpan,
-            Scope scope, bool aliasReturn, PhpMemberAttributes modifiers, IList<FormalParam>/*!*/ formalParams,
+            bool aliasReturn, PhpMemberAttributes modifiers, IList<FormalParam>/*!*/ formalParams,
             Text.Span paramSpan, IList<FormalParam> useParams,
             BlockStmt/*!*/ body, TypeRef returnType)
             : base(span)

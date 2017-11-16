@@ -27,7 +27,7 @@ namespace Devsense.PHP.Syntax.Ast
 
         /// <summary>Target of assignment</summary>
         public VarLikeConstructUse LValue { get { return lvalue; } }
-        internal VarLikeConstructUse lvalue;
+        protected VarLikeConstructUse lvalue;
 
         protected AssignEx(Text.Span p) : base(p) { }
     }
@@ -45,9 +45,9 @@ namespace Devsense.PHP.Syntax.Ast
         public override Operations Operation { get { return operation; } }
         internal Operations operation;
 
-        internal Expression/*!*/ rvalue;
         /// <summary>Expression being assigned</summary>
         public Expression/*!*/RValue { get { return rvalue; } }
+        Expression/*!*/ rvalue;
 
         public ValueAssignEx(Text.Span span, Operations operation, VarLikeConstructUse/*!*/ lvalue, Expression/*!*/ rvalue)
             : base(span)
@@ -83,7 +83,7 @@ namespace Devsense.PHP.Syntax.Ast
 
         /// <summary>Expression being assigned</summary>
         public Expression/*!*/RValue { get { return rvalue; } }
-        internal Expression/*!*/ rvalue;
+        Expression/*!*/ rvalue;
 
         /// <summary>
         /// Create new assignment.
@@ -94,7 +94,9 @@ namespace Devsense.PHP.Syntax.Ast
         public RefAssignEx(Text.Span span, VarLikeConstructUse/*!*/ lvalue, Expression/*!*/ rvalue)
             : base(span)
         {
-            Debug.Assert(rvalue is VarLikeConstructUse || rvalue is NewEx);
+            Debug.Assert(rvalue != null);
+            Debug.Assert(rvalue.AllowsPassByReference);
+
             this.lvalue = lvalue;
             this.rvalue = rvalue;
         }
