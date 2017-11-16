@@ -272,6 +272,7 @@ namespace Devsense.PHP.Syntax
                 case Operations.Spaceship: return Tokens.T_SPACESHIP;
                 case Operations.Coalesce: return Tokens.T_COALESCE;
 
+                // assignment
                 case Operations.AssignAdd:  return Tokens.T_PLUS_EQUAL;
                 case Operations.AssignSub: return Tokens.T_MINUS_EQUAL;
                 case Operations.AssignMul: return Tokens.T_MUL_EQUAL;
@@ -289,6 +290,11 @@ namespace Devsense.PHP.Syntax
                 case Operations.AssignRef:
                     return Tokens.T_EQ;
 
+                // constructs:
+                case Operations.Array: return Tokens.T_ARRAY;
+                case Operations.List: return Tokens.T_LIST;
+
+                //
                 default:
                     throw new ArgumentException();
             }

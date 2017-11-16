@@ -23,11 +23,11 @@ $arr = array(
     "Item":{"Index":{"DoubleLiteral":{"Value":"1.5"}},"RefToGet":{"DirectVarUse":{"VarName":"x"}}},
     "Item":{"RefToGet":{"DirectVarUse":{"VarName":"x"}}},
     "Item":{"Index":{"GlobalConstUse":{"Name":"true","OrigianlName":"true","FallbackName":""}},"ValueExpr":{
-      "ListEx":{
+      "ArrayEx":{
         "Item":{"Index":{"LongIntLiteral":{"Value":"1"}},"ValueExpr":{"StringLiteral":{"Value":"a"}}}}
       }
     },
-    "Item":{"ValueExpr":{"ListEx":{"Item":{"Index":{"LongIntLiteral":{"Value":"1"}
+    "Item":{"ValueExpr":{"ArrayEx":{"Item":{"Index":{"LongIntLiteral":{"Value":"1"}
   },
   "ValueExpr":{"StringLiteral":{"Value":"a"}}}}}}}}
 }

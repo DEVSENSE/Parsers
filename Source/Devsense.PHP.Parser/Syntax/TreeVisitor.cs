@@ -817,7 +817,7 @@ namespace Devsense.PHP.Syntax
         /// Visit list initializer expressions and r-value (if not null)
         /// </summary>
         /// <param name="x"></param>
-        virtual public void VisitListEx(ListEx x)
+        virtual public void VisitListEx(ArrayEx x)
         {
             for (int i = 0; i < x.Items.Length; i++)
             {

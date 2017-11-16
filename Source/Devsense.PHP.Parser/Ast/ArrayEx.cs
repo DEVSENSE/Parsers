@@ -20,32 +20,77 @@ using System.Diagnostics;
 namespace Devsense.PHP.Syntax.Ast
 {
     /// <summary>
+    /// Represents <c>array</c> or <c>list</c> constructs.
+    /// </summary>
+    public interface IArrayExpression : IExpression
+    {
+        /// <summary>
+        /// Gets value indicating the array element is in form of short syntax (<c>[</c>, <c>]</c>).
+        /// </summary>
+        bool IsShortSyntax { get; }
+
+        /// <summary>
+        /// Enumeration of array items.
+        /// </summary>
+        ICollection<IArrayItem> Items { get; }
+    }
+
+    /// <summary>
+    /// Represents an array or list item.
+    /// </summary>
+    public interface IArrayItem
+    {
+
+    }
+
+    /// <summary>
     /// Represents <c>array</c> constructor.
     /// </summary>
-    public sealed class ArrayEx : VarLikeConstructUse
+    public sealed class ArrayEx : VarLikeConstructUse, IArrayExpression
     {
-        public override Operations Operation { get { return Operations.Array; } }
+        [Flags]
+        enum Flags
+        {
+            Array = 1,
+            List = 2,
+            ShortSyntax = 16,
+        }
+
+        readonly Item[]/*!*/_items;
+        readonly Flags _flags;
+
+        public override Operations Operation => ((_flags & Flags.Array) != 0) ? Operations.Array : Operations.List;
 
         internal override bool AllowsPassByReference { get { return false; } }
 
         /// <summary>
-        /// <c>true</c> if the list is declared in the old notation 'list(...)', <c>false</c> if the new new notation '[...]' is used
+        /// Gets array items.
         /// </summary>
-        public bool IsOldNotation => _isOldNotation;
-        private readonly bool _isOldNotation;
-
         public Item[]/*!*/ Items
         {
-            get { return items; }
-            set { Debug.Assert(value != null); items = value; }
+            get { return _items; }
         }
-        private Item[]/*!*/items;
 
-        public ArrayEx(Text.Span span, IList<Item>/*!*/items, bool isOldNotation)
+        /// <summary>
+        /// Gets value indicating the array element is in form of short syntax (<c>[</c>, <c>]</c>).
+        /// </summary>
+        public bool IsShortSyntax => (_flags & Flags.ShortSyntax) != 0;
+
+        ICollection<IArrayItem> IArrayExpression.Items => _items;
+
+        public static ArrayEx CreateArray(Text.Span span, IList<Item>/*!*/items, bool isShortSyntax)
+            => new ArrayEx(span, items, Flags.Array | (isShortSyntax ? Flags.ShortSyntax : 0));
+
+        public static ArrayEx CreateList(Text.Span span, IList<Item>/*!*/items, bool isShortSyntax)
+            => new ArrayEx(span, items, Flags.List | (isShortSyntax ? Flags.ShortSyntax : 0));
+
+        private ArrayEx(Text.Span span, IList<Item> items, Flags flags)
             : base(span)
         {
-            this.Items = items.AsArray();
-            _isOldNotation = isOldNotation;
+            Debug.Assert(flags != 0);
+
+            _items = items.AsArray();
+            _flags = flags;
         }
 
         /// <summary>
@@ -54,7 +99,14 @@ namespace Devsense.PHP.Syntax.Ast
         /// <param name="visitor">Visitor to be called.</param>
         public override void VisitMe(TreeVisitor visitor)
         {
-            visitor.VisitArrayEx(this);
+            if ((_flags & Flags.Array) != 0)
+            {
+                visitor.VisitArrayEx(this);
+            }
+            else
+            {
+                visitor.VisitListEx(this);
+            }
         }
     }
 
@@ -63,10 +115,13 @@ namespace Devsense.PHP.Syntax.Ast
     /// <summary>
     /// Base class for item of an array defined by <c>array</c> constructor.
     /// </summary>
-    public abstract class Item : AstNode
+    public abstract class Item : AstNode, IArrayItem
     {
-        public Expression Index { get { return index; } internal set { index = value; } }
-        private Expression index; // can be null
+        /// <summary>
+        /// The item key, can be <c>null</c>.
+        /// </summary>
+        public Expression Index { get { return index; } }
+        readonly Expression index; // can be null
 
         protected Item(Expression index)
         {
@@ -88,8 +143,8 @@ namespace Devsense.PHP.Syntax.Ast
     public sealed class ValueItem : Item
     {
         /// <summary>Value of array item</summary>
-        public Expression ValueExpr { get { return valueExpr; } internal set { valueExpr = value; } }
-        private Expression valueExpr;
+        public Expression ValueExpr { get { return valueExpr; } }
+        readonly Expression valueExpr;
 
         public ValueItem(Expression index, Expression/*!*/ valueExpr)
             : base(index)
@@ -108,9 +163,9 @@ namespace Devsense.PHP.Syntax.Ast
     /// </summary>
     public sealed class RefItem : Item
     {
-        private readonly VariableUse/*!*/refToGet;
         /// <summary>Object to obtain reference of</summary>
         public VariableUse/*!*/RefToGet { get { return this.refToGet; } }
+        readonly VariableUse/*!*/refToGet;
 
         public RefItem(Expression index, VariableUse refToGet)
             : base(index)

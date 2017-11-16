@@ -446,6 +446,8 @@ namespace Devsense.PHP.Syntax.Ast
 
         public override Operations Operation => Operations.Parenthesis;
 
+        internal override bool AllowsPassByReference => _expression.AllowsPassByReference;
+
         protected Expression _expression;
 
         public EncapsedExpression(Span span, Expression expression) : base(span)

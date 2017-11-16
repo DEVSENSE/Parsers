@@ -805,15 +805,9 @@ namespace Devsense.PHP.Syntax.Ast.Serialization
             VisitVarLikeConstructUse(x);
             _serializer.EndSerialize();
         }
-        override public void VisitListEx(ListEx x)
+        override public void VisitListEx(ArrayEx x)
         {
-            _serializer.StartSerialize(typeof(ListEx).Name, SerializeSpan(x.Span));
-            foreach (var item in x.Items)
-                if (item is ValueItem)
-                    SerializeItem((ValueItem)item);
-                else
-                    SerializeItem((RefItem)item);
-            _serializer.EndSerialize();
+            VisitArrayEx(x);
         }
 
         override public void VisitArrayEx(ArrayEx x)

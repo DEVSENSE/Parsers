@@ -1607,7 +1607,7 @@ namespace Devsense.PHP.Syntax
 
                 if (value == "[]" || value == "array()")
                 {
-                    return new ArrayEx(Span.Invalid, EmptyArray<Item>.Instance, value == "array()");
+                    return ArrayEx.CreateArray(Span.Invalid, EmptyArray<Item>.Instance, value == "[]");
                 }
                 else if (long.TryParse(value, out l))
                 {

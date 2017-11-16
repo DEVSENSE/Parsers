@@ -10,14 +10,14 @@ list($a, $b => $c) = 1;
 "GlobalCode":{
   "NamingContext":{},
   "ValueAssignEx":{"Operation":"AssignValue",
-    "ListEx":{
+    "ArrayEx":{
       "Item":{"ValueExpr":{"DirectVarUse":{"VarName":"a"}}},
       "Item":{"Index":{"DirectVarUse":{"VarName":"b"}},"ValueExpr":{"DirectVarUse":{"VarName":"c"}}}
     },
     "LongIntLiteral":{"Value":"1"}
   },
   "ValueAssignEx":{"Operation":"AssignValue",
-    "ListEx":{
+    "ArrayEx":{
       "Item":{"ValueExpr":{"DirectVarUse":{"VarName":"a"}}},
       "Item":{"Index":{"DirectVarUse":{"VarName":"b"}},"ValueExpr":{"DirectVarUse":{"VarName":"c"}}}
     },

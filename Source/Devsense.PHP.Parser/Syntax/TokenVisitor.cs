@@ -208,19 +208,24 @@ namespace Devsense.PHP.Syntax
         {
             var itemSpan = x.Items.ItemsSpan();
             var terminalSpan = itemSpan.IsValid ? SpanUtils.SpanIntermission(itemSpan, x.Span.End) : x.Span;
-            if (x.IsOldNotation)
-            {
-                ProcessToken(Tokens.T_ARRAY, itemSpan.IsValid ? SpanUtils.SpanIntermission(x.Span.StartOrInvalid, itemSpan) : x.Span);
-                var previous = ProcessToken(Tokens.T_LPAREN, itemSpan.IsValid ? SpanUtils.SpanIntermission(x.Span.StartOrInvalid, itemSpan) : x.Span);
-                VisitItemList(x.Items, Tokens.T_COMMA, previous, terminalSpan);
-                ProcessToken(Tokens.T_RPAREN, terminalSpan);
-            }
-            else
+            if (x.IsShortSyntax)
             {
                 var previous = ProcessToken(Tokens.T_LBRACKET, itemSpan.IsValid ? SpanUtils.SpanIntermission(x.Span.StartOrInvalid, itemSpan) : x.Span);
                 VisitItemList(x.Items, Tokens.T_COMMA, previous, terminalSpan);
                 ProcessToken(Tokens.T_RBRACKET, terminalSpan);
             }
+            else
+            {
+                ProcessToken(TokenFacts.GetOperationToken(x.Operation), itemSpan.IsValid ? SpanUtils.SpanIntermission(x.Span.StartOrInvalid, itemSpan) : x.Span);
+                var previous = ProcessToken(Tokens.T_LPAREN, itemSpan.IsValid ? SpanUtils.SpanIntermission(x.Span.StartOrInvalid, itemSpan) : x.Span);
+                VisitItemList(x.Items, Tokens.T_COMMA, previous, terminalSpan);
+                ProcessToken(Tokens.T_RPAREN, terminalSpan);
+            }
+        }
+
+        public override void VisitListEx(ArrayEx x)
+        {
+            VisitArrayEx(x);
         }
 
         protected virtual void VisitItemList(IList<Item> list, Tokens separatorToken, ISourceToken previous, Span terminal)
@@ -1035,26 +1040,6 @@ namespace Devsense.PHP.Syntax
                 {
                     ConsumeToken(Tokens.T_SEMI, SpanUtils.SafeSpan(element.Span.End - 1, 1));
                 }
-            }
-        }
-
-        public override void VisitListEx(ListEx x)
-        {
-            var itemSpan = x.Items.ItemsSpan();
-            var terminalSpan = itemSpan.IsValid ? SpanUtils.SpanIntermission(itemSpan, x.Span.End) : x.Span;
-            if (x.IsOldNotation)
-            {
-                ConsumeToken(Tokens.T_LIST, SpanUtils.SafeSpan(x.Span.StartOrInvalid, 1));
-                var previous = ProcessToken(Tokens.T_LPAREN, itemSpan.IsValid ? SpanUtils.SpanIntermission(x.Span.StartOrInvalid, itemSpan) : x.Span);
-                VisitItemList(x.Items, Tokens.T_COMMA, previous, terminalSpan);
-                ProcessToken(Tokens.T_RPAREN, SpanUtils.SafeSpan(x.Span.End - 1, 1));
-            }
-            else
-            {
-                var openSpan = SpanUtils.SafeSpan(x.Span.StartOrInvalid, 1);
-                ConsumeToken(Tokens.T_LBRACKET, openSpan);
-                VisitItemList(x.Items, Tokens.T_COMMA, new SourceToken(Tokens.T_LBRACKET, openSpan), terminalSpan);
-                ConsumeToken(Tokens.T_RBRACKET, SpanUtils.SafeSpan(x.Span.End - 1, 1));
             }
         }
 

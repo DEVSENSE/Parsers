@@ -342,7 +342,7 @@ namespace Devsense.PHP.Syntax.Ast
         public virtual LangElement List(Span span, IEnumerable<Item> targets, bool isOldNotation)
         {
             var items = targets.AsArray();
-            return new ListEx(span, items.All(IsNull) ? null : items, isOldNotation);
+            return ArrayEx.CreateList(span, items.All(IsNull) ? null : items, !isOldNotation);
         }
 
         public virtual LangElement Literal(Span span, object value, string originalValue)
@@ -426,7 +426,7 @@ namespace Devsense.PHP.Syntax.Ast
         public virtual LangElement NewArray(Span span, IEnumerable<Item> itemsOpt, bool isOldNotation)
         {
             var items = itemsOpt.AsArray();
-            return new ArrayEx(span, items.All(IsNull) ? null : items, isOldNotation);
+            return ArrayEx.CreateArray(span, items.All(IsNull) ? null : items, !isOldNotation);
         }
 
         public virtual LangElement PHPDoc(Span span, LangElement block)
@@ -558,8 +558,8 @@ namespace Devsense.PHP.Syntax.Ast
         }
         public virtual ForeachVar ForeachVariable(Span span, LangElement variable, bool alias)
         {
-            if (variable is ListEx)
-                return new ForeachVar((ListEx)variable);
+            if (variable is IArrayExpression)
+                return new ForeachVar((IArrayExpression)variable);
             else
                 return new ForeachVar((VariableUse)variable, alias);
         }

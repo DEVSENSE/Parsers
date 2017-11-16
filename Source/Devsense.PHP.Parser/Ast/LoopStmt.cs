@@ -148,14 +148,14 @@ namespace Devsense.PHP.Syntax.Ast
         private bool _alias;
 
         /// <summary>
-        /// The variable itself. Can be <c>null</c> reference if <see cref="ListEx"/> is represented instead.
+        /// The variable itself. Can be <c>null</c> reference if <see cref="ArrayEx"/> is represented instead.
         /// </summary>
         public VariableUse Variable { get { return _target as VariableUse; } }
 
         /// <summary>
         /// PHP list expression. Can be <c>null</c> reference if <see cref="VariableUse"/> is represented instead.
         /// </summary>
-        public ListEx List { get { return _target as ListEx; } }
+        public ArrayEx List { get { return _target as ArrayEx; } }
 
         /// <summary>
         /// Inner expression representing <see cref="Variable"/> or <see cref="List"/>.
@@ -178,11 +178,12 @@ namespace Devsense.PHP.Syntax.Ast
         /// Initializes instance of <see cref="ForeachVar"/> representing PHP list expression.
         /// </summary>
         /// <param name="list"></param>
-        public ForeachVar(ListEx/*!*/list)
+        public ForeachVar(IArrayExpression/*!*/list)
         {
             Debug.Assert(list != null);
+            Debug.Assert(list.Operation == Operations.List);
 
-            _target = list;
+            _target = (VarLikeConstructUse)list;
             _alias = false;
         }
     }
