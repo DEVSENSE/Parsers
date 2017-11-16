@@ -19,6 +19,8 @@ using System.Diagnostics;
 
 namespace Devsense.PHP.Syntax.Ast
 {
+    #region IArrayExpression, IArrayItem
+
     /// <summary>
     /// Represents <c>array</c> or <c>list</c> constructs.
     /// </summary>
@@ -40,8 +42,25 @@ namespace Devsense.PHP.Syntax.Ast
     /// </summary>
     public interface IArrayItem
     {
+        /// <summary>
+        /// Gets value indicating that <see cref="Value"/> is passed by reference (<c>&amp;</c>).
+        /// </summary>
+        bool IsByRef { get; }
 
+        /// <summary>
+        /// Gets the item index, can be <c>null</c>.
+        /// </summary>
+        IExpression Index { get; }
+
+        /// <summary>
+        /// Gets the item value. Cannot be <c>null</c>.
+        /// </summary>
+        IExpression Value { get; }
     }
+
+    #endregion
+
+    #region ArrayEx
 
     /// <summary>
     /// Represents <c>array</c> constructor.
@@ -110,6 +129,8 @@ namespace Devsense.PHP.Syntax.Ast
         }
     }
 
+    #endregion
+
     #region Item
 
     /// <summary>
@@ -120,17 +141,22 @@ namespace Devsense.PHP.Syntax.Ast
         /// <summary>
         /// The item key, can be <c>null</c>.
         /// </summary>
-        public Expression Index { get { return index; } }
-        readonly Expression index; // can be null
+        public Expression Index { get { return _index; } }
+        readonly Expression _index; // can be null
+
+        public abstract bool IsByRef { get; }
+
+        IExpression IArrayItem.Index => _index;
+
+        IExpression IArrayItem.Value => this.Value;
+        protected abstract IExpression Value { get; }
 
         protected Item(Expression index)
         {
-            this.index = index;
+            _index = index;
         }
 
-        internal bool HasKey { get { return (index != null); } }
-        internal bool IsIndexLiteral { get { return index is Literal; } }
-        internal bool IsIndexStringLiteral { get { return index is StringLiteral; } }
+        internal bool HasKey => _index != null;
     }
 
     #endregion
@@ -143,14 +169,18 @@ namespace Devsense.PHP.Syntax.Ast
     public sealed class ValueItem : Item
     {
         /// <summary>Value of array item</summary>
-        public Expression ValueExpr { get { return valueExpr; } }
-        readonly Expression valueExpr;
+        public Expression ValueExpr { get { return _valueExpr; } }
+
+        public override bool IsByRef => false;
+        protected override IExpression Value => _valueExpr;
+
+        readonly Expression _valueExpr;
 
         public ValueItem(Expression index, Expression/*!*/ valueExpr)
             : base(index)
         {
             Debug.Assert(valueExpr != null);
-            this.valueExpr = valueExpr;
+            this._valueExpr = valueExpr;
         }
     }
 
@@ -164,14 +194,17 @@ namespace Devsense.PHP.Syntax.Ast
     public sealed class RefItem : Item
     {
         /// <summary>Object to obtain reference of</summary>
-        public VariableUse/*!*/RefToGet { get { return this.refToGet; } }
-        readonly VariableUse/*!*/refToGet;
+        public VariableUse/*!*/RefToGet { get { return _refToGet; } }
+        readonly VariableUse/*!*/_refToGet;
+
+        public override bool IsByRef => true;
+        protected override IExpression Value => _refToGet;
 
         public RefItem(Expression index, VariableUse refToGet)
             : base(index)
         {
             Debug.Assert(refToGet != null);
-            this.refToGet = refToGet;
+            this._refToGet = refToGet;
         }
     }
 
