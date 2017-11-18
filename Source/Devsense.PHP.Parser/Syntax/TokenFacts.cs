@@ -14,6 +14,36 @@ namespace Devsense.PHP.Syntax
     public static class TokenFacts
     {
         /// <summary>
+        /// Map of semireserved tokens source text to their original <see cref="Tokens"/> value.
+        /// </summary>
+        internal readonly static Dictionary<string, Tokens> s_reservedNameToToken = new Dictionary<string, Tokens>(StringComparer.OrdinalIgnoreCase)
+        {
+            //semi_reserved:
+            {"include", Tokens.T_INCLUDE}, {"include_once", Tokens.T_INCLUDE_ONCE}, {"eval", Tokens.T_EVAL},
+            {"REQUIRE", Tokens.T_REQUIRE}, {"REQUIRE_ONCE", Tokens.T_REQUIRE_ONCE},
+            {"OR", Tokens.T_LOGICAL_OR}, {"XOR", Tokens.T_LOGICAL_XOR}, {"AND", Tokens.T_LOGICAL_AND},
+            {"INSTANCEOF", Tokens.T_INSTANCEOF}, {"NEW", Tokens.T_NEW}, {"CLONE", Tokens.T_CLONE}, {"EXIT", Tokens.T_EXIT},
+            {"IF", Tokens.T_IF}, {"ELSEIF", Tokens.T_ELSEIF}, {"ELSE", Tokens.T_ELSE}, {"ENDIF", Tokens.T_ENDIF},
+            {"ECHO", Tokens.T_ECHO}, { "PRINT", Tokens.T_PRINT},
+            {"DO", Tokens.T_DO}, {"WHILE", Tokens.T_WHILE}, {"ENDWHILE", Tokens.T_ENDWHILE},
+            {"FOR", Tokens.T_FOR}, {"ENDFOR", Tokens.T_ENDFOR}, {"FOREACH", Tokens.T_FOREACH}, {"ENDFOREACH", Tokens.T_ENDFOREACH},
+            {"DECLARE", Tokens.T_DECLARE}, {"ENDDECLARE", Tokens.T_ENDDECLARE},
+            {"AS", Tokens.T_AS}, {"TRY", Tokens.T_TRY}, {"CATCH", Tokens.T_CATCH}, {"FINALLY", Tokens.T_FINALLY},
+            {"THROW", Tokens.T_THROW},
+            {"USE", Tokens.T_USE}, {"INSTEADOF", Tokens.T_INSTEADOF},
+            {"GLOBAL", Tokens.T_GLOBAL}, {"VAR", Tokens.T_VAR}, {"UNSET", Tokens.T_UNSET}, {"ISSET", Tokens.T_ISSET},
+            {"EMPTY", Tokens.T_EMPTY}, {"CONTINUE", Tokens.T_CONTINUE}, {"BREAK", Tokens.T_BREAK}, {"GOTO", Tokens.T_GOTO},
+            {"FUNCTION", Tokens.T_FUNCTION}, {"CONST", Tokens.T_CONST}, {"RETURN", Tokens.T_RETURN},
+            {"YIELD", Tokens.T_YIELD},
+            {"SWITCH", Tokens.T_SWITCH}, {"ENDSWITCH", Tokens.T_ENDSWITCH}, {"CASE", Tokens.T_CASE}, {"DEFAULT", Tokens.T_DEFAULT},
+            {"ARRAY", Tokens.T_ARRAY}, { "LIST", Tokens.T_LIST}, {"CALLABLE", Tokens.T_CALLABLE},
+            { "EXTENDS", Tokens.T_EXTENDS}, {"IMPLEMENTS", Tokens.T_IMPLEMENTS}, {"NAMESPACE", Tokens.T_NAMESPACE},
+            {"TRAIT", Tokens.T_TRAIT}, {"INTERFACE", Tokens.T_INTERFACE}, {"CLASS", Tokens.T_CLASS},
+            {"__CLASS__", Tokens.T_CLASS_C}, {"__TRAIT__", Tokens.T_TRAIT_C}, {"__FUNCTION__", Tokens.T_FUNC_C}, {"__METHOD__", Tokens.T_METHOD_C}, {"__LINE__", Tokens.T_LINE}, {"__FILE__", Tokens.T_FILE}, {"__DIR__", Tokens.T_DIR}, {"__NAMESPACE__", Tokens.T_NS_C},
+            {"STATIC", Tokens.T_STATIC}, {"ABSTRACT", Tokens.T_ABSTRACT}, {"FINAL", Tokens.T_FINAL}, {"PRIVATE", Tokens.T_PRIVATE}, {"PROTECTED", Tokens.T_PROTECTED}, {"PUBLIC", Tokens.T_PUBLIC},
+        };
+
+        /// <summary>
         /// Gets textual value of given token.
         /// </summary>
         public static string GetTokenText(Tokens t)
@@ -173,7 +203,7 @@ namespace Devsense.PHP.Syntax
                 case Tokens.T_REQUIRE: return "require";
                 case Tokens.T_INCLUDE_ONCE: return "include_once";
                 case Tokens.T_REQUIRE_ONCE: return "require_once";
-                case Tokens.T_NS_SEPARATOR:return "\\";
+                case Tokens.T_NS_SEPARATOR: return "\\";
                 case Tokens.T_CALLABLE: return "callable";
                 case Tokens.T_TRY: return "try";
                 case Tokens.T_CLASS: return "class";
@@ -273,7 +303,7 @@ namespace Devsense.PHP.Syntax
                 case Operations.Coalesce: return Tokens.T_COALESCE;
 
                 // assignment
-                case Operations.AssignAdd:  return Tokens.T_PLUS_EQUAL;
+                case Operations.AssignAdd: return Tokens.T_PLUS_EQUAL;
                 case Operations.AssignSub: return Tokens.T_MINUS_EQUAL;
                 case Operations.AssignMul: return Tokens.T_MUL_EQUAL;
                 case Operations.AssignPow: return Tokens.T_POW_EQUAL;

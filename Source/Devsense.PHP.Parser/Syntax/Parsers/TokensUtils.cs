@@ -74,7 +74,7 @@ namespace Devsense.PHP.Syntax
             }
         }
 
-        public static Tokens ToToken(this PhpMemberAttributes attributes)
+        public static Tokens AsToken(this PhpMemberAttributes attributes)
         {
             switch (attributes)
             {
