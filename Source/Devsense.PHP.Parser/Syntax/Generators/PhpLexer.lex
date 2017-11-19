@@ -703,7 +703,7 @@ ST_HALT_COMPILER1,ST_HALT_COMPILER2,ST_HALT_COMPILER3>{EOF} {
 	{
 		return Tokens.T_INLINE_HTML; 
 	}
-	if (this._allowShortTags) {
+	if (_allowShortTags) {
 		BEGIN(LexicalStates.ST_IN_SCRIPTING);
 		return (Tokens.T_OPEN_TAG);
 	} else {
@@ -783,15 +783,15 @@ ST_HALT_COMPILER1,ST_HALT_COMPILER2,ST_HALT_COMPILER3>{EOF} {
         }
 		BEGIN(LexicalStates.ST_HEREDOC);
 	}
-    this._hereDocLabel = GetTokenSubstring(s, length);
-	this._tokenSemantics.Object = tokenString[s-1] == '\''? GetTokenSubstring(s-1, length+2): this._hereDocLabel;
+    _hereDocLabel = GetTokenSubstring(s, length);
+	_tokenSemantics.Object = tokenString[s-1] == '\''? GetTokenSubstring(s-1, length+2): _hereDocLabel;
     return (Tokens.T_START_HEREDOC);
 }
 
 <ST_END_HEREDOC>^{LABEL}(";")?{NEWLINE} {
 	BEGIN(LexicalStates.ST_IN_SCRIPTING);
 	_yyless(LabelTrailLength());
-	this._tokenSemantics.Object = this._hereDocLabel;
+	_tokenSemantics.Object = _hereDocLabel;
 	return Tokens.T_END_HEREDOC;
 }
 
@@ -800,7 +800,7 @@ ST_HALT_COMPILER1,ST_HALT_COMPILER2,ST_HALT_COMPILER3>{EOF} {
 }
 
 <ST_NOWDOC>^{LABEL}(";")?{NEWLINE} {
-    if(!string.IsNullOrEmpty(this._hereDocLabel) && GetTokenString().Contains(this._hereDocLabel))
+    if(!string.IsNullOrEmpty(_hereDocLabel) && GetTokenString().Contains(_hereDocLabel))
 	{
 		BEGIN(LexicalStates.ST_END_HEREDOC); 
 		if( ProcessEndNowDoc(s => s) ) return (Tokens.T_ENCAPSED_AND_WHITESPACE);
@@ -809,7 +809,7 @@ ST_HALT_COMPILER1,ST_HALT_COMPILER2,ST_HALT_COMPILER3>{EOF} {
 }
 
 <ST_HEREDOC>^{LABEL}(";")?{NEWLINE} {
-    if(!string.IsNullOrEmpty(this._hereDocLabel) && GetTokenString().Contains(this._hereDocLabel))
+    if(!string.IsNullOrEmpty(_hereDocLabel) && GetTokenString().Contains(_hereDocLabel))
 	{
 		BEGIN(LexicalStates.ST_END_HEREDOC); 
 		if( ProcessEndNowDoc(s => (string)ProcessEscapedString(s, _encoding, false)) ) return (Tokens.T_ENCAPSED_AND_WHITESPACE);
@@ -890,9 +890,9 @@ ST_HALT_COMPILER1,ST_HALT_COMPILER2,ST_HALT_COMPILER3>{EOF} {
 <ST_BACKQUOTE>[\\]{ANY_CHAR}	{ yymore(); break; }
 <ST_BACKQUOTE>[^`\{$\\]+		{ yymore(); break; }
 
-<ST_HEREDOC>"${"			{ Tokens token; if (ProcessHeredoc(2, out token)) return token; else break; }
-<ST_HEREDOC>"$"[a-zA-Z_]	{ Tokens token; if (ProcessHeredoc(2, out token)) return token; else break; }
-<ST_HEREDOC>"{$"			{ Tokens token; if (ProcessHeredoc(2, out token)) return token; else break; }
+<ST_HEREDOC>"${"			{ if (ProcessHeredoc(2, out Tokens token)) return token; else break; }
+<ST_HEREDOC>"$"[a-zA-Z_]	{ if (ProcessHeredoc(2, out Tokens token)) return token; else break; }
+<ST_HEREDOC>"{$"			{ if (ProcessHeredoc(2, out Tokens token)) return token; else break; }
 
 <ST_HEREDOC>[$]|[{]			{ yymore(); break; }
 <ST_HEREDOC>[\\]{ANY_CHAR}	{ yymore(); break; }

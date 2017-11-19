@@ -159,7 +159,7 @@ using System.Collections.Generic;
 						{
 							return Tokens.T_INLINE_HTML; 
 						}
-						if (this._allowShortTags) {
+						if (_allowShortTags) {
 							BEGIN(LexicalStates.ST_IN_SCRIPTING);
 							return (Tokens.T_OPEN_TAG);
 						} else {
@@ -822,8 +822,8 @@ using System.Collections.Generic;
 					        }
 							BEGIN(LexicalStates.ST_HEREDOC);
 						}
-					    this._hereDocLabel = GetTokenSubstring(s, length);
-						this._tokenSemantics.Object = tokenString[s-1] == '\''? GetTokenSubstring(s-1, length+2): this._hereDocLabel;
+					    _hereDocLabel = GetTokenSubstring(s, length);
+						_tokenSemantics.Object = tokenString[s-1] == '\''? GetTokenSubstring(s-1, length+2): _hereDocLabel;
 					    return (Tokens.T_START_HEREDOC);
 					}
 					break;
@@ -1289,23 +1289,23 @@ using System.Collections.Generic;
 					
 				case 166:
 					// #line 895
-					{ Tokens token; if (ProcessHeredoc(2, out token)) return token; else break; }
+					{ if (ProcessHeredoc(2, out Tokens token)) return token; else break; }
 					break;
 					
 				case 167:
 					// #line 894
-					{ Tokens token; if (ProcessHeredoc(2, out token)) return token; else break; }
+					{ if (ProcessHeredoc(2, out Tokens token)) return token; else break; }
 					break;
 					
 				case 168:
 					// #line 893
-					{ Tokens token; if (ProcessHeredoc(2, out token)) return token; else break; }
+					{ if (ProcessHeredoc(2, out Tokens token)) return token; else break; }
 					break;
 					
 				case 169:
 					// #line 811
 					{
-					    if(!string.IsNullOrEmpty(this._hereDocLabel) && GetTokenString().Contains(this._hereDocLabel))
+					    if(!string.IsNullOrEmpty(_hereDocLabel) && GetTokenString().Contains(_hereDocLabel))
 						{
 							BEGIN(LexicalStates.ST_END_HEREDOC); 
 							if( ProcessEndNowDoc(s => (string)ProcessEscapedString(s, _encoding, false)) ) return (Tokens.T_ENCAPSED_AND_WHITESPACE);
@@ -1476,7 +1476,7 @@ using System.Collections.Generic;
 					{
 						BEGIN(LexicalStates.ST_IN_SCRIPTING);
 						_yyless(LabelTrailLength());
-						this._tokenSemantics.Object = this._hereDocLabel;
+						_tokenSemantics.Object = _hereDocLabel;
 						return Tokens.T_END_HEREDOC;
 					}
 					break;
@@ -1489,7 +1489,7 @@ using System.Collections.Generic;
 				case 195:
 					// #line 802
 					{
-					    if(!string.IsNullOrEmpty(this._hereDocLabel) && GetTokenString().Contains(this._hereDocLabel))
+					    if(!string.IsNullOrEmpty(_hereDocLabel) && GetTokenString().Contains(_hereDocLabel))
 						{
 							BEGIN(LexicalStates.ST_END_HEREDOC); 
 							if( ProcessEndNowDoc(s => s) ) return (Tokens.T_ENCAPSED_AND_WHITESPACE);

@@ -858,21 +858,15 @@ namespace Devsense.PHP.Syntax
         bool ProcessEndNowDoc(Func<string, string> f)
         {
             BEGIN(LexicalStates.ST_END_HEREDOC);
-            string label = GetTokenString();
             int trail = LabelTrailLength();
+            string text = GetTokenSubstring(0, TokenLength - _hereDocLabel.Length - trail);
             // move back at the end of the heredoc label - yyless does not work properly (requires additional condition for the optional ';')
             lookahead_index = token_end = lookahead_index - _hereDocLabel.Length - trail;
-            string text = f(label.Substring(0, label.Length - _hereDocLabel.Length - trail));
-            _tokenSemantics.Object = text;
-            if (text.EndsWith("\r\n"))
-            {
-                _tokenSemantics.Object = text.Remove(text.Length - 2);
-            }
-            else if (text.Length > 0 && IsNewLineCharacter(text[text.Length - 1]))
-            {
-                _tokenSemantics.Object = text.Remove(text.Length - 1);
-            }
-            return text.Length > 0;
+
+            _tokenSemantics.Object = f(text).TrimEnd(StringUtils.s_NewlineCharacters);
+
+            //
+            return text.Length != 0;
         }
 
         int LabelTrailLength()
@@ -880,8 +874,8 @@ namespace Devsense.PHP.Syntax
             int length = 0;
             for (int i = token_end - 1; i >= token_start; i--)
             {
-                if (buffer[i] == ';' || buffer[i] == '\n' ||
-                    buffer[i] == ' ' || buffer[i] == '\r' || buffer[i] == '\t')
+                if (char.IsWhiteSpace(buffer[i]) || // spaces, line separators, paragraph separators, tabs
+                    buffer[i] == ';')
                 {
                     length++;
                 }
@@ -914,7 +908,7 @@ namespace Devsense.PHP.Syntax
             if (pos != 0)
             {
                 _yyless(Math.Abs(pos - text.Length));
-                this._tokenSemantics.Object = text.Remove(pos);
+                _tokenSemantics.Object = text.Remove(pos);
                 return true;
             }
             return false;
@@ -924,7 +918,7 @@ namespace Devsense.PHP.Syntax
         {
             if (TokenLength > 0)
             {
-                this._tokenSemantics.Object = GetTokenString();
+                _tokenSemantics.Object = GetTokenString();
                 return token;
             }
             return Tokens.EOF;
@@ -932,13 +926,13 @@ namespace Devsense.PHP.Syntax
 
         Tokens ProcessToken(Tokens token)
         {
-            this._tokenSemantics.Object = GetTokenString();
+            _tokenSemantics.Object = GetTokenString();
             return token;
         }
 
         bool ProcessString(int count, out Tokens token)
         {
-            if (TokenLength > 1 && GetTokenChar(0) == '"' && GetTokenChar(TokenLength - 1) == '"' && count == 1)
+            if (count == 1 && TokenLength > 1 && GetTokenChar(0) == '"' && GetTokenChar(TokenLength - 1) == '"')
             {
                 BEGIN(LexicalStates.ST_IN_SCRIPTING);
                 token = ProcessDoubleQuotedString();
@@ -966,7 +960,7 @@ namespace Devsense.PHP.Syntax
             yy_push_state(newState);
             if (TokenLength > 0)
             {
-                this._tokenSemantics.Object = ProcessEscapedStringWithEnding(GetTokenString(), _encoding, false, ending);
+                _tokenSemantics.Object = ProcessEscapedStringWithEnding(GetTokenString(), _encoding, false, ending);
                 return true;
             }
             else

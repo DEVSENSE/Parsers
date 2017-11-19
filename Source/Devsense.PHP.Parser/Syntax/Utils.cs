@@ -35,11 +35,11 @@ namespace Devsense.PHP.Syntax
 
         public static Text.Span SafeCombineSpan(Text.Span previous, Text.Span next)
         {
-            if(!previous.IsValid)
+            if (!previous.IsValid)
             {
                 return next;
             }
-            else if(!next.IsValid)
+            else if (!next.IsValid)
             {
                 return previous;
             }
@@ -59,7 +59,7 @@ namespace Devsense.PHP.Syntax
             previous.IsValid && next >= 0 && previous.End <= next ? Text.Span.FromBounds(previous.End, next) : Text.Span.Invalid;
 
         public static Text.Span ItemSpan(this Ast.Item item) => SafeCombineSpan(
-            item.HasKey ? item.Index.Span: Text.Span.Invalid, 
+            item.HasKey ? item.Index.Span : Text.Span.Invalid,
             item is Ast.ValueItem ? ((Ast.ValueItem)item).ValueExpr.Span : ((Ast.RefItem)item).RefToGet.Span);
 
         public static Text.Span ItemsSpan(this IList<Ast.Item> items)
@@ -637,6 +637,19 @@ namespace Devsense.PHP.Syntax
         internal static bool IsWhiteSpace(byte b)
         {
             return b == ' ' || (b >= '\t' && b <= '\r') || b == '\u00a0' || b == '\u0085';
+        }
+
+        /// <summary>
+        /// Array of characters representing a new line.
+        /// </summary>
+        public static readonly char[] s_NewlineCharacters = new[] { '\r', '\n', (char)0x2028, (char)0x2029 };
+
+        /// <summary>
+        /// Checks whether given character is considered as a new line character.
+        /// </summary>
+        public static bool IsNewLineCharacter(char ch)
+        {
+            return ch == '\r' || ch == '\n' || ch == (char)0x2028 || ch == (char)0x2029;
         }
 
         /// <summary>
