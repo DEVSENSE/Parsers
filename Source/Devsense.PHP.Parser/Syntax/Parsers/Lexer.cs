@@ -509,16 +509,22 @@ namespace Devsense.PHP.Syntax
             return result.Result;
         }
 
-        protected object ProcessEscapedStringWithEnding(string text, Encoding/*!*/ encoding, bool forceBinaryString, char ending)
+        protected object ProcessEscapedStringWithEnding(string text, Encoding/*!*/encoding, bool forceBinaryString, char ending)
         {
+            char c2 = (text.Length >= 2) ? text[text.Length - 2] : '\0';
             object output;
-            if (text.EndsWith("$" + ending) || text.EndsWith("{" + ending))
+
+            // ends with "{END" or "$END" ?
+            if (text.LastCharacter() == ending && (c2 == '$' || c2 == '{'))
             {
                 output = ProcessEscapedString(text.Substring(0, text.Length - 1), _encoding, false);
                 _yyless(1);
             }
             else
+            {
                 output = ProcessEscapedString(text, _encoding, false);
+            }
+
             return output;
         }
 
