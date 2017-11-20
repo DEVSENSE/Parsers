@@ -140,7 +140,7 @@ namespace Devsense.PHP.Syntax
         /// <param name="modifiers">Modifiers.</param>
         /// <param name="tokens">Modifier tokens.</param>
         /// <param name="span">Optional. Modifiers span.</param>
-        void ConsumeModifiers(LangElement element, PhpMemberAttributes modifiers, ISourceToken[] tokens, Span span)
+        protected virtual void ConsumeModifiers(LangElement element, PhpMemberAttributes modifiers, ISourceToken[] tokens, Span span)
         {
             tokens.Foreach(ConsumeToken);
         }
@@ -192,7 +192,7 @@ namespace Devsense.PHP.Syntax
                 defaults.Add(token, new SourceToken(token, Span.Invalid));
         }
 
-        protected ISourceToken[] ConsumeModifiers(LangElement element, PhpMemberAttributes modifiers, Span span)
+        protected virtual ISourceToken[] ConsumeModifiers(LangElement element, PhpMemberAttributes modifiers, Span span)
         {
             var defaults = new Dictionary<Tokens, ISourceToken>();
             AddPublicModifier(modifiers, defaults);
