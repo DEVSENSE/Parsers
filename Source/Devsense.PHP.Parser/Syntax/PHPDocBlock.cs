@@ -30,6 +30,7 @@ namespace Devsense.PHP.Syntax
     /// </summary>
     /// <remarks>define() statements, functions, classes, class methods, and class vars, include() statements, and global variables can all be documented.
     /// See http://en.wikipedia.org/wiki/PHPDoc for specifications.</remarks>
+    [DebuggerDisplay("{PHPDocPreview,nq} {Span}")]
     public sealed class PHPDocBlock : LangElement
     {
         #region Nested classes: Element
@@ -74,12 +75,12 @@ namespace Devsense.PHP.Syntax
             /// <summary>
             /// Tag elements initialized using reflection.
             /// </summary>
-            private static Dictionary<string, Func<string, string, Element>>/*!!*/elementFactories;
+            private static Dictionary<string, Func<string, string, Element>>/*!!*/s_elementFactories;
 
             static Element()
             {
                 // initilize dictionary of known tags and their factories:
-                elementFactories = new Dictionary<string, Func<string, string, Element>>(20, StringComparer.OrdinalIgnoreCase);
+                s_elementFactories = new Dictionary<string, Func<string, string, Element>>(20, StringComparer.OrdinalIgnoreCase);
                 var types = typeof(PHPDocBlock).GetTypeInfo().DeclaredNestedTypes.Where(t => t.IsNestedPublic && !t.IsAbstract);
                 var eltype = typeof(Element).GetTypeInfo();
                 foreach (var t in types)
@@ -91,7 +92,7 @@ namespace Devsense.PHP.Syntax
                         if (fld != null)
                         {
                             var factory = CreateElementFactory(t);
-                            elementFactories.Add(TagNameHelper(fld), factory);
+                            s_elementFactories.Add(TagNameHelper(fld), factory);
                         }
                         else
                         {
@@ -102,11 +103,11 @@ namespace Devsense.PHP.Syntax
                             if (f1 != null && f2 != null)
                             {
                                 var factory = CreateElementFactory(t);
-                                elementFactories.Add(TagNameHelper(f1), factory);
-                                elementFactories.Add(TagNameHelper(f2), factory);
+                                s_elementFactories.Add(TagNameHelper(f1), factory);
+                                s_elementFactories.Add(TagNameHelper(f2), factory);
 
                                 if (f3 != null)
-                                    elementFactories.Add(TagNameHelper(f3), factory);
+                                    s_elementFactories.Add(TagNameHelper(f3), factory);
                             }
                             else
                             {
@@ -121,9 +122,9 @@ namespace Devsense.PHP.Syntax
                 }
 
                 // ensure we have some tags:
-                Debug.Assert(elementFactories.ContainsKey("@param"));
-                Debug.Assert(elementFactories.ContainsKey("@ignore"));
-                Debug.Assert(elementFactories.ContainsKey("@var"));
+                Debug.Assert(s_elementFactories.ContainsKey("@param"));
+                Debug.Assert(s_elementFactories.ContainsKey("@ignore"));
+                Debug.Assert(s_elementFactories.ContainsKey("@var"));
                 // ...
             }
 
@@ -184,7 +185,7 @@ namespace Devsense.PHP.Syntax
                 string tagName = (endIndex < line.Length) ? line.Remove(endIndex) : line;
 
                 Func<string, string, Element> tmp;
-                if (elementFactories.TryGetValue(tagName, out tmp))
+                if (s_elementFactories.TryGetValue(tagName, out tmp))
                     return new KeyValuePair<string, Func<string, string, Element>>(tagName, tmp);
                 else
                     return new KeyValuePair<string, Func<string, string, Element>>(tagName, (_name, _line) => new UnknownTextTag(_name, _line));
@@ -1881,8 +1882,8 @@ namespace Devsense.PHP.Syntax
         {
             var elements = this.Elements;
             for (int i = 0; i < elements.Length; i++)
-                if (elements[i] is T)
-                    return (T)elements[i];
+                if (elements[i] is T e)
+                    return e;
 
             return null;
         }
@@ -1927,8 +1928,7 @@ namespace Devsense.PHP.Syntax
         {
             get
             {
-                var tag = GetElement<ShortDescriptionElement>();
-                return (tag != null) ? tag.Text : null;
+                return GetElement<ShortDescriptionElement>()?.Text;
             }
         }
 
@@ -1939,8 +1939,7 @@ namespace Devsense.PHP.Syntax
         {
             get
             {
-                var tag = GetElement<LongDescriptionElement>();
-                return (tag != null) ? tag.Text : null;
+                return GetElement<LongDescriptionElement>()?.Text;
             }
         }
 
