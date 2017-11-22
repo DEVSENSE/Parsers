@@ -12,8 +12,6 @@ using Devsense.PHP.Syntax;
 namespace UnitTests
 {
     [TestClass]
-    [DeploymentItem("TestData.csv")]
-    [DeploymentItem("Tokens.php")]
     public class PHPDocTests
     {
         static PHPDocBlock NewPHPDoc(string code)
@@ -31,6 +29,19 @@ namespace UnitTests
  */");
 
             Assert.AreEqual(phpdoc.Summary, "Summary.");
+        }
+
+        [TestMethod]
+        public void ReturnsTest()
+        {
+            var phpdoc = NewPHPDoc(@"
+/**
+ * Summary.
+ * @return int The return value.
+ */");
+
+            Assert.AreEqual(phpdoc.Returns.TypeNames, "int");
+            Assert.AreEqual(phpdoc.Returns.Description, "The return value.");
         }
     }
 }
