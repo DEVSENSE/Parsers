@@ -425,6 +425,18 @@ namespace Devsense.PHP.Syntax
                             result.Append('\t');
                             break;
 
+                        case 'v':
+                            result.Append('\v');
+                            break;
+
+                        case 'e':
+                            result.Append((char)0x1B);
+                            break;
+
+                        case 'f':
+                            result.Append('\f');
+                            break;
+
                         case '\\':
                         case '$':
                         case '"':
@@ -558,9 +570,22 @@ namespace Devsense.PHP.Syntax
                             result.Append('\t');
                             break;
 
+                        case 'v':
+                            result.Append('\v');
+                            break;
+
+                        case 'e':
+                            result.Append((char)0x1B);
+                            break;
+
+                        case 'f':
+                            result.Append('\f');
+                            break;
+
                         case '\\':
                         case '$':
                         case '"':
+                        case '`':
                             result.Append(c);
                             break;
 
