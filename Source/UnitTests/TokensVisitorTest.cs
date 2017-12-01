@@ -15,15 +15,13 @@ using Devsense.PHP.Errors;
 namespace UnitTests
 {
     [TestClass]
-    //[DeploymentItem("TestData.csv")] // TODO - extend for lexer tests
-    [DeploymentItem("ParserTestData.csv")]
+    [DeploymentItem("TestData.csv")]
     public class TokensVisitorTests
     {
         public TestContext TestContext { get; set; }
 
         [TestMethod]
-        //[DataSource("Microsoft.VisualStudio.TestTools.DataSource.CSV", "|DataDirectory|\\TestData.csv", "TestData#csv", DataAccessMethod.Sequential)]
-        [DataSource("Microsoft.VisualStudio.TestTools.DataSource.CSV", "|DataDirectory|\\ParserTestData.csv", "ParserTestData#csv", DataAccessMethod.Sequential)]
+        [DataSource("Microsoft.VisualStudio.TestTools.DataSource.CSV", "|DataDirectory|\\TestData.csv", "TestData#csv", DataAccessMethod.Sequential)]
         public void TokensVisitorTest()
         {
             string path = (string)TestContext.DataRow["files"];

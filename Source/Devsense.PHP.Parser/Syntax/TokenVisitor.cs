@@ -105,22 +105,26 @@ namespace Devsense.PHP.Syntax
                 }
                 else if (literal.OriginalValue != null && literal.OriginalValue.StartsWith("<<<"))
                 {
-                    var first = literal.OriginalValue.IndexOf('\n') + 1;
+                    var first = literal.OriginalValue.IndexOf('\n');
+                    while (literal.OriginalValue[first] == '\n')
+                    {
+                        first++;
+                    }
                     var openLabel = literal.OriginalValue.Substring(0, first);
                     var last = literal.OriginalValue.LastIndexOfAny(NewLines) + 1;
                     var closeLabel = literal.OriginalValue.Substring(last, literal.OriginalValue.Length - last);
 
                     var openLabelSpan = SpanUtils.SafeSpan(literal.Span.StartOrInvalid, openLabel.Length);
-                    var closeLabelSpan = SpanUtils.SafeSpan(literal.Span.StartOrInvalid + literal.OriginalValue.Length - closeLabel.Length, closeLabel.Length);
-                    ConsumeToken(Tokens.T_START_HEREDOC, openLabel, openLabelSpan);
+                    var closeLabelSpan = SpanUtils.SafeSpan(literal.Span.StartOrInvalid + literal.Span.Length - closeLabel.Length, closeLabel.Length);
+                    ProcessToken(Tokens.T_START_HEREDOC, openLabel, openLabelSpan);
                     if (literal.OriginalValue.Length > (openLabel.Length + closeLabel.Length))
                     {
-                        ConsumeToken(
+                        ProcessToken(
                             Tokens.T_ENCAPSED_AND_WHITESPACE,
                             literal.OriginalValue.Substring(openLabel.Length, literal.OriginalValue.Length - openLabel.Length - closeLabel.Length),
                             literal.Span.IsValid ? SpanUtils.SafeSpan(literal.Span.Start + openLabel.Length, literal.Span.Length - openLabel.Length - closeLabel.Length) : Span.Invalid);
                     }
-                    ConsumeToken(Tokens.T_END_HEREDOC, closeLabel, closeLabelSpan);
+                    ProcessToken(Tokens.T_END_HEREDOC, closeLabel, closeLabelSpan);
                 }
                 else
                 {
@@ -514,7 +518,10 @@ namespace Devsense.PHP.Syntax
             else
             {
                 // echo PARAMETERS;
-                ConsumeToken(Tokens.T_ECHO, SpanUtils.SafeSpan(x.Span.StartOrInvalid, 4));
+                var echoSpan = SpanUtils.SafeSpan(x.Span.StartOrInvalid, 4);
+                var tokens = _provider.GetTokens(echoSpan, t => t.Token == Tokens.T_ECHO || t.Token == Tokens.T_OPEN_TAG_WITH_ECHO, null);
+                var token = tokens == null || tokens.Count() != 1 ? new SourceToken(Tokens.T_ECHO, echoSpan) : tokens.Single();
+                ConsumeToken(token.Token, token.Span);
                 VisitElementList(x.Parameters, Tokens.T_COMMA);
                 ConsumeToken(Tokens.T_SEMI, SpanUtils.SafeSpan(x.Span.End - 1, 1));
             }
@@ -523,10 +530,10 @@ namespace Devsense.PHP.Syntax
         public override void VisitEncapsedExpression(EncapsedExpression x)
         {
             var text = x is StringEncapsedExpression ? ((StringEncapsedExpression)x).OpenLabel : TokenFacts.GetTokenText(x.OpenToken);
-            ConsumeToken(x.ContainingElement is ConcatEx && x is BracesExpression ? Tokens.T_CURLY_OPEN : x.OpenToken, text, SpanUtils.SafeSpan(x.Span.StartOrInvalid, text.Length));
+            ProcessToken(x.ContainingElement is ConcatEx && x is BracesExpression ? Tokens.T_CURLY_OPEN : x.OpenToken, text, SpanUtils.SpanIntermission(x.Span.StartOrInvalid, x.Expression.Span));
             VisitElement(x.Expression);
             text = x is StringEncapsedExpression ? ((StringEncapsedExpression)x).CloseLabel : TokenFacts.GetTokenText(x.CloseToken);
-            ConsumeToken(x.CloseToken, text, SpanUtils.SafeSpan(x.Span.End - text.Length, text.Length));
+            ProcessToken(x.CloseToken, text, SpanUtils.SpanIntermission(x.Expression.Span, x.Span.End));
         }
 
         public override void VisitEmptyEx(EmptyEx x)
@@ -554,9 +561,9 @@ namespace Devsense.PHP.Syntax
 
         public override void VisitExitEx(ExitEx x)
         {
-            var exitSpan = SpanUtils.SafeSpan(x.Span.StartOrInvalid, 4);
-            ConsumeToken(Tokens.T_EXIT, exitSpan);
-            var paren = _provider.GetTokenAt(x.ResulExpr != null ? SpanUtils.SpanIntermission(exitSpan, x.ResulExpr.Span) : x.Span, Tokens.T_LPAREN, null);
+            var token = _provider.GetTokenAt(x.Span, Tokens.T_EXIT, new SourceToken(Tokens.T_EXIT, SpanUtils.SafeSpan(x.Span.StartOrInvalid, 4)));
+            ConsumeToken(token.Token, _provider.GetTokenText(token, "exit"), token.Span);
+            var paren = _provider.GetTokenAt(x.ResulExpr != null ? SpanUtils.SpanIntermission(token.Span, x.ResulExpr.Span) : x.Span, Tokens.T_LPAREN, null);
             if (paren != null)
             {
                 ConsumeToken(paren.Token, paren.Span);

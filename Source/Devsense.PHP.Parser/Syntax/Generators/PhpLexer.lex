@@ -784,7 +784,7 @@ ST_HALT_COMPILER1,ST_HALT_COMPILER2,ST_HALT_COMPILER3>{EOF} {
 		BEGIN(LexicalStates.ST_HEREDOC);
 	}
     _hereDocLabel = GetTokenSubstring(s, length);
-	_tokenSemantics.Object = tokenString[s-1] == '\''? GetTokenSubstring(s-1, length+2): _hereDocLabel;
+	_tokenSemantics.Object = tokenString[s-1] == '\'' || tokenString[s-1] == '"'? GetTokenSubstring(s-1, length+2): _hereDocLabel;
     return (Tokens.T_START_HEREDOC);
 }
 
