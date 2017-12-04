@@ -75,7 +75,7 @@ namespace Devsense.PHP.Syntax
             /// <summary>
             /// Tag elements initialized using reflection.
             /// </summary>
-            private static Dictionary<string, Func<string, string, Element>>/*!!*/s_elementFactories;
+            private static readonly Dictionary<string, Func<string, string, Element>>/*!!*/s_elementFactories;
 
             static Element()
             {

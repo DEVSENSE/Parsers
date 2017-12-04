@@ -52,11 +52,6 @@ namespace Devsense.PHP.Syntax
         Constructor = 256,
 
         /// <summary>
-        /// The member is imported type, function or global constant with ambiguous fully qualified name.
-        /// </summary>
-        Ambiguous = 1024,
-
-        /// <summary>
         /// The member needs to be activated before it can be resolved.
         /// TODO: useful when analysis checks whether there are any imported conditional types/functions.
         /// TODO: add the first conditional to the AC, ignore the others. Add the flag handling to Resolve* and to analyzer.

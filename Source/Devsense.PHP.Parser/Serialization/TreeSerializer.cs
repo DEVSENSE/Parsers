@@ -54,8 +54,6 @@ namespace Devsense.PHP.Syntax.Ast.Serialization
                     return "Trait";
                 case PhpMemberAttributes.Constructor:
                     return "Constructor";
-                case PhpMemberAttributes.Ambiguous:
-                    return "Ambiguous";
                 case PhpMemberAttributes.InactiveConditional:
                     return "InactiveConditional";
                 default:

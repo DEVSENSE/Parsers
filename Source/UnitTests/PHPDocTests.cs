@@ -43,5 +43,18 @@ namespace UnitTests
             Assert.AreEqual(phpdoc.Returns.TypeNames, "int");
             Assert.AreEqual(phpdoc.Returns.Description, "The return value.");
         }
+
+        [TestMethod]
+        public void MultitypeTest()
+        {
+            var phpdoc = NewPHPDoc(@"
+/**
+ * @param $a (int|double) The value.
+ * @param $b (int|double)[] The value.
+ * @param $c int|double[] The value.
+ */");
+
+            var ps = phpdoc.Params;
+        }
     }
 }
