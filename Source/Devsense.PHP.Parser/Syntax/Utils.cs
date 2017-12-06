@@ -1152,7 +1152,6 @@ namespace Devsense.PHP.Syntax
             throw new InvalidOperationException("Joining collections of incompatible size!");
         }
 
-
         /// <summary>
         /// Creates dictionary with all items from the <paramref name="values"/> collection. 
         /// The key of returned dictionary is list of values of type <typeparamref name="K"/>.
@@ -1204,6 +1203,18 @@ namespace Devsense.PHP.Syntax
             {
                 action(x);
             }
+        }
+
+        /// <summary>
+        /// Adds <paramref name="entries"/> into <paramref name="target"/>.
+        /// </summary>
+        /// <typeparam name="K">Dictionary key type.</typeparam>
+        /// <typeparam name="V">Dictionary value type.</typeparam>
+        /// <param name="target">Target dictionary.</param>
+        /// <param name="entries">Entries to be added.</param>
+        public static void Add<K,V>(this IDictionary<K,V> target, IDictionary<K, V> entries)
+        {
+            entries.Foreach(target.Add);
         }
     }
 
