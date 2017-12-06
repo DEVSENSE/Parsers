@@ -1847,13 +1847,4 @@ namespace Devsense.PHP.Syntax
     }
 
     #endregion
-
-    #region Properties
-
-    public static class PropertiesIdentifiers
-    {
-        public const string SeparatorPosition = "SeparatorPosition";
-    }
-
-    #endregion
 }

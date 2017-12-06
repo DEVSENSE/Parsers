@@ -603,25 +603,19 @@ is_variadic:
 ;
 
 class_declaration_statement:
-		class_modifiers T_CLASS T_STRING extends_from {PushClassContext($3, $4);} implements_list backup_doc_comment enter_scope '{' class_statement_list '}' exit_scope
-			{ 
-				$$ = _astFactory.Type(@$, CombineSpans(@1, @2, @3, @4, @6), isConditional, (PhpMemberAttributes)$1, new Name($3), @3, null, 
+		class_modifiers T_CLASS T_STRING extends_from {PushClassContext($3, $4, (PhpMemberAttributes)$1);} implements_list backup_doc_comment
+		enter_scope '{' class_statement_list '}' exit_scope
+		{ 
+			$$ = _astFactory.Type(@$, CombineSpans(@1, @2, @3, @4, @6), isConditional, (PhpMemberAttributes)$1, new Name($3), @3, null, 
 				ConvertToNamedTypeRef($4), $6.Select(ConvertToNamedTypeRef), $10, CombineSpans(@9, @11)); 
-				SetDoc($$);
-				PopClassContext();
-			}
-	|	T_CLASS T_STRING extends_from {PushClassContext($2, $3);} implements_list backup_doc_comment enter_scope '{' class_statement_list '}' exit_scope
-			{ 
-				$$ = _astFactory.Type(@$, CombineSpans(@1, @2, @3, @5), isConditional, PhpMemberAttributes.None, new Name($2), @2, null, 
-				ConvertToNamedTypeRef($3), $5.Select(ConvertToNamedTypeRef), $9, CombineSpans(@8, @10)); 
-				SetDoc($$);
-				PopClassContext();
-			}
+			SetDoc($$);
+			PopClassContext();
+		}
 ;
 
 class_modifiers:
-		class_modifier 					{ $$ = $1; }
-	|	class_modifiers class_modifier 	{ $$ = $1 | $2; }
+		/* empty */						{ $$ = (long)PhpMemberAttributes.None; }
+	|	class_modifier class_modifiers 	{ $$ = $1 | $2; }
 ;
 
 class_modifier:
@@ -630,21 +624,23 @@ class_modifier:
 ;
 
 trait_declaration_statement:
-		T_TRAIT T_STRING backup_doc_comment enter_scope '{' class_statement_list '}' exit_scope
-			{ 
-				$$ = _astFactory.Type(@$, CombineSpans(@1, @2), isConditional, PhpMemberAttributes.Trait, 
-					new Name($2), @2, null, null, new List<INamedTypeRef>(), $6, CombineSpans(@5, @7)); 
-				SetDoc($$);
-			}
+		T_TRAIT T_STRING {PushClassContext($2, null, PhpMemberAttributes.Trait);} backup_doc_comment
+		enter_scope '{' class_statement_list '}' exit_scope
+		{ 
+			$$ = _astFactory.Type(@$, CombineSpans(@1, @2), isConditional, PhpMemberAttributes.Trait, 
+				new Name($2), @2, null, null, new List<INamedTypeRef>(), $7, CombineSpans(@6, @8)); 
+			SetDoc($$);
+			PopClassContext();
+		}
 ;
 
 interface_declaration_statement:
 		T_INTERFACE T_STRING interface_extends_list backup_doc_comment enter_scope '{' class_statement_list '}' exit_scope
-			{ 
-				$$ = _astFactory.Type(@$, CombineSpans(@1, @2, @3), isConditional, PhpMemberAttributes.Interface, 
-					new Name($2), @2, null, null, $3.Select(ConvertToNamedTypeRef), $7, CombineSpans(@6, @8)); 
-				SetDoc($$);
-			}
+		{ 
+			$$ = _astFactory.Type(@$, CombineSpans(@1, @2, @3), isConditional, PhpMemberAttributes.Interface, 
+				new Name($2), @2, null, null, $3.Select(ConvertToNamedTypeRef), $7, CombineSpans(@6, @8)); 
+			SetDoc($$);
+		}
 ;
 
 extends_from:
@@ -1003,8 +999,9 @@ non_empty_for_exprs:
 ;
 
 anonymous_class:
-        T_CLASS ctor_arguments
-		extends_from { PushAnonymousClassContext($3); } implements_list backup_doc_comment enter_scope '{' class_statement_list '}' exit_scope {
+        T_CLASS ctor_arguments extends_from { PushAnonymousClassContext($3); } implements_list backup_doc_comment
+		enter_scope '{' class_statement_list '}' exit_scope
+		{
 			var typeRef = _astFactory.AnonymousTypeReference(@$, CombineSpans(@1, @2, @3, @5), isConditional, PhpMemberAttributes.None, null, ConvertToNamedTypeRef($3), $5.Select(ConvertToNamedTypeRef), $9, CombineSpans(@8, @10));
 			SetDoc(((AnonymousTypeRef)typeRef).TypeDeclaration);
 			$$ = new AnonymousClass(typeRef, $2, @2); 

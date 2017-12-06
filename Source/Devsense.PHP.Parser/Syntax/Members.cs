@@ -65,4 +65,16 @@ namespace Devsense.PHP.Syntax
     }
 
     #endregion
+
+    /// <summary>
+    /// <see cref="PhpMemberAttributes"/> extension methods.
+    /// </summary>
+    public static class PhpMemberAttributesExtensions
+    {
+        /// <summary>Gets value indicating a trait declaration.</summary>
+        public static bool IsTrait(this PhpMemberAttributes attrs) => (attrs & PhpMemberAttributes.Trait) != 0;
+
+        /// <summary>Gets value indicating an interface declaration.</summary>
+        public static bool IsInterface(this PhpMemberAttributes attrs) => (attrs & PhpMemberAttributes.Interface) != 0;
+    }
 }

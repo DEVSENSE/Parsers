@@ -667,7 +667,12 @@ namespace Devsense.PHP.Syntax
 
         protected object GetTokenAsSinglyQuotedString(string text, Encoding/*!*/ encoding, bool forceBinaryString)
         {
-            var result = new PhpStringBuilder(encoding, forceBinaryString, TokenLength);
+            if (string.IsNullOrEmpty(text))
+            {
+                return string.Empty;
+            }
+
+            var result = new PhpStringBuilder(encoding, forceBinaryString, text.Length);
 
             int pos = 1;
             char c;

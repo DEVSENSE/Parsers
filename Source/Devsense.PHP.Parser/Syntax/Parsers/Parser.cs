@@ -74,10 +74,11 @@ namespace Devsense.PHP.Syntax
         Stack<ClassContext> _classContexts = null;
         bool IsInClassContext { get { return _classContexts != null && _classContexts.Count != 0; } }
 
-        private struct ClassContext
+        struct ClassContext
         {
             public QualifiedName Name;
             public TypeRef Base;
+            public PhpMemberAttributes Attributes;
         }
 
         protected sealed override int EofToken
@@ -308,12 +309,13 @@ namespace Devsense.PHP.Syntax
             return new GroupUse(span, new QualifiedNameRef(prefixSpan, Name.EmptyBaseName, prefixNamespaces.ToArray(), isFullyQualified), uses);
         }
 
-        void PushClassContext(string name, TypeRef baseType)
+        void PushClassContext(string name, TypeRef baseType, PhpMemberAttributes attrs)
         {
             ClassContexts.Push(new ClassContext()
             {
                 Name = new QualifiedName(new Name(name), namingContext.CurrentNamespace.HasValue ? namingContext.CurrentNamespace.Value.Namespaces : Name.EmptyNames),
-                Base = baseType
+                Base = baseType,
+                Attributes = attrs,
             });
         }
 
@@ -322,7 +324,8 @@ namespace Devsense.PHP.Syntax
             ClassContexts.Push(new ClassContext()
             {
                 Name = new QualifiedName(Name.AnonymousClassName),
-                Base = baseType
+                Base = baseType,
+                Attributes = PhpMemberAttributes.None,
             });
         }
 
@@ -424,7 +427,6 @@ namespace Devsense.PHP.Syntax
             { QualifiedName.Object, PrimitiveTypeRef.PrimitiveType.@object },
         };
 
-
         static ReservedTypeRef.ReservedType _reservedTypeStatic => ReservedTypeRef.ReservedType.@static;
 
         TypeRef CreateTypeRef(Span span, QualifiedNameRef tname)
@@ -433,25 +435,7 @@ namespace Devsense.PHP.Syntax
             // primitive type name ?
             if (qname.IsSimpleName)
             {
-                ReservedTypeRef.ReservedType reserved;
-                PrimitiveTypeRef.PrimitiveType primitive;
-                if ((_languageFeatures.HasFeature(LanguageFeatures.Php72Set)) && PHP72PrimitiveTypes.TryGetValue(qname, out primitive))
-                {
-                    return _astFactory.PrimitiveTypeReference(span, primitive);
-                }
-                if ((_languageFeatures.HasFeature(LanguageFeatures.Php71Set)) && PHP71PrimitiveTypes.TryGetValue(qname, out primitive))
-                {
-                    return _astFactory.PrimitiveTypeReference(span, primitive);
-                }
-                if ((_languageFeatures.HasFeature(LanguageFeatures.Php70Set)) && PHP70PrimitiveTypes.TryGetValue(qname, out primitive))
-                {
-                    return _astFactory.PrimitiveTypeReference(span, primitive);
-                }
-                if ((_languageFeatures.HasFeature(LanguageFeatures.Php56Set)) && PHP56PrimitiveTypes.TryGetValue(qname, out primitive))
-                {
-                    return _astFactory.PrimitiveTypeReference(span, primitive);
-                }
-                if (ReservedTypeRef.ReservedTypes.TryGetValue(qname.Name, out reserved))
+                if (ReservedTypeRef.ReservedTypes.TryGetValue(qname.Name, out ReservedTypeRef.ReservedType reserved))
                 {
                     var reservedRef = _astFactory.ReservedTypeReference(span, reserved);
                     if (IsInClassContext)
@@ -464,6 +448,11 @@ namespace Devsense.PHP.Syntax
                                 {
                                     reservedRef = _astFactory.AliasedTypeReference(span, context.Base.QualifiedName.Value, reservedRef);
                                 }
+                                else if (context.Attributes.IsTrait())
+                                {
+                                    // keep unbound
+                                    // {parent} refers to actual class where the trait is used
+                                }
                                 else
                                 {
                                     this.ErrorSink.Error(span, FatalErrors.ParentAccessedInParentlessClass);
@@ -472,10 +461,17 @@ namespace Devsense.PHP.Syntax
 
                             case ReservedTypeRef.ReservedType.self:
 
-                                // we don't translate {self} in the context of an anonymous type name
-                                // since the translated name is platform specific and may differ from how it is handled by caller
-
-                                if (context.Name.Name != Name.AnonymousClassName)
+                                if (context.Attributes.IsTrait())
+                                {
+                                    // keep unbound
+                                    // {self} refers to actual class where the trait is used
+                                }
+                                else if (context.Name.Name == Name.AnonymousClassName)
+                                {
+                                    // we don't translate {self} in the context of an anonymous type name
+                                    // since the translated name is platform specific and may differ from how it is handled by caller
+                                }
+                                else
                                 {
                                     reservedRef = _astFactory.AliasedTypeReference(span, context.Name, reservedRef);
                                 }
@@ -492,9 +488,28 @@ namespace Devsense.PHP.Syntax
                     else
                     {
                         // TODO: Error: self|parent|static used outside a class context
+                        // NOTE: allowed in global code
                     }
 
                     return reservedRef;
+                }
+
+                PrimitiveTypeRef.PrimitiveType primitive;
+                if ((_languageFeatures.HasFeature(LanguageFeatures.Php72Set)) && PHP72PrimitiveTypes.TryGetValue(qname, out primitive))
+                {
+                    return _astFactory.PrimitiveTypeReference(span, primitive);
+                }
+                if ((_languageFeatures.HasFeature(LanguageFeatures.Php71Set)) && PHP71PrimitiveTypes.TryGetValue(qname, out primitive))
+                {
+                    return _astFactory.PrimitiveTypeReference(span, primitive);
+                }
+                if ((_languageFeatures.HasFeature(LanguageFeatures.Php70Set)) && PHP70PrimitiveTypes.TryGetValue(qname, out primitive))
+                {
+                    return _astFactory.PrimitiveTypeReference(span, primitive);
+                }
+                if ((_languageFeatures.HasFeature(LanguageFeatures.Php56Set)) && PHP56PrimitiveTypes.TryGetValue(qname, out primitive))
+                {
+                    return _astFactory.PrimitiveTypeReference(span, primitive);
                 }
             }
 
