@@ -421,7 +421,7 @@ namespace Devsense.PHP.Syntax.Ast
 
             public override string OpenLabel => $"<<<{Label}\r\n";
 
-            public override string CloseLabel => Label;
+            public override string CloseLabel => Label.Trim('"');
 
             /// <summary>
             /// NOWDOC label

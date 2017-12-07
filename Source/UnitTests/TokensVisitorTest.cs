@@ -11,6 +11,8 @@ using UnitTests.TestImplementation;
 using Devsense.PHP.Text;
 using System.Globalization;
 using Devsense.PHP.Errors;
+using System.Text.RegularExpressions;
+using Devsense.PHP.Syntax.Ast.Serialization;
 
 namespace UnitTests
 {
@@ -25,44 +27,30 @@ namespace UnitTests
         public void TokensVisitorTest()
         {
             string path = (string)TestContext.DataRow["files"];
-            string testcontent = File.ReadAllText(path);
-
-            string[] testparts = testcontent.Split(new string[] { "<<<TEST>>>" }, StringSplitOptions.RemoveEmptyEntries);
-
-            if (testparts.Length >= 2)
+            if (path.Contains("functions1.phpt"))
             {
-                testcontent = testparts[0];
-                if (path.Contains("functions1.phpt"))
-                {
-                    return; // TODO - too slow test 
-                }
+                return; // TODO - too slow test 
             }
-
+            string testcontent = File.ReadAllText(path);
             var original = testcontent;
             var sourceUnit = new TestSourceUnit(original, path, Encoding.UTF8, Lexer.LexicalStates.INITIAL, LanguageFeatures.Php71Set);
             var factory = new BasicNodesFactory(sourceUnit);
             var errors = new TestErrorSink();
 
-
             GlobalCode ast = null;
 
-            using (StringReader source_reader = new StringReader(original))
+            sourceUnit.Parse(factory, errors, new TestErrorRecovery());
+            ast = sourceUnit.Ast;
+            if (errors.Count != 0)
             {
-                sourceUnit.Parse(factory, errors, new TestErrorRecovery());
-                if(errors.Count != 0)
-                {
-                    return;// TODO - handle errors
-                }
-                ast = sourceUnit.Ast;
+                return; // AST is null or invalid
             }
 
-            var newlineLength = original.Contains("\r\n");
             var provider = SourceTokenProviderFactory.CreateProvider(sourceUnit.SourceLexer.AllTokens, original);
-            var whitespace = new WhiteSpaceCommentComposer(provider);
-            var composer = new TestComposer(whitespace);
+            var composer = new WhitespaceComposer(provider);
             var visitor = new TokenVisitor(new TreeContext(ast), composer, provider);
             visitor.VisitElement(ast);
-            var code = whitespace.Code;
+            var code = composer.Code;
 
             var result = code.ToString();
             //File.WriteAllText(Path.Combine(Directory.GetParent(path).FullName, "original.txt"), original);
@@ -74,187 +62,206 @@ namespace UnitTests
             //}
             Assert.AreEqual(original, result);
             var tokens = provider.GetTokens(new Span(0, original.Length)).AsArray();
-            Assert.AreEqual(tokens.Length, whitespace.Processed.Count);
+            Assert.AreEqual(tokens.Length, composer.Processed.Count);
             for (int i = 0; i < tokens.Length; i++)
             {
-                Assert.AreEqual(tokens[i].Token, whitespace.Processed[i].Token);
-                Assert.AreEqual(tokens[i].Span, whitespace.Processed[i].Span);
-            }
-        }
-        internal struct Comment
-        {
-            public readonly Span Position;
-            public readonly string Text;
-            public Comment(Span pos, string txt) { Position = pos; Text = txt; }
-        }
-        internal class TestSourceUnit : CodeSourceUnit
-        {
-            private CollectionLexer _lexer;
-            private LanguageFeatures _features;
-            public List<Comment> Comments => _lexer.Comments;
-
-            public CollectionLexer SourceLexer => _lexer;
-
-            public TestSourceUnit(string/*!*/ code, string/*!*/ filePath,
-                Encoding/*!*/ encoding,
-                Lexer.LexicalStates initialState = Lexer.LexicalStates.INITIAL,
-                LanguageFeatures features = LanguageFeatures.Basic)
-                : base(code, filePath, encoding, initialState, features)
-            {
-                _features = features;
-            }
-
-            public override void Parse(INodesFactory<LangElement, Span> factory, IErrorSink<Span> errors, IErrorRecovery recovery = null)
-            {
-                using (var source = new StringReader(this.Code))
-                {
-                    _lexer = new CollectionLexer(source, errors);
-                    ast = new Parser().Parse(_lexer, factory, _features, errors, recovery);
-                }
-            }
-        }
-        internal class CollectionLexer : ITokenProvider<SemanticValueType, Span>
-        {
-            List<Comment> _comments = new List<Comment>();
-            ITokenProvider<SemanticValueType, Span> _provider;
-            public List<Comment> Comments => _comments;
-            List<ISourceToken> _tokens = new List<ISourceToken>();
-
-            /// <summary>
-            /// Lexer constructor that initializes all the necessary members
-            /// </summary>
-            /// <param name="provider">Underlaying tokens provider.</param>
-            public CollectionLexer(StringReader source, IErrorSink<Span> errors)
-            {
-                _provider = new Lexer(source, Encoding.UTF8, errors, LanguageFeatures.Basic, 0, Lexer.LexicalStates.INITIAL);
-            }
-
-            public Span TokenPosition => _provider.TokenPosition;
-
-            public string TokenText => _provider.TokenText;
-
-            public SemanticValueType TokenValue => _provider.TokenValue;
-
-            public List<ISourceToken> AllTokens => _tokens;
-
-            /// <summary>
-            /// Get next token and store its actual position in the source unit.
-            /// This implementation supports the functionality of zendlex, which skips empty nodes (open tag, comment, etc.).
-            /// </summary>
-            /// <returns>Next token.</returns>
-            public int GetNextToken()
-            {
-                do
-                {
-                    Tokens token = (Tokens)_provider.GetNextToken();
-                    _tokens.Add(new SourceToken(token, TokenPosition));
-
-                    // origianl zendlex() functionality - skip open and close tags because they are not in the PHP grammar
-                    switch (token)
-                    {
-                        case Tokens.T_DOC_COMMENT:
-                        case Tokens.T_COMMENT:
-                        case Tokens.T_OPEN_TAG:
-                        case Tokens.T_CLOSE_TAG:
-                            _comments.Add(new Comment(TokenPosition, TokenText));
-                            break;
-                        case Tokens.T_WHITESPACE:
-                        case Tokens.T_OPEN_TAG_WITH_ECHO:
-                            break;
-                    }
-
-                    return (int)token;
-                } while (true);
-            }
-
-            public void ReportError(string[] expectedTokens)
-            {
-                _provider.ReportError(expectedTokens);
-            }
-
-            public CompleteToken PreviousToken => CompleteToken.Empty;
-
-            public PHPDocBlock DocBlock { get => null; set => throw new NotImplementedException(); }
-
-            public void AddNextTokens(IList<CompleteToken> tokensBuffer, CompleteToken previousToken) { }
-        }
-
-
-        class WhiteSpaceCommentComposer : ITokenComposer
-        {
-            public StringBuilder Code { get { ProcessWhitespaces(new Span(int.MaxValue, 0)); return _builder; } }
-            private StringBuilder _builder = new StringBuilder();
-
-            public List<ISourceToken> Processed => _processed;
-            private List<ISourceToken> _processed = new List<ISourceToken>();
-
-            private Span _previous = Span.Invalid;
-            private ISourceTokenProvider _tokens;
-
-            public WhiteSpaceCommentComposer(ISourceTokenProvider tokens)
-            {
-                _tokens = tokens;
-            }
-
-            private void ProcessToken(Tokens token, string text, Span position)
-            {
-                var start = position.StartOrInvalid;
-                var end = start + text.Length;
-                if (_builder.Length <= end)
-                {
-                    _builder.Append(' ', end - _builder.Length);
-                }
-                if (start >= 0 && text.Length >= 0)
-                {
-                    _builder.Replace(start, text.Length, text);
-                    _processed.Add(new SourceToken(token, position));
-                }
-            }
-
-            public void ConsumeToken(Tokens token, string text, Span position)
-            {
-                ProcessWhitespaces(position);
-                if (token != Tokens.T_SEMI || _tokens.GetTokenAt(position, Tokens.T_SEMI, null) != null) // TODO - last element without semicolon
-                {
-                    ProcessToken(token, _tokens.GetTokenText(new SourceToken(token, position), string.Empty), position);
-                }
-            }
-
-            private void ProcessWhitespaces(Span position)
-            {
-                if (position.IsValid && (!_previous.IsValid || _previous.End <= position.Start))
-                {
-                    var whitespaceSpan = Span.FromBounds(_previous.IsValid ? _previous.End : 0, position.Start);
-                    var tokens = _tokens.GetTokens(whitespaceSpan, t => t.Token == Tokens.T_WHITESPACE || t.Token == Tokens.T_COMMENT ||
-                    t.Token == Tokens.T_DOC_COMMENT || t.Token == Tokens.T_OPEN_TAG || t.Token == Tokens.T_CLOSE_TAG, Enumerable.Empty<ISourceToken>());
-                    if (tokens != null)
-                    {
-                        foreach (var item in tokens)
-                        {
-                            ProcessToken(item.Token, _tokens.GetTokenText(item, string.Empty), item.Span);
-                        }
-                    }
-                    _previous = position;
-                }
+                Assert.AreEqual(tokens[i].Token, composer.Processed[i].Token);
+                Assert.AreEqual(tokens[i].Span, composer.Processed[i].Span);
             }
         }
 
-        class TestComposer : ITokenComposer
+        [TestMethod]
+        [DataSource("Microsoft.VisualStudio.TestTools.DataSource.CSV", "|DataDirectory|\\TestData.csv", "TestData#csv", DataAccessMethod.Sequential)]
+        public void EmptyTokensVisitorTest()
         {
-
-            private ITokenComposer _composer;
-
-            public TestComposer(ITokenComposer composer)
+            string path = (string)TestContext.DataRow["files"];
+            if (path.Contains("functions1.phpt"))
             {
-                _composer = composer;
+                return; // TODO - too slow test 
+            }
+            string testcontent = File.ReadAllText(path);
+            var original = testcontent;
+            if (original.Contains("namespace\\"))
+            {
+                return; // TODO - current namespace cannot be decided from AST 
             }
 
-            public void ConsumeToken(Tokens token, string text, Span position)
+            var sourceUnit = new TestSourceUnit(original, path, Encoding.UTF8, Lexer.LexicalStates.INITIAL, LanguageFeatures.Php71Set);
+            var factory = new BasicNodesFactory(sourceUnit);
+            var errors = new TestErrorSink();
+            sourceUnit.Parse(factory, errors, new TestErrorRecovery());
+            GlobalCode ast = sourceUnit.Ast;
+            if (errors.Count != 0)
             {
-                _composer.ConsumeToken(token, text, position);
+                return; // AST is null or invalid
             }
 
-            protected void ConsumeToken(Tokens token, Span position) => ConsumeToken(token, TokenFacts.GetTokenText(token), position);
+            var provider = SourceTokenProviderFactory.CreateEmptyProvider();
+            var composer = new EmptyComposer(provider);
+            var visitor = new TokenVisitor(new TreeContext(ast), composer, provider);
+            visitor.VisitElement(ast);
+            var code = composer.Code.ToString();
+
+            var expectedStr = PrepareString(original);
+            var actualStr = PrepareString(code);
+            Assert.AreEqual(expectedStr, actualStr);
+            var expected = FilterTokens(sourceUnit.SourceLexer.AllTokens);
+            var actual = FilterTokens(composer.Processed);
+            Assert.AreEqual(expected.Length, actual.Length);
+            for (int i = 0; i < Math.Min(expected.Length, actual.Length); i++)
+            {
+                if (expected[i].Token == Tokens.T_SEMI && actual[i].Token == Tokens.T_CASE)
+                {
+
+                }
+                if (expected[i].Token == Tokens.T_LOGICAL_OR && actual[i].Token == Tokens.T_BOOLEAN_OR ||
+                    expected[i].Token == Tokens.T_LOGICAL_AND && actual[i].Token == Tokens.T_BOOLEAN_AND)
+                {
+                }
+                else
+                {
+                    Assert.AreEqual(expected[i].Token, actual[i].Token);
+                }
+            }
+
+
+            sourceUnit = new TestSourceUnit(code, path, Encoding.UTF8, Lexer.LexicalStates.INITIAL, LanguageFeatures.Php71Set);
+            sourceUnit.Parse(factory, errors, new TestErrorRecovery());
+            var newAst = sourceUnit.Ast;
+
+            var serializer = new JsonNodeWriter();
+            var serializerVisitor = new TreeSerializer(serializer);
+            ast.VisitMe(visitor);
+            expectedStr = serializer.ToString();
+            serializer = new JsonNodeWriter();
+            serializerVisitor = new TreeSerializer(serializer);
+            newAst.VisitMe(visitor);
+            actualStr = serializer.ToString();
+            Assert.AreEqual(expectedStr, actualStr);
+        }
+
+        private ISourceToken[] FilterTokens(IList<ISourceToken> tokens)
+        {
+            var filtered = tokens.Where(t =>
+            t.Token != Tokens.T_WHITESPACE &&       // whitespaces
+            t.Token != Tokens.T_COMMENT &&          // comments
+            t.Token != Tokens.T_DOC_COMMENT &&      // comments
+            t.Token != Tokens.T_PUBLIC &&           // default public 
+            t.Token != Tokens.T_VAR &&              // var replaced by default public
+            t.Token != Tokens.END                   // empty end token
+            ).AsArray();
+            var result = new List<ISourceToken>();
+            for (int i = 0; i < filtered.Length; i++)
+            {
+                if (i + 2 < filtered.Length && filtered[i].Token == Tokens.T_LBRACE &&
+                    filtered[i + 1].Token == Tokens.T_SEMI && filtered[i + 2].Token == Tokens.T_CASE)
+                {   // leading empty semicolon in switch
+                    result.Add(filtered[i]);
+                    result.Add(filtered[i + 2]);
+                    i += 2;
+                }
+                else if (i + 2 < filtered.Length && filtered[i].Token == Tokens.T_RPAREN &&
+                   filtered[i + 1].Token == Tokens.T_COLON && filtered[i + 2].Token == Tokens.T_CASE)
+                {   // switch with colon
+                    result.Add(filtered[i]);
+                    result.Add(new SourceToken(Tokens.T_LBRACE, Span.Invalid));
+                    result.Add(filtered[i + 2]);
+                    i += 2;
+                }
+                else if (i + 3 < filtered.Length && filtered[i].Token == Tokens.T_RPAREN &&
+                   filtered[i + 1].Token == Tokens.T_COLON && filtered[i + 2].Token == Tokens.T_SEMI &&
+                   filtered[i + 3].Token == Tokens.T_CASE)
+                {   // leading empty semicolon in switch with colon
+                    result.Add(filtered[i]);
+                    result.Add(new SourceToken(Tokens.T_LBRACE, Span.Invalid));
+                    result.Add(filtered[i + 3]);
+                    i += 3;
+                }
+                else if (i + 2 < filtered.Length && filtered[i].Token == Tokens.T_EXIT &&
+                   filtered[i + 1].Token == Tokens.T_LPAREN && filtered[i + 2].Token == Tokens.T_RPAREN)
+                {   // empty exit with parentheses
+                    result.Add(filtered[i]);
+                    i += 2;
+                }
+                else if (i + 1 < filtered.Length && filtered[i].Token == Tokens.T_ENDSWITCH &&
+                   filtered[i + 1].Token == Tokens.T_SEMI)
+                {   // endswitch
+                    result.Add(new SourceToken(Tokens.T_RBRACE, Span.Invalid));
+                    i++;
+                }
+                else if (i + 1 < filtered.Length && filtered[i].Token == Tokens.T_SEMI &&
+                   filtered[i + 1].Token == Tokens.T_CLOSE_TAG)
+                {   // semicolon before close tag
+                    result.Add(new SourceToken(Tokens.T_CLOSE_TAG, Span.Invalid));
+                    i++;
+                }
+                else if (i + 1 < filtered.Length && filtered[i].Token == Tokens.T_OPEN_TAG &&
+                   filtered[i + 1].Token == Tokens.T_CLOSE_TAG)
+                {   // empty php block
+                    i++;
+                }
+                else if (i == filtered.Length - 1 && filtered[i].Token == Tokens.T_OPEN_TAG)
+                {   // empty open php block
+                    i++;
+                }
+                else if (i == filtered.Length - 1 && filtered[i].Token == Tokens.T_SEMI)
+                {   // closing semicolon and close tag
+                    result.Add(new SourceToken(Tokens.T_CLOSE_TAG, Span.Invalid));
+                    i++;
+                }
+                else if (filtered[i].Token == Tokens.T_OPEN_TAG_WITH_ECHO)
+                {   // open tag with echo repalced by open tag and echo
+                    result.Add(new SourceToken(Tokens.T_OPEN_TAG, Span.Invalid));
+                    result.Add(new SourceToken(Tokens.T_ECHO, Span.Invalid));
+                }
+                else
+                {
+                    result.Add(filtered[i]);
+                }
+            }
+            if (result.Count != 0 && result.Last().Token == Tokens.T_CLOSE_TAG)
+            {
+                result.RemoveLast();
+            }
+            return result.AsArray();
+        }
+
+        private string PrepareString(string data)
+        {
+            return
+            Regex.Replace(
+                Regex.Replace(
+                    Regex.Replace(
+                        Regex.Replace(
+                            Regex.Replace(
+                                Regex.Replace(
+                                    Regex.Replace(
+                                        Regex.Replace(
+                                            Regex.Replace(
+                                                data,
+                                            @"/\*+[^/]*", "*"). // block comments
+                                            Replace("*/", ""),  // block comments end
+                                        @"\*$", ""),            // block comment before EOF
+                                    @"//.*\n", "\n"),           // line comments
+                                @"//.*$", ""),                  // line comments before EOF
+                            @"\s+", ""),                        // whitespaces
+                        @"\?>$", ";"),                          // terminal close tag
+                    @";+$", ""),                                // terminal semicolon
+                @"switch([^:{};>]*):", "switch$1{"),            // switch {} vs switch : endswitch; 
+            @"<\?php\s*$", "").                                 // empty opened php block
+            Replace("public", "").                              // default public
+            Replace("die(", "exit(").                           // die vs exit
+            Replace("die;", "exit;").                           // die vs exit without parameters
+            Replace("exit();", "exit;").                        // exit without parameters
+            Replace("||", "or").                                // boolean vs logical or
+            Replace("&&", "and").                               // boolean vs logical and
+            Replace(";?>", "?>").                               // semicolon before closetag
+            Replace("{;case", "{case").                         // leading empty semicolon in switch
+            Replace("<?php?>", "").                             // empty php block
+            Replace("var$", "$").                               // var modifier replaced by default public
+            Replace("<?=", "<?phpecho").                        // open tag with echo
+            Replace("endswitch;", "}").                         // endswitch vs }
+            Replace("endswitch?", "}?");                        // endswitch vs } before close tag
         }
     }
 }

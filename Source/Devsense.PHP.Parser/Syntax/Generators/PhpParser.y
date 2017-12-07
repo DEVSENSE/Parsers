@@ -22,6 +22,7 @@ using Devsense.PHP.Errors;
 using CompleteAlias = System.Tuple<Devsense.PHP.Syntax.QualifiedNameRef, Devsense.PHP.Syntax.NameRef>;
 using ContextAlias = System.Tuple<Devsense.PHP.Text.Span, Devsense.PHP.Syntax.QualifiedNameRef, Devsense.PHP.Syntax.NameRef, Devsense.PHP.Syntax.AliasKind>;
 using AnonymousClass = System.Tuple<Devsense.PHP.Syntax.Ast.TypeRef, System.Collections.Generic.List<Devsense.PHP.Syntax.Ast.ActualParam>, Devsense.PHP.Text.Span>;
+using StringPair = System.Collections.Generic.KeyValuePair<string, string>;
 
 %%
 
@@ -57,6 +58,7 @@ using AnonymousClass = System.Tuple<Devsense.PHP.Syntax.Ast.TypeRef, System.Coll
 	public LangElement Node								{ get { return (LangElement)Object; }				set { Object = value; } }
 	public List<LangElement> NodeList					{ get { return (List<LangElement>)Object; }			set { Object = value; } }
 	public string String								{ get { return (string)Object; }					set { Object = value; } }
+	public StringPair Strings							{ get { return (StringPair)Object; }				set { Object = value; } }
 	public List<string> StringList						{ get { return (List<string>)Object; }				set { Object = value; } }
 	public CompleteAlias Alias							{ get { return (CompleteAlias)Object; }				set { Object = value; } }
 	public List<CompleteAlias> AliasList				{ get { return (List<CompleteAlias>)Object; }		set { Object = value; } }
@@ -115,7 +117,7 @@ using AnonymousClass = System.Tuple<Devsense.PHP.Syntax.Ast.TypeRef, System.Coll
 %token <String> T_STRING 319   //"identifier (T_STRING)"
 %token <String> T_VARIABLE 320 //"variable (T_VARIABLE)"
 %token <String> T_INLINE_HTML 321
-%token <String> T_ENCAPSED_AND_WHITESPACE 322  //"quoted-string and whitespace (T_ENCAPSED_AND_WHITESPACE)"
+%token <Strings> T_ENCAPSED_AND_WHITESPACE 322  //"quoted-string and whitespace (T_ENCAPSED_AND_WHITESPACE)"
 %token <String> T_CONSTANT_ENCAPSED_STRING 323 //"quoted-string (T_CONSTANT_ENCAPSED_STRING)"
 %token <String> T_STRING_VARNAME 324 //"variable name (T_STRING_VARNAME)"
 %token <Long> T_NUM_STRING 325 //"number (T_NUM_STRING)"
@@ -1222,7 +1224,7 @@ exit_expr:
 
 backticks_expr:
 		'`' '`' { $$ = _astFactory.Literal(@$, string.Empty, "``"); }
-	|	'`' T_ENCAPSED_AND_WHITESPACE '`' { $$ = _astFactory.Literal(@$, $2, string.Format("`{0}`", $2.Replace("\n", "\\n").Replace("\"", "\\\""))); }
+	|	'`' T_ENCAPSED_AND_WHITESPACE '`' { $$ = _astFactory.Literal(@$, $2.Key, string.Format("`{0}`", $2.Value)); }
 	|	'`' encaps_list '`' { $$ = _astFactory.StringEncapsedExpression(@$, _astFactory.Concat(@2, $2), Tokens.T_BACKQUOTE, "`"); }
 ;
 
@@ -1249,7 +1251,7 @@ scalar:
 	|	T_FUNC_C	{ $$ = _astFactory.PseudoConstUse(@$, PseudoConstUse.Types.Function); } 
 	|	T_NS_C		{ $$ = _astFactory.PseudoConstUse(@$, PseudoConstUse.Types.Namespace); }
 	|	T_CLASS_C	{ $$ = _astFactory.PseudoConstUse(@$, PseudoConstUse.Types.Class); }    
-	|	T_START_HEREDOC T_ENCAPSED_AND_WHITESPACE T_END_HEREDOC { $$ = _astFactory.Literal(@$, $2, string.Format("<<<{0}\r\n{1}\r\n{2}", $1, $2, $3)); }
+	|	T_START_HEREDOC T_ENCAPSED_AND_WHITESPACE T_END_HEREDOC { $$ = _astFactory.Literal(@$, $2.Key, string.Format("<<<{0}\r\n{1}\r\n{2}", $1, $2.Value, $3)); }
 	|	T_START_HEREDOC T_END_HEREDOC { $$ = _astFactory.Literal(@$, string.Empty, string.Format("<<<{0}\r\n{1}", $1, $2)); }
 	|	'"' encaps_list '"' 	{ $$ = _astFactory.StringEncapsedExpression(@$, _astFactory.Concat(@2, $2), Tokens.T_DOUBLE_QUOTES, "\""); }
 	|	T_START_HEREDOC encaps_list T_END_HEREDOC { $$ = _astFactory.StringEncapsedExpression(@$, _astFactory.Concat(@2, $2), Tokens.T_START_HEREDOC, $1); }
@@ -1398,11 +1400,11 @@ encaps_list:
 		encaps_list encaps_var
 			{ $$ = AddToList<LangElement>($1, $2); }
 	|	encaps_list T_ENCAPSED_AND_WHITESPACE
-			{ $$ = AddToList<LangElement>($1, _astFactory.Literal(@2, $2, _lexer.TokenText)); }
+			{ $$ = AddToList<LangElement>($1, _astFactory.Literal(@2, $2.Key, _lexer.TokenText)); }
 	|	encaps_var
 			{ $$ = new List<LangElement>() { $1 }; }
 	|	T_ENCAPSED_AND_WHITESPACE encaps_var
-			{ $$ = new List<LangElement>() { _astFactory.Literal(@1, $1, $1), $2 }; }
+			{ $$ = new List<LangElement>() { _astFactory.Literal(@1, $1.Key, $1.Value), $2 }; }
 ;
 
 encaps_var:

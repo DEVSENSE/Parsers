@@ -893,7 +893,7 @@ namespace Devsense.PHP.Syntax
             // move back at the end of the heredoc label - yyless does not work properly (requires additional condition for the optional ';')
             lookahead_index = token_end = lookahead_index - _hereDocLabel.Length - trail;
 
-            _tokenSemantics.Object = f(text).TrimEnd(StringUtils.s_NewlineCharacters);
+            _tokenSemantics.Object = new KeyValuePair<string, string>(f(text).TrimEnd(StringUtils.s_NewlineCharacters), text);
 
             //
             return text.Length != 0;
@@ -926,7 +926,7 @@ namespace Devsense.PHP.Syntax
             }
             else
             {
-                this._tokenSemantics.Object = ProcessEscapedStringWithEnding(GetTokenString(), _encoding, false, '"');
+                this._tokenSemantics.Object = new KeyValuePair<string, string>((string)ProcessEscapedStringWithEnding(GetTokenString(), _encoding, false, '"'), GetTokenString());
                 return Tokens.T_ENCAPSED_AND_WHITESPACE;
             }
         }
@@ -948,7 +948,7 @@ namespace Devsense.PHP.Syntax
         {
             if (TokenLength > 0)
             {
-                _tokenSemantics.Object = GetTokenString();
+                _tokenSemantics.Object = token == Tokens.T_ENCAPSED_AND_WHITESPACE ? new KeyValuePair<string, string>(GetTokenString(), GetTokenString()) : (object)GetTokenString();
                 return token;
             }
             return Tokens.EOF;
@@ -990,7 +990,7 @@ namespace Devsense.PHP.Syntax
             yy_push_state(newState);
             if (TokenLength > 0)
             {
-                _tokenSemantics.Object = ProcessEscapedStringWithEnding(GetTokenString(), _encoding, false, ending);
+                _tokenSemantics.Object = new KeyValuePair<string, string>((string)ProcessEscapedStringWithEnding(GetTokenString(), _encoding, false, ending), GetTokenString());
                 return true;
             }
             else

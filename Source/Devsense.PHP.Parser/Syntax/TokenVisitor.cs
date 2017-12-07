@@ -136,6 +136,9 @@ namespace Devsense.PHP.Syntax
             }
         }
 
+        protected virtual bool ExitHasParentheses { get { return false; } }
+        protected virtual bool SwitchShortNotation { get { return true; } }
+
         /// <summary>
         /// Consume modifier tokens.
         /// Calls corresponding <see cref="ITokenComposer.ConsumeToken"/>.
@@ -199,7 +202,10 @@ namespace Devsense.PHP.Syntax
         protected virtual ISourceToken[] ConsumeModifiers(LangElement element, PhpMemberAttributes modifiers, Span span)
         {
             var defaults = new Dictionary<Tokens, ISourceToken>();
-            AddPublicModifier(modifiers, defaults);
+            if (element is MethodDecl || element is FieldDeclList || element is ConstDeclList)
+            {
+                AddPublicModifier(modifiers, defaults);
+            }
             AddModifier(modifiers, PhpMemberAttributes.Private, defaults);
             AddModifier(modifiers, PhpMemberAttributes.Protected, defaults);
             AddModifier(modifiers, PhpMemberAttributes.Static, defaults);
@@ -563,13 +569,15 @@ namespace Devsense.PHP.Syntax
         {
             var token = _provider.GetTokenAt(x.Span, Tokens.T_EXIT, new SourceToken(Tokens.T_EXIT, SpanUtils.SafeSpan(x.Span.StartOrInvalid, 4)));
             ConsumeToken(token.Token, _provider.GetTokenText(token, "exit"), token.Span);
-            var paren = _provider.GetTokenAt(x.ResulExpr != null ? SpanUtils.SpanIntermission(token.Span, x.ResulExpr.Span) : x.Span, Tokens.T_LPAREN, null);
+            var paren = _provider.GetTokenAt(x.ResulExpr != null ? SpanUtils.SpanIntermission(token.Span, x.ResulExpr.Span) : x.Span, Tokens.T_LPAREN,
+                ExitHasParentheses ? new SourceToken(Tokens.T_LPAREN, Span.Invalid) : null);
             if (paren != null)
             {
                 ConsumeToken(paren.Token, paren.Span);
             }
             VisitElement(x.ResulExpr);
-            paren = _provider.GetTokenAt(x.ResulExpr != null ? SpanUtils.SpanIntermission(x.ResulExpr.Span, x.Span.End) : x.Span, Tokens.T_RPAREN, null);
+            paren = _provider.GetTokenAt(x.ResulExpr != null ? SpanUtils.SpanIntermission(x.ResulExpr.Span, x.Span.End) : x.Span, Tokens.T_RPAREN,
+                ExitHasParentheses ? new SourceToken(Tokens.T_RPAREN, Span.Invalid) : null);
             if (paren != null)
             {
                 ConsumeToken(paren.Token, paren.Span);
@@ -906,7 +914,11 @@ namespace Devsense.PHP.Syntax
             }
             if (!string.IsNullOrEmpty(qname.Name.Value))
             {
-                defaults.Add(new SourceToken(Tokens.T_STRING, SpanUtils.SafeSpan(position, qname.Name.Value.Length)));
+                if (TokenFacts.s_reservedNameToToken.TryGetValue(qname.Name.Value, out Tokens t) == false || qname.Name.Value == "throw")
+                {
+                    t = Tokens.T_STRING;
+                }
+                defaults.Add(new SourceToken(t, SpanUtils.SafeSpan(position, qname.Name.Value.Length)));
             }
             return defaults;
         }
@@ -1067,7 +1079,7 @@ namespace Devsense.PHP.Syntax
                 VisitSignature(element.Signature);
                 var useSpan = SpanUtils.SpanIntermission(element.Signature.Span,
                     element.ReturnType != null ? element.ReturnType.Span.StartOrInvalid : (element.Body != null ? element.Body.Span.StartOrInvalid : element.Span.End));
-                if (element.UseParams != null)
+                if (element.UseParams != null && element.UseParams.Count != 0)
                 {
                     ProcessToken(Tokens.T_USE, useSpan);
                     ProcessToken(Tokens.T_LPAREN, useSpan);
@@ -1350,7 +1362,8 @@ namespace Devsense.PHP.Syntax
                 x.SwitchItems.Length > 0 ? x.SwitchItems.First().Span.StartOrInvalid : x.Span.End);
             ProcessToken(Tokens.T_RPAREN, braceSpan);
             var separator = _provider.GetTokenAt(braceSpan, Tokens.T_COLON, null) ??
-                _provider.GetTokenAt(braceSpan, Tokens.T_LBRACE, new SourceToken(Tokens.T_LBRACE, Span.Invalid));
+                _provider.GetTokenAt(braceSpan, Tokens.T_LBRACE,
+                SwitchShortNotation ? new SourceToken(Tokens.T_LBRACE, Span.Invalid) : new SourceToken(Tokens.T_COLON, Span.Invalid));
             ConsumeToken(separator);
             var token = _provider.GetTokenAt(braceSpan, Tokens.T_SEMI, null);
             if (token != null)
@@ -1359,7 +1372,7 @@ namespace Devsense.PHP.Syntax
             }
             VisitList(x.SwitchItems);
             var endSpan = SpanUtils.SpanIntermission(x.SwitchItems.Length > 0 ? x.SwitchItems.Last().Span : x.SwitchValue.Span, x.Span.End);
-            var tokens = _provider.GetTokens(endSpan, t => t.Token == Tokens.T_ENDSWITCH || t.Token == Tokens.T_SEMI, null).ToArray();
+            var tokens = _provider.GetTokens(endSpan, t => t.Token == Tokens.T_ENDSWITCH || t.Token == Tokens.T_SEMI, null).CastToArray<ISourceToken>();
             if (tokens != null && tokens.Length == 2 && tokens[0].Token == Tokens.T_ENDSWITCH && tokens[1].Token == Tokens.T_SEMI)
             {
                 ConsumeToken(tokens[0]);
@@ -1489,7 +1502,7 @@ namespace Devsense.PHP.Syntax
                 if ((x.MemberAttributes & PhpMemberAttributes.Interface) == 0 && (x.MemberAttributes & PhpMemberAttributes.Trait) == 0)
                 {
                     previous = ProcessToken(Tokens.T_CLASS, prenameSpan);
-                    if (signature != null)
+                    if (signature != null && signature.Parameters.Length != 0)
                     {
                         VisitCallSignature(signature);
                     }
@@ -1577,8 +1590,11 @@ namespace Devsense.PHP.Syntax
                 namespaces[i] = use.QualifiedName.Namespaces[i + offset];
             }
             VisitQualifiedName(new QualifiedName(use.QualifiedName.Name, namespaces), use.NameSpan);
-            ProcessToken(Tokens.T_AS, SpanUtils.SpanIntermission(use.NameSpan, use.AliasSpan));
-            ConsumeNameToken(use.Alias.Name.Value, use.AliasSpan);
+            if (use.QualifiedName.Name.Value != use.Alias.Name.Value)
+            {
+                ProcessToken(Tokens.T_AS, SpanUtils.SpanIntermission(use.NameSpan, use.AliasSpan));
+                ConsumeNameToken(use.Alias.Name.Value, use.AliasSpan);
+            }
         }
 
         protected virtual void VisitUse(GroupUse use, bool printKind)
