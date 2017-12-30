@@ -1182,7 +1182,7 @@ using System.Collections.Generic;
 					
 				case 145:
 					// #line 877
-					{ Tokens token; if (ProcessString(1, out token)) return token; else break; }
+					{ if (ProcessString(1, out Tokens token)) return token; else break; }
 					break;
 					
 				case 146:
@@ -1192,17 +1192,17 @@ using System.Collections.Generic;
 					
 				case 147:
 					// #line 876
-					{ Tokens token; if (ProcessString(2, out token)) return token; else break; }
+					{ if (ProcessString(2, out Tokens token)) return token; else break; }
 					break;
 					
 				case 148:
 					// #line 875
-					{ Tokens token; if (ProcessString(2, out token)) return token; else break; }
+					{ if (ProcessString(2, out Tokens token)) return token; else break; }
 					break;
 					
 				case 149:
 					// #line 874
-					{ Tokens token; if (ProcessString(2, out token)) return token; else break; }
+					{ if (ProcessString(2, out Tokens token)) return token; else break; }
 					break;
 					
 				case 150:
@@ -1213,17 +1213,17 @@ using System.Collections.Generic;
 					break;
 					
 				case 151:
-					// #line 826
-					{ yymore(); break; }
-					break;
-					
-				case 152:
 					// #line 825
 					{ yymore(); break; }
 					break;
 					
-				case 153:
+				case 152:
 					// #line 824
+					{ yymore(); break; }
+					break;
+					
+				case 153:
+					// #line 826
 					{ BEGIN(LexicalStates.ST_IN_SCRIPTING); return ProcessSingleQuotedString(); }
 					break;
 					
@@ -1244,7 +1244,7 @@ using System.Collections.Generic;
 					
 				case 157:
 					// #line 887
-					{ Tokens token; if (ProcessShell(1, out token)) return token; else break; }
+					{ if (ProcessShell(1, out Tokens token)) return token; else break; }
 					break;
 					
 				case 158:
@@ -1254,17 +1254,17 @@ using System.Collections.Generic;
 					
 				case 159:
 					// #line 886
-					{ Tokens token; if (ProcessShell(2, out token)) return token; else break; }
+					{ if (ProcessShell(2, out Tokens token)) return token; else break; }
 					break;
 					
 				case 160:
 					// #line 885
-					{ Tokens token; if (ProcessShell(2, out token)) return token; else break; }
+					{ if (ProcessShell(2, out Tokens token)) return token; else break; }
 					break;
 					
 				case 161:
 					// #line 884
-					{ Tokens token; if (ProcessShell(2, out token)) return token; else break; }
+					{ if (ProcessShell(2, out Tokens token)) return token; else break; }
 					break;
 					
 				case 162:

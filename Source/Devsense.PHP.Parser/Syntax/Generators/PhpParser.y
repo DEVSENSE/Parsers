@@ -49,6 +49,9 @@ using StringPair = System.Collections.Generic.KeyValuePair<string, string>;
 	public QualifiedNameRef QualifiedNameReference;
 	[FieldOffset(0)]
 	public AliasKind Kind;
+	/// <summary>Token that encapsulates the string literal.</summary>
+	[FieldOffset(0)]
+	public Tokens QuoteToken;
 
 	[FieldOffset(8)]
 	public object Object;

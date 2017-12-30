@@ -216,7 +216,9 @@ namespace Devsense.PHP.Syntax
         public void Append(char c)
         {
             if (IsUnicode)
+            {
                 UnicodeBuilder.Append(c);
+            }
             else
             {
                 var encodeBytes = BytesBuffer;

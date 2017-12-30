@@ -58,8 +58,6 @@ namespace Devsense.PHP.Syntax
                 default:
                     return false;
             }
-
-
         }
 
         private static bool IsInString(Lexer lexer)

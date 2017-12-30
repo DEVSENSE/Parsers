@@ -360,16 +360,9 @@ namespace Devsense.PHP.Syntax.Ast
             {
                 result = new DoubleLiteral(span, (double)value);
             }
-            else if (value is string)
+            else if (value is string str)
             {
-                var text = (string)value;
-                if (text.Length >= 2 &&
-                    (text[0] == '\'' && text[text.Length - 1] == '\'' ||
-                    text[0] == '"' && text[text.Length - 1] == '"'))
-                {
-                    text = text.Substring(1, text.Length - 2);
-                }
-                result = new StringLiteral(span, text);
+                result = new StringLiteral(span, str);
             }
             else if (value is byte[])
             {

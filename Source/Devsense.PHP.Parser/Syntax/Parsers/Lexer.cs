@@ -399,19 +399,36 @@ namespace Devsense.PHP.Syntax
 
         #region GetTokenAs*QuotedString
 
-        protected object GetTokenAsDoublyQuotedString(string text, Encoding/*!*/ encoding, bool forceBinaryString)
+        protected object GetTokenAsDoublyQuotedString(Encoding/*!*/ encoding)
         {
-            PhpStringBuilder result = new PhpStringBuilder(encoding, forceBinaryString, TokenLength);
-            Debug.Assert(text.Length == 0 || text[0] == '"');
-            int pos = 1;
-            char c;
-            result.Append('"');
-            while (pos < text.Length)
+            int max = TokenLength - 1;  // skip trailing quote
+            int pos = 0;
+            bool forceBinaryString = false;
+
+            // b'...' => binary string syntax
+            if (GetTokenChar(0) == 'b')
             {
-                c = text[pos++];
-                if (c == '\\' && pos < text.Length)
+                pos++;
+                forceBinaryString = true;
+            }
+
+            pos++;  // skip leading quote
+
+            if (pos == max)
+            {
+                return string.Empty;
+            }
+
+            // TODO: lazy PhpStringBuilder, without escaped chars return interned string from buffer
+
+            var result = new PhpStringBuilder(encoding, forceBinaryString, max - pos + 2);
+            char c;
+            while (pos < max)
+            {
+                c = GetTokenChar(pos++);
+                if (c == '\\' && pos < max)
                 {
-                    switch (c = text[pos++])
+                    switch (c = GetTokenChar(pos++))
                     {
                         case 'n':
                             result.Append('\n');
@@ -457,11 +474,11 @@ namespace Devsense.PHP.Syntax
                         case 'x':
                             {
                                 int digit;
-                                if (pos < text.Length && (digit = Convert.AlphaNumericToDigit(text[pos])) < 16)
+                                if (pos < max && (digit = Convert.AlphaNumericToDigit(GetTokenChar(pos))) < 16)
                                 {
                                     int hex_code = digit;
                                     pos++;
-                                    if (pos < text.Length && (digit = Convert.AlphaNumericToDigit(text[pos])) < 16)
+                                    if (pos < max && (digit = Convert.AlphaNumericToDigit(GetTokenChar(pos))) < 16)
                                     {
                                         pos++;
                                         hex_code = (hex_code << 4) + digit;
@@ -482,16 +499,16 @@ namespace Devsense.PHP.Syntax
                         default:
                             {
                                 int digit;
-                                if (pos < text.Length && (digit = Convert.NumericToDigit(c)) < 8)
+                                if (pos < max && (digit = Convert.NumericToDigit(c)) < 8)
                                 {
                                     int octal_code = digit;
 
-                                    if (pos < text.Length && pos < text.Length && (digit = Convert.NumericToDigit(text[pos])) < 8)
+                                    if (pos < max && pos < max && (digit = Convert.NumericToDigit(GetTokenChar(pos))) < 8)
                                     {
                                         octal_code = (octal_code << 3) + digit;
                                         pos++;
 
-                                        if (pos < text.Length && (digit = Convert.NumericToDigit(text[pos])) < 8)
+                                        if (pos < max && (digit = Convert.NumericToDigit(GetTokenChar(pos))) < 8)
                                         {
                                             pos++;
                                             octal_code = (octal_code << 3) + digit;
@@ -513,8 +530,6 @@ namespace Devsense.PHP.Syntax
                 else
                 {
                     result.Append(c);
-                    if (c == '"')
-                        break;
                 }
             }
 
@@ -665,24 +680,37 @@ namespace Devsense.PHP.Syntax
             return result.Result;
         }
 
-        protected object GetTokenAsSinglyQuotedString(string text, Encoding/*!*/ encoding, bool forceBinaryString)
+        protected object GetTokenAsSinglyQuotedString(Encoding/*!*/ encoding)
         {
-            if (string.IsNullOrEmpty(text))
+            int max = TokenLength - 1;  // skip trailing quote
+            int pos = 0;
+            bool forceBinaryString = false;
+
+            // b'...' => binary string syntax
+            if (GetTokenChar(0) == 'b')
+            {
+                pos++;
+                forceBinaryString = true;
+            }
+
+            pos++;  // skip leading quote
+
+            if (pos == max)
             {
                 return string.Empty;
             }
 
-            var result = new PhpStringBuilder(encoding, forceBinaryString, text.Length);
+            // TODO: lazy PhpStringBuilder, without escaped chars return interned string from buffer
 
-            int pos = 1;
+            var result = new PhpStringBuilder(encoding, forceBinaryString, max - pos + 2);
+
             char c;
-            result.Append('\'');
-            while (pos < text.Length)
+            while (pos < max)
             {
-                c = text[pos++];
-                if (c == '\\' && pos < text.Length)
+                c = GetTokenChar(pos++);
+                if (c == '\\' && pos < max)
                 {
-                    switch (c = text[pos++])
+                    switch (c = GetTokenChar(pos++))
                     {
                         case '\\':
                         case '\'':
@@ -696,13 +724,10 @@ namespace Devsense.PHP.Syntax
                 }
                 else
                 {
-                    if (c == '\'')
-                        break;
                     result.Append(c);
                 }
             }
 
-            result.Append('\'');
             return result.Result;
         }
 
@@ -842,17 +867,16 @@ namespace Devsense.PHP.Syntax
 
         Tokens ProcessSingleQuotedString()
         {
-            bool forceBinaryString = GetTokenChar(0) == 'b';
-
-            _tokenSemantics.Object = GetTokenAsSinglyQuotedString(GetTokenString(), _encoding, forceBinaryString);
+            _tokenSemantics.Object = GetTokenAsSinglyQuotedString(_encoding);
+            _tokenSemantics.QuoteToken = Tokens.T_SINGLE_QUOTES;
             return Tokens.T_CONSTANT_ENCAPSED_STRING;
         }
 
         Tokens ProcessDoubleQuotedString()
         {
-            bool forceBinaryString = GetTokenChar(0) == 'b';
+            _tokenSemantics.Object = GetTokenAsDoublyQuotedString(_encoding);
+            _tokenSemantics.QuoteToken = Tokens.T_DOUBLE_QUOTES;
 
-            _tokenSemantics.Object = GetTokenAsDoublyQuotedString(GetTokenString(), _encoding, forceBinaryString);
             return Tokens.T_CONSTANT_ENCAPSED_STRING;
         }
 

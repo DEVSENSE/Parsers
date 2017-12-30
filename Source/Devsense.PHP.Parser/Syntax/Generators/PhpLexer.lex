@@ -821,9 +821,9 @@ ST_HALT_COMPILER1,ST_HALT_COMPILER2,ST_HALT_COMPILER3>{EOF} {
 
 <ST_IN_SCRIPTING>b?[']				{ BEGIN(LexicalStates.ST_SINGLE_QUOTES); yymore(); break; }
 <ST_SINGLE_QUOTES>[\\]{ANY_CHAR}	{ yymore(); break; }
-<ST_SINGLE_QUOTES>[']				{ BEGIN(LexicalStates.ST_IN_SCRIPTING); return ProcessSingleQuotedString(); }
 <ST_SINGLE_QUOTES>{NEWLINE}			{ yymore(); break; }
 <ST_SINGLE_QUOTES>[^'\\]+			{ yymore(); break; }
+<ST_SINGLE_QUOTES>[']				{ BEGIN(LexicalStates.ST_IN_SCRIPTING); return ProcessSingleQuotedString(); }
 
 <ST_IN_STRING,ST_IN_SHELL,ST_IN_HEREDOC>"${" {
 	yy_push_state(LexicalStates.ST_LOOKING_FOR_VARNAME);
@@ -871,20 +871,20 @@ ST_HALT_COMPILER1,ST_HALT_COMPILER2,ST_HALT_COMPILER3>{EOF} {
 }
 
 <ST_IN_SCRIPTING>b?["] { BEGIN(LexicalStates.ST_DOUBLE_QUOTES); yymore(); break; }
-<ST_DOUBLE_QUOTES>"${" { Tokens token; if (ProcessString(2, out token)) return token; else break; }
-<ST_DOUBLE_QUOTES>"$"[a-zA-Z_] { Tokens token; if (ProcessString(2, out token)) return token; else break; }
-<ST_DOUBLE_QUOTES>"{$" { Tokens token; if (ProcessString(2, out token)) return token; else break; }
-<ST_DOUBLE_QUOTES>["] { Tokens token; if (ProcessString(1, out token)) return token; else break; }
+<ST_DOUBLE_QUOTES>"${" { if (ProcessString(2, out Tokens token)) return token; else break; }
+<ST_DOUBLE_QUOTES>"$"[a-zA-Z_] { if (ProcessString(2, out Tokens token)) return token; else break; }
+<ST_DOUBLE_QUOTES>"{$" { if (ProcessString(2, out Tokens token)) return token; else break; }
+<ST_DOUBLE_QUOTES>["] { if (ProcessString(1, out Tokens token)) return token; else break; }
 
 <ST_DOUBLE_QUOTES>[$]|[{] { yymore(); break; }
 <ST_DOUBLE_QUOTES>[\\]{ANY_CHAR} { yymore(); break; }
 <ST_DOUBLE_QUOTES>[^"\{$\\]+ { yymore(); break; }
 
 <ST_IN_SCRIPTING>[`] { BEGIN(LexicalStates.ST_BACKQUOTE); return Tokens.T_BACKQUOTE; }
-<ST_BACKQUOTE>"${" { Tokens token; if (ProcessShell(2, out token)) return token; else break; }
-<ST_BACKQUOTE>"$"[a-zA-Z_] { Tokens token; if (ProcessShell(2, out token)) return token; else break; }
-<ST_BACKQUOTE>"{$" { Tokens token; if (ProcessShell(2, out token)) return token; else break; }
-<ST_BACKQUOTE>[`] { Tokens token; if (ProcessShell(1, out token)) return token; else break; }
+<ST_BACKQUOTE>"${" { if (ProcessShell(2, out Tokens token)) return token; else break; }
+<ST_BACKQUOTE>"$"[a-zA-Z_] { if (ProcessShell(2, out Tokens token)) return token; else break; }
+<ST_BACKQUOTE>"{$" { if (ProcessShell(2, out Tokens token)) return token; else break; }
+<ST_BACKQUOTE>[`] { if (ProcessShell(1, out Tokens token)) return token; else break; }
 
 <ST_BACKQUOTE>[$]|[{]			{ yymore(); break; }
 <ST_BACKQUOTE>[\\]{ANY_CHAR}	{ yymore(); break; }
