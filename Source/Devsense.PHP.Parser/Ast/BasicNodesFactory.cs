@@ -187,7 +187,7 @@ namespace Devsense.PHP.Syntax.Ast
             }
         }
 
-        public virtual LangElement StringEncapsedExpression(Span span, LangElement expression, Tokens openDelimiter, string label)
+        public virtual LangElement StringEncapsedExpression(Span span, LangElement expression, Tokens openDelimiter)
         {
             switch (openDelimiter)
             {
@@ -197,12 +197,19 @@ namespace Devsense.PHP.Syntax.Ast
                     return new DoubleQuotedExpression(span, (Expression)expression);
                 case Tokens.T_BACKQUOTE:
                     return new BackQuotedExpression(span, (Expression)expression);
-                case Tokens.T_START_HEREDOC:
-                    return label.StartsWith("'") ?
-                        (StringEncapsedExpression)new NowDocExpression(span, (Expression)expression, label) :
-                        (StringEncapsedExpression)new HereDocExpression(span, (Expression)expression, label);
                 default:
                     throw new ArgumentOutOfRangeException(nameof(openDelimiter), openDelimiter, string.Empty);
+            }
+        }
+
+        public virtual LangElement HeredocExpression(Span span, LangElement expression, Tokens quoteStyle, string label)
+        {
+            switch (quoteStyle)
+            {
+                case Tokens.T_SINGLE_QUOTES:
+                    return new NowDocExpression(span, (Expression)expression, label);
+                default:
+                    return new HereDocExpression(span, (Expression)expression, label, quoteStyle == Tokens.T_DOUBLE_QUOTES);
             }
         }
 

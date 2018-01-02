@@ -269,7 +269,7 @@ using StringPair = System.Collections.Generic.KeyValuePair<string, string>;
 %token <Object> T_OPEN_TAG_WITH_ECHO 380 //"open tag with echo (T_OPEN_TAG_WITH_ECHO)"
 %token <Object> T_CLOSE_TAG 381      //"close tag (T_CLOSE_TAG)"
 %token <Object> T_WHITESPACE 382     //"whitespace (T_WHITESPACE)"
-%token <String> T_START_HEREDOC 383  //"heredoc start (T_START_HEREDOC)"
+%token T_START_HEREDOC 383  //"heredoc start (T_START_HEREDOC)"
 %token <String> T_END_HEREDOC 384    //"heredoc end (T_END_HEREDOC)"
 %token <Object> T_DOLLAR_OPEN_CURLY_BRACES 385 //"${ (T_DOLLAR_OPEN_CURLY_BRACES)"
 %token <Object> T_CURLY_OPEN 386     //"{$ (T_CURLY_OPEN)"
@@ -1228,7 +1228,7 @@ exit_expr:
 backticks_expr:
 		'`' '`' { $$ = _astFactory.Literal(@$, string.Empty, "``"); }
 	|	'`' T_ENCAPSED_AND_WHITESPACE '`' { $$ = _astFactory.Literal(@$, $2.Key, string.Format("`{0}`", $2.Value)); }
-	|	'`' encaps_list '`' { $$ = _astFactory.StringEncapsedExpression(@$, _astFactory.Concat(@2, $2), Tokens.T_BACKQUOTE, "`"); }
+	|	'`' encaps_list '`' { $$ = _astFactory.StringEncapsedExpression(@$, _astFactory.Concat(@2, $2), Tokens.T_BACKQUOTE); }
 ;
 
 ctor_arguments:
@@ -1254,10 +1254,10 @@ scalar:
 	|	T_FUNC_C	{ $$ = _astFactory.PseudoConstUse(@$, PseudoConstUse.Types.Function); } 
 	|	T_NS_C		{ $$ = _astFactory.PseudoConstUse(@$, PseudoConstUse.Types.Namespace); }
 	|	T_CLASS_C	{ $$ = _astFactory.PseudoConstUse(@$, PseudoConstUse.Types.Class); }    
-	|	T_START_HEREDOC T_ENCAPSED_AND_WHITESPACE T_END_HEREDOC { $$ = _astFactory.Literal(@$, $2.Key, string.Format("<<<{0}\r\n{1}\r\n{2}", $1, $2.Value, $3)); }
-	|	T_START_HEREDOC T_END_HEREDOC { $$ = _astFactory.Literal(@$, string.Empty, string.Format("<<<{0}\r\n{1}", $1, $2)); }
-	|	'"' encaps_list '"' 	{ $$ = _astFactory.StringEncapsedExpression(@$, _astFactory.Concat(@2, $2), Tokens.T_DOUBLE_QUOTES, "\""); }
-	|	T_START_HEREDOC encaps_list T_END_HEREDOC { $$ = _astFactory.StringEncapsedExpression(@$, _astFactory.Concat(@2, $2), Tokens.T_START_HEREDOC, $1); }
+	|	'"' encaps_list '"' 	{ $$ = _astFactory.StringEncapsedExpression(@$, _astFactory.Concat(@2, $2), Tokens.T_DOUBLE_QUOTES); }
+	|	T_START_HEREDOC T_END_HEREDOC							{ $$ = _astFactory.HeredocExpression(@$, _astFactory.Literal(new Span(@1.End, 0), "", ""), $1.QuoteToken, $1.String); }
+	|	T_START_HEREDOC T_ENCAPSED_AND_WHITESPACE T_END_HEREDOC { $$ = _astFactory.HeredocExpression(@$, _astFactory.Literal(@2, $2.Key, $2.Value), $1.QuoteToken, $1.String); }
+	|	T_START_HEREDOC encaps_list T_END_HEREDOC				{ $$ = _astFactory.HeredocExpression(@$, _astFactory.Concat(@2, $2), $1.QuoteToken, $1.String); }
 	|	dereferencable_scalar	{ $$ = $1; }
 	|	constant			{ $$ = $1; }
 ;

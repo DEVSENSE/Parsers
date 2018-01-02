@@ -539,14 +539,22 @@ namespace Devsense.PHP.Syntax.Ast
         TNode EncapsedExpression(TSpan span, TNode expression, Tokens openDelimiter);
 
         /// <summary>
-        /// Encloses expression in a string - single quoted, double quoted, heredoc, nowdoc
+        /// Encloses expression in a string - single quoted, double quoted or shell.
         /// </summary>
         /// <param name="span">Entire element span.</param>
         /// <param name="expression">String expression.</param>
-        /// <param name="openDelimiter">Opening delimiter.</param>
-        /// <param name="label">Label used to initiate the string.</param>
+        /// <param name="openDelimiter">Opening delimiter - single quotes, double quotes or backquote.</param>
         /// <returns>Encapsed string expression.</returns>
-        TNode StringEncapsedExpression(TSpan span, TNode expression, Tokens openDelimiter, string label);
+        TNode StringEncapsedExpression(TSpan span, TNode expression, Tokens openDelimiter);
+
+        /// <summary>
+        /// Encloses expression into HEREDOC/NOWDOC 
+        /// </summary>
+        /// <param name="span">Element span.</param>
+        /// <param name="containing">String expression.</param>
+        /// <param name="quoteStyle">Either double quote, single quote or zero. Quotes used to enclose the label.</param>
+        /// <param name="label">Label string.</param>
+        TNode HeredocExpression(TSpan span, TNode containing, Tokens quoteStyle, string label);
 
         /// <summary>
         /// Creates <c>exit</c> expression with optional result status expression.

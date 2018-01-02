@@ -391,7 +391,7 @@ namespace Devsense.PHP.Syntax.Ast
 
             public override string OpenLabel => $"<<<'{Label}'\r\n";
 
-            public override string CloseLabel => $"{Label};";
+            public override string CloseLabel => Label;
 
             /// <summary>
             /// NOWDOC label
@@ -399,7 +399,8 @@ namespace Devsense.PHP.Syntax.Ast
             public string Label => _label;
             private string _label;
 
-            public NowDocExpression(Span span, Expression expression, string label) : base(span, expression)
+            public NowDocExpression(Span span, Expression expression, string label)
+                : base(span, expression)
             {
                 _expression = expression;
                 _label = label;
@@ -419,9 +420,9 @@ namespace Devsense.PHP.Syntax.Ast
 
             public override Tokens CloseToken => Tokens.T_END_HEREDOC;
 
-            public override string OpenLabel => $"<<<{Label}\r\n";
+            public override string OpenLabel => "<<<" + QuotedLabel + "\r\n";
 
-            public override string CloseLabel => Label.Trim('"');
+            public override string CloseLabel => Label;
 
             /// <summary>
             /// NOWDOC label
@@ -429,10 +430,15 @@ namespace Devsense.PHP.Syntax.Ast
             public string Label => _label;
             private string _label;
 
-            public HereDocExpression(Span span, Expression expression, string label) : base(span, expression)
+            string QuotedLabel => _quoted ? ("\"" + Label + "\"") : Label;
+            readonly bool _quoted;
+
+            public HereDocExpression(Span span, Expression expression, string label, bool quoted)
+                : base(span, expression)
             {
                 _expression = expression;
                 _label = label;
+                _quoted = quoted;
             }
         }
 

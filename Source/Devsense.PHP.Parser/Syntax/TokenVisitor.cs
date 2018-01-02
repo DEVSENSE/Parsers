@@ -103,35 +103,17 @@ namespace Devsense.PHP.Syntax
                     }
                     ConsumeToken(Tokens.T_BACKQUOTE, SpanUtils.SafeSpan(literal.Span.End - 1, 1));
                 }
-                else if (literal.OriginalValue != null && literal.OriginalValue.StartsWith("<<<"))
-                {
-                    var first = literal.OriginalValue.IndexOf('\n');
-                    while (literal.OriginalValue[first] == '\n')
-                    {
-                        first++;
-                    }
-                    var openLabel = literal.OriginalValue.Substring(0, first);
-                    var last = literal.OriginalValue.LastIndexOfAny(NewLines) + 1;
-                    var closeLabel = literal.OriginalValue.Substring(last, literal.OriginalValue.Length - last);
-
-                    var openLabelSpan = SpanUtils.SafeSpan(literal.Span.StartOrInvalid, openLabel.Length);
-                    var closeLabelSpan = SpanUtils.SafeSpan(literal.Span.StartOrInvalid + literal.Span.Length - closeLabel.Length, closeLabel.Length);
-                    ProcessToken(Tokens.T_START_HEREDOC, openLabel, openLabelSpan);
-                    if (literal.OriginalValue.Length > (openLabel.Length + closeLabel.Length))
-                    {
-                        ProcessToken(
-                            Tokens.T_ENCAPSED_AND_WHITESPACE,
-                            literal.OriginalValue.Substring(openLabel.Length, literal.OriginalValue.Length - openLabel.Length - closeLabel.Length),
-                            literal.Span.IsValid ? SpanUtils.SafeSpan(literal.Span.Start + openLabel.Length, literal.Span.Length - openLabel.Length - closeLabel.Length) : Span.Invalid);
-                    }
-                    ProcessToken(Tokens.T_END_HEREDOC, closeLabel, closeLabelSpan);
-                }
                 else
                 {
-                    ConsumeToken(
-                        literal.ContainingElement is ConcatEx ? Tokens.T_ENCAPSED_AND_WHITESPACE : Tokens.T_CONSTANT_ENCAPSED_STRING,
-                        literal.OriginalValue ?? $"\"{slit.Value}\"",
-                        literal.Span);
+                    if (literal.Span.Length != 0)   // literal must exist or invalid
+                    {
+                        ConsumeToken(
+                            (literal.ContainingElement is ConcatEx || (literal.ContainingElement is StringEncapsedExpression stre && stre.OpenToken == Tokens.T_START_HEREDOC))
+                                ? Tokens.T_ENCAPSED_AND_WHITESPACE
+                                : Tokens.T_CONSTANT_ENCAPSED_STRING,
+                            literal.OriginalValue ?? $"\"{slit.Value}\"",
+                            literal.Span);
+                    }
                 }
             }
         }

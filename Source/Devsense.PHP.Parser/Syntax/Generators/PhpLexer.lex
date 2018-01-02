@@ -764,28 +764,32 @@ ST_HALT_COMPILER1,ST_HALT_COMPILER2,ST_HALT_COMPILER3>{EOF} {
 <ST_IN_SCRIPTING>b?"<<<"{TABS_AND_SPACES}({LABEL}|([']{LABEL}['])|(["]{LABEL}["])){NEWLINE} {
 	int bprefix = (GetTokenChar(0) != '<') ? 1 : 0;
 	int s = bprefix + 3;
-    int length = TokenLength - bprefix - 3 - 1 - (GetTokenChar(TokenLength-2) == '\r' ? 1 : 0);
-    string tokenString = GetTokenString();
-    while ((tokenString[s] == ' ') || (tokenString[s] == '\t')) {
+    int length = TokenLength - bprefix - 3 - 1 - (GetTokenChar(TokenLength - 2) == '\r' ? 1 : 0);
+    while (char.IsWhiteSpace(GetTokenChar(s))) {	// {TABS_AND_SPACES}
 		s++;
         length--;
-
     }
-	if (tokenString[s] == '\'') {
-		s++;
-        length -= 2;
 
+	_tokenSemantics.QuoteToken = Tokens.END;
+	if (GetTokenChar(s) == '\'') {
+		_tokenSemantics.QuoteToken = Tokens.T_SINGLE_QUOTES;
         BEGIN(LexicalStates.ST_NOWDOC);
 	} else {
-		if (tokenString[s] == '"') {
-			s++;
-            length -= 2;
+		if (GetTokenChar(s) == '"') {
+			_tokenSemantics.QuoteToken = Tokens.T_DOUBLE_QUOTES;
         }
 		BEGIN(LexicalStates.ST_HEREDOC);
 	}
-    _hereDocLabel = GetTokenSubstring(s, length);
-	_tokenSemantics.Object = tokenString[s-1] == '\'' || tokenString[s-1] == '"'? GetTokenSubstring(s-1, length+2): _hereDocLabel;
-    return (Tokens.T_START_HEREDOC);
+
+	if (_tokenSemantics.QuoteToken != Tokens.END) {	// enclosed in quotes
+		s++;
+        length -= 2;
+	}
+
+	_tokenSemantics.Object = _hereDocLabel = GetTokenSubstring(s, length);
+
+	//
+	return Tokens.T_START_HEREDOC;
 }
 
 <ST_END_HEREDOC>^{LABEL}(";")?{NEWLINE} {
