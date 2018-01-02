@@ -74,11 +74,6 @@ namespace Devsense.PHP.Syntax
         internal string _hereDocLabel = null;
 
         /// <summary>
-        /// Flag for handling unicode strings (currently always false, may be eliminated)
-        /// </summary>
-        private bool _inUnicodeString = false;
-
-        /// <summary>
         /// Get actual doc comment.
         /// </summary>
         public PHPDocBlock DocBlock { get; set; }
@@ -460,15 +455,9 @@ namespace Devsense.PHP.Syntax
                             result.Append(c);
                             break;
 
-                        case 'C':
-                            if (!_inUnicodeString) goto default;
-                            result.Append(ParseCodePointName(ref pos));
-                            break;
-
                         case 'u':
-                        case 'U':
-                            if (!_inUnicodeString) goto default;
-                            result.Append(ParseCodePoint(c == 'u' ? 4 : 6, ref pos));
+                            // TODO: if (PHP < 7.0) goto default;
+                            result.Append(ParseCodePoint(4, ref pos));
                             break;
 
                         case 'x':
@@ -604,15 +593,9 @@ namespace Devsense.PHP.Syntax
                             result.Append(c);
                             break;
 
-                        case 'C':
-                            //if (!inUnicodeString) goto default;
-                            result.Append(ParseCodePointName(ref pos));
-                            break;
-
                         case 'u':
-                        case 'U':
-                            //if (!inUnicodeString) goto default;
-                            result.Append(ParseCodePoint(c == 'u' ? 4 : 6, ref pos));
+                            // TODO: if (PHP < 7.0) goto default;
+                            result.Append(ParseCodePoint(4, ref pos));   // TODO: ref pos !!!
                             break;
 
                         case 'x':
@@ -683,28 +666,29 @@ namespace Devsense.PHP.Syntax
         protected object GetTokenAsSinglyQuotedString(Encoding/*!*/ encoding)
         {
             int max = TokenLength - 1;  // skip trailing quote
-            int pos = 0;
+            int start = 0;
             bool forceBinaryString = false;
 
             // b'...' => binary string syntax
             if (GetTokenChar(0) == 'b')
             {
-                pos++;
+                start++;
                 forceBinaryString = true;
             }
 
-            pos++;  // skip leading quote
+            start++;  // skip leading quote
 
-            if (pos == max)
+            if (start == max)
             {
                 return string.Empty;
             }
 
             // TODO: lazy PhpStringBuilder, without escaped chars return interned string from buffer
 
-            var result = new PhpStringBuilder(encoding, forceBinaryString, max - pos + 2);
+            var result = new PhpStringBuilder(encoding, forceBinaryString, max - start + 2);
 
             char c;
+            int pos = start;
             while (pos < max)
             {
                 c = GetTokenChar(pos++);
@@ -733,35 +717,11 @@ namespace Devsense.PHP.Syntax
 
         #endregion
 
-        private string ParseCodePointName(ref int pos)
-        {
-            if (buffer[pos] == '{')
-            {
-                int start = ++pos;
-                while (pos < token_end && buffer[pos] != '}') pos++;
-
-                if (pos < token_end)
-                {
-                    string name = new String(buffer, start, pos - start);
-
-                    // TODO: name look-up
-                    // return ...[name];
-
-                    // skip '}'
-                    pos++;
-                }
-            }
-
-            //errors.Add(Errors.InvalidCodePointName, sourceFile, );
-
-            return "?";
-        }
-
         private string ParseCodePoint(int maxLength, ref int pos)
         {
             int digit;
             int code_point = 0;
-            while (maxLength > 0 && (digit = Convert.NumericToDigit(buffer[pos])) < 16)
+            while (maxLength > 0 && (digit = Convert.NumericToDigit(GetTokenChar(pos))) < 16)
             {
                 code_point = code_point << 4 + digit;
                 pos++;
