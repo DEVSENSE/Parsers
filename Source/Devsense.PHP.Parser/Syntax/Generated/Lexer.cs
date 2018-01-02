@@ -159,7 +159,7 @@ using System.Collections.Generic;
 						{
 							return Tokens.T_INLINE_HTML; 
 						}
-						if (_allowShortTags) {
+						if (EnableShortTags) {
 							BEGIN(LexicalStates.ST_IN_SCRIPTING);
 							return (Tokens.T_OPEN_TAG);
 						} else {
@@ -1308,7 +1308,7 @@ using System.Collections.Generic;
 					    if(!string.IsNullOrEmpty(_hereDocLabel) && GetTokenString().Contains(_hereDocLabel))
 						{
 							BEGIN(LexicalStates.ST_END_HEREDOC); 
-							if( ProcessEndNowDoc(s => (string)ProcessEscapedString(s, _encoding, false)) ) return (Tokens.T_ENCAPSED_AND_WHITESPACE);
+							if( ProcessEndNowDoc(_processDoubleQuotedString) ) return (Tokens.T_ENCAPSED_AND_WHITESPACE);
 						}
 					    yymore(); break;
 					}
@@ -1492,7 +1492,7 @@ using System.Collections.Generic;
 					    if(!string.IsNullOrEmpty(_hereDocLabel) && GetTokenString().Contains(_hereDocLabel))
 						{
 							BEGIN(LexicalStates.ST_END_HEREDOC); 
-							if( ProcessEndNowDoc(s => s) ) return (Tokens.T_ENCAPSED_AND_WHITESPACE);
+							if( ProcessEndNowDoc(null) ) return (Tokens.T_ENCAPSED_AND_WHITESPACE);
 						}
 					    yymore(); break;
 					}

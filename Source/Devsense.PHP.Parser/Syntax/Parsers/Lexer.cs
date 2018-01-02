@@ -32,9 +32,16 @@ namespace Devsense.PHP.Syntax
     public partial class Lexer : ITokenProvider<SemanticValueType, Span>
     {
         /// <summary>
-        /// Allow short opening tags
+        /// Gets value indicating short open tags are enabled.
         /// </summary>
-        protected bool _allowShortTags = true;
+        protected bool EnableShortTags => (_features & LanguageFeatures.ShortOpenTags) != 0;
+
+        /// <summary>
+        /// Gets value indicating Unicode codepoints (\u{[0-9A-Fa-f]+}) in double quoted strings are enabled.
+        /// </summary>
+        protected bool EnableUtfCodepoints => (_features & LanguageFeatures.Php70Set) == LanguageFeatures.Php70Set;
+
+        readonly LanguageFeatures _features;
 
         /// <summary>
         /// Semantic value of the actual token
@@ -101,7 +108,7 @@ namespace Devsense.PHP.Syntax
             _encoding = encoding ?? Encoding.UTF8;
             _errors = errors ?? new EmptyErrorSink<Span>();
             _charOffset = positionShift;
-            _allowShortTags = (features & LanguageFeatures.ShortOpenTags) != 0;
+            _features = features;
             _strings = StringTable.GetInstance();
 
             Initialize(reader, initialState);
@@ -392,336 +399,277 @@ namespace Devsense.PHP.Syntax
             }
         }
 
-        #region GetTokenAs*QuotedString
+        /// <summary>
+        /// Delegate used for <see cref="ProcessStringText"/> that handles escaped string sequences.
+        /// </summary>
+        /// <param name="buffer">Source text buffer.</param>
+        /// <param name="index">Index of the escaped character right after '\'.</param>
+        /// <param name="builder">Output string builder.</param>
+        /// <returns>Position of the last processed character. In case the escaped character is not handled, gets <c>-1</c>.</returns>
+        delegate int ProcessStringDelegate(char[] buffer, int index, PhpStringBuilder builder);
 
-        protected object GetTokenAsDoublyQuotedString(Encoding/*!*/ encoding)
+        readonly ProcessStringDelegate _processSingleQuotedString = (buffer, pos, result) =>
         {
-            int max = TokenLength - 1;  // skip trailing quote
-            int pos = 0;
-            bool forceBinaryString = false;
-
-            // b'...' => binary string syntax
-            if (GetTokenChar(0) == 'b')
+            var c = buffer[pos];
+            if (c == '\\' || c == '\'')
             {
-                pos++;
-                forceBinaryString = true;
+                result.Append(c);
+                return pos;
             }
 
-            pos++;  // skip leading quote
+            return -1;
+        };
 
-            if (pos == max)
+        int _processDoubleQuotedString(char[] buffer, int pos, PhpStringBuilder result)
+        {
+            switch (buffer[pos])
+            {
+                case 'n':
+                    result.Append('\n');
+                    return pos;
+
+                case 'r':
+                    result.Append('\r');
+                    return pos;
+
+                case 't':
+                    result.Append('\t');
+                    return pos;
+
+                case 'v':
+                    result.Append('\v');
+                    return pos;
+
+                case 'e':
+                    result.Append((char)0x1B);
+                    return pos;
+
+                case 'f':
+                    result.Append('\f');
+                    return pos;
+
+                case '\\':
+                case '$':
+                case '"':
+                    result.Append(buffer[pos]);
+                    return pos;
+
+                case '`':
+                    if (CurrentLexicalState == LexicalStates.ST_IN_SHELL)
+                    {
+                        result.Append(buffer[pos]);
+                        return pos;
+                    }
+                    break;
+
+                case 'u':
+                    if (EnableUtfCodepoints)
+                    {
+                        pos++;
+                        result.Append(ParseCodePoint(buffer, ref pos, 4));
+                        return pos - 1;
+                    }
+                    else
+                    {
+                        break;
+                    }
+
+                case 'x':
+                    {
+                        // \x[0-9A-Fa-f]{1,2}
+                        int digit;
+                        if ((digit = Convert.AlphaNumericToDigit(buffer[++pos])) < 16)
+                        {
+                            int hex_code = digit;
+                            if ((digit = Convert.AlphaNumericToDigit(buffer[++pos])) < 16)
+                            {
+                                hex_code = (hex_code << 4) + digit;
+                            }
+                            else
+                            {
+                                pos--;  // rollback
+                            }
+
+                            //encodeBytes[0] = (byte)hex_code;
+                            //result.Append(encodeChars, 0, encoding.GetChars(encodeBytes, 0, 1, encodeChars, 0));
+                            result.Append((byte)hex_code);
+                            return pos;
+                        }
+
+                        break;
+                    }
+
+                default:
+                    {
+                        // \[0-7]{1,3}
+                        int digit;
+                        if ((digit = Convert.NumericToDigit(buffer[pos])) < 8)  // 1
+                        {
+                            int octal_code = digit;
+
+                            if ((digit = Convert.NumericToDigit(buffer[++pos])) < 8)    // 2
+                            {
+                                octal_code = (octal_code << 3) + digit;
+
+                                if ((digit = Convert.NumericToDigit(buffer[++pos])) < 8)    // 3
+                                {
+                                    octal_code = (octal_code << 3) + digit;
+                                }
+                                else
+                                {
+                                    pos--; // rollback
+                                }
+                            }
+                            else
+                            {
+                                pos--; // rollback
+                            }
+
+                            //encodeBytes[0] = (byte)octal_code;
+                            //result.Append(encodeChars, 0, encoding.GetChars(encodeBytes, 0, 1, encodeChars, 0));
+                            result.Append((byte)octal_code);
+                            return pos;
+                        }
+
+                        break;
+                    }
+            }
+
+            // not handled:
+            return -1;
+        }
+
+        /// <summary>
+        /// Parses string literal text, processes escaped sequences.
+        /// </summary>
+        /// <param name="buffer">Characters buffer to read from.</param>
+        /// <param name="start">Offset in <paramref name="buffer"/> of first character.</param>
+        /// <param name="length">Number of characters.</param>
+        /// <param name="tryprocess">Callback that handles escaped character sequences. Returns new buffer position in case the sequence was processed, otherwise <c>-1</c>.</param>
+        /// <param name="binary">Whether to force a binary string output.</param>
+        /// <returns>Parsed text, either <see cref="string"/> or <see cref="byte"/>[].</returns>
+        object ProcessStringText(char[] buffer, int start, int length, ProcessStringDelegate tryprocess, bool binary = false)
+        {
+            Debug.Assert(start >= 0);
+            Debug.Assert(length >= 0);
+            Debug.Assert(tryprocess != null);
+
+            if (length == 0)
             {
                 return string.Empty;
             }
 
-            // TODO: lazy PhpStringBuilder, without escaped chars return interned string from buffer
+            int to = start + length;
 
-            var result = new PhpStringBuilder(encoding, forceBinaryString, max - pos + 2);
-            char c;
-            while (pos < max)
+            Debug.Assert(start >= 0);
+            Debug.Assert(to <= buffer.Length);
+
+            PhpStringBuilder lazyBuilder = null;
+
+            // find first backslash quickly
+            int index = start;
+            while (index < to && buffer[index] != '\\')
             {
-                c = GetTokenChar(pos++);
-                if (c == '\\' && pos < max)
+                index++;
+            }
+
+            //
+            for (; index < to; index++)
+            {
+                var c = buffer[index];
+                if (c == '\\' && index + 1 < to)
                 {
-                    switch (c = GetTokenChar(pos++))
+                    // ensure string builder lazily
+                    if (lazyBuilder == null)
                     {
-                        case 'n':
-                            result.Append('\n');
-                            break;
+                        lazyBuilder = new PhpStringBuilder(_encoding, binary, length);
+                        lazyBuilder.Append(buffer, start, index - start);
+                    }
 
-                        case 'r':
-                            result.Append('\r');
-                            break;
-
-                        case 't':
-                            result.Append('\t');
-                            break;
-
-                        case 'v':
-                            result.Append('\v');
-                            break;
-
-                        case 'e':
-                            result.Append((char)0x1B);
-                            break;
-
-                        case 'f':
-                            result.Append('\f');
-                            break;
-
-                        case '\\':
-                        case '$':
-                        case '"':
-                            result.Append(c);
-                            break;
-
-                        case 'u':
-                            // TODO: if (PHP < 7.0) goto default;
-                            result.Append(ParseCodePoint(4, ref pos));
-                            break;
-
-                        case 'x':
-                            {
-                                int digit;
-                                if (pos < max && (digit = Convert.AlphaNumericToDigit(GetTokenChar(pos))) < 16)
-                                {
-                                    int hex_code = digit;
-                                    pos++;
-                                    if (pos < max && (digit = Convert.AlphaNumericToDigit(GetTokenChar(pos))) < 16)
-                                    {
-                                        pos++;
-                                        hex_code = (hex_code << 4) + digit;
-                                    }
-
-                                    //encodeBytes[0] = (byte)hex_code;
-                                    //result.Append(encodeChars, 0, encoding.GetChars(encodeBytes, 0, 1, encodeChars, 0));
-                                    result.Append((byte)hex_code);
-                                }
-                                else
-                                {
-                                    result.Append('\\');
-                                    result.Append('x');
-                                }
-                                break;
-                            }
-
-                        default:
-                            {
-                                int digit;
-                                if (pos < max && (digit = Convert.NumericToDigit(c)) < 8)
-                                {
-                                    int octal_code = digit;
-
-                                    if (pos < max && pos < max && (digit = Convert.NumericToDigit(GetTokenChar(pos))) < 8)
-                                    {
-                                        octal_code = (octal_code << 3) + digit;
-                                        pos++;
-
-                                        if (pos < max && (digit = Convert.NumericToDigit(GetTokenChar(pos))) < 8)
-                                        {
-                                            pos++;
-                                            octal_code = (octal_code << 3) + digit;
-                                        }
-                                    }
-                                    //encodeBytes[0] = (byte)octal_code;
-                                    //result.Append(encodeChars, 0, encoding.GetChars(encodeBytes, 0, 1, encodeChars, 0));
-                                    result.Append((byte)octal_code);
-                                }
-                                else
-                                {
-                                    result.Append('\\');
-                                    result.Append(c);
-                                }
-                                break;
-                            }
+                    int processed = tryprocess(buffer, index + 1, lazyBuilder);
+                    if (processed > 0)
+                    {
+                        Debug.Assert(processed >= index + 1);
+                        index = processed;
+                        continue;
                     }
                 }
-                else
+
+                if (lazyBuilder != null)
                 {
-                    result.Append(c);
+                    lazyBuilder.Append(c);
                 }
             }
 
-            return result.Result;
+            //
+            return lazyBuilder == null
+                ? Intern(buffer, start, length)
+                : lazyBuilder.Result;
         }
 
-        protected object ProcessEscapedStringWithEnding(string text, Encoding/*!*/encoding, bool forceBinaryString, char ending)
+        object GetTokenAsQuotedString(ProcessStringDelegate tryprocess, char quote)
         {
-            char c2 = (text.Length >= 2) ? text[text.Length - 2] : '\0';
+            // 1/ "..."
+            // 2/ b"..."
+            // 3/ ...
+
+            bool binary = false;
+            int start = token_start;
+            int end = token_end;
+
+            if (start == end)
+            {
+                return string.Empty;
+            }
+
+            if (buffer[start] == 'b')
+            {
+                binary = true;
+                start++;
+            }
+
+            if (end - start >= 2 && buffer[start] == quote && buffer[end - 1] == quote)
+            {
+                // quoted
+                start++;
+                end--;
+            }
+            else
+            {
+                if (binary) // rollback
+                {
+                    binary = false;
+                    start--;
+                }
+            }
+
+            return ProcessStringText(buffer, start, end - start, tryprocess, binary);
+        }
+
+        protected object ProcessEscapedStringWithEnding(char[] buffer, int start, int length, char ending)
+        {
+            char c2 = (length >= 2) ? buffer[start + length - 2] : '\0';
             object output;
 
             // ends with "{END" or "$END" ?
-            if (text.LastCharacter() == ending && (c2 == '$' || c2 == '{'))
+            if (buffer[start + length - 1] == ending && (c2 == '$' || c2 == '{'))
             {
-                output = ProcessEscapedString(text.Substring(0, text.Length - 1), _encoding, false);
+                output = ProcessStringText(buffer, start, length - 1, _processDoubleQuotedString);
                 _yyless(1);
             }
             else
             {
-                output = ProcessEscapedString(text, _encoding, false);
+                output = ProcessStringText(buffer, start, length, _processDoubleQuotedString);
             }
 
             return output;
         }
 
-        protected object ProcessEscapedString(string text, Encoding/*!*/ encoding, bool forceBinaryString)
-        {
-            if (text.Length == 0)
-            {
-                return string.Empty;
-            }
-
-            PhpStringBuilder result = new PhpStringBuilder(encoding, forceBinaryString, text.Length);
-
-            int pos = 0;
-            char c;
-            while (pos < text.Length)
-            {
-                c = text[pos++];
-                if (c == '\\' && pos < text.Length)
-                {
-                    switch (c = text[pos++])
-                    {
-                        case 'n':
-                            result.Append('\n');
-                            break;
-
-                        case 'r':
-                            result.Append('\r');
-                            break;
-
-                        case 't':
-                            result.Append('\t');
-                            break;
-
-                        case 'v':
-                            result.Append('\v');
-                            break;
-
-                        case 'e':
-                            result.Append((char)0x1B);
-                            break;
-
-                        case 'f':
-                            result.Append('\f');
-                            break;
-
-                        case '\\':
-                        case '$':
-                        case '"':
-                        case '`':
-                            result.Append(c);
-                            break;
-
-                        case 'u':
-                            // TODO: if (PHP < 7.0) goto default;
-                            result.Append(ParseCodePoint(4, ref pos));   // TODO: ref pos !!!
-                            break;
-
-                        case 'x':
-                            {
-                                int digit;
-                                if (pos < text.Length && (digit = Convert.AlphaNumericToDigit(text[pos])) < 16)
-                                {
-                                    int hex_code = digit;
-                                    pos++;
-                                    if (pos < text.Length && (digit = Convert.AlphaNumericToDigit(text[pos])) < 16)
-                                    {
-                                        pos++;
-                                        hex_code = (hex_code << 4) + digit;
-                                    }
-
-                                    //encodeBytes[0] = (byte)hex_code;
-                                    //result.Append(encodeChars, 0, encoding.GetChars(encodeBytes, 0, 1, encodeChars, 0));
-                                    result.Append((byte)hex_code);
-                                }
-                                else
-                                {
-                                    result.Append('\\');
-                                    result.Append('x');
-                                }
-                                break;
-                            }
-
-                        default:
-                            {
-                                int digit;
-                                if ((digit = Convert.NumericToDigit(c)) < 8)
-                                {
-                                    int octal_code = digit;
-
-                                    if (pos < text.Length && (digit = Convert.NumericToDigit(text[pos])) < 8)
-                                    {
-                                        octal_code = (octal_code << 3) + digit;
-                                        pos++;
-
-                                        if (pos < text.Length && (digit = Convert.NumericToDigit(text[pos])) < 8)
-                                        {
-                                            pos++;
-                                            octal_code = (octal_code << 3) + digit;
-                                        }
-                                    }
-                                    //encodeBytes[0] = (byte)octal_code;
-                                    //result.Append(encodeChars, 0, encoding.GetChars(encodeBytes, 0, 1, encodeChars, 0));
-                                    result.Append((byte)octal_code);
-                                }
-                                else
-                                {
-                                    result.Append('\\');
-                                    result.Append(c);
-                                }
-                                break;
-                            }
-                    }
-                }
-                else
-                {
-                    result.Append(c);
-                }
-            }
-
-            return result.Result;
-        }
-
-        protected object GetTokenAsSinglyQuotedString(Encoding/*!*/ encoding)
-        {
-            int max = TokenLength - 1;  // skip trailing quote
-            int start = 0;
-            bool forceBinaryString = false;
-
-            // b'...' => binary string syntax
-            if (GetTokenChar(0) == 'b')
-            {
-                start++;
-                forceBinaryString = true;
-            }
-
-            start++;  // skip leading quote
-
-            if (start == max)
-            {
-                return string.Empty;
-            }
-
-            // TODO: lazy PhpStringBuilder, without escaped chars return interned string from buffer
-
-            var result = new PhpStringBuilder(encoding, forceBinaryString, max - start + 2);
-
-            char c;
-            int pos = start;
-            while (pos < max)
-            {
-                c = GetTokenChar(pos++);
-                if (c == '\\' && pos < max)
-                {
-                    switch (c = GetTokenChar(pos++))
-                    {
-                        case '\\':
-                        case '\'':
-                            result.Append(c);
-                            break;
-                        default:
-                            result.Append('\\');
-                            result.Append(c);
-                            break;
-                    }
-                }
-                else
-                {
-                    result.Append(c);
-                }
-            }
-
-            return result.Result;
-        }
-
-        #endregion
-
-        private string ParseCodePoint(int maxLength, ref int pos)
+        private string ParseCodePoint(char[] buffer, ref int pos, int maxLength)
         {
             int digit;
             int code_point = 0;
-            while (maxLength > 0 && (digit = Convert.NumericToDigit(GetTokenChar(pos))) < 16)
+            while (maxLength > 0 && (digit = Convert.NumericToDigit(buffer[pos])) < 16)
             {
                 code_point = code_point << 4 + digit;
                 pos++;
@@ -827,14 +775,14 @@ namespace Devsense.PHP.Syntax
 
         Tokens ProcessSingleQuotedString()
         {
-            _tokenSemantics.Object = GetTokenAsSinglyQuotedString(_encoding);
+            _tokenSemantics.Object = GetTokenAsQuotedString(_processSingleQuotedString, '\'');
             _tokenSemantics.QuoteToken = Tokens.T_SINGLE_QUOTES;
             return Tokens.T_CONSTANT_ENCAPSED_STRING;
         }
 
         Tokens ProcessDoubleQuotedString()
         {
-            _tokenSemantics.Object = GetTokenAsDoublyQuotedString(_encoding);
+            _tokenSemantics.Object = GetTokenAsQuotedString(_processDoubleQuotedString, '\"');
             _tokenSemantics.QuoteToken = Tokens.T_DOUBLE_QUOTES;
 
             return Tokens.T_CONSTANT_ENCAPSED_STRING;
@@ -869,15 +817,23 @@ namespace Devsense.PHP.Syntax
             return (Tokens.T_NUM_STRING);
         }
 
-        bool ProcessEndNowDoc(Func<string, string> f)
+        bool ProcessEndNowDoc(ProcessStringDelegate tryprocess)
         {
             BEGIN(LexicalStates.ST_END_HEREDOC);
             int trail = LabelTrailLength();
-            string text = GetTokenSubstring(0, TokenLength - _hereDocLabel.Length - trail);
+
+            int start = BufferTokenStart;
+            int length = TokenLength - _hereDocLabel.Length - trail;
+
+            string sourcetext = GetTokenSubstring(0, length, false);
+            string text = tryprocess != null
+                ? (string)ProcessStringText(buffer, start, length, tryprocess)
+                : sourcetext;
+
             // move back at the end of the heredoc label - yyless does not work properly (requires additional condition for the optional ';')
             lookahead_index = token_end = lookahead_index - _hereDocLabel.Length - trail;
 
-            _tokenSemantics.Object = new KeyValuePair<string, string>(f(text).TrimEnd(StringUtils.s_NewlineCharacters), text);
+            _tokenSemantics.Object = new KeyValuePair<string, string>(text, sourcetext);
 
             //
             return text.Length != 0;
@@ -910,7 +866,7 @@ namespace Devsense.PHP.Syntax
             }
             else
             {
-                this._tokenSemantics.Object = new KeyValuePair<string, string>((string)ProcessEscapedStringWithEnding(GetTokenString(), _encoding, false, '"'), GetTokenString());
+                this._tokenSemantics.Object = new KeyValuePair<string, string>((string)ProcessEscapedStringWithEnding(buffer, BufferTokenStart, TokenLength, '"'), GetTokenString());
                 return Tokens.T_ENCAPSED_AND_WHITESPACE;
             }
         }
@@ -932,7 +888,12 @@ namespace Devsense.PHP.Syntax
         {
             if (TokenLength > 0)
             {
-                _tokenSemantics.Object = token == Tokens.T_ENCAPSED_AND_WHITESPACE ? new KeyValuePair<string, string>(GetTokenString(), GetTokenString()) : (object)GetTokenString();
+                var text = GetTokenString();
+
+                _tokenSemantics.Object = (token == Tokens.T_ENCAPSED_AND_WHITESPACE)
+                    ? new KeyValuePair<string, string>(text, text)
+                    : (object)text;
+
                 return token;
             }
             return Tokens.EOF;
@@ -974,7 +935,7 @@ namespace Devsense.PHP.Syntax
             yy_push_state(newState);
             if (TokenLength > 0)
             {
-                _tokenSemantics.Object = new KeyValuePair<string, string>((string)ProcessEscapedStringWithEnding(GetTokenString(), _encoding, false, ending), GetTokenString());
+                _tokenSemantics.Object = new KeyValuePair<string, string>((string)ProcessEscapedStringWithEnding(buffer, BufferTokenStart, TokenLength, ending), GetTokenString());
                 return true;
             }
             else

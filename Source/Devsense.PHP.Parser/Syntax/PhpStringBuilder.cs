@@ -201,10 +201,24 @@ namespace Devsense.PHP.Syntax
         public void Append(string str)
         {
             if (IsUnicode)
+            {
                 UnicodeBuilder.Append(str);
+            }
             else
             {
                 BinaryBuilder.AddRange(encoding.GetBytes(str));
+            }
+        }
+
+        public void Append(char[] buffer, int start, int length)
+        {
+            if (IsUnicode)
+            {
+                UnicodeBuilder.Append(buffer, start, length);
+            }
+            else
+            {
+                BinaryBuilder.AddRange(encoding.GetBytes(buffer, start, length));
             }
         }
 
