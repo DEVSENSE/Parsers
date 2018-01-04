@@ -30,14 +30,61 @@ namespace Devsense.PHP.Syntax.Ast
         internal abstract object ValueObj { get; }
 
         /// <summary>
-        /// Literal original value.
+        /// Optional. Literal source code text.
         /// </summary>
-        public string OriginalValue { get; set; }
+        public string SourceText { get; set; }
 
         protected Literal(Text.Span span)
 			: base(span)
 		{
 		}
+
+        /// <summary>
+        /// Creates <see cref="Literal"/> instance for given <paramref name="value"/>.
+        /// </summary>
+        /// <param name="span">Element span.</param>
+        /// <param name="value">Value of the literal.</param>
+        /// <returns>Instance of the <see cref="Literal"/> containing <paramref name="value"/>.</returns>
+        public static Literal Create(Text.Span span, object value)
+        {
+            if (ReferenceEquals(value, null))
+            {
+                return new NullLiteral(span);
+            }
+
+            if (value is long)
+            {
+                return new LongIntLiteral(span, (long)value);
+            }
+
+            if (value is int)
+            {
+                return new LongIntLiteral(span, (int)value);
+            }
+
+            if (value is double)
+            {
+                return new DoubleLiteral(span, (double)value);
+            }
+
+            if (value is bool)
+            {
+                return new BoolLiteral(span, (bool)value);
+            }
+
+            if (value is string str)
+            {
+                return new StringLiteral(span, str);
+            }
+
+            if (value is byte[])
+            {
+                return new BinaryStringLiteral(span, (byte[])value);
+            }
+
+            //
+            throw new ArgumentException();
+        }
 	}
 
 	#endregion

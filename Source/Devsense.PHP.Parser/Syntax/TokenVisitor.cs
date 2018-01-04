@@ -65,34 +65,34 @@ namespace Devsense.PHP.Syntax
         {
             if (literal is BoolLiteral blit)
             {
-                ConsumeToken(Tokens.T_STRING, literal.OriginalValue ?? (blit.Value ? "true" : "false"), literal.Span);
+                ConsumeToken(Tokens.T_STRING, literal.SourceText ?? (blit.Value ? "true" : "false"), literal.Span);
             }
             else if (literal is DoubleLiteral dlit)
             {
-                ConsumeToken(Tokens.T_DNUMBER, literal.OriginalValue ?? dlit.Value.ToString(CultureInfo.InvariantCulture), literal.Span);
+                ConsumeToken(Tokens.T_DNUMBER, literal.SourceText ?? dlit.Value.ToString(CultureInfo.InvariantCulture), literal.Span);
             }
             else if (literal is NullLiteral)
             {
-                ConsumeToken(Tokens.T_STRING, literal.OriginalValue ?? "null", literal.Span);
+                ConsumeToken(Tokens.T_STRING, literal.SourceText ?? "null", literal.Span);
             }
             else if (literal is LongIntLiteral)
             {
                 bool isArrayItemInConcat = literal.ContainingElement is ItemUse && literal.ContainingElement.ContainingElement is ConcatEx;
                 ConsumeToken(
                     isArrayItemInConcat ? Tokens.T_NUM_STRING : Tokens.T_LNUMBER,
-                    literal.OriginalValue ?? ((LongIntLiteral)literal).Value.ToString(CultureInfo.InvariantCulture),
+                    literal.SourceText ?? ((LongIntLiteral)literal).Value.ToString(CultureInfo.InvariantCulture),
                     literal.Span);
             }
             else if (literal is StringLiteral slit)
             {
                 if (literal.ContainingElement is ItemUse && literal.ContainingElement.ContainingElement is ConcatEx)
                 {
-                    ConsumeToken(Tokens.T_STRING, literal.OriginalValue ?? slit.Value, literal.Span);
+                    ConsumeToken(Tokens.T_STRING, literal.SourceText ?? slit.Value, literal.Span);
                 }
                 else if (literal.ContainingElement is ShellEx)
                 {
-                    Debug.Assert(literal.OriginalValue == null || literal.OriginalValue.Length >= 2);
-                    var value = literal.OriginalValue != null ? literal.OriginalValue.Substring(1, literal.OriginalValue.Length - 2) : slit.Value;
+                    Debug.Assert(literal.SourceText == null || literal.SourceText.Length >= 2);
+                    var value = literal.SourceText != null ? literal.SourceText.Substring(1, literal.SourceText.Length - 2) : slit.Value;
                     ConsumeToken(Tokens.T_BACKQUOTE, SpanUtils.SafeSpan(literal.Span.StartOrInvalid, 1));
                     if (value.Length != 0)
                     {
@@ -111,7 +111,7 @@ namespace Devsense.PHP.Syntax
                             (literal.ContainingElement is ConcatEx || (literal.ContainingElement is StringEncapsedExpression stre && stre.OpenToken == Tokens.T_START_HEREDOC))
                                 ? Tokens.T_ENCAPSED_AND_WHITESPACE
                                 : Tokens.T_CONSTANT_ENCAPSED_STRING,
-                            literal.OriginalValue ?? $"\"{slit.Value}\"",
+                            literal.SourceText ?? $"\"{slit.Value}\"",
                             literal.Span);
                     }
                 }

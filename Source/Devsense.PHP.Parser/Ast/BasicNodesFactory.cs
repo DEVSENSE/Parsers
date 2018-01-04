@@ -354,40 +354,8 @@ namespace Devsense.PHP.Syntax.Ast
 
         public virtual LangElement Literal(Span span, object value, string originalValue)
         {
-            Literal result;
-            if (value is long)
-            {
-                result = new LongIntLiteral(span, (long)value);
-            }
-            else if (value is int)
-            {
-                result = new LongIntLiteral(span, (int)value);
-            }
-            else if (value is double)
-            {
-                result = new DoubleLiteral(span, (double)value);
-            }
-            else if (value is string str)
-            {
-                result = new StringLiteral(span, str);
-            }
-            else if (value is byte[])
-            {
-                result = new BinaryStringLiteral(span, (byte[])value);
-            }
-            else if (value is bool)
-            {
-                result = new BoolLiteral(span, (bool)value);
-            }
-            else if (value == null)
-            {
-                result = new NullLiteral(span);
-            }
-            else
-            {
-                throw new ArgumentException("Value does not have supported type.");
-            }
-            result.OriginalValue = originalValue;
+            var result = Ast.Literal.Create(span, value);
+            result.SourceText = originalValue;
             return result;
         }
 
