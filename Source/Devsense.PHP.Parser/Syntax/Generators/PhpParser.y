@@ -324,7 +324,8 @@ using StringPair = System.Collections.Generic.KeyValuePair<string, string>;
 %type <String> identifier semi_reserved reserved_non_modifiers
 %type <StringList> namespace_name
 
-%type <Alias> unprefixed_use_declaration trait_method_reference absolute_trait_method_reference
+%type <Alias> unprefixed_use_declaration
+%type <Object> trait_method_reference absolute_trait_method_reference
 %type <Alias> use_declaration
 %type <AliasList> unprefixed_use_declarations
 
@@ -568,8 +569,8 @@ catch_list:
 ;
 
 catch_name_list:
-		name { $$ = new List<TypeRef>() { CreateTypeRef(@1, $1) }; }
-	|	catch_name_list '|' name { $$ = AddToList<TypeRef>($1, CreateTypeRef(@3, $3)); }
+		name { $$ = new List<TypeRef>() { CreateTypeRef($1) }; }
+	|	catch_name_list '|' name { $$ = AddToList<TypeRef>($1, CreateTypeRef($3)); }
 ;
 
 finally_statement:
@@ -650,7 +651,7 @@ interface_declaration_statement:
 
 extends_from:
 		/* empty */		{ $$ = null; }
-	|	T_EXTENDS name	{ $$ = CreateTypeRef(@2, $2); }
+	|	T_EXTENDS name	{ $$ = CreateTypeRef($2); }
 ;
 
 interface_extends_list:
@@ -795,7 +796,7 @@ type_expr:
 type:   
 		T_ARRAY		{ $$ = _astFactory.PrimitiveTypeReference(@$, PrimitiveTypeRef.PrimitiveType.array); }
 	|	T_CALLABLE	{ $$ = _astFactory.PrimitiveTypeReference(@$, PrimitiveTypeRef.PrimitiveType.callable); }
-	|	name		{ $$ = CreateTypeRef(@$, $1); }
+	|	name		{ $$ = CreateTypeRef($1); }
 ;
 
 return_type:
@@ -873,8 +874,8 @@ class_statement:
 ;
 
 name_list:
-		name { $$ = new List<TypeRef>() { CreateTypeRef(@1, $1) }; }
-	|	name_list ',' name { $$ = AddToList<TypeRef>($1, CreateTypeRef(@3, $3)); }
+		name { $$ = new List<TypeRef>() { CreateTypeRef($1) }; }
+	|	name_list ',' name { $$ = AddToList<TypeRef>($1, CreateTypeRef($3)); }
 ;
 
 trait_adaptations:
@@ -898,33 +899,32 @@ trait_adaptation:
 
 trait_precedence:
 	absolute_trait_method_reference T_INSTEADOF name_list ';'
-		{ $$ = _astFactory.TraitAdaptationPrecedence(@$, (Tuple<QualifiedNameRef,NameRef>)$1, $3); }
+		{ $$ = _astFactory.TraitAdaptationPrecedence(@$, (Tuple<TypeRef,NameRef>)$1, $3); }
 ;
 
 trait_alias:
 		trait_method_reference T_AS T_STRING ';'
-			{ $$ = _astFactory.TraitAdaptationAlias(@$, $1, new NameRef(@3, $3), null); }
+			{ $$ = _astFactory.TraitAdaptationAlias(@$, (Tuple<TypeRef,NameRef>)$1, new NameRef(@3, $3), null); }
 	|	trait_method_reference T_AS reserved_non_modifiers ';'
-			{ $$ = _astFactory.TraitAdaptationAlias(@$, $1, new NameRef(@3, $3), null); }
+			{ $$ = _astFactory.TraitAdaptationAlias(@$, (Tuple<TypeRef,NameRef>)$1, new NameRef(@3, $3), null); }
 	|	trait_method_reference T_AS member_modifier identifier ';'
 			{ 
-				$$ = _astFactory.TraitAdaptationAlias(@$, $1, new NameRef(@4, $4), (PhpMemberAttributes)$3); 
+				$$ = _astFactory.TraitAdaptationAlias(@$, (Tuple<TypeRef,NameRef>)$1, new NameRef(@4, $4), (PhpMemberAttributes)$3); 
 			}
 	|	trait_method_reference T_AS member_modifier ';'
 			{ 
-				$$ = _astFactory.TraitAdaptationAlias(@$, $1, NameRef.Invalid, (PhpMemberAttributes)$3); 
+				$$ = _astFactory.TraitAdaptationAlias(@$, (Tuple<TypeRef,NameRef>)$1, NameRef.Invalid, (PhpMemberAttributes)$3); 
 			}
 ;
 
 trait_method_reference:
-		identifier
-			{ $$ = new Tuple<QualifiedNameRef,NameRef>(QualifiedNameRef.Invalid, new NameRef(@1, $1)); }
-	|	absolute_trait_method_reference { $$ = $1; }
+		identifier						{ $$ = new Tuple<TypeRef,NameRef>(null, new NameRef(@1, $1)); }
+	|	absolute_trait_method_reference	{ $$ = $1; }
 ;
 
 absolute_trait_method_reference:
 	name T_DOUBLE_COLON identifier
-		{ $$ = new Tuple<QualifiedNameRef,NameRef>($1, new NameRef(@3, $3)); }
+		{ $$ = new Tuple<TypeRef,NameRef>(CreateTypeRef($1), new NameRef(@3, $3)); }
 ;
 
 method_body:
@@ -1212,7 +1212,7 @@ function_call:
 
 class_name:
 		T_STATIC	{ $$ = _astFactory.ReservedTypeReference(@$, _reservedTypeStatic); }
-	|	name		{ $$ = CreateTypeRef(@$, $1); }
+	|	name		{ $$ = CreateTypeRef($1); }
 ;
 
 class_name_reference:

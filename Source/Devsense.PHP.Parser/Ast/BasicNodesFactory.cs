@@ -429,13 +429,13 @@ namespace Devsense.PHP.Syntax.Ast
             return new TraitsUse(span, traits.AsArray(), (TraitAdaptationBlock)adaptationsBlock);
         }
 
-        public virtual LangElement TraitAdaptationPrecedence(Span span, Tuple<QualifiedNameRef, NameRef> name, IEnumerable<TypeRef> precedences)
+        public virtual LangElement TraitAdaptationPrecedence(Span span, Tuple<TypeRef, NameRef> name, IEnumerable<TypeRef> precedences)
         {
             Debug.Assert(precedences != null);
             return new TraitsUse.TraitAdaptationPrecedence(span, name, precedences.AsArray());
         }
 
-        public virtual LangElement TraitAdaptationAlias(Span span, Tuple<QualifiedNameRef, NameRef> name, NameRef identifierOpt, PhpMemberAttributes? attributeOpt)
+        public virtual LangElement TraitAdaptationAlias(Span span, Tuple<TypeRef, NameRef> name, NameRef identifierOpt, PhpMemberAttributes? attributeOpt)
         {
             return new TraitsUse.TraitAdaptationAlias(span, name, identifierOpt, attributeOpt);
         }

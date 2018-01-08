@@ -2221,10 +2221,10 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 			}
         return;
       case 157: // catch_name_list -> name 
-{ yyval.TypeRefList = new List<TypeRef>() { CreateTypeRef(value_stack.array[value_stack.top-1].yypos, value_stack.array[value_stack.top-1].yyval.QualifiedNameReference) }; }
+{ yyval.TypeRefList = new List<TypeRef>() { CreateTypeRef(value_stack.array[value_stack.top-1].yyval.QualifiedNameReference) }; }
         return;
       case 158: // catch_name_list -> catch_name_list '|' name 
-{ yyval.TypeRefList = AddToList<TypeRef>(value_stack.array[value_stack.top-3].yyval.TypeRefList, CreateTypeRef(value_stack.array[value_stack.top-1].yypos, value_stack.array[value_stack.top-1].yyval.QualifiedNameReference)); }
+{ yyval.TypeRefList = AddToList<TypeRef>(value_stack.array[value_stack.top-3].yyval.TypeRefList, CreateTypeRef(value_stack.array[value_stack.top-1].yyval.QualifiedNameReference)); }
         return;
       case 159: // finally_statement -> 
 { yyval.Node = null; }
@@ -2306,7 +2306,7 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 { yyval.TypeReference = null; }
         return;
       case 179: // extends_from -> T_EXTENDS name 
-{ yyval.TypeReference = CreateTypeRef(value_stack.array[value_stack.top-1].yypos, value_stack.array[value_stack.top-1].yyval.QualifiedNameReference); }
+{ yyval.TypeReference = CreateTypeRef(value_stack.array[value_stack.top-1].yyval.QualifiedNameReference); }
         return;
       case 180: // interface_extends_list -> 
 { yyval.TypeRefList = TypeRef.EmptyList; }
@@ -2458,7 +2458,7 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 { yyval.TypeReference = _astFactory.PrimitiveTypeReference(yypos, PrimitiveTypeRef.PrimitiveType.callable); }
         return;
       case 225: // type -> name 
-{ yyval.TypeReference = CreateTypeRef(yypos, value_stack.array[value_stack.top-1].yyval.QualifiedNameReference); }
+{ yyval.TypeReference = CreateTypeRef(value_stack.array[value_stack.top-1].yyval.QualifiedNameReference); }
         return;
       case 226: // return_type -> 
 { yyval.TypeReference = null; }
@@ -2534,10 +2534,10 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 			}
         return;
       case 247: // name_list -> name 
-{ yyval.TypeRefList = new List<TypeRef>() { CreateTypeRef(value_stack.array[value_stack.top-1].yypos, value_stack.array[value_stack.top-1].yyval.QualifiedNameReference) }; }
+{ yyval.TypeRefList = new List<TypeRef>() { CreateTypeRef(value_stack.array[value_stack.top-1].yyval.QualifiedNameReference) }; }
         return;
       case 248: // name_list -> name_list ',' name 
-{ yyval.TypeRefList = AddToList<TypeRef>(value_stack.array[value_stack.top-3].yyval.TypeRefList, CreateTypeRef(value_stack.array[value_stack.top-1].yypos, value_stack.array[value_stack.top-1].yyval.QualifiedNameReference)); }
+{ yyval.TypeRefList = AddToList<TypeRef>(value_stack.array[value_stack.top-3].yyval.TypeRefList, CreateTypeRef(value_stack.array[value_stack.top-1].yyval.QualifiedNameReference)); }
         return;
       case 249: // trait_adaptations -> ';' 
 { yyval.Node = null; }
@@ -2562,32 +2562,32 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 { yyval.Node = value_stack.array[value_stack.top-1].yyval.Node; }
         return;
       case 256: // trait_precedence -> absolute_trait_method_reference T_INSTEADOF name_list ';' 
-{ yyval.Node = _astFactory.TraitAdaptationPrecedence(yypos, (Tuple<QualifiedNameRef,NameRef>)value_stack.array[value_stack.top-4].yyval.Alias, value_stack.array[value_stack.top-2].yyval.TypeRefList); }
+{ yyval.Node = _astFactory.TraitAdaptationPrecedence(yypos, (Tuple<TypeRef,NameRef>)value_stack.array[value_stack.top-4].yyval.Object, value_stack.array[value_stack.top-2].yyval.TypeRefList); }
         return;
       case 257: // trait_alias -> trait_method_reference T_AS T_STRING ';' 
-{ yyval.Node = _astFactory.TraitAdaptationAlias(yypos, value_stack.array[value_stack.top-4].yyval.Alias, new NameRef(value_stack.array[value_stack.top-2].yypos, value_stack.array[value_stack.top-2].yyval.String), null); }
+{ yyval.Node = _astFactory.TraitAdaptationAlias(yypos, (Tuple<TypeRef,NameRef>)value_stack.array[value_stack.top-4].yyval.Object, new NameRef(value_stack.array[value_stack.top-2].yypos, value_stack.array[value_stack.top-2].yyval.String), null); }
         return;
       case 258: // trait_alias -> trait_method_reference T_AS reserved_non_modifiers ';' 
-{ yyval.Node = _astFactory.TraitAdaptationAlias(yypos, value_stack.array[value_stack.top-4].yyval.Alias, new NameRef(value_stack.array[value_stack.top-2].yypos, value_stack.array[value_stack.top-2].yyval.String), null); }
+{ yyval.Node = _astFactory.TraitAdaptationAlias(yypos, (Tuple<TypeRef,NameRef>)value_stack.array[value_stack.top-4].yyval.Object, new NameRef(value_stack.array[value_stack.top-2].yypos, value_stack.array[value_stack.top-2].yyval.String), null); }
         return;
       case 259: // trait_alias -> trait_method_reference T_AS member_modifier identifier ';' 
 { 
-				yyval.Node = _astFactory.TraitAdaptationAlias(yypos, value_stack.array[value_stack.top-5].yyval.Alias, new NameRef(value_stack.array[value_stack.top-2].yypos, value_stack.array[value_stack.top-2].yyval.String), (PhpMemberAttributes)value_stack.array[value_stack.top-3].yyval.Long); 
+				yyval.Node = _astFactory.TraitAdaptationAlias(yypos, (Tuple<TypeRef,NameRef>)value_stack.array[value_stack.top-5].yyval.Object, new NameRef(value_stack.array[value_stack.top-2].yypos, value_stack.array[value_stack.top-2].yyval.String), (PhpMemberAttributes)value_stack.array[value_stack.top-3].yyval.Long); 
 			}
         return;
       case 260: // trait_alias -> trait_method_reference T_AS member_modifier ';' 
 { 
-				yyval.Node = _astFactory.TraitAdaptationAlias(yypos, value_stack.array[value_stack.top-4].yyval.Alias, NameRef.Invalid, (PhpMemberAttributes)value_stack.array[value_stack.top-2].yyval.Long); 
+				yyval.Node = _astFactory.TraitAdaptationAlias(yypos, (Tuple<TypeRef,NameRef>)value_stack.array[value_stack.top-4].yyval.Object, NameRef.Invalid, (PhpMemberAttributes)value_stack.array[value_stack.top-2].yyval.Long); 
 			}
         return;
       case 261: // trait_method_reference -> identifier 
-{ yyval.Alias = new Tuple<QualifiedNameRef,NameRef>(QualifiedNameRef.Invalid, new NameRef(value_stack.array[value_stack.top-1].yypos, value_stack.array[value_stack.top-1].yyval.String)); }
+{ yyval.Object = new Tuple<TypeRef,NameRef>(null, new NameRef(value_stack.array[value_stack.top-1].yypos, value_stack.array[value_stack.top-1].yyval.String)); }
         return;
       case 262: // trait_method_reference -> absolute_trait_method_reference 
-{ yyval.Alias = value_stack.array[value_stack.top-1].yyval.Alias; }
+{ yyval.Object = value_stack.array[value_stack.top-1].yyval.Object; }
         return;
       case 263: // absolute_trait_method_reference -> name T_DOUBLE_COLON identifier 
-{ yyval.Alias = new Tuple<QualifiedNameRef,NameRef>(value_stack.array[value_stack.top-3].yyval.QualifiedNameReference, new NameRef(value_stack.array[value_stack.top-1].yypos, value_stack.array[value_stack.top-1].yyval.String)); }
+{ yyval.Object = new Tuple<TypeRef,NameRef>(CreateTypeRef(value_stack.array[value_stack.top-3].yyval.QualifiedNameReference), new NameRef(value_stack.array[value_stack.top-1].yypos, value_stack.array[value_stack.top-1].yyval.String)); }
         return;
       case 264: // method_body -> ';' 
 { yyval.Node = null; }
@@ -2999,7 +2999,7 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 { yyval.TypeReference = _astFactory.ReservedTypeReference(yypos, _reservedTypeStatic); }
         return;
       case 392: // class_name -> name 
-{ yyval.TypeReference = CreateTypeRef(yypos, value_stack.array[value_stack.top-1].yyval.QualifiedNameReference); }
+{ yyval.TypeReference = CreateTypeRef(value_stack.array[value_stack.top-1].yyval.QualifiedNameReference); }
         return;
       case 393: // class_name_reference -> class_name 
 { yyval.TypeReference = value_stack.array[value_stack.top-1].yyval.TypeReference; }

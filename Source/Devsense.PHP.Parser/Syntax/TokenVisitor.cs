@@ -1384,9 +1384,9 @@ namespace Devsense.PHP.Syntax
 
         public override void VisitTraitAdaptationAlias(TraitsUse.TraitAdaptationAlias x)
         {
-            if (x.TraitMemberName.Item1.HasValue)
+            if (x.TraitMemberName.Item1 != null)
             {
-                VisitQualifiedName(x.TraitMemberName.Item1.QualifiedName, x.TraitMemberName.Item1.Span);
+                VisitQualifiedName(x.TraitMemberName.Item1.QualifiedName.Value, x.TraitMemberName.Item1.Span);
                 ProcessToken(Tokens.T_DOUBLE_COLON, SpanUtils.SpanIntermission(x.TraitMemberName.Item1.Span, x.TraitMemberName.Item2.Span));
             }
             ConsumeToken(Tokens.T_STRING, x.TraitMemberName.Item2.Name.Value, x.TraitMemberName.Item2.Span);
@@ -1417,8 +1417,11 @@ namespace Devsense.PHP.Syntax
 
         public override void VisitTraitAdaptationPrecedence(TraitsUse.TraitAdaptationPrecedence x)
         {
-            VisitQualifiedName(x.TraitMemberName.Item1.QualifiedName, x.TraitMemberName.Item1.Span);
-            ProcessToken(Tokens.T_DOUBLE_COLON, SpanUtils.SpanIntermission(x.TraitMemberName.Item1.Span, x.TraitMemberName.Item2.Span));
+            if (x.TraitMemberName.Item1 != null)
+            {
+                VisitQualifiedName(x.TraitMemberName.Item1.QualifiedName.Value, x.TraitMemberName.Item1.Span);
+                ProcessToken(Tokens.T_DOUBLE_COLON, SpanUtils.SpanIntermission(x.TraitMemberName.Item1.Span, x.TraitMemberName.Item2.Span));
+            }
             ConsumeNameToken(x.TraitMemberName.Item2.Name.Value, x.TraitMemberName.Item2.Span);
             ProcessToken(Tokens.T_INSTEADOF, SpanUtils.SpanIntermission(x.TraitMemberName.Item2.Span,
                 x.IgnoredTypes != null && x.IgnoredTypes.Length != 0 ? x.IgnoredTypes[0].Span.StartOrInvalid : x.Span.End));

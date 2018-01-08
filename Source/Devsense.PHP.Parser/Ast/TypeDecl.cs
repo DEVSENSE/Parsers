@@ -642,9 +642,9 @@ namespace Devsense.PHP.Syntax.Ast
             /// <summary>
             /// Name of existing trait member. Its qualified name is optional.
             /// </summary>
-            public Tuple<QualifiedNameRef, NameRef> TraitMemberName { get; private set; }
+            public Tuple<TypeRef, NameRef> TraitMemberName { get; private set; }
 
-            public TraitAdaptation(Text.Span span, Tuple<QualifiedNameRef, NameRef> traitMemberName)
+            public TraitAdaptation(Text.Span span, Tuple<TypeRef, NameRef> traitMemberName)
                 : base(span)
             {
                 this.TraitMemberName = traitMemberName;
@@ -661,7 +661,7 @@ namespace Devsense.PHP.Syntax.Ast
             /// </summary>
             public TypeRef[]/*!*/IgnoredTypes { get; private set; }
 
-            public TraitAdaptationPrecedence(Text.Span span, Tuple<QualifiedNameRef, NameRef> traitMemberName, IList<TypeRef>/*!*/ignoredTypes)
+            public TraitAdaptationPrecedence(Text.Span span, Tuple<TypeRef, NameRef> traitMemberName, IList<TypeRef>/*!*/ignoredTypes)
                 : base(span, traitMemberName)
             {
                 this.IgnoredTypes = ignoredTypes.AsArray();
@@ -688,7 +688,7 @@ namespace Devsense.PHP.Syntax.Ast
             /// </summary>
             public NameRef NewName { get; private set; }
 
-            public TraitAdaptationAlias(Text.Span span, Tuple<QualifiedNameRef, NameRef>/*!*/oldname, NameRef newname, PhpMemberAttributes? newmodifier)
+            public TraitAdaptationAlias(Text.Span span, Tuple<TypeRef, NameRef>/*!*/oldname, NameRef newname, PhpMemberAttributes? newmodifier)
                 : base(span, oldname)
             {
                 if (oldname == null)

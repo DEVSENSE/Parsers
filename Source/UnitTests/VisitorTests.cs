@@ -421,13 +421,13 @@ namespace UnitTests
             public override LangElement Throw(Span span, LangElement expression)
                  => CountLE(base.Throw(span, expression));
 
-            public override LangElement TraitAdaptationAlias(Span span, Tuple<QualifiedNameRef, NameRef> name, NameRef identifierOpt, PhpMemberAttributes? attributeOpt)
+            public override LangElement TraitAdaptationAlias(Span span, Tuple<TypeRef, NameRef> name, NameRef identifierOpt, PhpMemberAttributes? attributeOpt)
                  => CountLE(base.TraitAdaptationAlias(span, name, identifierOpt, attributeOpt));
 
             public override LangElement TraitAdaptationBlock(Span span, IEnumerable<LangElement> adaptations)
                  => CountLE(base.TraitAdaptationBlock(span, adaptations));
 
-            public override LangElement TraitAdaptationPrecedence(Span span, Tuple<QualifiedNameRef, NameRef> name, IEnumerable<TypeRef> precedences)
+            public override LangElement TraitAdaptationPrecedence(Span span, Tuple<TypeRef, NameRef> name, IEnumerable<TypeRef> precedences)
                  => CountLE(base.TraitAdaptationPrecedence(span, name, precedences));
 
             public override LangElement TraitUse(Span span, IEnumerable<TypeRef> traits, LangElement adaptationsBlock)

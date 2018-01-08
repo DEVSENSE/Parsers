@@ -468,9 +468,11 @@ namespace Devsense.PHP.Syntax
 
         static ReservedTypeRef.ReservedType _reservedTypeStatic => ReservedTypeRef.ReservedType.@static;
 
-        TypeRef CreateTypeRef(Span span, QualifiedNameRef tname)
+        TypeRef CreateTypeRef(QualifiedNameRef tname)
         {
             var qname = tname.QualifiedName;
+            var span = tname.Span;
+
             // primitive type name ?
             if (qname.IsSimpleName)
             {
