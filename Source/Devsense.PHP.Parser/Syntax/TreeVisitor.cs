@@ -322,12 +322,12 @@ namespace Devsense.PHP.Syntax
 
         virtual public void VisitTraitAdaptationPrecedence(TraitsUse.TraitAdaptationPrecedence x)
         {
-
+            VisitElement(x.TraitMemberName.Item1);
         }
 
         virtual public void VisitTraitAdaptationAlias(TraitsUse.TraitAdaptationAlias x)
         {
-
+            VisitElement(x.TraitMemberName.Item1);
         }
 
         /// <summary>
