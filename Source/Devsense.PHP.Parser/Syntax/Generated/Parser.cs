@@ -2458,7 +2458,7 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 { yyval.TypeReference = _astFactory.PrimitiveTypeReference(yypos, PrimitiveTypeRef.PrimitiveType.callable); }
         return;
       case 225: // type -> name 
-{ yyval.TypeReference = CreateTypeRef(value_stack.array[value_stack.top-1].yyval.QualifiedNameReference); }
+{ yyval.TypeReference = CreateTypeRef(value_stack.array[value_stack.top-1].yyval.QualifiedNameReference, true); }
         return;
       case 226: // return_type -> 
 { yyval.TypeReference = null; }

@@ -796,7 +796,7 @@ type_expr:
 type:   
 		T_ARRAY		{ $$ = _astFactory.PrimitiveTypeReference(@$, PrimitiveTypeRef.PrimitiveType.array); }
 	|	T_CALLABLE	{ $$ = _astFactory.PrimitiveTypeReference(@$, PrimitiveTypeRef.PrimitiveType.callable); }
-	|	name		{ $$ = CreateTypeRef($1); }
+	|	name		{ $$ = CreateTypeRef($1, true); }
 ;
 
 return_type:

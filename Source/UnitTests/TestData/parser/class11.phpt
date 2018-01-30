@@ -11,8 +11,6 @@ interface SimpleClass extends int
 ?>
 <<<TEST>>>
 
-ERRORS: 1022, 1022, 1022
-
 "GlobalCode":{
   "NamingContext":{},
   "NamedTypeDecl":{

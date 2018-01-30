@@ -468,7 +468,7 @@ namespace Devsense.PHP.Syntax
 
         static ReservedTypeRef.ReservedType _reservedTypeStatic => ReservedTypeRef.ReservedType.@static;
 
-        TypeRef CreateTypeRef(QualifiedNameRef tname)
+        TypeRef CreateTypeRef(QualifiedNameRef tname, bool allowPrimitiveTypes = false)
         {
             var qname = tname.QualifiedName;
             var span = tname.Span;
@@ -535,7 +535,7 @@ namespace Devsense.PHP.Syntax
                     return reservedRef;
                 }
 
-                if (PrimitiveTypes.TryGetValue(qname, out PrimitiveTypeRef.PrimitiveType primitive))
+                if (allowPrimitiveTypes && PrimitiveTypes.TryGetValue(qname, out PrimitiveTypeRef.PrimitiveType primitive))
                 {
                     return _astFactory.PrimitiveTypeReference(span, primitive);
                 }
