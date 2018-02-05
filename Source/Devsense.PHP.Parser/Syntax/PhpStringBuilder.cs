@@ -138,12 +138,18 @@ namespace Devsense.PHP.Syntax
             }
         }
 
-        public Literal CreateLiteral()
+        public string StringResult
         {
-            if (IsBinary)
-                return new BinaryStringLiteral(span, BinaryBuilder.ToArray());
-            else
-                return new StringLiteral(span, UnicodeBuilder.ToString());
+            get
+            {
+                if (Length != 0)
+                {
+                    // convert to unicode string:
+                    return UnicodeBuilder.ToString();
+                }
+
+                return string.Empty;
+            }
         }
 
         #endregion
@@ -254,32 +260,15 @@ namespace Devsense.PHP.Syntax
         {
             // force binary string
 
-            if (IsUnicode)
+            if (IsUnicode && b <= 0x7f)
             {
-                var encodeBytes = BytesBuffer;
-                var encodeChars = CharsBuffer;
-
-                encodeBytes[0] = b;
-                UnicodeBuilder.Append(encodeChars, 0, encoding.GetChars(encodeBytes, 0, 1, encodeChars, 0));
+                UnicodeBuilder.Append((char)b);
             }
             else
+            {
+                // we have to store the string as a single-byte array
                 BinaryBuilder.Add(b);
-        }
-
-        public void Append(int c, Span span)
-        {
-            Append(span);
-            Append(c);
-        }
-        public void Append(int c)
-        {
-            Debug.Assert(c >= 0);
-
-            //if (c <= 0xff)
-            if (IsBinary)
-                BinaryBuilder.Add((byte)c);
-            else
-                UnicodeBuilder.Append((char)c);
+            }
         }
 
         #endregion

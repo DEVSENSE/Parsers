@@ -490,8 +490,6 @@ namespace Devsense.PHP.Syntax
                                 pos--;  // rollback
                             }
 
-                            //encodeBytes[0] = (byte)hex_code;
-                            //result.Append(encodeChars, 0, encoding.GetChars(encodeBytes, 0, 1, encodeChars, 0));
                             result.Append((byte)hex_code);
                             return pos;
                         }
@@ -525,8 +523,6 @@ namespace Devsense.PHP.Syntax
                                 pos--; // rollback
                             }
 
-                            //encodeBytes[0] = (byte)octal_code;
-                            //result.Append(encodeChars, 0, encoding.GetChars(encodeBytes, 0, 1, encodeChars, 0));
                             result.Append((byte)octal_code);
                             return pos;
                         }
@@ -604,7 +600,7 @@ namespace Devsense.PHP.Syntax
             //
             return lazyBuilder == null
                 ? Intern(buffer, start, length)
-                : lazyBuilder.Result;
+                : lazyBuilder.StringResult; // TODO: .Result; and handle String or byte[] properly
         }
 
         object GetTokenAsQuotedString(ProcessStringDelegate tryprocess, char quote)
