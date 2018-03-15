@@ -1437,6 +1437,14 @@ namespace Devsense.PHP.Syntax
             public readonly string MethodName;
 
             /// <summary>
+            /// Whether the method was declared with `static` keyword.
+            /// </summary>
+            public readonly bool IsStatic;
+
+            /// <summary>Static keyword.</summary>
+            const string StaticModifierString = "static";
+
+            /// <summary>
             /// Span within the source code of the method name.
             /// </summary>
             public Span MethodNameSpan
@@ -1463,10 +1471,13 @@ namespace Devsense.PHP.Syntax
 
                 _methodNamePos = -1;
 
-                // [type] [name()] [name(params ...)] [description]
+                // [static] [type] [name()] [name(params ...)] [description]
 
                 int index = tagName.Length; // current index within line
                 int descStart = index;  // start of description, moved when [type] or [name] found
+
+                // try read `static`
+                TryReadStatic(line, ref index, out IsStatic);
 
                 // try to find [type]
                 TypeVarDescTag.TryReadTypeName(line, ref index, out _typeNames, out _typeNamesPos);
@@ -1534,6 +1545,24 @@ namespace Devsense.PHP.Syntax
 
                 if (descStart < line.Length)
                     this.Description = line.Substring(descStart).TrimStart(null/*default whitespace characters*/);
+            }
+
+            private static bool TryReadStatic(string line, ref int index, out bool isStatic)
+            {
+                int index2 = index;
+
+                var word = NextWord(line, ref index2);
+                if (word == StaticModifierString)
+                {
+                    index = index2;
+                    isStatic = true;
+                    return true;
+                }
+                else
+                {
+                    isStatic = false;
+                    return false;
+                }
             }
 
             /// <summary>
