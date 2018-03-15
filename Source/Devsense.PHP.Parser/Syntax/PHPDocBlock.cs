@@ -1471,7 +1471,7 @@ namespace Devsense.PHP.Syntax
 
                 _methodNamePos = -1;
 
-                // [static] [type] [name()] [name(params ...)] [description]
+                // [static] [type] [name()] [name(params ...)] [static] [description]
 
                 int index = tagName.Length; // current index within line
                 int descStart = index;  // start of description, moved when [type] or [name] found
@@ -1542,6 +1542,9 @@ namespace Devsense.PHP.Syntax
                     }
                 }
                 if (this.Parameters == null) this.Parameters = EmptyArray<FormalParam>.Instance;
+
+                // [static] after the parameters?
+                if (!IsStatic) TryReadStatic(line, ref descStart, out IsStatic);
 
                 if (descStart < line.Length)
                     this.Description = line.Substring(descStart).TrimStart(null/*default whitespace characters*/);
