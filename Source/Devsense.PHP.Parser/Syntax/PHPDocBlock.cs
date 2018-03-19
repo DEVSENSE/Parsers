@@ -1643,28 +1643,32 @@ namespace Devsense.PHP.Syntax
 
                 if (value == "[]" || value == "array()")
                 {
-                    return ArrayEx.CreateArray(Span.Invalid, EmptyArray<Item>.Instance, value == "[]");
+                    return ArrayEx.CreateArray(span, EmptyArray<Item>.Instance, value == "[]");
                 }
                 else if (long.TryParse(value, out l))
                 {
-                    return new LongIntLiteral(Span.Invalid, l);
+                    return new LongIntLiteral(span, l);
                 }
                 else if (double.TryParse(value, out d))
                 {
-                    return new DoubleLiteral(Span.Invalid, d);
+                    return new DoubleLiteral(span, d);
                 }
                 else if (bool.TryParse(value, out b))
                 {
-                    return new BoolLiteral(Span.Invalid, b);
+                    return new BoolLiteral(span, b);
                 }
-                else if (value == "\"\"")
+                else if (value == "\"\"" || value == "''")
                 {
-                    return new StringLiteral(Span.Invalid, string.Empty);
+                    return new StringLiteral(span, string.Empty);
                 }
-                //else if (char.IsLetter(value[0]))
-                //{
-                //    return new GlobalConstUse(Span.Invalid, )
-                //}
+                else if (value.Length >= 2 && value[0] == value[value.Length - 1] && (value[0] == '"' || value[0] == '\''))
+                {
+                    return new StringLiteral(span, value.Substring(1, value.Length - 2)); // TODO: Lexer.ProcessString
+                }
+                else if ((char.IsLetter(value[0]) || value[0] == '_'))
+                {
+                    return new GlobalConstUse(span, new TranslatedQualifiedName(QualifiedName.Parse(value, false), span));
+                }
                 else
                 {
                     Debug.WriteLine("PHPDoc @method tag parameter init value {0} was not handled.", value);
