@@ -1600,7 +1600,10 @@ namespace Devsense.PHP.Syntax
                     // [type]
                     if (word.Length > 0 && word[0] != '$')
                     {
-                        typehint = TypeRef.FromString(new Span(i - word.Length, word.Length), word);    // TODO: naming
+                        if (!string.Equals(word, "mixed", StringComparison.OrdinalIgnoreCase))
+                        {
+                            typehint = TypeRef.FromString(new Span(i - word.Length, word.Length), word);    // TODO: naming
+                        }
                         word = NextWord(paramDecl, ref i);
                     }
 
