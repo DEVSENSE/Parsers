@@ -8,8 +8,8 @@ using System.Diagnostics;
 
 namespace Devsense.PHP.Syntax
 {
-
-    internal class BufferedLexer : IParserTokenProvider<SemanticValueType, Span>
+    // TODO: remove or document
+    internal sealed class BufferedLexer : IParserTokenProvider<SemanticValueType, Span>
     {
         private CompliantLexer _provider;
         private Stack<CompleteToken> _buffer = new Stack<CompleteToken>();

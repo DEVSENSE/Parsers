@@ -55,7 +55,6 @@ namespace Devsense.PHP.Syntax
     {
         private readonly ITokenComposer _composer;
         private readonly ISourceTokenProvider _provider;
-        private static readonly char[] NewLines = new[] { '\n', '\r' };
 
         /// <summary>
         /// Consumes a literal.
