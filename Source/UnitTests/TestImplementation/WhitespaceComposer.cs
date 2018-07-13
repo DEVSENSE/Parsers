@@ -1,4 +1,5 @@
 ﻿using Devsense.PHP.Syntax;
+using Devsense.PHP.Syntax.Ast;
 using Devsense.PHP.Text;
 using System.Collections.Generic;
 using System.Text;
@@ -21,7 +22,7 @@ namespace UnitTests.TestImplementation
             _tokens = tokens;
         }
 
-        private void ProcessToken(Tokens token, string text, Span position)
+        private void ProcessToken(Tokens token, string text, Span position, LangElement sourceNode)
         {
             var start = position.StartOrInvalid;
             var end = start + text.Length;
@@ -36,12 +37,12 @@ namespace UnitTests.TestImplementation
             }
         }
 
-        public void ConsumeToken(Tokens token, string text, Span position)
+        public void ConsumeToken(Tokens token, string text, Span position, LangElement sourceNode)
         {
             ProcessWhitespaces(position);
             if (token != Tokens.T_SEMI || _tokens.GetTokenAt(position, Tokens.T_SEMI, null) != null) // TODO - last element without semicolon
             {
-                ProcessToken(token, _tokens.GetTokenText(new SourceToken(token, position), text), position);
+                ProcessToken(token, _tokens.GetTokenText(new SourceToken(token, position), text), position, sourceNode);
             }
         }
 
@@ -56,7 +57,7 @@ namespace UnitTests.TestImplementation
                 {
                     foreach (var item in tokens)
                     {
-                        ProcessToken(item.Token, _tokens.GetTokenText(item, string.Empty), item.Span);
+                        ProcessToken(item.Token, _tokens.GetTokenText(item, string.Empty), item.Span, null);
                     }
                 }
                 _previous = position;

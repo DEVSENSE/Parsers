@@ -182,7 +182,14 @@ namespace UnitTests
                 }
                 if (token == Tokens.T_LNUMBER)
                 {
-                    Assert.AreEqual(int.Parse(expectedToken[2]), lexer.TokenValue.Integer);
+                    if (expectedToken[2].ToLower().StartsWith("0x"))
+                    {
+                        Assert.AreEqual(System.Convert.ToInt32(expectedToken[2], 16), lexer.TokenValue.Integer);
+                    }
+                    else
+                    {
+                        Assert.AreEqual(int.Parse(expectedToken[2]), lexer.TokenValue.Integer);
+                    }
                 }
                 //lexer.RestoreCompressedState(lexer.GetCompressedState());
             }
