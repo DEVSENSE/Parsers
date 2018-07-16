@@ -371,7 +371,7 @@ namespace Devsense.PHP.Syntax
             {
                 ConsumeToken(Tokens.T_LBRACE, SpanUtils.SafeSpan(x.Span.StartOrInvalid, 1));
 
-                using (new ScopeHelper(this, x))
+                using (new ScopeHelper(this, new DummyInsideBlockStmt(x)))
                 {
                     base.VisitBlockStmt(x);
                 }

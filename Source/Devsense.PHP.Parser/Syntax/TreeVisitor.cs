@@ -32,10 +32,7 @@ namespace Devsense.PHP.Syntax
         /// <param name="element">Any LanguageElement. Can be null.</param>
         public virtual void VisitElement(LangElement element)
         {
-            if (element != null)
-            {
-                element.VisitMe(this);
-            }
+            element?.VisitMe(this);
         }
 
         /// <summary>
