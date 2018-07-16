@@ -13,6 +13,7 @@ using System.Globalization;
 using Devsense.PHP.Errors;
 using System.Text.RegularExpressions;
 using Devsense.PHP.Syntax.Ast.Serialization;
+using Devsense.PHP.Syntax.Visitor;
 
 namespace UnitTests
 {

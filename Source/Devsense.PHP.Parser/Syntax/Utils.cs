@@ -49,6 +49,23 @@ namespace Devsense.PHP.Syntax
             }
         }
 
+        public static Text.Span CombineValid(Text.Span s1, Text.Span s2, Text.Span s3 = default(Text.Span))
+        {
+            var result = s1;
+
+            if (s2.Length > 0)
+            {
+                result = result.IsValid ? Text.Span.Combine(result, s2) : s2;
+            }
+
+            if (s3.Length > 0)
+            {
+                result = result.IsValid ? Text.Span.Combine(result, s3) : s3;
+            }
+
+            return result;
+        }
+
         public static Text.Span SpanIntermission(Text.Span previous, Text.Span next) =>
             previous.IsValid && next.IsValid && previous.End <= next.Start ? Text.Span.FromBounds(previous.End, next.Start) : Text.Span.Invalid;
 

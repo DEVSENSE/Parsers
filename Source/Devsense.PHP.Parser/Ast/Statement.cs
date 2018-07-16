@@ -124,6 +124,10 @@ namespace Devsense.PHP.Syntax.Ast
         }
     }
 
+    /// <summary>
+    /// Represents a block without opening and closing token.
+    /// Usually inside a simple namespace declaration.
+    /// </summary>
     internal class SimpleBlockStmt : BlockStmt
     {
         public override Tokens OpeningToken => 0;
@@ -134,6 +138,9 @@ namespace Devsense.PHP.Syntax.Ast
         }
     }
 
+    /// <summary>
+    /// Represents a block opened with colon and closed with corresponding <c>END**</c> token.
+    /// </summary>
     internal class ColonBlockStmt : BlockStmt
     {
         public override Tokens OpeningToken => Tokens.T_COLON;

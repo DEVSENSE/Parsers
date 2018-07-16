@@ -8,6 +8,7 @@ using System.Diagnostics;
 using System.Globalization;
 using Devsense.PHP.Text;
 using static Devsense.PHP.Syntax.Ast.EncapsedExpression;
+using Devsense.PHP.Syntax.Visitor;
 
 namespace Devsense.PHP.Syntax
 {
@@ -353,7 +354,12 @@ namespace Devsense.PHP.Syntax
             {
                 var openingText = TokenFacts.GetTokenText(block.OpeningToken);
                 ConsumeToken(block.OpeningToken, openingText, new Span(x.Span.StartOrInvalid, openingText.Length));
-                base.VisitBlockStmt(x);
+
+                using (new ScopeHelper(this, new DummyInsideBlockStmt(x)))
+                {
+                    base.VisitBlockStmt(x);
+                }
+
                 var closingText = TokenFacts.GetTokenText(block.ClosingToken);
                 ConsumeToken(block.ClosingToken, closingText, SpanUtils.SafeSpan(x.Span.End, closingText.Length));
                 if (block.ClosingToken != Tokens.T_ELSE && block.ClosingToken != Tokens.T_ELSEIF)
@@ -364,7 +370,12 @@ namespace Devsense.PHP.Syntax
             else
             {
                 ConsumeToken(Tokens.T_LBRACE, SpanUtils.SafeSpan(x.Span.StartOrInvalid, 1));
-                base.VisitBlockStmt(x);
+
+                using (new ScopeHelper(this, x))
+                {
+                    base.VisitBlockStmt(x);
+                }
+
                 ConsumeToken(Tokens.T_RBRACE, SpanUtils.SafeSpan(x.Span.End - 1, 1));
             }
         }
@@ -685,29 +696,60 @@ namespace Devsense.PHP.Syntax
             throw new InvalidOperationException(); // DirectFncCall, IndirectFncCall, *MethodCall, ...
         }
 
-        protected virtual void VisitRoutineDecl(LangElement element, Signature signature, Statement body, NameRef nameOpt = default(NameRef), TypeRef returnTypeOpt = null, PhpMemberAttributes modifiers = PhpMemberAttributes.None)
+        protected virtual void VisitRoutineDecl(LangElement element, Span headerSpan, Signature signature, Statement body, NameRef nameOpt = default(NameRef), TypeRef returnTypeOpt = null, PhpMemberAttributes modifiers = PhpMemberAttributes.None, IList<FormalParam> useParams = null)
         {
             using (new ScopeHelper(this, element))
             {
-                // function &NAME SIGNATURE : RETURN_TYPE BODY
-                var prenameSpan = SpanUtils.SpanIntermission(element.Span.StartOrInvalid, nameOpt.HasValue ? nameOpt.Span : signature.Span);
-                ConsumeModifiers(element, modifiers, prenameSpan);
-                ProcessToken(Tokens.T_FUNCTION, prenameSpan);
-                if (signature.AliasReturn)
+                if (!headerSpan.IsValid)
                 {
-                    ProcessToken(Tokens.T_AMP, prenameSpan);
+                    // guess the header span
+                    headerSpan =
+                        SpanUtils.CombineValid(
+                        element.Span.IsValid ? new Span(element.Span.Start, 0) : Span.Invalid,
+                        signature.Span,
+                        returnTypeOpt != null ? returnTypeOpt.Span : (useParams != null && useParams.Count != 0) ? useParams.Last().Span : Span.Invalid);
                 }
-                if (nameOpt.HasValue)
+
+                using (new ScopeHelper(this, new DummyRoutineHeader(element, headerSpan)))
                 {
-                    ConsumeNameToken(nameOpt.Name.Value, nameOpt.Span);
+                    // function &NAME SIGNATURE : RETURN_TYPE
+                    var prenameSpan = SpanUtils.SpanIntermission(element.Span.StartOrInvalid, nameOpt.HasValue ? nameOpt.Span : signature.Span);
+                    ConsumeModifiers(element, modifiers, prenameSpan);
+                    ProcessToken(Tokens.T_FUNCTION, prenameSpan);
+                    if (signature.AliasReturn)
+                    {
+                        ProcessToken(Tokens.T_AMP, prenameSpan); // TODO: correct span!
+                    }
+                    if (nameOpt.HasValue)
+                    {
+                        ConsumeNameToken(nameOpt.Name.Value, nameOpt.Span);
+                    }
+
+                    VisitSignature(signature);
+
+                    if (useParams != null && useParams.Any())
+                    {
+                        var useSpan = SpanUtils.SpanIntermission(
+                            signature.Span,
+                            returnTypeOpt != null ? returnTypeOpt.Span.StartOrInvalid : (body != null ? body.Span.StartOrInvalid : element.Span.End));
+
+                        ProcessToken(Tokens.T_USE, useSpan);
+                        ProcessToken(Tokens.T_LPAREN, useSpan);
+                        VisitElementList(useParams, Tokens.T_COMMA);
+                        ProcessToken(Tokens.T_RPAREN, useParams.Count > 0
+                            ? SpanUtils.SpanIntermission(useParams.Last().Span, useSpan.End)
+                            : useSpan);
+                    }
+
+                    if (returnTypeOpt != null)
+                    {
+                        ProcessToken(Tokens.T_COLON, SpanUtils.SpanIntermission(signature.Span,
+                            body != null ? body.Span.StartOrInvalid : element.Span.End));
+                        VisitElement(returnTypeOpt);
+                    }
                 }
-                VisitSignature(signature);
-                if (returnTypeOpt != null)
-                {
-                    ProcessToken(Tokens.T_COLON, SpanUtils.SpanIntermission(signature.Span,
-                        body != null ? body.Span.StartOrInvalid : element.Span.End));
-                    VisitElement(returnTypeOpt);
-                }
+
+                // BODY or ;
                 if (body != null)
                 {
                     VisitElement(body);
@@ -721,7 +763,7 @@ namespace Devsense.PHP.Syntax
 
         public override void VisitFunctionDecl(FunctionDecl x)
         {
-            VisitRoutineDecl(x, x.Signature, x.Body, x.Name, x.ReturnType);
+            VisitRoutineDecl(x, x.HeadingSpan, x.Signature, x.Body, x.Name, x.ReturnType);
         }
 
         public override void VisitGenericTypeRef(GenericTypeRef x)
@@ -1046,43 +1088,13 @@ namespace Devsense.PHP.Syntax
             ConsumeToken(Tokens.T_COLON, ":", SpanUtils.SafeSpan(x.Span.End - 1, 1));
         }
 
-        public override void VisitLambdaFunctionExpr(LambdaFunctionExpr element)
+        public override void VisitLambdaFunctionExpr(LambdaFunctionExpr x)
         {
-            using (new ScopeHelper(this, element))
-            {
-                var initialSpan = SpanUtils.SpanIntermission(element.Span.StartOrInvalid, element.Signature.Span);
-                ConsumeModifiers(element, element.Modifiers, initialSpan);
-                ProcessToken(Tokens.T_FUNCTION, initialSpan);
-                if (element.Signature.AliasReturn)
-                {
-                    ConsumeToken(Tokens.T_AMP, initialSpan);
-                }
-                VisitSignature(element.Signature);
-                var useSpan = SpanUtils.SpanIntermission(element.Signature.Span,
-                    element.ReturnType != null ? element.ReturnType.Span.StartOrInvalid : (element.Body != null ? element.Body.Span.StartOrInvalid : element.Span.End));
-                if (element.UseParams != null && element.UseParams.Count != 0)
-                {
-                    ProcessToken(Tokens.T_USE, useSpan);
-                    ProcessToken(Tokens.T_LPAREN, useSpan);
-                    VisitElementList(element.UseParams, Tokens.T_COMMA);
-                    ProcessToken(Tokens.T_RPAREN, element.UseParams.Count > 0 ?
-                        SpanUtils.SpanIntermission(element.UseParams.Last().Span, useSpan.End) : useSpan);
-                }
-                if (element.ReturnType != null)
-                {
-                    ProcessToken(Tokens.T_COLON, SpanUtils.SpanIntermission(element.Signature.Span,
-                        element.Body != null ? element.Body.Span.StartOrInvalid : element.Span.End));
-                    VisitElement(element.ReturnType);
-                }
-                if (element.Body != null)
-                {
-                    VisitElement(element.Body);
-                }
-                else
-                {
-                    ConsumeToken(Tokens.T_SEMI, SpanUtils.SafeSpan(element.Span.End - 1, 1));
-                }
-            }
+            VisitRoutineDecl(
+                x, x.HeadingSpan, x.Signature, x.Body,
+                returnTypeOpt: x.ReturnType,
+                modifiers: x.Modifiers,
+                useParams: x.UseParams);
         }
 
         protected virtual void VisitElementList<TElement>(IList<TElement> list, Tokens separatorToken) where TElement : LangElement
@@ -1150,7 +1162,7 @@ namespace Devsense.PHP.Syntax
 
         public override void VisitMethodDecl(MethodDecl x)
         {
-            VisitRoutineDecl(x, x.Signature, x.Body, x.Name, x.ReturnType, x.Modifiers);
+            VisitRoutineDecl(x, x.HeadingSpan, x.Signature, x.Body, x.Name, x.ReturnType, x.Modifiers);
         }
 
         public override void VisitMultipleTypeRef(MultipleTypeRef x)
