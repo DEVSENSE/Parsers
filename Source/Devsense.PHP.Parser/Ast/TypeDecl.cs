@@ -32,7 +32,7 @@ namespace Devsense.PHP.Syntax.Ast
         /// </summary>
         public object DefaultType { get { return defaultType; } }
         private readonly object defaultType;
-        
+
         /// <summary>
         /// Singleton instance of an empty <see cref="List&lt;FormalTypeParam&gt;"/>.
         /// </summary>
@@ -368,7 +368,23 @@ namespace Devsense.PHP.Syntax.Ast
         /// <summary>
         /// Span of the entire method header.
         /// </summary>
-        public Text.Span HeadingSpan => Text.Span.FromBounds(Span.Start, ((returnType != null) ? returnType.Span : ParametersSpan).End);
+        public Text.Span HeadingSpan
+        {
+            get
+            {
+                if (Span.IsValid)
+                {
+                    var endspan = returnType != null ? returnType.Span : Signature.Span;
+                    if (endspan.IsValid)
+                    {
+                        return Text.Span.FromBounds(Span.Start, endspan.End);
+                    }
+                }
+
+                //
+                return Text.Span.Invalid;
+            }
+        }
 
         /// <summary>
         /// Return type hint, optional.

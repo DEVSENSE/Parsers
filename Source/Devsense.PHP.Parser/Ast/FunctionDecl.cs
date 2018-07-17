@@ -166,7 +166,26 @@ namespace Devsense.PHP.Syntax.Ast
 
         public Text.Span ParametersSpan { get { return Signature.Span; } }
 
-        public Text.Span HeadingSpan => Text.Span.FromBounds(Span.Start, ((returnType != null) ? returnType.Span : ParametersSpan).End);
+        /// <summary>
+        /// Span of the entire method header.
+        /// </summary>
+        public Text.Span HeadingSpan
+        {
+            get
+            {
+                if (Span.IsValid)
+                {
+                    var endspan = returnType != null ? returnType.Span : Signature.Span;
+                    if (endspan.IsValid)
+                    {
+                        return Text.Span.FromBounds(Span.Start, endspan.End);
+                    }
+                }
+
+                //
+                return Text.Span.Invalid;
+            }
+        }
 
         public TypeRef ReturnType { get { return returnType; } }
         private TypeRef returnType;
