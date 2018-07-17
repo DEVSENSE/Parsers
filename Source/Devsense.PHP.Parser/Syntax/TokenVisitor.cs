@@ -1322,27 +1322,36 @@ namespace Devsense.PHP.Syntax
 
         public sealed override void VisitSwitchItem(SwitchItem x)
         {
-            VisitList(x.Statements);
+            using (new ScopeHelper(this, new DummyInsideBlockStmt(x)))
+            {
+                VisitList(x.Statements);
+            }
         }
 
         public override void VisitCaseItem(CaseItem x)
         {
-            ConsumeToken(Tokens.T_CASE, SpanUtils.SafeSpan(x.Span.StartOrInvalid, 4));
-            VisitElement(x.CaseVal);
-            var colonSpan = SpanUtils.SpanIntermission(x.CaseVal.Span, x.Statements == null || x.Statements.Length == 0 ?
-                x.Span.End : x.Statements[0].Span.StartOrInvalid);
-            ProcessToken(Tokens.T_COLON, colonSpan);
-            VisitSwitchItem(x);
+            using (new ScopeHelper(this, x))
+            {
+                ConsumeToken(Tokens.T_CASE, SpanUtils.SafeSpan(x.Span.StartOrInvalid, 4));
+                VisitElement(x.CaseVal);
+                var colonSpan = SpanUtils.SpanIntermission(x.CaseVal.Span, x.Statements == null || x.Statements.Length == 0 ?
+                    x.Span.End : x.Statements[0].Span.StartOrInvalid);
+                ProcessToken(Tokens.T_COLON, colonSpan);
+                VisitSwitchItem(x);
+            }
         }
 
         public override void VisitDefaultItem(DefaultItem x)
         {
-            var labelSpan = SpanUtils.SafeSpan(x.Span.StartOrInvalid, 7);
-            ConsumeToken(Tokens.T_DEFAULT, labelSpan);
-            var colonSpan = SpanUtils.SpanIntermission(labelSpan, x.Statements == null || x.Statements.Length == 0 ?
-                x.Span.End : x.Statements[0].Span.StartOrInvalid);
-            ProcessToken(Tokens.T_COLON, colonSpan);
-            VisitSwitchItem(x);
+            using (new ScopeHelper(this, x))
+            {
+                var labelSpan = SpanUtils.SafeSpan(x.Span.StartOrInvalid, 7);
+                ConsumeToken(Tokens.T_DEFAULT, labelSpan);
+                var colonSpan = SpanUtils.SpanIntermission(labelSpan, x.Statements == null || x.Statements.Length == 0 ?
+                    x.Span.End : x.Statements[0].Span.StartOrInvalid);
+                ProcessToken(Tokens.T_COLON, colonSpan);
+                VisitSwitchItem(x);
+            }
         }
 
         public override void VisitSwitchStmt(SwitchStmt x)
@@ -1363,7 +1372,12 @@ namespace Devsense.PHP.Syntax
             {
                 ConsumeToken(token);
             }
-            VisitList(x.SwitchItems);
+
+            using (new ScopeHelper(this, new DummyInsideBlockStmt(x)))
+            {
+                VisitList(x.SwitchItems);
+            }
+
             var endSpan = SpanUtils.SpanIntermission(x.SwitchItems.Length > 0 ? x.SwitchItems.Last().Span : x.SwitchValue.Span, x.Span.End);
             var tokens = _provider.GetTokens(endSpan, t => t.Token == Tokens.T_ENDSWITCH || t.Token == Tokens.T_SEMI, null).CastToArray<ISourceToken>();
             if (tokens != null && tokens.Length == 2 && tokens[0].Token == Tokens.T_ENDSWITCH && tokens[1].Token == Tokens.T_SEMI)

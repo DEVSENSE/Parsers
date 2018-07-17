@@ -43,9 +43,9 @@ namespace Devsense.PHP.Syntax.Visitor
         /// <summary>
         /// The original block statement.
         /// </summary>
-        public BlockStmt OriginalBlock { get; }
+        public ILangElement OriginalBlock { get; }
 
-        public DummyInsideBlockStmt(BlockStmt originalBlock)
+        public DummyInsideBlockStmt(ILangElement originalBlock)
         {
             this.OriginalBlock = originalBlock ?? throw new ArgumentNullException(nameof(originalBlock));
         }
@@ -181,8 +181,15 @@ namespace Devsense.PHP.Syntax.Visitor
         {
             foreach (var x in context.Scope)
             {
-                if (x is DummyInsideBlockStmt) break; // we are inside
-                if (x is IBlockStatement) return true; // we are in block but didn't reach the inside -> boundaries
+                if (x is DummyInsideBlockStmt)
+                {
+                    break; // we are inside
+                }
+
+                if (x is IBlockStatement || x is SwitchStmt || x is SwitchItem)
+                {
+                    return true; // we are in block but didn't reach the inside -> boundaries
+                }
             }
 
             return false;
