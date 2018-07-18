@@ -186,7 +186,7 @@ namespace Devsense.PHP.Syntax.Visitor
                     break; // we are inside
                 }
 
-                if (x is IBlockStatement || x is SwitchStmt || x is SwitchItem)
+                if (x is IBlockStatement || x is SwitchStmt || x is SwitchItem || x is TypeDecl)
                 {
                     return true; // we are in block but didn't reach the inside -> boundaries
                 }
@@ -256,7 +256,7 @@ namespace Devsense.PHP.Syntax
             return
                 element is IStatement ||
                 element is GlobalCode ||
-                element is TypeDecl ||
+                // element is TypeDecl || // handled in TokenVisitor
                 element is MethodDecl ||
                 element is LambdaFunctionExpr ||
                 element is CatchItem ||

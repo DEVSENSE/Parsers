@@ -1543,7 +1543,10 @@ namespace Devsense.PHP.Syntax
                 }
 
                 ProcessToken(Tokens.T_LBRACE, SpanUtils.SpanIntermission(previous.Span, bodySpan));
-                VisitList(x.Members);
+                using (new ScopeHelper(this, new DummyInsideBlockStmt(x)))
+                {
+                    VisitList(x.Members);
+                }
                 ConsumeToken(Tokens.T_RBRACE, lastSpan);
             }
         }
