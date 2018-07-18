@@ -62,7 +62,7 @@ namespace Devsense.PHP.Syntax
 
         private static bool IsInString(Lexer lexer)
         {
-            if(lexer.CurrentLexicalState == Lexer.LexicalStates.ST_LOOKING_FOR_PROPERTY)
+            if (lexer.CurrentLexicalState == Lexer.LexicalStates.ST_LOOKING_FOR_PROPERTY)
             {
                 return IsInString(lexer.PreviousLexicalState);
             }
@@ -72,7 +72,20 @@ namespace Devsense.PHP.Syntax
             }
         }
 
-        public static Tokens AsToken(this PhpMemberAttributes attributes, Tokens @default = Tokens.T_ERROR)
+        /// <summary>
+        /// Gets interface|trait or class token.
+        /// </summary>
+        public static Tokens AsTypeKeywordToken(this Ast.TypeDecl tdecl)
+        {
+            switch (tdecl.MemberAttributes & (PhpMemberAttributes.Trait | PhpMemberAttributes.Interface))
+            {
+                case PhpMemberAttributes.Interface: return Tokens.T_INTERFACE;
+                case PhpMemberAttributes.Trait: return Tokens.T_TRAIT;
+                default: return Tokens.T_CLASS;
+            }
+        }
+
+        public static Tokens AsToken(this PhpMemberAttributes attributes)
         {
             switch (attributes)
             {
@@ -93,7 +106,7 @@ namespace Devsense.PHP.Syntax
                 case PhpMemberAttributes.Trait:
                     return Tokens.T_TRAIT;
                 default:
-                    return @default;
+                    return Tokens.T_ERROR;
             }
         }
         public static PhpMemberAttributes ToModifier(this Tokens token)

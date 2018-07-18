@@ -1522,9 +1522,7 @@ namespace Devsense.PHP.Syntax
                 previous = ConsumeModifiers(x, x.MemberAttributes, prenameSpan).LastOrDefault();
 
                 // interface|trait|class
-                previous = ProcessToken(
-                    (x.MemberAttributes & (PhpMemberAttributes.Trait | PhpMemberAttributes.Interface)).AsToken(@default: Tokens.T_CLASS),
-                    prenameSpan);
+                previous = ProcessToken(x.AsTypeKeywordToken(), prenameSpan);
 
                 if (signature != null && signature.Parameters.Length != 0)
                 {
