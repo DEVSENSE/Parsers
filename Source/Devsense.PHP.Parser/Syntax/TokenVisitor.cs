@@ -1453,22 +1453,31 @@ namespace Devsense.PHP.Syntax
 
         public override void VisitTraitAdaptationBlock(TraitAdaptationBlock x)
         {
-            ConsumeToken(Tokens.T_LBRACE, SpanUtils.SafeSpan(x.Span.StartOrInvalid, 1));
-            VisitElementList(x.Adaptations);
-            ConsumeToken(Tokens.T_RBRACE, SpanUtils.SafeSpan(x.Span.End - 1, 1));
+            using (new ScopeHelper(this, x))
+            {
+                ConsumeToken(Tokens.T_LBRACE, SpanUtils.SafeSpan(x.Span.StartOrInvalid, 1));
+                using (new ScopeHelper(this, new DummyInsideBlockStmt(x)))
+                {
+                    VisitElementList(x.Adaptations);
+                }
+                ConsumeToken(Tokens.T_RBRACE, SpanUtils.SafeSpan(x.Span.End - 1, 1));
+            }
         }
 
         public override void VisitTraitsUse(TraitsUse x)
         {
-            ConsumeToken(Tokens.T_USE, SpanUtils.SafeSpan(x.Span.StartOrInvalid, 3));
-            VisitElementList(x.TraitsList, Tokens.T_COMMA);
-            if (x.TraitAdaptationBlock != null)
+            using (new ScopeHelper(this, x))
             {
-                VisitElement(x.TraitAdaptationBlock);
-            }
-            else
-            {
-                ConsumeToken(Tokens.T_SEMI, SpanUtils.SafeSpan(x.Span.End - 1, 1));
+                ConsumeToken(Tokens.T_USE, SpanUtils.SafeSpan(x.Span.StartOrInvalid, 3));
+                VisitElementList(x.TraitsList, Tokens.T_COMMA);
+                if (x.TraitAdaptationBlock != null)
+                {
+                    VisitElement(x.TraitAdaptationBlock);
+                }
+                else
+                {
+                    ConsumeToken(Tokens.T_SEMI, SpanUtils.SafeSpan(x.Span.End - 1, 1));
+                }
             }
         }
 
