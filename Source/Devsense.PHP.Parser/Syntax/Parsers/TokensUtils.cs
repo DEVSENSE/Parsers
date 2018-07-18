@@ -72,7 +72,7 @@ namespace Devsense.PHP.Syntax
             }
         }
 
-        public static Tokens AsToken(this PhpMemberAttributes attributes)
+        public static Tokens AsToken(this PhpMemberAttributes attributes, Tokens @default = Tokens.T_ERROR)
         {
             switch (attributes)
             {
@@ -93,7 +93,7 @@ namespace Devsense.PHP.Syntax
                 case PhpMemberAttributes.Trait:
                     return Tokens.T_TRAIT;
                 default:
-                    return Tokens.T_ERROR;
+                    return @default;
             }
         }
         public static PhpMemberAttributes ToModifier(this Tokens token)

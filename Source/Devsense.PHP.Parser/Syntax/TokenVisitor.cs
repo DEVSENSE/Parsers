@@ -193,9 +193,6 @@ namespace Devsense.PHP.Syntax
             AddModifier(modifiers, PhpMemberAttributes.Static, defaults);
             AddModifier(modifiers, PhpMemberAttributes.Abstract, defaults);
             AddModifier(modifiers, PhpMemberAttributes.Final, defaults);
-            AddModifier(modifiers, PhpMemberAttributes.Interface, defaults);
-            AddModifier(modifiers, PhpMemberAttributes.Trait, defaults);
-            AddModifier(modifiers, PhpMemberAttributes.Constructor, defaults);
             var tokens = _provider.GetTokens(span, t => defaults.ContainsKey(t.Token), defaults.Values).AsArray();
             ConsumeModifiers(element, modifiers, tokens, span);
             return tokens;
@@ -1507,15 +1504,22 @@ namespace Devsense.PHP.Syntax
                 var nameSpan = x.Name.HasValue && !x.Name.Name.IsGenerated ? x.Name.Span : baseSpan;
                 var prenameSpan = SpanUtils.SpanIntermission(x.Span.StartOrInvalid, nameSpan);
 
-                // final class|interface|trait [NAME] extends ... implements ... { MEMBERS }
-                var previous = ConsumeModifiers(x, x.MemberAttributes, prenameSpan).LastOrDefault();
-                if ((x.MemberAttributes & PhpMemberAttributes.Interface) == 0 && (x.MemberAttributes & PhpMemberAttributes.Trait) == 0)
+                ISourceToken previous;
+
+                //
+                // final class|interface|trait [(call signature)] [NAME] extends ... implements ... { MEMBERS }
+                //
+
+                previous = ConsumeModifiers(x, x.MemberAttributes, prenameSpan).LastOrDefault();
+
+                // interface|trait|class
+                previous = ProcessToken(
+                    (x.MemberAttributes & (PhpMemberAttributes.Trait | PhpMemberAttributes.Interface)).AsToken(@default: Tokens.T_CLASS),
+                    prenameSpan);
+
+                if (signature != null && signature.Parameters.Length != 0)
                 {
-                    previous = ProcessToken(Tokens.T_CLASS, prenameSpan);
-                    if (signature != null && signature.Parameters.Length != 0)
-                    {
-                        VisitCallSignature(signature);
-                    }
+                    VisitCallSignature(signature);
                 }
                 if (x.Name.HasValue && !x.Name.Name.IsGenerated)
                 {
