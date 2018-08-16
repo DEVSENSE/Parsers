@@ -261,6 +261,7 @@ namespace Devsense.PHP.Syntax
                 element is MethodDecl ||
                 element is LambdaFunctionExpr ||
                 element is CatchItem ||
+                element is FieldDeclList ||
                 element is FinallyItem;
         }
 
