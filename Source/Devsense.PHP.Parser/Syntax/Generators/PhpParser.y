@@ -440,17 +440,22 @@ use_type:
 ;
 
 group_use_declaration:
-		namespace_name T_NS_SEPARATOR '{' unprefixed_use_declarations '}'
+		namespace_name T_NS_SEPARATOR '{' unprefixed_use_declarations possible_comma '}'
 			{ $$ = new List<UseBase>() { AddAliases(@$, $1, CombineSpans(@1, @2), $4, false) }; }
-	|	T_NS_SEPARATOR namespace_name T_NS_SEPARATOR '{' unprefixed_use_declarations '}'
+	|	T_NS_SEPARATOR namespace_name T_NS_SEPARATOR '{' unprefixed_use_declarations possible_comma '}'
 			{ $$ = new List<UseBase>() { AddAliases(@$, $2, CombineSpans(@1, @2, @3), $5, true) }; }
 ;
 
 mixed_group_use_declaration:
-		namespace_name T_NS_SEPARATOR '{' inline_use_declarations '}'
+		namespace_name T_NS_SEPARATOR '{' inline_use_declarations possible_comma '}'
 			{ $$ = new List<UseBase>() { AddAliases(@$, $1, CombineSpans(@1, @2), $4, false) }; }
-	|	T_NS_SEPARATOR namespace_name T_NS_SEPARATOR '{' inline_use_declarations '}'
+	|	T_NS_SEPARATOR namespace_name T_NS_SEPARATOR '{' inline_use_declarations possible_comma '}'
 			{ $$ = new List<UseBase>() { AddAliases(@$, $2, CombineSpans(@1, @2, @3), $5, true) }; }
+;
+
+possible_comma:
+		/* empty */
+	|	','
 ;
 
 inline_use_declarations:
@@ -543,7 +548,7 @@ statement:
 	|	T_ECHO echo_expr_list ';'		{ $$ = _astFactory.Echo(@$, $2); }
 	|	T_INLINE_HTML { $$ = _astFactory.InlineHtml(@$, $1); }
 	|	expr ';' { $$ = _astFactory.ExpressionStmt(@$, $1); }
-	|	T_UNSET '(' unset_variables ')' ';' { $$ = _astFactory.Unset(@$, $3); }
+	|	T_UNSET '(' unset_variables possible_comma ')' ';' { $$ = _astFactory.Unset(@$, $3); }
 	|	T_FOREACH '(' expr T_AS foreach_variable ')' enter_scope foreach_statement exit_scope
 			{ $$ = _astFactory.Foreach(@$, $3, null, $5, $8); }
 	|	T_FOREACH '(' expr T_AS foreach_variable T_DOUBLE_ARROW foreach_variable ')' enter_scope foreach_statement exit_scope
@@ -806,7 +811,7 @@ return_type:
 
 argument_list:
 		'(' ')'	{ $$ = new List<ActualParam>(); }
-	|	'(' non_empty_argument_list ')' { $$ = $2; }
+	|	'(' non_empty_argument_list possible_comma ')' { $$ = $2; }
 ;
 
 non_empty_argument_list:
@@ -1436,7 +1441,7 @@ encaps_var_offset:
 
 
 internal_functions_in_yacc:
-		T_ISSET '(' isset_variables ')' { $$ = _astFactory.Isset(@$, $3); }
+		T_ISSET '(' isset_variables possible_comma ')' { $$ = _astFactory.Isset(@$, $3); }
 	|	T_EMPTY '(' expr ')' { $$ = _astFactory.Empty(@$, $3);}
 	|	T_INCLUDE expr
 			{ $$ = _astFactory.Inclusion(@$, isConditional, InclusionTypes.Include, $2); }

@@ -1,0 +1,19 @@
+<?php
+foo(
+    $bar,
+    $baz,
+);
+unset($x,$y,);
+isset($x,$y,);
+<<<TEST>>>
+
+"GlobalCode":
+{
+  "NamingContext":{},
+  "DirectFcnCall":{"Name":"foo","OrigianlName":"foo","FallbackQualifiedName":"",
+    "ActualParam":{"IsUnpack":"False","DirectVarUse":{"VarName":"bar"}},
+    "ActualParam":{"IsUnpack":"False","DirectVarUse":{"VarName":"baz"}}
+  },
+  "UnsetStmt":{"DirectVarUse":{"VarName":"x"},"DirectVarUse":{"VarName":"y"}},
+  "IssetEx":{"DirectVarUse":{"VarName":"x"},"DirectVarUse":{"VarName":"y"}}
+}
