@@ -409,6 +409,15 @@ namespace Devsense.PHP.Syntax
             return Span.FromBounds(validSpans.Min(s => s.Start), validSpans.Max(s => s.End));
         }
 
+        private List<T> AddTrailingComma<T>(List<T> list, bool addComma) where T : class
+        {
+            if (addComma)
+            {
+                list.Add(null);
+            }
+            return list;
+        }
+
         static readonly Dictionary<QualifiedName, PrimitiveTypeRef.PrimitiveType> PHP56PrimitiveTypes = new Dictionary<QualifiedName, PrimitiveTypeRef.PrimitiveType>() {
             { QualifiedName.Array, PrimitiveTypeRef.PrimitiveType.array },
             { QualifiedName.Callable, PrimitiveTypeRef.PrimitiveType.callable },
