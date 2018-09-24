@@ -650,11 +650,13 @@ trait_declaration_statement:
 ;
 
 interface_declaration_statement:
-		T_INTERFACE T_STRING interface_extends_list backup_doc_comment enter_scope '{' class_statement_list '}' exit_scope
+		T_INTERFACE T_STRING {PushClassContext($2, null, PhpMemberAttributes.Interface);} interface_extends_list backup_doc_comment
+		enter_scope '{' class_statement_list '}' exit_scope
 		{ 
 			$$ = _astFactory.Type(@$, CombineSpans(@1, @2, @3), isConditional, PhpMemberAttributes.Interface, 
 				new Name($2), @2, null, null, $3.Select(ConvertToNamedTypeRef), $7, CombineSpans(@6, @8)); 
 			SetDoc($$);
+			PopClassContext();
 		}
 ;
 
