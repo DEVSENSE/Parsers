@@ -653,7 +653,7 @@ interface_declaration_statement:
 		T_INTERFACE T_STRING {PushClassContext($2, null, PhpMemberAttributes.Interface);} interface_extends_list backup_doc_comment
 		enter_scope '{' class_statement_list '}' exit_scope
 		{ 
-			$$ = _astFactory.Type(@$, CombineSpans(@1, @2, @3), isConditional, PhpMemberAttributes.Interface, 
+			$$ = _astFactory.Type(@$, CombineSpans(@1, @2, @3, @4), isConditional, PhpMemberAttributes.Interface, 
 				new Name($2), @2, null, null, $4.Select(ConvertToNamedTypeRef), $8, CombineSpans(@7, @9)); 
 			SetDoc($$);
 			PopClassContext();
