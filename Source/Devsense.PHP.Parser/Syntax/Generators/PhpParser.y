@@ -654,7 +654,7 @@ interface_declaration_statement:
 		enter_scope '{' class_statement_list '}' exit_scope
 		{ 
 			$$ = _astFactory.Type(@$, CombineSpans(@1, @2, @3), isConditional, PhpMemberAttributes.Interface, 
-				new Name($2), @2, null, null, $3.Select(ConvertToNamedTypeRef), $7, CombineSpans(@6, @8)); 
+				new Name($2), @2, null, null, $4.Select(ConvertToNamedTypeRef), $8, CombineSpans(@7, @9)); 
 			SetDoc($$);
 			PopClassContext();
 		}

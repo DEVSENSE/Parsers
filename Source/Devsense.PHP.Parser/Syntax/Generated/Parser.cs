@@ -2320,7 +2320,7 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
       case 180: // interface_declaration_statement -> T_INTERFACE T_STRING @6 interface_extends_list backup_doc_comment enter_scope '{' class_statement_list '}' exit_scope 
 { 
 			yyval.Node = _astFactory.Type(yypos, CombineSpans(value_stack.array[value_stack.top-10].yypos, value_stack.array[value_stack.top-9].yypos, value_stack.array[value_stack.top-8].yypos), isConditional, PhpMemberAttributes.Interface, 
-				new Name(value_stack.array[value_stack.top-9].yyval.String), value_stack.array[value_stack.top-9].yypos, null, null, value_stack.array[value_stack.top-8].yyval.Select(ConvertToNamedTypeRef), value_stack.array[value_stack.top-4].yyval, CombineSpans(value_stack.array[value_stack.top-5].yypos, value_stack.array[value_stack.top-3].yypos)); 
+				new Name(value_stack.array[value_stack.top-9].yyval.String), value_stack.array[value_stack.top-9].yypos, null, null, value_stack.array[value_stack.top-7].yyval.TypeRefList.Select(ConvertToNamedTypeRef), value_stack.array[value_stack.top-3].yyval.NodeList, CombineSpans(value_stack.array[value_stack.top-4].yypos, value_stack.array[value_stack.top-2].yypos)); 
 			SetDoc(yyval.Node);
 			PopClassContext();
 		}
