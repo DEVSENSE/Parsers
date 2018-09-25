@@ -792,8 +792,10 @@ ST_HALT_COMPILER1,ST_HALT_COMPILER2,ST_HALT_COMPILER3>{EOF} {
 	return Tokens.T_START_HEREDOC;
 }
 
-<ST_END_HEREDOC>^{LABEL}(";")?{NEWLINE} {
+<ST_END_HEREDOC>{LABEL} {
 	BEGIN(LexicalStates.ST_IN_SCRIPTING);
+	if (GetTokenString() != _hereDocLabel) 
+		_errors.Error(_tokenPosition, Devsense.PHP.Errors.FatalErrors.SyntaxError, "Incorrect heredoc end label: " + _hereDocLabel);
 	_yyless(LabelTrailLength());
 	_tokenSemantics.Object = _hereDocLabel;
 	return Tokens.T_END_HEREDOC;
@@ -803,8 +805,8 @@ ST_HALT_COMPILER1,ST_HALT_COMPILER2,ST_HALT_COMPILER3>{EOF} {
 	return Tokens.T_ERROR;
 }
 
-<ST_NOWDOC>^{LABEL}(";")?{NEWLINE} {
-    if(!string.IsNullOrEmpty(_hereDocLabel) && GetTokenString().Contains(_hereDocLabel))
+<ST_NOWDOC>^{TABS_AND_SPACES}{LABEL} {
+    if(!string.IsNullOrEmpty(_hereDocLabel) && VerifyEndLabel(GetTokenString()))
 	{
 		BEGIN(LexicalStates.ST_END_HEREDOC); 
 		if( ProcessEndNowDoc(null) ) return (Tokens.T_ENCAPSED_AND_WHITESPACE);
@@ -812,8 +814,8 @@ ST_HALT_COMPILER1,ST_HALT_COMPILER2,ST_HALT_COMPILER3>{EOF} {
     yymore(); break;
 }
 
-<ST_HEREDOC>^{LABEL}(";")?{NEWLINE} {
-    if(!string.IsNullOrEmpty(_hereDocLabel) && GetTokenString().Contains(_hereDocLabel))
+<ST_HEREDOC>^{TABS_AND_SPACES}{LABEL} {
+    if(!string.IsNullOrEmpty(_hereDocLabel) && VerifyEndLabel(GetTokenString()))
 	{
 		BEGIN(LexicalStates.ST_END_HEREDOC); 
 		if( ProcessEndNowDoc(_processDoubleQuotedString) ) return (Tokens.T_ENCAPSED_AND_WHITESPACE);

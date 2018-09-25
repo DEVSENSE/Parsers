@@ -86,7 +86,7 @@ namespace UnitTests
             parentChecker.VisitGlobalCode(ast);
 
             // check every node has a parent
-            var spanChecker = new NameSpanCheck();
+            var spanChecker = new NameSpanCheck(testparts[0]);
             spanChecker.VisitGlobalCode(ast);
         }
 
@@ -111,6 +111,13 @@ namespace UnitTests
         /// </summary>
         sealed class NameSpanCheck : TreeVisitor
         {
+            string _originalText;
+
+            public NameSpanCheck(string text)
+            {
+                _originalText = text;
+            }
+
             List<Span> inclusion = new List<Span>() { new Span(0, int.MaxValue) };
 
             public override void VisitElement(LangElement element)
@@ -127,6 +134,8 @@ namespace UnitTests
                         CheckLambdaDecl((LambdaFunctionExpr)element);
                     else if (element is TypeDecl)
                         CheckTypeDecl((TypeDecl)element);
+                    else if (element is StringLiteral)
+                        CheckStringValue((StringLiteral)element);
 
                     if (element is NamespaceDecl && ((NamespaceDecl)element).IsSimpleSyntax)
                         inclusion.Add(Span.Combine(element.Span, ((NamespaceDecl)element).Body.Span));
@@ -141,6 +150,43 @@ namespace UnitTests
                         Assert.IsNotNull(((NamespaceDecl)element).Body);
                     }
                 }
+            }
+
+            private void CheckStringValue(StringLiteral element)
+            {
+                int start = element.ContainingElement is EncapsedExpression.HereDocExpression ||
+                    element.ContainingElement is EncapsedExpression.NowDocExpression ||
+                    element.ContainingElement is EchoStmt echo && echo.IsHtmlCode ||
+                    element.ContainingElement is ItemUse && _originalText[element.Span.Start] != '\''
+                    && _originalText[element.Span.Start] != '"' || element.ContainingElement is ConcatEx ? 0 : 1;
+                var original = _originalText.Substring(element.Span.Start + start, element.Span.Length - start - start);
+                if (element.ContainingElement is EncapsedExpression.HereDocExpression)
+                {
+                    var matches = Regex.Matches(original, "\\n(\\s*)");
+                    if (matches.Count != 0)
+                    {
+                        string prefix = original;
+                        for (int i = 0; i < matches.Count; i++)
+                        {
+                            if (prefix.StartsWith(matches[i].Groups[1].Value))
+                            {
+                                prefix = matches[i].Groups[1].Value;
+                            }
+                            else if (!matches[i].Groups[1].Value.StartsWith(prefix))
+                            {
+                                prefix = string.Empty;
+                            }
+                        }
+                        original = original.Substring(prefix.Length).Replace("\n" + prefix, "\n");
+                    }
+                }
+                if (start == 1 && _originalText[element.Span.Start] == '\'')
+                    original = original.Replace("\\'", "'").Replace("\\\\", "\\");
+                else
+                    original = original.Replace("\\r", "\r").Replace("\\n", "\n").Replace("\\\\", "\\")
+                        .Replace("\\\"", "\"").Replace("\\t", "\t").Replace("\\v", "\v").Replace("\\\\$", "\\$")
+                        .Replace("\\e", "\u001b").Replace("\\f", "\f").Replace("\\75", "=").Replace("\\`", "`");
+                Assert.AreEqual(original, element.Value);
             }
 
             void CheckFunctionDecl(FunctionDecl func)

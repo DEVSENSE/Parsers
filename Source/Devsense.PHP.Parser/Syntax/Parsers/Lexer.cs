@@ -80,6 +80,7 @@ namespace Devsense.PHP.Syntax
         /// </summary>
         internal string _hereDocLabel = null;
 
+
         /// <summary>
         /// Get actual doc comment.
         /// </summary>
@@ -813,6 +814,64 @@ namespace Devsense.PHP.Syntax
             return (Tokens.T_NUM_STRING);
         }
 
+        bool VerifyEndLabel(string value)
+        {
+            var offset = value.LastIndexOfAny(new[] { ' ', '\t', '\n' }) + 1;
+            for (int i = 0; i < _hereDocLabel.Length; i++)
+            {
+                if (offset + i >= value.Length || value[offset + i] != _hereDocLabel[i])
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        string LocateHeredocPrefix(string text)
+        {
+            string prefix = text;
+            StringBuilder prefixBuild = new StringBuilder();
+            bool start = true;
+            for (int i = 0; i < text.Length; i++)
+            {
+                if (start && (text[i] == ' ' || text[i] == '\t'))
+                {
+                    prefixBuild.Append(text[i]);
+                }
+                else
+                {
+                    if (start = text[i] == '\n')
+                    {
+                        var next = prefixBuild.ToString();
+                        if (prefix.StartsWith(next))
+                        {
+                            prefix = next;
+                        }
+                        else if (!next.StartsWith(prefix))
+                        {
+                            prefix = string.Empty;
+                        }
+                        prefixBuild.Clear();
+                    }
+                }
+            }
+            if (prefixBuild.Length <= prefix.Length)
+            {
+                prefix = prefixBuild.ToString();
+            }
+            else
+            {
+                _errors.Error(_tokenPosition, FatalErrors.SyntaxError, "Incorrect heredoc indentation.");
+            }
+            return prefix;
+        }
+
+        string FixHeredocIndent(string text)
+        {
+            var prefix = LocateHeredocPrefix(text);
+            return text.Substring(prefix.Length).Replace("\n" + prefix, "\n");
+        }
+
         bool ProcessEndNowDoc(ProcessStringDelegate tryprocess)
         {
             BEGIN(LexicalStates.ST_END_HEREDOC);
@@ -825,6 +884,8 @@ namespace Devsense.PHP.Syntax
             string text = tryprocess != null
                 ? (string)ProcessStringText(buffer, start, length, tryprocess)
                 : sourcetext;
+
+            text = FixHeredocIndent(text);
 
             // move back at the end of the heredoc label - yyless does not work properly (requires additional condition for the optional ';')
             lookahead_index = token_end = lookahead_index - _hereDocLabel.Length - trail;
