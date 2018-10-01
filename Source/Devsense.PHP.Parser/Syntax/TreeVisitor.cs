@@ -693,9 +693,10 @@ namespace Devsense.PHP.Syntax
         /// <param name="x"></param>
         virtual public void VisitArrayEx(ArrayEx x)
         {
-            for (int i = 0; i < x.Items.Length; i++)
+            var items = x.Items;
+            for (int i = 0; i < items.Length; i++)
             {
-                VisitArrayItem(x.Items[i]);
+                VisitArrayItem(items[i]);
             }
         }
 
@@ -816,9 +817,10 @@ namespace Devsense.PHP.Syntax
         /// <param name="x"></param>
         virtual public void VisitListEx(ArrayEx x)
         {
-            for (int i = 0; i < x.Items.Length; i++)
+            var items = x.Items;
+            for (int i = 0; i < items.Length; i++)
             {
-                VisitArrayItem(x.Items[i]);
+                VisitArrayItem(items[i]);
             }
         }
 
