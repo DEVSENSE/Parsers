@@ -14,20 +14,20 @@ namespace Devsense.PHP.Syntax.Visitor
     #region Dummy Nodes
 
     /// <summary>
-    /// Dummy AST node representing a function header.
+    /// Dummy AST node representing a function or type header.
     /// </summary>
-    internal sealed class DummyRoutineHeader : AstNode
+    internal sealed class DummyDeclHeader : AstNode
     {
-        public DummyRoutineHeader(AstNode decl, Span span) : base()
+        public DummyDeclHeader(AstNode decl, Span span) : base()
         {
-            this.RoutineDecl = decl ?? throw new ArgumentNullException(nameof(decl));
+            this.Decl = decl ?? throw new ArgumentNullException(nameof(decl));
             this.Span = span;
         }
 
         /// <summary>
         /// Original function or method declaration. (either <see cref="MethodDecl"/> or <see cref="FunctionDecl"/> or <see cref="LambdaFunctionExpr"/>).
         /// </summary>
-        public AstNode RoutineDecl { get; private set; }
+        public AstNode Decl { get; private set; }
 
         /// <summary>
         /// Optional span of the header.
@@ -159,9 +159,9 @@ namespace Devsense.PHP.Syntax.Visitor
         /// <summary>
         /// Gets value indicating the context is in a routine header (either function, method, lambda).
         /// </summary>
-        public static bool IsInRoutineHeader(this ITreeContext context, out Span span)
+        public static bool IsInDeclHeader(this ITreeContext context, out Span span)
         {
-            var header = Get<DummyRoutineHeader>(context);
+            var header = Get<DummyDeclHeader>(context);
             if (header != null)
             {
                 span = header.Span;
@@ -200,14 +200,14 @@ namespace Devsense.PHP.Syntax.Visitor
         /// </summary>
         public static int Count(this ITreeContext context, Func<AstNode, bool> predicate) => context.Count(predicate);
 
-        ///// <summary>
-        ///// Counts scopes that causes an indentation by default.
-        ///// Gets raugh level of indentation at current context state (blocks, type declaration).
-        ///// </summary>
-        //public static int CountIndent(this ITreeContext context) => Count(context, s_indentnodes);
+        /// <summary>
+        /// Counts scopes that causes an indentation by default.
+        /// Gets raugh level of indentation at current context state (blocks, type declaration).
+        /// </summary>
+        public static int CountIndent(this ITreeContext context) => Count(context, s_indentnodes);
 
-        //readonly static Func<AstNode, bool> s_indentnodes = new Func<AstNode, bool>( // sample indent function, should be replaced by actual implementation
-        //    node => (node is DummyInsideBlockStmt db && !(db.OriginalBlock is SimpleBlockStmt)) || node is TypeDecl);
+        readonly static Func<AstNode, bool> s_indentnodes = new Func<AstNode, bool>( // sample indent function, should be replaced by actual implementation
+            node => (node is DummyInsideBlockStmt db && !(db.OriginalBlock is SimpleBlockStmt)) || node is TypeDecl);
     }
 
     #endregion

@@ -707,7 +707,7 @@ namespace Devsense.PHP.Syntax
                         returnTypeOpt != null ? returnTypeOpt.Span : (useParams != null && useParams.Count != 0) ? useParams.Last().Span : Span.Invalid);
                 }
 
-                using (new ScopeHelper(this, new DummyRoutineHeader(element, headerSpan)))
+                using (new ScopeHelper(this, new DummyDeclHeader(element, headerSpan)))
                 {
                     // function &NAME SIGNATURE : RETURN_TYPE
                     var prenameSpan = SpanUtils.SpanIntermission(element.Span.StartOrInvalid, nameOpt.HasValue ? nameOpt.Span : signature.Span);
@@ -1504,17 +1504,16 @@ namespace Devsense.PHP.Syntax
 
         private void VisitTypeDecl(TypeDecl x, CallSignature signature)
         {
-            using (new ScopeHelper(this, x))
+            var lastSpan = SpanUtils.SafeSpan(x.BodySpan.End - 1, 1);
+            var bodySpan = x.Members.Count != 0 ? x.Members.First().Span : lastSpan;
+            var implementsSpan = x.ImplementsList != null && x.ImplementsList.Length != 0 ? x.ImplementsList.First().Span : bodySpan;
+            var baseSpan = x.BaseClass != null ? x.BaseClass.Span : implementsSpan;
+            var nameSpan = x.Name.HasValue && !x.Name.Name.IsGenerated ? x.Name.Span : baseSpan;
+            var prenameSpan = SpanUtils.SpanIntermission(x.Span.StartOrInvalid, nameSpan);
+            ISourceToken previous;
+
+            using (new ScopeHelper(this, new DummyDeclHeader(x, x.HeadingSpan)))
             {
-                var lastSpan = SpanUtils.SafeSpan(x.BodySpan.End - 1, 1);
-                var bodySpan = x.Members.Count != 0 ? x.Members.First().Span : lastSpan;
-                var implementsSpan = x.ImplementsList != null && x.ImplementsList.Length != 0 ? x.ImplementsList.First().Span : bodySpan;
-                var baseSpan = x.BaseClass != null ? x.BaseClass.Span : implementsSpan;
-                var nameSpan = x.Name.HasValue && !x.Name.Name.IsGenerated ? x.Name.Span : baseSpan;
-                var prenameSpan = SpanUtils.SpanIntermission(x.Span.StartOrInvalid, nameSpan);
-
-                ISourceToken previous;
-
                 //
                 // final class|interface|trait [(call signature)] [NAME] extends ... implements ... { MEMBERS }
                 //
@@ -1552,14 +1551,14 @@ namespace Devsense.PHP.Syntax
 
                     VisitElementList(x.ImplementsList, Tokens.T_COMMA);
                 }
-
-                ProcessToken(Tokens.T_LBRACE, SpanUtils.SpanIntermission(previous.Span, bodySpan));
-                using (new ScopeHelper(this, new DummyInsideBlockStmt(x)))
-                {
-                    VisitList(x.Members);
-                }
-                ConsumeToken(Tokens.T_RBRACE, lastSpan);
             }
+
+            ProcessToken(Tokens.T_LBRACE, SpanUtils.SpanIntermission(previous.Span, bodySpan));
+            using (new ScopeHelper(this, new DummyInsideBlockStmt(x)))
+            {
+                VisitList(x.Members);
+            }
+            ConsumeToken(Tokens.T_RBRACE, lastSpan);
         }
 
         public override void VisitTypeOfEx(TypeOfEx x)
