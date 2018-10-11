@@ -16,7 +16,7 @@ namespace Devsense.PHP.Syntax.Visitor
     /// <summary>
     /// Dummy AST node representing a function or type header.
     /// </summary>
-    internal sealed class DummyDeclHeader : AstNode
+    internal abstract class DummyDeclHeader : AstNode
     {
         public DummyDeclHeader(AstNode decl, Span span) : base()
         {
@@ -33,6 +33,25 @@ namespace Devsense.PHP.Syntax.Visitor
         /// Optional span of the header.
         /// </summary>
         public Span Span { get; private set; }
+    }
+
+    internal sealed class DummyFunctionDeclHeader : DummyDeclHeader
+    {
+        public DummyFunctionDeclHeader(AstNode decl, Span span) : base(decl, span)
+        {
+        }
+    }
+    internal sealed class DummyTypeDeclHeader : DummyDeclHeader
+    {
+        public DummyTypeDeclHeader(AstNode decl, Span span) : base(decl, span)
+        {
+        }
+    }
+    internal sealed class DummyMethodDeclHeader : DummyDeclHeader
+    {
+        public DummyMethodDeclHeader(AstNode decl, Span span) : base(decl, span)
+        {
+        }
     }
 
     /// <summary>
@@ -157,11 +176,29 @@ namespace Devsense.PHP.Syntax.Visitor
         public static bool IsIn<T>(this ITreeContext context, Func<T, bool> predicate) where T : AstNode => Get<T>(context, predicate) != null;
 
         /// <summary>
-        /// Gets value indicating the context is in a routine header (either function, method, lambda).
+        /// Gets value indicating the context is in a function header (either function, method, lambda).
         /// </summary>
-        public static bool IsInDeclHeader(this ITreeContext context, out Span span)
+        /// 
+        public static bool IsInFunctionDeclHeader<T>(this ITreeContext context, out Span span) =>
+            IsInDeclHeader<DummyFunctionDeclHeader>(context, out span);
+
+        /// <summary>
+        /// Gets value indicating the context is in a type header (either function, method, lambda).
+        /// </summary>
+        /// 
+        public static bool IsInTypeDeclHeader<T>(this ITreeContext context, out Span span) =>
+            IsInDeclHeader<DummyTypeDeclHeader>(context, out span);
+
+        /// <summary>
+        /// Gets value indicating the context is in a method header (either function, method, lambda).
+        /// </summary>
+        /// 
+        public static bool IsInMethodDeclHeader<T>(this ITreeContext context, out Span span) =>
+            IsInDeclHeader<DummyMethodDeclHeader>(context, out span);
+
+        internal static bool IsInDeclHeader<T>(this ITreeContext context, out Span span) where T : DummyDeclHeader
         {
-            var header = Get<DummyDeclHeader>(context);
+            var header = Get<T>(context);
             if (header != null)
             {
                 span = header.Span;
@@ -207,7 +244,7 @@ namespace Devsense.PHP.Syntax.Visitor
         public static int CountIndent(this ITreeContext context) => Count(context, s_indentnodes);
 
         readonly static Func<AstNode, bool> s_indentnodes = new Func<AstNode, bool>( // sample indent function, should be replaced by actual implementation
-            node => (node is DummyInsideBlockStmt db && !(db.OriginalBlock is SimpleBlockStmt)) || node is TypeDecl);
+            node => (node is DummyInsideBlockStmt db && !(db.OriginalBlock is SimpleBlockStmt)));
     }
 
     #endregion

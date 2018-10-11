@@ -695,66 +695,65 @@ namespace Devsense.PHP.Syntax
 
         protected virtual void VisitRoutineDecl(LangElement element, Span headerSpan, Signature signature, Statement body, NameRef nameOpt = default(NameRef), TypeRef returnTypeOpt = null, PhpMemberAttributes modifiers = PhpMemberAttributes.None, IList<FormalParam> useParams = null)
         {
-            using (new ScopeHelper(this, element))
+            if (!headerSpan.IsValid)
             {
-                if (!headerSpan.IsValid)
+                // guess the header span
+                headerSpan =
+                    SpanUtils.CombineValid(
+                    element.Span.IsValid ? new Span(element.Span.Start, 0) : Span.Invalid,
+                    signature.Span,
+                    returnTypeOpt != null ? returnTypeOpt.Span : (useParams != null && useParams.Count != 0) ? useParams.Last().Span : Span.Invalid);
+            }
+
+            using (new ScopeHelper(this, element is FunctionDecl ?
+                (DummyDeclHeader)new DummyFunctionDeclHeader(element, headerSpan) :
+                (DummyDeclHeader)new DummyMethodDeclHeader(element, headerSpan)))
+            {
+                // function &NAME SIGNATURE : RETURN_TYPE
+                var prenameSpan = SpanUtils.SpanIntermission(element.Span.StartOrInvalid, nameOpt.HasValue ? nameOpt.Span : signature.Span);
+                ConsumeModifiers(element, modifiers, prenameSpan);
+                ProcessToken(Tokens.T_FUNCTION, prenameSpan);
+                if (signature.AliasReturn)
                 {
-                    // guess the header span
-                    headerSpan =
-                        SpanUtils.CombineValid(
-                        element.Span.IsValid ? new Span(element.Span.Start, 0) : Span.Invalid,
+                    ProcessToken(Tokens.T_AMP, prenameSpan); // TODO: correct span!
+                }
+                if (nameOpt.HasValue)
+                {
+                    ConsumeNameToken(nameOpt.Name.Value, nameOpt.Span);
+                }
+
+                VisitSignature(signature);
+
+                if (useParams != null && useParams.Any())
+                {
+                    var useSpan = SpanUtils.SpanIntermission(
                         signature.Span,
-                        returnTypeOpt != null ? returnTypeOpt.Span : (useParams != null && useParams.Count != 0) ? useParams.Last().Span : Span.Invalid);
+                        returnTypeOpt != null ? returnTypeOpt.Span.StartOrInvalid : (body != null ? body.Span.StartOrInvalid : element.Span.End));
+
+                    ProcessToken(Tokens.T_USE, useSpan);
+                    ProcessToken(Tokens.T_LPAREN, useSpan);
+                    VisitElementList(useParams, Tokens.T_COMMA);
+                    ProcessToken(Tokens.T_RPAREN, useParams.Count > 0
+                        ? SpanUtils.SpanIntermission(useParams.Last().Span, useSpan.End)
+                        : useSpan);
                 }
 
-                using (new ScopeHelper(this, new DummyDeclHeader(element, headerSpan)))
+                if (returnTypeOpt != null)
                 {
-                    // function &NAME SIGNATURE : RETURN_TYPE
-                    var prenameSpan = SpanUtils.SpanIntermission(element.Span.StartOrInvalid, nameOpt.HasValue ? nameOpt.Span : signature.Span);
-                    ConsumeModifiers(element, modifiers, prenameSpan);
-                    ProcessToken(Tokens.T_FUNCTION, prenameSpan);
-                    if (signature.AliasReturn)
-                    {
-                        ProcessToken(Tokens.T_AMP, prenameSpan); // TODO: correct span!
-                    }
-                    if (nameOpt.HasValue)
-                    {
-                        ConsumeNameToken(nameOpt.Name.Value, nameOpt.Span);
-                    }
-
-                    VisitSignature(signature);
-
-                    if (useParams != null && useParams.Any())
-                    {
-                        var useSpan = SpanUtils.SpanIntermission(
-                            signature.Span,
-                            returnTypeOpt != null ? returnTypeOpt.Span.StartOrInvalid : (body != null ? body.Span.StartOrInvalid : element.Span.End));
-
-                        ProcessToken(Tokens.T_USE, useSpan);
-                        ProcessToken(Tokens.T_LPAREN, useSpan);
-                        VisitElementList(useParams, Tokens.T_COMMA);
-                        ProcessToken(Tokens.T_RPAREN, useParams.Count > 0
-                            ? SpanUtils.SpanIntermission(useParams.Last().Span, useSpan.End)
-                            : useSpan);
-                    }
-
-                    if (returnTypeOpt != null)
-                    {
-                        ProcessToken(Tokens.T_COLON, SpanUtils.SpanIntermission(signature.Span,
-                            body != null ? body.Span.StartOrInvalid : element.Span.End));
-                        VisitElement(returnTypeOpt);
-                    }
+                    ProcessToken(Tokens.T_COLON, SpanUtils.SpanIntermission(signature.Span,
+                        body != null ? body.Span.StartOrInvalid : element.Span.End));
+                    VisitElement(returnTypeOpt);
                 }
+            }
 
-                // BODY or ;
-                if (body != null)
-                {
-                    VisitElement(body);
-                }
-                else
-                {
-                    ConsumeToken(Tokens.T_SEMI, SpanUtils.SafeSpan(element.Span.End - 1, 1));
-                }
+            // BODY or ;
+            if (body != null)
+            {
+                VisitElement(body);
+            }
+            else
+            {
+                ConsumeToken(Tokens.T_SEMI, SpanUtils.SafeSpan(element.Span.End - 1, 1));
             }
         }
 
@@ -1512,7 +1511,7 @@ namespace Devsense.PHP.Syntax
             var prenameSpan = SpanUtils.SpanIntermission(x.Span.StartOrInvalid, nameSpan);
             ISourceToken previous;
 
-            using (new ScopeHelper(this, new DummyDeclHeader(x, x.HeadingSpan)))
+            using (new ScopeHelper(this, new DummyTypeDeclHeader(x, x.HeadingSpan)))
             {
                 //
                 // final class|interface|trait [(call signature)] [NAME] extends ... implements ... { MEMBERS }
