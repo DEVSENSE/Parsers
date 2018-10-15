@@ -303,9 +303,16 @@ namespace Devsense.PHP.Syntax
 
         void VisitBody(Statement body)
         {
-            using (new ScopeHelper(this, new DummyInsideBlockStmt(body)))
+            if (body is IBlockStatement)
             {
                 VisitElement(body);
+            }
+            else
+            {
+                using (new ScopeHelper(this, new DummyInsideBlockStmt(body)))
+                {
+                    VisitElement(body);
+                }
             }
         }
 

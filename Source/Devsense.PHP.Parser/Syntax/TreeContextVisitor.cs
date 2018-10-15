@@ -179,21 +179,21 @@ namespace Devsense.PHP.Syntax.Visitor
         /// Gets value indicating the context is in a function header (either function, method, lambda).
         /// </summary>
         /// 
-        public static bool IsInFunctionDeclHeader<T>(this ITreeContext context, out Span span) =>
+        public static bool IsInFunctionDeclHeader(this ITreeContext context, out Span span) =>
             IsInDeclHeader<DummyFunctionDeclHeader>(context, out span);
 
         /// <summary>
         /// Gets value indicating the context is in a type header (either function, method, lambda).
         /// </summary>
         /// 
-        public static bool IsInTypeDeclHeader<T>(this ITreeContext context, out Span span) =>
+        public static bool IsInTypeDeclHeader(this ITreeContext context, out Span span) =>
             IsInDeclHeader<DummyTypeDeclHeader>(context, out span);
 
         /// <summary>
         /// Gets value indicating the context is in a method header (either function, method, lambda).
         /// </summary>
         /// 
-        public static bool IsInMethodDeclHeader<T>(this ITreeContext context, out Span span) =>
+        public static bool IsInMethodDeclHeader(this ITreeContext context, out Span span) =>
             IsInDeclHeader<DummyMethodDeclHeader>(context, out span);
 
         internal static bool IsInDeclHeader<T>(this ITreeContext context, out Span span) where T : DummyDeclHeader
