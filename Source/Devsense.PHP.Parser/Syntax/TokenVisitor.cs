@@ -301,6 +301,14 @@ namespace Devsense.PHP.Syntax
             }
         }
 
+        void VisitBody(Statement body)
+        {
+            using (new ScopeHelper(this, new DummyInsideBlockStmt(body)))
+            {
+                VisitElement(body);
+            }
+        }
+
         public override void VisitAssertEx(AssertEx x)
         {
             ConsumeToken(Tokens.T_STRING, "assert", SpanUtils.SafeSpan(x.Span.StartOrInvalid, 6));
@@ -393,7 +401,7 @@ namespace Devsense.PHP.Syntax
                 VisitElement(x.Variable);
                 ProcessToken(Tokens.T_RPAREN, SpanUtils.SpanIntermission(x.Variable.Span, x.Body.Span));
 
-                VisitElement(x.Body);
+                VisitBody(x.Body);
             }
         }
 
@@ -608,29 +616,26 @@ namespace Devsense.PHP.Syntax
             using (new ScopeHelper(this, x))
             {
                 ConsumeToken(Tokens.T_FINALLY, SpanUtils.SafeSpan(x.Span.StartOrInvalid, 7));
-                VisitElement(x.Body);
+                VisitBody(x.Body);
             }
         }
 
         public override void VisitForeachStmt(ForeachStmt x)
         {
-            using (new ScopeHelper(this, x))
+            var foreachSpan = SpanUtils.SafeSpan(x.Span.StartOrInvalid, 7);
+            ConsumeToken(Tokens.T_FOREACH, foreachSpan);
+            ProcessToken(Tokens.T_LPAREN, SpanUtils.SpanIntermission(foreachSpan, x.Enumeree.Span));
+            VisitElement(x.Enumeree);
+            ProcessToken(Tokens.T_AS, SpanUtils.SpanIntermission(x.Enumeree.Span,
+                x.KeyVariable != null ? x.KeyVariable.Span : x.ValueVariable.Span));
+            if (x.KeyVariable != null)
             {
-                var foreachSpan = SpanUtils.SafeSpan(x.Span.StartOrInvalid, 7);
-                ConsumeToken(Tokens.T_FOREACH, foreachSpan);
-                ProcessToken(Tokens.T_LPAREN, SpanUtils.SpanIntermission(foreachSpan, x.Enumeree.Span));
-                VisitElement(x.Enumeree);
-                ProcessToken(Tokens.T_AS, SpanUtils.SpanIntermission(x.Enumeree.Span,
-                    x.KeyVariable != null ? x.KeyVariable.Span : x.ValueVariable.Span));
-                if (x.KeyVariable != null)
-                {
-                    VisitForeachVar(x.KeyVariable);
-                    ProcessToken(Tokens.T_DOUBLE_ARROW, SpanUtils.SpanIntermission(x.KeyVariable.Span, x.ValueVariable.Span));
-                }
-                VisitForeachVar(x.ValueVariable);
-                ProcessToken(Tokens.T_RPAREN, SpanUtils.SpanIntermission(x.ValueVariable.Span, x.Body.Span));
-                VisitElement(x.Body);
+                VisitForeachVar(x.KeyVariable);
+                ProcessToken(Tokens.T_DOUBLE_ARROW, SpanUtils.SpanIntermission(x.KeyVariable.Span, x.ValueVariable.Span));
             }
+            VisitForeachVar(x.ValueVariable);
+            ProcessToken(Tokens.T_RPAREN, SpanUtils.SpanIntermission(x.ValueVariable.Span, x.Body.Span));
+            VisitBody(x.Body);
         }
 
         public override void VisitForeachVar(ForeachVar x)
@@ -671,21 +676,18 @@ namespace Devsense.PHP.Syntax
 
         public override void VisitForStmt(ForStmt x)
         {
-            using (new ScopeHelper(this, x))
-            {
-                var foreachSpan = SpanUtils.SafeSpan(x.Span.StartOrInvalid, 3);
-                ConsumeToken(Tokens.T_FOR, foreachSpan);
-                ProcessToken(Tokens.T_LPAREN, SpanUtils.SafeSpan(x.ConditionSpan.StartOrInvalid, 1));
+            var foreachSpan = SpanUtils.SafeSpan(x.Span.StartOrInvalid, 3);
+            ConsumeToken(Tokens.T_FOR, foreachSpan);
+            ProcessToken(Tokens.T_LPAREN, SpanUtils.SafeSpan(x.ConditionSpan.StartOrInvalid, 1));
 
-                VisitElementList(x.InitExList, Tokens.T_COMMA);
-                var previous = ProcessToken(Tokens.T_SEMI, x.ConditionSpan);
-                VisitElementList(x.CondExList, Tokens.T_COMMA);
-                ProcessToken(Tokens.T_SEMI, SpanUtils.SpanIntermission(previous.Span, x.ConditionSpan.End));
-                VisitElementList(x.ActionExList, Tokens.T_COMMA);
+            VisitElementList(x.InitExList, Tokens.T_COMMA);
+            var previous = ProcessToken(Tokens.T_SEMI, x.ConditionSpan);
+            VisitElementList(x.CondExList, Tokens.T_COMMA);
+            ProcessToken(Tokens.T_SEMI, SpanUtils.SpanIntermission(previous.Span, x.ConditionSpan.End));
+            VisitElementList(x.ActionExList, Tokens.T_COMMA);
 
-                ProcessToken(Tokens.T_RPAREN, SpanUtils.SafeSpan(x.ConditionSpan.End - 1, 1));
-                VisitElement(x.Body);
-            }
+            ProcessToken(Tokens.T_RPAREN, SpanUtils.SafeSpan(x.ConditionSpan.End - 1, 1));
+            VisitBody(x.Body);
         }
 
         public sealed override void VisitFunctionCall(FunctionCall x)
@@ -817,33 +819,30 @@ namespace Devsense.PHP.Syntax
             for (int i = 0; i < x.Conditions.Count; i++)
             {
                 var cond = x.Conditions[i];
-                using (new ScopeHelper(this, cond))
+                if (i == 0)
                 {
-                    if (i == 0)
-                    {
-                        ConsumeToken(Tokens.T_IF, SpanUtils.SafeSpan(cond.Span.StartOrInvalid, 2));
-                    }
-                    else if (!(x.Conditions[i - 1].Statement is ColonBlockStmt))
-                    {
-                        if (cond.Condition != null)
-                        {
-                            ConsumeToken(Tokens.T_ELSEIF, SpanUtils.SafeSpan(cond.Span.StartOrInvalid, 6));
-                        }
-                        else
-                        {
-                            ConsumeToken(Tokens.T_ELSE, SpanUtils.SafeSpan(cond.Span.StartOrInvalid, 4));
-                        }
-                    }
-
+                    ConsumeToken(Tokens.T_IF, SpanUtils.SafeSpan(cond.Span.StartOrInvalid, 2));
+                }
+                else if (!(x.Conditions[i - 1].Statement is ColonBlockStmt))
+                {
                     if (cond.Condition != null)
                     {
-                        ProcessToken(Tokens.T_LPAREN, SpanUtils.SpanIntermission(cond.Span.StartOrInvalid, cond.Condition.Span));
-                        VisitElement(cond.Condition);
-                        ProcessToken(Tokens.T_RPAREN, SpanUtils.SpanIntermission(cond.Condition.Span, cond.Statement.Span));
+                        ConsumeToken(Tokens.T_ELSEIF, SpanUtils.SafeSpan(cond.Span.StartOrInvalid, 6));
                     }
-
-                    VisitElement(cond.Statement);
+                    else
+                    {
+                        ConsumeToken(Tokens.T_ELSE, SpanUtils.SafeSpan(cond.Span.StartOrInvalid, 4));
+                    }
                 }
+
+                if (cond.Condition != null)
+                {
+                    ProcessToken(Tokens.T_LPAREN, SpanUtils.SpanIntermission(cond.Span.StartOrInvalid, cond.Condition.Span));
+                    VisitElement(cond.Condition);
+                    ProcessToken(Tokens.T_RPAREN, SpanUtils.SpanIntermission(cond.Condition.Span, cond.Statement.Span));
+                }
+
+                VisitBody(cond.Statement);
             }
         }
 
@@ -1326,28 +1325,22 @@ namespace Devsense.PHP.Syntax
 
         public override void VisitCaseItem(CaseItem x)
         {
-            using (new ScopeHelper(this, x))
-            {
-                ConsumeToken(Tokens.T_CASE, SpanUtils.SafeSpan(x.Span.StartOrInvalid, 4));
-                VisitElement(x.CaseVal);
-                var colonSpan = SpanUtils.SpanIntermission(x.CaseVal.Span, x.Statements == null || x.Statements.Length == 0 ?
-                    x.Span.End : x.Statements[0].Span.StartOrInvalid);
-                ProcessToken(Tokens.T_COLON, colonSpan);
-                VisitSwitchItem(x);
-            }
+            ConsumeToken(Tokens.T_CASE, SpanUtils.SafeSpan(x.Span.StartOrInvalid, 4));
+            VisitElement(x.CaseVal);
+            var colonSpan = SpanUtils.SpanIntermission(x.CaseVal.Span, x.Statements == null || x.Statements.Length == 0 ?
+                x.Span.End : x.Statements[0].Span.StartOrInvalid);
+            ProcessToken(Tokens.T_COLON, colonSpan);
+            VisitSwitchItem(x);
         }
 
         public override void VisitDefaultItem(DefaultItem x)
         {
-            using (new ScopeHelper(this, x))
-            {
-                var labelSpan = SpanUtils.SafeSpan(x.Span.StartOrInvalid, 7);
-                ConsumeToken(Tokens.T_DEFAULT, labelSpan);
-                var colonSpan = SpanUtils.SpanIntermission(labelSpan, x.Statements == null || x.Statements.Length == 0 ?
-                    x.Span.End : x.Statements[0].Span.StartOrInvalid);
-                ProcessToken(Tokens.T_COLON, colonSpan);
-                VisitSwitchItem(x);
-            }
+            var labelSpan = SpanUtils.SafeSpan(x.Span.StartOrInvalid, 7);
+            ConsumeToken(Tokens.T_DEFAULT, labelSpan);
+            var colonSpan = SpanUtils.SpanIntermission(labelSpan, x.Statements == null || x.Statements.Length == 0 ?
+                x.Span.End : x.Statements[0].Span.StartOrInvalid);
+            ProcessToken(Tokens.T_COLON, colonSpan);
+            VisitSwitchItem(x);
         }
 
         public override void VisitSwitchStmt(SwitchStmt x)
@@ -1452,31 +1445,25 @@ namespace Devsense.PHP.Syntax
 
         public override void VisitTraitAdaptationBlock(TraitAdaptationBlock x)
         {
-            using (new ScopeHelper(this, x))
+            ConsumeToken(Tokens.T_LBRACE, SpanUtils.SafeSpan(x.Span.StartOrInvalid, 1));
+            using (new ScopeHelper(this, new DummyInsideBlockStmt(x)))
             {
-                ConsumeToken(Tokens.T_LBRACE, SpanUtils.SafeSpan(x.Span.StartOrInvalid, 1));
-                using (new ScopeHelper(this, new DummyInsideBlockStmt(x)))
-                {
-                    VisitElementList(x.Adaptations);
-                }
-                ConsumeToken(Tokens.T_RBRACE, SpanUtils.SafeSpan(x.Span.End - 1, 1));
+                VisitElementList(x.Adaptations);
             }
+            ConsumeToken(Tokens.T_RBRACE, SpanUtils.SafeSpan(x.Span.End - 1, 1));
         }
 
         public override void VisitTraitsUse(TraitsUse x)
         {
-            using (new ScopeHelper(this, x))
+            ConsumeToken(Tokens.T_USE, SpanUtils.SafeSpan(x.Span.StartOrInvalid, 3));
+            VisitElementList(x.TraitsList, Tokens.T_COMMA);
+            if (x.TraitAdaptationBlock != null)
             {
-                ConsumeToken(Tokens.T_USE, SpanUtils.SafeSpan(x.Span.StartOrInvalid, 3));
-                VisitElementList(x.TraitsList, Tokens.T_COMMA);
-                if (x.TraitAdaptationBlock != null)
-                {
-                    VisitElement(x.TraitAdaptationBlock);
-                }
-                else
-                {
-                    ConsumeToken(Tokens.T_SEMI, SpanUtils.SafeSpan(x.Span.End - 1, 1));
-                }
+                VisitElement(x.TraitAdaptationBlock);
+            }
+            else
+            {
+                ConsumeToken(Tokens.T_SEMI, SpanUtils.SafeSpan(x.Span.End - 1, 1));
             }
         }
 
@@ -1487,13 +1474,10 @@ namespace Devsense.PHP.Syntax
 
         public override void VisitTryStmt(TryStmt x)
         {
-            using (new ScopeHelper(this, x))
-            {
-                ConsumeToken(Tokens.T_TRY, SpanUtils.SafeSpan(x.Span.StartOrInvalid, 3));
-                VisitElement(x.Body);
-                VisitList(x.Catches);
-                VisitElement(x.FinallyItem);
-            }
+            ConsumeToken(Tokens.T_TRY, SpanUtils.SafeSpan(x.Span.StartOrInvalid, 3));
+            VisitElement(x.Body);
+            VisitList(x.Catches);
+            VisitElement(x.FinallyItem);
         }
 
         public override void VisitTypeDecl(TypeDecl x)
@@ -1660,27 +1644,24 @@ namespace Devsense.PHP.Syntax
 
         public override void VisitWhileStmt(WhileStmt x)
         {
-            using (new ScopeHelper(this, x))
+            if (x.LoopType == WhileStmt.Type.While)
             {
-                if (x.LoopType == WhileStmt.Type.While)
-                {
-                    ConsumeToken(Tokens.T_WHILE, SpanUtils.SafeSpan(x.Span.StartOrInvalid, 5));
-                    ProcessToken(Tokens.T_LPAREN, SpanUtils.SpanIntermission(x.Span.Start, x.CondExpr.Span));
-                    VisitElement(x.CondExpr);
-                    ProcessToken(Tokens.T_RPAREN, SpanUtils.SpanIntermission(x.CondExpr.Span, x.Body.Span));
-                    VisitElement(x.Body);
-                }
-                else
-                {
-                    ConsumeToken(Tokens.T_DO, SpanUtils.SafeSpan(x.Span.StartOrInvalid, 2));
-                    VisitElement(x.Body);
-                    Span whileSpan = SpanUtils.SpanIntermission(x.Body.Span, x.CondExpr.Span);
-                    ProcessToken(Tokens.T_WHILE, whileSpan);
-                    ProcessToken(Tokens.T_LPAREN, whileSpan);
-                    VisitElement(x.CondExpr);
-                    ProcessToken(Tokens.T_RPAREN, SpanUtils.SpanIntermission(x.CondExpr.Span, x.Span.End));
-                    ConsumeToken(Tokens.T_SEMI, SpanUtils.SafeSpan(x.Span.End - 1, 1));
-                }
+                ConsumeToken(Tokens.T_WHILE, SpanUtils.SafeSpan(x.Span.StartOrInvalid, 5));
+                ProcessToken(Tokens.T_LPAREN, SpanUtils.SpanIntermission(x.Span.Start, x.CondExpr.Span));
+                VisitElement(x.CondExpr);
+                ProcessToken(Tokens.T_RPAREN, SpanUtils.SpanIntermission(x.CondExpr.Span, x.Body.Span));
+                VisitBody(x.Body);
+            }
+            else
+            {
+                ConsumeToken(Tokens.T_DO, SpanUtils.SafeSpan(x.Span.StartOrInvalid, 2));
+                VisitBody(x.Body);
+                Span whileSpan = SpanUtils.SpanIntermission(x.Body.Span, x.CondExpr.Span);
+                ProcessToken(Tokens.T_WHILE, whileSpan);
+                ProcessToken(Tokens.T_LPAREN, whileSpan);
+                VisitElement(x.CondExpr);
+                ProcessToken(Tokens.T_RPAREN, SpanUtils.SpanIntermission(x.CondExpr.Span, x.Span.End));
+                ConsumeToken(Tokens.T_SEMI, SpanUtils.SafeSpan(x.Span.End - 1, 1));
             }
         }
 
