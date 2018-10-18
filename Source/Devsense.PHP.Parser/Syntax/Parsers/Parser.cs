@@ -118,18 +118,21 @@ namespace Devsense.PHP.Syntax
                 throw new ArgumentNullException(nameof(lexer));
 
             // initialization:
+
             _languageFeatures = language;
+            _lexer = new CompliantLexer(lexer);
+            _astFactory = astFactory ?? throw new ArgumentNullException(nameof(astFactory));
+            _errors = errors ?? new EmptyErrorSink<Span>();
+
             if (errorRecovery != null)
             {
-                _lexer = new BufferedLexer(new CompliantLexer(lexer));
+                _lexer = new BufferedLexer(_lexer);
+                _errorRecovery = errorRecovery;
             }
             else
             {
-                _lexer = new CompliantLexer(lexer);
+                _errorRecovery = EmptyErrorRecovery.Instance;
             }
-            _astFactory = astFactory ?? throw new ArgumentNullException(nameof(astFactory));
-            _errors = errors ?? new EmptyErrorSink<Span>();
-            _errorRecovery = errorRecovery ?? new EmptyErrorRecovery();
             //InitializeFields();
 
             _currentScope = new Scope(0);

@@ -29,7 +29,7 @@ namespace Devsense.PHP.Syntax
     /// <summary>
     /// PHP lexer generated according to the PhpLexer.l grammar.
     /// </summary>
-    public partial class Lexer : ITokenProvider<SemanticValueType, Span>
+    public partial class Lexer : ITokenProvider<SemanticValueType, Span>, IDisposable
     {
         /// <summary>
         /// Gets value indicating short open tags are enabled.
@@ -68,7 +68,7 @@ namespace Devsense.PHP.Syntax
         /// </summary>
         IErrorSink<Span> _errors;
 
-        private readonly StringTable _strings;
+        private StringTable _strings;
 
         /// <summary>
         /// Token postition
@@ -122,6 +122,15 @@ namespace Devsense.PHP.Syntax
         {
             Initialize(reader, lexicalState, atBol);
             _charOffset = positionShift;
+        }
+
+        public void Dispose()
+        {
+            if (_strings != null)
+            {
+                _strings.Free();
+                _strings = null;
+            }
         }
 
         /// <summary>

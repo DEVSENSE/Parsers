@@ -11,12 +11,12 @@ namespace Devsense.PHP.Syntax
     // TODO: remove or document
     internal sealed class BufferedLexer : IParserTokenProvider<SemanticValueType, Span>
     {
-        private CompliantLexer _provider;
+        private IParserTokenProvider<SemanticValueType, Span> _provider;
         private Stack<CompleteToken> _buffer = new Stack<CompleteToken>();
         int _currentToken = (int)Tokens.END;
         CompleteToken _previousToken = CompleteToken.Empty;
 
-        public BufferedLexer(CompliantLexer provider)
+        public BufferedLexer(IParserTokenProvider<SemanticValueType, Span> provider)
         {
             _provider = provider;
         }

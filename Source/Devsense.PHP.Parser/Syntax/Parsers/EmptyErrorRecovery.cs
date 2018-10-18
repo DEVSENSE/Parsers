@@ -7,8 +7,12 @@ namespace Devsense.PHP.Syntax
     /// <summary>
     /// Empty implementation of <see cref="IErrorRecovery"/>.
     /// </summary>
-    public class EmptyErrorRecovery : IErrorRecovery
+    public sealed class EmptyErrorRecovery : IErrorRecovery
     {
+        public static IErrorRecovery Instance = new EmptyErrorRecovery();
+
+        private EmptyErrorRecovery() { }
+
         /// <summary>
         /// Always fails to recover.
         /// </summary>

@@ -26,12 +26,12 @@ namespace Devsense.PHP.Utilities
         //       Roslyn C# compiler project
 
         // Size of local cache.
-        private const int LocalSizeBits = 11;
+        private const int LocalSizeBits = 8;
         private const int LocalSize = (1 << LocalSizeBits);
         private const int LocalSizeMask = LocalSize - 1;
 
         // max size of shared cache.
-        private const int SharedSizeBits = 16;
+        private const int SharedSizeBits = 8;
         private const int SharedSize = (1 << SharedSizeBits);
         private const int SharedSizeMask = SharedSize - 1;
 
@@ -64,10 +64,10 @@ namespace Devsense.PHP.Utilities
         // same as above but for users that go directly with unbuffered shared cache.
         private static int s_sharedRandom = Environment.TickCount;
 
-        internal StringTable() :
-            this(null)
-        {
-        }
+        //internal StringTable() :
+        //    this(null)
+        //{
+        //}
 
         // implement Poolable object pattern
         #region "Poolable"
