@@ -118,7 +118,7 @@ namespace Devsense.PHP.Syntax.Ast
         }
         public virtual ActualParam ActualParameter(Span span, LangElement expr, ActualParam.Flags flags)
         {
-            Debug.Assert(expr != null && expr is Expression);
+            Debug.Assert(expr is Expression);
             return new ActualParam(span, (Expression)expr, flags);
         }
 
