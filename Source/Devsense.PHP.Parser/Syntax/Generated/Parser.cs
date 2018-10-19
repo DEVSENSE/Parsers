@@ -1969,14 +1969,209 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 		_astRoot = _astFactory.GlobalCode(yypos, value_stack.array[value_stack.top-1].yyval.NodeList, namingContext);
 	}
         return;
-      case 71: // semi_reserved -> reserved_non_modifiers 
-{ yyval.String = value_stack.array[value_stack.top-1].yyval.String; }
+      case 4: // reserved_non_modifiers -> T_INCLUDE 
+{ yyval.String = _lexer.TokenText; }
         return;
-      case 78: // identifier -> T_STRING 
-{ yyval.String = value_stack.array[value_stack.top-1].yyval.String; }
+      case 5: // reserved_non_modifiers -> T_INCLUDE_ONCE 
+{ yyval.String = _lexer.TokenText; }
         return;
-      case 79: // identifier -> semi_reserved 
-{ yyval.String = value_stack.array[value_stack.top-1].yyval.String; }
+      case 6: // reserved_non_modifiers -> T_EVAL 
+{ yyval.String = _lexer.TokenText; }
+        return;
+      case 7: // reserved_non_modifiers -> T_REQUIRE 
+{ yyval.String = _lexer.TokenText; }
+        return;
+      case 8: // reserved_non_modifiers -> T_REQUIRE_ONCE 
+{ yyval.String = _lexer.TokenText; }
+        return;
+      case 9: // reserved_non_modifiers -> T_LOGICAL_OR 
+{ yyval.String = _lexer.TokenText; }
+        return;
+      case 10: // reserved_non_modifiers -> T_LOGICAL_XOR 
+{ yyval.String = _lexer.TokenText; }
+        return;
+      case 11: // reserved_non_modifiers -> T_LOGICAL_AND 
+{ yyval.String = _lexer.TokenText; }
+        return;
+      case 12: // reserved_non_modifiers -> T_INSTANCEOF 
+{ yyval.String = _lexer.TokenText; }
+        return;
+      case 13: // reserved_non_modifiers -> T_NEW 
+{ yyval.String = _lexer.TokenText; }
+        return;
+      case 14: // reserved_non_modifiers -> T_CLONE 
+{ yyval.String = _lexer.TokenText; }
+        return;
+      case 15: // reserved_non_modifiers -> T_EXIT 
+{ yyval.String = _lexer.TokenText; }
+        return;
+      case 16: // reserved_non_modifiers -> T_IF 
+{ yyval.String = _lexer.TokenText; }
+        return;
+      case 17: // reserved_non_modifiers -> T_ELSEIF 
+{ yyval.String = _lexer.TokenText; }
+        return;
+      case 18: // reserved_non_modifiers -> T_ELSE 
+{ yyval.String = _lexer.TokenText; }
+        return;
+      case 19: // reserved_non_modifiers -> T_ENDIF 
+{ yyval.String = _lexer.TokenText; }
+        return;
+      case 20: // reserved_non_modifiers -> T_ECHO 
+{ yyval.String = _lexer.TokenText; }
+        return;
+      case 21: // reserved_non_modifiers -> T_DO 
+{ yyval.String = _lexer.TokenText; }
+        return;
+      case 22: // reserved_non_modifiers -> T_WHILE 
+{ yyval.String = _lexer.TokenText; }
+        return;
+      case 23: // reserved_non_modifiers -> T_ENDWHILE 
+{ yyval.String = _lexer.TokenText; }
+        return;
+      case 24: // reserved_non_modifiers -> T_FOR 
+{ yyval.String = _lexer.TokenText; }
+        return;
+      case 25: // reserved_non_modifiers -> T_ENDFOR 
+{ yyval.String = _lexer.TokenText; }
+        return;
+      case 26: // reserved_non_modifiers -> T_FOREACH 
+{ yyval.String = _lexer.TokenText; }
+        return;
+      case 27: // reserved_non_modifiers -> T_ENDFOREACH 
+{ yyval.String = _lexer.TokenText; }
+        return;
+      case 28: // reserved_non_modifiers -> T_DECLARE 
+{ yyval.String = _lexer.TokenText; }
+        return;
+      case 29: // reserved_non_modifiers -> T_ENDDECLARE 
+{ yyval.String = _lexer.TokenText; }
+        return;
+      case 30: // reserved_non_modifiers -> T_AS 
+{ yyval.String = _lexer.TokenText; }
+        return;
+      case 31: // reserved_non_modifiers -> T_TRY 
+{ yyval.String = _lexer.TokenText; }
+        return;
+      case 32: // reserved_non_modifiers -> T_CATCH 
+{ yyval.String = _lexer.TokenText; }
+        return;
+      case 33: // reserved_non_modifiers -> T_FINALLY 
+{ yyval.String = _lexer.TokenText; }
+        return;
+      case 34: // reserved_non_modifiers -> T_THROW 
+{ yyval.String = _lexer.TokenText; }
+        return;
+      case 35: // reserved_non_modifiers -> T_USE 
+{ yyval.String = _lexer.TokenText; }
+        return;
+      case 36: // reserved_non_modifiers -> T_INSTEADOF 
+{ yyval.String = _lexer.TokenText; }
+        return;
+      case 37: // reserved_non_modifiers -> T_GLOBAL 
+{ yyval.String = _lexer.TokenText; }
+        return;
+      case 38: // reserved_non_modifiers -> T_VAR 
+{ yyval.String = _lexer.TokenText; }
+        return;
+      case 39: // reserved_non_modifiers -> T_UNSET 
+{ yyval.String = _lexer.TokenText; }
+        return;
+      case 40: // reserved_non_modifiers -> T_ISSET 
+{ yyval.String = _lexer.TokenText; }
+        return;
+      case 41: // reserved_non_modifiers -> T_EMPTY 
+{ yyval.String = _lexer.TokenText; }
+        return;
+      case 42: // reserved_non_modifiers -> T_CONTINUE 
+{ yyval.String = _lexer.TokenText; }
+        return;
+      case 43: // reserved_non_modifiers -> T_GOTO 
+{ yyval.String = _lexer.TokenText; }
+        return;
+      case 44: // reserved_non_modifiers -> T_FUNCTION 
+{ yyval.String = _lexer.TokenText; }
+        return;
+      case 45: // reserved_non_modifiers -> T_CONST 
+{ yyval.String = _lexer.TokenText; }
+        return;
+      case 46: // reserved_non_modifiers -> T_RETURN 
+{ yyval.String = _lexer.TokenText; }
+        return;
+      case 47: // reserved_non_modifiers -> T_PRINT 
+{ yyval.String = _lexer.TokenText; }
+        return;
+      case 48: // reserved_non_modifiers -> T_YIELD 
+{ yyval.String = _lexer.TokenText; }
+        return;
+      case 49: // reserved_non_modifiers -> T_LIST 
+{ yyval.String = _lexer.TokenText; }
+        return;
+      case 50: // reserved_non_modifiers -> T_SWITCH 
+{ yyval.String = _lexer.TokenText; }
+        return;
+      case 51: // reserved_non_modifiers -> T_ENDSWITCH 
+{ yyval.String = _lexer.TokenText; }
+        return;
+      case 52: // reserved_non_modifiers -> T_CASE 
+{ yyval.String = _lexer.TokenText; }
+        return;
+      case 53: // reserved_non_modifiers -> T_DEFAULT 
+{ yyval.String = _lexer.TokenText; }
+        return;
+      case 54: // reserved_non_modifiers -> T_BREAK 
+{ yyval.String = _lexer.TokenText; }
+        return;
+      case 55: // reserved_non_modifiers -> T_ARRAY 
+{ yyval.String = _lexer.TokenText; }
+        return;
+      case 56: // reserved_non_modifiers -> T_CALLABLE 
+{ yyval.String = _lexer.TokenText; }
+        return;
+      case 57: // reserved_non_modifiers -> T_EXTENDS 
+{ yyval.String = _lexer.TokenText; }
+        return;
+      case 58: // reserved_non_modifiers -> T_IMPLEMENTS 
+{ yyval.String = _lexer.TokenText; }
+        return;
+      case 59: // reserved_non_modifiers -> T_NAMESPACE 
+{ yyval.String = _lexer.TokenText; }
+        return;
+      case 60: // reserved_non_modifiers -> T_TRAIT 
+{ yyval.String = _lexer.TokenText; }
+        return;
+      case 61: // reserved_non_modifiers -> T_INTERFACE 
+{ yyval.String = _lexer.TokenText; }
+        return;
+      case 62: // reserved_non_modifiers -> T_CLASS 
+{ yyval.String = _lexer.TokenText; }
+        return;
+      case 63: // reserved_non_modifiers -> T_CLASS_C 
+{ yyval.String = _lexer.TokenText; }
+        return;
+      case 64: // reserved_non_modifiers -> T_TRAIT_C 
+{ yyval.String = _lexer.TokenText; }
+        return;
+      case 65: // reserved_non_modifiers -> T_FUNC_C 
+{ yyval.String = _lexer.TokenText; }
+        return;
+      case 66: // reserved_non_modifiers -> T_METHOD_C 
+{ yyval.String = _lexer.TokenText; }
+        return;
+      case 67: // reserved_non_modifiers -> T_LINE 
+{ yyval.String = _lexer.TokenText; }
+        return;
+      case 68: // reserved_non_modifiers -> T_FILE 
+{ yyval.String = _lexer.TokenText; }
+        return;
+      case 69: // reserved_non_modifiers -> T_DIR 
+{ yyval.String = _lexer.TokenText; }
+        return;
+      case 70: // reserved_non_modifiers -> T_NS_C 
+{ yyval.String = _lexer.TokenText; }
+        return;
+      case 77: // semi_reserved -> T_PUBLIC 
+{ yyval.String = _lexer.TokenText; }
         return;
       case 80: // top_statement_list -> top_statement_list top_statement 
 { yyval.NodeList = AddToTopStatementList<LangElement>(value_stack.array[value_stack.top-2].yyval.NodeList, value_stack.array[value_stack.top-1].yyval.Node); }

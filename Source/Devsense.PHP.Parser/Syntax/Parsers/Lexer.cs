@@ -391,7 +391,7 @@ namespace Devsense.PHP.Syntax
         // [0-9]+[eE][+-]?[0-9]+
         protected double GetTokenAsDouble(int startIndex)
         {
-            string str = GetTokenSubstring(startIndex, true);
+            string str = GetTokenSubstring(startIndex, intern: false);
 
             try
             {
@@ -802,7 +802,7 @@ namespace Devsense.PHP.Syntax
 
         Tokens ProcessVariable()
         {
-            _tokenSemantics.Object = GetTokenSubstring(1);
+            _tokenSemantics.Object = GetTokenSubstring(1, intern: true);
             return Tokens.T_VARIABLE;
         }
 
@@ -889,7 +889,7 @@ namespace Devsense.PHP.Syntax
             int start = BufferTokenStart;
             int length = TokenLength - _hereDocLabel.Length - trail;
 
-            string sourcetext = GetTokenSubstring(0, length, false);
+            string sourcetext = GetTokenSubstring(0, length, intern: false);
             string text = tryprocess != null
                 ? (string)ProcessStringText(buffer, start, length, tryprocess)
                 : sourcetext;
@@ -939,12 +939,12 @@ namespace Devsense.PHP.Syntax
 
         bool ProcessPreOpenTag()
         {
-            string text = GetTokenString();
+            string text = GetTokenString(intern: false);
             int pos = text.LastIndexOf('<');
             if (pos != 0)
             {
                 _yyless(Math.Abs(pos - text.Length));
-                _tokenSemantics.Object = text.Remove(pos);
+                _tokenSemantics.Object = _strings.Add(text, 0, pos);
                 return true;
             }
             return false;
@@ -954,7 +954,7 @@ namespace Devsense.PHP.Syntax
         {
             if (TokenLength > 0)
             {
-                var text = GetTokenString();
+                var text = GetTokenString(intern: true);
 
                 _tokenSemantics.Object = (token == Tokens.T_ENCAPSED_AND_WHITESPACE)
                     ? new KeyValuePair<string, string>(text, text)
@@ -965,7 +965,7 @@ namespace Devsense.PHP.Syntax
             return Tokens.EOF;
         }
 
-        Tokens ProcessToken(Tokens token)
+        Tokens WithTokenString(Tokens token)
         {
             _tokenSemantics.Object = GetTokenString();
             return token;

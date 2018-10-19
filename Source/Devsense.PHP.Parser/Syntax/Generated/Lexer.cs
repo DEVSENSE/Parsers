@@ -302,14 +302,14 @@ using System.Collections.Generic;
 				case 22:
 					// #line 157
 					{
-						return ProcessToken(Tokens.T_IF);
+						return (Tokens.T_IF);
 					}
 					break;
 					
 				case 23:
 					// #line 181
 					{
-						return ProcessToken(Tokens.T_DO);
+						return (Tokens.T_DO);
 					}
 					break;
 					
@@ -323,7 +323,7 @@ using System.Collections.Generic;
 				case 25:
 					// #line 213
 					{
-						return ProcessToken(Tokens.T_AS);
+						return (Tokens.T_AS);
 					}
 					break;
 					
@@ -518,35 +518,35 @@ using System.Collections.Generic;
 				case 53:
 					// #line 141
 					{
-						return ProcessToken(Tokens.T_TRY);
+						return (Tokens.T_TRY);
 					}
 					break;
 					
 				case 54:
 					// #line 117
 					{
-						return ProcessToken(Tokens.T_EXIT);
+						return (Tokens.T_EXIT);
 					}
 					break;
 					
 				case 55:
 					// #line 185
 					{
-						return ProcessToken(Tokens.T_FOR);
+						return (Tokens.T_FOR);
 					}
 					break;
 					
 				case 56:
 					// #line 377
 					{
-						return ProcessToken(Tokens.T_USE);
+						return (Tokens.T_USE);
 					}
 					break;
 					
 				case 57:
 					// #line 313
 					{
-						return ProcessToken(Tokens.T_NEW);
+						return (Tokens.T_NEW);
 					}
 					break;
 					
@@ -574,7 +574,7 @@ using System.Collections.Generic;
 				case 61:
 					// #line 321
 					{
-						return ProcessToken(Tokens.T_VAR);
+						return (Tokens.T_VAR);
 					}
 					break;
 					
@@ -630,49 +630,49 @@ using System.Collections.Generic;
 				case 69:
 					// #line 113
 					{ 
-						return ProcessToken(Tokens.T_EXIT);
+						return (Tokens.T_EXIT);
 					}
 					break;
 					
 				case 70:
 					// #line 245
 					{
-						return ProcessToken(Tokens.T_ECHO);
+						return (Tokens.T_ECHO);
 					}
 					break;
 					
 				case 71:
 					// #line 169
 					{
-						return ProcessToken(Tokens.T_ELSE);
+						return (Tokens.T_ELSE);
 					}
 					break;
 					
 				case 72:
 					// #line 353
 					{
-						return ProcessToken(Tokens.T_EVAL);
+						return (Tokens.T_EVAL);
 					}
 					break;
 					
 				case 73:
 					// #line 225
 					{
-						return ProcessToken(Tokens.T_CASE);
+						return (Tokens.T_CASE);
 					}
 					break;
 					
 				case 74:
 					// #line 461
 					{
-						return ProcessToken(Tokens.T_LIST);
+						return (Tokens.T_LIST);
 					}
 					break;
 					
 				case 75:
 					// #line 241
 					{
-						return ProcessToken(Tokens.T_GOTO);
+						return (Tokens.T_GOTO);
 					}
 					break;
 					
@@ -684,112 +684,112 @@ using System.Collections.Generic;
 				case 77:
 					// #line 165
 					{
-						return ProcessToken(Tokens.T_ENDIF);
+						return (Tokens.T_ENDIF);
 					}
 					break;
 					
 				case 78:
 					// #line 393
 					{
-						return ProcessToken(Tokens.T_EMPTY);
+						return (Tokens.T_EMPTY);
 					}
 					break;
 					
 				case 79:
 					// #line 389
 					{
-						return ProcessToken(Tokens.T_ISSET);
+						return (Tokens.T_ISSET);
 					}
 					break;
 					
 				case 80:
 					// #line 261
 					{
-						return ProcessToken(Tokens.T_TRAIT);
+						return (Tokens.T_TRAIT);
 					}
 					break;
 					
 				case 81:
 					// #line 153
 					{
-						return ProcessToken(Tokens.T_THROW);
+						return (Tokens.T_THROW);
 					}
 					break;
 					
 				case 82:
 					// #line 437
 					{
-						return ProcessToken(Tokens.T_FINAL);
+						return (Tokens.T_FINAL);
 					}
 					break;
 					
 				case 83:
 					// #line 453
 					{
-						return ProcessToken(Tokens.T_UNSET);
+						return (Tokens.T_UNSET);
 					}
 					break;
 					
 				case 84:
 					// #line 125
 					{
-						return ProcessToken(Tokens.T_CONST);
+						return (Tokens.T_CONST);
 					}
 					break;
 					
 				case 85:
 					// #line 317
 					{
-						return ProcessToken(Tokens.T_CLONE);
+						return (Tokens.T_CLONE);
 					}
 					break;
 					
 				case 86:
 					// #line 253
 					{
-						return ProcessToken(Tokens.T_CLASS);
+						return (Tokens.T_CLASS);
 					}
 					break;
 					
 				case 87:
 					// #line 145
 					{
-						return ProcessToken(Tokens.T_CATCH);
+						return (Tokens.T_CATCH);
 					}
 					break;
 					
 				case 88:
 					// #line 137
 					{
-						return ProcessToken(Tokens.T_YIELD);
+						return (Tokens.T_YIELD);
 					}
 					break;
 					
 				case 89:
 					// #line 465
 					{
-						return ProcessToken(Tokens.T_ARRAY);
+						return (Tokens.T_ARRAY);
 					}
 					break;
 					
 				case 90:
 					// #line 173
 					{
-						return ProcessToken(Tokens.T_WHILE);
+						return (Tokens.T_WHILE);
 					}
 					break;
 					
 				case 91:
 					// #line 233
 					{
-						return ProcessToken(Tokens.T_BREAK);
+						return (Tokens.T_BREAK);
 					}
 					break;
 					
 				case 92:
 					// #line 249
 					{
-						return ProcessToken(Tokens.T_PRINT);
+						return (Tokens.T_PRINT);
 					}
 					break;
 					
@@ -833,49 +833,49 @@ using System.Collections.Generic;
 				case 95:
 					// #line 189
 					{
-						return ProcessToken(Tokens.T_ENDFOR);
+						return (Tokens.T_ENDFOR);
 					}
 					break;
 					
 				case 96:
 					// #line 161
 					{
-						return ProcessToken(Tokens.T_ELSEIF);
+						return (Tokens.T_ELSEIF);
 					}
 					break;
 					
 				case 97:
 					// #line 429
 					{
-						return ProcessToken(Tokens.T_STATIC);
+						return (Tokens.T_STATIC);
 					}
 					break;
 					
 				case 98:
 					// #line 217
 					{
-						return ProcessToken(Tokens.T_SWITCH);
+						return (Tokens.T_SWITCH);
 					}
 					break;
 					
 				case 99:
 					// #line 129
 					{
-						return ProcessToken(Tokens.T_RETURN);
+						return (Tokens.T_RETURN);
 					}
 					break;
 					
 				case 100:
 					// #line 385
 					{
-						return ProcessToken(Tokens.T_GLOBAL);
+						return (Tokens.T_GLOBAL);
 					}
 					break;
 					
 				case 101:
 					// #line 449
 					{
-						return ProcessToken(Tokens.T_PUBLIC);
+						return (Tokens.T_PUBLIC);
 					}
 					break;
 					
@@ -896,56 +896,56 @@ using System.Collections.Generic;
 				case 104:
 					// #line 265
 					{
-						return ProcessToken(Tokens.T_EXTENDS);
+						return (Tokens.T_EXTENDS);
 					}
 					break;
 					
 				case 105:
 					// #line 357
 					{
-						return ProcessToken(Tokens.T_INCLUDE);
+						return (Tokens.T_INCLUDE);
 					}
 					break;
 					
 				case 106:
 					// #line 229
 					{
-						return ProcessToken(Tokens.T_DEFAULT);
+						return (Tokens.T_DEFAULT);
 					}
 					break;
 					
 				case 107:
 					// #line 201
 					{
-						return ProcessToken(Tokens.T_DECLARE);
+						return (Tokens.T_DECLARE);
 					}
 					break;
 					
 				case 108:
 					// #line 149
 					{
-						return ProcessToken(Tokens.T_FINALLY);
+						return (Tokens.T_FINALLY);
 					}
 					break;
 					
 				case 109:
 					// #line 193
 					{
-						return ProcessToken(Tokens.T_FOREACH);
+						return (Tokens.T_FOREACH);
 					}
 					break;
 					
 				case 110:
 					// #line 365
 					{
-						return ProcessToken(Tokens.T_REQUIRE);
+						return (Tokens.T_REQUIRE);
 					}
 					break;
 					
 				case 111:
 					// #line 441
 					{
-						return ProcessToken(Tokens.T_PRIVATE);
+						return (Tokens.T_PRIVATE);
 					}
 					break;
 					
@@ -966,42 +966,42 @@ using System.Collections.Generic;
 				case 114:
 					// #line 673
 					{
-						return ProcessToken(Tokens.T_DIR);
+						return (Tokens.T_DIR);
 					}
 					break;
 					
 				case 115:
 					// #line 177
 					{
-						return ProcessToken(Tokens.T_ENDWHILE);
+						return (Tokens.T_ENDWHILE);
 					}
 					break;
 					
 				case 116:
 					// #line 121
 					{
-						return ProcessToken(Tokens.T_FUNCTION);
+						return (Tokens.T_FUNCTION);
 					}
 					break;
 					
 				case 117:
 					// #line 237
 					{
-						return ProcessToken(Tokens.T_CONTINUE);
+						return (Tokens.T_CONTINUE);
 					}
 					break;
 					
 				case 118:
 					// #line 469
 					{
-						return ProcessToken(Tokens.T_CALLABLE);
+						return (Tokens.T_CALLABLE);
 					}
 					break;
 					
 				case 119:
 					// #line 433
 					{
-						return ProcessToken(Tokens.T_ABSTRACT);
+						return (Tokens.T_ABSTRACT);
 					}
 					break;
 					
@@ -1022,91 +1022,91 @@ using System.Collections.Generic;
 				case 122:
 					// #line 669
 					{
-						return ProcessToken(Tokens.T_FILE);
+						return (Tokens.T_FILE);
 					}
 					break;
 					
 				case 123:
 					// #line 665
 					{
-						return ProcessToken(Tokens.T_LINE);
+						return (Tokens.T_LINE);
 					}
 					break;
 					
 				case 124:
 					// #line 221
 					{
-						return ProcessToken(Tokens.T_ENDSWITCH);
+						return (Tokens.T_ENDSWITCH);
 					}
 					break;
 					
 				case 125:
 					// #line 257
 					{
-						return ProcessToken(Tokens.T_INTERFACE);
+						return (Tokens.T_INTERFACE);
 					}
 					break;
 					
 				case 126:
 					// #line 381
 					{
-						return ProcessToken(Tokens.T_INSTEADOF);
+						return (Tokens.T_INSTEADOF);
 					}
 					break;
 					
 				case 127:
 					// #line 373
 					{
-						return ProcessToken(Tokens.T_NAMESPACE);
+						return (Tokens.T_NAMESPACE);
 					}
 					break;
 					
 				case 128:
 					// #line 445
 					{
-						return ProcessToken(Tokens.T_PROTECTED);
+						return (Tokens.T_PROTECTED);
 					}
 					break;
 					
 				case 129:
 					// #line 653
 					{
-						return ProcessToken(Tokens.T_TRAIT_C);
+						return (Tokens.T_TRAIT_C);
 					}
 					break;
 					
 				case 130:
 					// #line 649
 					{
-						return ProcessToken(Tokens.T_CLASS_C);
+						return (Tokens.T_CLASS_C);
 					}
 					break;
 					
 				case 131:
 					// #line 205
 					{
-						return ProcessToken(Tokens.T_ENDDECLARE);
+						return (Tokens.T_ENDDECLARE);
 					}
 					break;
 					
 				case 132:
 					// #line 197
 					{
-						return ProcessToken(Tokens.T_ENDFOREACH);
+						return (Tokens.T_ENDFOREACH);
 					}
 					break;
 					
 				case 133:
 					// #line 209
 					{
-						return ProcessToken(Tokens.T_INSTANCEOF);
+						return (Tokens.T_INSTANCEOF);
 					}
 					break;
 					
 				case 134:
 					// #line 269
 					{
-						return ProcessToken(Tokens.T_IMPLEMENTS);
+						return (Tokens.T_IMPLEMENTS);
 					}
 					break;
 					
@@ -1120,35 +1120,35 @@ using System.Collections.Generic;
 				case 136:
 					// #line 661
 					{
-						return ProcessToken(Tokens.T_METHOD_C);
+						return (Tokens.T_METHOD_C);
 					}
 					break;
 					
 				case 137:
 					// #line 361
 					{
-						return ProcessToken(Tokens.T_INCLUDE_ONCE);
+						return (Tokens.T_INCLUDE_ONCE);
 					}
 					break;
 					
 				case 138:
 					// #line 369
 					{
-						return ProcessToken(Tokens.T_REQUIRE_ONCE);
+						return (Tokens.T_REQUIRE_ONCE);
 					}
 					break;
 					
 				case 139:
 					// #line 657
 					{
-						return ProcessToken(Tokens.T_FUNC_C);
+						return (Tokens.T_FUNC_C);
 					}
 					break;
 					
 				case 140:
 					// #line 677
 					{
-						return ProcessToken(Tokens.T_NS_C);
+						return (Tokens.T_NS_C);
 					}
 					break;
 					
@@ -1287,7 +1287,7 @@ using System.Collections.Generic;
 				case 165:
 					// #line 817
 					{
-					    if(!string.IsNullOrEmpty(_hereDocLabel) && VerifyEndLabel(GetTokenString()))
+					    if(!string.IsNullOrEmpty(_hereDocLabel) && VerifyEndLabel(GetTokenString(intern: false)))
 						{
 							BEGIN(LexicalStates.ST_END_HEREDOC); 
 							if( ProcessEndNowDoc(_processDoubleQuotedString) ) return (Tokens.T_ENCAPSED_AND_WHITESPACE);
@@ -1356,7 +1356,7 @@ using System.Collections.Generic;
 						_yyless(1);
 						yy_pop_state();
 						yy_push_state(LexicalStates.ST_IN_SCRIPTING);
-						return ProcessToken(Tokens.T_STRING_VARNAME);
+						return WithTokenString(Tokens.T_STRING_VARNAME);
 					}
 					break;
 					
@@ -1477,7 +1477,7 @@ using System.Collections.Generic;
 					// #line 795
 					{
 						BEGIN(LexicalStates.ST_IN_SCRIPTING);
-						if (GetTokenString() != _hereDocLabel) 
+						if (GetTokenString(intern: false) != _hereDocLabel) 
 							_errors.Error(_tokenPosition, Devsense.PHP.Errors.FatalErrors.SyntaxError, "Incorrect heredoc end label: " + _hereDocLabel);
 						_yyless(LabelTrailLength());
 						_tokenSemantics.Object = _hereDocLabel;
@@ -1493,7 +1493,7 @@ using System.Collections.Generic;
 				case 195:
 					// #line 808
 					{
-					    if(!string.IsNullOrEmpty(_hereDocLabel) && VerifyEndLabel(GetTokenString()))
+					    if(!string.IsNullOrEmpty(_hereDocLabel) && VerifyEndLabel(GetTokenString(intern: false)))
 						{
 							BEGIN(LexicalStates.ST_END_HEREDOC); 
 							if( ProcessEndNowDoc(null) ) return (Tokens.T_ENCAPSED_AND_WHITESPACE);

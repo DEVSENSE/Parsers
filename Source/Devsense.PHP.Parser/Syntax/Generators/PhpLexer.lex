@@ -111,23 +111,23 @@ ST_HALT_COMPILER1,ST_HALT_COMPILER2,ST_HALT_COMPILER3>{EOF} {
 }
 
 <ST_IN_SCRIPTING>"exit" { 
-	return ProcessToken(Tokens.T_EXIT);
+	return (Tokens.T_EXIT);
 }
 
 <ST_IN_SCRIPTING>"die" {
-	return ProcessToken(Tokens.T_EXIT);
+	return (Tokens.T_EXIT);
 }
 
 <ST_IN_SCRIPTING>"function" {
-	return ProcessToken(Tokens.T_FUNCTION);
+	return (Tokens.T_FUNCTION);
 }
 
 <ST_IN_SCRIPTING>"const" {
-	return ProcessToken(Tokens.T_CONST);
+	return (Tokens.T_CONST);
 }
 
 <ST_IN_SCRIPTING>"return" {
-	return ProcessToken(Tokens.T_RETURN);
+	return (Tokens.T_RETURN);
 }
 
 <ST_IN_SCRIPTING>"yield"{WHITESPACE}"from" {
@@ -135,139 +135,139 @@ ST_HALT_COMPILER1,ST_HALT_COMPILER2,ST_HALT_COMPILER3>{EOF} {
 }
 
 <ST_IN_SCRIPTING>"yield" {
-	return ProcessToken(Tokens.T_YIELD);
+	return (Tokens.T_YIELD);
 }
 
 <ST_IN_SCRIPTING>"try" {
-	return ProcessToken(Tokens.T_TRY);
+	return (Tokens.T_TRY);
 }
 
 <ST_IN_SCRIPTING>"catch" {
-	return ProcessToken(Tokens.T_CATCH);
+	return (Tokens.T_CATCH);
 }
 
 <ST_IN_SCRIPTING>"finally" {
-	return ProcessToken(Tokens.T_FINALLY);
+	return (Tokens.T_FINALLY);
 }
 
 <ST_IN_SCRIPTING>"throw" {
-	return ProcessToken(Tokens.T_THROW);
+	return (Tokens.T_THROW);
 }
 
 <ST_IN_SCRIPTING>"if" {
-	return ProcessToken(Tokens.T_IF);
+	return (Tokens.T_IF);
 }
 
 <ST_IN_SCRIPTING>"elseif" {
-	return ProcessToken(Tokens.T_ELSEIF);
+	return (Tokens.T_ELSEIF);
 }
 
 <ST_IN_SCRIPTING>"endif" {
-	return ProcessToken(Tokens.T_ENDIF);
+	return (Tokens.T_ENDIF);
 }
 
 <ST_IN_SCRIPTING>"else" {
-	return ProcessToken(Tokens.T_ELSE);
+	return (Tokens.T_ELSE);
 }
 
 <ST_IN_SCRIPTING>"while" {
-	return ProcessToken(Tokens.T_WHILE);
+	return (Tokens.T_WHILE);
 }
 
 <ST_IN_SCRIPTING>"endwhile" {
-	return ProcessToken(Tokens.T_ENDWHILE);
+	return (Tokens.T_ENDWHILE);
 }
 
 <ST_IN_SCRIPTING>"do" {
-	return ProcessToken(Tokens.T_DO);
+	return (Tokens.T_DO);
 }
 
 <ST_IN_SCRIPTING>"for" {
-	return ProcessToken(Tokens.T_FOR);
+	return (Tokens.T_FOR);
 }
 
 <ST_IN_SCRIPTING>"endfor" {
-	return ProcessToken(Tokens.T_ENDFOR);
+	return (Tokens.T_ENDFOR);
 }
 
 <ST_IN_SCRIPTING>"foreach" {
-	return ProcessToken(Tokens.T_FOREACH);
+	return (Tokens.T_FOREACH);
 }
 
 <ST_IN_SCRIPTING>"endforeach" {
-	return ProcessToken(Tokens.T_ENDFOREACH);
+	return (Tokens.T_ENDFOREACH);
 }
 
 <ST_IN_SCRIPTING>"declare" {
-	return ProcessToken(Tokens.T_DECLARE);
+	return (Tokens.T_DECLARE);
 }
 
 <ST_IN_SCRIPTING>"enddeclare" {
-	return ProcessToken(Tokens.T_ENDDECLARE);
+	return (Tokens.T_ENDDECLARE);
 }
 
 <ST_IN_SCRIPTING>"instanceof" {
-	return ProcessToken(Tokens.T_INSTANCEOF);
+	return (Tokens.T_INSTANCEOF);
 }
 
 <ST_IN_SCRIPTING>"as" {
-	return ProcessToken(Tokens.T_AS);
+	return (Tokens.T_AS);
 }
 
 <ST_IN_SCRIPTING>"switch" {
-	return ProcessToken(Tokens.T_SWITCH);
+	return (Tokens.T_SWITCH);
 }
 
 <ST_IN_SCRIPTING>"endswitch" {
-	return ProcessToken(Tokens.T_ENDSWITCH);
+	return (Tokens.T_ENDSWITCH);
 }
 
 <ST_IN_SCRIPTING>"case" {
-	return ProcessToken(Tokens.T_CASE);
+	return (Tokens.T_CASE);
 }
 
 <ST_IN_SCRIPTING>"default" {
-	return ProcessToken(Tokens.T_DEFAULT);
+	return (Tokens.T_DEFAULT);
 }
 
 <ST_IN_SCRIPTING>"break" {
-	return ProcessToken(Tokens.T_BREAK);
+	return (Tokens.T_BREAK);
 }
 
 <ST_IN_SCRIPTING>"continue" {
-	return ProcessToken(Tokens.T_CONTINUE);
+	return (Tokens.T_CONTINUE);
 }
 
 <ST_IN_SCRIPTING>"goto" {
-	return ProcessToken(Tokens.T_GOTO);
+	return (Tokens.T_GOTO);
 }
 
 <ST_IN_SCRIPTING>"echo" {
-	return ProcessToken(Tokens.T_ECHO);
+	return (Tokens.T_ECHO);
 }
 
 <ST_IN_SCRIPTING>"print" {
-	return ProcessToken(Tokens.T_PRINT);
+	return (Tokens.T_PRINT);
 }
 
 <ST_IN_SCRIPTING>"class" {
-	return ProcessToken(Tokens.T_CLASS);
+	return (Tokens.T_CLASS);
 }
 
 <ST_IN_SCRIPTING>"interface" {
-	return ProcessToken(Tokens.T_INTERFACE);
+	return (Tokens.T_INTERFACE);
 }
 
 <ST_IN_SCRIPTING>"trait" {
-	return ProcessToken(Tokens.T_TRAIT);
+	return (Tokens.T_TRAIT);
 }
 
 <ST_IN_SCRIPTING>"extends" {
-	return ProcessToken(Tokens.T_EXTENDS);
+	return (Tokens.T_EXTENDS);
 }
 
 <ST_IN_SCRIPTING>"implements" {
-	return ProcessToken(Tokens.T_IMPLEMENTS);
+	return (Tokens.T_IMPLEMENTS);
 }
 
 <ST_IN_SCRIPTING>"->" {
@@ -311,15 +311,15 @@ ST_HALT_COMPILER1,ST_HALT_COMPILER2,ST_HALT_COMPILER3>{EOF} {
 }
 
 <ST_IN_SCRIPTING>"new" {
-	return ProcessToken(Tokens.T_NEW);
+	return (Tokens.T_NEW);
 }
 
 <ST_IN_SCRIPTING>"clone" {
-	return ProcessToken(Tokens.T_CLONE);
+	return (Tokens.T_CLONE);
 }
 
 <ST_IN_SCRIPTING>"var" {
-	return ProcessToken(Tokens.T_VAR);
+	return (Tokens.T_VAR);
 }
 
 <ST_IN_SCRIPTING>"("{TABS_AND_SPACES}("int"|"integer"){TABS_AND_SPACES}")" {
@@ -351,47 +351,47 @@ ST_HALT_COMPILER1,ST_HALT_COMPILER2,ST_HALT_COMPILER3>{EOF} {
 }
 
 <ST_IN_SCRIPTING>"eval" {
-	return ProcessToken(Tokens.T_EVAL);
+	return (Tokens.T_EVAL);
 }
 
 <ST_IN_SCRIPTING>"include" {
-	return ProcessToken(Tokens.T_INCLUDE);
+	return (Tokens.T_INCLUDE);
 }
 
 <ST_IN_SCRIPTING>"include_once" {
-	return ProcessToken(Tokens.T_INCLUDE_ONCE);
+	return (Tokens.T_INCLUDE_ONCE);
 }
 
 <ST_IN_SCRIPTING>"require" {
-	return ProcessToken(Tokens.T_REQUIRE);
+	return (Tokens.T_REQUIRE);
 }
 
 <ST_IN_SCRIPTING>"require_once" {
-	return ProcessToken(Tokens.T_REQUIRE_ONCE);
+	return (Tokens.T_REQUIRE_ONCE);
 }
 
 <ST_IN_SCRIPTING>"namespace" {
-	return ProcessToken(Tokens.T_NAMESPACE);
+	return (Tokens.T_NAMESPACE);
 }
 
 <ST_IN_SCRIPTING>"use" {
-	return ProcessToken(Tokens.T_USE);
+	return (Tokens.T_USE);
 }
 
 <ST_IN_SCRIPTING>"insteadof" {
-	return ProcessToken(Tokens.T_INSTEADOF);
+	return (Tokens.T_INSTEADOF);
 }
 
 <ST_IN_SCRIPTING>"global" {
-	return ProcessToken(Tokens.T_GLOBAL);
+	return (Tokens.T_GLOBAL);
 }
 
 <ST_IN_SCRIPTING>"isset" {
-	return ProcessToken(Tokens.T_ISSET);
+	return (Tokens.T_ISSET);
 }
 
 <ST_IN_SCRIPTING>"empty" {
-	return ProcessToken(Tokens.T_EMPTY);
+	return (Tokens.T_EMPTY);
 }
 
 <ST_HALT_COMPILER1>"(" {
@@ -427,31 +427,31 @@ ST_HALT_COMPILER1,ST_HALT_COMPILER2,ST_HALT_COMPILER3>{EOF} {
 }
 
 <ST_IN_SCRIPTING>"static" {
-	return ProcessToken(Tokens.T_STATIC);
+	return (Tokens.T_STATIC);
 }
 
 <ST_IN_SCRIPTING>"abstract" {
-	return ProcessToken(Tokens.T_ABSTRACT);
+	return (Tokens.T_ABSTRACT);
 }
 
 <ST_IN_SCRIPTING>"final" {
-	return ProcessToken(Tokens.T_FINAL);
+	return (Tokens.T_FINAL);
 }
 
 <ST_IN_SCRIPTING>"private" {
-	return ProcessToken(Tokens.T_PRIVATE);
+	return (Tokens.T_PRIVATE);
 }
 
 <ST_IN_SCRIPTING>"protected" {
-	return ProcessToken(Tokens.T_PROTECTED);
+	return (Tokens.T_PROTECTED);
 }
 
 <ST_IN_SCRIPTING>"public" {
-	return ProcessToken(Tokens.T_PUBLIC);
+	return (Tokens.T_PUBLIC);
 }
 
 <ST_IN_SCRIPTING>"unset" {
-	return ProcessToken(Tokens.T_UNSET);
+	return (Tokens.T_UNSET);
 }
 
 <ST_IN_SCRIPTING>"=>" {
@@ -459,15 +459,15 @@ ST_HALT_COMPILER1,ST_HALT_COMPILER2,ST_HALT_COMPILER3>{EOF} {
 }
 
 <ST_IN_SCRIPTING>"list" {
-	return ProcessToken(Tokens.T_LIST);
+	return (Tokens.T_LIST);
 }
 
 <ST_IN_SCRIPTING>"array" {
-	return ProcessToken(Tokens.T_ARRAY);
+	return (Tokens.T_ARRAY);
 }
 
 <ST_IN_SCRIPTING>"callable" {
-	return ProcessToken(Tokens.T_CALLABLE);
+	return (Tokens.T_CALLABLE);
 }
 
 <ST_IN_SCRIPTING>"++" {
@@ -611,7 +611,7 @@ ST_HALT_COMPILER1,ST_HALT_COMPILER2,ST_HALT_COMPILER3>{EOF} {
 	_yyless(1);
 	yy_pop_state();
 	yy_push_state(LexicalStates.ST_IN_SCRIPTING);
-	return ProcessToken(Tokens.T_STRING_VARNAME);
+	return WithTokenString(Tokens.T_STRING_VARNAME);
 }
 
 
@@ -647,35 +647,35 @@ ST_HALT_COMPILER1,ST_HALT_COMPILER2,ST_HALT_COMPILER3>{EOF} {
 }
 
 <ST_IN_SCRIPTING>"__CLASS__" {
-	return ProcessToken(Tokens.T_CLASS_C);
+	return (Tokens.T_CLASS_C);
 }
 
 <ST_IN_SCRIPTING>"__TRAIT__" {
-	return ProcessToken(Tokens.T_TRAIT_C);
+	return (Tokens.T_TRAIT_C);
 }
 
 <ST_IN_SCRIPTING>"__FUNCTION__" {
-	return ProcessToken(Tokens.T_FUNC_C);
+	return (Tokens.T_FUNC_C);
 }
 
 <ST_IN_SCRIPTING>"__METHOD__" {
-	return ProcessToken(Tokens.T_METHOD_C);
+	return (Tokens.T_METHOD_C);
 }
 
 <ST_IN_SCRIPTING>"__LINE__" {
-	return ProcessToken(Tokens.T_LINE);
+	return (Tokens.T_LINE);
 }
 
 <ST_IN_SCRIPTING>"__FILE__" {
-	return ProcessToken(Tokens.T_FILE);
+	return (Tokens.T_FILE);
 }
 
 <ST_IN_SCRIPTING>"__DIR__" {
-	return ProcessToken(Tokens.T_DIR);
+	return (Tokens.T_DIR);
 }
 
 <ST_IN_SCRIPTING>"__NAMESPACE__" {
-	return ProcessToken(Tokens.T_NS_C);
+	return (Tokens.T_NS_C);
 }
 
 <INITIAL>"<?=" {
@@ -794,7 +794,7 @@ ST_HALT_COMPILER1,ST_HALT_COMPILER2,ST_HALT_COMPILER3>{EOF} {
 
 <ST_END_HEREDOC>{LABEL} {
 	BEGIN(LexicalStates.ST_IN_SCRIPTING);
-	if (GetTokenString() != _hereDocLabel) 
+	if (GetTokenString(intern: false) != _hereDocLabel) 
 		_errors.Error(_tokenPosition, Devsense.PHP.Errors.FatalErrors.SyntaxError, "Incorrect heredoc end label: " + _hereDocLabel);
 	_yyless(LabelTrailLength());
 	_tokenSemantics.Object = _hereDocLabel;
@@ -806,7 +806,7 @@ ST_HALT_COMPILER1,ST_HALT_COMPILER2,ST_HALT_COMPILER3>{EOF} {
 }
 
 <ST_NOWDOC>^{TABS_AND_SPACES}{LABEL} {
-    if(!string.IsNullOrEmpty(_hereDocLabel) && VerifyEndLabel(GetTokenString()))
+    if(!string.IsNullOrEmpty(_hereDocLabel) && VerifyEndLabel(GetTokenString(intern: false)))
 	{
 		BEGIN(LexicalStates.ST_END_HEREDOC); 
 		if( ProcessEndNowDoc(null) ) return (Tokens.T_ENCAPSED_AND_WHITESPACE);
@@ -815,7 +815,7 @@ ST_HALT_COMPILER1,ST_HALT_COMPILER2,ST_HALT_COMPILER3>{EOF} {
 }
 
 <ST_HEREDOC>^{TABS_AND_SPACES}{LABEL} {
-    if(!string.IsNullOrEmpty(_hereDocLabel) && VerifyEndLabel(GetTokenString()))
+    if(!string.IsNullOrEmpty(_hereDocLabel) && VerifyEndLabel(GetTokenString(intern: false)))
 	{
 		BEGIN(LexicalStates.ST_END_HEREDOC); 
 		if( ProcessEndNowDoc(_processDoubleQuotedString) ) return (Tokens.T_ENCAPSED_AND_WHITESPACE);

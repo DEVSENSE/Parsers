@@ -366,23 +366,83 @@ start:
 	}
 ;
 reserved_non_modifiers:
-	  T_INCLUDE | T_INCLUDE_ONCE | T_EVAL | T_REQUIRE | T_REQUIRE_ONCE | T_LOGICAL_OR | T_LOGICAL_XOR | T_LOGICAL_AND
-	| T_INSTANCEOF | T_NEW | T_CLONE | T_EXIT | T_IF | T_ELSEIF | T_ELSE | T_ENDIF | T_ECHO | T_DO | T_WHILE | T_ENDWHILE
-	| T_FOR | T_ENDFOR | T_FOREACH | T_ENDFOREACH | T_DECLARE | T_ENDDECLARE | T_AS | T_TRY | T_CATCH | T_FINALLY
-	| T_THROW | T_USE | T_INSTEADOF | T_GLOBAL | T_VAR | T_UNSET | T_ISSET | T_EMPTY | T_CONTINUE | T_GOTO
-	| T_FUNCTION | T_CONST | T_RETURN | T_PRINT | T_YIELD | T_LIST | T_SWITCH | T_ENDSWITCH | T_CASE | T_DEFAULT | T_BREAK
-	| T_ARRAY | T_CALLABLE | T_EXTENDS | T_IMPLEMENTS | T_NAMESPACE | T_TRAIT | T_INTERFACE | T_CLASS
-	| T_CLASS_C | T_TRAIT_C | T_FUNC_C | T_METHOD_C | T_LINE | T_FILE | T_DIR | T_NS_C
+	  T_INCLUDE { $$ = _lexer.TokenText; }
+	| T_INCLUDE_ONCE { $$ = _lexer.TokenText; }
+	| T_EVAL { $$ = _lexer.TokenText; }	
+	| T_REQUIRE { $$ = _lexer.TokenText; }	
+	| T_REQUIRE_ONCE { $$ = _lexer.TokenText; }	
+	| T_LOGICAL_OR { $$ = _lexer.TokenText; }	
+	| T_LOGICAL_XOR { $$ = _lexer.TokenText; }	
+	| T_LOGICAL_AND { $$ = _lexer.TokenText; }
+	| T_INSTANCEOF { $$ = _lexer.TokenText; }	
+	| T_NEW { $$ = _lexer.TokenText; }	
+	| T_CLONE { $$ = _lexer.TokenText; }	
+	| T_EXIT { $$ = _lexer.TokenText; }	
+	| T_IF { $$ = _lexer.TokenText; }	
+	| T_ELSEIF { $$ = _lexer.TokenText; }	
+	| T_ELSE { $$ = _lexer.TokenText; }	
+	| T_ENDIF { $$ = _lexer.TokenText; }	
+	| T_ECHO { $$ = _lexer.TokenText; }	
+	| T_DO { $$ = _lexer.TokenText; }	
+	| T_WHILE { $$ = _lexer.TokenText; }	
+	| T_ENDWHILE  { $$ = _lexer.TokenText; }	
+	| T_FOR { $$ = _lexer.TokenText; }	
+	| T_ENDFOR { $$ = _lexer.TokenText; }	
+	| T_FOREACH { $$ = _lexer.TokenText; }	
+	| T_ENDFOREACH { $$ = _lexer.TokenText; }	
+	| T_DECLARE { $$ = _lexer.TokenText; }	
+	| T_ENDDECLARE { $$ = _lexer.TokenText; }	
+	| T_AS { $$ = _lexer.TokenText; }	
+	| T_TRY { $$ = _lexer.TokenText; }	
+	| T_CATCH { $$ = _lexer.TokenText; }	
+	| T_FINALLY  { $$ = _lexer.TokenText; }	
+	| T_THROW { $$ = _lexer.TokenText; }	
+	| T_USE { $$ = _lexer.TokenText; }	
+	| T_INSTEADOF { $$ = _lexer.TokenText; }	
+	| T_GLOBAL { $$ = _lexer.TokenText; }	
+	| T_VAR { $$ = _lexer.TokenText; }	
+	| T_UNSET { $$ = _lexer.TokenText; }	
+	| T_ISSET { $$ = _lexer.TokenText; }	
+	| T_EMPTY { $$ = _lexer.TokenText; }	
+	| T_CONTINUE { $$ = _lexer.TokenText; }	
+	| T_GOTO  { $$ = _lexer.TokenText; }	
+	| T_FUNCTION { $$ = _lexer.TokenText; }	
+	| T_CONST { $$ = _lexer.TokenText; }	
+	| T_RETURN { $$ = _lexer.TokenText; }	
+	| T_PRINT { $$ = _lexer.TokenText; }	
+	| T_YIELD { $$ = _lexer.TokenText; }	
+	| T_LIST { $$ = _lexer.TokenText; }	
+	| T_SWITCH { $$ = _lexer.TokenText; }	
+	| T_ENDSWITCH { $$ = _lexer.TokenText; }	
+	| T_CASE { $$ = _lexer.TokenText; }	
+	| T_DEFAULT { $$ = _lexer.TokenText; }	
+	| T_BREAK { $$ = _lexer.TokenText; }
+	| T_ARRAY { $$ = _lexer.TokenText; }	
+	| T_CALLABLE { $$ = _lexer.TokenText; }	
+	| T_EXTENDS { $$ = _lexer.TokenText; }	
+	| T_IMPLEMENTS { $$ = _lexer.TokenText; }	
+	| T_NAMESPACE { $$ = _lexer.TokenText; }	
+	| T_TRAIT { $$ = _lexer.TokenText; }	
+	| T_INTERFACE { $$ = _lexer.TokenText; }	
+	| T_CLASS { $$ = _lexer.TokenText; }	
+	| T_CLASS_C { $$ = _lexer.TokenText; }	
+	| T_TRAIT_C { $$ = _lexer.TokenText; }	
+	| T_FUNC_C { $$ = _lexer.TokenText; }	
+	| T_METHOD_C { $$ = _lexer.TokenText; }	
+	| T_LINE { $$ = _lexer.TokenText; }	
+	| T_FILE { $$ = _lexer.TokenText; }	
+	| T_DIR { $$ = _lexer.TokenText; }	
+	| T_NS_C { $$ = _lexer.TokenText; }
 ;
 
 semi_reserved:
-	  reserved_non_modifiers { $$ = $1; }
-	| T_STATIC | T_ABSTRACT | T_FINAL | T_PRIVATE | T_PROTECTED | T_PUBLIC
+		reserved_non_modifiers
+	|	T_STATIC | T_ABSTRACT | T_FINAL | T_PRIVATE | T_PROTECTED | T_PUBLIC { $$ = _lexer.TokenText; }
 ;
 
 identifier:
-		T_STRING { $$ = $1; }
-	| 	semi_reserved   { $$ = $1; }
+		T_STRING
+	| 	semi_reserved
 ;
 
 top_statement_list:
