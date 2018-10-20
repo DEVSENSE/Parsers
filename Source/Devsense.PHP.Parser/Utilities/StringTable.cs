@@ -12,6 +12,7 @@ namespace Devsense.PHP.Utilities
     public class StringTable
     {
         // entry in the caches
+        [DebuggerDisplay("{Text}")]
         private struct Entry
         {
             // hash code of the entry

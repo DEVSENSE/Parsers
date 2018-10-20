@@ -1287,7 +1287,7 @@ using System.Collections.Generic;
 				case 165:
 					// #line 817
 					{
-					    if(!string.IsNullOrEmpty(_hereDocLabel) && VerifyEndLabel(GetTokenString(intern: false)))
+					    if(!string.IsNullOrEmpty(_hereDocLabel) && VerifyEndLabel(GetTokenSpan()))
 						{
 							BEGIN(LexicalStates.ST_END_HEREDOC); 
 							if( ProcessEndNowDoc(_processDoubleQuotedString) ) return (Tokens.T_ENCAPSED_AND_WHITESPACE);
@@ -1493,7 +1493,7 @@ using System.Collections.Generic;
 				case 195:
 					// #line 808
 					{
-					    if(!string.IsNullOrEmpty(_hereDocLabel) && VerifyEndLabel(GetTokenString(intern: false)))
+					    if(!string.IsNullOrEmpty(_hereDocLabel) && VerifyEndLabel(GetTokenSpan()))
 						{
 							BEGIN(LexicalStates.ST_END_HEREDOC); 
 							if( ProcessEndNowDoc(null) ) return (Tokens.T_ENCAPSED_AND_WHITESPACE);

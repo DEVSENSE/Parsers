@@ -193,6 +193,11 @@ namespace Devsense.PHP.Syntax
             return _strings.Add(array, start, length);
         }
 
+        public CharSpan GetTokenSpan()
+        {
+            return new CharSpan(buffer, token_start, TokenLength);
+        }
+
         public string GetText(int offset, int length, bool intern)
         {
             // PERF: Whether interning or not, there are some frequently occurring easy cases we can pick off easily.
@@ -209,6 +214,8 @@ namespace Devsense.PHP.Syntax
                         case ';': return ";";
                         case '(': return "(";
                         case ')': return ")";
+                        case '/': return "/";
+                        case '\\': return "\\";
                     }
                     break;
 
@@ -823,17 +830,11 @@ namespace Devsense.PHP.Syntax
             return (Tokens.T_NUM_STRING);
         }
 
-        bool VerifyEndLabel(string value)
+        bool VerifyEndLabel(CharSpan chars)
         {
-            var offset = value.LastIndexOfAny(new[] { ' ', '\t', '\n' }) + 1;
-            for (int i = 0; i < _hereDocLabel.Length; i++)
-            {
-                if (offset + i >= value.Length || value[offset + i] != _hereDocLabel[i])
-                {
-                    return false;
-                }
-            }
-            return true;
+            return chars
+                .LastWord()
+                .StartsWith(_hereDocLabel);
         }
 
         string LocateHeredocPrefix(string text)
@@ -939,12 +940,12 @@ namespace Devsense.PHP.Syntax
 
         bool ProcessPreOpenTag()
         {
-            string text = GetTokenString(intern: false);
+            var text = GetTokenSpan(); // GetTokenString(intern: false);
             int pos = text.LastIndexOf('<');
             if (pos != 0)
             {
                 _yyless(Math.Abs(pos - text.Length));
-                _tokenSemantics.Object = _strings.Add(text, 0, pos);
+                _tokenSemantics.Object = text.Substring(0, pos).ToString();
                 return true;
             }
             return false;
@@ -954,7 +955,7 @@ namespace Devsense.PHP.Syntax
         {
             if (TokenLength > 0)
             {
-                var text = GetTokenString(intern: true);
+                var text = GetTokenString(intern: false);
 
                 _tokenSemantics.Object = (token == Tokens.T_ENCAPSED_AND_WHITESPACE)
                     ? new KeyValuePair<string, string>(text, text)

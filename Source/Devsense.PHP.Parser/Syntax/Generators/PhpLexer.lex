@@ -806,7 +806,7 @@ ST_HALT_COMPILER1,ST_HALT_COMPILER2,ST_HALT_COMPILER3>{EOF} {
 }
 
 <ST_NOWDOC>^{TABS_AND_SPACES}{LABEL} {
-    if(!string.IsNullOrEmpty(_hereDocLabel) && VerifyEndLabel(GetTokenString(intern: false)))
+    if(!string.IsNullOrEmpty(_hereDocLabel) && VerifyEndLabel(GetTokenSpan()))
 	{
 		BEGIN(LexicalStates.ST_END_HEREDOC); 
 		if( ProcessEndNowDoc(null) ) return (Tokens.T_ENCAPSED_AND_WHITESPACE);
@@ -815,7 +815,7 @@ ST_HALT_COMPILER1,ST_HALT_COMPILER2,ST_HALT_COMPILER3>{EOF} {
 }
 
 <ST_HEREDOC>^{TABS_AND_SPACES}{LABEL} {
-    if(!string.IsNullOrEmpty(_hereDocLabel) && VerifyEndLabel(GetTokenString(intern: false)))
+    if(!string.IsNullOrEmpty(_hereDocLabel) && VerifyEndLabel(GetTokenSpan()))
 	{
 		BEGIN(LexicalStates.ST_END_HEREDOC); 
 		if( ProcessEndNowDoc(_processDoubleQuotedString) ) return (Tokens.T_ENCAPSED_AND_WHITESPACE);
