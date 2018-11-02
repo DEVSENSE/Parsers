@@ -1358,6 +1358,16 @@ namespace Devsense.PHP.Syntax
             }
         }
 
+        public sealed class MixinTag : TypeVarDescTag
+        {
+            public const string Name = "@mixin";
+
+            public MixinTag(string/*!*/line)
+                : base(Name, line, false)
+            {
+            }
+        }
+
         /// <summary>
         /// Dynamic property description within a class.
         /// </summary>
