@@ -480,7 +480,11 @@ namespace Devsense.PHP.Syntax
 
         static ReservedTypeRef.ReservedType _reservedTypeStatic => ReservedTypeRef.ReservedType.@static;
 
-        TypeRef CreateTypeRef(QualifiedNameRef tname, bool allowPrimitiveTypes = false)
+        /// <summary>
+        /// Creates type reference from a given qualified name.
+        /// The given name will be translated using current naming context.
+        /// </summary>
+        public TypeRef CreateTypeRef(QualifiedNameRef tname, bool allowPrimitiveTypes = false)
         {
             var qname = tname.QualifiedName;
             var span = tname.Span;
