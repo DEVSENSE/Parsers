@@ -97,24 +97,24 @@ namespace Devsense.PHP.Syntax.Ast
         public virtual LangElement Call(Span span, LangElement nameExpr, CallSignature signature, TypeRef typeRef)
         {
             Debug.Assert(nameExpr is Expression);
-            return new IndirectStMtdCall(span, typeRef, (Expression)nameExpr, signature.Parameters, signature.Position, signature.GenericParams);
+            return new IndirectStMtdCall(span, typeRef, (Expression)nameExpr, signature);
         }
 
         public virtual LangElement Call(Span span, LangElement nameExpr, CallSignature signature, LangElement memberOfOpt)
         {
             Debug.Assert(nameExpr is Expression);
-            return new IndirectFcnCall(span, (Expression)nameExpr, signature.Parameters, signature.Position, signature.GenericParams) { IsMemberOf = (Expression)memberOfOpt };
+            return new IndirectFcnCall(span, (Expression)nameExpr, signature) { IsMemberOf = (Expression)memberOfOpt };
         }
 
         public virtual LangElement Call(Span span, Name name, Span nameSpan, CallSignature signature, TypeRef typeRef)
         {
-            return new DirectStMtdCall(span, new ClassConstUse(span, typeRef, new VariableNameRef(nameSpan, name.Value)), signature.Parameters, signature.Position, signature.GenericParams);
+            return new DirectStMtdCall(span, typeRef, new NameRef(nameSpan, name), signature);
         }
 
         public virtual LangElement Call(Span span, TranslatedQualifiedName name, CallSignature signature, LangElement memberOfOpt)
         {
             Debug.Assert(memberOfOpt == null || memberOfOpt is Expression);
-            return new DirectFcnCall(span, name, signature.Parameters, signature.Position, signature.GenericParams) { IsMemberOf = (Expression)memberOfOpt };
+            return new DirectFcnCall(span, name, signature) { IsMemberOf = (Expression)memberOfOpt };
         }
         public virtual ActualParam ActualParameter(Span span, LangElement expr, ActualParam.Flags flags)
         {

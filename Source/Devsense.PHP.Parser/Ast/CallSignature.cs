@@ -123,13 +123,20 @@ namespace Devsense.PHP.Syntax.Ast
         /// </summary>
         public TypeRef[]/*!*/ GenericParams
         {
-            get { return this.GetProperty<TypeRef[]>() ?? EmptyArray<TypeRef>.Instance; }
+            get
+            {
+                return this.GetProperty<TypeRef[]>() ?? EmptyArray<TypeRef>.Instance;
+            }
             set
             {
-                if (value.Any())
+                if (value != null && value.Length != 0)
+                {
                     this.SetProperty<TypeRef[]>(value);
+                }
                 else
+                {
                     this.Properties.RemoveProperty<TypeRef[]>();
+                }
             }
         }
 
@@ -152,7 +159,7 @@ namespace Devsense.PHP.Syntax.Ast
         public CallSignature(IList<ActualParam> parameters, IList<TypeRef> genericParams, Text.Span position)
         {
             this.parameters = (parameters ?? throw new ArgumentNullException(nameof(parameters))).AsArray();
-            this.GenericParams = genericParams.AsArray();
+            this.GenericParams = (genericParams != null && genericParams.Count != 0) ? genericParams.AsArray() : null;
             _position = position;
         }
     }
