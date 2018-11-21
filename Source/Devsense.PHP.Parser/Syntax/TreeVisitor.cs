@@ -206,6 +206,8 @@ namespace Devsense.PHP.Syntax
         virtual public void VisitTypeDecl(TypeDecl x)
         {
             VisitElement(x.PHPDoc);
+            VisitElement(x.BaseClass as TypeRef);
+            VisitList(x.ImplementsList);
             VisitList(x.Members);
         }
 
@@ -340,13 +342,13 @@ namespace Devsense.PHP.Syntax
         /// Visit all elements in the given list.
         /// </summary>
         /// <param name="items">Collection of elements to visit.</param>
-        protected void VisitList<T>(IList<T> items) where T : LangElement
+        protected void VisitList<T>(IList<T> items) where T : class
         {
             if (items != null)
             {
                 for (int i = 0; i < items.Count; i++)
                 {
-                    VisitElement(items[i]);
+                    VisitElement(items[i] as LangElement);
                 }
             }
         }
