@@ -651,18 +651,36 @@ namespace Devsense.PHP.Syntax.Ast.Serialization
             base.VisitUseStatement(x);
             _serializer.EndSerialize();
         }
+        private void VisitINamedTypeRef(INamedTypeRef tref)
+        {
+            if (tref is ClassTypeRef)
+                VisitClassTypeRef((ClassTypeRef)tref);
+            else
+                VisitTranslatedTypeRef((TranslatedTypeRef)tref);
+        }
         override public void VisitNamedTypeDecl(NamedTypeDecl x)
         {
             _serializer.StartSerialize(typeof(NamedTypeDecl).Name, SerializeSpan(x.Span),
                 new NodeObj("Name", x.Name.Name.Value), new NodeObj("MemberAttributes", MemberAttributesToString(x.MemberAttributes)),
                 new NodeObj("IsConditional", x.IsConditional.ToString()));
             if (x.BaseClass != null)
-                _serializer.Serialize("BaseClassName", new NodeObj("Name", x.BaseClass.ClassName.ToString()),
-                    x.BaseClass is TranslatedTypeRef ? new NodeObj("OriginalName", ((TranslatedTypeRef)x.BaseClass).OriginalType.QualifiedName.ToString()) : NodeObj.Empty);
+            {
+                _serializer.StartSerialize("BaseClassName");
+                VisitINamedTypeRef(x.BaseClass);
+                _serializer.EndSerialize();
+            }
             if (x.ImplementsList != null && x.ImplementsList.Length > 0)
-                _serializer.Serialize("ImplementsList", x.ImplementsList.Select(n => new NodeObj("Name", n.ClassName.ToString())).ToArray());
+            {
+                _serializer.StartSerialize("ImplementsList");
+                foreach (var item in x.ImplementsList)
+                {
+                    VisitINamedTypeRef(item);
+                }
+                _serializer.EndSerialize();
+            }
             SerializePHPDoc(x.PHPDoc);
-            base.VisitNamedTypeDecl(x);
+            foreach (var item in x.Members)
+                VisitElement(item);
             _serializer.EndSerialize();
         }
         override public void VisitAnonymousTypeDecl(AnonymousTypeDecl x)
@@ -671,11 +689,23 @@ namespace Devsense.PHP.Syntax.Ast.Serialization
                 new NodeObj("MemberAttributes", MemberAttributesToString(x.MemberAttributes)),
                 new NodeObj("IsConditional", x.IsConditional.ToString()));
             if (x.BaseClass != null)
-                _serializer.Serialize("BaseClassName", new NodeObj("Name", x.BaseClass.ClassName.ToString()));
+            {
+                _serializer.StartSerialize("BaseClassName");
+                VisitINamedTypeRef(x.BaseClass);
+                _serializer.EndSerialize();
+            }
             if (x.ImplementsList != null && x.ImplementsList.Length > 0)
-                _serializer.Serialize("ImplementsList", x.ImplementsList.Select(n => new NodeObj("Name", n.ClassName.ToString())).ToArray());
+            {
+                _serializer.StartSerialize("ImplementsList");
+                foreach (var item in x.ImplementsList)
+                {
+                    VisitINamedTypeRef(item);
+                }
+                _serializer.EndSerialize();
+            }
             SerializePHPDoc(x.PHPDoc);
-            base.VisitAnonymousTypeDecl(x);
+            foreach (var item in x.Members)
+                VisitElement(item);
             _serializer.EndSerialize();
         }
         override public void VisitFieldDeclList(FieldDeclList x)

@@ -16,7 +16,7 @@ class SimpleClass extends MyClass
     "Name" : "SimpleClass",
     "MemberAttributes" : "Public",
     "IsConditional" : "False",
-    "BaseClassName":{"Name":"MyClass"},
+    "BaseClassName":{"ClassTypeRef":{"ClassName":"MyClass"}},
     "PHPDoc" : {
       "Comment" : "class declaration"
     },

@@ -119,15 +119,6 @@ namespace UnitTests
                 base.VisitTranslatedTypeRef(x);
             }
 
-            public override void VisitTypeDecl(TypeDecl x)
-            {
-                // TODO - base class and interfaces are not visited, they are converted to qualified name
-                VisitElement((TypeRef)x.BaseClass);
-                foreach (var item in x.ImplementsList)
-                    VisitElement((TypeRef)item);
-                base.VisitTypeDecl(x);
-            }
-
             public override void VisitTraitAdaptationPrecedence(TraitsUse.TraitAdaptationPrecedence x)
             {
                 // TODO - visit adaptations

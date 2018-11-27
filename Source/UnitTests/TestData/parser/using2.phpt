@@ -38,7 +38,10 @@ namespace test{
         "NewEx":{"TranslatedTypeRef":{"ClassName":"MySpace\X","OriginalName":"Y"}},
         "GlobalConstUse":{"Name":"MySpace\gconst","OrigianlName":"lconst","FallbackName":""},
         "GlobalConstUse":{"Name":"test\clsconst","OrigianlName":"clsconst","FallbackName":"clsconst"},
-        "NamedTypeDecl":{"Name":"A","MemberAttributes":"Public","IsConditional":"False","BaseClassName":{"Name":"MySpace\X","OriginalName":"X"},"ImplementsList":{"Name":"MySpace\X","Name":"Y"}}
+        "NamedTypeDecl":{"Name":"A","MemberAttributes":"Public","IsConditional":"False",
+          "BaseClassName":{"TranslatedTypeRef":{"ClassName":"MySpace\X","OriginalName":"X"}},
+          "ImplementsList":{"TranslatedTypeRef":{"ClassName":"MySpace\X","OriginalName":"Y"},"ClassTypeRef":{"ClassName":"Y"}}
+        }
       }
     }
   }

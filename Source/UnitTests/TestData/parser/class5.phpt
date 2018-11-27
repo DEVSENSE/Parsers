@@ -17,8 +17,8 @@ interface SimpleInterface extends SimpleInter1, SimpleInter2
     "MemberAttributes":"Interface",
     "IsConditional":"False",    
     "ImplementsList":{
-      "Name":"SimpleInter1",
-      "Name":"SimpleInter2"
+      "ClassTypeRef":{"ClassName":"SimpleInter1"},
+      "ClassTypeRef":{"ClassName":"SimpleInter2"}
     },
     "PHPDoc":{"Comment":"interface declaration"},
     "MethodDecl":{

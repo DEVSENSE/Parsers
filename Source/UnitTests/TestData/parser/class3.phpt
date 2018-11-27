@@ -12,10 +12,10 @@ class SimpleClass extends SimpleTrait implements SimpleInter1, SimpleInter2
     "Name":"SimpleClass",
     "MemberAttributes":"Public",
     "IsConditional":"False",
-    "BaseClassName":{"Name":"SimpleTrait"},
+    "BaseClassName":{"ClassTypeRef":{"ClassName":"SimpleTrait"}},
     "ImplementsList":{
-      "Name":"SimpleInter1",
-      "Name":"SimpleInter2"
+      "ClassTypeRef":{"ClassName":"SimpleInter1"},
+      "ClassTypeRef":{"ClassName":"SimpleInter2"}
     },
     "PHPDoc":{"Comment":"class declaration"}
   }  

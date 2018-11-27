@@ -13,8 +13,8 @@ echo new class extends myA implements ArrayA
       "AnonymousTypeDecl":{
         "MemberAttributes":"Public",
         "IsConditional":"False",
-        "BaseClassName":{"Name":"myA"},
-        "ImplementsList":{"Name":"ArrayA"}
+        "BaseClassName":{"ClassTypeRef":{"ClassName":"myA"}},
+        "ImplementsList":{"ClassTypeRef":{"ClassName":"ArrayA"}}
       }
     }
   }

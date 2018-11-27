@@ -17,15 +17,15 @@ interface SimpleClass extends int
     "Name":"SimpleClass",
     "MemberAttributes":"Public",
     "IsConditional":"False",
-    "BaseClassName":{"Name":"int"},
-    "ImplementsList":{"Name":"int"},
+    "BaseClassName":{"ClassTypeRef":{"ClassName":"int"}},
+    "ImplementsList":{"ClassTypeRef":{"ClassName":"int"}},
     "PHPDoc":{"Comment":"classdeclaration"}
   },
   "NamedTypeDecl":{
     "Name":"SimpleClass",
     "MemberAttributes":"Interface",
     "IsConditional":"False",
-    "ImplementsList":{"Name":"int"}
+    "ImplementsList":{"ClassTypeRef":{"ClassName":"int"}}
   }
 }
 
