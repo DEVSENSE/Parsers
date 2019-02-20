@@ -150,7 +150,7 @@ namespace Devsense.PHP.Syntax
 
             public ISourceToken GetTokenAt(Span span, Tokens predicate, ISourceToken @default)
             {
-                foreach ( var t in GetTokens(span))
+                foreach (var t in GetTokens(span))
                 {
                     if (t.Token == predicate) return t;
                 }
@@ -176,9 +176,9 @@ namespace Devsense.PHP.Syntax
                     foreach (var t in @default) yield return t;
                 }
             }
-            public string GetTokenText(ISourceToken token, string @default) => 
-                token == null || !token.Span.IsValid || token.Span.End >  _text.Length? 
-                @default: _text.Substring(token.Span.Start, token.Span.Length);
+            public string GetTokenText(ISourceToken token, string @default) =>
+                token == null || !token.Span.IsValid || token.Span.End > _text.Length ?
+                @default : _text.Substring(token.Span.Start, token.Span.Length);
         }
 
         public static ISourceTokenProvider CreateEmptyProvider()
