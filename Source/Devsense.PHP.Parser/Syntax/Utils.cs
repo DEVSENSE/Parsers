@@ -1410,7 +1410,10 @@ namespace Devsense.PHP.Syntax
             get
             {
                 if (_instance == null)
-                    _instance = new T[0];
+                {
+                    System.Threading.Interlocked.CompareExchange(ref _instance, new T[0], null);
+                }
+
                 return _instance;
             }
         }
@@ -1423,6 +1426,13 @@ namespace Devsense.PHP.Syntax
     [DebuggerNonUserCode]
     public static class ArrayUtils
     {
+        /// <summary>
+        /// Gets empty array singleton of <typeparamref name="T"/>.
+        /// Cannot be <c>null</c>.
+        /// </summary>
+        /// <remarks>To be used on platforms where we don't have <c>Array.Empty&lt;T&gt;()</c>.</remarks>
+        public static T[] Empty<T>() => EmptyArray<T>.Instance;
+
         /// <summary>
         /// Empty int array.
         /// </summary>
@@ -1828,10 +1838,16 @@ namespace Devsense.PHP.Syntax
         /// <summary>
         /// Determines whether the array is empty or <c>null</c> reference.
         /// </summary>
+        [Obsolete("Use IsEmpty<T>() instead.")]
         public static bool Empty<T>(this T[] arr)
         {
             return !Any<T>(arr);
         }
+
+        /// <summary>
+        /// Determines whether the array is empty or <c>null</c> reference.
+        /// </summary>
+        public static bool IsEmpty<T>(this T[] arr) => arr == null || arr.Length == 0;
 
         /// <summary>
         /// Copies a part of given array into a new one. If the result array would be the same size as the original one, reference to the original one is returned directly.

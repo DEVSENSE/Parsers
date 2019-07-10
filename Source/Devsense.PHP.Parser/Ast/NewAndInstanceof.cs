@@ -42,7 +42,7 @@ namespace Devsense.PHP.Syntax.Ast
         {
             Debug.Assert(classNameRef != null && parameters != null);
             this.classNameRef = classNameRef;
-            this.callSignature = new CallSignature(parameters, TypeRef.EmptyList, parametersSpan);
+            this.callSignature = new CallSignature(parameters, EmptyArray<TypeRef>.Instance, parametersSpan);
         }
 
         /// <summary>
