@@ -31,7 +31,7 @@ namespace Devsense.PHP.Syntax
         /// <summary>
         /// Basic features - always present.
         /// </summary>
-        Basic = Php73Set,
+        Basic = Php74Set,
 
         /// <summary>
         /// Allows using short open tags in the script.
@@ -72,6 +72,11 @@ namespace Devsense.PHP.Syntax
         /// PHP 7.3 feature set.
         /// </summary>
         Php73Set = Php72Set | 1024,
+
+        /// <summary>
+        /// /PHP 7.4 feature set.
+        /// </summary>
+        Php74Set = Php73Set | 2048,
     }
 
     public static class LanguageFeaturesExtensions
