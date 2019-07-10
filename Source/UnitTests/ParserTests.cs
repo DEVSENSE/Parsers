@@ -18,6 +18,22 @@ namespace UnitTests
     [DeploymentItem("ParserTestData.csv")]
     public class ParserTests
     {
+        [TestMethod]
+        public void SimpleParseTest()
+        {
+            string code = @"<?php
+class X {
+    function static() { }
+}
+";
+
+            var sourceUnit = new CodeSourceUnit(code, "dummy.php", Encoding.UTF8, Lexer.LexicalStates.INITIAL, LanguageFeatures.Basic);
+            var factory = new BasicNodesFactory(sourceUnit);
+            var errors = new TestErrorSink();
+
+            sourceUnit.Parse(factory, errors, new TestErrorRecovery());
+        }
+
         public TestContext TestContext { get; set; }
         public const string Errors = "ERRORS:";
         public const string Pattern = @"\s*" + Errors + @"\s*(?<Number>\d*(, \d*)*)\s*(?<JSON>.*)";
@@ -33,17 +49,14 @@ namespace UnitTests
             string[] testparts = testcontent.Split(new string[] { "<<<TEST>>>" }, StringSplitOptions.RemoveEmptyEntries);
             Assert.IsTrue(testparts.Length >= 2);
 
-            var sourceUnit = new CodeSourceUnit(testparts[0], path, Encoding.UTF8, Lexer.LexicalStates.INITIAL, LanguageFeatures.Php71Set);
+            var sourceUnit = new CodeSourceUnit(testparts[0], path, Encoding.UTF8, Lexer.LexicalStates.INITIAL, LanguageFeatures.Basic);
             var factory = new BasicNodesFactory(sourceUnit);
             var errors = new TestErrorSink();
 
-            GlobalCode ast = null;
-
-            using (StringReader source_reader = new StringReader(testparts[0]))
-            {
-                sourceUnit.Parse(factory, errors, new TestErrorRecovery());
-                ast = sourceUnit.Ast;
-            }
+            //
+            sourceUnit.Parse(factory, errors, new TestErrorRecovery());
+            
+            //
             if (testparts[1].TrimStart().StartsWith(Errors))
             {
                 var matches = _errorRegex.Matches(testparts[1]);
@@ -64,11 +77,11 @@ namespace UnitTests
                 Assert.AreEqual(0, errors.Count, path);
             }
 
-            Assert.IsNotNull(ast);
+            Assert.IsNotNull(sourceUnit.Ast);
 
             var serializer = new JsonNodeWriter();
             TreeSerializer visitor = new TreeSerializer(serializer);
-            ast.VisitMe(visitor);
+            sourceUnit.Ast.VisitMe(visitor);
 
             Regex rgx = new Regex(@"""Span""[^}]*},?\s*\n?"); // omit Span for more compact testing (position must be verified separately)
             string expected = rgx.Replace(testparts[1].Trim().Replace("\r", string.Empty).Replace("\n", string.Empty).Replace(" ", string.Empty), string.Empty);
@@ -83,11 +96,11 @@ namespace UnitTests
 
             // check every node has a parent
             var parentChecker = new ContainingElementCheck();
-            parentChecker.VisitGlobalCode(ast);
+            parentChecker.VisitGlobalCode(sourceUnit.Ast);
 
             // check every node has a parent
             var spanChecker = new NameSpanCheck(testparts[0]);
-            spanChecker.VisitGlobalCode(ast);
+            spanChecker.VisitGlobalCode(sourceUnit.Ast);
         }
 
         /// <summary>
