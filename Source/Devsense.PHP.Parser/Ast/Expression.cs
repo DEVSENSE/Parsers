@@ -154,11 +154,6 @@ namespace Devsense.PHP.Syntax.Ast
     public abstract class Expression : LangElement, IExpression
     {
         /// <summary>
-        /// Immutable empty list of <see cref="Expression"/>.
-        /// </summary>
-        internal new static readonly List<Expression>/*!*/EmptyList = new List<Expression>();
-
-        /// <summary>
         /// Operation represented by the expression
         /// </summary>
         public abstract Operations Operation { get; }

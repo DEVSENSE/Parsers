@@ -33,11 +33,6 @@ namespace Devsense.PHP.Syntax.Ast
         public object DefaultType { get { return defaultType; } }
         private readonly object defaultType;
 
-        /// <summary>
-        /// Singleton instance of an empty <see cref="List&lt;FormalTypeParam&gt;"/>.
-        /// </summary>
-        public new static readonly List<FormalTypeParam>/*!*/EmptyList = new List<FormalTypeParam>();
-
         #region Construction
 
         public FormalTypeParam(Text.Span span, Name name, object defaultType)

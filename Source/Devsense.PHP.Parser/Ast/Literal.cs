@@ -52,24 +52,24 @@ namespace Devsense.PHP.Syntax.Ast
                 return new NullLiteral(span);
             }
 
-            if (value is long)
+            if (value is long l)
             {
-                return new LongIntLiteral(span, (long)value);
+                return new LongIntLiteral(span, l);
             }
 
-            if (value is int)
+            if (value is int i)
             {
-                return new LongIntLiteral(span, (int)value);
+                return new LongIntLiteral(span, i);
             }
 
-            if (value is double)
+            if (value is double d)
             {
-                return new DoubleLiteral(span, (double)value);
+                return new DoubleLiteral(span, d);
             }
 
-            if (value is bool)
+            if (value is bool b)
             {
-                return new BoolLiteral(span, (bool)value);
+                return new BoolLiteral(span, b);
             }
 
             if (value is string str)
@@ -77,9 +77,9 @@ namespace Devsense.PHP.Syntax.Ast
                 return new StringLiteral(span, str);
             }
 
-            if (value is byte[])
+            if (value is byte[] barr)
             {
-                return new BinaryStringLiteral(span, (byte[])value);
+                return new BinaryStringLiteral(span, barr);
             }
 
             //
