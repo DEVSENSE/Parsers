@@ -1,13 +1,13 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <VersionPrefix Condition=" '$(VersionPrefix)'=='' ">1.9.0</VersionPrefix>
+    <VersionPrefix Condition=" '$(VersionPrefix)'=='' ">1.10.1</VersionPrefix>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Version Condition=" '$(Version)'=='' ">$(VersionPrefix)</Version>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Company>Devsense</Company>
-    <Copyright>(c) Devsense 2018</Copyright>
+    <Copyright>(c) Devsense 2019</Copyright>
     <ProjectGuid>{4F3BE9D7-1E3D-4BE4-999A-32CCE715AB40}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
