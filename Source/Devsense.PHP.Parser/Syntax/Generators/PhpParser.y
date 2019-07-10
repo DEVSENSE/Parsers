@@ -436,8 +436,13 @@ reserved_non_modifiers:
 ;
 
 semi_reserved:
-		reserved_non_modifiers
-	|	T_STATIC | T_ABSTRACT | T_FINAL | T_PRIVATE | T_PROTECTED | T_PUBLIC { $$ = _lexer.TokenText; }
+	  reserved_non_modifiers
+	| T_STATIC { $$ = _lexer.TokenText; }
+	| T_ABSTRACT { $$ = _lexer.TokenText; }
+	| T_FINAL { $$ = _lexer.TokenText; }
+	| T_PRIVATE { $$ = _lexer.TokenText; }
+	| T_PROTECTED { $$ = _lexer.TokenText; }
+	| T_PUBLIC { $$ = _lexer.TokenText; }
 ;
 
 identifier:

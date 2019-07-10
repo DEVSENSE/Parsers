@@ -2170,6 +2170,21 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
       case 70: // reserved_non_modifiers -> T_NS_C 
 { yyval.String = _lexer.TokenText; }
         return;
+      case 72: // semi_reserved -> T_STATIC 
+{ yyval.String = _lexer.TokenText; }
+        return;
+      case 73: // semi_reserved -> T_ABSTRACT 
+{ yyval.String = _lexer.TokenText; }
+        return;
+      case 74: // semi_reserved -> T_FINAL 
+{ yyval.String = _lexer.TokenText; }
+        return;
+      case 75: // semi_reserved -> T_PRIVATE 
+{ yyval.String = _lexer.TokenText; }
+        return;
+      case 76: // semi_reserved -> T_PROTECTED 
+{ yyval.String = _lexer.TokenText; }
+        return;
       case 77: // semi_reserved -> T_PUBLIC 
 { yyval.String = _lexer.TokenText; }
         return;
