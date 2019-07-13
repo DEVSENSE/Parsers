@@ -277,22 +277,27 @@ namespace Devsense.PHP.Syntax
         {
             if (item != null)
             {
-                var valueSpan = item is ValueItem ? ((ValueItem)item).ValueExpr.Span : ((RefItem)item).RefToGet.Span;
+                var valueSpan = item.Value.Span;
                 if (item.Index != null)
                 {
                     VisitElement(item.Index);
                     previous = ProcessToken(Tokens.T_DOUBLE_ARROW, SpanUtils.SpanIntermission(item.Index.Span, valueSpan));
                 }
 
-                if (item is ValueItem)
+                if (item is ValueItem vi)
                 {
-                    VisitElement(((ValueItem)item).ValueExpr);
+                    VisitElement(vi.ValueExpr);
                 }
-                else if (item is RefItem)
+                else if (item is RefItem ri)
                 {
                     ProcessToken(Tokens.T_AMP, SpanUtils.SpanIntermission(
                         item.HasKey ? item.Index.Span : previous.Span, valueSpan));
-                    VisitElement(((RefItem)item).RefToGet);
+                    VisitElement(ri.RefToGet);
+                }
+                else if (item is SpreadItem si)
+                {
+                    ProcessToken(Tokens.T_ELLIPSIS, SpanUtils.SpanIntermission(previous.Span, valueSpan));
+                    VisitElement(si.Expression);
                 }
                 else
                 {
@@ -1640,6 +1645,11 @@ namespace Devsense.PHP.Syntax
         }
 
         public sealed override void VisitValueItem(ValueItem x)
+        {
+            throw new InvalidOperationException();  // VisitArrayItem
+        }
+
+        public sealed override void VisitSpreadItem(SpreadItem x)
         {
             throw new InvalidOperationException();  // VisitArrayItem
         }

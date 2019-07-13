@@ -15,7 +15,7 @@
 
 using System;
 using System.Collections.Generic;
-
+using System.Diagnostics;
 using Devsense.PHP.Syntax.Ast;
 
 namespace Devsense.PHP.Syntax
@@ -623,6 +623,16 @@ namespace Devsense.PHP.Syntax
         }
 
         /// <summary>
+        /// Visit item use index (if not null) and array.
+        /// </summary>
+        /// <param name="x"></param>
+        virtual public void VisitSpreadItem(SpreadItem x)
+        {
+            Debug.Assert(x.Index == null);
+            VisitElement(x.Expression);
+        }
+
+        /// <summary>
         /// Visits string literal dereferencing.
         /// </summary>
         virtual public void VisitStringLiteralDereferenceEx(StringLiteralDereferenceEx x)
@@ -711,10 +721,7 @@ namespace Devsense.PHP.Syntax
                 VisitElement(item.Index);
 
                 // value
-                if (item is ValueItem)
-                    VisitElement(((ValueItem)item).ValueExpr);
-                else
-                    VisitElement(((RefItem)item).RefToGet);
+                VisitElement((LangElement)item.Value);
             }
         }
 

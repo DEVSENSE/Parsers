@@ -90,6 +90,13 @@ namespace Devsense.PHP.Syntax.Ast.Serialization
             }
         }
 
+        void SerializeItem(SpreadItem item)
+        {
+            _serializer.StartSerialize("Item");
+            SerializeOptionalProperty("Expression", item.Expression);
+            _serializer.EndSerialize();
+        }
+
         void SerializePHPDoc(PHPDocBlock doc)
         {
             if (doc != null)
@@ -842,9 +849,12 @@ namespace Devsense.PHP.Syntax.Ast.Serialization
         {
             _serializer.StartSerialize(typeof(ArrayEx).Name, SerializeSpan(x.Span));
             foreach (var item in x.Items)
-                if (item is ValueItem)
-                    SerializeItem((ValueItem)item);
-                else SerializeItem((RefItem)item);
+            {
+                if (item is ValueItem vi) SerializeItem(vi);
+                else if (item is RefItem ri) SerializeItem(ri);
+                else if (item is SpreadItem si) SerializeItem(si);
+                else throw new ArgumentException();
+            }
             _serializer.EndSerialize();
         }
 

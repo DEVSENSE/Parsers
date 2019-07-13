@@ -141,22 +141,20 @@ namespace Devsense.PHP.Syntax.Ast
         /// <summary>
         /// The item key, can be <c>null</c>.
         /// </summary>
-        public Expression Index { get { return _index; } }
-        readonly Expression _index; // can be null
+        public Expression Index { get; }
 
         public abstract bool IsByRef { get; }
 
-        IExpression IArrayItem.Index => _index;
+        IExpression IArrayItem.Index => Index;
 
-        IExpression IArrayItem.Value => this.Value;
-        protected abstract IExpression Value { get; }
+        public abstract IExpression Value { get; }
 
         protected Item(Expression index)
         {
-            _index = index;
+            this.Index = index;
         }
 
-        internal bool HasKey => _index != null;
+        internal bool HasKey => Index != null;
     }
 
     #endregion
@@ -169,18 +167,18 @@ namespace Devsense.PHP.Syntax.Ast
     public sealed class ValueItem : Item
     {
         /// <summary>Value of array item</summary>
-        public Expression ValueExpr { get { return _valueExpr; } }
+        public Expression ValueExpr { get; }
 
         public override bool IsByRef => false;
-        protected override IExpression Value => _valueExpr;
+
+        public override IExpression Value => _valueExpr;
 
         readonly Expression _valueExpr;
 
         public ValueItem(Expression index, Expression/*!*/ valueExpr)
             : base(index)
         {
-            Debug.Assert(valueExpr != null);
-            this._valueExpr = valueExpr;
+            this.ValueExpr = valueExpr ?? throw new ArgumentNullException(nameof(valueExpr));
         }
     }
 
@@ -194,18 +192,42 @@ namespace Devsense.PHP.Syntax.Ast
     public sealed class RefItem : Item
     {
         /// <summary>Object to obtain reference of</summary>
-        public VariableUse/*!*/RefToGet { get { return _refToGet; } }
-        readonly VariableUse/*!*/_refToGet;
+        public VariableUse/*!*/RefToGet { get; }
 
         public override bool IsByRef => true;
-        protected override IExpression Value => _refToGet;
+
+        public override IExpression Value => RefToGet;
 
         public RefItem(Expression index, VariableUse refToGet)
             : base(index)
         {
-            Debug.Assert(refToGet != null);
-            this._refToGet = refToGet;
+            this.RefToGet = refToGet ?? throw new ArgumentNullException(nameof(refToGet));
         }
+    }
+
+    #endregion
+
+    #region SpreadItem
+
+    /// <summary>
+    /// Expression to be spread into the array.
+    /// <code>[...$expression]</code>
+    /// </summary>
+    public sealed class SpreadItem : Item
+    {
+        /// <summary>
+        /// Expression to be spread into the array.
+        /// </summary>
+        public Expression/*!*/Expression { get; }
+
+        public SpreadItem(Expression expression)
+            : base(null)
+        {
+        }
+
+        public override bool IsByRef => false;
+
+        public override IExpression Value => Expression;
     }
 
     #endregion

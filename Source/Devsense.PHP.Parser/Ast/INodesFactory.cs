@@ -915,6 +915,14 @@ namespace Devsense.PHP.Syntax.Ast
         Item ArrayItemRef(TSpan span, TNode indexOpt, TNode variable);
 
         /// <summary>
+        /// Creates array reference item initialization expression.
+        /// </summary>
+        /// <param name="span">Entire element span.</param>
+        /// <param name="expression">Expression to be spread.</param>
+        /// <returns>Array spread item expression.</returns>
+        Item ArrayItemSpread(TSpan span, TNode expression);
+
+        /// <summary>
         /// Creates <c>new</c> expression.
         /// </summary>
         /// <param name="span">Entire element span.</param>

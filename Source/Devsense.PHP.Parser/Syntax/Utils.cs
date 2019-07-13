@@ -76,8 +76,8 @@ namespace Devsense.PHP.Syntax
             previous.IsValid && next >= 0 && previous.End <= next ? Text.Span.FromBounds(previous.End, next) : Text.Span.Invalid;
 
         public static Text.Span ItemSpan(this Ast.Item item) => SafeCombineSpan(
-            item.HasKey ? item.Index.Span : Text.Span.Invalid,
-            item is Ast.ValueItem ? ((Ast.ValueItem)item).ValueExpr.Span : ((Ast.RefItem)item).RefToGet.Span);
+            item.Index != null ? item.Index.Span : Text.Span.Invalid,
+            item.Value.Span);
 
         public static Text.Span ItemsSpan(this IList<Ast.Item> items)
         {

@@ -1479,7 +1479,7 @@ array_pair:
 	|	'&' variable
 			{ $$ = _astFactory.ArrayItemRef(@$, null, $2); }
 	|	T_ELLIPSIS expr
-			{ throw new NotImplementedException(); }
+			{ $$ = _astFactory.ArrayItemSpread(@$, $2); }
 	|	expr T_DOUBLE_ARROW T_LIST '(' array_pair_list ')'
 			{ $$ = _astFactory.ArrayItemValue(@$, $1, _astFactory.List(Span.Combine(@3, @6), $5, true)); }
 	|	T_LIST '(' array_pair_list ')'

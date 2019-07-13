@@ -55,6 +55,11 @@ namespace Devsense.PHP.Syntax.Ast
             return new RefItem((Expression)indexOpt, (VariableUse)variable);
         }
 
+        public virtual Item ArrayItemSpread(Span span, LangElement expression)
+        {
+            return new SpreadItem((Expression)expression);
+        }
+
         public virtual LangElement Assignment(Span span, LangElement target, LangElement value, Operations assignOp)
         {
             if (assignOp == Operations.AssignRef)
