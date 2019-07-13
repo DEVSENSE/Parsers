@@ -92,7 +92,7 @@ using StringPair = System.Collections.Generic.KeyValuePair<string, string>;
 %right T_YIELD
 %right T_DOUBLE_ARROW
 %right T_YIELD_FROM
-%left '=' T_PLUS_EQUAL T_MINUS_EQUAL T_MUL_EQUAL T_DIV_EQUAL T_CONCAT_EQUAL T_MOD_EQUAL T_AND_EQUAL T_OR_EQUAL T_XOR_EQUAL T_SL_EQUAL T_SR_EQUAL T_POW_EQUAL
+%left '=' T_PLUS_EQUAL T_MINUS_EQUAL T_MUL_EQUAL T_DIV_EQUAL T_CONCAT_EQUAL T_MOD_EQUAL T_AND_EQUAL T_OR_EQUAL T_XOR_EQUAL T_SL_EQUAL T_SR_EQUAL T_POW_EQUAL T_COALESCE_EQUAL
 %left '?' ':'
 %right T_COALESCE
 %left T_BOOLEAN_OR
@@ -501,7 +501,7 @@ top_statement:
 	|	T_USE use_type use_declarations ';'			{ $$ = _astFactory.Use(@$, $3, $2); _contextType = AliasKind.Type;				/* TODO: Error - must contain only simple uses		  */	}				
 	|	T_CONST const_list ';'	
 		{
-			SetDoc($$ = _astFactory.DeclList(@$, PhpMemberAttributes.None, $2));
+			SetDoc($$ = _astFactory.DeclList(@$, PhpMemberAttributes.None, $2, null));
 		}
 ;
 
@@ -930,14 +930,14 @@ class_statement_list:
 
 
 class_statement:
-		variable_modifiers property_list ';'
+		variable_modifiers optional_type property_list ';'
 			{ 
-				$$ = _astFactory.DeclList(@$, (PhpMemberAttributes)$1, $2); 
+				$$ = _astFactory.DeclList(@$, (PhpMemberAttributes)$1, $3, $2); 
 				SetDoc($$);
 			}
 	|	method_modifiers T_CONST class_const_list ';'
 			{ 
-				$$ = _astFactory.DeclList(@$, (PhpMemberAttributes)$1, $3); 
+				$$ = _astFactory.DeclList(@$, (PhpMemberAttributes)$1, $3, null); 
 				SetDoc($$);
 			}
 	|	T_USE name_list trait_adaptations

@@ -233,8 +233,9 @@ namespace Devsense.PHP.Syntax.Ast
         /// <param name="span">Entire element span.</param>
         /// <param name="attributes">Type member attributes.</param>
         /// <param name="decls">Enumeration of declarations.</param>
+        /// <param name="type">Optional type.</param>
         /// <returns>Declaration list.</returns>
-        TNode DeclList(TSpan span, PhpMemberAttributes attributes, IEnumerable<TNode> decls);
+        TNode DeclList(TSpan span, PhpMemberAttributes attributes, IList<TNode> decls, TypeRef type);
 
         /// <summary>
         /// Creates field declaration.

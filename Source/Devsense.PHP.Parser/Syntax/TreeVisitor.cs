@@ -254,6 +254,7 @@ namespace Devsense.PHP.Syntax
         virtual public void VisitFieldDeclList(FieldDeclList x)
         {
             VisitElement(x.PHPDoc);
+            VisitElement(x.Type);
             VisitList(x.Fields);
         }
 

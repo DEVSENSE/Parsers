@@ -185,8 +185,7 @@ namespace Devsense.PHP.Syntax.Ast
         /// <summary>
         /// Declared constants.
         /// </summary>
-        public IList<GlobalConstantDecl>/*!*/ Constants { get { return constants; } }
-        private readonly IList<GlobalConstantDecl>/*!*/ constants;
+        public IList<GlobalConstantDecl>/*!*/ Constants { get; }
 
         /// <summary>
         /// Span of the entire declaration.
@@ -201,7 +200,7 @@ namespace Devsense.PHP.Syntax.Ast
         {
             Debug.Assert(constants != null);
 
-            this.constants = constants;
+            this.Constants = constants ?? throw new ArgumentNullException(nameof(constants));
         }
 
         /// <summary>

@@ -142,15 +142,30 @@ namespace Devsense.PHP.Syntax.Ast
             return new ConcatEx(span, expressions.CastToArray<Expression>());
         }
 
-        public virtual LangElement DeclList(Span span, PhpMemberAttributes attributes, IEnumerable<LangElement> decls)
+        public virtual LangElement DeclList(Span span, PhpMemberAttributes attributes, IList<LangElement>/*!!*/decls, TypeRef type)
         {
+            Debug.Assert(decls.Count != 0);
             Debug.Assert(decls.All(e => e is FieldDecl) || decls.All(e => e is GlobalConstantDecl) || decls.All(e => e is ClassConstantDecl));
-            if (decls.All(e => e is GlobalConstantDecl))
-                return new GlobalConstDeclList(span, decls.CastToArray<GlobalConstantDecl>());
-            else if (decls.All(e => e is ClassConstantDecl))
+
+            if (decls[0] is FieldDecl)
+            {
+                Debug.Assert(decls.All(e => e is FieldDecl));
+                return new FieldDeclList(span, attributes, decls.CastToArray<FieldDecl>(), type);
+            }
+            else if (decls[0] is ClassConstantDecl)
+            {
+                Debug.Assert(decls.All(e => e is ClassConstantDecl));
                 return new ConstDeclList(span, attributes, decls.CastToArray<ClassConstantDecl>());
-            else //if (decls.All(e => e is FieldDecl))
-                return new FieldDeclList(span, attributes, decls.CastToArray<FieldDecl>());
+            }
+            else if (decls[0] is GlobalConstantDecl)
+            {
+                Debug.Assert(decls.All(e => e is GlobalConstantDecl));
+                return new GlobalConstDeclList(span, decls.CastToArray<GlobalConstantDecl>());
+            }
+            else
+            {
+                throw new ArgumentException();
+            }
         }
 
         public virtual LangElement Do(Span span, LangElement body, LangElement cond, Span condSpan)

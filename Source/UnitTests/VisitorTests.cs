@@ -252,8 +252,8 @@ namespace UnitTests
                 return CountLE(base.Declare(span, decls, statementOpt));
             }
 
-            public override LangElement DeclList(Span span, PhpMemberAttributes attributes, IEnumerable<LangElement> decls)
-                 => CountLE(base.DeclList(span, attributes, decls));
+            public override LangElement DeclList(Span span, PhpMemberAttributes attributes, IList<LangElement> decls, TypeRef type)
+                 => CountLE(base.DeclList(span, attributes, decls, type));
 
             public override LangElement Do(Span span, LangElement body, LangElement cond, Span condSpan)
                  => CountLE(base.Do(span, body, cond, condSpan));

@@ -452,15 +452,18 @@ namespace Devsense.PHP.Syntax.Ast
     /// </remarks>
     public sealed class FieldDeclList : TypeMemberDecl
     {
-        private readonly IList<FieldDecl>/*!*/ fields;
         /// <summary>List of fields in this list</summary>
-        public IList<FieldDecl> Fields/*!*/ { get { return fields; } }
+        public IList<FieldDecl> Fields/*!*/ { get; }
 
-        public FieldDeclList(Text.Span span, PhpMemberAttributes modifiers, IList<FieldDecl>/*!*/ fields)
+        /// <summary>Optional, fields type.</summary>
+        public TypeRef Type { get; }
+
+        public FieldDeclList(Text.Span span, PhpMemberAttributes modifiers, IList<FieldDecl>/*!*/ fields, TypeRef type)
             : base(span, modifiers)
         {
             Debug.Assert(fields != null);
-            this.fields = fields;
+            this.Fields = fields ?? throw new ArgumentNullException(nameof(fields));
+            this.Type = type;
         }
 
         /// <summary>
