@@ -441,7 +441,11 @@ namespace Devsense.PHP.Syntax
         // [0-9]+[eE][+-]?[0-9]+
         protected double GetTokenAsDouble(int startIndex)
         {
+            // TODO: ReadOnlySpan<char>
+
             string str = GetTokenSubstring(startIndex, intern: false);
+
+            if (str.IndexOf('_') >= 0) str = str.Replace("_", ""); // NOTE: NumberStyles.AllowThousands is insufficient so we just remove '_' from the source string
 
             try
             {
