@@ -48,7 +48,7 @@ namespace Devsense.PHP.Syntax.Ast
         Tokens IBlockStatement.ClosingToken => 0;
 
         #endregion
-        
+
         /// <summary>
         /// Array of nodes representing statements in PHP global code
         /// </summary>
@@ -198,8 +198,6 @@ namespace Devsense.PHP.Syntax.Ast
         public GlobalConstDeclList(Text.Span span, IList<GlobalConstantDecl>/*!*/ constants)
             : base(span)
         {
-            Debug.Assert(constants != null);
-
             this.Constants = constants ?? throw new ArgumentNullException(nameof(constants));
         }
 

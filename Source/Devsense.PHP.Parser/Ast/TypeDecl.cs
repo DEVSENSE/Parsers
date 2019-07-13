@@ -555,14 +555,12 @@ namespace Devsense.PHP.Syntax.Ast
     public sealed class ConstDeclList : TypeMemberDecl
     {
         /// <summary>List of constants in this list</summary>
-        public IList<ClassConstantDecl>/*!*/ Constants { get { return constants; } }
-        private readonly IList<ClassConstantDecl>/*!*/ constants;
+        public IList<ClassConstantDecl>/*!*/ Constants { get; }
 
         public ConstDeclList(Text.Span span, PhpMemberAttributes modifiers, IList<ClassConstantDecl>/*!*/ constants)
             : base(span, modifiers)
         {
-            Debug.Assert(constants != null);
-            this.constants = constants;
+            this.Constants = constants ?? throw new ArgumentNullException(nameof(constants));
         }
 
         /// <summary>

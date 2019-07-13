@@ -294,8 +294,8 @@ using StringPair = System.Collections.Generic.KeyValuePair<string, string>;
 
 %type <Bool> possible_comma
 
-%type <Long> returns_ref is_reference is_variadic variable_modifiers method_modifiers 
-%type <Long> non_empty_member_modifiers member_modifier class_modifier class_modifiers function
+%type <Long> returns_ref function fn is_reference is_variadic variable_modifiers 
+%type <Long> method_modifiers non_empty_member_modifiers member_modifier class_modifier class_modifiers
 %type <Kind> use_type
 
 %type <Object> backup_doc_comment enter_scope exit_scope
@@ -435,6 +435,7 @@ reserved_non_modifiers:
 	| T_FILE { $$ = _lexer.TokenText; }	
 	| T_DIR { $$ = _lexer.TokenText; }	
 	| T_NS_C { $$ = _lexer.TokenText; }
+	| T_FN { $$ = _lexer.TokenText; }
 ;
 
 semi_reserved:
@@ -1227,6 +1228,10 @@ expr_without_variable:
 				$6, CombineSpans(@5, @7), $8, CreateBlock(CombineSpans(@12, @14), $13)); 
 				SetDoc($$);
 			}
+;
+
+fn:
+	T_FN
 ;
 
 function:
