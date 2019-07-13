@@ -171,9 +171,7 @@ namespace Devsense.PHP.Syntax.Ast
 
         public override bool IsByRef => false;
 
-        public override IExpression Value => _valueExpr;
-
-        readonly Expression _valueExpr;
+        public override IExpression Value => ValueExpr;
 
         public ValueItem(Expression index, Expression/*!*/ valueExpr)
             : base(index)

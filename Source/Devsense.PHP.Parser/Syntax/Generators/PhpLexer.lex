@@ -52,11 +52,11 @@ using System.Collections.Generic;
 %x ST_IN_HEREDOC
 
 re2c:yyfill:check = 0;
-LNUM	[0-9]+
-DNUM	([0-9]*"."[0-9]+)|([0-9]+"."[0-9]*)
+LNUM	[0-9]+(_[0-9]+)*
+DNUM	({LNUM}?"."{LNUM})|({LNUM}"."{LNUM}?)
 EXPONENT_DNUM	(({LNUM}|{DNUM})[eE][+-]?{LNUM})
-HNUM	"0x"[0-9a-fA-F]+
-BNUM	"0b"[01]+
+HNUM	"0x"[0-9a-fA-F]+(_[0-9a-fA-F]+)*
+BNUM	"0b"[01]+(_[01]+)*
 LABEL	[a-zA-Z_][a-zA-Z0-9_]* //[a-zA-Z_\x80-\xff][a-zA-Z0-9_\x80-\xff]* // support of unicode
 WHITESPACE [ \n\r\t]+
 JUSTWHITESPACE [ \t]+

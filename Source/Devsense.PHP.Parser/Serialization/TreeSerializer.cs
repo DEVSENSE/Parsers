@@ -850,10 +850,13 @@ namespace Devsense.PHP.Syntax.Ast.Serialization
             _serializer.StartSerialize(typeof(ArrayEx).Name, SerializeSpan(x.Span));
             foreach (var item in x.Items)
             {
-                if (item is ValueItem vi) SerializeItem(vi);
-                else if (item is RefItem ri) SerializeItem(ri);
-                else if (item is SpreadItem si) SerializeItem(si);
-                else throw new ArgumentException();
+                if (item != null)
+                {
+                    if (item is ValueItem vi) SerializeItem(vi);
+                    else if (item is RefItem ri) SerializeItem(ri);
+                    else if (item is SpreadItem si) SerializeItem(si);
+                    else throw new ArgumentException();
+                }
             }
             _serializer.EndSerialize();
         }

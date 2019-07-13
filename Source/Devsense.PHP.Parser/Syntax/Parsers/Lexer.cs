@@ -268,70 +268,109 @@ namespace Devsense.PHP.Syntax
             }
         }
 
-        /// <summary>
-        /// Checks whether {LNUM} fits to integer, long or double 
-        /// and returns appropriate value from Tokens enum.
-        /// </summary>
-        protected Tokens GetIntegerTokenType(int startIndex)
-        {
-            int i = token_start + startIndex;
-            while (i < token_end && buffer[i] == '0') i++;
+        ///// <summary>
+        ///// Checks whether {LNUM} fits to integer, long or double 
+        ///// and returns appropriate value from Tokens enum.
+        ///// </summary>
+        //protected Tokens GetIntegerTokenType(int startIndex)
+        //{
+        //    int i = token_start + startIndex;
+        //    while (i < token_end && buffer[i] == '0') i++;
 
-            int number_length = token_end - i;
-            if (i != token_start + startIndex)
+        //    int number_length = token_end - i;
+        //    if (i != token_start + startIndex)
+        //    {
+        //        // starts with zero - octal
+        //        // similar to GetHexIntegerTokenType code
+        //        if (number_length < 22)
+        //            return Tokens.T_LNUMBER;
+        //        return Tokens.T_DNUMBER;
+        //    }
+        //    else
+        //    {
+        //        // can't easily check for numbers of different length
+        //        SemanticValueType val = default(SemanticValueType);
+        //        return GetTokenAsDecimalNumber(startIndex, 10, ref val);
+        //    }
+        //}
+
+        ///// <summary>
+        ///// Checks whether {HNUM} fits to integer, long or double 
+        ///// and returns appropriate value from Tokens enum.
+        ///// </summary>
+        //protected Tokens GetHexIntegerTokenType(int startIndex)
+        //{
+        //    // 0xffffffff no
+        //    // 0x7fffffff yes
+        //    int i = token_start + startIndex;
+        //    while (i < token_end && buffer[i] == '0') i++;
+
+        //    // returns T_LNUMBER when: length without zeros is less than 16
+        //    // or equals 16 and first non-zero character is less than '8'
+        //    if ((token_end - i < 16) || ((token_end - i == 16) && buffer[i] >= '0' && buffer[i] < '8'))
+        //        return Tokens.T_LNUMBER;
+
+        //    return Tokens.T_DNUMBER;
+        //}
+
+        //// base == 10: [0-9]*
+        //// base == 16: [0-9A-Fa-f]*
+        //// assuming result < max int
+        //protected int GetTokenAsInteger(int startIndex, int @base)
+        //{
+        //    int result = 0;
+        //    int buffer_pos = token_start + startIndex;
+
+        //    for (; ; )
+        //    {
+        //        int digit = Convert.AlphaNumericToDigit(buffer[buffer_pos]);
+        //        if (digit >= @base) break;
+
+        //        result = result * @base + digit;
+        //        buffer_pos++;
+        //    }
+
+        //    return result;
+        //}
+
+        #region nested struct: DigitsEnumerator // helper enumerator of digits within string, ignores '_'
+
+        struct DigitsEnumerator
+        {
+            readonly char[] buffer;
+            readonly int @base;
+
+            int buffer_pos;
+            int digit;
+
+            public DigitsEnumerator(char[] buffer, int buffer_pos, int @base)
             {
-                // starts with zero - octal
-                // similar to GetHexIntegerTokenType code
-                if (number_length < 22)
-                    return Tokens.T_LNUMBER;
-                return Tokens.T_DNUMBER;
+                this.buffer = buffer;
+                this.buffer_pos = buffer_pos;
+                this.@base = @base;
+                this.digit = 0;
             }
-            else
+
+            public bool MoveNext()
             {
-                // can't easily check for numbers of different length
-                SemanticValueType val = default(SemanticValueType);
-                return GetTokenAsDecimalNumber(startIndex, 10, ref val);
+                for (; ; )
+                {
+                    if (buffer_pos >= buffer.Length) return false;
+                    var ch = buffer[buffer_pos++];
+                    if (ch != '_')
+                    {
+                        return (digit = Convert.AlphaNumericToDigit(ch)) < @base;
+                    }
+                }
+            }
+
+            public int Current
+            {
+                get { return digit; }
             }
         }
 
-        /// <summary>
-        /// Checks whether {HNUM} fits to integer, long or double 
-        /// and returns appropriate value from Tokens enum.
-        /// </summary>
-        protected Tokens GetHexIntegerTokenType(int startIndex)
-        {
-            // 0xffffffff no
-            // 0x7fffffff yes
-            int i = token_start + startIndex;
-            while (i < token_end && buffer[i] == '0') i++;
-
-            // returns T_LNUMBER when: length without zeros is less than 16
-            // or equals 16 and first non-zero character is less than '8'
-            if ((token_end - i < 16) || ((token_end - i == 16) && buffer[i] >= '0' && buffer[i] < '8'))
-                return Tokens.T_LNUMBER;
-
-            return Tokens.T_DNUMBER;
-        }
-
-        // base == 10: [0-9]*
-        // base == 16: [0-9A-Fa-f]*
-        // assuming result < max int
-        protected int GetTokenAsInteger(int startIndex, int @base)
-        {
-            int result = 0;
-            int buffer_pos = token_start + startIndex;
-
-            for (; ; )
-            {
-                int digit = Convert.AlphaNumericToDigit(buffer[buffer_pos]);
-                if (digit >= @base) break;
-
-                result = result * @base + digit;
-                buffer_pos++;
-            }
-
-            return result;
-        }
+        #endregion
 
         /// <summary>
         /// Reads token as a number (accepts tokens with any reasonable base [0-9a-zA-Z]*).
@@ -347,48 +386,52 @@ namespace Devsense.PHP.Syntax
             long lresult = 0;
             double dresult = 0;
 
-            int digit;
-            int buffer_pos = token_start + startIndex;
+            // helper enumerator of digits, ignores '_'
+            var digits = new DigitsEnumerator(buffer, token_start + startIndex, @base);
 
-            // try to parse INT value
-            // most of the literals are parsed using the following loop
-            while (buffer_pos < buffer.Length && (digit = Convert.AlphaNumericToDigit(buffer[buffer_pos])) < @base && lresult <= long.MaxValue)
+            // try parse Int32
+            // most literals fit 32 bit number
+
+            while (lresult < Int32.MaxValue)
             {
-                lresult = lresult * @base + digit;
-                buffer_pos++;
-            }
-            // try to parse LONG value (check for the overflow and if it occurs converts data to double)
-            bool longOverflow = false;
-            while (buffer_pos < buffer.Length && (digit = Convert.AlphaNumericToDigit(buffer[buffer_pos])) < @base)
-            {
-                try
+                if (digits.MoveNext())
                 {
-                    lresult = checked(lresult * @base + digit);
+                    lresult = lresult * @base + digits.Current;
                 }
-                catch (OverflowException)
+                else
                 {
-                    longOverflow = true; break;
+                    // NOTE: we don't use val.Integer, all numbers are either Long or Double
+                    val.Long = lresult;
+                    return Tokens.T_LNUMBER;
                 }
-                buffer_pos++;
             }
 
-            if (longOverflow)
+            // parse rest of the number
+            // (Int64 or overflow to Double)
+            while (digits.MoveNext())
             {
-                // too big for LONG - use double
-                dresult = (double)lresult;
-                while (buffer_pos < buffer.Length && (digit = Convert.AlphaNumericToDigit(buffer[buffer_pos])) < @base)
+                var tmp = lresult;
+                lresult = unchecked(lresult * @base + digits.Current);
+                
+                // overflow?
+                if (lresult < tmp)
                 {
-                    dresult = dresult * @base + digit;
-                    buffer_pos++;
+                    dresult = (double)tmp * @base + digits.Current;
+
+                    // overflow:
+                    while (digits.MoveNext())
+                    {
+                        dresult = dresult * @base + digits.Current;
+                    }
+
+                    val.Double = dresult;
+                    return Tokens.T_DNUMBER;
                 }
-                val.Double = dresult;
-                return Tokens.T_DNUMBER;
             }
-            else
-            {
-                val.Long = lresult;
-                return Tokens.T_LNUMBER;
-            }
+
+            // did not overflow:
+            val.Long = lresult;
+            return Tokens.T_LNUMBER;
         }
 
         // [0-9]*[.][0-9]+

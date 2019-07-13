@@ -83,25 +83,22 @@ namespace Devsense.PHP.Syntax
         {
             Ast.Item first = null;
             Ast.Item last = null;
+
             for (int i = 0; i < items.Count; i++)
             {
-                if (items[i] != null)
+                if ((first = items[i]) != null)
                 {
-                    last = items[i];
-                    if (first == null)
+                    for (int j = items.Count - 1; j >= i; j--)
                     {
-                        first = items[i];
+                        if ((last = items[j]) != null)
+                        {
+                            return SafeCombineSpan(first.ItemSpan(), last.ItemSpan());
+                        }
                     }
                 }
             }
-            if (first != null && last != null)
-            {
-                return SafeCombineSpan(first.ItemSpan(), last.ItemSpan());
-            }
-            else
-            {
-                return Text.Span.Invalid;
-            }
+
+            return Text.Span.Invalid;
         }
     }
 

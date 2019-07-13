@@ -35,7 +35,7 @@ namespace UnitTests
             Process process = new Process();
             StringBuilder output = new StringBuilder();
             // Configure the process using the StartInfo properties.
-            process.StartInfo.FileName = Path.Combine(GetRootDirectory(), @"Tools\PHP v7.0\php.exe");
+            process.StartInfo.FileName = Path.Combine(GetRootDirectory(), @"Tools\PHP v7.0\php.exe"); // TODO: PHP v7.3
             process.StartInfo.Arguments = "-f tokens.php " + path;
             process.StartInfo.RedirectStandardOutput = true;
             process.StartInfo.UseShellExecute = false;
@@ -137,6 +137,32 @@ namespace UnitTests
                     Assert.IsTrue(lexer.TokenSpan.IsValid);
                 }
                 previousState = lexer.CurrentLexicalState;
+            }
+        }
+
+        [TestMethod]
+        public void TestParseNumbers()
+        {
+            Lexer lexer = new Lexer(
+                new StringReader("1_2_3,999999999999999,999_999_999_999_999_999_999,0b01111111_11111111_11111111"),
+                Encoding.UTF8, new TestErrorSink(),
+                LanguageFeatures.ShortOpenTags, 0, Lexer.LexicalStates.ST_IN_SCRIPTING);
+
+            // long or double
+            var expected = new object[] { (long)123, (long)999999999999999, 999_999_999_999_999_999_999.0, (long)0b11111111111111111111111 };
+
+            Tokens t;
+            int n = 0;
+            while ((t = lexer.GetNextToken()) != Tokens.EOF)
+            {
+                if (t == Tokens.T_DNUMBER)
+                {
+                    Assert.AreEqual((double)expected[n++], lexer.TokenValue.Double);
+                }
+                else if (t == Tokens.T_LNUMBER)
+                {
+                    Assert.AreEqual((long)expected[n++], lexer.TokenValue.Long);
+                }
             }
         }
 
