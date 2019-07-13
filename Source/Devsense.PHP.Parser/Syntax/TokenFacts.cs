@@ -84,6 +84,7 @@ namespace Devsense.PHP.Syntax
                 case Tokens.T_FINAL: return "final";
                 case Tokens.T_ABSTRACT: return "abstract";
                 case Tokens.T_FUNCTION: return "function";
+                case Tokens.T_FN: return "fn";
                 case Tokens.T_CONST: return "const";
                 case Tokens.T_VAR: return "var";
                 case Tokens.T_PRIVATE: return "private";
@@ -184,6 +185,7 @@ namespace Devsense.PHP.Syntax
                 case Tokens.T_AND_EQUAL: return "&=";
                 case Tokens.T_OR_EQUAL: return "|=";
                 case Tokens.T_XOR_EQUAL: return "^=";
+                case Tokens.T_COALESCE_EQUAL: return "??=";
                 case Tokens.T_CONCAT_EQUAL: return ".=";
                 case Tokens.T_SL_EQUAL: return "<<=";
                 case Tokens.T_SR_EQUAL: return ">>=";
@@ -313,6 +315,7 @@ namespace Devsense.PHP.Syntax
                 case Operations.AssignAnd: return Tokens.T_AND_EQUAL;
                 case Operations.AssignOr: return Tokens.T_OR_EQUAL;
                 case Operations.AssignXor: return Tokens.T_XOR_EQUAL;
+                case Operations.AssignCoalesce: return Tokens.T_COALESCE_EQUAL;
                 case Operations.AssignShiftLeft: return Tokens.T_SL_EQUAL;
                 case Operations.AssignShiftRight: return Tokens.T_SR_EQUAL;
                 case Operations.AssignAppend: return Tokens.T_CONCAT_EQUAL;

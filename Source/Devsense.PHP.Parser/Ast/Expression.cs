@@ -84,6 +84,7 @@ namespace Devsense.PHP.Syntax.Ast
         AssignShiftRight,
         AssignAppend,
         AssignPrepend,
+        AssignCoalesce,
 
         // constants, variables, fields, items:
         GlobalConstUse,

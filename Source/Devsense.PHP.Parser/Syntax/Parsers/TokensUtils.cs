@@ -199,6 +199,7 @@ namespace Devsense.PHP.Syntax
                 case Tokens.T_BREAK:
                 case Tokens.T_CONTINUE:
                 case Tokens.T_FUNCTION:
+                case Tokens.T_FN:
                 case Tokens.T_CONST:
                 case Tokens.T_RETURN:
                 case Tokens.T_YIELD:
@@ -264,6 +265,7 @@ namespace Devsense.PHP.Syntax
                 case Tokens.T_POW_EQUAL:            // **=
                 case Tokens.T_MINUS_EQUAL:          // -=
                 case Tokens.T_PLUS_EQUAL:           // +=
+                case Tokens.T_COALESCE_EQUAL:       // ??=
                 case Tokens.T_BOOLEAN_OR:           // ||      
                 case Tokens.T_BOOLEAN_AND:          // &&
                 case Tokens.T_IS_NOT_IDENTICAL:     // !==

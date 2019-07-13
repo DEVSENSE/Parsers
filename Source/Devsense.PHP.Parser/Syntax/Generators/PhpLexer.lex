@@ -118,6 +118,10 @@ ST_HALT_COMPILER1,ST_HALT_COMPILER2,ST_HALT_COMPILER3>{EOF} {
 	return (Tokens.T_EXIT);
 }
 
+<ST_IN_SCRIPTING>"fn" {
+	return (Tokens.T_FN);
+}
+
 <ST_IN_SCRIPTING>"function" {
 	return (Tokens.T_FUNCTION);
 }
@@ -556,6 +560,10 @@ ST_HALT_COMPILER1,ST_HALT_COMPILER2,ST_HALT_COMPILER3>{EOF} {
 
 <ST_IN_SCRIPTING>"^=" {
 	return (Tokens.T_XOR_EQUAL);
+}
+
+<ST_IN_SCRIPTING>"??=" {
+	return (Tokens.T_COALESCE_EQUAL);
 }
 
 <ST_IN_SCRIPTING>"||" {
