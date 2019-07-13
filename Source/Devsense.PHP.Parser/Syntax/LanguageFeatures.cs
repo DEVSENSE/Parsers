@@ -74,7 +74,7 @@ namespace Devsense.PHP.Syntax
         Php73Set = Php72Set | 1024,
 
         /// <summary>
-        /// /PHP 7.4 feature set.
+        /// PHP 7.4 feature set.
         /// </summary>
         Php74Set = Php73Set | 2048,
     }

@@ -1136,6 +1136,8 @@ expr_without_variable:
 			{ $$ = _astFactory.Assignment(@$, $1, $3, Operations.AssignShiftLeft); }
 	|	variable T_SR_EQUAL expr
 			{ $$ = _astFactory.Assignment(@$, $1, $3, Operations.AssignShiftRight); }
+	|	variable T_COALESCE_EQUAL expr
+			{ $$ = _astFactory.Assignment(@$, $1, $3, Operations.AssignCoalesce); }
 	|	variable T_INC { $$ = CreateIncDec(@$, $1, true, true); }
 	|	T_INC variable { $$ = CreateIncDec(@$, $2, true,  false); }
 	|	variable T_DEC { $$ = CreateIncDec(@$, $1, false, true); }
