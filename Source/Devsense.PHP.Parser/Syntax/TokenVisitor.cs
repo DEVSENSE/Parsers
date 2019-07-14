@@ -1110,7 +1110,8 @@ namespace Devsense.PHP.Syntax
         public override void VisitLambdaFunctionExpr(LambdaFunctionExpr x)
         {
             VisitRoutineDecl(
-                x, x.HeadingSpan, x.Signature, x.Body,
+                x, x.HeadingSpan, x.Signature,
+                (LangElement)((ILambdaExpression)x).Body,   // body or expression
                 returnTypeOpt: x.ReturnType,
                 modifiers: x.Modifiers,
                 useParams: x.UseParams);
