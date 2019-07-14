@@ -707,7 +707,7 @@ namespace Devsense.PHP.Syntax
             throw new InvalidOperationException(); // DirectFncCall, IndirectFncCall, *MethodCall, ...
         }
 
-        protected virtual void VisitRoutineDecl(LangElement element, Span headerSpan, Signature signature, Statement body, NameRef nameOpt = default(NameRef), TypeRef returnTypeOpt = null, PhpMemberAttributes modifiers = PhpMemberAttributes.None, IList<FormalParam> useParams = null)
+        protected virtual void VisitRoutineDecl(LangElement element, Span headerSpan, Signature signature, LangElement body, NameRef nameOpt = default(NameRef), TypeRef returnTypeOpt = null, PhpMemberAttributes modifiers = PhpMemberAttributes.None, IList<FormalParam> useParams = null)
         {
             if (!headerSpan.IsValid)
             {
@@ -719,14 +719,18 @@ namespace Devsense.PHP.Syntax
                     returnTypeOpt != null ? returnTypeOpt.Span : (useParams != null && useParams.Count != 0) ? useParams.Last().Span : Span.Invalid);
             }
 
+            bool isArrowFunc = !nameOpt.HasValue && body is Expression; // arrow func (PHP 7.4), lambda function with expression instead of body
+
             using (new ScopeHelper(this, element is FunctionDecl ?
                 (DummyDeclHeader)new DummyFunctionDeclHeader(element, headerSpan) :
                 (DummyDeclHeader)new DummyMethodDeclHeader(element, headerSpan)))
             {
                 // function &NAME SIGNATURE : RETURN_TYPE
+                // function &SIGNATURE : RETURN_TYPE
+                // fn &SIGNATURE : RETURN_TYPE
                 var prenameSpan = SpanUtils.SpanIntermission(element.Span.StartOrInvalid, nameOpt.HasValue ? nameOpt.Span : signature.Span);
                 ConsumeModifiers(element, modifiers, prenameSpan);
-                ProcessToken(Tokens.T_FUNCTION, prenameSpan);
+                ProcessToken(isArrowFunc ? Tokens.T_FN : Tokens.T_FUNCTION, prenameSpan);
                 if (signature.AliasReturn)
                 {
                     ProcessToken(Tokens.T_AMP, prenameSpan); // TODO: correct span!
@@ -738,7 +742,7 @@ namespace Devsense.PHP.Syntax
 
                 VisitSignature(signature);
 
-                if (useParams != null && useParams.Any())
+                if (useParams != null && useParams.Count != 0)
                 {
                     var useSpan = SpanUtils.SpanIntermission(
                         signature.Span,
@@ -757,6 +761,14 @@ namespace Devsense.PHP.Syntax
                     ProcessToken(Tokens.T_COLON, SpanUtils.SpanIntermission(signature.Span,
                         body != null ? body.Span.StartOrInvalid : element.Span.End));
                     VisitElement(returnTypeOpt);
+                }
+
+                // =>
+                if (isArrowFunc)
+                {
+                    // span (header end .. expression start)
+                    Span arrowSpan = headerSpan.IsValid && body != null && body.Span.IsValid ? Span.FromBounds(headerSpan.End, body.Span.Start) : Span.Invalid;
+                    ProcessToken(Tokens.T_DOUBLE_ARROW, arrowSpan);
                 }
             }
 
