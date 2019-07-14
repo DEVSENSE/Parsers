@@ -55,7 +55,7 @@ class X {
 
             //
             sourceUnit.Parse(factory, errors, new TestErrorRecovery());
-            
+
             //
             if (testparts[1].TrimStart().StartsWith(Errors))
             {
@@ -106,8 +106,16 @@ class X {
         [TestMethod]
         public void ArrowFuncTest()
         {
-            var unit = new CodeSourceUnit(@"<?php $foo = fn() => 1;", "dummy.php", Encoding.UTF8);
-            unit.Parse(new BasicNodesFactory(unit), null);
+            var codes = new[] {
+                @"<?php $foo = fn() => 1;",
+                @"<?php $foo = static fn() => 1;"
+            };
+
+            foreach (var code in codes)
+            {
+                var unit = new CodeSourceUnit(code, "dummy.php", Encoding.UTF8);
+                unit.Parse(new BasicNodesFactory(unit), null);
+            }
         }
 
         /// <summary>

@@ -3185,7 +3185,7 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
         return;
       case 378: // expr_without_variable -> T_STATIC inline_function 
 {
-			var lambda = (ILambdaExpression)value_stack.array[value_stack.top-2].yyval.Object;
+			var lambda = (ILambdaExpression)value_stack.array[value_stack.top-1].yyval.Node;
 			lambda.IsStatic = true;
 			lambda.Span = yypos;
 			yyval.Node = (LangElement)lambda;

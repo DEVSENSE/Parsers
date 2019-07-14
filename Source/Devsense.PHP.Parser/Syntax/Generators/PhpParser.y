@@ -1217,7 +1217,7 @@ expr_without_variable:
 	|	T_YIELD_FROM expr { $$ = _astFactory.YieldFrom(@$, $2); }
 	|	inline_function { $$ = $1; }
 	|	T_STATIC inline_function {
-			var lambda = (ILambdaExpression)$1;
+			var lambda = (ILambdaExpression)$2;
 			lambda.IsStatic = true;
 			lambda.Span = @$;
 			$$ = (LangElement)lambda;

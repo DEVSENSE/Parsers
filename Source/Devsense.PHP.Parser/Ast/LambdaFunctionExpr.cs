@@ -86,7 +86,8 @@ namespace Devsense.PHP.Syntax.Ast
         /// <summary>
         /// Span of the lambda header.
         /// </summary>
-        public Text.Span HeadingSpan { get; }
+        public Text.Span HeadingSpan { get { return Text.Span.FromBounds(Span.Start, _headingEnd); } }
+        readonly int _headingEnd;
 
         /// <summary>
         /// Span of the parameters and the parentheses.
@@ -125,11 +126,12 @@ namespace Devsense.PHP.Syntax.Ast
             ILangElement/*!*/ body, TypeRef returnType)
             : base(span)
         {
-            this.HeadingSpan = headingSpan;
             this.Signature = signature;
             this.UseParams = useParams;
             this.body = body;
             this.ReturnType = returnType;
+
+            _headingEnd = headingSpan.End;
         }
 
         [Obsolete]
