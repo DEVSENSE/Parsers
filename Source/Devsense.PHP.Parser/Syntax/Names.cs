@@ -119,6 +119,12 @@ namespace Devsense.PHP.Syntax
 
             /// <summary>Invoked when an unknown field is tested for being set.</summary>
             public static readonly Name Isset = new Name("__isset");
+
+            /// <summary>Invoked when object is being serialized.</summary>
+            public static readonly Name Serialize = new Name("__serialize");
+
+            /// <summary>Invoked when object is being unserialized.</summary>
+            public static readonly Name Unserialize = new Name("__unserialize");
         };
 
         #endregion
