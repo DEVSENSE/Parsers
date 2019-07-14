@@ -221,6 +221,7 @@ namespace Devsense.PHP.Syntax.Ast
         public SpreadItem(Expression expression)
             : base(null)
         {
+            this.Expression = expression;
         }
 
         public override bool IsByRef => false;
