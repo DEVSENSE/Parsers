@@ -82,8 +82,8 @@ using StringPair = System.Collections.Generic.KeyValuePair<string, string>;
 	public List<UseBase> UseList						{ get { return (List<UseBase>)Object; }				set { Object = value; } }
 }
 
-
-%left T_INCLUDE T_INCLUDE_ONCE T_EVAL T_REQUIRE T_REQUIRE_ONCE
+%left PREC_ARROW_FUNCTION
+%left T_INCLUDE T_INCLUDE_ONCE T_REQUIRE T_REQUIRE_ONCE
 %left ','
 %left T_LOGICAL_OR
 %left T_LOGICAL_XOR
@@ -320,6 +320,7 @@ using StringPair = System.Collections.Generic.KeyValuePair<string, string>;
 %type <Node> while_statement backticks_expr method_body exit_expr
 %type <Node> finally_statement new_variable callable_expr
 %type <Node> trait_adaptations variable_class_name inner_statement class_statement
+%type <Node> inline_function
 
 %type <NodeList> top_statement_list const_list class_const_list
 %type <NodeList> inner_statement_list class_statement_list for_exprs
@@ -1214,18 +1215,27 @@ expr_without_variable:
 	|	T_YIELD expr { $$ = _astFactory.Yield(@$, null, $2); }
 	|	T_YIELD expr T_DOUBLE_ARROW expr { $$ = _astFactory.Yield(@$, $2, $4); }
 	|	T_YIELD_FROM expr { $$ = _astFactory.YieldFrom(@$, $2); }
-	|	function returns_ref backup_doc_comment '(' parameter_list ')' lexical_vars return_type
+	|	inline_function { $$ = $1; }
+	|	T_STATIC inline_function {
+			var lambda = (ILambdaExpression)$1;
+			lambda.IsStatic = true;
+			lambda.Span = @$;
+			$$ = (LangElement)lambda;
+		}
+;
+
+inline_function:
+		function returns_ref backup_doc_comment '(' parameter_list ')' lexical_vars return_type
 		backup_fn_flags enter_scope '{' inner_statement_list '}' exit_scope backup_fn_flags
 			{ 
-				$$ = _astFactory.Lambda(@$, CombineSpans(@1, @6, @7, @8), $2 == (long)FormalParam.Flags.IsByRef, PhpMemberAttributes.None, $8, 
-				$5, CombineSpans(@4, @6), $7, CreateBlock(CombineSpans(@11, @13), $12)); 
+				$$ = _astFactory.Lambda(@$, CombineSpans(@1, @6, @7, @8), $2 == (long)FormalParam.Flags.IsByRef, $8, 
+					$5, CombineSpans(@4, @6), $7, CreateBlock(CombineSpans(@11, @13), $12)); 
 				SetDoc($$);
 			}
-	|	T_STATIC function returns_ref backup_doc_comment '(' parameter_list ')' lexical_vars
-		return_type backup_fn_flags enter_scope '{' inner_statement_list '}' exit_scope backup_fn_flags
-			{ 
-				$$ = _astFactory.Lambda(@$, CombineSpans(@1, @7, @8, @9), $3 == (long)FormalParam.Flags.IsByRef, PhpMemberAttributes.Static, $9, 
-				$6, CombineSpans(@5, @7), $8, CreateBlock(CombineSpans(@12, @14), $13)); 
+	|	fn returns_ref  '(' parameter_list ')' return_type backup_doc_comment T_DOUBLE_ARROW backup_fn_flags backup_lex_pos expr backup_fn_flags
+			{
+				$$ = _astFactory.ArrowFunc(@$, CombineSpans(@1, @5, @6), $2 == (long)FormalParam.Flags.IsByRef, $6, 
+					$4, CombineSpans(@3, @5), $11); 
 				SetDoc($$);
 			}
 ;
@@ -1251,6 +1261,11 @@ exit_scope:
 ;
 
 backup_fn_flags:
+	/* empty */ {  }
+	%prec PREC_ARROW_FUNCTION /* empty */ {  }
+;
+
+backup_lex_pos:
 	/* empty */ {  }
 ;
 

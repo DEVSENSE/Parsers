@@ -848,8 +848,8 @@ namespace Devsense.PHP.Syntax
             // function return type
             VisitElement(x.ReturnType);
 
-            // function body
-            VisitElement(x.Body);
+            // function body/expression
+            VisitElement((LangElement)((ILambdaExpression)x).Body);
         }
 
         /// <summary>

@@ -32,14 +32,13 @@ namespace Devsense.PHP.Syntax.Ast
         /// <summary>
         /// Gets associated source unit.
         /// </summary>
-        public SourceUnit SourceUnit => _sourceUnit;
-        readonly SourceUnit _sourceUnit;
+        public SourceUnit SourceUnit { get; }
 
         private static bool IsNull<T>(T obj) => obj == null;
 
         public BasicNodesFactory(SourceUnit sourceUnit)
         {
-            _sourceUnit = sourceUnit;
+            this.SourceUnit = sourceUnit ?? throw new ArgumentNullException(nameof(sourceUnit));
         }
 
         public virtual LangElement ArrayItem(Span span, bool braces, LangElement expression, LangElement indexOpt)
@@ -279,12 +278,24 @@ namespace Devsense.PHP.Syntax.Ast
                 (BlockStmt)body, returnType);
         }
 
-        public virtual LangElement Lambda(Span span, Span headingSpan, bool aliasReturn,
-            PhpMemberAttributes modifiers, TypeRef returnType, IEnumerable<FormalParam> formalParams,
+        public virtual LangElement Lambda(Span span, Span headingSpan,
+            bool aliasReturn, TypeRef returnType, IEnumerable<FormalParam> formalParams,
             Span formalParamsSpan, IEnumerable<FormalParam> lexicalVars, LangElement body)
         {
-            return new LambdaFunctionExpr(span, headingSpan, aliasReturn, modifiers, formalParams.AsArray(),
-                formalParamsSpan, lexicalVars.AsArray(), (BlockStmt)body, returnType);
+            return new LambdaFunctionExpr(
+                span, headingSpan,
+                new Signature(aliasReturn, formalParams.AsArray(), formalParamsSpan),
+                lexicalVars.AsArray(), (BlockStmt)body, returnType);
+        }
+
+        public virtual LangElement ArrowFunc(Span span, Span headingSpan,
+            bool aliasReturn, TypeRef returnType, IEnumerable<FormalParam> formalParams,
+            Span formalParamsSpan, LangElement expression)
+        {
+            return new ArrowFunctionExpr(
+                span, headingSpan,
+                new Signature(aliasReturn, formalParams.AsArray(), formalParamsSpan),
+                (Expression)expression, returnType);
         }
 
         public virtual FormalParam Parameter(Span span, string name, Span nameSpan, TypeRef typeOpt, FormalParam.Flags flags, Expression initValue)
@@ -294,8 +305,8 @@ namespace Devsense.PHP.Syntax.Ast
 
         public virtual LangElement GlobalCode(Span span, IEnumerable<LangElement> statements, NamingContext context)
         {
-            _sourceUnit.Naming = context;
-            var ast = new GlobalCode(span, statements.CastToArray<Statement>(), _sourceUnit);
+            SourceUnit.Naming = context;
+            var ast = new GlobalCode(span, statements.CastToArray<Statement>(), SourceUnit);
 
             // link to parent nodes
             UpdateParentVisitor.UpdateParents(ast);

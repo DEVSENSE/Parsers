@@ -103,6 +103,13 @@ class X {
             spanChecker.VisitGlobalCode(sourceUnit.Ast);
         }
 
+        [TestMethod]
+        public void ArrowFuncTest()
+        {
+            var unit = new CodeSourceUnit(@"<?php $foo = fn() => 1;", "dummy.php", Encoding.UTF8);
+            unit.Parse(new BasicNodesFactory(unit), null);
+        }
+
         /// <summary>
         /// Helper visitor checking every node has a containing element.
         /// </summary>

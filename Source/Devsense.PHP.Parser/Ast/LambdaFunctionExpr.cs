@@ -19,12 +19,36 @@ using System.Collections.Generic;
 
 namespace Devsense.PHP.Syntax.Ast
 {
-    #region LambdaFunctionDecl
+    /// <summary>
+    /// Common interface for lambda function expression, encapsulates closures and arrow functions.
+    /// </summary>
+    public interface ILambdaExpression : IExpression
+    {
+        /// <summary>
+        /// Function signature.
+        /// </summary>
+        Signature Signature { get; }
+
+        /// <summary>
+        /// Return type if present.
+        /// </summary>
+        TypeRef ReturnType { get; }
+
+        /// <summary>
+        /// Whether the function is 'static'.
+        /// </summary>
+        bool IsStatic { get; set; }
+
+        /// <summary>
+        /// Anonymous function body. Is either a block statement (closure) or an expression (arrow func).
+        /// </summary>
+        ILangElement Body { get; }
+    }
 
     /// <summary>
-    /// Represents a function declaration.
+    /// Represents a lambda function declaration.
     /// </summary>
-    public sealed class LambdaFunctionExpr : Expression
+    public class LambdaFunctionExpr : Expression, ILambdaExpression
     {
         /// <summary>
         /// Expression operation.
@@ -43,37 +67,36 @@ namespace Devsense.PHP.Syntax.Ast
             set { this.SetPHPDoc(value); }
         }
 
-        public Signature Signature { get { return signature; } }
-        private readonly Signature signature;
+        public Signature Signature { get; }
 
         /// <summary>
         /// Parameters specified within <c>use</c> 
         /// </summary>
-        public IList<FormalParam> UseParams { get { return useParams; } }
-        private readonly IList<FormalParam> useParams;
+        public IList<FormalParam> UseParams { get; }
 
         /// <summary>
         /// Lambda body.
         /// </summary>
-        public BlockStmt/*!*/ Body { get { return body; } }
-        private readonly BlockStmt/*!*/ body;
+        public BlockStmt/*!*/Body { get { return body as BlockStmt; } }
+        public Expression/*!*/Expression { get { return body as Expression; } }
+
+        ILangElement ILambdaExpression.Body { get { return body; } }
+        private readonly ILangElement/*!*/ body;
 
         /// <summary>
         /// Span of the lambda header.
         /// </summary>
-        public Text.Span HeadingSpan { get { return headingSpan; } }
-        private Text.Span headingSpan;
+        public Text.Span HeadingSpan { get; }
 
         /// <summary>
         /// Span of the parameters and the parentheses.
         /// </summary>
-        public Text.Span ParametersSpan => signature.Span;
+        public Text.Span ParametersSpan => this.Signature.Span;
 
         /// <summary>
         /// Return type if present.
         /// </summary>
-        public TypeRef ReturnType { get { return returnType; } }
-        private TypeRef returnType;
+        public TypeRef ReturnType { get; }
 
         /// <summary>
         /// Modifiers, <see cref="PhpMemberAttributes.Static"/> or none.
@@ -81,24 +104,42 @@ namespace Devsense.PHP.Syntax.Ast
         public PhpMemberAttributes Modifiers => _modifiers;
         private PhpMemberAttributes _modifiers;
 
+        /// <summary>
+        /// Whether the function is 'static'.
+        /// </summary>
+        public bool IsStatic
+        {
+            get { return (_modifiers & PhpMemberAttributes.Static) != 0; }
+            set
+            {
+                if (value) _modifiers |= PhpMemberAttributes.Static;
+                else _modifiers &= ~PhpMemberAttributes.Static;
+            }
+        }
+
         #region Construction
 
+        public LambdaFunctionExpr(
+            Text.Span span, Text.Span headingSpan,
+            Signature signature, IList<FormalParam> useParams,
+            ILangElement/*!*/ body, TypeRef returnType)
+            : base(span)
+        {
+            this.HeadingSpan = headingSpan;
+            this.Signature = signature;
+            this.UseParams = useParams;
+            this.body = body;
+            this.ReturnType = returnType;
+        }
+
+        [Obsolete]
         public LambdaFunctionExpr(
             Text.Span span, Text.Span headingSpan,
             bool aliasReturn, PhpMemberAttributes modifiers, IList<FormalParam>/*!*/ formalParams,
             Text.Span paramSpan, IList<FormalParam> useParams,
             BlockStmt/*!*/ body, TypeRef returnType)
-            : base(span)
+            : this(span, headingSpan, new Signature(aliasReturn, formalParams, paramSpan), useParams, body, returnType)
         {
-            Debug.Assert(formalParams != null && body != null);
-
-            this.signature = new Signature(aliasReturn, formalParams, paramSpan);
-            this.useParams = useParams;
-            //this.typeSignature = new TypeSignature(genericParams);
-            this.body = body;
-            this.headingSpan = headingSpan;
-            this.returnType = returnType;
-            _modifiers = modifiers;
         }
 
         #endregion
@@ -113,5 +154,28 @@ namespace Devsense.PHP.Syntax.Ast
         }
     }
 
-    #endregion
+    /// <summary>
+    /// Represents an arrow function declaration.
+    /// </summary>
+    public sealed class ArrowFunctionExpr : LambdaFunctionExpr
+    {
+        /// <summary>
+        /// Expression operation.
+        /// </summary>
+        public override Operations Operation
+        {
+            get { return Operations.ArrowFunc; }
+        }
+
+        #region Construction
+
+        public ArrowFunctionExpr(
+            Text.Span span, Text.Span headingSpan,
+            Signature signature, Expression/*!*/expression, TypeRef returnType)
+            : base(span, headingSpan, signature, null, expression, returnType)
+        {
+        }
+
+        #endregion
+    }
 }

@@ -118,17 +118,20 @@ namespace Devsense.PHP.Syntax.Ast
         /// <param name="span">Entire element span.</param>
         /// <param name="headingSpan">Heading span - ends after return type.</param>
         /// <param name="aliasReturn">Whether the function returns an aliased value.</param>
-        /// <param name="modifiers">Lambda modifiers.</param>
         /// <param name="returnType">Optional. Function return type.</param>
         /// <param name="formalParams">Lambda parameters.</param>
         /// <param name="formalParamsSpan">Parameters enclosing parenthesis span.</param>
         /// <param name="lexicalVars">Variables from parent scope.</param>
         /// <param name="body">Lambda body.</param>
         /// <returns>Lambda node.</returns>
-        TNode Lambda(TSpan span, TSpan headingSpan, bool aliasReturn,
-            PhpMemberAttributes modifiers, TypeRef returnType,
+        TNode Lambda(TSpan span, TSpan headingSpan,
+            bool aliasReturn, TypeRef returnType,
             IEnumerable<FormalParam> formalParams, TSpan formalParamsSpan,
             IEnumerable<FormalParam> lexicalVars, TNode body);
+
+        TNode ArrowFunc(TSpan span, TSpan headingSpan,
+            bool aliasReturn, TypeRef returnType,
+            IEnumerable<FormalParam> formalParams, TSpan formalParamsSpan, TNode expression);
 
         /// <summary>
         /// Creates <c>FormalParam</c> for a function of method declaration.

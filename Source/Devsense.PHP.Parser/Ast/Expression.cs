@@ -132,6 +132,7 @@ namespace Devsense.PHP.Syntax.Ast
 
         // lambda function:
         Closure,
+        ArrowFunc,
     }
 
     #endregion
