@@ -24,7 +24,7 @@
     <PackageTags>php</PackageTags>    
   </PropertyGroup>
   <PropertyGroup>
-    <PublicSign Condition="'$(OS)' != 'Windows_NT'">true</PublicSign>
+    <!--PublicSign Condition="'$(OS)' != 'Windows_NT'">true</PublicSign-->
     <DelaySign>False</DelaySign>
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>key.snk</AssemblyOriginatorKeyFile>
