@@ -611,14 +611,31 @@ namespace Devsense.PHP.Syntax
 
         public override void VisitFieldDeclList(FieldDeclList x)
         {
-            var varSpan = x.Fields == null || x.Fields.Count == 0 ? x.Span :
-                SpanUtils.SpanIntermission(x.Span.StartOrInvalid, x.Fields[0].Span);
-            var modifiers = ConsumeModifiers(x, x.Modifiers, varSpan);
+            var modifiersSpan = Span.Invalid;
+
+            if (x.Span.IsValid)
+            {
+                if (x.Type != null && x.Type.Span.IsValid)
+                {
+                    // >>var <<Type $f;
+                    modifiersSpan = SpanUtils.SpanIntermission(x.Span.Start, x.Type.Span);
+                }
+                else if (x.Fields != null && x.Fields.Count != 0)
+                {
+                    // >>var <<$f1, $f2;
+                    modifiersSpan = SpanUtils.SpanIntermission(x.Span.Start, x.Fields[0].Span);
+                }
+            }
+
+            var modifiers = ConsumeModifiers(x, x.Modifiers, modifiersSpan);
             if (modifiers.Length == 0)
             {
-                ProcessToken(Tokens.T_VAR, varSpan);
+                ProcessToken(Tokens.T_VAR, modifiersSpan);
             }
+
+            VisitElement(x.Type);
             VisitElementList(x.Fields, Tokens.T_COMMA);
+
             ConsumeToken(Tokens.T_SEMI, SpanUtils.SafeSpan(x.Span.End - 1, 1));
         }
 
