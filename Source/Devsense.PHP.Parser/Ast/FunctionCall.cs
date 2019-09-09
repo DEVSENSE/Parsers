@@ -23,9 +23,8 @@ namespace Devsense.PHP.Syntax.Ast
 
     public abstract class FunctionCall : VarLikeConstructUse
     {
-        protected CallSignature callSignature;
-        /// <summary>GetUserEntryPoint calling signature</summary>
-        public CallSignature CallSignature { get { return callSignature; } set { callSignature = callSignature = value ?? throw new ArgumentNullException(nameof(value)); } }
+        /// <summary>Function call arguments.</summary>
+        public CallSignature CallSignature { get; set; }
 
         /// <summary>
         /// Position of called function name in source code.
@@ -35,12 +34,9 @@ namespace Devsense.PHP.Syntax.Ast
         public FunctionCall(Text.Span span, CallSignature signature)
             :base(span)
         {
-            this.callSignature = signature ?? throw new ArgumentNullException();
-        }
+            Debug.Assert(signature.Parameters != null);
 
-        public FunctionCall(Text.Span span, IList<ActualParam> parameters, Text.Span parametersSpan, IList<TypeRef> genericParams)
-            : this(span, new CallSignature(parameters, genericParams, parametersSpan))
-        {
+            this.CallSignature = signature;
         }
     }
 

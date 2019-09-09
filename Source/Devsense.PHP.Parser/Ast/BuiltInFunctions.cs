@@ -193,7 +193,7 @@ namespace Devsense.PHP.Syntax.Ast
             : base(span)
         {
             Debug.Assert(callsignature.Parameters.Any());
-            Debug.Assert(callsignature.GenericParams.IsEmpty());
+            //Debug.Assert(callsignature.GenericParams.IsEmpty());
 
             this.CodeEx = callsignature.Parameters[0].Expression;
         }

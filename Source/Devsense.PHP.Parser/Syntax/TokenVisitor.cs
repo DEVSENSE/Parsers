@@ -1207,10 +1207,10 @@ namespace Devsense.PHP.Syntax
             VisitElementList(x.MultipleTypes, Tokens.T_PIPE);
         }
 
-        public override void VisitNamedActualParam(NamedActualParam x)
-        {
-            throw new NotImplementedException();
-        }
+        //public override void VisitNamedActualParam(NamedActualParam x)
+        //{
+        //    throw new NotImplementedException();
+        //}
 
         public override void VisitNamedTypeDecl(NamedTypeDecl x)
         {
@@ -1243,9 +1243,9 @@ namespace Devsense.PHP.Syntax
         public override void VisitNewEx(NewEx x)
         {
             ConsumeToken(Tokens.T_NEW, SpanUtils.SafeSpan(x.Span.StartOrInvalid, 3));
-            if (x.ClassNameRef is AnonymousTypeRef)
+            if (x.ClassNameRef is AnonymousTypeRef atr)
             {
-                VisitTypeDecl(((AnonymousTypeRef)x.ClassNameRef).TypeDeclaration, x.CallSignature);
+                VisitTypeDecl(atr.TypeDeclaration, x.CallSignature);
             }
             else
             {
@@ -1527,7 +1527,7 @@ namespace Devsense.PHP.Syntax
             VisitTypeDecl(x, null);
         }
 
-        private void VisitTypeDecl(TypeDecl x, CallSignature signature)
+        private void VisitTypeDecl(TypeDecl x, CallSignature? signature)
         {
             var lastSpan = SpanUtils.SafeSpan(x.BodySpan.End - 1, 1);
             var bodySpan = x.Members.Count != 0 ? x.Members.First().Span : lastSpan;
@@ -1548,9 +1548,9 @@ namespace Devsense.PHP.Syntax
                 // interface|trait|class
                 previous = ProcessToken(x.AsTypeKeywordToken(), prenameSpan);
 
-                if (signature != null && signature.Parameters.Length != 0)
+                if (signature.HasValue && signature.Value.Position.IsValid)
                 {
-                    VisitCallSignature(signature);
+                    VisitCallSignature(signature.Value);
                 }
                 if (x.Name.HasValue && !x.Name.Name.IsGenerated)
                 {

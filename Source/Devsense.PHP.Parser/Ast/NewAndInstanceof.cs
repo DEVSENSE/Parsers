@@ -30,19 +30,17 @@ namespace Devsense.PHP.Syntax.Ast
 
         internal override bool AllowsPassByReference { get { return true; } }
 
-        private TypeRef/*!*/ classNameRef;
-        private CallSignature callSignature;
         /// <summary>Type of class being instantiated</summary>
-        public TypeRef /*!*/ ClassNameRef { get { return classNameRef; } }
+        public TypeRef /*!*/ ClassNameRef { get; }
+
         /// <summary>Call signature of constructor</summary>
-        public CallSignature CallSignature { get { return callSignature; } }
+        public CallSignature CallSignature { get; }
 
         public NewEx(Text.Span span, TypeRef/*!*/ classNameRef, IList<ActualParam>/*!*/ parameters, Text.Span parametersSpan)
             : base(span)
         {
-            Debug.Assert(classNameRef != null && parameters != null);
-            this.classNameRef = classNameRef;
-            this.callSignature = new CallSignature(parameters, EmptyArray<TypeRef>.Instance, parametersSpan);
+            this.ClassNameRef = classNameRef ?? throw new ArgumentNullException(nameof(classNameRef));
+            this.CallSignature = new CallSignature(parameters, parametersSpan);
         }
 
         /// <summary>

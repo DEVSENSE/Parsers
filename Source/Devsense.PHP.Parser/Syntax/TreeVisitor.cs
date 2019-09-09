@@ -958,14 +958,14 @@ namespace Devsense.PHP.Syntax
             VisitElement(x.Expression);
         }
 
-        /// <summary>
-        /// Visit named actual parameter expression.
-        /// </summary>
-        /// <param name="x"></param>
-        virtual public void VisitNamedActualParam(NamedActualParam x)
-        {
-            VisitElement(x.Expression);
-        }
+        ///// <summary>
+        ///// Visit named actual parameter expression.
+        ///// </summary>
+        ///// <param name="x"></param>
+        //virtual public void VisitNamedActualParam(NamedActualParam x)
+        //{
+        //    VisitElement(x.Expression);
+        //}
 
         virtual public void VisitPrimitiveTypeRef(PrimitiveTypeRef x)
         {
