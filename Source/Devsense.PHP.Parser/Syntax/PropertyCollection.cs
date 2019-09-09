@@ -207,9 +207,9 @@ namespace Devsense.PHP.Syntax
             object o = _obj;
 
             // empty list
-            if (ReferenceEquals(o, null) || o.GetType() == key)
+            if (ReferenceEquals(o, null) || Equals(o.GetType(), key))
             {
-                if (value != null && value.GetType() == key)
+                if (value != null && Equals(value.GetType(), key))
                 {
                     // special case,
                     // single item keyed by own type
@@ -292,7 +292,7 @@ namespace Devsense.PHP.Syntax
             // empty container
             if (!ReferenceEquals(o, null))
             {
-                if (o.GetType() == key)
+                if (Equals(o.GetType(), key))
                 {
                     // special case,
                     // single item keyed by own type
@@ -363,7 +363,7 @@ namespace Devsense.PHP.Syntax
 
             if (!ReferenceEquals(o, null))
             {
-                if (o.GetType() == key)
+                if (Equals(o.GetType(), key))
                 {
                     // single item keyed by own type
                     _obj = null;
@@ -456,12 +456,12 @@ namespace Devsense.PHP.Syntax
 
         private static void CheckKey(object key)
         {
-            if (key == null)
+            if (ReferenceEquals(key, null))
             {
                 throw new ArgumentNullException(nameof(key));
             }
 
-            if (key == typeof(Hashtable))
+            if (Equals(key, typeof(Hashtable)))
             {
                 // key cannot be Hashtable,
                 // reserved,
