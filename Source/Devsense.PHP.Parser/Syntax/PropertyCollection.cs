@@ -101,26 +101,18 @@ namespace Devsense.PHP.Syntax
         #region Fields & Properties
 
         /// <summary>
-        /// Reference to actual collection of properties.
+        /// Reference to actual collection of properties or single property itself.
         /// </summary>
         /// <remarks>
-        /// This mechanism saves memory for small properties sets.
-        /// type of this object depends on amount of properties in the set.
+        /// This mechanism saves memory for small property sets.
+        /// Type of this object depends on amount of properties in the set.
         /// </remarks>
-        private object _obj;
-
-        /// <summary>
-        /// Type of the hybrid table.
-        /// </summary>
-        private object _type;
-
-        private static readonly object TypeHashtable = new object();
-        private static readonly object TypeList = new object();
+        private object _obj; // object|DictionaryNode|Hashtable
 
         /// <summary>
         /// If amount of properties exceeds this number, hashtable will be used instead of an array.
         /// </summary>
-        private const int MaxListSize = 8;
+        const int MaxListSize = 8;
 
         #endregion
 
@@ -144,31 +136,19 @@ namespace Devsense.PHP.Syntax
         {
             get
             {
-                object p = _type;
-                object o = _obj;
-
-                if (p != null)
+                var o = _obj;
+                if (ReferenceEquals(o, null))
                 {
-                    // non-empty container
-                    if (ReferenceEquals(p, TypeList))
-                    {
-                        Debug.Assert(o is DictionaryNode);
-                        return (DictionaryNode)o;   // IEnumerable
-                    }
-                    else if (ReferenceEquals(p, TypeHashtable))
-                    {
-                        Debug.Assert(o is Hashtable);
-                        return (Hashtable)o;
-                    }
-                    else
-                    {
-                        // single item in here
-                        return new[] { new KeyValuePair<object, object>(p, o) };
-                    }
+                    return EmptyArray<KeyValuePair<object, object>>.Instance;
                 }
                 else
                 {
-                    return EmptyArray<KeyValuePair<object, object>>.Instance;
+                    // non-empty container
+                    if (o is DictionaryNode list) return list;
+                    if (o is Hashtable dict) return dict;
+
+                    // single item keyed by own type
+                    return new[] { new KeyValuePair<object, object>(o.GetType(), o) };
                 }
             }
         }
@@ -177,16 +157,18 @@ namespace Devsense.PHP.Syntax
 
         #region Nested class: DictionaryNode
 
-        private sealed class DictionaryNode : IEnumerable<KeyValuePair<object, object>>
+        sealed class DictionaryNode : IEnumerable<KeyValuePair<object, object>>
         {
-            public object key;
-            public object value;
-            public DictionaryNode next;
+            public object Key { get; }
+            public object Value { get; set; }
+            public DictionaryNode Next { get; set; }
 
-            /// <summary>
-            /// Casts node to <see cref="KeyValuePair{Object, Object}"/>.
-            /// </summary>
-            public static implicit operator KeyValuePair<object, object>(DictionaryNode node) => new KeyValuePair<object, object>(node.key, node.value);
+            public DictionaryNode(object key, object value, DictionaryNode next)
+            {
+                this.Key = key;
+                this.Value = value;
+                this.Next = next;
+            }
 
             /// <summary>
             /// Items count in this node.
@@ -197,9 +179,9 @@ namespace Devsense.PHP.Syntax
 
             public IEnumerator<KeyValuePair<object, object>> GetEnumerator()
             {
-                for (var node = this; node != null; node = node.next)
+                for (var node = this; node != null; node = node.Next)
                 {
-                    yield return node;
+                    yield return new KeyValuePair<object, object>(node.Key, node.Value);
                 }
             }
 
@@ -222,33 +204,34 @@ namespace Devsense.PHP.Syntax
             CheckKey(key);
 
             //
-            object p = _type;
             object o = _obj;
 
             // empty list
-            if (p == null)
+            if (ReferenceEquals(o, null) || o.GetType() == key)
             {
-                _type = key;
-                _obj = value;
-            }
-            // one item list, with the same key
-            else if (p.Equals(key))
-            {
-                _obj = value;
+                if (value != null && value.GetType() == key)
+                {
+                    // special case,
+                    // single item keyed by own type
+                    _obj = value;
+                }
+                else
+                {
+                    // create list
+                    _obj = new DictionaryNode(key, value, null);
+                }
             }
             // linked list
-            else if (ReferenceEquals(p, TypeList))
+            else if (o is DictionaryNode list)
             {
-                Debug.Assert(o is DictionaryNode);
-
                 // replaces value if key already in collection,
                 // counts items
                 int count = 0;
-                for (var node = (DictionaryNode)o; node != null; node = node.next)
+                for (var node = list; node != null; node = node.Next)
                 {
-                    if (object.Equals(node.key, key))
+                    if (Equals(node.Key, key))
                     {
-                        node.value = value;
+                        node.Value = value;
                         return;
                     }
                     count++;
@@ -257,50 +240,42 @@ namespace Devsense.PHP.Syntax
                 // add new item
                 if (count < MaxListSize)
                 {
-                    _obj = new DictionaryNode() { key = key, value = value, next = (DictionaryNode)o };
+                    _obj = new DictionaryNode(key, value, list);
                 }
                 else
                 {
                     // upgrade to hashtable
-                    var hashtable = ToHashtable((DictionaryNode)o);
-                    hashtable.Add(key, value);
+                    var dict = ToHashtable(list);
+                    dict[key] = value;
 
-                    _obj = hashtable;
-                    _type = TypeHashtable;
+                    _obj = dict;
                 }
             }
             // hashtable
-            else if (ReferenceEquals(p, TypeHashtable))
+            else if (o is Hashtable dict)
             {
-                Debug.Assert(o is Hashtable);
-                ((Hashtable)o)[key] = value;
+                dict[key] = value;
             }
             // one item list,
             // upgrade to linked list
             else
             {
-                _obj = new DictionaryNode()
-                {
-                    key = key,
-                    value = value,
-                    next = new DictionaryNode()
-                    {
-                        key = p,
-                        value = o,
-                        next = null,
-                    }
-                };
-                _type = TypeList;
+                _obj = new DictionaryNode(
+                    key: key,
+                    value: value,
+                    next: new DictionaryNode(
+                        key: o.GetType(),
+                        value: o,
+                        next: null
+                    )
+                );
             }
         }
 
         /// <summary>
         /// Sets property into the container.
         /// </summary>
-        public void SetProperty<T>(T value)
-        {
-            SetProperty(typeof(T), (object)value);
-        }
+        public void SetProperty<T>(T value) => SetProperty(typeof(T), value);
 
         /// <summary>
         /// Tries to get property from the container.
@@ -312,33 +287,32 @@ namespace Devsense.PHP.Syntax
         {
             CheckKey(key);
 
-            object p = _type;
-            object o = _obj;
+            var o = _obj;
 
             // empty container
-            if (p != null)
+            if (!ReferenceEquals(o, null))
             {
-                if (p.Equals(key))
+                if (o.GetType() == key)
                 {
+                    // special case,
+                    // single item keyed by own type
                     value = o;
                     return true;
                 }
-                else if (ReferenceEquals(p, TypeList))
+                else if (o is DictionaryNode list)
                 {
-                    Debug.Assert(o is DictionaryNode);
-                    for (var node = (DictionaryNode)o; node != null; node = node.next)
+                    for (; list != null; list = list.Next)
                     {
-                        if (object.Equals(node.key, key))
+                        if (Equals(list.Key, key))
                         {
-                            value = node.value;
+                            value = list.Value;
                             return true;
                         }
                     }
                 }
-                else if (ReferenceEquals(p, TypeHashtable))
+                else if (o is Hashtable dict)
                 {
-                    Debug.Assert(o is Hashtable);
-                    return ((Hashtable)o).TryGetValue(key, out value);
+                    return dict.TryGetValue(key, out value);
                 }
             }
 
@@ -352,35 +326,28 @@ namespace Devsense.PHP.Syntax
         /// </summary>
         /// <param name="key">Key.</param>
         /// <returns><c>null</c> or property value.</returns>
-        public object GetProperty(object key)
-        {
-            object value;
-            TryGetProperty(key, out value);
-            return value;
-        }
+        public object GetProperty(object key) => TryGetProperty(key, out var value) ? value : null;
 
         /// <summary>
         /// Tries to get property from the container.
         /// </summary>
-        public T GetProperty<T>()
-        {
-            return (T)GetProperty(typeof(T));
-        }
+        public T GetProperty<T>() => TryGetProperty(typeof(T), out var value) ? (T)value : default(T);
 
         /// <summary>
         /// Tries to get property from the container.
         /// </summary>
         public bool TryGetProperty<T>(out T value)
         {
-            object tmp;
-            if (TryGetProperty(typeof(T), out tmp))
+            if (TryGetProperty(typeof(T), out var tmp))
             {
                 value = (T)tmp;
                 return true;
             }
-
-            value = default(T);
-            return false;
+            else
+            {
+                value = default(T);
+                return false;
+            }
         }
 
         /// <summary>
@@ -392,35 +359,30 @@ namespace Devsense.PHP.Syntax
         {
             CheckKey(key);
 
-            var p = _type;
             var o = _obj;
 
-            if (p != null)
+            if (!ReferenceEquals(o, null))
             {
-                if (object.Equals(p, key))
+                if (o.GetType() == key)
                 {
-                    _type = null;
+                    // single item keyed by own type
                     _obj = null;
                     return true;
                 }
-                else if (ReferenceEquals(p, TypeList))
+                else if (o is DictionaryNode node)
                 {
-                    Debug.Assert(o is DictionaryNode);
                     DictionaryNode prev = null;
-                    for (var node = (DictionaryNode)o; node != null; node = node.next)
+                    for (; node != null; node = node.Next)
                     {
-                        if (object.Equals(node.key, key))
+                        if (Equals(node.Key, key))
                         {
                             if (prev == null)
                             {
-                                if ((_obj = node.next) == null)
-                                {
-                                    _type = null;   // empty list
-                                }
+                                _obj = node.Next;
                             }
                             else
                             {
-                                prev.next = node.next;
+                                prev.Next = node.Next;
                             }
 
                             return true;
@@ -430,16 +392,14 @@ namespace Devsense.PHP.Syntax
                         prev = node;
                     }
                 }
-                else if (ReferenceEquals(p, TypeHashtable))
+                else if (o is Hashtable dict)
                 {
-                    Debug.Assert(o is Hashtable);
-                    var hashtable = (Hashtable)o;
-                    if (hashtable.Remove(key))
+                    if (dict.Remove(key))
                     {
-                        if (hashtable.Count <= MaxListSize)
+                        if (dict.Count < MaxListSize)
                         {
-                            _obj = ToList(hashtable);
-                            _type = TypeList;
+                            // downgrade to list
+                            _obj = ToList(dict);
                         }
 
                         return true;
@@ -447,23 +407,21 @@ namespace Devsense.PHP.Syntax
                 }
             }
 
+            //
             return false;
         }
 
         /// <summary>
         /// Removes property from the container.
         /// </summary>
-        public bool RemoveProperty<T>()
-        {
-            return RemoveProperty(typeof(T));
-        }
+        public bool RemoveProperty<T>() => RemoveProperty(typeof(T));
 
         /// <summary>
         /// Clears the container.
         /// </summary>
         public void ClearProperties()
         {
-            _obj = _type = null;
+            _obj = null;
         }
 
         /// <summary>
@@ -473,13 +431,11 @@ namespace Devsense.PHP.Syntax
         {
             get
             {
-                var p = _type;
                 var o = _obj;
-
-                if (p == null) return 0;
-                if (object.ReferenceEquals(p, TypeList)) return CountItems((PropertyCollection.DictionaryNode)o);
-                if (object.ReferenceEquals(p, TypeHashtable)) return ((Hashtable)o).Count;
-                return 1;
+                if (ReferenceEquals(o, null)) return 0;
+                if (o is DictionaryNode list) return CountItems(list);
+                if (o is Hashtable dict) return dict.Count;
+                else return 1; // {o} is value itself
             }
         }
 
@@ -490,14 +446,8 @@ namespace Devsense.PHP.Syntax
         /// <returns>Property value or <c>null</c>.</returns>
         public object this[object key]
         {
-            get
-            {
-                return this.GetProperty(key);
-            }
-            set
-            {
-                this.SetProperty(key, value);
-            }
+            get => GetProperty(key);
+            set => SetProperty(key, value);
         }
 
         #endregion
@@ -507,7 +457,17 @@ namespace Devsense.PHP.Syntax
         private static void CheckKey(object key)
         {
             if (key == null)
-                throw new ArgumentNullException("key");
+            {
+                throw new ArgumentNullException(nameof(key));
+            }
+
+            if (key == typeof(Hashtable))
+            {
+                // key cannot be Hashtable,
+                // reserved,
+                // would corrupt the data structure
+                throw new ArgumentException(string.Empty, nameof(key));
+            }
         }
 
         /// <summary>
@@ -516,8 +476,10 @@ namespace Devsense.PHP.Syntax
         private static int CountItems(DictionaryNode head)
         {
             int count = 0;
-            for (var p = head; p != null; p = p.next)
+            for (var p = head; p != null; p = p.Next)
+            {
                 count++;
+            }
             return count;
         }
 
@@ -525,8 +487,10 @@ namespace Devsense.PHP.Syntax
         {
             var hashtable = new Hashtable(13);
 
-            for (var p = node; p != null; p = p.next)
-                hashtable.Add(p.key, p.value);
+            for (var p = node; p != null; p = p.Next)
+            {
+                hashtable[p.Key] = p.Value;
+            }
 
             return hashtable;
         }
@@ -535,7 +499,7 @@ namespace Devsense.PHP.Syntax
             DictionaryNode list = null;
             foreach (var p in hashtable)
             {
-                list = new DictionaryNode() { key = p.Key, value = p.Value, next = list };
+                list = new DictionaryNode(p.Key, p.Value, list);
             }
             return list;
         }
