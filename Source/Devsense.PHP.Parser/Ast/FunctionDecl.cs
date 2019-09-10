@@ -27,7 +27,7 @@ namespace Devsense.PHP.Syntax.Ast
     public sealed class FormalParam : LangElement
     {
         [Flags]
-        public enum Flags
+        public enum Flags : byte
         {
             Default = 0,
             IsByRef = 1,

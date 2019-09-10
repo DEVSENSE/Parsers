@@ -3185,10 +3185,10 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
         return;
       case 378: // expr_without_variable -> T_STATIC inline_function 
 {
-			var lambda = (ILambdaExpression)value_stack.array[value_stack.top-1].yyval.Node;
+			var lambda = (LambdaFunctionExpr)value_stack.array[value_stack.top-1].yyval.Node;
 			lambda.IsStatic = true;
 			lambda.Span = yypos;
-			yyval.Node = (LangElement)lambda;
+			yyval.Node = lambda;
 		}
         return;
       case 379: // inline_function -> function returns_ref backup_doc_comment '(' parameter_list ')' lexical_vars return_type backup_fn_flags enter_scope '{' inner_statement_list '}' exit_scope backup_fn_flags 

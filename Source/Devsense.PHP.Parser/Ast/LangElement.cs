@@ -31,6 +31,22 @@ namespace Devsense.PHP.Syntax.Ast
     }
 
     /// <summary>
+    /// Basic tree node - with visitor capability and span.
+    /// </summary>
+    public interface ITreeNode
+    {
+        /// <summary>
+        /// Implements the visitor pattern.
+        /// </summary>
+        void VisitMe(TreeVisitor/*!*/visitor);
+
+        /// <summary>
+        /// Position of the element in source file.
+        /// </summary>
+        Span Span { get; }
+    }
+
+    /// <summary>
     /// Base class for all AST nodes.
     /// </summary>
     public abstract class AstNode : IAstNode, IPropertyCollection
@@ -149,17 +165,9 @@ namespace Devsense.PHP.Syntax.Ast
     /// <summary>
     /// Represents all AST elements - statements, expressions and global code.
     /// </summary>
-    public interface ILangElement : IAstNode
+    public interface ILangElement : IAstNode, ITreeNode
     {
-        /// <summary>
-        /// Position of the element in source file.
-        /// </summary>
-        Span Span { get; set; }
-
-        /// <summary>
-        /// Implements the visitor pattern.
-        /// </summary>
-        void VisitMe(TreeVisitor/*!*/visitor);
+        
     }
 
     /// <summary>

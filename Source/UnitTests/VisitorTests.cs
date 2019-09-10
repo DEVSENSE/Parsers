@@ -169,7 +169,7 @@ namespace UnitTests
             }
 
             public override ActualParam ActualParameter(Span span, LangElement expr, ActualParam.Flags flags)
-                => (ActualParam)CountLE(base.ActualParameter(span, expr, flags)); // TODO - replace definitions by interfaces
+                => (ActualParam)/*CountLE*/(base.ActualParameter(span, expr, flags)); // TODO - replace definitions by interfaces
 
             public override TypeRef AnonymousTypeReference(Span span, Span headingSpan, bool conditional, PhpMemberAttributes attributes, IEnumerable<FormalTypeParam> typeParamsOpt, INamedTypeRef baseClassOpt, IEnumerable<INamedTypeRef> implements, IEnumerable<LangElement> members, Span blockSpan)
             {

@@ -35,6 +35,21 @@ namespace Devsense.PHP.Syntax
             element?.VisitMe(this);
         }
 
+        protected void Visit(ITreeNode node)
+        {
+            if (node != null)
+            {
+                if (node is LangElement element)
+                {
+                    VisitElement(element);
+                }
+                else
+                {
+                    node.VisitMe(this);
+                }
+            }
+        }
+
         /// <summary>
         /// Visit global scope element and all children.
         /// </summary>
@@ -343,13 +358,21 @@ namespace Devsense.PHP.Syntax
         /// Visit all elements in the given list.
         /// </summary>
         /// <param name="items">Collection of elements to visit.</param>
-        protected void VisitList<T>(IList<T> items) where T : class
+        protected void VisitList<T>(IList<T> items) where T : ITreeNode
         {
             if (items != null)
             {
                 for (int i = 0; i < items.Count; i++)
                 {
-                    VisitElement(items[i] as LangElement);
+                    var item = items[i];
+                    if (item is LangElement element)
+                    {
+                        VisitElement(element);
+                    }
+                    else
+                    {
+                        item?.VisitMe(this);
+                    }
                 }
             }
         }

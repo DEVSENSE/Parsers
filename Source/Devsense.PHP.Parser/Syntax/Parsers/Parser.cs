@@ -188,8 +188,7 @@ namespace Devsense.PHP.Syntax
             for (int i = 0; i < statements.Count; i++)
             {
                 var stmt = (Statement)statements[i];
-                var ns = stmt as NamespaceDecl;
-                if (ns != null)
+                if (stmt is NamespaceDecl ns)
                 {
                     if (hasStmt)
                     {
@@ -418,6 +417,16 @@ namespace Devsense.PHP.Syntax
             {
                 list.Add(null);
             }
+            return list;
+        }
+
+        private List<ActualParam> AddTrailingComma(List<ActualParam> list, bool addComma)
+        {
+            if (addComma)
+            {
+                list.Add(default(ActualParam));
+            }
+
             return list;
         }
 

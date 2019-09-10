@@ -304,10 +304,13 @@ namespace Devsense.PHP.Syntax.Ast.Serialization
         }
         override public void VisitActualParam(ActualParam x)
         {
-            _serializer.StartSerialize(typeof(ActualParam).Name, SerializeSpan(x.Span),
-                new NodeObj("IsUnpack", x.IsUnpack.ToString()));
-            base.VisitActualParam(x);
-            _serializer.EndSerialize();
+            if (x.Exists)
+            {
+                _serializer.StartSerialize(typeof(ActualParam).Name, SerializeSpan(x.Span),
+                  new NodeObj("IsUnpack", x.IsUnpack.ToString()));
+                base.VisitActualParam(x);
+                _serializer.EndSerialize();
+            }
         }
         override public void VisitBlockStmt(BlockStmt x)
         {

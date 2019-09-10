@@ -24,7 +24,7 @@ namespace Devsense.PHP.Syntax.Ast
     /// <summary>
     /// Represents a single argument passed to <see cref="FunctionCall"/>.
     /// </summary>
-    public sealed class ActualParam : LangElement
+    public struct ActualParam : ITreeNode
     {
         [Flags]
         public enum Flags : byte
@@ -42,6 +42,17 @@ namespace Devsense.PHP.Syntax.Ast
         readonly Flags _flags;
 
         /// <summary>
+        /// The parameter span.
+        /// </summary>
+        public Text.Span Span => (Expression != null && Expression.Span.IsValid) ? Text.Span.FromBounds(_spanStart, Expression.Span.End) : Text.Span.Invalid;
+        readonly int _spanStart;
+
+        /// <summary>
+        /// Gets value indicating the parameter is not empty (<see cref="Expression"/> is not a <c>null</c> reference).
+        /// </summary>
+        public bool Exists => Expression != null;
+        
+        /// <summary>
         /// Gets value indicating whether the parameter is prefixed by <c>&amp;</c> character.
         /// </summary>
         public bool Ampersand => (_flags & Flags.IsByRef) != 0;
@@ -56,17 +67,17 @@ namespace Devsense.PHP.Syntax.Ast
         { }
 
         public ActualParam(Text.Span p, Expression param, Flags flags)
-            : base(p)
         {
             Expression = param ?? throw new ArgumentNullException(nameof(param));
             _flags = flags;
+            _spanStart = p.Start;
         }
 
         /// <summary>
         /// Call the right Visit* method on the given Visitor object.
         /// </summary>
         /// <param name="visitor">Visitor to be called.</param>
-        public override void VisitMe(TreeVisitor visitor)
+        public void VisitMe(TreeVisitor visitor)
         {
             visitor.VisitActualParam(this);
         }

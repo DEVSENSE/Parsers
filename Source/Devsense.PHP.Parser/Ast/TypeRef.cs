@@ -26,13 +26,8 @@ namespace Devsense.PHP.Syntax.Ast
     /// <summary>
     /// A common interface for a direct class reference (translated, class or generic).
     /// </summary>
-    public interface INamedTypeRef 
+    public interface INamedTypeRef : ITreeNode
     {
-        /// <summary>
-        /// Position of the element in the source file.
-        /// </summary>
-        Span Span { get; }
-
         /// <summary>
         /// Gets qualified name of the named type.
         /// </summary>

@@ -206,21 +206,18 @@ namespace Devsense.PHP.Syntax
 
         #region Single Nodes Overrides
 
-        public override void VisitElement(LangElement element)
-        {
-            base.VisitElement(element);
-        }
-
         public override void VisitActualParam(ActualParam x)
         {
             if (x.IsUnpack)
             {
                 ProcessToken(Tokens.T_ELLIPSIS, SpanUtils.SpanIntermission(x.Span.StartOrInvalid, x.Expression.Span));
             }
+
             if (x.Ampersand)
             {
                 ProcessToken(Tokens.T_AMP, SpanUtils.SpanIntermission(x.Span.StartOrInvalid, x.Expression.Span));
             }
+
             VisitElement(x.Expression);
         }
 
@@ -1134,7 +1131,7 @@ namespace Devsense.PHP.Syntax
                 useParams: x.UseParams);
         }
 
-        protected virtual void VisitElementList<TElement>(IList<TElement> list, Tokens separatorToken) where TElement : LangElement
+        protected virtual void VisitElementList<TElement>(IList<TElement> list, Tokens separatorToken) where TElement : ITreeNode
         {
             Debug.Assert(list != null, nameof(list));
 
@@ -1145,7 +1142,8 @@ namespace Devsense.PHP.Syntax
                     SpanUtils.SpanIntermission(
                         list[i - 1] != null ? list[i - 1].Span : Span.Invalid,
                         list[i] != null ? list[i].Span : Span.Invalid));
-                VisitElement(list[i]);
+
+                Visit(list[i]);
             }
         }
 
