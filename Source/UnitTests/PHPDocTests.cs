@@ -56,5 +56,21 @@ namespace UnitTests
 
             var ps = phpdoc.Params;
         }
+
+        [TestMethod]
+        public void MethodVarArgTest()
+        {
+            var phpdoc = NewPHPDoc(@"
+/**
+ * @method static int alphanum(string ...$x)
+ * @method static int alphanum2(... $x)
+ */");
+
+            var method = phpdoc.GetElement<PHPDocBlock.MethodTag>();
+
+            Assert.IsNotNull(method);
+            Assert.IsTrue(method.Parameters[0].IsVariadic);
+            Assert.AreEqual(method.Parameters[0].Name.Name.Value, "x");
+        }
     }
 }

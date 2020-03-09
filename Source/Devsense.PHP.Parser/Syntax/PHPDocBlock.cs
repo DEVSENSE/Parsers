@@ -1592,8 +1592,8 @@ namespace Devsense.PHP.Syntax
                 TypeRef typehint = null;
                 string paramname = string.Empty;
                 Span paramnamespan = Span.Invalid;
-                bool byref = false;
                 Expression initExpr = null;
+                var flags = FormalParam.Flags.Default;
 
                 // Trim [=initializer] off
                 int eqIndex = paramDecl.IndexOf('=');
@@ -1608,7 +1608,7 @@ namespace Devsense.PHP.Syntax
                 if (word != null)
                 {
                     // [type]
-                    if (word.Length > 0 && word[0] != '$')
+                    if (word.Length != 0 && word[0] != '$' && word[0] != '&' && word[0] != '.')
                     {
                         if (!string.Equals(word, "mixed", StringComparison.OrdinalIgnoreCase))
                         {
@@ -1617,21 +1617,42 @@ namespace Devsense.PHP.Syntax
                         word = NextWord(paramDecl, ref i);
                     }
 
-                    // [$name][=initializer]
-                    if (word != null && word.Length > 0 && word[0] == '$')
+                    // [...]
+                    if (word != null && word.StartsWith("...", StringComparison.Ordinal))
+                    {
+                        flags |= FormalParam.Flags.IsVariadic;
+
+                        word = word.Substring(3).Trim();
+                        if (word.Length == 0)
+                        {
+                            word = NextWord(paramDecl, ref i);
+                        }
+                    }
+
+                    // [&]
+                    if (word != null && word.Length != 0 && word[0] == '&')
+                    {
+                        flags |= FormalParam.Flags.IsByRef;
+
+                        word = word.Substring(1);
+                        if (word.Length == 0)
+                        {
+                            word = NextWord(paramDecl, ref i);
+                        }
+                    }
+
+                    // [$name]
+                    if (word != null && word.Length != 0 && word[0] == '$')
                     {
                         eqIndex = word.IndexOf('=');
                         paramname = ((eqIndex == -1) ? word : word.Remove(eqIndex));
 
-                        byref = paramname.IndexOf('&') != -1;
                         paramname = paramname.TrimStart(new char[] { '$', '&' }).Trim();
+
                     }
                 }
 
-                return new FormalParam(
-                    Span.Invalid, paramname, paramnamespan, typehint,
-                    byref ? FormalParam.Flags.IsByRef : FormalParam.Flags.Default,
-                    initExpr);
+                return new FormalParam(Span.Invalid, paramname, paramnamespan, typehint, flags, initExpr);
             }
 
             /// <summary>
