@@ -239,6 +239,12 @@ namespace Devsense.PHP.Syntax
 
                     if (hasNsSimple && hasNsBracket)
                     {
+                        var span = ns.QualifiedName.Span;
+                        if (span.IsValid == false)
+                        {
+                            span = new Span(ns.Span.Start, "namespace".Length);
+                        }
+
                         this.ErrorSink.Error(ns.QualifiedName.Span, FatalErrors.MixedNamespacedeclarations);
                     }
                 }
