@@ -306,7 +306,7 @@ using StringPair = System.Collections.Generic.KeyValuePair<string, string>;
 %type <TypeReference> type return_type type_expr optional_type extends_from
 %type <TypeReference> class_name_reference class_name
 
-%type <TypeRefList> name_list catch_name_list implements_list interface_extends_list
+%type <TypeRefList> name_list catch_name_list implements_list interface_extends_list union_type
 
 %type <Node> top_statement statement function_declaration_statement class_declaration_statement 
 %type <Node> trait_declaration_statement interface_declaratioimplements_listn_statement 
@@ -877,12 +877,18 @@ optional_type:
 type_expr:
 		type		{ $$ = $1; }
 	|	'?' type	{ $$ = _astFactory.NullableTypeReference(@$, $2); }
+	|   union_type  { $$ = _astFactory.TypeReference(@$, $1); }
 ;
 
 type:   
 		T_ARRAY		{ $$ = _astFactory.PrimitiveTypeReference(@$, PrimitiveTypeRef.PrimitiveType.array); }
 	|	T_CALLABLE	{ $$ = _astFactory.PrimitiveTypeReference(@$, PrimitiveTypeRef.PrimitiveType.callable); }
 	|	name		{ $$ = CreateTypeRef($1, true); }
+;
+
+union_type:
+		type '|' type       { $$ = new List<TypeRef>(2){ $1, $3 }; }
+	|	union_type '|' type { $$ = AddToList<TypeRef>($1, $3); }
 ;
 
 return_type:
