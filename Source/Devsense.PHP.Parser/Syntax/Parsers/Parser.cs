@@ -453,6 +453,9 @@ namespace Devsense.PHP.Syntax
         static readonly Dictionary<QualifiedName, PrimitiveTypeRef.PrimitiveType> PHP72PrimitiveTypes = new Dictionary<QualifiedName, PrimitiveTypeRef.PrimitiveType>() {
             { QualifiedName.Object, PrimitiveTypeRef.PrimitiveType.@object },
         };
+        static readonly Dictionary<QualifiedName, PrimitiveTypeRef.PrimitiveType> PHP80PrimitiveTypes = new Dictionary<QualifiedName, PrimitiveTypeRef.PrimitiveType>() {
+            { QualifiedName.Mixed, PrimitiveTypeRef.PrimitiveType.mixed },
+        };
 
         /// <summary>
         /// Gets map of primitive types for current language features.
@@ -467,6 +470,10 @@ namespace Devsense.PHP.Syntax
 
                     var dict = new Dictionary<QualifiedName, PrimitiveTypeRef.PrimitiveType>(12);
 
+                    if ((_languageFeatures.HasFeature(LanguageFeatures.Php80Set)))
+                    {
+                        dict.Add(PHP80PrimitiveTypes);
+                    }
                     if ((_languageFeatures.HasFeature(LanguageFeatures.Php72Set)))
                     {
                         dict.Add(PHP72PrimitiveTypes);

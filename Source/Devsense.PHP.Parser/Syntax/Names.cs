@@ -471,13 +471,13 @@ namespace Devsense.PHP.Syntax
 
         public static readonly QualifiedName Assert = new QualifiedName(new Name("assert"), Name.EmptyNames);
         public static readonly QualifiedName Error = new QualifiedName(new Name("<error>"), Name.EmptyNames);
-        public static readonly QualifiedName Global = new QualifiedName(new Name("<Global>"), Name.EmptyNames);
         public static readonly QualifiedName Lambda = new QualifiedName(new Name("Lambda"), Name.EmptyNames);
         public static readonly QualifiedName Null = new QualifiedName(new Name("null"), Name.EmptyNames);
         public static readonly QualifiedName True = new QualifiedName(new Name("true"), Name.EmptyNames);
         public static readonly QualifiedName False = new QualifiedName(new Name("false"), Name.EmptyNames);
         public static readonly QualifiedName Array = new QualifiedName(new Name("array"), Name.EmptyNames);
         public static readonly QualifiedName Object = new QualifiedName(new Name("object"), Name.EmptyNames);
+        public static readonly QualifiedName Mixed = new QualifiedName(new Name("mixed"), Name.EmptyNames);
         public static readonly QualifiedName Int = new QualifiedName(new Name("int"), Name.EmptyNames);
         public static readonly QualifiedName Integer = new QualifiedName(new Name("integer"), Name.EmptyNames);
         public static readonly QualifiedName LongInteger = new QualifiedName(new Name("int64"), Name.EmptyNames);
@@ -514,7 +514,10 @@ namespace Devsense.PHP.Syntax
                         Equals(Array) ||
                         Equals(Callable) ||
                         Equals(Void) ||     // PHP 7.1
-                        Equals(Iterable)    // PHP 7.1
+                        Equals(Iterable) || // PHP 7.1
+                        Equals(Object) ||   // PHP 7.2
+                        Equals(Mixed) ||    // PHP 8.0
+                        false
                         );
             }
         }

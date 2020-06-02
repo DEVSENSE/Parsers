@@ -222,7 +222,13 @@ namespace Devsense.PHP.Syntax.Ast
             /// Object.
             /// </summary>
             /// <remarks>PHP 7.2+</remarks>
-            @object
+            @object,
+
+            /// <summary>
+            /// Mixed.
+            /// </summary>
+            /// <remarks>PHP 8.0+</remarks>
+            mixed,
         }
 
         #endregion
