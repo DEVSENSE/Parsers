@@ -1359,7 +1359,11 @@ namespace Devsense.PHP.Syntax
 
         public static TTarget[] CastToArray<TTarget>(this IEnumerable enumerable)
         {
-            if (enumerable is ICollection collection)
+            if (enumerable is TTarget[] array)
+            {
+                return array;
+            }
+            else if (enumerable is ICollection collection)
             {
                 return CastToArray<TTarget>(collection);
             }

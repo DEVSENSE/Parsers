@@ -624,7 +624,7 @@ namespace Devsense.PHP.Syntax
 
             if (tref is ClassTypeRef) return new ClassTypeRef(tref.Span, TranslateAny(((ClassTypeRef)tref).ClassName));
             if (tref is NullableTypeRef) return new NullableTypeRef(tref.Span, Translate(((NullableTypeRef)tref).TargetType));
-            if (tref is MultipleTypeRef) return new MultipleTypeRef(tref.Span, ((MultipleTypeRef)tref).MultipleTypes.Select(Translate).ToList());
+            if (tref is MultipleTypeRef mtref) return new MultipleTypeRef(tref.Span, mtref.MultipleTypes.Select(Translate));
             if (tref is GenericTypeRef) throw new NotImplementedException();
             // PrimitiveTypeRef is not translated
             // IndirectTypeRef is not translated

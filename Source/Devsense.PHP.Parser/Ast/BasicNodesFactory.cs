@@ -597,13 +597,15 @@ namespace Devsense.PHP.Syntax.Ast
         {
             Debug.Assert(classes != null && classes.Count() > 0 && classes.All(c => c is TypeRef));
 
-            if (classes.Count() == 1)
+            var typearr = classes is IList<TypeRef> list ? list.ToArray() : classes.CastToArray<TypeRef>();
+
+            if (typearr.Length == 1)
             {
-                return (TypeRef)classes.First();
+                return typearr[0];
             }
             else
             {
-                return new MultipleTypeRef(span, classes.CastToArray<TypeRef>());
+                return new MultipleTypeRef(span, typearr);
             }
         }
 
