@@ -328,6 +328,7 @@ using StringPair = System.Collections.Generic.KeyValuePair<string, string>;
 %type <NodeList> global_var_list static_var_list echo_expr_list unset_variables
 %type <NodeList> trait_adaptation_list encaps_list isset_variables property_list
 %type <NodeList> case_list switch_case_list non_empty_for_exprs catch_list
+%type <Node> optional_variable
 
 %type <String> identifier semi_reserved reserved_non_modifiers
 %type <StringList> namespace_name
@@ -639,11 +640,16 @@ statement:
 catch_list:
 		/* empty */
 			{ $$ = new List<LangElement>(); }
-	|	catch_list T_CATCH '(' catch_name_list T_VARIABLE ')' '{' inner_statement_list '}'
+	|	catch_list T_CATCH '(' catch_name_list optional_variable ')' '{' inner_statement_list '}'
 			{ 
 				$$ = AddToList<LangElement>($1, _astFactory.Catch(CombineSpans(@2, @9), _astFactory.TypeReference(@4, $4), 
-					(DirectVarUse)_astFactory.Variable(@5, $5, NullLangElement, true), CreateBlock(CombineSpans(@7, @9), $8))); 
+					(DirectVarUse)$5, CreateBlock(CombineSpans(@7, @9), $8))); 
 			}
+;
+
+optional_variable:
+		/*empty*/ { $$ = null; }
+	|	T_VARIABLE { $$ = _astFactory.Variable(@1, $1, NullLangElement, true); }
 ;
 
 catch_name_list:

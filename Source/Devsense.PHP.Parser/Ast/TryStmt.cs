@@ -74,33 +74,29 @@ namespace Devsense.PHP.Syntax.Ast
         /// <summary>
         /// A block containing the list of statements contained in the catch-block.
         /// </summary>
-        public BlockStmt/*!*/ Body { get { return body; } }
-        private readonly BlockStmt/*!*/ body;
+        public BlockStmt/*!*/ Body { get; }
 
         /// <summary>
+        /// Optional.
         /// A variable where an exception is assigned in.
-        /// Cannot be <c>null</c>.
+        /// Can be <c>null</c> (PHP 8.0+).
         /// </summary>
-        private readonly DirectVarUse/*!*/ variable;
-        /// <summary>A variable where an exception is assigned in.</summary>
-        public DirectVarUse/*!*/ Variable { get { return variable; } }
+        public DirectVarUse Variable { get; }
 
         /// <summary>
         /// Optional. Catch variable type reference.
         /// Can be a multiple type reference.
         /// </summary>
-        public TypeRef TargetType { get { return this.tref; } }
-        private readonly TypeRef tref;
+        public TypeRef TargetType { get; }
 
-        public CatchItem(Text.Span p, TypeRef tref, DirectVarUse/*!*/ variable,
-            BlockStmt body)
+        public CatchItem(Text.Span p, TypeRef tref, DirectVarUse variable, BlockStmt body)
             : base(p)
         {
-            Debug.Assert(variable != null && body != null);
+            Debug.Assert(body != null);
 
-            this.tref = tref;
-            this.variable = variable;
-            this.body = body;
+            this.TargetType = tref;
+            this.Variable = variable;
+            this.Body = body;
         }
 
         /// <summary>
@@ -121,13 +117,12 @@ namespace Devsense.PHP.Syntax.Ast
         /// <summary>
         /// Statements in the finally block
         /// </summary>
-        public BlockStmt/*!*/ Body { get { return body; } }
-        private readonly BlockStmt/*!*/ body;
+        public BlockStmt/*!*/ Body { get; }
 
         public FinallyItem(Text.Span span, BlockStmt body)
             : base(span)
         {
-            this.body = body;
+            this.Body = body;
         }
 
         public override void VisitMe(TreeVisitor visitor)
