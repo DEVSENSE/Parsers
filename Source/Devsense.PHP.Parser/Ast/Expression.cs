@@ -128,6 +128,7 @@ namespace Devsense.PHP.Syntax.Ast
         ShellCommand,
         IncDec,
         Yield,
+        Throw,
         Parenthesis,
 
         // lambda function:

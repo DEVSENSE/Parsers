@@ -82,15 +82,6 @@ namespace Devsense.PHP.Syntax
         }
 
         /// <summary>
-        /// Visit throw expression.
-        /// </summary>
-        /// <param name="x"></param>
-        virtual public void VisitThrowStmt(ThrowStmt x)
-        {
-            VisitElement(x.Expression);
-        }
-
-        /// <summary>
         /// Visit namespace statements.
         /// </summary>
         /// <param name="x"></param>
@@ -891,6 +882,15 @@ namespace Devsense.PHP.Syntax
         {
             VisitElement(x.ValueExpr);
         }
+
+        /// <summary>
+        /// Visit throw expression.
+        /// </summary>
+        virtual public void VisitThrowEx(ThrowEx x)
+        {
+            VisitElement(x.Expression);
+        }
+
         #endregion
 
         #region Literals

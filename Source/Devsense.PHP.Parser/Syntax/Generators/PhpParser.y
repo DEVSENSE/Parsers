@@ -82,6 +82,7 @@ using StringPair = System.Collections.Generic.KeyValuePair<string, string>;
 	public List<UseBase> UseList						{ get { return (List<UseBase>)Object; }				set { Object = value; } }
 }
 
+%left T_THROW
 %left PREC_ARROW_FUNCTION
 %left T_INCLUDE T_INCLUDE_ONCE T_REQUIRE T_REQUIRE_ONCE
 %left ','
@@ -631,7 +632,6 @@ statement:
 	|	';'	/* empty statement */ { $$ = _astFactory.EmptyStmt(@$); }
 	|	T_TRY '{' inner_statement_list '}' enter_scope catch_list finally_statement exit_scope
 			{ $$ = _astFactory.TryCatch(@$, CreateBlock(CombineSpans(@2, @4), $3), $6, $7); }
-	|	T_THROW expr ';' { $$ = _astFactory.Throw(@$, $2); }
 	|	T_GOTO T_STRING ';' { $$ = _astFactory.Goto(@$, $2, @2); }
 	|	T_STRING ':' { $$ = _astFactory.Label(@$, $1, @1); }
 ;
@@ -1215,6 +1215,7 @@ expr_without_variable:
 	|	T_YIELD expr { $$ = _astFactory.Yield(@$, null, $2); }
 	|	T_YIELD expr T_DOUBLE_ARROW expr { $$ = _astFactory.Yield(@$, $2, $4); }
 	|	T_YIELD_FROM expr { $$ = _astFactory.YieldFrom(@$, $2); }
+	|	T_THROW expr { $$ = _astFactory.Throw(@$, $2); }
 	|	inline_function { $$ = $1; }
 	|	T_STATIC inline_function {
 			var lambda = (LambdaFunctionExpr)$2;

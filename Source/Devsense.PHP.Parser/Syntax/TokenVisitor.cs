@@ -1428,12 +1428,11 @@ namespace Devsense.PHP.Syntax
             }
         }
 
-        public override void VisitThrowStmt(ThrowStmt x)
+        public override void VisitThrowEx(ThrowEx x)
         {
-            // throw EXPR;
+            // throw EXPR
             ConsumeToken(Tokens.T_THROW, SpanUtils.SafeSpan(x.Span.StartOrInvalid, 5));
             VisitElement(x.Expression);
-            ConsumeToken(Tokens.T_SEMI, SpanUtils.SafeSpan(x.Span.End - 1, 1));
         }
 
         public override void VisitTraitAdaptationAlias(TraitsUse.TraitAdaptationAlias x)

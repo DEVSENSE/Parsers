@@ -135,32 +135,4 @@ namespace Devsense.PHP.Syntax.Ast
             visitor.VisitFinallyItem(this);
         }
     }
-
-    /// <summary>
-    /// Represents a throw statement.
-    /// </summary>
-    public sealed class ThrowStmt : Statement
-    {
-        /// <summary>
-        /// An expression being thrown.
-        /// </summary>
-        public Expression /*!*/ Expression { get { return expression; } internal set { expression = value; } }
-        private Expression/*!*/ expression;
-
-        public ThrowStmt(Text.Span span, Expression/*!*/ expression)
-            : base(span)
-        {
-            Debug.Assert(expression != null);
-            this.expression = expression;
-        }
-
-        /// <summary>
-        /// Call the right Visit* method on the given Visitor object.
-        /// </summary>
-        /// <param name="visitor">Visitor to be called.</param>
-        public override void VisitMe(TreeVisitor visitor)
-        {
-            visitor.VisitThrowStmt(this);
-        }
-    }
 }

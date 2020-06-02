@@ -497,7 +497,7 @@ namespace Devsense.PHP.Syntax.Ast
         public virtual LangElement Throw(Span span, LangElement expression)
         {
             Debug.Assert(expression is Expression);
-            return new ThrowStmt(span, (Expression)expression);
+            return new ThrowEx(span, (Expression)expression);
         }
 
         public virtual LangElement Type(Span span, Span headingSpan, bool conditional, PhpMemberAttributes attributes, Name name, Span nameSpan, IEnumerable<FormalTypeParam> typeParamsOpt, INamedTypeRef baseClassOpt, IEnumerable<INamedTypeRef> implements, IEnumerable<LangElement> members, Span bodySpan)
