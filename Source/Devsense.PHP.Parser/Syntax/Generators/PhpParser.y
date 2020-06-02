@@ -849,7 +849,7 @@ alt_if_stmt:
 ;
 
 parameter_list:
-		non_empty_parameter_list { $$ = $1; }
+		non_empty_parameter_list possible_comma { $$ = AddTrailingComma($1, $2); }
 	|	/* empty */	{ $$ = new List<FormalParam>(); }
 ;
 
