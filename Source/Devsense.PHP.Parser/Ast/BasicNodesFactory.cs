@@ -298,9 +298,9 @@ namespace Devsense.PHP.Syntax.Ast
                 (Expression)expression, returnType);
         }
 
-        public virtual FormalParam Parameter(Span span, string name, Span nameSpan, TypeRef typeOpt, FormalParam.Flags flags, Expression initValue)
+        public virtual FormalParam Parameter(Span span, string name, Span nameSpan, TypeRef typeOpt, FormalParam.Flags flags, Expression initValue, PhpMemberAttributes visibility)
         {
-            return new FormalParam(span, name, nameSpan, typeOpt, flags, initValue);
+            return new FormalParam(span, name, nameSpan, typeOpt, flags, initValue, constructorPropertyVisibility: visibility);
         }
 
         public virtual LangElement GlobalCode(Span span, IEnumerable<LangElement> statements, NamingContext context)

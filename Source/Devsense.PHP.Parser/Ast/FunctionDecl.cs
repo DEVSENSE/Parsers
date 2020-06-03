@@ -33,6 +33,11 @@ namespace Devsense.PHP.Syntax.Ast
             IsByRef = 1,
             IsOut = 2,
             IsVariadic = 4,
+
+            IsConstructorPropertyPublic = 8,
+            IsConstructorPropertyPrivate = 16,
+            IsConstructorPropertyProtected = 32,
+            IsConstructorPropertyMask = IsConstructorPropertyPublic | IsConstructorPropertyPrivate | IsConstructorPropertyProtected,
         }
 
         /// <summary>
@@ -56,7 +61,10 @@ namespace Devsense.PHP.Syntax.Ast
         /// </summary>
         public bool IsOut
         {
-            get { return (_flags & Flags.IsOut) != 0; }
+            get
+            {
+                return (_flags & Flags.IsOut) != 0;
+            }
             internal set
             {
                 if (value) _flags |= Flags.IsOut;
@@ -68,6 +76,22 @@ namespace Devsense.PHP.Syntax.Ast
         /// Gets value indicating whether the parameter is variadic and so passed parameters will be packed into the array as passed as one parameter.
         /// </summary>
         public bool IsVariadic { get { return (_flags & Flags.IsVariadic) != 0; } }
+
+        /// <summary>
+        /// Gets value indicating the parameter is a constructor property (PHP8).
+        /// </summary>
+        public bool IsConstructorProperty => (_flags & Flags.IsConstructorPropertyMask) != 0;
+
+        /// <summary>
+        /// In case the parameter is <see cref="IsConstructorProperty"/>, gets the member visibility.
+        /// </summary>
+        public PhpMemberAttributes ConstructorPropertyVisibility => (_flags & Flags.IsConstructorPropertyMask) switch
+        {
+            Flags.IsConstructorPropertyPublic => PhpMemberAttributes.Public,
+            Flags.IsConstructorPropertyPrivate => PhpMemberAttributes.Private,
+            Flags.IsConstructorPropertyProtected => PhpMemberAttributes.Protected,
+            _ => PhpMemberAttributes.None, // which is public
+        };
 
         /// <summary>
         /// Initial value expression. Can be <B>null</B>.
@@ -83,14 +107,30 @@ namespace Devsense.PHP.Syntax.Ast
 
         #region Construction
 
-        public FormalParam(Text.Span span, string/*!*/ name, Text.Span nameSpan, TypeRef typeHint, Flags flags,
-                Expression initValue)
+        public FormalParam(
+            Text.Span span, string/*!*/ name, Text.Span nameSpan,
+            TypeRef typeHint, Flags flags,
+            Expression initValue,
+            PhpMemberAttributes constructorPropertyVisibility = 0)
             : base(span)
         {
             _name = new VariableNameRef(nameSpan, name);
             _typeHint = typeHint;
             _flags = flags;
             _initValue = initValue;
+
+            if (constructorPropertyVisibility != 0)
+            {
+                Debug.Assert((constructorPropertyVisibility & PhpMemberAttributes.Constructor) != 0);
+
+                _flags |= (constructorPropertyVisibility & PhpMemberAttributes.VisibilityMask) switch
+                {
+                    PhpMemberAttributes.Private => Flags.IsConstructorPropertyPrivate,
+                    PhpMemberAttributes.Protected => Flags.IsConstructorPropertyProtected,
+                    //PhpMemberAttributes.Public => Flags.IsConstructorPropertyPublic,
+                    _ => Flags.IsConstructorPropertyPublic,
+                };
+            }
         }
 
         #endregion

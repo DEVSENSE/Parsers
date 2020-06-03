@@ -142,8 +142,8 @@ namespace Devsense.PHP.Syntax.Ast
         /// <param name="typeOpt">Parameter type.</param>
         /// <param name="flags">Parameter flags.</param>
         /// <param name="initValue">Optional. Default value expression.</param>
-        /// <returns></returns>
-        FormalParam Parameter(TSpan span, string name, TSpan nameSpan, TypeRef typeOpt, FormalParam.Flags flags, Expression initValue);
+        /// <param name="visibility">Optional. Used for PHP8 constructor property promotion.</param>
+        FormalParam Parameter(TSpan span, string name, TSpan nameSpan, TypeRef typeOpt, FormalParam.Flags flags = FormalParam.Flags.Default, Expression initValue = null, PhpMemberAttributes visibility = 0);
 
         /// <summary>
         /// Creates type declaration node.

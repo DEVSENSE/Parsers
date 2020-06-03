@@ -296,7 +296,7 @@ using StringPair = System.Collections.Generic.KeyValuePair<string, string>;
 %type <Bool> possible_comma
 
 %type <Long> returns_ref function fn is_reference is_variadic variable_modifiers 
-%type <Long> method_modifiers non_empty_member_modifiers member_modifier class_modifier class_modifiers
+%type <Long> method_modifiers non_empty_member_modifiers member_modifier class_modifier class_modifiers optional_visibility_modifier
 %type <Kind> use_type
 
 %type <Object> backup_doc_comment enter_scope exit_scope
@@ -861,11 +861,18 @@ non_empty_parameter_list:
 			{ $$ = AddToList<FormalParam>($1, $3); }
 ;
 
+optional_visibility_modifier:
+		/* empty */	{ $$ = 0; /* None */ }
+	|	T_PUBLIC	{ $$ = (long)(PhpMemberAttributes.Public | PhpMemberAttributes.Constructor); }
+	|	T_PROTECTED	{ $$ = (long)(PhpMemberAttributes.Protected | PhpMemberAttributes.Constructor); }
+	|	T_PRIVATE	{ $$ = (long)(PhpMemberAttributes.Private | PhpMemberAttributes.Constructor); }
+;
+
 parameter:
-		optional_type is_reference is_variadic T_VARIABLE
-			{ $$ = _astFactory.Parameter(CombineSpans(@1, @2, @3, @4), $4, @4, $1, (FormalParam.Flags)$2|(FormalParam.Flags)$3, null); /* Important - @$ is invalid when optional_type is empty */ }
-	|	optional_type is_reference is_variadic T_VARIABLE '=' expr
-			{ $$ = _astFactory.Parameter(CombineSpans(@1, @2, @3, @4, @6), $4, @4, $1, (FormalParam.Flags)$2|(FormalParam.Flags)$3|FormalParam.Flags.Default, (Expression)$6); /* Important - @$ is invalid when optional_type is empty */ }
+		optional_visibility_modifier optional_type is_reference is_variadic T_VARIABLE
+			{ $$ = _astFactory.Parameter(CombineSpans(@1, @2, @3, @4, @5), $5, @5, $2, (FormalParam.Flags)$3|(FormalParam.Flags)$4, null, (PhpMemberAttributes)$1); /* Important - @$ is invalid when optional_type is empty */ }
+	|	optional_visibility_modifier optional_type is_reference is_variadic T_VARIABLE '=' expr
+			{ $$ = _astFactory.Parameter(CombineSpans(@1, @2, @3, @4, @7), $5, @5, $2, (FormalParam.Flags)$3|(FormalParam.Flags)$4, (Expression)$7, (PhpMemberAttributes)$1); /* Important - @$ is invalid when optional_type is empty */ }
 ;
 
 
@@ -1298,8 +1305,8 @@ lexical_var_list:
 ;
 
 lexical_var:
-		T_VARIABLE		{ $$ = _astFactory.Parameter(@$, $1, @1, null, FormalParam.Flags.Default, null); }
-	|	'&' T_VARIABLE	{ $$ = _astFactory.Parameter(@$, $2, @2, null, FormalParam.Flags.IsByRef, null); }
+		T_VARIABLE		{ $$ = _astFactory.Parameter(@$, $1, @1, null, FormalParam.Flags.Default); }
+	|	'&' T_VARIABLE	{ $$ = _astFactory.Parameter(@$, $2, @2, null, FormalParam.Flags.IsByRef); }
 ;
 
 function_call:
