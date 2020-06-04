@@ -2299,7 +2299,7 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 { yyval.Node = _astFactory.Attribute(yypos, value_stack.array[value_stack.top-2].yyval.TypeReference, new CallSignature(value_stack.array[value_stack.top-1].yyval.ParamList, value_stack.array[value_stack.top-1].yypos)); }
         return;
       case 92: // attribute -> T_SL attribute_decl T_SR 
-{ yyval.Node = value_stack.array[value_stack.top-2].yyval.Node; }
+{ value_stack.array[value_stack.top-2].yyval.Node.Span = yypos; yyval.Node = value_stack.array[value_stack.top-2].yyval.Node; }
         return;
       case 93: // attributes -> attribute 
 { yyval.NodeList = new List<LangElement>(1) { value_stack.array[value_stack.top-1].yyval.Node }; }

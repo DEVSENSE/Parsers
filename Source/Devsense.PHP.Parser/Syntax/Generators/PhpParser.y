@@ -489,7 +489,7 @@ attribute_decl:
 ;
 
 attribute:
-		T_SL attribute_decl T_SR	{ $$ = $2; }
+		T_SL attribute_decl T_SR	{ $2.Span = @$; $$ = $2; }
 ;
 
 attributes:
