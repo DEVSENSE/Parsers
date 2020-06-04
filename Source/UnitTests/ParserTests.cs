@@ -118,6 +118,21 @@ class X {
             }
         }
 
+        [TestMethod]
+        public void AttributesTest()
+        {
+            var codes = new[] {
+                @"<?php <<ClassName(1,2,3)>>class X { }",
+                @"<?php <<ClassName>>class X { }",
+            };
+
+            foreach (var code in codes)
+            {
+                var unit = new CodeSourceUnit(code, "dummy.php", Encoding.UTF8);
+                unit.Parse(new BasicNodesFactory(unit), null);
+            }
+        }
+
         /// <summary>
         /// Helper visitor checking every node has a containing element.
         /// </summary>

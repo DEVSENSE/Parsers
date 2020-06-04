@@ -326,7 +326,7 @@ using StringPair = System.Collections.Generic.KeyValuePair<string, string>;
 %type <FormalParam> attributed_parameter
 %type <Node> attribute attribute_decl
 %type <NodeList> attributes
-%type<ParamList> attribute_arguments
+%type <ParamList> attribute_arguments
 
 %type <NodeList> top_statement_list const_list class_const_list
 %type <NodeList> inner_statement_list class_statement_list for_exprs
@@ -478,7 +478,7 @@ name:	// TODO - count as translate (use a helper object)
 ;
 
 attribute_arguments:
-		argument_list	{ $$ = $1; } /* intentionally more benevolent rule */
+		argument_list	{ $$ = $1; /* intentionally more benevolent rule */ }
 ;
 
 attribute_decl:
