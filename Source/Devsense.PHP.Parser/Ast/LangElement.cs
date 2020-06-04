@@ -167,7 +167,7 @@ namespace Devsense.PHP.Syntax.Ast
     /// </summary>
     public interface ILangElement : IAstNode, ITreeNode
     {
-        
+
     }
 
     /// <summary>
@@ -288,6 +288,38 @@ namespace Devsense.PHP.Syntax.Ast
         public override string ToString()
         {
             return start.ToString();
+        }
+    }
+
+    #endregion
+
+    #region AstExtensions
+
+    public static class AstExtensions
+    {
+        /// <summary>
+        /// Gets attributes of the node. Cannot return <c>null</c>, gets empty collection instead.
+        /// </summary>
+        public static IReadOnlyList<IAttributeElement> GetAttributes(this IPropertyCollection node)
+        {
+            return node.GetProperty<IReadOnlyList<IAttributeElement>>() ?? ArrayUtils.Empty<IAttributeElement>();
+        }
+
+        /// <summary>
+        /// Sets attributes for given node.
+        /// </summary>
+        /// <param name="node">Node to set properties for.</param>
+        /// <param name="attributes">List of attributes. Can be <c>null</c> to remove attribites. Existing attributes are overwritten.</param>
+        public static void SetAttributes(this IPropertyCollection node, IReadOnlyList<IAttributeElement> attributes)
+        {
+            if (attributes == null || attributes.Count == 0)
+            {
+                node.RemoveProperty<IReadOnlyList<IAttributeElement>>();
+            }
+            else
+            {
+                node.SetProperty(attributes);
+            }
         }
     }
 

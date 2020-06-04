@@ -21,6 +21,7 @@ using System.Linq;
 using Devsense.PHP.Text;
 using Devsense.PHP.Syntax.Ast;
 using Devsense.PHP.Errors;
+using System.Xml;
 
 namespace Devsense.PHP.Syntax
 {
@@ -340,6 +341,16 @@ namespace Devsense.PHP.Syntax
         void PopClassContext()
         {
             ClassContexts.Pop();
+        }
+
+        protected TElement WithAttributes<TElement>(TElement node, List<LangElement> attributes) where TElement: IPropertyCollection
+        {
+            if (attributes != null && attributes.Count != 0)
+            {
+                node.SetAttributes(attributes.CastToArray<IAttributeElement>());
+            }
+
+            return node;
         }
 
         private List<T> AddToTopStatementList<T>(List<T> list, T item) where T : LangElement

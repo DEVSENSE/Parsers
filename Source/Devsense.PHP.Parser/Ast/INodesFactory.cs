@@ -966,6 +966,16 @@ namespace Devsense.PHP.Syntax.Ast
 
         #endregion
 
+        #region Attributes
+
+        /// <summary>
+        /// Creates attribute.
+        /// PHP8.
+        /// </summary>
+        TNode Attribute(TSpan span, TypeRef classref, CallSignature signature = default);
+
+        #endregion
+
         #region Comments
 
         /// <summary>

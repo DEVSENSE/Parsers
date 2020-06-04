@@ -322,6 +322,11 @@ using StringPair = System.Collections.Generic.KeyValuePair<string, string>;
 %type <Node> finally_statement new_variable callable_expr
 %type <Node> trait_adaptations variable_class_name inner_statement class_statement
 %type <Node> inline_function
+%type <Node> attributed_statement attributed_class_statement
+%type <FormalParam> attributed_parameter
+%type <Node> attribute attribute_decl
+%type <NodeList> attributes
+%type<ParamList> attribute_arguments
 
 %type <NodeList> top_statement_list const_list class_const_list
 %type <NodeList> inner_statement_list class_statement_list for_exprs
@@ -472,12 +477,37 @@ name:	// TODO - count as translate (use a helper object)
 	|	T_NS_SEPARATOR namespace_name				{ $$ = new QualifiedNameRef(@$, new QualifiedName($2, true,  true)); }
 ;
 
-top_statement:
-		statement							{ $$ = $1; }
-	|	function_declaration_statement		{ $$ = $1; }
+attribute_arguments:
+		argument_list	{ $$ = $1; } /* intentionally more benevolent rule */
+;
+
+attribute_decl:
+		class_name_reference
+			{ $$ = _astFactory.Attribute(@$, $1); }
+	|	class_name_reference attribute_arguments
+			{ $$ = _astFactory.Attribute(@$, $1, new CallSignature($2, @2)); }
+;
+
+attribute:
+		T_SL attribute_decl T_SR	{ $$ = $2; }
+;
+
+attributes:
+		attribute				{ $$ = new List<LangElement>(1) { $1 }; }
+	|	attributes attribute	{ $$ = AddToList($1, $2); }
+;
+
+attributed_statement:
+		function_declaration_statement		{ $$ = $1; }
 	|	class_declaration_statement			{ $$ = $1; }
 	|	trait_declaration_statement			{ $$ = $1; }
 	|	interface_declaration_statement		{ $$ = $1; }
+;
+
+top_statement:
+		statement							{ $$ = $1; }
+	|	attributed_statement				{ $$ = $1; }
+	|	attributes attributed_statement		{ $$ = WithAttributes($2, $1); }
 	|	T_HALT_COMPILER '(' ')' ';'			{ $$ = _astFactory.HaltCompiler(@$); }
 	|	T_NAMESPACE namespace_name ';'
 		{
@@ -592,10 +622,8 @@ inner_statement_list:
 
 inner_statement:
 		statement								{ $$ = $1; }
-	|	function_declaration_statement 			{ $$ = $1; }
-	|	class_declaration_statement 			{ $$ = $1; }
-	|	trait_declaration_statement				{ $$ = $1; }
-	|	interface_declaration_statement			{ $$ = $1; }
+	|	attributed_statement					{ $$ = $1; }
+	|	attributes attributed_statement			{ $$ = WithAttributes($2, $1); }
 	|	T_HALT_COMPILER '(' ')' ';'
 			{ 
 				$$ = _astFactory.HaltCompiler(@$); 
@@ -855,10 +883,15 @@ parameter_list:
 
 
 non_empty_parameter_list:
-		parameter
+		attributed_parameter
 			{ $$ = new List<FormalParam>() { (FormalParam)$1 }; }
-	|	non_empty_parameter_list ',' parameter
+	|	non_empty_parameter_list ',' attributed_parameter
 			{ $$ = AddToList<FormalParam>($1, $3); }
+;
+
+attributed_parameter:
+		attributes parameter	{ $$ = WithAttributes($2, $1); }
+	|	parameter				{ $$ = $1; }
 ;
 
 optional_visibility_modifier:
@@ -949,8 +982,7 @@ class_statement_list:
 			{ $$ = new List<LangElement>(); }
 ;
 
-
-class_statement:
+attributed_class_statement:
 		variable_modifiers optional_type property_list ';'
 			{ 
 				$$ = _astFactory.DeclList(@$, (PhpMemberAttributes)$1, $3, $2); 
@@ -961,8 +993,6 @@ class_statement:
 				$$ = _astFactory.DeclList(@$, (PhpMemberAttributes)$1, $3, null); 
 				SetDoc($$);
 			}
-	|	T_USE name_list trait_adaptations
-			{ $$ = _astFactory.TraitUse(@$, $2, $3); }
 	|	method_modifiers function returns_ref identifier backup_doc_comment '(' parameter_list ')'
 		return_type backup_fn_flags method_body backup_fn_flags
 			{	
@@ -970,6 +1000,13 @@ class_statement:
 					$9, @9, $4, @4, null, $7, CombineSpans(@6, @8), null, $11);
 				SetDoc($$);
 			}
+;
+
+class_statement:
+		attributed_class_statement				{ $$ = $1; }
+	|   attributes attributed_class_statement	{ $$ = WithAttributes($2, $1); }
+	|	T_USE name_list trait_adaptations
+			{ $$ = _astFactory.TraitUse(@$, $2, $3); }
 ;
 
 name_list:
@@ -1118,6 +1155,8 @@ new_expr:
 			{ $$ = _astFactory.New(@$, $2, $3, @3); }
 	|	T_NEW anonymous_class
 			{ $$ = _astFactory.New(@$, ((AnonymousClass)$2).Item1, ((AnonymousClass)$2).Item2, ((AnonymousClass)$2).Item3); }
+	|	T_NEW attributes anonymous_class
+			{ $$ = WithAttributes(_astFactory.New(@$, ((AnonymousClass)$3).Item1, ((AnonymousClass)$3).Item2, ((AnonymousClass)$3).Item3), $2); }
 ;
 
 expr_without_variable:
@@ -1236,11 +1275,18 @@ expr_without_variable:
 	|	T_YIELD_FROM expr { $$ = _astFactory.YieldFrom(@$, $2); }
 	|	T_THROW expr { $$ = _astFactory.Throw(@$, $2); }
 	|	inline_function { $$ = $1; }
+	|	attributes inline_function { $$ = WithAttributes($2, $1); }
 	|	T_STATIC inline_function {
 			var lambda = (LambdaFunctionExpr)$2;
 			lambda.IsStatic = true;
 			lambda.Span = @$;
 			$$ = lambda;
+		}
+	|	attributes T_STATIC inline_function {
+			var lambda = (LambdaFunctionExpr)$3;
+			lambda.IsStatic = true;
+			lambda.Span = @$;
+			$$ = WithAttributes(lambda, $1);
 		}
 ;
 
@@ -1311,23 +1357,23 @@ lexical_var:
 
 function_call:
 		name argument_list
-			{ $$ = _astFactory.Call(@$, TranslateQNRFunction($1), new CallSignature($2, @2) { Position = @2 }, null); }
+			{ $$ = _astFactory.Call(@$, TranslateQNRFunction($1), new CallSignature($2, @2), null); }
 	|	class_name T_DOUBLE_COLON member_name argument_list
 			{
 				if($3 is Name)
-					$$ = _astFactory.Call(@$, (Name)$3, @3, new CallSignature($4, @4) { Position = @4 }, $1); 
+					$$ = _astFactory.Call(@$, (Name)$3, @3, new CallSignature($4, @4), $1); 
 				else
-					$$ = _astFactory.Call(@$, (LangElement)$3, new CallSignature($4, @4) { Position = @4 }, $1); 
+					$$ = _astFactory.Call(@$, (LangElement)$3, new CallSignature($4, @4), $1); 
 			}
 	|	variable_class_name T_DOUBLE_COLON member_name argument_list
 			{
 				if($3 is Name)
-					$$ = _astFactory.Call(@$, (Name)$3, @3, new CallSignature($4, @4) { Position = @4 }, _astFactory.TypeReference(@1, $1)); 
+					$$ = _astFactory.Call(@$, (Name)$3, @3, new CallSignature($4, @4), _astFactory.TypeReference(@1, $1)); 
 				else
-					$$ = _astFactory.Call(@$, (LangElement)$3, new CallSignature($4, @4) { Position = @4 }, _astFactory.TypeReference(@1, $1)); 
+					$$ = _astFactory.Call(@$, (LangElement)$3, new CallSignature($4, @4), _astFactory.TypeReference(@1, $1)); 
 			}
 	|	callable_expr argument_list
-			{ $$ = _astFactory.Call(@$, $1, new CallSignature($2, @2) { Position = @2 }, NullLangElement);}
+			{ $$ = _astFactory.Call(@$, $1, new CallSignature($2, @2), NullLangElement);}
 ;
 
 class_name:
@@ -1431,10 +1477,10 @@ callable_variable:
 			if($3 is Name)
 			{
 				var name = new QualifiedName((Name)$3);
-				$$ = _astFactory.Call(@$, new TranslatedQualifiedName(name, @3, name, null), new CallSignature($4, @4) { Position = @4 }, VerifyMemberOf($1));
+				$$ = _astFactory.Call(@$, new TranslatedQualifiedName(name, @3, name, null), new CallSignature($4, @4), VerifyMemberOf($1));
 			}
 			else
-				$$ = _astFactory.Call(@$, (LangElement)$3, new CallSignature($4, @4) { Position = @4 }, VerifyMemberOf($1));
+				$$ = _astFactory.Call(@$, (LangElement)$3, new CallSignature($4, @4), VerifyMemberOf($1));
 		}
 	|	function_call { $$ = $1; }
 ;

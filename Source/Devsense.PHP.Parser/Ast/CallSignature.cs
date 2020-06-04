@@ -135,7 +135,7 @@ namespace Devsense.PHP.Syntax.Ast
         /// <summary>
         /// Signature position including the parentheses.
         /// </summary>
-        public Text.Span Position { get; set; }
+        public Text.Span Span { get; set; }
 
         ///// <summary>
         ///// List of generic parameters.
@@ -163,12 +163,12 @@ namespace Devsense.PHP.Syntax.Ast
         /// Initialize new instance of <see cref="CallSignature"/>.
         /// </summary>
         /// <param name="parameters">List of parameters.</param>
-        /// <param name="position">Signature position.</param>
-        public CallSignature(IList<ActualParam> parameters, Text.Span position)
+        /// <param name="span">Signature position.</param>
+        public CallSignature(IList<ActualParam> parameters, Text.Span span)
         {
             this.Parameters = (parameters ?? throw new ArgumentNullException(nameof(parameters))).AsArray();
             //this.GenericParams = (genericParams != null && genericParams.Count != 0) ? genericParams.AsArray() : null;
-            this.Position = position;
+            this.Span = span;
         }
     }
 

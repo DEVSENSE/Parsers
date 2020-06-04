@@ -1017,9 +1017,9 @@ namespace Devsense.PHP.Syntax
 
         public virtual void VisitCallSignature(CallSignature signature)
         {
-            ConsumeToken(Tokens.T_LPAREN, SpanUtils.SafeSpan(signature.Position.StartOrInvalid, 1));
+            ConsumeToken(Tokens.T_LPAREN, SpanUtils.SafeSpan(signature.Span.StartOrInvalid, 1));
             VisitElementList(signature.Parameters, Tokens.T_COMMA);
-            ConsumeToken(Tokens.T_RPAREN, SpanUtils.SafeSpan(signature.Position.End - 1, 1));
+            ConsumeToken(Tokens.T_RPAREN, SpanUtils.SafeSpan(signature.Span.End - 1, 1));
         }
 
         public virtual void VisitSignature(Signature signature)
@@ -1248,7 +1248,7 @@ namespace Devsense.PHP.Syntax
             else
             {
                 VisitElement(x.ClassNameRef);
-                if (x.CallSignature.Parameters.Length != 0 || x.CallSignature.Position.IsValid)
+                if (x.CallSignature.Parameters.Length != 0 || x.CallSignature.Span.IsValid)
                 {
                     VisitCallSignature(x.CallSignature);
                 }
@@ -1545,7 +1545,7 @@ namespace Devsense.PHP.Syntax
                 // interface|trait|class
                 previous = ProcessToken(x.AsTypeKeywordToken(), prenameSpan);
 
-                if (signature.HasValue && signature.Value.Position.IsValid)
+                if (signature.HasValue && signature.Value.Span.IsValid)
                 {
                     VisitCallSignature(signature.Value);
                 }
@@ -1726,6 +1726,21 @@ namespace Devsense.PHP.Syntax
         {
             ConsumeToken(Tokens.T_YIELD_FROM, SpanUtils.SafeSpan(x.Span.StartOrInvalid, 10));
             VisitElement(x.ValueExpr);
+        }
+
+        public override void VisitAttribute(AttributeElement x)
+        {
+            // << attribute() >>
+
+            ConsumeToken(Tokens.T_SL, SpanUtils.SafeSpan(x.Span.StartOrInvalid, 2));
+
+            VisitElement(x.ClassRef);
+
+            // ()
+            VisitCallSignature(x.CallSignature);
+
+            //
+            ConsumeToken(Tokens.T_SR, SpanUtils.SafeSpan(x.Span.StartOrInvalid, 2));
         }
 
         #endregion

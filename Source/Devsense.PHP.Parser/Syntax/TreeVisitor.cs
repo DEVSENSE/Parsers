@@ -1037,6 +1037,12 @@ namespace Devsense.PHP.Syntax
             // nothing
         }
 
+        virtual public void VisitAttribute(AttributeElement x)
+        {
+            VisitElement(x.ClassRef);
+            VisitList(x.CallSignature.Parameters);
+        }
+
         #endregion
     }
 }
