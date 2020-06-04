@@ -3066,7 +3066,7 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 { yyval.Node = _astFactory.New(yypos, ((AnonymousClass)value_stack.array[value_stack.top-1].yyval.AnonymousClass).Item1, ((AnonymousClass)value_stack.array[value_stack.top-1].yyval.AnonymousClass).Item2, ((AnonymousClass)value_stack.array[value_stack.top-1].yyval.AnonymousClass).Item3); }
         return;
       case 320: // new_expr -> T_NEW attributes anonymous_class 
-{ yyval.Node = WithAttributes(_astFactory.New(yypos, ((AnonymousClass)value_stack.array[value_stack.top-1].yyval.AnonymousClass).Item1, ((AnonymousClass)value_stack.array[value_stack.top-1].yyval.AnonymousClass).Item2, ((AnonymousClass)value_stack.array[value_stack.top-1].yyval.AnonymousClass).Item3), value_stack.array[value_stack.top-2].yyval.NodeList); }
+{ yyval.Node = _astFactory.New(yypos, WithAttributes(((AnonymousClass)value_stack.array[value_stack.top-1].yyval.AnonymousClass).Item1, value_stack.array[value_stack.top-2].yyval.NodeList), ((AnonymousClass)value_stack.array[value_stack.top-1].yyval.AnonymousClass).Item2, ((AnonymousClass)value_stack.array[value_stack.top-1].yyval.AnonymousClass).Item3); }
         return;
       case 321: // expr_without_variable -> T_LIST '(' array_pair_list ')' '=' expr 
 { yyval.Node = _astFactory.Assignment(yypos, _astFactory.List(Span.Combine(value_stack.array[value_stack.top-6].yypos, value_stack.array[value_stack.top-3].yypos), value_stack.array[value_stack.top-4].yyval.ItemList, true), value_stack.array[value_stack.top-1].yyval.Node, Operations.AssignValue); }

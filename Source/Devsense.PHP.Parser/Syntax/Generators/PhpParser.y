@@ -1156,7 +1156,7 @@ new_expr:
 	|	T_NEW anonymous_class
 			{ $$ = _astFactory.New(@$, ((AnonymousClass)$2).Item1, ((AnonymousClass)$2).Item2, ((AnonymousClass)$2).Item3); }
 	|	T_NEW attributes anonymous_class
-			{ $$ = WithAttributes(_astFactory.New(@$, ((AnonymousClass)$3).Item1, ((AnonymousClass)$3).Item2, ((AnonymousClass)$3).Item3), $2); }
+			{ $$ = _astFactory.New(@$, WithAttributes(((AnonymousClass)$3).Item1, $2), ((AnonymousClass)$3).Item2, ((AnonymousClass)$3).Item3); }
 ;
 
 expr_without_variable:

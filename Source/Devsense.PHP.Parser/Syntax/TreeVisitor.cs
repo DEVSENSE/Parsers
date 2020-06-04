@@ -212,6 +212,7 @@ namespace Devsense.PHP.Syntax
         virtual public void VisitTypeDecl(TypeDecl x)
         {
             VisitElement(x.PHPDoc);
+            VisitAttributes(x);
             VisitElement(x.BaseClass as TypeRef);
             VisitList(x.ImplementsList);
             VisitList(x.Members);
@@ -243,6 +244,8 @@ namespace Devsense.PHP.Syntax
         {
             VisitElement(x.PHPDoc);
 
+            VisitAttributes(x);
+
             // function parameters
             VisitList(x.Signature.FormalParams);
 
@@ -260,6 +263,7 @@ namespace Devsense.PHP.Syntax
         virtual public void VisitFieldDeclList(FieldDeclList x)
         {
             VisitElement(x.PHPDoc);
+            VisitAttributes(x);
             VisitElement(x.Type);
             VisitList(x.Fields);
         }
@@ -280,6 +284,7 @@ namespace Devsense.PHP.Syntax
         virtual public void VisitConstDeclList(ConstDeclList x)
         {
             VisitElement(x.PHPDoc);
+            VisitAttributes(x);
             VisitList(x.Constants);
         }
 
@@ -308,6 +313,8 @@ namespace Devsense.PHP.Syntax
         virtual public void VisitFunctionDecl(FunctionDecl x)
         {
             VisitElement(x.PHPDoc);
+
+            VisitAttributes(x);
 
             // function parameters
             VisitList(x.Signature.FormalParams);
@@ -356,6 +363,30 @@ namespace Devsense.PHP.Syntax
                 for (int i = 0; i < items.Count; i++)
                 {
                     var item = items[i];
+                    if (item is LangElement element)
+                    {
+                        VisitElement(element);
+                    }
+                    else
+                    {
+                        item?.VisitMe(this);
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Visit all elements in the given list.
+        /// </summary>
+        /// <param name="node">Attributed element.</param>
+        protected virtual void VisitAttributes(IPropertyCollection node)
+        {
+            var attrs = node.GetAttributes();
+            if (attrs != null)
+            {
+                for (int i = 0; i < attrs.Count; i++)
+                {
+                    var item = attrs[i];
                     if (item is LangElement element)
                     {
                         VisitElement(element);
@@ -853,6 +884,8 @@ namespace Devsense.PHP.Syntax
         /// </summary>
         virtual public void VisitLambdaFunctionExpr(LambdaFunctionExpr x)
         {
+            VisitAttributes(x);
+
             // function parameters
             VisitList(x.Signature.FormalParams);
 
@@ -968,6 +1001,7 @@ namespace Devsense.PHP.Syntax
         /// <param name="x"></param>
         virtual public void VisitFormalParam(FormalParam x)
         {
+            VisitAttributes(x);
             VisitElement(x.TypeHint);
             VisitElement(x.InitValue);
         }
