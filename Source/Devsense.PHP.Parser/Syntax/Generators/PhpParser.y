@@ -923,6 +923,7 @@ type_expr:
 type:   
 		T_ARRAY		{ $$ = _astFactory.PrimitiveTypeReference(@$, PrimitiveTypeRef.PrimitiveType.array); }
 	|	T_CALLABLE	{ $$ = _astFactory.PrimitiveTypeReference(@$, PrimitiveTypeRef.PrimitiveType.callable); }
+	|	T_STATIC    { $$ = _astFactory.ReservedTypeReference(@$, _reservedTypeStatic); }
 	|	name		{ $$ = CreateTypeRef($1, true); }
 ;
 

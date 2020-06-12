@@ -115,6 +115,22 @@ class X {
             {
                 var unit = new CodeSourceUnit(code, "dummy.php", Encoding.UTF8);
                 unit.Parse(new BasicNodesFactory(unit), null);
+                Assert.IsNotNull(unit.Ast);
+            }
+        }
+
+        [TestMethod]
+        public void ReturnTypeTest()
+        {
+            var codes = new[] {
+                @"<?php class X { function foo() : static { } }"
+            };
+
+            foreach (var code in codes)
+            {
+                var unit = new CodeSourceUnit(code, "dummy.php", Encoding.UTF8);
+                unit.Parse(new BasicNodesFactory(unit), null);
+                Assert.IsNotNull(unit.Ast);
             }
         }
 
