@@ -111,6 +111,7 @@ namespace Devsense.PHP.Syntax
             _charOffset = positionShift;
             _features = features;
             _strings = StringTable.GetInstance();
+            _processDoubleQuotedString = ProcessDoubleQuotedString;
 
             Initialize(reader, initialState);
         }
@@ -412,7 +413,7 @@ namespace Devsense.PHP.Syntax
             {
                 var tmp = lresult;
                 lresult = unchecked(lresult * @base + digits.Current);
-                
+
                 // overflow?
                 if (lresult < tmp)
                 {
@@ -484,7 +485,9 @@ namespace Devsense.PHP.Syntax
             return -1;
         };
 
-        int _processDoubleQuotedString(char[] buffer, int pos, PhpStringBuilder result)
+        readonly ProcessStringDelegate _processDoubleQuotedString;
+
+        int ProcessDoubleQuotedString(char[] buffer, int pos, PhpStringBuilder result)
         {
             switch (buffer[pos])
             {
@@ -527,16 +530,12 @@ namespace Devsense.PHP.Syntax
                     break;
 
                 case 'u':
-                    if (EnableUtfCodepoints)
+                    if (EnableUtfCodepoints && TryParseCodePoint(buffer, ref pos, out var value))
                     {
-                        pos++;
-                        result.Append(ParseCodePoint(buffer, ref pos, 4));
-                        return pos - 1;
+                        result.Append(value);
+                        return pos;
                     }
-                    else
-                    {
-                        break;
-                    }
+                    break;
 
                 case 'x':
                     {
@@ -725,39 +724,62 @@ namespace Devsense.PHP.Syntax
             return output;
         }
 
-        private string ParseCodePoint(char[] buffer, ref int pos, int maxLength)
+        /// <summary>
+        /// Parse code point enclosed in braces.
+        /// 'pos' points before '{'
+        /// </summary>
+        bool TryParseCodePoint(char[] buffer, ref int pos, out string value)
         {
-            int digit;
+            var index = pos + 1; //
             int code_point = 0;
-            while (maxLength > 0 && (digit = Convert.NumericToDigit(buffer[pos])) < 16)
+            int digit;
+
+            // {
+            if (index < buffer.Length && buffer[index] == '{')
             {
-                code_point = code_point << 4 + digit;
-                pos++;
-                maxLength--;
+                int ndigits = 0;
+
+                // [0-9A-Fa-f]+}
+                while (++index < buffer.Length)
+                {
+                    var ch = buffer[index];
+                    if (ch == '}')
+                    {
+                        if (ndigits == 0)
+                        {
+                            // \u{}
+                            break;
+                        }
+
+                        if ((code_point < 0 || code_point > 0x10ffff) || (code_point >= 0xd800 && code_point <= 0xdfff))
+                        {
+                            _errors.Error(
+                                new Span(_charOffset + pos + 1, index - pos),
+                                Errors.Errors.InvalidCodePoint,
+                                code_point.ToString("x"));
+
+                            break;
+                        }
+
+                        pos = index;
+                        value = StringUtils.Utf32ToString(code_point);
+                        return true;
+                    }
+                    else if ((digit = Convert.AlphaNumericToDigit(ch)) < 16)
+                    {
+                        code_point = (code_point << 4) + digit;
+                        ndigits++;
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
             }
 
-            if (maxLength != 0)
-            {
-                // TODO: warning
-            }
-
-            try
-            {
-                if ((code_point < 0 || code_point > 0x10ffff) || (code_point >= 0xd800 && code_point <= 0xdfff))
-                {
-                    // TODO: errors.Add(Errors.InvalidCodePoint, sourceFile, tokenPosition.Short, GetTokenString());
-                    return "?";
-                }
-                else
-                {
-                    return StringUtils.Utf32ToString(code_point);
-                }
-            }
-            catch (ArgumentOutOfRangeException)
-            {
-                // TODO: errors.Add(Errors.InvalidCodePoint, sourceFile, tokenPosition.Short, GetTokenString());
-                return "?";
-            }
+            //
+            value = default;
+            return false;
         }
 
         #endregion

@@ -747,14 +747,16 @@ namespace Devsense.PHP.Syntax
         /// </summary>
         internal static string Utf32ToString(int codePoint)
         {
-            // MONO BUG:
-            // replace by Char.ConvertFromUtf32 when implemented in Mono
+            return char.ConvertFromUtf32(codePoint);
 
-            if (codePoint < 0x10000)
-                return char.ToString((char)((ushort)codePoint));
+            //// MONO BUG:
+            //// replace by Char.ConvertFromUtf32 when implemented in Mono
 
-            codePoint -= 0x10000;
-            return new string(new char[] { (char)((codePoint / 0x400) + 0xd800), (char)((codePoint % 0x400) + 0xdc00) });
+            //if (codePoint < 0x10000)
+            //    return char.ToString((char)((ushort)codePoint));
+
+            //codePoint -= 0x10000;
+            //return new string(new char[] { (char)((codePoint / 0x400) + 0xd800), (char)((codePoint % 0x400) + 0xdc00) });
         }
 
         #region Uniform Wrappers
