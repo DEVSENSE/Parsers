@@ -754,7 +754,7 @@ namespace Devsense.PHP.Syntax
                         if ((code_point < 0 || code_point > 0x10ffff) || (code_point >= 0xd800 && code_point <= 0xdfff))
                         {
                             _errors.Error(
-                                new Span(_charOffset + pos + 1, index - pos),
+                                new Span(_charOffset + (pos - token_start) + 1, index - pos),
                                 Errors.Errors.InvalidCodePoint,
                                 code_point.ToString("x"));
 
