@@ -683,14 +683,22 @@ namespace Devsense.PHP.Syntax
         /// <returns>Qualified name.</returns>
         public static QualifiedName Parse(string name, bool fullyQualified)
         {
-            name = (name == null) ? string.Empty : name.Trim();
+            return Parse((name ?? string.Empty).AsSpan(), fullyQualified);
+        }
+
+        public static QualifiedName Parse(ReadOnlySpan<char> name, bool fullyQualified)
+        {
+            name = name.Trim();
+
             if (name.Length == 0)
+            {
                 return new QualifiedName(Name.EmptyBaseName);
+            }
 
             // fully qualified
             if (name[0] == Separator)
             {
-                name = name.Substring(1);
+                name = name.Slice(1);
                 fullyQualified = true;
             }
 
@@ -700,28 +708,29 @@ namespace Devsense.PHP.Syntax
             int lastNameStart = name.LastIndexOf(Separator) + 1;
             if (lastNameStart == 0)
             {
+                // no namespaces
                 namespaces = Name.EmptyNames;
             }
             else
             {
-                int from = 0, to;
-                List<Name> namespacesList = new List<Name>(4);
-                while ((to = name.IndexOf(Separator, from)) != -1)
+                var namespacesList = new List<Name>();
+
+                int sep;
+                while ((sep = name.IndexOf(Separator)) >= 0)
                 {
-                    if (from < to)
+                    if (sep > 0)
                     {
-                        string part = name.Substring(from, to - from);
-                        namespacesList.Add(new Name(part));
+                        namespacesList.Add(new Name(name.Slice(0, sep).ToString()));
                     }
-                    from = to + 1;
+
+                    name = name.Slice(sep + 1);
                 }
 
-                name = name.Substring(lastNameStart);
                 namespaces = namespacesList.ToArray();
             }
 
             // create QualifiedName
-            return new QualifiedName(new Name(name), namespaces, fullyQualified);
+            return new QualifiedName(new Name(name.ToString()), namespaces, fullyQualified);
         }
 
         /// <summary>
@@ -1065,7 +1074,7 @@ namespace Devsense.PHP.Syntax
         /// <param name="name">Alias name.</param>
         /// <param name="kind">Alias type.</param>
         public Alias(string name, AliasKind kind)
-            :this(new Name(name), kind)
+            : this(new Name(name), kind)
         {
         }
     }
@@ -1085,9 +1094,9 @@ namespace Devsense.PHP.Syntax
                     x.Name.Value.Equals(y.Name.Value, StringComparison.Ordinal) :
                     x.Name.Equals(y.Name));
 
-            public int GetHashCode(Alias obj) => 
-                obj.Kind == AliasKind.Constant ? 
-                    StringComparer.Ordinal.GetHashCode(obj.Name.Value) : 
+            public int GetHashCode(Alias obj) =>
+                obj.Kind == AliasKind.Constant ?
+                    StringComparer.Ordinal.GetHashCode(obj.Name.Value) :
                     StringComparer.OrdinalIgnoreCase.GetHashCode(obj.Name.Value);
         }
 
@@ -1170,7 +1179,7 @@ namespace Devsense.PHP.Syntax
         public bool AddAlias(Name alias, QualifiedName qualifiedName)
         {
             Debug.Assert(string.IsNullOrEmpty(qualifiedName.NamespacePhpName) || qualifiedName.NamespacePhpName[0] != QualifiedName.Separator);   // not starting with separator
-            
+
             return AddAlias(alias, AliasKind.Type, qualifiedName);
         }
 

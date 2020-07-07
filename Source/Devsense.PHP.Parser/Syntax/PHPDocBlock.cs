@@ -490,7 +490,7 @@ namespace Devsense.PHP.Syntax
                 {
                     if (line.Length > Name1.Length)
                     {
-                        var access = line.Substring(Name1.Length + 1).Trim().ToLowerInvariant();
+                        var access = line.AsSpan(Name1.Length + 1).Trim().ToString().ToLowerInvariant();
 
                         // public, private or protected
                         switch (access)
@@ -811,7 +811,7 @@ namespace Devsense.PHP.Syntax
 
             #region Helpers
 
-            private static string NextWord(string/*!*/text, ref int index)
+            private static ReadOnlySpan<char> NextWord(string/*!*/text, ref int index)
             {
                 // skip whitespaces:
                 while (index < text.Length && char.IsWhiteSpace(text[index]))
@@ -824,7 +824,7 @@ namespace Devsense.PHP.Syntax
 
                 // cut off the word:
                 if (startIndex < index)
-                    return text.Substring(startIndex, index - startIndex);
+                    return text.AsSpan(startIndex, index - startIndex);
                 else
                     return null;
             }
@@ -851,30 +851,34 @@ namespace Devsense.PHP.Syntax
                     int typenameOffset = typenameend - typename.Length;
                     index = typenameend;
 
-                    var split = typename.Split(new char[] { TypeNamesSeparator });
-                    int splitat = typenameOffset;
-                    foreach (var s in split)
+                    while (typename.Length != 0)
                     {
-                        if (!string.IsNullOrEmpty(s))
+                        var sep = typename.IndexOf(TypeNamesSeparator);
+                        if (sep < 0) sep = typename.Length;
+
+                        // name: [0..sep)
+                        var name = typename.Slice(0, sep);
+                        if (name.Length != 0)
                         {
-                            names.Add(s);
-                            positions.Add(splitat);
-                            splitat += s.Length;    // type name length
+                            names.Add(name.ToString());
+                            positions.Add(typenameOffset);
                         }
-                        splitat++;  // separator
+
+                        typename = sep < typename.Length ? typename.Slice(sep + 1) : ReadOnlySpan<char>.Empty;
+                        typenameOffset += sep + 1;
                     }
 
-                    // [type] or [type]
+                    // [type1|type2] or [type3]
                     var orend = typenameend;
-                    var or = NextWord(text, ref orend);
-                    if (or == "or")
+                    var maybeor = NextWord(text, ref orend);
+                    if (maybeor.Equals("or".AsSpan(), StringComparison.OrdinalIgnoreCase))
                     {
                         var nextend = orend;
                         var next = NextWord(text, ref nextend);
                         if (IsTypeName(next) && next.IndexOf(TypeNamesSeparator) == -1)
                         {
                             index = nextend;
-                            names.Add(next);
+                            names.Add(next.ToString());
                             positions.Add(nextend - next.Length);
                         }
                     }
@@ -902,10 +906,10 @@ namespace Devsense.PHP.Syntax
             {
                 var wordend = index;
                 var word = NextWord(text, ref wordend);
-                if (word != null /* => word.Length != 0 */ && word[0] == '$')
+                if (word.Length != 0 && word[0] == '$')
                 {
                     index = wordend;
-                    variableName = word;
+                    variableName = word.ToString();
                     variableNameOffset = wordend - word.Length;
                     return true;
                 }
@@ -920,19 +924,25 @@ namespace Devsense.PHP.Syntax
             /// </summary>
             /// <param name="str">String to check.</param>
             /// <returns>Whether given string may be a PHP type name.</returns>
-            internal static bool IsTypeName(string str)
+            internal static bool IsTypeName(ReadOnlySpan<char> str)
             {
-                if (string.IsNullOrEmpty(str))
+                if (str.IsEmpty)
+                {
                     return false;
+                }
 
                 if (str[0] != '_' && !char.IsLetter(str[0]) && str[0] != QualifiedName.Separator)
+                {
                     return false;
+                }
 
                 for (int i = 1; i < str.Length; i++)
                 {
-                    char c = str[i];
+                    var c = str[i];
                     if (c != '_' && !char.IsLetterOrDigit(c) && c != '[' && c != ']' && c != TypeNamesSeparator && c != QualifiedName.Separator)
+                    {
                         return false;
+                    }
                 }
 
                 // ok
@@ -1513,12 +1523,12 @@ namespace Devsense.PHP.Syntax
                 TypeVarDescTag.TryReadTypeName(line, ref index, out _typeNames, out _typeNamesPos);
 
                 descStart = index;
-                string word = NextWord(line, ref index);
+                var word = NextWord(line, ref index);
 
                 // [name()]
-                if (word != null && word.EndsWith("()", StringComparison.Ordinal))
+                if (word.Length != 0 && word.EndsWith("()".AsSpan(), StringComparison.Ordinal))
                 {
-                    this.MethodName = word.Remove(word.Length - 2);
+                    this.MethodName = word.Slice(0, word.Length - 2).ToString();
                     _methodNamePos = index - word.Length;
                     descStart = index;
                     word = NextWord(line, ref index);
@@ -1577,7 +1587,7 @@ namespace Devsense.PHP.Syntax
                 if (!IsStatic) TryReadStatic(line, ref descStart, out IsStatic);
 
                 if (descStart < line.Length)
-                    this.Description = line.Substring(descStart).TrimStart(null/*default whitespace characters*/);
+                    this.Description = line.AsSpan(descStart).TrimStart().ToString();
             }
 
             private static bool TryReadStatic(string line, ref int index, out bool isStatic)
@@ -1585,7 +1595,7 @@ namespace Devsense.PHP.Syntax
                 int index2 = index;
 
                 var word = NextWord(line, ref index2);
-                if (word == StaticModifierString)
+                if (word.Equals(StaticModifierString.AsSpan(), StringComparison.Ordinal))
                 {
                     index = index2;
                     isStatic = true;
@@ -1619,30 +1629,30 @@ namespace Devsense.PHP.Syntax
                 int eqIndex = paramDecl.IndexOf('=');
                 if (eqIndex >= 0)
                 {
-                    initExpr = TryParseInitValue(Span.Invalid, paramDecl.Substring(eqIndex + 1).Trim());
+                    initExpr = TryParseInitValue(Span.Invalid, paramDecl.AsSpan(eqIndex + 1).Trim());
                     paramDecl = paramDecl.Remove(eqIndex);
                 }
 
                 int i = 0;
                 var word = NextWord(paramDecl, ref i);
-                if (word != null)
+                if (word.Length != 0)
                 {
                     // [type]
                     if (word.Length != 0 && word[0] != '$' && word[0] != '&' && word[0] != '.')
                     {
-                        if (!string.Equals(word, "mixed", StringComparison.OrdinalIgnoreCase))
+                        if (!word.Equals("mixed".AsSpan(), StringComparison.OrdinalIgnoreCase))
                         {
-                            typehint = TypeRef.FromString(new Span(i - word.Length, word.Length), word);    // TODO: naming
+                            typehint = TypeRef.FromString(new Span(i - word.Length, word.Length), word.ToString());    // TODO: naming
                         }
                         word = NextWord(paramDecl, ref i);
                     }
 
                     // [...]
-                    if (word != null && word.StartsWith("...", StringComparison.Ordinal))
+                    if (word.StartsWith("...".AsSpan(), StringComparison.Ordinal))
                     {
                         flags |= FormalParam.Flags.IsVariadic;
 
-                        word = word.Substring(3).Trim();
+                        word = word.Slice(3).Trim();
                         if (word.Length == 0)
                         {
                             word = NextWord(paramDecl, ref i);
@@ -1650,11 +1660,11 @@ namespace Devsense.PHP.Syntax
                     }
 
                     // [&]
-                    if (word != null && word.Length != 0 && word[0] == '&')
+                    if (word.Length != 0 && word[0] == '&')
                     {
                         flags |= FormalParam.Flags.IsByRef;
 
-                        word = word.Substring(1);
+                        word = word.Slice(1).TrimStart();
                         if (word.Length == 0)
                         {
                             word = NextWord(paramDecl, ref i);
@@ -1662,13 +1672,17 @@ namespace Devsense.PHP.Syntax
                     }
 
                     // [$name]
-                    if (word != null && word.Length != 0 && word[0] == '$')
+                    if (word.Length != 0 && word[0] == '$')
                     {
                         eqIndex = word.IndexOf('=');
-                        paramname = ((eqIndex == -1) ? word : word.Remove(eqIndex));
+                        if (eqIndex >= 0) word = word.Slice(0, eqIndex);
 
-                        paramname = paramname.TrimStart(new char[] { '$', '&' }).Trim();
-
+                        if (word.Length != 0)
+                        {
+                            if (word[0] == '$' || word[0] == '&') word = word.Slice(1);
+                            
+                            paramname = word.Trim().ToString();
+                        }
                     }
                 }
 
@@ -1679,32 +1693,30 @@ namespace Devsense.PHP.Syntax
             /// Parses a default parameter value from a string.
             /// </summary>
             /// <param name="span">Value position within source code.</param>
-            /// <param name="value">Parameter initializer as it is in PHPDoc string.</param>
+            /// <param name="rvalue">Parameter initializer as it is in PHPDoc string.</param>
             /// <returns>Optional parsed expression. Returns <c>null</c> is value could not be parsed or is empty.</returns>
-            private static Expression TryParseInitValue(Span span, string value)
+            private static Expression TryParseInitValue(Span span, ReadOnlySpan<char> rvalue)
             {
-                if (string.IsNullOrEmpty(value))
+                if (rvalue.Length == 0)
                 {
                     return null;
                 }
 
-                long l;
-                bool b;
-                double d;
+                var value = rvalue.ToString(); // TODO: NETSTANDARD2.1
 
                 if (value == "[]" || value == "array()")
                 {
                     return ArrayEx.CreateArray(span, EmptyArray<Item>.Instance, value == "[]");
                 }
-                else if (long.TryParse(value, out l))
+                else if (long.TryParse(value, out var l))
                 {
                     return new LongIntLiteral(span, l);
                 }
-                else if (double.TryParse(value, out d))
+                else if (double.TryParse(value, out var d))
                 {
                     return new DoubleLiteral(span, d);
                 }
-                else if (bool.TryParse(value, out b))
+                else if (bool.TryParse(value, out var b))
                 {
                     return new BoolLiteral(span, b);
                 }
@@ -1730,7 +1742,7 @@ namespace Devsense.PHP.Syntax
 
             #region Helpers
 
-            private static string NextWord(string/*!*/text, ref int index)
+            private static ReadOnlySpan<char> NextWord(string/*!*/text, ref int index)
             {
                 // skip whitespaces:
                 while (index < text.Length && char.IsWhiteSpace(text[index]))
@@ -1743,7 +1755,7 @@ namespace Devsense.PHP.Syntax
 
                 // cut off the word:
                 if (startIndex < index)
-                    return text.Substring(startIndex, index - startIndex);
+                    return text.AsSpan(startIndex, index - startIndex);
                 else
                     return null;
             }
