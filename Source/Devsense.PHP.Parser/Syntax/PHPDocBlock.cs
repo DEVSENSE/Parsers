@@ -273,7 +273,10 @@ namespace Devsense.PHP.Syntax
                 // TODO: handle "{@tag ...}" for @link, @see etc...
 
                 // check tags:
-                next = CreateElement(line);
+                if (leading_ws <= 2) // (1+2) or more leading whitespaces means it is a nested element // TODO: we need a regular PHPDoc parser ...
+                {
+                    next = CreateElement(line);
+                }
                 
                 // 
                 return true;
