@@ -166,6 +166,21 @@ namespace Devsense.PHP.Text
             return document.Substring(_start, _length);
         }
 
+        public Span Slice(int offset)
+        {
+            return Slice(offset, _length + offset);
+        }
+
+        public Span Slice(int offset, int count)
+        {
+            if (offset < 0) throw new ArgumentOutOfRangeException(nameof(offset));
+            if (count < 0) throw new ArgumentOutOfRangeException(nameof(count));
+            if (offset > _length) throw new ArgumentOutOfRangeException(nameof(offset));
+            if (offset + count > _length) throw new ArgumentOutOfRangeException(nameof(count));
+
+            return new Span(_start + offset, count);
+        }
+
         #endregion
 
         #region Object Members

@@ -37,4 +37,7 @@
       rem call $(ProjectDir)Syntax\Generators\generate.bat
     </PreBuildEvent>
   </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="System.Memory" Version="4.5.0" />
+  </ItemGroup>
 </Project>

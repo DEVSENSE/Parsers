@@ -39,10 +39,9 @@ namespace Devsense.PHP.Syntax
         {
             #region Constants
 
-            /// <summary>
-            /// String sequence starting the PHPDoc block on the first line.
-            /// </summary>
-            private const string PhpDocStartString = "/**";
+            const string PHPDocStart = "/**";
+
+            const string PHPDocEnd = "*/";
 
             /// <summary>
             /// Every PHPDoc line not starting with this character is ignored.
@@ -172,9 +171,9 @@ namespace Devsense.PHP.Syntax
                 return tagname;
             }
 
-            private static KeyValuePair<string, Func<string, string, Element>> FindTagInfo(string/*!*/line)
+            private static KeyValuePair<string, Func<string, string, Element>> FindTagInfo(ReadOnlySpan<char>/*!*/line)
             {
-                Debug.Assert(!string.IsNullOrEmpty(line));
+                Debug.Assert(line.Length != 0);
                 Debug.Assert(line[0] == PHPDocTagChar);
 
                 int endIndex = 1;
@@ -182,10 +181,9 @@ namespace Devsense.PHP.Syntax
                 while (endIndex < line.Length && !char.IsWhiteSpace(c = line[endIndex]) && c != ':' && c != '(' && c != ';' && c != '.')
                     endIndex++;
 
-                string tagName = (endIndex < line.Length) ? line.Remove(endIndex) : line;
+                var tagName = ((endIndex < line.Length) ? line.Slice(0, endIndex) : line).ToString();
 
-                Func<string, string, Element> tmp;
-                if (s_elementFactories.TryGetValue(tagName, out tmp))
+                if (s_elementFactories.TryGetValue(tagName, out var tmp))
                     return new KeyValuePair<string, Func<string, string, Element>>(tagName, tmp);
                 else
                     return new KeyValuePair<string, Func<string, string, Element>>(tagName, (_name, _line) => new UnknownTextTag(_name, _line));
@@ -204,61 +202,79 @@ namespace Devsense.PHP.Syntax
             /// <param name="line">Line to parse. Cannot be <c>null</c> reference.</param>
             /// <param name="next">Outputs new element that will follow current element. Parsing will continue using this element.</param>
             /// <param name="lineIndex">Index of the line within PHPDoc token.</param>
-            /// <param name="startCharIndex">Gets index of first content character within <paramref name="line"/>.</param>
-            /// <param name="endCharIndex">Gets index of last content character within <paramref name="line"/>.</param>
+            /// <param name="lineOffset">Gets count of characters of which <paramref name="line"/> was moved.</param>
             /// <returns>If the line can be parsed, method returns <c>true</c>.</returns>
-            internal static bool TryParseLine(ref string/*!*/line, out Element next, int lineIndex, out int startCharIndex, out int endCharIndex)
+            internal static bool TryParseLine(ref ReadOnlySpan<char>/*!*/line, out Element next, int lineIndex, out int lineOffset)
             {
-                if (line == null)
-                    throw new ArgumentNullException("line");
-
                 next = null;
-                startCharIndex = endCharIndex = 0;
+                lineOffset = 0;
 
-                int startIndex = 0;
-                while (startIndex < line.Length && char.IsWhiteSpace(line[startIndex])) startIndex++;   // skip whitespaces
+                int from = 0;
+                int to = line.Length;
 
-                // we souhldn't, but we allow first line to contain text after the /** sequence:
-                if (lineIndex == 0 && line.StartsWith(PhpDocStartString, StringComparison.Ordinal))
+                // we shouldn't, but we allow first line to contain text after the /** sequence:
+                if (lineIndex == 0 && line.StartsWith(PHPDocStart.AsSpan(), StringComparison.Ordinal))
                 {
-                    startIndex = PhpDocStartString.Length - 1;  // jump to the '*' character
-                    Debug.Assert(line[startIndex] == PHPDocFirstChar);
-                }
-
-                // invalid PHPDoc line (not starting with '*'):
-                if (startIndex == line.Length || line[startIndex] != PHPDocFirstChar)
-                    return false;
-
-                // trim starting '*' and whitespaces
-                startIndex++;   // skip '*'
-                while (startIndex < line.Length && char.IsWhiteSpace(line[startIndex])) startIndex++;   // skip whitespaces
-
-                if (startIndex == line.Length)
-                {
-                    line = string.Empty;
+                    // skip /** sequence
+                    from = PHPDocStart.Length;
                 }
                 else
                 {
-                    // trim end
-                    int endIndex = line.Length;
-                    while (endIndex > startIndex && char.IsWhiteSpace(line[endIndex - 1])) endIndex--;  // skip whitespaces from end
-                    line = line.Substring(startIndex, endIndex - startIndex).Replace("{@*}", "*/");
+                    // skip leading whitespaces
+                    while (from < line.Length && char.IsWhiteSpace(line[from]))
+                    {
+                        from++;
+                    }
+
+                    if (from < line.Length && line[from] == PHPDocFirstChar)
+                    {
+                        from++;   // skip '*'
+                    }
+                    else
+                    {
+                        // invalid PHPDoc line (not starting with '*'):
+                        return false;
+                    }
                 }
+
+                // trim leading whitespaces
+                int leading_ws = 0; // number of leading whitespaces
+                while (from < line.Length && char.IsWhiteSpace(line[from]))
+                {
+                    // skip whitespaces
+                    from++;
+                    leading_ws++;
+                }
+
+                // trim ending whitespaces
+                while (to > from && char.IsWhiteSpace(line[to - 1]))
+                {
+                    to--;
+                }
+
+                // trim ending */
+
+                line = line.Slice(from, to - from);
+                lineOffset = from;
+                
+                //line = line.Replace("{@*}", "*/");
 
                 // check "*/" at the end
                 if (line.Length == 1 && line[0] == '/')
                     return false;   // empty line
-                if (line.Length >= 2 && line[line.Length - 1] == '/' && line[line.Length - 2] == '*')  // "*/" found at the end
-                    line = line.Remove(line.Length - 2);
+
+                if (line.EndsWith(PHPDocEnd.AsSpan(), StringComparison.Ordinal))
+                {
+                    // trim "*/" from the end
+                    line = line.Slice(0, line.Length - PHPDocEnd.Length);
+                }
 
                 // TODO: any whitespace sequence is converted into single space, but only outside <pre> and {} blocks
                 // TODO: handle "{@tag ...}" for @link, @see etc...
 
                 // check tags:
                 next = CreateElement(line);
-                startCharIndex = startIndex;
-                endCharIndex = startIndex + line.Length;
-
+                
                 // 
                 return true;
             }
@@ -268,13 +284,13 @@ namespace Devsense.PHP.Syntax
             /// </summary>
             /// <param name="line">Line to parse. Line is trimmed and does not start with '*'. Cannot be <c>null</c> reference.</param>
             /// <param name="next">Next element to continue parsing with.</param>
-            internal abstract void ParseLine(string/*!*/line, out Element next);
+            internal abstract void ParseLine(ReadOnlySpan<char>/*!*/line, out Element next);
 
             /// <summary>
             /// Reads tag at the beginning of line and tries to create corresponding <see cref="Element"/> instance.
             /// </summary>
             /// <param name="line">PHPDoc comment line. Assuming the line starts with a PHPDoc tag. Otherwise, or if tag is not recognized, <c>null</c> is returned..</param>
-            private static Element CreateElement(string/*!*/line)
+            private static Element CreateElement(ReadOnlySpan<char>/*!*/line)
             {
                 Debug.Assert(line != null);
 
@@ -288,7 +304,7 @@ namespace Devsense.PHP.Syntax
                     Debug.Assert(tagInfo.Value != null);
 
                     // initialize new tag element
-                    return tagInfo.Value(tagInfo.Key, line);
+                    return tagInfo.Value(tagInfo.Key, line.ToString());
                 }
 
                 // unrecognized tag:
@@ -325,12 +341,12 @@ namespace Devsense.PHP.Syntax
 
             }
 
-            internal override void ParseLine(string/*!*/line, out Element next)
+            internal override void ParseLine(ReadOnlySpan<char>/*!*/line, out Element next)
             {
                 next = null;
 
                 // ignore first line of length 0 (empty space after /**)
-                if (this.Text == null && string.IsNullOrWhiteSpace(line))
+                if (this.Text == null && line.IsWhiteSpace())
                     return;
 
                 // Short Description can be followed by Long Description.
@@ -339,7 +355,7 @@ namespace Devsense.PHP.Syntax
 
                 if (this.Text != null && (this.Text.LastCharacter() == (int)EndChar))
                 {
-                    next = new LongDescriptionElement(line);
+                    next = new LongDescriptionElement(line.ToString());
                 }
                 else if (line.Length == 0)
                 {
@@ -352,12 +368,12 @@ namespace Devsense.PHP.Syntax
                     int firstLineEndIndex = this.Text.IndexOf('\n');
                     Debug.Assert(firstLineEndIndex != -1);
 
-                    next = new LongDescriptionElement(this.Text.Substring(firstLineEndIndex + 1) + NewLineString + line);
+                    next = new LongDescriptionElement(this.Text.Substring(firstLineEndIndex + 1) + NewLineString + line.ToString());
                     this.Text = this.Text.Remove(firstLineEndIndex);
                 }
                 else
                 {
-                    this.Text = (this.Text != null) ? (this.Text + NewLineString + line) : line;
+                    this.Text = (this.Text != null) ? (this.Text + NewLineString + line.ToString()) : line.ToString();
                 }
             }
 
@@ -388,12 +404,13 @@ namespace Devsense.PHP.Syntax
                 this.Text = string.IsNullOrWhiteSpace(initialText) ? null : initialText;
             }
 
-            internal override void ParseLine(string line, out Element next)
+            internal override void ParseLine(ReadOnlySpan<char> line, out Element next)
             {
                 // Long Description can only be followed by PHPDoc tag (handled in TryParseLine)
 
                 next = null;
-                this.Text = (this.Text != null) ? (this.Text + NewLineString + line) : line;
+                var newtext = line.ToString();
+                this.Text = (this.Text != null) ? (this.Text + NewLineString + newtext) : newtext;
             }
 
             internal override bool IsEmpty { get { return string.IsNullOrWhiteSpace(this.Text); } }
@@ -413,7 +430,7 @@ namespace Devsense.PHP.Syntax
 
         public abstract class EmptyTag : Element
         {
-            internal override void ParseLine(string line, out Element next)
+            internal override void ParseLine(ReadOnlySpan<char> line, out Element next)
             {
                 next = null;
                 // ignored
@@ -498,7 +515,7 @@ namespace Devsense.PHP.Syntax
                 }
             }
 
-            internal override void ParseLine(string line, out Element next)
+            internal override void ParseLine(ReadOnlySpan<char> line, out Element next)
             {
                 next = null;
                 // ignored
@@ -519,10 +536,12 @@ namespace Devsense.PHP.Syntax
                 Debug.Assert(line.StartsWith(tagName));
 
                 if (line.Length > tagName.Length)
-                    this.text = line.Substring(tagName.Length + 1).Trim();
+                {
+                    this.text = line.AsSpan(tagName.Length).Trim().ToString();
+                }
             }
 
-            internal override void ParseLine(string line, out Element next)
+            internal override void ParseLine(ReadOnlySpan<char> line, out Element next)
             {
                 next = null;
                 // other lines are ignored
@@ -783,9 +802,7 @@ namespace Devsense.PHP.Syntax
 
                 if (index < line.Length)
                 {
-                    this.Description = line.Substring(index).TrimStart(null/*default whitespace characters*/);
-                    if (string.IsNullOrEmpty(this.Description))
-                        this.Description = string.Empty;
+                    this.Description = line.AsSpan(index).TrimStart().ToString();
                 }
             }
 
@@ -921,12 +938,12 @@ namespace Devsense.PHP.Syntax
 
             #endregion
 
-            internal override void ParseLine(string line, out Element next)
+            internal override void ParseLine(ReadOnlySpan<char> line, out Element next)
             {
                 next = null;
 
                 // add the line into description:
-                Description = string.IsNullOrWhiteSpace(Description) ? line : (Description + NewLineString + line);
+                Description = string.IsNullOrWhiteSpace(Description) ? line.ToString() : (Description + NewLineString + line.ToString());
             }
 
             internal override void OnEndParsing()
@@ -1017,10 +1034,10 @@ namespace Devsense.PHP.Syntax
                 this.Text = (index < line.Length) ? line.Substring(index) : string.Empty;
             }
 
-            internal override void ParseLine(string line, out Element next)
+            internal override void ParseLine(ReadOnlySpan<char> line, out Element next)
             {
                 next = null;
-                this.Text = string.IsNullOrEmpty(this.Text) ? line : (this.Text + NewLineString + line);
+                this.Text = string.IsNullOrEmpty(this.Text) ? line.ToString() : (this.Text + NewLineString + line.ToString());
             }
 
             internal override void OnEndParsing()
@@ -1730,12 +1747,12 @@ namespace Devsense.PHP.Syntax
 
             #endregion
 
-            internal override void ParseLine(string line, out Element next)
+            internal override void ParseLine(ReadOnlySpan<char> line, out Element next)
             {
                 next = null;
 
                 // add the line into description:
-                Description = string.IsNullOrWhiteSpace(Description) ? line : (Description + NewLineString + line);
+                Description = string.IsNullOrWhiteSpace(Description) ? line.ToString() : (Description + NewLineString + line.ToString());
             }
 
             internal override void OnEndParsing()
@@ -1886,7 +1903,6 @@ namespace Devsense.PHP.Syntax
 
             //
             var result = new List<Element>();
-            Element tmp;
 
             Element/*!*/current = new ShortDescriptionElement();
             current.Span = Span.Invalid;
@@ -1894,10 +1910,9 @@ namespace Devsense.PHP.Syntax
             for (int lineIndex = 0; lineIndex < lineBreaks.LinesCount; lineIndex++)
             {
                 var lineSpan = lineBreaks.GetLineSpan(lineIndex);
-                string/*!*/line = lineSpan.GetText(doccomment);
+                var line = doccomment.AsSpan(lineSpan.Start, lineSpan.Length);
 
-                int startCharIndex, endCharIndex;
-                if (Element.TryParseLine(ref line, out tmp, lineIndex, out startCharIndex, out endCharIndex))    // validate the line, process tags
+                if (Element.TryParseLine(ref line, out var tmp, lineIndex, out var lineOffset))    // validate the line, process tags
                 {
                     Debug.Assert(line != null);
 
@@ -1910,12 +1925,12 @@ namespace Devsense.PHP.Syntax
                         if (current.Span.IsValid == false)      // ShortDescriptionElement has not initialized Span
                         {
                             if (!current.IsEmpty)   // initialize Start iff element has some text
-                                current.Span = new Span(offset + lineSpan.Start + startCharIndex, endCharIndex - startCharIndex);
+                                current.Span = new Span(offset + lineSpan.Start + lineOffset, line.Length);
                         }
                         else                                    // other elements has to update their end position
                         {
                             if (tmp != null)
-                                current.Span = new Span(current.Span.Start, offset + lineSpan.Start + endCharIndex - current.Span.Start);   // update its end position                        
+                                current.Span = Span.FromBounds(current.Span.Start, offset + lineSpan.Start + lineOffset + line.Length);   // update its end position                        
                         }
                     }
 
@@ -1927,7 +1942,7 @@ namespace Devsense.PHP.Syntax
                             result.Add(current);
                         }
 
-                        tmp.Span = new Span(offset + lineSpan.Start + startCharIndex, endCharIndex - startCharIndex);
+                        tmp.Span = new Span(offset + lineSpan.Start + lineOffset, line.Length);
                         current = tmp;  // it is current element from now
                     }
                 }
