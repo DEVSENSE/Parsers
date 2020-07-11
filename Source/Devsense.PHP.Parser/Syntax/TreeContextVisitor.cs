@@ -235,7 +235,7 @@ namespace Devsense.PHP.Syntax.Visitor
         /// <summary>
         /// Counts scopes matching given predicate.
         /// </summary>
-        public static int Count(this ITreeContext context, Func<AstNode, bool> predicate) => context.Count(predicate);
+        public static int Count(this ITreeContext context, Func<AstNode, bool> predicate) => context.Scope.Count(predicate);
 
         /// <summary>
         /// Counts scopes that causes an indentation by default.
