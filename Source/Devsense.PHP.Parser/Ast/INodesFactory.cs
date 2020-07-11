@@ -362,7 +362,7 @@ namespace Devsense.PHP.Syntax.Ast
         TNode Finally(Span span, TNode block);
 
         /// <summary>
-        /// Creates a <c>throw</c> statment;
+        /// Creates a <c>throw</c> expression;
         /// </summary>
         /// <param name="span">Entire element span.</param>
         /// <param name="expression">The exception statement.</param>
