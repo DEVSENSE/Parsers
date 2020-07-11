@@ -121,7 +121,7 @@ namespace Devsense.PHP.Syntax
             // initialization:
 
             _languageFeatures = language;
-            _lexer = new CompliantLexer(lexer);
+            _lexer = new CompliantLexer(lexer, language);
             _astFactory = astFactory ?? throw new ArgumentNullException(nameof(astFactory));
             _errors = errors ?? new EmptyErrorSink<Span>();
 

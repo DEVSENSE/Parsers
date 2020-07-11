@@ -25,17 +25,21 @@ namespace Devsense.PHP.Syntax
     /// </summary>
     internal class CompliantLexer : IParserTokenProvider<SemanticValueType, Span>
     {
-        ITokenProvider<SemanticValueType, Span> _provider;
+        readonly ITokenProvider<SemanticValueType, Span> _provider;
 
-        DocCommentList _phpDocs = new DocCommentList();
+        readonly DocCommentList _phpDocs = new DocCommentList();
+
+        readonly LanguageFeatures _features;
 
         /// <summary>
         /// Lexer constructor that initializes all the necessary members
         /// </summary>
         /// <param name="provider">Underlaying tokens provider.</param>
-        public CompliantLexer(ITokenProvider<SemanticValueType, Span> provider)
+        /// <param name="language">Language features.</param>
+        public CompliantLexer(ITokenProvider<SemanticValueType, Span> provider, LanguageFeatures language = LanguageFeatures.Basic)
         {
             _provider = provider;
+            _features = language;
         }
 
         PHPDocBlock backupDocBlock = null;
@@ -50,6 +54,8 @@ namespace Devsense.PHP.Syntax
 
         public SemanticValueType TokenValue => _provider.TokenValue;
 
+        bool HasFeatureSet(LanguageFeatures fset) => (_features & fset) == fset;
+
         /// <summary>
         /// Get next token and store its actual position in the source unit.
         /// This implementation supports the functionality of zendlex, which skips empty nodes (open tag, comment, etc.).
@@ -58,7 +64,7 @@ namespace Devsense.PHP.Syntax
         public int GetNextToken()
         {
             int docBlockExtend = -1;
-            do
+            for (; ; )
             {
                 Tokens token = (Tokens)_provider.GetNextToken();
 
@@ -82,11 +88,25 @@ namespace Devsense.PHP.Syntax
                     case Tokens.T_OPEN_TAG_WITH_ECHO:
                         token = Tokens.T_ECHO;
                         break;
+
+                    case Tokens.T_FN:
+                        if (!HasFeatureSet(LanguageFeatures.Php74Set))
+                        {
+                            token = Tokens.T_STRING;
+                        }
+                        break;
+
+                    //case Tokens.T_MATCH:
+                    //    if (!HasFeatureSet(LanguageFeatures.Php80Set))
+                    //    {
+                    //        token = Tokens.T_STRING;
+                    //    }
+                    //    break;
                 }
                 SaveDocComment(docBlockExtend);
 
                 return (int)token;
-            } while (true);
+            }
         }
 
         void SaveDocComment(int extend)
