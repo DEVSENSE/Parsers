@@ -32,6 +32,17 @@ namespace UnitTests
         }
 
         [TestMethod]
+        public void EmptyDeprecatedTest()
+        {
+            var phpdoc = NewPHPDoc(@"
+/**
+ * @deprecated
+ */");
+
+            Assert.IsNotNull(phpdoc.GetElement<PHPDocBlock.DeprecatedTag>());
+        }
+
+        [TestMethod]
         public void ReturnsTest()
         {
             var phpdoc = NewPHPDoc(@"

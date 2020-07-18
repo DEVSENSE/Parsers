@@ -630,6 +630,15 @@ namespace Devsense.PHP.Syntax
             {
                 return Name1 + " " + Version;
             }
+
+            internal override bool IsEmpty
+            {
+                get
+                {
+                    // "@deprecated" itself is significant, even without additional text
+                    return false;
+                }
+            }
         }
 
         /// <summary>
