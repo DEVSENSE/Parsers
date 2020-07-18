@@ -19,7 +19,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Text;
-
+using System.Threading;
 using Devsense.PHP.Syntax.Ast;
 using Devsense.PHP.Text;
 
@@ -256,7 +256,7 @@ namespace Devsense.PHP.Syntax
 
                 line = line.Slice(from, to - from);
                 lineOffset = from;
-                
+
                 //line = line.Replace("{@*}", "*/");
 
                 // check "*/" at the end
@@ -277,7 +277,7 @@ namespace Devsense.PHP.Syntax
                 {
                     next = CreateElement(line);
                 }
-                
+
                 // 
                 return true;
             }
@@ -1689,7 +1689,7 @@ namespace Devsense.PHP.Syntax
                         if (word.Length != 0)
                         {
                             if (word[0] == '$' || word[0] == '&') word = word.Slice(1);
-                            
+
                             paramname = word.Trim().ToString();
                         }
                     }
@@ -1857,11 +1857,6 @@ namespace Devsense.PHP.Syntax
         #region Properties
 
         /// <summary>
-        /// Empty singleton <see cref="Element"/> array.
-        /// </summary>
-        private static Element[]/*!*/EmptyElements { get { return EmptyArray<Element>.Instance; } }
-
-        /// <summary>
         /// Original PHPDoc text, including comment tags.
         /// </summary>
         /// <remarks>Used internally for lazy initialization.</remarks>
@@ -1881,18 +1876,15 @@ namespace Devsense.PHP.Syntax
             get
             {
                 if (this.elements == null)
-                    lock (this)
-                        if (this.elements == null)  // double checked lock
-                        {
-                            var elementsList = ParseNoLock(this._docCommentString, this.Span.Start);
-                            if (elementsList != null && elementsList.Count > 0)
-                                this.elements = elementsList.ToArray();
-                            else
-                                this.elements = EmptyElements;
+                {
+                    if (Interlocked.CompareExchange(ref this.elements, ParseNoLock(this._docCommentString, this.Span.Start), null) == null)
+                    {
+                        // dispose the string
+                        this._docCommentString = null;
+                    }
 
-                            // dispose the string
-                            this._docCommentString = null;
-                        }
+                    Debug.Assert(this.elements != null);
+                }
 
                 return this.elements;
             }
@@ -1907,7 +1899,7 @@ namespace Devsense.PHP.Syntax
         /// </summary>
         /// <param name="doccomment">PHPDoc token content.</param>
         /// <param name="span">Position of the comment in the source code.</param>
-        public PHPDocBlock(string doccomment, Span span)
+        public PHPDocBlock(string doccomment, Span span) // TODO: NETSTANDARD21 ReadOnlySpan<char>
             : base(span)
         {
             this._docCommentString = doccomment;
@@ -1918,7 +1910,7 @@ namespace Devsense.PHP.Syntax
         /// </summary>
         /// <param name="doccomment">Content of the PHPDoc token.</param>
         /// <param name="offset">Start position of <paramref name="doccomment"/> within the source code.</param>
-        private static List<Element>/*!*/ParseNoLock(string/*!*/doccomment, int offset)
+        private static Element[]/*!*/ParseNoLock(string/*!*/doccomment, int offset)
         {
             Debug.Assert(doccomment != null);
 
@@ -1980,7 +1972,9 @@ namespace Devsense.PHP.Syntax
             }
 
             //
-            return result;
+            return result != null && result.Count != 0
+                ? result.ToArray()
+                : EmptyArray<Element>.Instance;
         }
 
         #endregion
