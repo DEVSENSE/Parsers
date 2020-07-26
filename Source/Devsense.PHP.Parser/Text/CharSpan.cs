@@ -90,6 +90,42 @@ namespace Devsense.PHP.Text
             return chars;
         }
 
+        public static IEnumerable<CharSpan> EnumerateLines(this CharSpan text, bool includeEOL)
+        {
+            int linestart = 0;
+
+            for (int i = 0; i < text.Length; )
+            {
+                var eol = TextUtils.LengthOfLineBreak(text.Buffer, text.Start + i);
+                if (eol != 0)
+                {
+                    yield return text.Substring(linestart, i - linestart + (includeEOL ? eol : 0));
+
+                    i += eol;
+                    linestart = i;
+
+                    if (linestart >= text.Length)
+                    {
+                        yield break;
+                    }
+                }
+                else
+                {
+                    i++;
+                }
+            }
+
+            yield return text.Substring(linestart);
+        }
+
+        /// <summary>
+        /// Gets last character of the span or '\0' if span is empty.
+        /// </summary>
+        public static char LastChar(this CharSpan chars)
+        {
+            return chars.Length != 0 ? chars[chars.Length - 1] : '\0';
+        }
+
         public static CharSpan Substring(this CharSpan chars, int index)
             => index == 0
             ? chars
@@ -106,6 +142,22 @@ namespace Devsense.PHP.Text
         }
 
         public static bool StartsWith(this CharSpan chars, string text)
+        {
+            if (text.Length > chars.Length)
+            {
+                return false;
+            }
+
+            for (int i = 0; i < text.Length; i++)
+            {
+                if (text[i] != chars[i])
+                    return false;
+            }
+
+            return true;
+        }
+
+        public static bool StartsWith(this CharSpan chars, CharSpan text)
         {
             if (text.Length > chars.Length)
             {
