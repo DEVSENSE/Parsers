@@ -984,7 +984,7 @@ namespace Devsense.PHP.Syntax
             var defaults = BuildQnameDefaults(qname, span, isNamespace);
             var tokens = _provider.GetTokens(span, t => t.Token == Tokens.T_NAMESPACE ||
             t.Token == Tokens.T_NS_SEPARATOR || t.Token == Tokens.T_STRING || t.Token == Tokens.T_STATIC ||
-            t.Token == Tokens.T_CALLABLE || t.Token == Tokens.T_ARRAY, defaults).ToArray();
+            t.Token == Tokens.T_CALLABLE || t.Token == Tokens.T_ARRAY || t.Token == Tokens.T_FN, defaults).ToArray();
             if (tokens.Length == defaults.Count)
             {
                 ProcessQnameTokens(qname, tokens, 0);

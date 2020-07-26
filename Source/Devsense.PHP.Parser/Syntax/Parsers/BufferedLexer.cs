@@ -40,7 +40,11 @@ namespace Devsense.PHP.Syntax
             }
         }
 
-        public SemanticValueType TokenValue => _buffer.Count > 0 ? _buffer.Peek().TokenValue : _provider.TokenValue;
+        public SemanticValueType TokenValue
+        {
+            get => _buffer.Count > 0 ? _buffer.Peek().TokenValue : _provider.TokenValue;
+            set => throw new NotSupportedException();
+        }
 
         public Span TokenPosition => _buffer.Count > 0 ? _buffer.Peek().TokenPosition : _provider.TokenPosition;
 

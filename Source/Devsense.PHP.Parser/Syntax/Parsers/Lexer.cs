@@ -789,7 +789,11 @@ namespace Devsense.PHP.Syntax
             return (c > SByte.MaxValue) ? 'a' : c;
         }
 
-        public SemanticValueType TokenValue => _tokenSemantics;
+        public SemanticValueType TokenValue
+        {
+            get => _tokenSemantics;
+            set => _tokenSemantics = value;
+        }
 
         /// <summary>
         /// Gets span of the current token.
@@ -906,73 +910,150 @@ namespace Devsense.PHP.Syntax
                 .StartsWith(_hereDocLabel);
         }
 
-        string LocateHeredocPrefix(string text)
+        /// <summary>
+        /// Resolves closing label indentation,
+        /// updated the content with trimmed closing line including closing linebreak.
+        /// </summary>
+        CharSpan ResolveHeredocIndentation(ref CharSpan content)
         {
-            string prefix = text;
-            StringBuilder prefixBuild = new StringBuilder();
-            bool start = true;
-            for (int i = 0; i < text.Length; i++)
+            int from = content.Length;
+
+            // the last line specifies the indentation
+            for (; from > 0;)
             {
-                if (start && (text[i] == ' ' || text[i] == '\t'))
+                var ch = content[from - 1];
+                if (ch == ' ' || ch == '\t')
                 {
-                    prefixBuild.Append(text[i]);
+                    from--;
                 }
                 else
                 {
-                    if (start = text[i] == '\n')
+                    break;
+                }
+            }
+
+            var indent = content.Substring(from);
+
+            // scan line by line and check the line indentation
+
+            if (indent.Length != 0)
+            {
+                foreach (var line in content.EnumerateLines(false))
+                {
+                    if (!line.StartsWith(indent))
                     {
-                        var next = prefixBuild.ToString();
-                        if (prefix.StartsWith(next))
-                        {
-                            prefix = next;
-                        }
-                        else if (!next.StartsWith(prefix))
-                        {
-                            prefix = string.Empty;
-                        }
-                        prefixBuild.Clear();
+                        // TODO: exact position of the line
+                        _errors.Error(_tokenPosition, FatalErrors.SyntaxError, "Incorrect heredoc indentation.");
+                        break;
                     }
                 }
             }
-            if (prefixBuild.Length <= prefix.Length)
-            {
-                prefix = prefixBuild.ToString();
-            }
-            else
-            {
-                _errors.Error(_tokenPosition, FatalErrors.SyntaxError, "Incorrect heredoc indentation.");
-            }
-            return prefix;
+
+            // trim last line
+            content = content.Substring(0, from);
+
+            // \n
+            if (content.LastChar() == '\n') content = content.Substring(0, content.Length - 1);
+            // \r\n
+            // \r
+            if (content.LastChar() == '\r') content = content.Substring(0, content.Length - 1);
+
+            //
+            return indent;
         }
 
-        string FixHeredocIndent(string text)
+        /// <summary>
+        /// Removes line indentation from the content.
+        /// </summary>
+        static string RemoveHeredocIndentation(string content, CharSpan indentation)
         {
-            var prefix = LocateHeredocPrefix(text);
-            return text.Substring(prefix.Length).Replace("\n" + prefix, "\n");
+            if (indentation.Length == 0)
+            {
+                // no indentation
+                return content;
+            }
+
+            // scan line by line and trim N characters
+            int linestart = 0;
+            var result = new StringBuilder(content.Length);
+
+            for (int i = 0; i < content.Length;)
+            {
+                var eol = TextUtils.LengthOfLineBreak(content, i);
+                if (eol != 0)
+                {
+                    i += eol;
+
+                    result.Append(content, linestart + indentation.Length, i - linestart - indentation.Length);
+
+                    linestart = i;
+                }
+                else
+                {
+                    i++;
+                }
+            }
+
+            result.Append(content, linestart + indentation.Length, content.Length - linestart - indentation.Length);
+
+            return result.ToString();
         }
 
         bool ProcessEndNowDoc(ProcessStringDelegate tryprocess)
         {
             BEGIN(LexicalStates.ST_END_HEREDOC);
-            int trail = LabelTrailLength();
 
-            int start = BufferTokenStart;
-            int length = TokenLength - _hereDocLabel.Length - trail;
+            var content = TrimNowDocEnd(this.GetTokenSpan(), _hereDocLabel); // trim label and whitespaces from the heredoc end
+            var lookbackfix = TokenLength - content.Length;
+            var indentation = ResolveHeredocIndentation(ref content);
+            var sourcetext = content.ToString();
 
-            string sourcetext = GetTokenSubstring(0, length, intern: false);
             string text = tryprocess != null
-                ? (string)ProcessStringText(buffer, start, length, tryprocess)
+                ? (string)ProcessStringText(content.Buffer, content.Start, content.Length, tryprocess)
                 : sourcetext;
 
-            text = FixHeredocIndent(text);
+            text = RemoveHeredocIndentation(text, indentation);
 
             // move back at the end of the heredoc label - yyless does not work properly (requires additional condition for the optional ';')
-            lookahead_index = token_end = lookahead_index - _hereDocLabel.Length - trail;
+            lookahead_index = token_end = lookahead_index - lookbackfix;
 
             _tokenSemantics.Object = new KeyValuePair<string, string>(text, sourcetext);
 
             //
             return text.Length != 0;
+        }
+
+        /// <summary>
+        /// Removes closing label from the heredoc content.
+        /// </summary>
+        static CharSpan TrimNowDocEnd(CharSpan content, string label)
+        {
+            Debug.Assert(label != null);
+
+            // content: {TEXT}\n[WHITESPACE]*label[WHITESPACE;]*
+
+            // trim whitespace suffix
+            // spaces, line separators, paragraph separators, tabs
+            for (; ; )
+            {
+                var ch = content.LastChar();
+                if (char.IsWhiteSpace(ch) || ch == ';')
+                {
+                    content = content.Substring(0, content.Length - 1);
+                }
+                else
+                {
+                    break;
+                }
+            }
+
+            // trim label
+            Debug.Assert(content.Length >= label.Length);
+
+            content = content.Substring(0, content.Length - label.Length);
+
+            //
+            return content;
         }
 
         int LabelTrailLength()

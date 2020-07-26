@@ -101,7 +101,7 @@ namespace Devsense.PHP.Syntax
         /// <summary>
         /// Gets current token semantic value.
         /// </summary>
-		ValueType TokenValue { get; }
+		ValueType TokenValue { get; set; }
 
         /// <summary>
         /// Gets current token position.

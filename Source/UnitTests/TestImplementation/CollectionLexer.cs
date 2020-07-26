@@ -21,6 +21,8 @@ namespace UnitTests.TestImplementation
         /// <param name="provider">Underlaying tokens provider.</param>
         public CollectionLexer(StringReader source, IErrorSink<Span> errors)
         {
+            // TODO: should have CompliantLexer a LanguageFeatures !!!
+
             _provider = new Lexer(source, Encoding.UTF8, errors, LanguageFeatures.Basic, 0, Lexer.LexicalStates.INITIAL);
         }
 
@@ -28,7 +30,11 @@ namespace UnitTests.TestImplementation
 
         public string TokenText => _provider.TokenText;
 
-        public SemanticValueType TokenValue => _provider.TokenValue;
+        public SemanticValueType TokenValue
+        {
+            get => _provider.TokenValue;
+            set => _provider.TokenValue = value;
+        }
 
         public List<ISourceToken> AllTokens => _tokens;
 

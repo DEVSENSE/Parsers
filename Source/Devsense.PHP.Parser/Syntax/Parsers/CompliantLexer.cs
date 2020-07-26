@@ -23,7 +23,7 @@ namespace Devsense.PHP.Syntax
     /// PHP lexer generated according to the PhpLexer.l grammar.
     /// Special implementation of the PHP lexer that skips empty nodes (open tag, comment, etc.), which is required by the PHP grammar.
     /// </summary>
-    internal class CompliantLexer : IParserTokenProvider<SemanticValueType, Span>
+    public class CompliantLexer : IParserTokenProvider<SemanticValueType, Span>
     {
         readonly ITokenProvider<SemanticValueType, Span> _provider;
 
@@ -52,7 +52,11 @@ namespace Devsense.PHP.Syntax
 
         public string TokenText => _provider.TokenText;
 
-        public SemanticValueType TokenValue => _provider.TokenValue;
+        public SemanticValueType TokenValue
+        {
+            get => _provider.TokenValue;
+            set => _provider.TokenValue = value;
+        }
 
         bool HasFeatureSet(LanguageFeatures fset) => (_features & fset) == fset;
 
@@ -92,16 +96,17 @@ namespace Devsense.PHP.Syntax
                     case Tokens.T_FN:
                         if (!HasFeatureSet(LanguageFeatures.Php74Set))
                         {
+                            TokenValue = new SemanticValueType() { String = TokenText, };
                             token = Tokens.T_STRING;
                         }
                         break;
 
-                    //case Tokens.T_MATCH:
-                    //    if (!HasFeatureSet(LanguageFeatures.Php80Set))
-                    //    {
-                    //        token = Tokens.T_STRING;
-                    //    }
-                    //    break;
+                        //case Tokens.T_MATCH:
+                        //    if (!HasFeatureSet(LanguageFeatures.Php80Set))
+                        //    {
+                        //        token = Tokens.T_STRING;
+                        //    }
+                        //    break;
                 }
                 SaveDocComment(docBlockExtend);
 
