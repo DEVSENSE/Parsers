@@ -46,7 +46,7 @@ namespace Devsense.PHP.Syntax
 
         public PHPDocBlock DocBlock { get { return _phpDocs.LastDocBlock; } set { } }
 
-        public DocCommentList DocBlockList { get { return _phpDocs; } }
+        DocCommentList IParserTokenProvider<SemanticValueType, Span>.DocBlockList { get { return _phpDocs; } }
 
         public Span TokenPosition => _provider.TokenPosition;
 
