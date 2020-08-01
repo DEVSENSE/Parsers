@@ -711,6 +711,9 @@ namespace Devsense.PHP.Syntax
                     if (names == null || names.Length == 0)
                         return null;
 
+                    if (names.Length == 1)
+                        return names[0];
+
                     return string.Join(TypeNamesSeparator.ToString(), names);
                 }
             }
