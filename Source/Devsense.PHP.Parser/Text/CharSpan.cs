@@ -22,7 +22,7 @@ namespace Devsense.PHP.Text
         public readonly char[] Buffer;
         public readonly int Start, Length;
 
-        private string DebugString => new string(Buffer, Start, Length);
+        private string DebugString => ToString();
 
         public CharSpan(char[] buffer)
             : this(buffer, 0, buffer.Length)
@@ -50,9 +50,40 @@ namespace Devsense.PHP.Text
                 : string.Empty;
         }
 
+        public override int GetHashCode()
+        {
+            return StringComparer.Ordinal.GetHashCode(ToString());
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (obj is string str) return Equals(str);
+            if (obj is CharSpan span) return Equals(span);
+
+            return false;
+        }
+
+        public bool Equals(CharSpan other)
+        {
+            if (other != null && other.Length == Length)
+            {
+                for (int i = 0; i < Length; i++)
+                {
+                    if (other[i] != this[i])
+                    {
+                        return false;
+                    }
+                }
+
+                return true;
+            }
+
+            return false;
+        }
+
         public bool Equals(string other)
         {
-            if (other != null && other.Length == this.Length)
+            if (other != null && other.Length == Length)
             {
                 for (int i = 0; i < other.Length; i++)
                 {
