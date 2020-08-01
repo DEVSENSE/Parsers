@@ -15,6 +15,7 @@
 
 using System;
 using System.Collections.Generic;
+using Devsense.PHP.Text;
 
 %%
 
@@ -802,8 +803,10 @@ ST_HALT_COMPILER1,ST_HALT_COMPILER2,ST_HALT_COMPILER3>{EOF} {
 
 <ST_END_HEREDOC>{LABEL} {
 	BEGIN(LexicalStates.ST_IN_SCRIPTING);
-	if (GetTokenString(intern: false) != _hereDocLabel) 
-		_errors.Error(_tokenPosition, Devsense.PHP.Errors.FatalErrors.SyntaxError, "Incorrect heredoc end label: " + _hereDocLabel);
+	if (GetTokenSpan().TrimLeft() != _hereDocLabel)
+	{
+		_errors.Error(_tokenPosition, Devsense.PHP.Errors.FatalErrors.SyntaxError, "Incorrect heredoc end label: " + GetTokenSpan().Trim().ToString());
+	}
 	_yyless(LabelTrailLength());
 	_tokenSemantics.Object = _hereDocLabel;
 	return Tokens.T_END_HEREDOC;

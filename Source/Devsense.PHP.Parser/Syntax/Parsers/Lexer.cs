@@ -967,7 +967,7 @@ namespace Devsense.PHP.Syntax
         /// </summary>
         static string RemoveHeredocIndentation(string content, CharSpan indentation)
         {
-            if (indentation.Length == 0)
+            if (indentation.Length == 0 || content.Length == 0)
             {
                 // no indentation
                 return content;
@@ -994,7 +994,11 @@ namespace Devsense.PHP.Syntax
                 }
             }
 
-            result.Append(content, linestart + indentation.Length, content.Length - linestart - indentation.Length);
+            var count = content.Length - linestart - indentation.Length;
+            if (count > 0)
+            {
+                result.Append(content, linestart + indentation.Length, count);
+            }
 
             return result.ToString();
         }

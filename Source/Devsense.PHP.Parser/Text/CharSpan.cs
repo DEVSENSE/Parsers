@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Runtime.InteropServices;
 using System.Text;
 using Devsense.PHP.Syntax;
 
@@ -11,7 +12,7 @@ namespace Devsense.PHP.Text
     /// Basic functionality of <c>ReadOnlySpan&lt;char&gt;</c>.
     /// </summary>
     [DebuggerDisplay("{ToString()}")]
-    public struct CharSpan
+    public struct CharSpan : IEquatable<string>
     {
         /// <summary>
         /// Empty span of characters.
@@ -49,6 +50,24 @@ namespace Devsense.PHP.Text
                 : string.Empty;
         }
 
+        public bool Equals(string other)
+        {
+            if (other != null && other.Length == this.Length)
+            {
+                for (int i = 0; i < other.Length; i++)
+                {
+                    if (other[i] != Buffer[Start + i])
+                    {
+                        return false;
+                    }
+                }
+
+                return true;
+            }
+
+            return false;
+        }
+
         /// <summary>
         /// Gets char at given index.
         /// </summary>
@@ -56,6 +75,10 @@ namespace Devsense.PHP.Text
         public char this[int idx] => (idx >= 0 && idx < Length)
             ? Buffer[Start + idx]
             : throw new ArgumentOutOfRangeException();
+
+        public static bool operator ==(CharSpan left, string right) => left.Equals(right);
+
+        public static bool operator !=(CharSpan left, string right) => !left.Equals(right);
     }
 
     /// <summary>
@@ -73,6 +96,19 @@ namespace Devsense.PHP.Text
 
             return chars.Substring(skip);
         }
+
+        public static CharSpan TrimRight(this CharSpan chars)
+        {
+            int length = chars.Length;
+            while (length != 0 && char.IsWhiteSpace(chars[length - 1]))
+            {
+                length--;
+            }
+
+            return chars.Substring(0, length);
+        }
+
+        public static CharSpan Trim(this CharSpan chars) => chars.TrimLeft().TrimRight();
 
         /// <summary>
         /// Finds last whitespace character and returns substring that follows.
@@ -94,7 +130,7 @@ namespace Devsense.PHP.Text
         {
             int linestart = 0;
 
-            for (int i = 0; i < text.Length; )
+            for (int i = 0; i < text.Length;)
             {
                 var eol = TextUtils.LengthOfLineBreak(text.Buffer, text.Start + i);
                 if (eol != 0)
