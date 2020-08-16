@@ -38,6 +38,6 @@
     </PreBuildEvent>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="System.Memory" Version="4.5.0" />
+    <PackageReference Include="System.Memory" Version="4.5.0" Condition=" '$(TargetFramework)'!='netstandard2.1' " />
   </ItemGroup>
 </Project>
