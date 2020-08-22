@@ -149,6 +149,20 @@ class X {
             }
         }
 
+        [TestMethod]
+        public void MatchTest()
+        {
+            var codes = new[] {
+                @"<?php echo match($x) { 0 => 'hello', 1, 2, 3 => 'world', default => '!', };",
+            };
+
+            foreach (var code in codes)
+            {
+                var unit = new CodeSourceUnit(code, "dummy.php", Encoding.UTF8, features: LanguageFeatures.Php80Set);
+                unit.Parse(new BasicNodesFactory(unit), null);
+            }
+        }
+
         /// <summary>
         /// Helper visitor checking every node has a containing element.
         /// </summary>
