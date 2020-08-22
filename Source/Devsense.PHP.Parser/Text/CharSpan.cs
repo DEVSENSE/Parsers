@@ -110,6 +110,8 @@ namespace Devsense.PHP.Text
         public static bool operator ==(CharSpan left, string right) => left.Equals(right);
 
         public static bool operator !=(CharSpan left, string right) => !left.Equals(right);
+
+        public static implicit operator ReadOnlySpan<char>(CharSpan span) => new ReadOnlySpan<char>(span.Buffer, span.Start, span.Length);
     }
 
     /// <summary>
