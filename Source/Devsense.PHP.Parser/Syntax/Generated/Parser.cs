@@ -315,6 +315,8 @@ T_EXTENDS=364,
 T_IMPLEMENTS=365,
 /// <summary>&quot;-&gt; (T_OBJECT_OPERATOR)&quot;</summary>
 T_OBJECT_OPERATOR=369,
+/// <summary>&quot;?-&gt; (T_NULLSAFE_OBJECT_OPERATOR )&quot;</summary>
+T_NULLSAFE_OBJECT_OPERATOR=396,
 /// <summary>&quot;list (T_LIST)&quot;</summary>
 T_LIST=367,
 /// <summary>&quot;array (T_ARRAY)&quot;</summary>

@@ -257,6 +257,7 @@ using StringPair = System.Collections.Generic.KeyValuePair<string, string>;
 %token <Object> T_EXTENDS 364   //"extends (T_EXTENDS)"
 %token <Object> T_IMPLEMENTS 365 //"implements (T_IMPLEMENTS)"
 %token <Object> T_OBJECT_OPERATOR 369 //"-> (T_OBJECT_OPERATOR)"
+%token <Object> T_NULLSAFE_OBJECT_OPERATOR  396 //"?-> (T_NULLSAFE_OBJECT_OPERATOR )"
 %token <Object> T_DOUBLE_ARROW 268    //"=> (T_DOUBLE_ARROW)"
 %token <Object> T_LIST 367           //"list (T_LIST)"
 %token <Object> T_ARRAY 368          //"array (T_ARRAY)"
