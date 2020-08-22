@@ -54,6 +54,9 @@ using StringPair = System.Collections.Generic.KeyValuePair<string, string>;
 	/// <summary>Token that encapsulates the string literal.</summary>
 	[FieldOffset(0)]
 	public Tokens QuoteToken;
+	/// <summary>The original token.</summary>
+	[FieldOffset(0)]
+	public Tokens Token;
 
 	[FieldOffset(8)]
 	public object Object;
@@ -304,6 +307,7 @@ using StringPair = System.Collections.Generic.KeyValuePair<string, string>;
 %type <Object> backup_doc_comment enter_scope exit_scope
 
 %type <QualifiedNameReference> name
+%type <Token> object_operator
 
 %type <TypeReference> type return_type type_expr optional_type extends_from
 %type <TypeReference> class_name_reference class_name
@@ -1477,6 +1481,11 @@ optional_expr:
 	|	expr		{ $$ = $1; }
 ;
 
+object_operator:
+		T_OBJECT_OPERATOR			{ $$ = Tokens.T_OBJECT_OPERATOR; }
+	|	T_NULLSAFE_OBJECT_OPERATOR	{ $$ = Tokens.T_NULLSAFE_OBJECT_OPERATOR; }
+;
+
 variable_class_name:
 	dereferencable { $$ = $1; /* TODO if (!($1 is VarLikeConstructUse)) _errors.Error(@$, FatalErrors.CheckVarUseFault); */ }
 ;
@@ -1502,27 +1511,25 @@ callable_variable:
 			{ $$ = _astFactory.ArrayItem(@$, false, $1, $3); }
 	|	dereferencable '{' expr '}'
 			{ $$ = _astFactory.ArrayItem(@$, true, $1, $3); }
-	|	dereferencable T_OBJECT_OPERATOR property_name argument_list
+	|	dereferencable object_operator property_name argument_list
 		{
 			if ($3 is string name)
-			{
 				$$ = _astFactory.Call(@$, new TranslatedQualifiedName(new QualifiedName(new Name(name)), @3), new CallSignature($4, @4), VerifyMemberOf($1));
-			}
 			else
-			{
 				$$ = _astFactory.Call(@$, (LangElement)$3, new CallSignature($4, @4), VerifyMemberOf($1));
-			}
+
+			AdjustNullSafeOperator($$, $2);
 		}
 	|	function_call { $$ = $1; }
 ;
 
 variable:
-		callable_variable
-			{ $$ = $1; }
-	|	static_member
-			{ $$ = $1; }
-	|	dereferencable T_OBJECT_OPERATOR property_name
-			{ $$ = CreateProperty(@$, $1, $3); }
+		callable_variable	{ $$ = $1; }
+	|	static_member		{ $$ = $1; }
+	|	dereferencable object_operator property_name
+		{
+			$$ = AdjustNullSafeOperator(CreateProperty(@$, $1, $3), $2);
+		}
 ;
 
 simple_variable:
@@ -1545,8 +1552,8 @@ new_variable:
 			{ $$ = _astFactory.ArrayItem(@$, false, $1, $3); }
 	|	new_variable '{' expr '}'
 			{ $$ = _astFactory.ArrayItem(@$, true, $1, $3); }
-	|	new_variable T_OBJECT_OPERATOR property_name
-			{ $$ = CreateProperty(@$, $1, $3); }
+	|	new_variable object_operator property_name
+			{ $$ = AdjustNullSafeOperator(CreateProperty(@$, $1, $3), $2); }
 	|	class_name T_DOUBLE_COLON simple_variable
 			{ $$ = CreateStaticProperty(@$, $1, @1, $3); }
 	|	new_variable T_DOUBLE_COLON simple_variable
@@ -1615,8 +1622,8 @@ encaps_var:
 	|	T_VARIABLE '[' encaps_var_offset ']'
 			{ $$ = _astFactory.ArrayItem(@$, false,
 					_astFactory.Variable(@1, $1, NullLangElement, true), $3); }
-	|	T_VARIABLE T_OBJECT_OPERATOR T_STRING
-			{ $$ = CreateProperty(@$, _astFactory.Variable(@1, $1, NullLangElement, true), $3); }
+	|	T_VARIABLE object_operator T_STRING
+			{ $$ = AdjustNullSafeOperator(CreateProperty(@$, _astFactory.Variable(@1, $1, NullLangElement, true), $3), $2); }
 	|	T_DOLLAR_OPEN_CURLY_BRACES expr '}'
 			{ $$ = _astFactory.EncapsedExpression(@$, _astFactory.Variable(@2, $2, NullLangElement), Tokens.T_DOLLAR_OPEN_CURLY_BRACES); }
 	|	T_DOLLAR_OPEN_CURLY_BRACES T_STRING_VARNAME '}'

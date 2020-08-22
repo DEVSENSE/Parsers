@@ -628,6 +628,16 @@ namespace Devsense.PHP.Syntax
             return null;
         }
 
+        static LangElement AdjustNullSafeOperator(LangElement element, Tokens objectOperator)
+        {
+            if (objectOperator == Tokens.T_NULLSAFE_OBJECT_OPERATOR)
+            {
+                Debug.Assert(element is VarLikeConstructUse);
+                ((VarLikeConstructUse)element).IsNullSafeObjectOperation = true;
+            }
+            return element;
+        }
+
         #region Aliasing
 
         /// <summary>
