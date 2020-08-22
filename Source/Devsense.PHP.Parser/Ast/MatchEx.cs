@@ -83,6 +83,14 @@ namespace Devsense.PHP.Syntax.Ast
             this.Expression = expression ?? throw new ArgumentNullException(nameof(expression));
         }
 
+        /// <summary>
+        /// Gets value indicating this is a default branch.
+        /// </summary>
+        public bool IsDefault => ConditionList.Length == 0;
+
+        /// <summary>
+        /// List of conditions. Cannot be <c>null</c>.
+        /// </summary>
         public Expression[] ConditionList { get; }
 
         IList<IExpression> IMatchArm.ConditionList => ConditionList;
