@@ -401,7 +401,7 @@ namespace Devsense.PHP.Syntax
 
         #endregion
 
-        #region Switch statement
+        #region Switch statement, Match expression
 
         /// <summary>
         /// Visit switch value and switch items.
@@ -442,6 +442,24 @@ namespace Devsense.PHP.Syntax
         virtual public void VisitSwitchItem(SwitchItem x)
         {
             VisitList(x.Statements);
+        }
+
+        /// <summary>
+        /// Visit match expression.
+        /// </summary>
+        virtual public void VisitMatchEx(MatchEx x)
+        {
+            VisitElement(x.MatchValue);
+            VisitList(x.MatchItems);
+        }
+
+        /// <summary>
+        /// Visit match arm.
+        /// </summary>
+        virtual public void VisitMatchItem(MatchArm x)
+        {
+            VisitList(x.ConditionList);
+            VisitElement(x.Expression);
         }
 
         #endregion

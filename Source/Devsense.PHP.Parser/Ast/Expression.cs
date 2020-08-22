@@ -32,6 +32,7 @@ namespace Devsense.PHP.Syntax.Ast
         AtSign,
         Print,
         Clone,
+        Match,
 
         // casts:
         BoolCast,
