@@ -227,6 +227,8 @@ class X {
 
             private void CheckStringValue(StringLiteral element)
             {
+                // NOTE: this is not correct !!!
+
                 int start = element.ContainingElement is EncapsedExpression.HereDocExpression ||
                     element.ContainingElement is EncapsedExpression.NowDocExpression ||
                     element.ContainingElement is EchoStmt echo && echo.IsHtmlCode ||
