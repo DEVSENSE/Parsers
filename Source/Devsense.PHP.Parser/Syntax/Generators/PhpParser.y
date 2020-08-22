@@ -225,6 +225,7 @@ using StringPair = System.Collections.Generic.KeyValuePair<string, string>;
 %token <Object> T_ENDSWITCH 336 //"endswitch (T_ENDSWITCH)"
 %token <Object> T_CASE 341      //"case (T_CASE)"
 %token <Object> T_DEFAULT 342   //"default (T_DEFAULT)"
+%token <Object> T_MATCH	395		//"match" (T_MATCH)
 %token <Object> T_BREAK 339     //"break (T_BREAK)"
 %token <Object> T_CONTINUE 340  //"continue (T_CONTINUE)"
 %token <Object> T_GOTO 345      //"goto (T_GOTO)"

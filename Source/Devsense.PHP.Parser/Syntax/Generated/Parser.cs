@@ -265,6 +265,8 @@ T_ENDSWITCH=336,
 T_CASE=341,
 /// <summary>&quot;default (T_DEFAULT)&quot;</summary>
 T_DEFAULT=342,
+/// <summary>&quot;match&quot; (T_MATCH)</summary>
+T_MATCH=395,
 /// <summary>&quot;break (T_BREAK)&quot;</summary>
 T_BREAK=339,
 /// <summary>&quot;continue (T_CONTINUE)&quot;</summary>

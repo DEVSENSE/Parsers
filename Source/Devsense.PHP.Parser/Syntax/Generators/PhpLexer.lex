@@ -223,6 +223,10 @@ ST_HALT_COMPILER1,ST_HALT_COMPILER2,ST_HALT_COMPILER3>{EOF} {
 	return (Tokens.T_SWITCH);
 }
 
+<ST_IN_SCRIPTING>"match" {
+	return (Tokens.T_MATCH);
+}
+
 <ST_IN_SCRIPTING>"endswitch" {
 	return (Tokens.T_ENDSWITCH);
 }

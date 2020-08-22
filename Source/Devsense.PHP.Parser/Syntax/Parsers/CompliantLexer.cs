@@ -101,12 +101,12 @@ namespace Devsense.PHP.Syntax
                         }
                         break;
 
-                        //case Tokens.T_MATCH:
-                        //    if (!HasFeatureSet(LanguageFeatures.Php80Set))
-                        //    {
-                        //        token = Tokens.T_STRING;
-                        //    }
-                        //    break;
+                    case Tokens.T_MATCH:
+                        if (!HasFeatureSet(LanguageFeatures.Php80Set))
+                        {
+                            token = Tokens.T_STRING;
+                        }
+                        break;
                 }
                 SaveDocComment(docBlockExtend);
 
