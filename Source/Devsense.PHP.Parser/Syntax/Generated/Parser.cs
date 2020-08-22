@@ -3457,16 +3457,16 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
         return;
       case 431: // function_call -> class_name T_DOUBLE_COLON member_name argument_list 
 {
-				if(value_stack.array[value_stack.top-2].yyval.Object is Name)
-					yyval.Node = _astFactory.Call(yypos, (Name)value_stack.array[value_stack.top-2].yyval.Object, value_stack.array[value_stack.top-2].yypos, new CallSignature(value_stack.array[value_stack.top-1].yyval.ParamList, value_stack.array[value_stack.top-1].yypos), value_stack.array[value_stack.top-4].yyval.TypeReference); 
+				if (value_stack.array[value_stack.top-2].yyval.Object is string namestr)
+					yyval.Node = _astFactory.Call(yypos, new Name(namestr), value_stack.array[value_stack.top-2].yypos, new CallSignature(value_stack.array[value_stack.top-1].yyval.ParamList, value_stack.array[value_stack.top-1].yypos), value_stack.array[value_stack.top-4].yyval.TypeReference); 
 				else
 					yyval.Node = _astFactory.Call(yypos, (LangElement)value_stack.array[value_stack.top-2].yyval.Object, new CallSignature(value_stack.array[value_stack.top-1].yyval.ParamList, value_stack.array[value_stack.top-1].yypos), value_stack.array[value_stack.top-4].yyval.TypeReference); 
 			}
         return;
       case 432: // function_call -> variable_class_name T_DOUBLE_COLON member_name argument_list 
 {
-				if(value_stack.array[value_stack.top-2].yyval.Object is Name)
-					yyval.Node = _astFactory.Call(yypos, (Name)value_stack.array[value_stack.top-2].yyval.Object, value_stack.array[value_stack.top-2].yypos, new CallSignature(value_stack.array[value_stack.top-1].yyval.ParamList, value_stack.array[value_stack.top-1].yypos), _astFactory.TypeReference(value_stack.array[value_stack.top-4].yypos, value_stack.array[value_stack.top-4].yyval.Node)); 
+				if (value_stack.array[value_stack.top-2].yyval.Object is string namestr)
+					yyval.Node = _astFactory.Call(yypos, new Name(namestr), value_stack.array[value_stack.top-2].yypos, new CallSignature(value_stack.array[value_stack.top-1].yyval.ParamList, value_stack.array[value_stack.top-1].yypos), _astFactory.TypeReference(value_stack.array[value_stack.top-4].yypos, value_stack.array[value_stack.top-4].yyval.Node)); 
 				else
 					yyval.Node = _astFactory.Call(yypos, (LangElement)value_stack.array[value_stack.top-2].yyval.Object, new CallSignature(value_stack.array[value_stack.top-1].yyval.ParamList, value_stack.array[value_stack.top-1].yypos), _astFactory.TypeReference(value_stack.array[value_stack.top-4].yypos, value_stack.array[value_stack.top-4].yyval.Node)); 
 			}
@@ -3676,7 +3676,7 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 { yyval.Node = CreateStaticProperty(yypos, value_stack.array[value_stack.top-3].yyval.Node, value_stack.array[value_stack.top-3].yypos, value_stack.array[value_stack.top-1].yyval.Node); }
         return;
       case 498: // member_name -> identifier 
-{ yyval.Object = new Name(value_stack.array[value_stack.top-1].yyval.String); }
+{ yyval.Object = value_stack.array[value_stack.top-1].yyval.String; }
         return;
       case 499: // member_name -> '{' expr '}' 
 { yyval.Object = _astFactory.EncapsedExpression(yypos, value_stack.array[value_stack.top-2].yyval.Node, Tokens.T_LBRACE); }

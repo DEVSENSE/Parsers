@@ -1390,15 +1390,15 @@ function_call:
 			{ $$ = _astFactory.Call(@$, TranslateQNRFunction($1), new CallSignature($2, @2), null); }
 	|	class_name T_DOUBLE_COLON member_name argument_list
 			{
-				if($3 is Name)
-					$$ = _astFactory.Call(@$, (Name)$3, @3, new CallSignature($4, @4), $1); 
+				if ($3 is string namestr)
+					$$ = _astFactory.Call(@$, new Name(namestr), @3, new CallSignature($4, @4), $1); 
 				else
 					$$ = _astFactory.Call(@$, (LangElement)$3, new CallSignature($4, @4), $1); 
 			}
 	|	variable_class_name T_DOUBLE_COLON member_name argument_list
 			{
-				if($3 is Name)
-					$$ = _astFactory.Call(@$, (Name)$3, @3, new CallSignature($4, @4), _astFactory.TypeReference(@1, $1)); 
+				if ($3 is string namestr)
+					$$ = _astFactory.Call(@$, new Name(namestr), @3, new CallSignature($4, @4), _astFactory.TypeReference(@1, $1)); 
 				else
 					$$ = _astFactory.Call(@$, (LangElement)$3, new CallSignature($4, @4), _astFactory.TypeReference(@1, $1)); 
 			}
@@ -1554,7 +1554,7 @@ new_variable:
 ;
 
 member_name:
-		identifier { $$ = new Name($1); }
+		identifier { $$ = $1; }
 	|	'{' expr '}'	{ $$ = _astFactory.EncapsedExpression(@$, $2, Tokens.T_LBRACE); }
 	|	simple_variable	{ $$ = $1; }
 ;
