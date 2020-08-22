@@ -104,6 +104,7 @@ namespace Devsense.PHP.Syntax
                     case Tokens.T_MATCH:
                         if (!HasFeatureSet(LanguageFeatures.Php80Set))
                         {
+                            TokenValue = new SemanticValueType() { String = TokenText, };
                             token = Tokens.T_STRING;
                         }
                         break;
