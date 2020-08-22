@@ -1504,13 +1504,14 @@ callable_variable:
 			{ $$ = _astFactory.ArrayItem(@$, true, $1, $3); }
 	|	dereferencable T_OBJECT_OPERATOR property_name argument_list
 		{
-			if($3 is Name)
+			if ($3 is string name)
 			{
-				var name = new QualifiedName((Name)$3);
-				$$ = _astFactory.Call(@$, new TranslatedQualifiedName(name, @3, name, null), new CallSignature($4, @4), VerifyMemberOf($1));
+				$$ = _astFactory.Call(@$, new TranslatedQualifiedName(new QualifiedName(new Name(name)), @3), new CallSignature($4, @4), VerifyMemberOf($1));
 			}
 			else
+			{
 				$$ = _astFactory.Call(@$, (LangElement)$3, new CallSignature($4, @4), VerifyMemberOf($1));
+			}
 		}
 	|	function_call { $$ = $1; }
 ;
@@ -1559,7 +1560,7 @@ member_name:
 ;
 
 property_name:
-		T_STRING { $$ = new Name($1); }
+		T_STRING { $$ = $1; }
 	|	'{' expr '}'	{ $$ = _astFactory.EncapsedExpression(@$, $2, Tokens.T_LBRACE); }
 	|	simple_variable	{ $$ = $1; }
 ;
@@ -1615,7 +1616,7 @@ encaps_var:
 			{ $$ = _astFactory.ArrayItem(@$, false,
 					_astFactory.Variable(@1, $1, NullLangElement, true), $3); }
 	|	T_VARIABLE T_OBJECT_OPERATOR T_STRING
-			{ $$ = CreateProperty(@$, _astFactory.Variable(@1, $1, NullLangElement, true), new Name($3)); }
+			{ $$ = CreateProperty(@$, _astFactory.Variable(@1, $1, NullLangElement, true), $3); }
 	|	T_DOLLAR_OPEN_CURLY_BRACES expr '}'
 			{ $$ = _astFactory.EncapsedExpression(@$, _astFactory.Variable(@2, $2, NullLangElement), Tokens.T_DOLLAR_OPEN_CURLY_BRACES); }
 	|	T_DOLLAR_OPEN_CURLY_BRACES T_STRING_VARNAME '}'

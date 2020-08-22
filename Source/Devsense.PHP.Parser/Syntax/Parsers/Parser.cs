@@ -343,7 +343,7 @@ namespace Devsense.PHP.Syntax
             ClassContexts.Pop();
         }
 
-        protected TElement WithAttributes<TElement>(TElement node, List<LangElement> attributes) where TElement: IPropertyCollection
+        protected TElement WithAttributes<TElement>(TElement node, List<LangElement> attributes) where TElement : IPropertyCollection
         {
             if (attributes != null && attributes.Count != 0)
             {
@@ -405,10 +405,16 @@ namespace Devsense.PHP.Syntax
         private LangElement CreateProperty(Span span, LangElement objectExpr, object name)
         {
             var parent = VerifyMemberOf(objectExpr);
-            if (name is Name)
-                return _astFactory.Variable(span, ((Name)name).Value, parent, parent == null);
+
+            if (name is string namestr)
+            {
+                return _astFactory.Variable(span, namestr, parent, parent == null);
+            }
             else
+            {
+                Debug.Assert(name is LangElement);
                 return _astFactory.Variable(span, (LangElement)name, parent);
+            }
         }
 
         private LangElement CreateStaticProperty(Span span, TypeRef objectName, Span objectNamePos, object name)
