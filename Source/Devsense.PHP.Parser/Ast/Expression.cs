@@ -221,6 +221,36 @@ namespace Devsense.PHP.Syntax.Ast
         public Expression IsMemberOf { get { return isMemberOf; } set { isMemberOf = value; } }
         protected Expression isMemberOf;
 
+        sealed class NullSafeOperationFlag
+        {
+            public static bool HasFlag(AstNode node) => node.TryGetProperty<NullSafeOperationFlag>(out _);
+
+            public static void SetFlag(AstNode node, bool value)
+            {
+                if (value)
+                {
+                    node.SetProperty(Instance);
+                }
+                else
+                {
+                    ((IPropertyCollection)node).RemoveProperty<NullSafeOperationFlag>();
+                }
+            }
+
+            static readonly NullSafeOperationFlag Instance = new NullSafeOperationFlag();
+
+            private NullSafeOperationFlag() { }
+        }
+
+        /// <summary>
+        /// Gets value indicating the object operation is null-safe (<c>?-&gt;</c>).
+        /// </summary>
+        public bool IsNullSafeObjectOperation
+        {
+            get => isMemberOf != null && NullSafeOperationFlag.HasFlag(this);
+            internal set => NullSafeOperationFlag.SetFlag(this, value);
+        }
+
         internal override bool AllowsPassByReference { get { return true; } }
 
         protected VarLikeConstructUse(Text.Span p) : base(p) { }
