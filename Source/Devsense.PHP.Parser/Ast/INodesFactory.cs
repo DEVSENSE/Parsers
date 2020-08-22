@@ -964,6 +964,24 @@ namespace Devsense.PHP.Syntax.Ast
         /// <returns>Shell expression.</returns>
         TNode Shell(TSpan span, TNode command);
 
+        /// <summary>
+        /// Creates match expression.
+        /// </summary>
+        /// <param name="span">Expression span.</param>
+        /// <param name="value">Match value.</param>
+        /// <param name="arms">List of <see cref="IMatchArm"/> nodes.</param>
+        /// <returns>Node of type <see cref="IMatchEx"/>.</returns>
+        IMatchEx Match(TSpan span, TNode value, List<TNode> arms);
+
+        /// <summary>
+        /// Creates match arm.
+        /// </summary>
+        /// <param name="span">Span.</param>
+        /// <param name="expression">Match arm expression.</param>
+        /// <param name="conditions">List of <see cref="IExpression"/> nodes. If <c>null</c> or empty, the arm represents the <c>default</c> branch.</param>
+        /// <returns>Node of type <see cref="IMatchArm"/>.</returns>
+        IMatchArm MatchArm(TSpan span, List<TNode> conditions, TNode expression);
+
         #endregion
 
         #region Attributes

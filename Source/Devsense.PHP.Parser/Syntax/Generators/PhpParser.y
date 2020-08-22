@@ -328,6 +328,8 @@ using StringPair = System.Collections.Generic.KeyValuePair<string, string>;
 %type <Node> attribute attribute_decl
 %type <NodeList> attributes
 %type <ParamList> attribute_arguments
+%type <Node> match match_arm
+%type <NodeList> match_arm_list match_arm_cond_list non_empty_match_arm_list
 
 %type <NodeList> top_statement_list const_list class_const_list
 %type <NodeList> inner_statement_list class_statement_list for_exprs
@@ -445,6 +447,7 @@ reserved_non_modifiers:
 	| T_DIR { $$ = _lexer.TokenText; }	
 	| T_NS_C { $$ = _lexer.TokenText; }
 	| T_FN { $$ = _lexer.TokenText; }
+	| T_MATCH { $$ = _lexer.TokenText; }
 ;
 
 semi_reserved:
@@ -823,6 +826,29 @@ case_separator:
 	|	';'
 ;
 
+match:
+		T_MATCH '(' expr ')' '{' match_arm_list '}'	{ $$ = (LangElement)_astFactory.Match(@$, $3, $6); }
+;
+
+match_arm_list:
+		/* empty */	{ $$ = LangElement.EmptyList; }
+	|	non_empty_match_arm_list possible_comma { $$ = $1; }
+;
+
+non_empty_match_arm_list:
+		match_arm { $$ = new List<LangElement>(1) { $1 }; }
+	|	non_empty_match_arm_list ',' match_arm { $$ = AddToList<LangElement>($1, $3); }
+;
+
+match_arm:
+		match_arm_cond_list possible_comma T_DOUBLE_ARROW expr { $$ = (LangElement)_astFactory.MatchArm(@$, $1, $4); }
+	|	T_DEFAULT possible_comma T_DOUBLE_ARROW expr { $$ = (LangElement)_astFactory.MatchArm(@$, LangElement.EmptyList, $4); }
+;
+
+match_arm_cond_list:
+		expr { $$ = new List<LangElement>(1) { $1 }; }
+	|	match_arm_cond_list ',' expr { $$ = AddToList<LangElement>($1, $3); }
+;
 
 while_statement:
 		statement { $$ = $1; }
@@ -1290,6 +1316,7 @@ expr_without_variable:
 			lambda.Span = @$;
 			$$ = WithAttributes(lambda, $1);
 		}
+	|	match { $$ = $1; }
 ;
 
 inline_function:

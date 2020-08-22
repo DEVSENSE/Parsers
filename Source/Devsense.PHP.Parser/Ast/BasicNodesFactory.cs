@@ -555,6 +555,7 @@ namespace Devsense.PHP.Syntax.Ast
             int nameLength = name.Length + (hasDollar ? 1 : 0);
             return new DirectVarUse(new Span(span.End - nameLength, nameLength), name) { IsMemberOf = (Expression)memberOfOpt };
         }
+
         public virtual ForeachVar ForeachVariable(Span span, LangElement variable, bool alias)
         {
             if (variable is IArrayExpression)
@@ -663,6 +664,16 @@ namespace Devsense.PHP.Syntax.Ast
         public virtual LangElement Attribute(Span span, TypeRef classref, CallSignature signature = default)
         {
             return new AttributeElement(span, classref, signature);
+        }
+
+        public virtual IMatchEx Match(Span span, LangElement value, List<LangElement> arms)
+        {
+            return new MatchEx(span, (Expression)value, arms.CastToArray<MatchArm>());
+        }
+
+        public virtual IMatchArm MatchArm(Span span, List<LangElement> conditions, LangElement expression)
+        {
+            return new MatchArm(span, conditions.CastToArray<Expression>(), (Expression)expression);
         }
     }
 }
