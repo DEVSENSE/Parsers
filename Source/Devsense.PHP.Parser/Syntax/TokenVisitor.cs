@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using Devsense.PHP.Syntax.Ast;
 using System.Diagnostics;
 using System.Globalization;
@@ -1426,6 +1425,33 @@ namespace Devsense.PHP.Syntax
                     ConsumeToken(Tokens.T_RBRACE, SpanUtils.SafeSpan(x.Span.End - 1, 1));
                 }
             }
+        }
+
+        public override void VisitMatchEx(MatchEx x)
+        {
+            // match(VALUE){ARMS}
+            ConsumeToken(Tokens.T_MATCH, SpanUtils.SafeSpan(x.Span.StartOrInvalid, 6));
+            ProcessToken(Tokens.T_LPAREN, x.Span);
+            VisitElement(x.MatchValue);
+            var braceSpan = SpanUtils.SpanIntermission(x.MatchValue.Span,
+                x.MatchItems.Length != 0 ? x.MatchItems.First().Span.StartOrInvalid : x.Span.End);
+            ProcessToken(Tokens.T_RPAREN, braceSpan);
+
+            ProcessToken(Tokens.T_LBRACE, Span.Invalid);
+            using (new ScopeHelper(this, new DummyInsideBlockStmt(x)))
+            {
+                VisitList(x.MatchItems);
+            }
+            ProcessToken(Tokens.T_RBRACE, Span.Invalid);
+        }
+
+        public override void VisitMatchItem(MatchArm x)
+        {
+            // {CONDITIONS} => {EXPRESSION},
+            VisitElementList(x.ConditionList, Tokens.T_COMMA);
+            ProcessToken(Tokens.T_DOUBLE_ARROW, Span.Invalid);
+            VisitElement(x.Expression);
+            ProcessToken(Tokens.T_COMMA, x.Expression.Span.IsValid ? new Span(x.Expression.Span.End - 1, 1) : Span.Invalid);
         }
 
         public override void VisitThrowEx(ThrowEx x)

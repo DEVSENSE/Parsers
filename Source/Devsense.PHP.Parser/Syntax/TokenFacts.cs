@@ -35,7 +35,7 @@ namespace Devsense.PHP.Syntax
             {"EMPTY", Tokens.T_EMPTY}, {"CONTINUE", Tokens.T_CONTINUE}, {"BREAK", Tokens.T_BREAK}, {"GOTO", Tokens.T_GOTO},
             {"FUNCTION", Tokens.T_FUNCTION}, {"CONST", Tokens.T_CONST}, {"RETURN", Tokens.T_RETURN},
             {"YIELD", Tokens.T_YIELD},
-            {"SWITCH", Tokens.T_SWITCH}, {"ENDSWITCH", Tokens.T_ENDSWITCH}, {"CASE", Tokens.T_CASE}, {"DEFAULT", Tokens.T_DEFAULT},
+            {"SWITCH", Tokens.T_SWITCH}, {"ENDSWITCH", Tokens.T_ENDSWITCH}, {"CASE", Tokens.T_CASE}, {"DEFAULT", Tokens.T_DEFAULT}, {"MATCH", Tokens.T_MATCH},
             {"ARRAY", Tokens.T_ARRAY}, { "LIST", Tokens.T_LIST}, {"CALLABLE", Tokens.T_CALLABLE},
             { "EXTENDS", Tokens.T_EXTENDS}, {"IMPLEMENTS", Tokens.T_IMPLEMENTS}, {"NAMESPACE", Tokens.T_NAMESPACE},
             {"TRAIT", Tokens.T_TRAIT}, {"INTERFACE", Tokens.T_INTERFACE}, {"CLASS", Tokens.T_CLASS},
@@ -109,6 +109,7 @@ namespace Devsense.PHP.Syntax
                 case Tokens.T_DEFAULT: return "default";
                 case Tokens.T_CASE: return "case";
                 case Tokens.T_SWITCH: return "switch";
+                case Tokens.T_MATCH: return "match";
                 case Tokens.T_ENDSWITCH: return "endswitch";
                 case Tokens.T_BREAK: return "break";
                 case Tokens.T_CONTINUE: return "continue";
@@ -327,6 +328,8 @@ namespace Devsense.PHP.Syntax
                 // constructs:
                 case Operations.Array: return Tokens.T_ARRAY;
                 case Operations.List: return Tokens.T_LIST;
+
+                case Operations.Match: return Tokens.T_MATCH;
 
                 //
                 default:
