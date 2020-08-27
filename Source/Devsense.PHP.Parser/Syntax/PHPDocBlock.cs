@@ -325,6 +325,28 @@ namespace Devsense.PHP.Syntax
             internal virtual void OnEndParsing() { }
 
             #endregion
+
+            #region Helpers
+
+            protected static ReadOnlySpan<char> NextWord(string/*!*/text, ref int index)
+            {
+                // skip whitespaces:
+                while (index < text.Length && char.IsWhiteSpace(text[index]))
+                    index++;
+
+                // read word:
+                int startIndex = index;
+                while (index < text.Length && !char.IsWhiteSpace(text[index]))
+                    index++;
+
+                // cut off the word:
+                if (startIndex < index)
+                    return text.AsSpan(startIndex, index - startIndex);
+                else
+                    return null;
+            }
+
+            #endregion
         }
 
         /// <summary>
@@ -822,24 +844,6 @@ namespace Devsense.PHP.Syntax
             }
 
             #region Helpers
-
-            private static ReadOnlySpan<char> NextWord(string/*!*/text, ref int index)
-            {
-                // skip whitespaces:
-                while (index < text.Length && char.IsWhiteSpace(text[index]))
-                    index++;
-
-                // read word:
-                int startIndex = index;
-                while (index < text.Length && !char.IsWhiteSpace(text[index]))
-                    index++;
-
-                // cut off the word:
-                if (startIndex < index)
-                    return text.AsSpan(startIndex, index - startIndex);
-                else
-                    return null;
-            }
 
             /// <summary>
             /// Tries to recognize a type name starting at given <paramref name="index"/>.
@@ -1751,28 +1755,6 @@ namespace Devsense.PHP.Syntax
 
                 return null;
             }
-
-            #region Helpers
-
-            private static ReadOnlySpan<char> NextWord(string/*!*/text, ref int index)
-            {
-                // skip whitespaces:
-                while (index < text.Length && char.IsWhiteSpace(text[index]))
-                    index++;
-
-                // read word:
-                int startIndex = index;
-                while (index < text.Length && !char.IsWhiteSpace(text[index]))
-                    index++;
-
-                // cut off the word:
-                if (startIndex < index)
-                    return text.AsSpan(startIndex, index - startIndex);
-                else
-                    return null;
-            }
-
-            #endregion
 
             internal override void ParseLine(ReadOnlySpan<char> line, out Element next)
             {
