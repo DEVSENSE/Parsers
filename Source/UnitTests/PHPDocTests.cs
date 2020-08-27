@@ -32,6 +32,17 @@ namespace UnitTests
         }
 
         [TestMethod]
+        public void DataProviderTest()
+        {
+            var phpdoc = NewPHPDoc(@"
+/**
+ * @dataProvider provideTrimData
+ */");
+
+            Assert.IsNotNull(phpdoc.GetElement<PHPDocBlock.DataProviderTag>());
+            Assert.AreEqual(phpdoc.GetElement<PHPDocBlock.DataProviderTag>().FunctionName.Name.Value, "provideTrimData");
+        }
+        [TestMethod]
         public void EmptyDeprecatedTest()
         {
             var phpdoc = NewPHPDoc(@"

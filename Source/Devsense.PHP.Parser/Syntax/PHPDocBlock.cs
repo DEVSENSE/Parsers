@@ -996,6 +996,45 @@ namespace Devsense.PHP.Syntax
             }
         }
 
+        public abstract class MethodRefTag : Element
+        {
+            public NameRef FunctionName => new NameRef(
+                new Span(this.Span.Start + _functionNamePos, _functionName.Length),
+                _functionName);
+
+            string _functionName;
+            int _functionNamePos;
+
+            protected MethodRefTag(string tagName, string line)
+            {
+                int index = tagName.Length;
+
+                // skip whitespaces:
+                while (index < line.Length && char.IsWhiteSpace(line[index]))
+                    index++;
+
+                _functionNamePos = index;
+                _functionName = NextWord(line, ref index).ToString();
+            }
+
+            internal override void ParseLine(ReadOnlySpan<char> line, out Element next)
+            {
+                next = null;
+            }
+
+            internal override bool IsEmpty => string.IsNullOrEmpty(_functionName);
+        }
+
+        public sealed class DataProviderTag : MethodRefTag
+        {
+            public const string Name = "@dataProvider";
+
+            public DataProviderTag(string line)
+                : base(Name, line)
+            {
+            }
+        }
+
         /// <summary>
         /// Documents a global variable or its use in a function or method.
         /// @global	type $globalvarname
