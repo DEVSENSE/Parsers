@@ -42,6 +42,7 @@ namespace UnitTests
             Assert.IsNotNull(phpdoc.GetElement<PHPDocBlock.DataProviderTag>());
             Assert.AreEqual(phpdoc.GetElement<PHPDocBlock.DataProviderTag>().FunctionName.Name.Value, "provideTrimData");
         }
+
         [TestMethod]
         public void EmptyDeprecatedTest()
         {
