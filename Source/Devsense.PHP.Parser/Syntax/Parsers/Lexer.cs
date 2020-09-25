@@ -71,7 +71,7 @@ namespace Devsense.PHP.Syntax
         private StringTable _strings;
 
         /// <summary>
-        /// Token postition
+        /// Token position
         /// </summary>
         private int _charOffset = 0;
 
@@ -940,10 +940,12 @@ namespace Devsense.PHP.Syntax
             {
                 foreach (var line in content.EnumerateLines(false))
                 {
-                    if (!line.StartsWith(indent))
+                    if (!line.StartsWith(indent) && line.Length != 0)
                     {
-                        // TODO: exact position of the line
-                        _errors.Error(_tokenPosition, FatalErrors.HeredocIndentError);
+                        // note: {line.Start} refers to the index in {buffer}
+                        // id {line} is empty, then it is CharSpan.Empty (line.Start will be 0)
+                        var linespan = new Span(_charOffset + (line.Start - token_start), line.Length);
+                        _errors.Error(linespan, FatalErrors.HeredocIndentError);
                         break;
                     }
                 }
