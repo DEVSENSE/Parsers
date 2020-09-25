@@ -1096,6 +1096,36 @@ namespace Devsense.PHP.Syntax
 
             return str;
         }
+
+        /// <summary>Pooled string bulder instance.</summary>
+        [ThreadStatic] // TODO: replace with proper pool
+        static StringBuilder s_sb;
+
+        /// <summary>
+        /// Gets pooled string builder instance for this thread.
+        /// </summary>
+        /// <param name="capacity">Initia capacity in case new instance is created.</param>
+        /// <returns></returns>
+        internal static StringBuilder GetStringBuilder(int capacity = 0)
+        {
+            var sb = s_sb ?? new StringBuilder(capacity);
+            s_sb = null;
+            return sb;
+        }
+
+        /// <summary>
+        /// Returns instance to the pool, resets it.<br/>
+        /// Method returns the content of given string builder.
+        /// </summary>
+        internal static string ReturnStringBuilder(StringBuilder sb)
+        {
+            if (sb == null) throw new ArgumentNullException(nameof(sb));
+
+            var @string = sb.ToString();
+            sb.Clear();
+            s_sb = sb;
+            return @string;
+        }
     }
 
     #endregion

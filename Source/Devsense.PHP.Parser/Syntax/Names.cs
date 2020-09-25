@@ -914,14 +914,14 @@ namespace Devsense.PHP.Syntax
             }
             else
             {
-                StringBuilder result = new StringBuilder(ns.Length * 8);
+                var result = StringUtils.GetStringBuilder(ns.Length * 8);
                 for (int i = 0; i < ns.Length; i++)
                 {
                     result.Append(ns[i]);
                     result.Append(Separator);
                 }
                 result.Append(this.Name.Value);
-                return result.ToString();
+                return StringUtils.ReturnStringBuilder(result);
             }
         }
 

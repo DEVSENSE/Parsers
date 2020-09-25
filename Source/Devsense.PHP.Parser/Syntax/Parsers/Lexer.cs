@@ -975,7 +975,7 @@ namespace Devsense.PHP.Syntax
 
             // scan line by line and trim N characters
             int linestart = 0;
-            var result = new StringBuilder(content.Length);
+            var result = StringUtils.GetStringBuilder(content.Length);
 
             for (int i = 0; i < content.Length;)
             {
@@ -1022,7 +1022,8 @@ namespace Devsense.PHP.Syntax
                 }
             }
 
-            return result.ToString();
+            //
+            return StringUtils.ReturnStringBuilder(result);
         }
 
         bool ProcessEndNowDoc(ProcessStringDelegate tryprocess)
