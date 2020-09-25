@@ -295,6 +295,7 @@ namespace Devsense.PHP.Syntax
                 case Tokens.T_SEMI:                         // ;
                 case Tokens.T_COMMA:                        // ,
                 case Tokens.T_NS_SEPARATOR:                 // \
+                case Tokens.T_ATTRIBUTE:                    // #[
                     return TokenCategory.Delimiter;
 
                 //case Tokens.T_NAMESPACE_NAME:               // namespace name
