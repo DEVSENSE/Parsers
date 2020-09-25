@@ -16,6 +16,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using NameTuple = System.Tuple<Devsense.PHP.Syntax.VariableNameRef, Devsense.PHP.Syntax.Ast.Expression>;
 
 namespace Devsense.PHP.Syntax.Ast
 {
@@ -34,7 +35,36 @@ namespace Devsense.PHP.Syntax.Ast
             IsUnpack = 2,
         }
 
-        public Expression Expression { get; }
+        /// <summary>
+        /// Either <see cref="Expression"/> or <see cref="Tuple{VariableNameRef, Expression}"/>.
+        /// </summary>
+        object _obj;
+
+        /// <summary>
+        /// Argument expression.
+        /// </summary>
+        public Expression Expression
+        {
+            get
+            {
+                if (_obj is Expression expr) return expr;
+                if (_obj is NameTuple t) return t.Item2;
+                Debug.Assert(_obj == null);
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Named argument, if specified.
+        /// </summary>
+        public VariableNameRef? Name
+        {
+            get
+            {
+                if (_obj is NameTuple t) return t.Item1;
+                return null;
+            }
+        }
 
         /// <summary>
         /// Flags describing use of the parameter.
@@ -51,7 +81,7 @@ namespace Devsense.PHP.Syntax.Ast
         /// Gets value indicating the parameter is not empty (<see cref="Expression"/> is not a <c>null</c> reference).
         /// </summary>
         public bool Exists => Expression != null;
-        
+
         /// <summary>
         /// Gets value indicating whether the parameter is prefixed by <c>&amp;</c> character.
         /// </summary>
@@ -62,15 +92,22 @@ namespace Devsense.PHP.Syntax.Ast
         /// </summary>
         public bool IsUnpack => (_flags & Flags.IsUnpack) != 0;
 
+        /// <summary>
+        /// Gets value indicating it's a named argument.
+        /// </summary>
+        public bool IsNamedArgument => Name.HasValue;
+
         public ActualParam(Text.Span p, Expression param)
-            : this(p, param, Flags.Default)
+            : this(p, param, Flags.Default, default)
         { }
 
-        public ActualParam(Text.Span p, Expression param, Flags flags)
+        public ActualParam(Text.Span p, Expression param, Flags flags, VariableNameRef? nameOpt = default)
         {
-            Expression = param ?? throw new ArgumentNullException(nameof(param));
             _flags = flags;
             _spanStart = p.Start;
+            _obj = nameOpt.HasValue
+                ? (object)new NameTuple(nameOpt.Value, param)
+                : param;
         }
 
         /// <summary>

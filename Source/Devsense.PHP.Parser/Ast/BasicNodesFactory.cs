@@ -134,10 +134,10 @@ namespace Devsense.PHP.Syntax.Ast
             Debug.Assert(memberOfOpt == null || memberOfOpt is Expression);
             return new DirectFcnCall(span, name, signature) { IsMemberOf = (Expression)memberOfOpt };
         }
-        public virtual ActualParam ActualParameter(Span span, LangElement expr, ActualParam.Flags flags)
+        public virtual ActualParam ActualParameter(Span span, LangElement expr, ActualParam.Flags flags, VariableNameRef? nameOpt = default)
         {
             Debug.Assert(expr is Expression);
-            return new ActualParam(span, (Expression)expr, flags);
+            return new ActualParam(span, (Expression)expr, flags, nameOpt);
         }
 
         public virtual LangElement ClassConstDecl(Span span, VariableName name, Span nameSpan, LangElement initializer)

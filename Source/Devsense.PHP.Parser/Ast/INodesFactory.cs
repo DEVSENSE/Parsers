@@ -877,8 +877,9 @@ namespace Devsense.PHP.Syntax.Ast
         /// <param name="span">Entire element span.</param>
         /// <param name="expr">Argument expression.</param>
         /// <param name="flags">Parameter flags.</param>
+        /// <param name="nameOpt">Named argument. Optional.</param>
         /// <returns>Function call argument.</returns>
-        ActualParam ActualParameter(Span span, TNode expr, ActualParam.Flags flags);
+        ActualParam ActualParameter(Span span, TNode expr, ActualParam.Flags flags, VariableNameRef? nameOpt = default);
 
         /// <summary>
         /// Creates new <c>array</c> expression.

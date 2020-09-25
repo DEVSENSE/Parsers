@@ -984,6 +984,7 @@ non_empty_argument_list:
 
 argument:
 		expr			{ $$ = _astFactory.ActualParameter(@$, $1, ActualParam.Flags.Default); }
+	|	identifier ':' expr { $$ = _astFactory.ActualParameter(@$, $3, ActualParam.Flags.Default, new VariableNameRef(@1, $1)); }
 	|	T_ELLIPSIS expr	{ $$ = _astFactory.ActualParameter(@$, $2, ActualParam.Flags.IsUnpack); }
 ;
 

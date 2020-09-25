@@ -150,6 +150,20 @@ class X {
         }
 
         [TestMethod]
+        public void NamedArgTest()
+        {
+            var codes = new[] {
+                @"<?php array_fill(start_index: 0, num: 100, value: 50);",
+            };
+
+            foreach (var code in codes)
+            {
+                var unit = new CodeSourceUnit(code, "dummy.php", Encoding.UTF8);
+                unit.Parse(new BasicNodesFactory(unit), null);
+            }
+        }
+
+        [TestMethod]
         public void MatchTest()
         {
             var codes = new[] {
