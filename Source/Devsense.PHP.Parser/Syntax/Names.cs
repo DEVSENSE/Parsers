@@ -910,7 +910,7 @@ namespace Devsense.PHP.Syntax
             var ns = this.namespaces;
             if (ns == null || ns.Length == 0)
             {
-                return this.Name.Value;
+                return this.Name.Value ?? string.Empty;
             }
             else
             {
