@@ -984,8 +984,20 @@ namespace Devsense.PHP.Syntax
                 {
                     i += eol;
 
-                    result.Append(content, linestart + indentation.Length, i - linestart - indentation.Length);
-
+                    // take [linestart .. i] characters
+                    // without the indentation
+                    var wholeline = content.AsSpan(linestart, i - linestart);
+                    if (wholeline.Length >= indentation.Length && wholeline.StartsWith(indentation))
+                    {
+                        result.Append(content, linestart + indentation.Length, i - linestart - indentation.Length);
+                    }
+                    else
+                    {
+                        // invalid indentation
+                        // add the whole line, syntax error will be reported later
+                        result.Append(content, linestart, i - linestart);
+                    }
+                    
                     linestart = i;
                 }
                 else
@@ -997,7 +1009,17 @@ namespace Devsense.PHP.Syntax
             var count = content.Length - linestart - indentation.Length;
             if (count > 0)
             {
-                result.Append(content, linestart + indentation.Length, count);
+                var wholeline = content.AsSpan(linestart);
+                if (wholeline.Length >= indentation.Length && wholeline.StartsWith(indentation))
+                {
+                    result.Append(content, linestart + indentation.Length, count);
+                }
+                else
+                {
+                    // invalid indentation
+                    // add the whole line, syntax error will be reported later
+                    result.Append(content, linestart, content.Length - linestart);
+                }
             }
 
             return result.ToString();

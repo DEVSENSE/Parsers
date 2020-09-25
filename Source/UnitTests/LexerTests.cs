@@ -119,6 +119,47 @@ namespace UnitTests
         }
 
         [TestMethod]
+        public void HeredocTest()
+        {
+            // expects error
+            // do not throw exception!
+            var unit = new CodeSourceUnit(@"<?php
+    $output     = <<<EOT
+<table align='center' width='100%' id='pgnav'>
+    <tr>
+        <td align='left'>
+            <form name='sfltr' action='$PHP_SELF' method='GET' >
+            <input name='fn' type='hidden' value='lst' />
+            </form>
+        </td>
+        <td align='right'>
+            <form>
+            <table>
+            <tr>
+                <td align='left'><button type='button' onclick='$prevset' style=''>&lt;&lt;</button></td>
+                <td align='center'>$pgjmp</td>
+                <td align='right'><button type='button' onclick='$nextset' style=''>&gt;&gt;</button></td>
+            </tr>
+            </table>
+            </form>
+        </td>
+    </tr>
+</table>
+<table class='fxlist' border='0' cellpadding='0' cellspacing='0' width='100%'>
+    $header
+    <tbody>
+        $out
+    </tbody>
+</table>
+    EOT;
+
+    echo $output", "index.php", Encoding.UTF8);
+
+            var errors = new TestErrorSink();
+            unit.Parse(new BasicNodesFactory(unit), errors);
+        }
+
+        [TestMethod]
         [DataSource("Microsoft.VisualStudio.TestTools.DataSource.CSV", "|DataDirectory|\\TestData.csv", "TestData#csv", DataAccessMethod.Sequential)]
         public void LexerGetNextTokenByLineTest()
         {
