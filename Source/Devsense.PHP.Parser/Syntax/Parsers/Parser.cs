@@ -347,7 +347,7 @@ namespace Devsense.PHP.Syntax
         {
             if (attributes != null && attributes.Count != 0)
             {
-                node.SetAttributes(attributes.CastToArray<IAttributeElement>());
+                node.SetAttributes(attributes.CastToArray<IAttributeGroup>());
             }
 
             return node;

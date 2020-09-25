@@ -992,6 +992,11 @@ namespace Devsense.PHP.Syntax.Ast
         /// </summary>
         TNode Attribute(TSpan span, TypeRef classref, CallSignature signature = default);
 
+        /// <summary>
+        /// Creates attribute group (PHP8).
+        /// </summary>
+        TNode AttributeGroup(TSpan span, IList<TNode> attributes);
+
         #endregion
 
         #region Comments

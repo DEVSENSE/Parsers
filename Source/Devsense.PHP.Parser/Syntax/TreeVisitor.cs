@@ -1095,6 +1095,11 @@ namespace Devsense.PHP.Syntax
             VisitList(x.CallSignature.Parameters);
         }
 
+        virtual public void VisitAttributeGroup(AttributeGroup x)
+        {
+            VisitList(x.Attributes);
+        }
+
         #endregion
     }
 }

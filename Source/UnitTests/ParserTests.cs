@@ -138,8 +138,8 @@ class X {
         public void AttributesTest()
         {
             var codes = new[] {
-                @"<?php <<ClassName(1,2,3)>>class X { }",
-                @"<?php <<ClassName>>class X { }",
+                @"<?php #[ClassName(1,2,3)]class X { }",
+                @"<?php #[ClassName]class X { }",
             };
 
             foreach (var code in codes)

@@ -34,7 +34,21 @@ namespace Devsense.PHP.Syntax.Ast
         /// </summary>
         public SourceUnit SourceUnit { get; }
 
-        private static bool IsNull<T>(T obj) => obj == null;
+        private static bool IsAllNull<T>(T[] arr)
+        {
+            if (arr != null)
+            {
+                for (int i = 0; i < arr.Length; i++)
+                {
+                    if (arr[i] != null)
+                    {
+                        return false;
+                    }
+                }
+            }
+
+            return true;
+        }
 
         public BasicNodesFactory(SourceUnit sourceUnit)
         {
@@ -380,7 +394,7 @@ namespace Devsense.PHP.Syntax.Ast
         public virtual LangElement List(Span span, IEnumerable<Item> targets, bool isOldNotation)
         {
             var items = targets.AsArray();
-            return ArrayEx.CreateList(span, items.All(IsNull) ? null : items, !isOldNotation);
+            return ArrayEx.CreateList(span, IsAllNull(items) ? null : items, !isOldNotation);
         }
 
         public virtual LangElement Literal(Span span, object value, string originalValue)
@@ -425,7 +439,7 @@ namespace Devsense.PHP.Syntax.Ast
         public virtual LangElement NewArray(Span span, IEnumerable<Item> itemsOpt, bool isOldNotation)
         {
             var items = itemsOpt.AsArray();
-            return ArrayEx.CreateArray(span, items.All(IsNull) ? null : items, !isOldNotation);
+            return ArrayEx.CreateArray(span, IsAllNull(items) ? null : items, !isOldNotation);
         }
 
         public virtual LangElement PHPDoc(Span span, LangElement block)
@@ -664,6 +678,11 @@ namespace Devsense.PHP.Syntax.Ast
         public virtual LangElement Attribute(Span span, TypeRef classref, CallSignature signature = default)
         {
             return new AttributeElement(span, classref, signature);
+        }
+
+        public virtual LangElement AttributeGroup(Span span, IList<LangElement> attributes)
+        {
+            return new AttributeGroup(span, attributes.CastToArray<IAttributeElement>());
         }
 
         public virtual IMatchEx Match(Span span, LangElement value, List<LangElement> arms)

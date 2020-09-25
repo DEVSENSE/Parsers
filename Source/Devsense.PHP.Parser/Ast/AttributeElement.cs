@@ -22,6 +22,17 @@ namespace Devsense.PHP.Syntax.Ast
     }
 
     /// <summary>
+    /// Attribute group.
+    /// </summary>
+    public interface IAttributeGroup : ILangElement
+    {
+        /// <summary>
+        /// Gets attributes within the group.
+        /// </summary>
+        IAttributeElement[] Attributes { get; }
+    }
+
+    /// <summary>
     /// Represents attribute.
     /// </summary>
     public class AttributeElement : LangElement, IAttributeElement
@@ -49,6 +60,27 @@ namespace Devsense.PHP.Syntax.Ast
         public override void VisitMe(TreeVisitor visitor)
         {
             visitor.VisitAttribute(this);
+        }
+    }
+
+    /// <summary>
+    /// Attribute group.
+    /// </summary>
+    public class AttributeGroup : LangElement, IAttributeGroup
+    {
+        public AttributeGroup(Span span, IList<IAttributeElement> attributes)
+            : base(span)
+        {
+            this.Attributes = attributes.AsArray();
+        }
+
+        /// <inheritdoc/>
+        public IAttributeElement[] Attributes { get; }
+
+        /// <inheritdoc/>
+        public override void VisitMe(TreeVisitor visitor)
+        {
+            visitor.VisitAttributeGroup(this);
         }
     }
 }

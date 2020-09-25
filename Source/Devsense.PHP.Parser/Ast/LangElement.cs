@@ -300,9 +300,9 @@ namespace Devsense.PHP.Syntax.Ast
         /// <summary>
         /// Gets attributes of the node. Cannot return <c>null</c>, gets empty collection instead.
         /// </summary>
-        public static IReadOnlyList<IAttributeElement> GetAttributes(this IPropertyCollection node)
+        public static IReadOnlyList<IAttributeGroup> GetAttributes(this IPropertyCollection node)
         {
-            return node.GetProperty<IReadOnlyList<IAttributeElement>>() ?? ArrayUtils.Empty<IAttributeElement>();
+            return node.GetProperty<IReadOnlyList<IAttributeGroup>>() ?? ArrayUtils.Empty<IAttributeGroup>();
         }
 
         /// <summary>
@@ -310,11 +310,11 @@ namespace Devsense.PHP.Syntax.Ast
         /// </summary>
         /// <param name="node">Node to set properties for.</param>
         /// <param name="attributes">List of attributes. Can be <c>null</c> to remove attribites. Existing attributes are overwritten.</param>
-        public static void SetAttributes(this IPropertyCollection node, IReadOnlyList<IAttributeElement> attributes)
+        public static void SetAttributes(this IPropertyCollection node, IReadOnlyList<IAttributeGroup> attributes)
         {
             if (attributes == null || attributes.Count == 0)
             {
-                node.RemoveProperty<IReadOnlyList<IAttributeElement>>();
+                node.RemoveProperty<IReadOnlyList<IAttributeGroup>>();
             }
             else
             {

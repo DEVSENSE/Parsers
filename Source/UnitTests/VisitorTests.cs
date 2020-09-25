@@ -500,6 +500,12 @@ namespace UnitTests
 
             public override LangElement Use(Span span, IEnumerable<UseBase> uses, AliasKind kind)
                  => CountLE(base.Use(span, uses, kind));
+
+            public override LangElement Attribute(Span span, TypeRef classref, CallSignature signature = default)
+                => CountLE(base.Attribute(span, classref, signature));
+
+            public override LangElement AttributeGroup(Span span, IList<LangElement> attributes)
+                => CountLE(base.AttributeGroup(span, attributes));
         }
     }
 }

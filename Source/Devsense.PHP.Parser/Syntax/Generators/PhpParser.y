@@ -291,6 +291,7 @@ using StringPair = System.Collections.Generic.KeyValuePair<string, string>;
 %token <Object> T_COALESCE_EQUAL 282  // "??= (T_COALESCE_EQUAL)"
 %token <Object> T_COALESCE 283        //"?? (T_COALESCE)"
 %token <Object> T_POW 305             //"** (T_POW)"
+%token <Object> T_ATTRIBUTE 397             //"#[ (T_ATTRIBUTE)"
 
 /* Token used to force a parse error from the lexer */
 %token T_ERROR 257
@@ -331,8 +332,7 @@ using StringPair = System.Collections.Generic.KeyValuePair<string, string>;
 %type <Node> attributed_statement attributed_class_statement
 %type <FormalParam> attributed_parameter
 %type <Node> attribute attribute_decl
-%type <NodeList> attributes
-%type <ParamList> attribute_arguments
+%type <NodeList> attributes attribute_group
 %type <Node> match match_arm
 %type <NodeList> match_arm_list match_arm_cond_list non_empty_match_arm_list
 
@@ -486,19 +486,20 @@ name:	// TODO - count as translate (use a helper object)
 	|	T_NS_SEPARATOR namespace_name				{ $$ = new QualifiedNameRef(@$, new QualifiedName($2, true,  true)); }
 ;
 
-attribute_arguments:
-		argument_list	{ $$ = $1; /* intentionally more benevolent rule */ }
-;
-
 attribute_decl:
 		class_name_reference
 			{ $$ = _astFactory.Attribute(@$, $1); }
-	|	class_name_reference attribute_arguments
+	|	class_name_reference argument_list
 			{ $$ = _astFactory.Attribute(@$, $1, new CallSignature($2, @2)); }
 ;
 
+attribute_group:
+		attribute_decl	{ $$ = new List<LangElement>(1) { $1 }; }
+	|	attribute_group ',' attribute_decl	{ $$ = AddToList($1, $3); }
+;
+
 attribute:
-		T_SL attribute_decl T_SR	{ $2.Span = @$; $$ = $2; }
+		T_ATTRIBUTE attribute_group possible_comma ']'	{ $$ = _astFactory.AttributeGroup(@$, $2); }
 ;
 
 attributes:
