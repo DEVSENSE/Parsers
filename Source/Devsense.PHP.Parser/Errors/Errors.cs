@@ -389,6 +389,7 @@ namespace Devsense.PHP.Errors
         //public static readonly ErrorInfo AbstractMethodNameNotMatchingImplementation = new ErrorInfo_(2012, "abstract_method_name_not_matching_implementation", ErrorSeverity.FatalError);
         public static readonly ErrorInfo SyntaxError = new SyntaxError();
         public static readonly ErrorInfo CheckVarUseFault = new ErrorInfo_(2015, "check_varuse_fault", ErrorSeverity.FatalError);
+        public static readonly ErrorInfo HeredocIndentError = new ErrorInfo_(2016, "invalid_heredoc_indent", ErrorSeverity.FatalError);
 
         public static readonly ErrorInfo CircularBaseClassDependency = new ErrorInfo_(2030, "circular_base_class_dependency", ErrorSeverity.FatalError);
         public static readonly ErrorInfo CircularBaseInterfaceDependency = new ErrorInfo_(2031, "circular_base_interface_dependency", ErrorSeverity.FatalError);

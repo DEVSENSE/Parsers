@@ -943,7 +943,7 @@ namespace Devsense.PHP.Syntax
                     if (!line.StartsWith(indent))
                     {
                         // TODO: exact position of the line
-                        _errors.Error(_tokenPosition, FatalErrors.SyntaxError, "Incorrect heredoc indentation.");
+                        _errors.Error(_tokenPosition, FatalErrors.HeredocIndentError);
                         break;
                     }
                 }

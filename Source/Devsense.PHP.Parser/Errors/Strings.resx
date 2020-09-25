@@ -2098,4 +2098,7 @@ non-infringement.
   <data name="too_big_double" xml:space="preserve">
     <value>The floating-point number {0} is too big, considered as infinity instead</value>
   </data>
+  <data name="invalid_heredoc_indent" xml:space="preserve">
+    <value>Incorrect heredoc indentation</value>
+  </data>
 </root>
