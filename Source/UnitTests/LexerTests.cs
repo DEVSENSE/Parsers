@@ -153,7 +153,7 @@ namespace UnitTests
 </table>
     EOT;
 
-    echo $output", "index.php", Encoding.UTF8);
+    echo $output;", "index.php", Encoding.UTF8);
 
             var errors = new TestErrorSink();
             unit.Parse(new BasicNodesFactory(unit), errors);
