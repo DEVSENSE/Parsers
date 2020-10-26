@@ -330,6 +330,11 @@ namespace Devsense.PHP.Syntax
 
             protected static ReadOnlySpan<char> NextWord(string/*!*/text, ref int index)
             {
+                return NextWord(text.AsSpan(), ref index);
+            }
+
+            protected static ReadOnlySpan<char> NextWord(ReadOnlySpan<char>/*!*/text, ref int index)
+            {
                 // skip whitespaces:
                 while (index < text.Length && char.IsWhiteSpace(text[index]))
                     index++;
@@ -341,9 +346,9 @@ namespace Devsense.PHP.Syntax
 
                 // cut off the word:
                 if (startIndex < index)
-                    return text.AsSpan(startIndex, index - startIndex);
+                    return text.Slice(startIndex, index - startIndex);
                 else
-                    return null;
+                    return ReadOnlySpan<char>.Empty;
             }
 
             #endregion
@@ -1627,13 +1632,23 @@ namespace Devsense.PHP.Syntax
                     if (paramsEnd > 0)
                     {
                         descStart = paramsEnd + 1;
-                        string[] paramsDecl = line.Substring(paramsFrom + 1, paramsEnd - paramsFrom - 1).Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
-                        if (paramsDecl != null && paramsDecl.Length > 0)
+                        var offset = paramsFrom + 1;
+                        var paramsDecl = line.AsSpan(offset, paramsEnd - offset);
+                        var ps = new List<FormalParam>();
+
+                        while (paramsDecl.Length != 0 && !paramsDecl.IsWhiteSpace())
                         {
-                            this.Parameters = new FormalParam[paramsDecl.Length];
-                            for (int i = 0; i < paramsDecl.Length; i++)
-                                this.Parameters[i] = ParseParam(paramsDecl[i]);
+                            var comma = paramsDecl.IndexOf(',');
+                            if (comma < 0) comma = paramsDecl.Length;
+
+                            // parse parameter
+                            ps.Add(ParseParam(paramsDecl.Slice(0, comma), offset));
+
+                            // move next
+                            paramsDecl = paramsDecl.Slice(comma);
+                            offset += comma;
                         }
+                        this.Parameters = ps.ToArray();
                     }
                 }
                 if (this.Parameters == null) this.Parameters = EmptyArray<FormalParam>.Instance;
@@ -1667,12 +1682,11 @@ namespace Devsense.PHP.Syntax
             /// Parses parameter description in a form of [type][$name][=initializer].
             /// </summary>
             /// <param name="paramDecl"></param>
+            /// <param name="offset">Span offset.</param>
             /// <returns></returns>
-            private static FormalParam/*!*/ParseParam(string/*!*/paramDecl)
+            private static FormalParam/*!*/ParseParam(ReadOnlySpan<char>/*!*/paramDecl, int offset)
             {
-                Debug.Assert(!string.IsNullOrEmpty(paramDecl));
-
-                // TODO: spans
+                var span = new Span(offset, paramDecl.Length);
 
                 TypeRef typehint = null;
                 string paramname = string.Empty;
@@ -1684,8 +1698,8 @@ namespace Devsense.PHP.Syntax
                 int eqIndex = paramDecl.IndexOf('=');
                 if (eqIndex >= 0)
                 {
-                    initExpr = TryParseInitValue(Span.Invalid, paramDecl.AsSpan(eqIndex + 1).Trim());
-                    paramDecl = paramDecl.Remove(eqIndex);
+                    initExpr = TryParseInitValue(Span.Invalid, paramDecl.Slice(eqIndex + 1).Trim());
+                    paramDecl = paramDecl.Slice(0, eqIndex);
                 }
 
                 int i = 0;
@@ -1695,10 +1709,7 @@ namespace Devsense.PHP.Syntax
                     // [type]
                     if (word.Length != 0 && word[0] != '$' && word[0] != '&' && word[0] != '.')
                     {
-                        if (!word.Equals("mixed".AsSpan(), StringComparison.OrdinalIgnoreCase))
-                        {
-                            typehint = TypeRef.FromString(new Span(i - word.Length, word.Length), word.ToString());    // TODO: naming
-                        }
+                        typehint = TypeRef.FromString(new Span(offset + i - word.Length, word.Length), word.ToString());    // TODO: naming
                         word = NextWord(paramDecl, ref i);
                     }
 
@@ -1729,11 +1740,15 @@ namespace Devsense.PHP.Syntax
                     // [$name]
                     if (word.Length != 0 && word[0] == '$')
                     {
+                        var wordstart = i - word.Length;
+
                         eqIndex = word.IndexOf('=');
                         if (eqIndex >= 0) word = word.Slice(0, eqIndex);
 
                         if (word.Length != 0)
                         {
+                            paramnamespan = new Span(offset + wordstart, word.Length);
+
                             if (word[0] == '$' || word[0] == '&') word = word.Slice(1);
 
                             paramname = word.Trim().ToString();
@@ -1741,7 +1756,10 @@ namespace Devsense.PHP.Syntax
                     }
                 }
 
-                return new FormalParam(Span.Invalid, paramname, paramnamespan, typehint, flags, initExpr);
+                return new FormalParam(span, paramname, paramnamespan, typehint, flags, initExpr)
+                {
+                    //ContainingElement = ...,
+                };
             }
 
             /// <summary>

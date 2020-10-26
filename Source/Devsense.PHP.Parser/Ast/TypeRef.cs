@@ -131,8 +131,7 @@ namespace Devsense.PHP.Syntax.Ast
             var qname = Syntax.QualifiedName.Parse(name, false);
 
             // primitive types
-            PrimitiveTypeRef.PrimitiveType primitive;
-            if (qname.IsSimpleName && Enum.TryParse(qname.Name.Value, true, out primitive))
+            if (qname.IsSimpleName && Enum.TryParse<PrimitiveTypeRef.PrimitiveType>(qname.Name.Value, true, out var primitive))
             {
                 return new PrimitiveTypeRef(span, primitive);
             }
@@ -148,8 +147,7 @@ namespace Devsense.PHP.Syntax.Ast
             TypeRef result = new ClassTypeRef(span, qname);
 
             // apply naming context
-            QualifiedName translated;
-            if (Syntax.QualifiedName.TryTranslateAlias(qname, naming, out translated))
+            if (Syntax.QualifiedName.TryTranslateAlias(qname, naming, out var translated))
             {
                 result = new TranslatedTypeRef(span, translated, result);
             }
