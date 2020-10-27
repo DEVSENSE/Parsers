@@ -960,7 +960,7 @@ namespace Devsense.PHP.Syntax
                 for (int i = 1; i < str.Length; i++)
                 {
                     var c = str[i];
-                    if (c != '_' && !char.IsLetterOrDigit(c) && c != '[' && c != ']' && c != TypeNamesSeparator && c != QualifiedName.Separator)
+                    if (c != '_' && !char.IsLetterOrDigit(c) && c != '[' && c != ']' && c != '<' && c != '>' && c != TypeNamesSeparator && c != QualifiedName.Separator)
                     {
                         return false;
                     }
