@@ -1529,7 +1529,19 @@ namespace Devsense.PHP.Syntax
             /// <summary>
             /// Array of method parameters;
             /// </summary>
-            public readonly FormalParam[]/*!*/Parameters;
+            public FormalParam[]/*!*/Parameters
+            {
+                get
+                {
+                    if (_parameters == null)
+                    {
+                        return EmptyArray<FormalParam>.Instance;
+                    }
+
+                    return _parameters;
+                }
+            }
+            readonly FormalParam[]/*!*/_parameters;
 
             /// <summary>
             /// Method name.
@@ -1598,8 +1610,6 @@ namespace Devsense.PHP.Syntax
                 while (descStart < line.Length && char.IsWhiteSpace(line[descStart]))
                     descStart++;    // skip whitespaces
 
-                this.Parameters = null;
-
                 int nameStart = descStart;
                 int paramsFrom = -1;
                 // skip [name]
@@ -1648,10 +1658,13 @@ namespace Devsense.PHP.Syntax
                             paramsDecl = paramsDecl.Slice(comma);
                             offset += comma;
                         }
-                        this.Parameters = ps.ToArray();
+
+                        if (ps.Count != 0)
+                        {
+                            _parameters = ps.ToArray();
+                        }
                     }
                 }
-                if (this.Parameters == null) this.Parameters = EmptyArray<FormalParam>.Instance;
 
                 // [static] after the parameters?
                 if (!IsStatic) TryReadStatic(line, ref descStart, out IsStatic);
