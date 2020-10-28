@@ -110,12 +110,15 @@ namespace Devsense.PHP.Syntax.Ast
             {
                 var names = name.Split(new char[] { PHPDocBlock.TypeVarDescTag.TypeNamesSeparator });
                 Debug.Assert(names.Length > 1);
-                var trefs = new TypeRef[names.Length];
+                var trefs = new List<TypeRef>();
                 int offset = 0;
                 for (int i = 0; i < names.Length; i++)
                 {
                     var str = names[i];
-                    trefs[i] = FromString(new Span(span.Start + offset, str.Length), str, naming);
+                    if (str.Length != 0)
+                    {
+                        trefs.Add(FromString(new Span(span.Start + offset, str.Length), str, naming));
+                    }
                     offset += str.Length + 1; // + separator
                 }
                 return new MultipleTypeRef(span, trefs);
@@ -124,8 +127,17 @@ namespace Devsense.PHP.Syntax.Ast
             // nullable
             if (name[0] == '?')
             {
-                return new NullableTypeRef(span, FromString(new Span(span.Start + 1, span.Length - 1), name.Substring(1), naming));
+                if (name.Length > 1)
+                {
+                    return new NullableTypeRef(span, FromString(new Span(span.Start + 1, span.Length - 1), name.Substring(1), naming));
+                }
+                else
+                {
+                    return null; // ?mixed
+                }
             }
+
+            // TODO: handle array types []
 
             //
             var qname = Syntax.QualifiedName.Parse(name, false);
@@ -137,8 +149,7 @@ namespace Devsense.PHP.Syntax.Ast
             }
 
             // reserved type names
-            ReservedTypeRef.ReservedType rtype;
-            if (qname.IsSimpleName && ReservedTypeRef.ReservedTypes.TryGetValue(qname.Name, out rtype))
+            if (qname.IsSimpleName && ReservedTypeRef.ReservedTypes.TryGetValue(qname.Name, out var rtype))
             {
                 return new ReservedTypeRef(span, rtype);
             }
