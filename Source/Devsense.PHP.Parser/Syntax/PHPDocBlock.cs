@@ -1655,8 +1655,8 @@ namespace Devsense.PHP.Syntax
                             ps.Add(ParseParam(paramsDecl.Slice(0, comma), offset));
 
                             // move next
-                            paramsDecl = paramsDecl.Slice(comma);
-                            offset += comma;
+                            paramsDecl = comma < paramsDecl.Length ? paramsDecl.Slice(comma + 1) : ReadOnlySpan<char>.Empty;
+                            offset += comma + 1;
                         }
 
                         if (ps.Count != 0)
