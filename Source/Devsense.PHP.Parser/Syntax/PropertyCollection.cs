@@ -454,19 +454,29 @@ namespace Devsense.PHP.Syntax
 
         #region Helper functions
 
-        private static void CheckKey(object key)
+        static Exception KeyNullException()
         {
-            if (ReferenceEquals(key, null))
+            return new ArgumentNullException("key");
+        }
+
+        static Exception KeyNotAllowedException()
+        {
+            return new ArgumentException(string.Empty, "key");
+        }
+
+        static void CheckKey(object key)
+        {
+            if (key == null)
             {
-                throw new ArgumentNullException(nameof(key));
+                throw KeyNullException();
             }
 
-            if (Equals(key, typeof(Hashtable)))
+            if (key == (object)typeof(Hashtable))
             {
                 // key cannot be Hashtable,
                 // reserved,
                 // would corrupt the data structure
-                throw new ArgumentException(string.Empty, nameof(key));
+                throw KeyNotAllowedException();
             }
         }
 
