@@ -79,7 +79,7 @@ namespace Devsense.PHP.Syntax
             static Element()
             {
                 // initilize dictionary of known tags and their factories:
-                s_elementFactories = new Dictionary<string, Func<string, string, Element>>(20, StringComparer.OrdinalIgnoreCase);
+                s_elementFactories = new Dictionary<string, Func<string, string, Element>>(36, StringComparer.OrdinalIgnoreCase);
                 var types = typeof(PHPDocBlock).GetTypeInfo().DeclaredNestedTypes.Where(t => t.IsNestedPublic && !t.IsAbstract);
                 var eltype = typeof(Element).GetTypeInfo();
                 foreach (var t in types)
@@ -663,6 +663,34 @@ namespace Devsense.PHP.Syntax
                 get
                 {
                     // "@deprecated" itself is significant, even without additional text
+                    return false;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Annotates an annotation class.
+        /// </summary>
+        public sealed class AnnotationTag : SingleLineTag
+        {
+            public const string Name = "@Annotation";
+
+            public AnnotationTag(string tagName, string/*!*/line)
+                : base(tagName, line)
+            {
+
+            }
+
+            public override string ToString()
+            {
+                return Name;
+            }
+
+            internal override bool IsEmpty
+            {
+                get
+                {
+                    // "@Annotation" itself is significant, even without additional text
                     return false;
                 }
             }
