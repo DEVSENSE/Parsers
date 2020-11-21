@@ -245,14 +245,13 @@ namespace Devsense.PHP.Syntax.Ast
         /// <summary>
         /// Gets underlaying primitive type name.
         /// </summary>
-        public PrimitiveType PrimitiveTypeName => _typeName;
-        private PrimitiveType _typeName;
+        public PrimitiveType PrimitiveTypeName { get; }
 
         public PrimitiveTypeRef(Span span, PrimitiveType name)
             : base(span)
         {
             Debug.Assert(Enum.IsDefined(typeof(PrimitiveType), name));
-            _typeName = name;
+            PrimitiveTypeName = name;
         }
 
         /// <summary>
@@ -261,29 +260,33 @@ namespace Devsense.PHP.Syntax.Ast
         /// <param name="visitor">Visitor to be called.</param>
         public override void VisitMe(TreeVisitor visitor) => visitor.VisitPrimitiveTypeRef(this);
 
-        public override QualifiedName? QualifiedName
+        /// <summary>
+        /// The primitive type name.
+        /// </summary>
+        public Name SimpleName
         {
             get
             {
-                switch (_typeName)
+                return PrimitiveTypeName switch
                 {
-                    case PrimitiveType.@int: return Syntax.QualifiedName.Int;
-                    case PrimitiveType.@float: return Syntax.QualifiedName.Float;
-                    case PrimitiveType.@string: return Syntax.QualifiedName.String;
-                    case PrimitiveType.@bool: return Syntax.QualifiedName.Bool;
-                    case PrimitiveType.array: return Syntax.QualifiedName.Array;
-                    case PrimitiveType.callable: return Syntax.QualifiedName.Callable;
-                    case PrimitiveType.@void: return Syntax.QualifiedName.Void;
-                    case PrimitiveType.iterable: return Syntax.QualifiedName.Iterable;
-                    case PrimitiveType.@object: return Syntax.QualifiedName.Object;
-                    case PrimitiveType.mixed: return Syntax.QualifiedName.Mixed;
-                    default:
-                        throw new InvalidOperationException();  // invalid _typeName
-                }
+                    PrimitiveType.@int => Syntax.QualifiedName.Int.Name,
+                    PrimitiveType.@float => Syntax.QualifiedName.Float.Name,
+                    PrimitiveType.@string => Syntax.QualifiedName.String.Name,
+                    PrimitiveType.@bool => Syntax.QualifiedName.Bool.Name,
+                    PrimitiveType.array => Syntax.QualifiedName.Array.Name,
+                    PrimitiveType.callable => Syntax.QualifiedName.Callable.Name,
+                    PrimitiveType.@void => Syntax.QualifiedName.Void.Name,
+                    PrimitiveType.iterable => Syntax.QualifiedName.Iterable.Name,
+                    PrimitiveType.@object => Syntax.QualifiedName.Object.Name,
+                    PrimitiveType.mixed => Syntax.QualifiedName.Mixed.Name,
+                    _ => throw new InvalidOperationException(),  // invalid _typeName
+                };
             }
         }
 
-        public override string ToString() => QualifiedName.ToString();
+        public override QualifiedName? QualifiedName => new QualifiedName(SimpleName);
+
+        public override string ToString() => SimpleName.ToString();
     }
 
     #endregion
