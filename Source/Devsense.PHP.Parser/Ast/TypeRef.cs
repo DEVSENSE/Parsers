@@ -276,6 +276,7 @@ namespace Devsense.PHP.Syntax.Ast
                     case PrimitiveType.@void: return Syntax.QualifiedName.Void;
                     case PrimitiveType.iterable: return Syntax.QualifiedName.Iterable;
                     case PrimitiveType.@object: return Syntax.QualifiedName.Object;
+                    case PrimitiveType.mixed: return Syntax.QualifiedName.Mixed;
                     default:
                         throw new InvalidOperationException();  // invalid _typeName
                 }
