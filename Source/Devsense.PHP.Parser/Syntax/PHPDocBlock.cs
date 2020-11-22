@@ -1943,12 +1943,12 @@ namespace Devsense.PHP.Syntax
         /// Original PHPDoc text, including comment tags.
         /// </summary>
         /// <remarks>Used internally for lazy initialization.</remarks>
-        private string _docCommentString;
+        string _docCommentString;
 
         /// <summary>
         /// Parsed data. Lazily initialized.
         /// </summary>
-        private Element[] elements;
+        private Element[] _elements;
 
         /// <summary>
         /// Elements within the PHPDoc block. Some elements may be ignored due to missing information.
@@ -1958,18 +1958,22 @@ namespace Devsense.PHP.Syntax
         {
             get
             {
-                if (this.elements == null)
+                if (_elements == null)
                 {
-                    if (Interlocked.CompareExchange(ref this.elements, ParseNoLock(this._docCommentString, this.Span.Start), null) == null)
+                    var phpdocstring = _docCommentString;
+                    if (phpdocstring != null)
                     {
-                        // dispose the string
-                        this._docCommentString = null;
+                        Interlocked.CompareExchange(ref _elements, ParseNoLock(phpdocstring, this.Span.Start), null);
+                        _docCommentString = null;
                     }
 
-                    Debug.Assert(this.elements != null);
+                    Debug.Assert(_elements != null);
+
+                    // dispose the string,
+                    // not needed anymore
                 }
 
-                return this.elements;
+                return _elements;
             }
         }
 
@@ -1995,7 +1999,10 @@ namespace Devsense.PHP.Syntax
         /// <param name="offset">Start position of <paramref name="doccomment"/> within the source code.</param>
         private static Element[]/*!*/ParseNoLock(string/*!*/doccomment, int offset)
         {
-            Debug.Assert(doccomment != null);
+            if (string.IsNullOrEmpty(doccomment))
+            {
+                return EmptyArray<Element>.Instance;
+            }
 
             // initialize line endings information
             var/*!*/lineBreaks = LineBreaks.Create(doccomment);
@@ -2055,9 +2062,7 @@ namespace Devsense.PHP.Syntax
             }
 
             //
-            return result != null && result.Count != 0
-                ? result.ToArray()
-                : EmptyArray<Element>.Instance;
+            return result.Count != 0 ? result.ToArray() : EmptyArray<Element>.Instance;
         }
 
         #endregion
