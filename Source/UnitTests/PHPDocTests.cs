@@ -44,6 +44,17 @@ namespace UnitTests
         }
 
         [TestMethod]
+        public void AnnotationTest()
+        {
+            var phpdoc = NewPHPDoc(@"
+/**
+ * @Annotation
+ */");
+
+            Assert.IsNotNull(phpdoc.GetElement<PHPDocBlock.AnnotationTag>());
+        }
+
+        [TestMethod]
         public void EmptyDeprecatedTest()
         {
             var phpdoc = NewPHPDoc(@"
