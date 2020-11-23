@@ -18,28 +18,28 @@ using System.Diagnostics;
 
 namespace Devsense.PHP.Syntax.Ast
 {
-	#region ConstantUse
+    #region ConstantUse
 
-	/// <summary>
-	/// Base class for constant uses.
-	/// </summary>
-	public abstract class ConstantUse : VarLikeConstructUse
+    /// <summary>
+    /// Base class for constant uses.
+    /// </summary>
+    public abstract class ConstantUse : VarLikeConstructUse
     {
-		public ConstantUse(Text.Span span)
-			: base(span)
-		{
-		}
-	}
+        public ConstantUse(Text.Span span)
+            : base(span)
+        {
+        }
+    }
 
-	#endregion
+    #endregion
 
-	#region GlobalConstUse
+    #region GlobalConstUse
 
-	/// <summary>
-	/// Global constant use (constants defined by <c>define</c> function).
-	/// </summary>
+    /// <summary>
+    /// Global constant use (constants defined by <c>define</c> function).
+    /// </summary>
     public sealed class GlobalConstUse : ConstantUse
-	{
+    {
         public override Operations Operation { get { return Operations.GlobalConstUse; } }
 
         TranslatedQualifiedName _fullName;
@@ -58,12 +58,12 @@ namespace Devsense.PHP.Syntax.Ast
 
 
         public GlobalConstUse(Text.Span span, TranslatedQualifiedName name)
-			: base(span)
-		{
-			this._fullName = name;
-		}
+            : base(span)
+        {
+            this._fullName = name;
+        }
 
-		/// <summary>
+        /// <summary>
         /// Call the right Visit* method on the given Visitor object.
         /// </summary>
         /// <param name="visitor">Visitor to be called.</param>
@@ -71,18 +71,18 @@ namespace Devsense.PHP.Syntax.Ast
         {
             visitor.VisitGlobalConstUse(this);
         }
-	}
+    }
 
-	#endregion
+    #endregion
 
-	#region ClassConstUse
+    #region ClassConstUse
 
-	/// <summary>
-	/// Class constant use.
-	/// </summary>
+    /// <summary>
+    /// Class constant use.
+    /// </summary>
     public class ClassConstUse : ConstantUse
-	{
-		public override Operations Operation { get { return Operations.ClassConstUse; } }
+    {
+        public override Operations Operation { get { return Operations.ClassConstUse; } }
 
         /// <summary>
         /// Class type reference.
@@ -105,10 +105,10 @@ namespace Devsense.PHP.Syntax.Ast
             Debug.Assert(!string.IsNullOrEmpty(name.Name.Value));
 
             this.targetType = typeRef;
-			this.name = name;
+            this.name = name;
         }
 
-		/// <summary>
+        /// <summary>
         /// Call the right Visit* method on the given Visitor object.
         /// </summary>
         /// <param name="visitor">Visitor to be called.</param>
@@ -116,7 +116,7 @@ namespace Devsense.PHP.Syntax.Ast
         {
             visitor.VisitClassConstUse(this);
         }
-	}
+    }
 
     /// <summary>
     /// Pseudo class constant use.
@@ -128,22 +128,33 @@ namespace Devsense.PHP.Syntax.Ast
         /// </summary>
         public enum Types
         {
-            Class
+            Class,
         }
 
         /// <summary>Type of pseudoconstant</summary>
-        public Types Type { get { return consttype; } }
-        private Types consttype;
+        public Types Type { get; }
+
+        /// <summary>
+        /// Gets string representation of <see cref="Types"/>.
+        /// </summary>
+        public static VariableName TypeToName(Types type)
+        {
+            return type switch
+            {
+                Types.Class => new VariableName("class"),
+                _ => throw new ArgumentException(),
+            };
+        }
 
         internal PseudoClassConstUse(Text.Span span, GenericQualifiedName className, Text.Span classNamePosition, Types type, Text.Span namePosition)
             : this(span, ClassTypeRef.FromGenericQualifiedName(classNamePosition, className), type, namePosition)
-		{
-		}
+        {
+        }
 
         public PseudoClassConstUse(Text.Span span, TypeRef/*!*/typeRef, Types type, Text.Span namePosition)
-            : base(span, typeRef, new VariableNameRef(namePosition, type.ToString().ToLowerInvariant()))
+            : base(span, typeRef, new VariableNameRef(namePosition, TypeToName(type)))
         {
-            this.consttype = type;
+            this.Type = type;
         }
 
         public override void VisitMe(TreeVisitor visitor)
@@ -152,28 +163,28 @@ namespace Devsense.PHP.Syntax.Ast
         }
     }
 
-	#endregion
+    #endregion
 
     #region PseudoConstUse
 
     /// <summary>
-	/// Pseudo-constant use (PHP keywords: __LINE__, __FILE__, __DIR__, __FUNCTION__, __METHOD__, __CLASS__, __TRAIT__, __NAMESPACE__)
-	/// </summary>
+    /// Pseudo-constant use (PHP keywords: __LINE__, __FILE__, __DIR__, __FUNCTION__, __METHOD__, __CLASS__, __TRAIT__, __NAMESPACE__)
+    /// </summary>
     public sealed class PseudoConstUse : Expression
-	{
+    {
         public override Operations Operation { get { return Operations.PseudoConstUse; } }
 
-		public enum Types { Line, File, Class, Trait, Function, Method, Namespace, Dir }
+        public enum Types { Line, File, Class, Trait, Function, Method, Namespace, Dir }
 
-		private Types type;
+        private Types type;
         /// <summary>Type of pseudoconstant</summary>
         public Types Type { get { return type; } }
 
-		public PseudoConstUse(Text.Span span, Types type)
-			: base(span)
-		{
-			this.type = type;
-		}
+        public PseudoConstUse(Text.Span span, Types type)
+            : base(span)
+        {
+            this.type = type;
+        }
 
         /// <summary>
         /// Call the right Visit* method on the given Visitor object.
@@ -183,7 +194,7 @@ namespace Devsense.PHP.Syntax.Ast
         {
             visitor.VisitPseudoConstUse(this);
         }
-	}
+    }
 
-	#endregion
+    #endregion
 }
