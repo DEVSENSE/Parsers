@@ -117,7 +117,16 @@ namespace Devsense.PHP.Syntax.Ast
                     var str = names[i];
                     if (str.Length != 0)
                     {
-                        trefs.Add(FromString(new Span(span.Start + offset, str.Length), str, naming));
+                        var tspan = new Span(span.Start + offset, str.Length);
+                        if (i == names.Length - 1 && Syntax.QualifiedName.Null.Name.Equals(str))
+                        {
+                            // `|null` at the end of union type
+                            trefs.Add(new ClassTypeRef(tspan, Syntax.QualifiedName.Null));
+                        }
+                        else
+                        {
+                            trefs.Add(FromString(tspan, str, naming));
+                        }
                     }
                     offset += str.Length + 1; // + separator
                 }

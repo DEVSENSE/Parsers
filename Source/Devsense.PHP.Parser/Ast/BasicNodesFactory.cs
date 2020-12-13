@@ -620,6 +620,15 @@ namespace Devsense.PHP.Syntax.Ast
             }
             else
             {
+                if (typearr.Length > 1 &&
+                    typearr[typearr.Length - 1] is TranslatedTypeRef tt &&
+                    tt.OriginalType is ClassTypeRef ct &&
+                    ct.ClassName == QualifiedName.Null)
+                {
+                    // `|null` at the end
+                    typearr[typearr.Length - 1] = ct;
+                }
+
                 return new MultipleTypeRef(span, typearr);
             }
         }
