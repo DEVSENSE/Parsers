@@ -980,7 +980,7 @@ namespace Devsense.PHP.Syntax
                     return false;
                 }
 
-                if (str[0] != '_' && !char.IsLetter(str[0]) && str[0] != QualifiedName.Separator)
+                if (str[0] != '_' && !char.IsLetter(str[0]) && str[0] != QualifiedName.Separator && str[0] != '?')
                 {
                     return false;
                 }
