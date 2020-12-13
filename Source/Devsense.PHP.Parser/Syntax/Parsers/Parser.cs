@@ -22,6 +22,7 @@ using Devsense.PHP.Text;
 using Devsense.PHP.Syntax.Ast;
 using Devsense.PHP.Errors;
 using System.Xml;
+using System.Threading;
 
 namespace Devsense.PHP.Syntax
 {
@@ -509,7 +510,7 @@ namespace Devsense.PHP.Syntax
                     }
 
                     //
-                    _lazyPrimitiveTypes = dict;
+                    Interlocked.CompareExchange(ref _lazyPrimitiveTypes, dict, null);
                 }
 
                 return _lazyPrimitiveTypes;
@@ -602,8 +603,7 @@ namespace Devsense.PHP.Syntax
 
         private TypeRef CreateNamedTypeRef(Span span, QualifiedName tname)
         {
-            QualifiedName translated;
-            return (TryTranslateAny(tname, out translated)) ?
+            return TryTranslateAny(tname, out var translated) ?
                 _astFactory.AliasedTypeReference(span, translated, _astFactory.TypeReference(span, tname)) :
                 _astFactory.TypeReference(span, tname);
         }
