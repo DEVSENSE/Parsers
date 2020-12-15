@@ -1448,7 +1448,14 @@ namespace Devsense.PHP.Syntax
         public override void VisitMatchItem(MatchArm x)
         {
             // {CONDITIONS} => {EXPRESSION},
-            VisitElementList(x.ConditionList, Tokens.T_COMMA);
+            if (x.IsDefault)
+            {
+                ProcessToken(Tokens.T_DEFAULT, x.Span);
+            }
+            else
+            {
+                VisitElementList(x.ConditionList, Tokens.T_COMMA);
+            }
             ProcessToken(Tokens.T_DOUBLE_ARROW, Span.Invalid);
             VisitElement(x.Expression);
             ProcessToken(Tokens.T_COMMA, x.Expression.Span.IsValid ? new Span(x.Expression.Span.End - 1, 1) : Span.Invalid);
