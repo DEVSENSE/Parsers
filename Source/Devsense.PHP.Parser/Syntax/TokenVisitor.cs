@@ -1433,16 +1433,26 @@ namespace Devsense.PHP.Syntax
             ConsumeToken(Tokens.T_MATCH, SpanUtils.SafeSpan(x.Span.StartOrInvalid, 6));
             ProcessToken(Tokens.T_LPAREN, x.Span);
             VisitElement(x.MatchValue);
-            var braceSpan = SpanUtils.SpanIntermission(x.MatchValue.Span,
-                x.MatchItems.Length != 0 ? x.MatchItems.First().Span.StartOrInvalid : x.Span.End);
-            ProcessToken(Tokens.T_RPAREN, braceSpan);
 
-            ProcessToken(Tokens.T_LBRACE, Span.Invalid);
+            // }
+            var rBraceSpan = x.Span.IsValid ? new Span(x.Span.End - 1, 1) : Span.Invalid;
+
+            // {
+            var lBraceSpan = SpanUtils.SpanIntermission(
+                x.MatchValue.Span,
+                x.MatchItems.Length != 0 ? x.MatchItems[0].Span : rBraceSpan);
+
+            // )
+            var rParenSpan = SpanUtils.SpanIntermission(x.MatchValue.Span, lBraceSpan);
+
+            ProcessToken(Tokens.T_RPAREN, rParenSpan);
+
+            ProcessToken(Tokens.T_LBRACE, lBraceSpan);
             using (new ScopeHelper(this, new DummyInsideBlockStmt(x)))
             {
                 VisitList(x.MatchItems);
             }
-            ProcessToken(Tokens.T_RBRACE, Span.Invalid);
+            ProcessToken(Tokens.T_RBRACE, rBraceSpan);
         }
 
         public override void VisitMatchItem(MatchArm x)
