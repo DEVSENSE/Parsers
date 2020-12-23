@@ -909,7 +909,7 @@ namespace Devsense.PHP.Syntax
                         var name = typename.Slice(0, sep);
                         if (name.Length != 0)
                         {
-                            names.Add(name.ToString());
+                            names.Add(ToString(name));
                             positions.Add(typenameOffset);
                         }
 
@@ -927,12 +927,12 @@ namespace Devsense.PHP.Syntax
                         if (IsTypeName(next) && next.IndexOf(TypeNamesSeparator) == -1)
                         {
                             index = nextend;
-                            names.Add(next.ToString());
+                            names.Add(ToString(next));
                             positions.Add(nextend - next.Length);
                         }
                     }
 
-                    typenames = names.ToArray();
+                    typenames = ToArray(names);
                     typenamesPos = positions.ToArray();
                     return true;
                 }
@@ -941,6 +941,26 @@ namespace Devsense.PHP.Syntax
                 typenames = EmptyArray<string>.Instance;
                 typenamesPos = EmptyArray<int>.Instance;
                 return false;
+            }
+
+            private static string[] ToArray(List<string> names)
+            {
+                if (names.Count == 1)
+                {
+                    if (names[0] == CommonTypeNames.Void) return CommonTypeNames.VoidArray;
+                    if (names[0] == CommonTypeNames.Mixed) return CommonTypeNames.MixedArray;
+                }
+
+                return names.ToArray();
+            }
+
+            private static string ToString(ReadOnlySpan<char> span)
+            {
+                if (span.Equals(CommonTypeNames.Void.AsSpan(), StringComparison.Ordinal)) return CommonTypeNames.Void;
+                if (span.Equals(CommonTypeNames.Mixed.AsSpan(), StringComparison.Ordinal)) return CommonTypeNames.Mixed;
+                if (span.Equals(CommonTypeNames.Bool.AsSpan(), StringComparison.Ordinal)) return CommonTypeNames.Bool;
+
+                return span.ToString();
             }
 
             /// <summary>
@@ -1513,6 +1533,17 @@ namespace Devsense.PHP.Syntax
         {
             public const string Name = "@method";
 
+            /// <summary>Static keyword.</summary>
+            const string StaticModifierString = "static";
+
+            enum MethodFlags : byte
+            {
+                IsStatic = 1,
+                ReturnsStatic = 2,
+            }
+
+            private MethodFlags _flags;
+
             /// <summary>
             /// Optional. Type names separated by '|'.
             /// </summary>
@@ -1579,10 +1610,12 @@ namespace Devsense.PHP.Syntax
             /// <summary>
             /// Whether the method was declared with `static` keyword.
             /// </summary>
-            public readonly bool IsStatic;
+            public bool IsStatic => (_flags & MethodFlags.IsStatic) != 0;
 
-            /// <summary>Static keyword.</summary>
-            const string StaticModifierString = "static";
+            /// <summary>
+            /// Whether the method was declared to return itself (returns $this, declared as returning static)
+            /// </summary>
+            public bool ReturnsStatic => (_flags & MethodFlags.ReturnsStatic) != 0;
 
             /// <summary>
             /// Span within the source code of the method name.
@@ -1617,10 +1650,20 @@ namespace Devsense.PHP.Syntax
                 int descStart = index;  // start of description, moved when [type] or [name] found
 
                 // try read `static`
-                TryReadStatic(line, ref index, out IsStatic);
+                if (TryReadStatic(line, ref index))
+                {
+                    _flags |= MethodFlags.IsStatic;
+                }
 
                 // try to find [type]
-                TypeVarDescTag.TryReadTypeName(line, ref index, out _typeNames, out _typeNamesPos);
+                if (!TypeVarDescTag.TryReadTypeName(line, ref index, out _typeNames, out _typeNamesPos))
+                {
+                    // or [$this]
+                    if (TryReadThis(line, ref index))
+                    {
+                        _flags |= MethodFlags.ReturnsStatic;
+                    }
+                }
 
                 descStart = index;
                 var word = NextWord(line, ref index);
@@ -1695,13 +1738,16 @@ namespace Devsense.PHP.Syntax
                 }
 
                 // [static] after the parameters?
-                if (!IsStatic) TryReadStatic(line, ref descStart, out IsStatic);
+                if (!IsStatic && TryReadStatic(line, ref descStart))
+                {
+                    _flags |= MethodFlags.IsStatic;
+                }
 
                 if (descStart < line.Length)
                     this.Description = line.AsSpan(descStart).TrimStart().ToString();
             }
 
-            private static bool TryReadStatic(string line, ref int index, out bool isStatic)
+            private static bool TryReadStatic(string line, ref int index)
             {
                 int index2 = index;
 
@@ -1709,12 +1755,26 @@ namespace Devsense.PHP.Syntax
                 if (word.Equals(StaticModifierString.AsSpan(), StringComparison.Ordinal))
                 {
                     index = index2;
-                    isStatic = true;
                     return true;
                 }
                 else
                 {
-                    isStatic = false;
+                    return false;
+                }
+            }
+
+            private static bool TryReadThis(string line, ref int index)
+            {
+                int index2 = index;
+
+                var word = NextWord(line, ref index2);
+                if (word.Equals("$this".AsSpan(), StringComparison.Ordinal))
+                {
+                    index = index2;
+                    return true;
+                }
+                else
+                {
                     return false;
                 }
             }
@@ -1933,6 +1993,20 @@ namespace Devsense.PHP.Syntax
             {
                 return Name + " " + this.Group;
             }
+        }
+
+        #endregion
+
+        #region Nested struct: CommonTypeNames
+
+        struct CommonTypeNames
+        {
+            public static string Bool => "bool";
+            public static string Void => "void";
+            public static string Mixed => "mixed";
+
+            public static readonly string[] VoidArray = new[] { Void };
+            public static readonly string[] MixedArray = new[] { Mixed };
         }
 
         #endregion

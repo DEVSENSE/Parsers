@@ -98,7 +98,10 @@ namespace UnitTests
 /**
  * @method static int alphanum(string ...$x)
  * @method static int alphanum2(... $x)
+ * @method $this alphanum3(string ...$x)
  */");
+
+            Assert.AreEqual(3, phpdoc.Elements.Length);
 
             var method = phpdoc.GetElement<PHPDocBlock.MethodTag>();
 
