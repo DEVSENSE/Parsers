@@ -83,10 +83,18 @@ namespace Devsense.PHP.Syntax
             {
                 if (_unicodeBuilder == null)
                 {
-                    if (_binaryBuilder != null && _binaryBuilder.Count > 0)
+                    if (_binaryBuilder != null && _binaryBuilder.Count != 0)
                     {
-                        byte[] bytes = _binaryBuilder.ToArray();
-                        _unicodeBuilder = new StringBuilder(encoding.GetString(bytes, 0, bytes.Length));
+                        if (_binaryBuilder.Count == 1)
+                        {
+                            _unicodeBuilder = new StringBuilder();
+                            _unicodeBuilder.Append((char)_binaryBuilder[0]);
+                        }
+                        else
+                        {
+                            byte[] bytes = _binaryBuilder.ToArray();
+                            _unicodeBuilder = new StringBuilder(encoding.GetString(bytes, 0, bytes.Length));
+                        }
                     }
                     else
                     {

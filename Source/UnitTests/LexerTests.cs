@@ -119,37 +119,33 @@ namespace UnitTests
         }
 
         [TestMethod]
+        public void LexerEscapedCharTest()
+        {
+            var errorSink = new TestErrorSink();
+            var lexer = new Lexer(new StringReader(@"""\xC0"""), Encoding.UTF8, errorSink,
+                LanguageFeatures.Basic, 0, Lexer.LexicalStates.ST_IN_SCRIPTING);
+
+            for (; ; )
+            {
+                var token = lexer.GetNextToken();
+                if (token == Tokens.END)
+                    break;
+
+                Assert.AreEqual(Tokens.T_CONSTANT_ENCAPSED_STRING, token);
+
+                var value = lexer.TokenValue;
+                Assert.AreEqual("\xC0", value.String);
+            }
+        }
+
+        [TestMethod]
         public void HeredocTest()
         {
             // expects error
             // do not throw exception!
             var unit = new CodeSourceUnit(@"<?php
     $output     = <<<EOT
-<table align='center' width='100%' id='pgnav'>
-    <tr>
-        <td align='left'>
-            <form name='sfltr' action='$PHP_SELF' method='GET' >
-            <input name='fn' type='hidden' value='lst' />
-            </form>
-        </td>
-        <td align='right'>
-            <form>
-            <table>
-            <tr>
-                <td align='left'><button type='button' onclick='$prevset' style=''>&lt;&lt;</button></td>
-                <td align='center'>$pgjmp</td>
-                <td align='right'><button type='button' onclick='$nextset' style=''>&gt;&gt;</button></td>
-            </tr>
-            </table>
-            </form>
-        </td>
-    </tr>
-</table>
-<table class='fxlist' border='0' cellpadding='0' cellspacing='0' width='100%'>
-    $header
-    <tbody>
         $out
-    </tbody>
 </table>
     EOT;
 
