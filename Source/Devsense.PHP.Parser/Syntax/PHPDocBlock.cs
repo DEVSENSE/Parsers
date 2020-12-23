@@ -2252,7 +2252,7 @@ namespace Devsense.PHP.Syntax
         {
             get
             {
-                var result = new StringBuilder();
+                var result = StringUtils.GetStringBuilder();
                 result.AppendLine("/**");
 
                 foreach (var element in this.Elements)
@@ -2269,7 +2269,7 @@ namespace Devsense.PHP.Syntax
                 }
                 result.Append(" */");
 
-                return result.ToString();
+                return StringUtils.ReturnStringBuilder(result);
             }
         }
 

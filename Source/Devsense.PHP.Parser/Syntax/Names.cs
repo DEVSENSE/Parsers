@@ -889,7 +889,7 @@ namespace Devsense.PHP.Syntax
 
         public string ToString(Name? memberName, bool instance)
         {
-            StringBuilder result = new StringBuilder();
+            var result = StringUtils.GetStringBuilder();
             for (int i = 0; i < namespaces.Length; i++)
             {
                 result.Append(namespaces[i]);
@@ -902,7 +902,7 @@ namespace Devsense.PHP.Syntax
                 result.Append(memberName.Value.ToString());
             }
 
-            return result.ToString();
+            return StringUtils.ReturnStringBuilder(result);
         }
 
         public override string ToString()

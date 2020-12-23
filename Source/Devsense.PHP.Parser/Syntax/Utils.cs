@@ -1769,11 +1769,12 @@ namespace Devsense.PHP.Syntax
         public static string/*!*/ ToList<T>(IEnumerable<T> enumerable, Action<StringBuilder, T>/*!*/ appendItem)
         {
             if (appendItem == null)
-                throw new ArgumentNullException("appendItem");
+                throw new ArgumentNullException(nameof(appendItem));
 
-            if (enumerable == null) return "";
+            if (enumerable == null)
+                return string.Empty;
 
-            StringBuilder result = new StringBuilder();
+            var result = StringUtils.GetStringBuilder();
 
             bool first = true;
             foreach (T item in enumerable)
@@ -1784,7 +1785,7 @@ namespace Devsense.PHP.Syntax
                 appendItem(result, item);
             }
 
-            return result.ToString();
+            return StringUtils.ReturnStringBuilder(result);
         }
 
         /// <summary>
