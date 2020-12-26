@@ -86,6 +86,7 @@ namespace UnitTests
  * @param $a (int|double) The value.
  * @param $b (int|double)[] The value.
  * @param $c int|double[] The value.
+ * @param $d int|array<float|string|null> The value.
  */");
 
             var ps = phpdoc.Params;

@@ -902,8 +902,24 @@ namespace Devsense.PHP.Syntax
 
                     while (typename.Length != 0)
                     {
-                        var sep = typename.IndexOf(TypeNamesSeparator);
-                        if (sep < 0) sep = typename.Length;
+                        int sep; // index of next separator | [0..typename.length]
+                        int nested = 0; // level of <> or [] nesting
+                        for (sep = 0; sep < typename.Length; sep++)
+                        {
+                            var ch = typename[sep];
+                            if (ch == TypeNamesSeparator)
+                            {
+                                if (nested == 0) break;
+                            }
+                            else if (ch == '<' || ch == '[')
+                            {
+                                nested++;
+                            }
+                            else if (ch == '>' || ch == ']')
+                            {
+                                nested--;
+                            }
+                        }
 
                         // name: [0..sep)
                         var name = typename.Slice(0, sep);
