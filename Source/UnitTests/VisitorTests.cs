@@ -168,7 +168,7 @@ namespace UnitTests
                 return i;
             }
 
-            public override ActualParam ActualParameter(Span span, LangElement expr, ActualParam.Flags flags, VariableNameRef? nameOpt = default)
+            public override ActualParam ActualParameter(Span span, LangElement expr, ActualParam.Flags flags, VariableNameRef? nameOpt = null)
                 => (ActualParam)/*CountLE*/(base.ActualParameter(span, expr, flags, nameOpt)); // TODO - replace definitions by interfaces
 
             public override TypeRef AnonymousTypeReference(Span span, Span headingSpan, bool conditional, PhpMemberAttributes attributes, IEnumerable<FormalTypeParam> typeParamsOpt, INamedTypeRef baseClassOpt, IEnumerable<INamedTypeRef> implements, IEnumerable<LangElement> members, Span blockSpan)
@@ -501,7 +501,7 @@ namespace UnitTests
             public override LangElement Use(Span span, IEnumerable<UseBase> uses, AliasKind kind)
                  => CountLE(base.Use(span, uses, kind));
 
-            public override LangElement Attribute(Span span, TypeRef classref, CallSignature signature = default)
+            public override LangElement Attribute(Span span, TypeRef classref, CallSignature signature = default(CallSignature))
                 => CountLE(base.Attribute(span, classref, signature));
 
             public override LangElement AttributeGroup(Span span, IList<LangElement> attributes)
