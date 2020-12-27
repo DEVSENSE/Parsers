@@ -794,7 +794,7 @@ namespace Devsense.PHP.Syntax
             /// Array of type names. Cannot be <c>null</c>. Can be an empty array.
             /// </summary>
             public string[]/*!!*/TypeNamesArray { get { return _typeNames; } }
-            private readonly string[]/*!!*/_typeNames;
+            protected string[]/*!!*/_typeNames;
 
             /// <summary>
             /// Array of type names span within the source code.
@@ -814,7 +814,7 @@ namespace Devsense.PHP.Syntax
                     return spans;
                 }
             }
-            private readonly int[]/*!!*/_typeNamesPos;
+            protected int[]/*!!*/_typeNamesPos;
 
             /// <summary>
             /// Optional. Variable name, starts with '$'.
@@ -844,7 +844,7 @@ namespace Devsense.PHP.Syntax
             /// <summary>
             /// Optional. Element description.
             /// </summary>
-            public string Description { get; private set; }
+            public string Description { get; protected set; }
 
             protected TypeVarDescTag(string/*!*/tagName, string/*!*/line, bool allowVariableName)
             {
@@ -2008,6 +2008,76 @@ namespace Devsense.PHP.Syntax
             public override string ToString()
             {
                 return Name + " " + this.Group;
+            }
+        }
+
+        public sealed class TemplateTag : TypeVarDescTag
+        {
+            public const string Name = "@template";
+
+            /// <summary>
+            /// The template identifier.
+            /// </summary>
+            public NameRef Identifier => string.IsNullOrEmpty(_identifier)
+                ? default(NameRef)
+                : new NameRef(new Span(this.Span.Start + _identifierStart, _identifier.Length), _identifier);
+
+            readonly string _identifier;
+            readonly int _identifierStart;
+
+            public TemplateTag(string tagName, string/*!*/line)
+                : base(Name, Name, false) // empty line
+            {
+                // @template {Identifier} of {TypeNames}
+                Debug.Assert(line.StartsWith(tagName));
+
+                int index = tagName.Length; // current index within line
+
+                var identifier = NextWord(line, ref index);
+
+                _identifier = identifier.ToString();
+                _identifierStart = index - identifier.Length;
+                
+                var of = NextWord(line, ref index);
+                if (of.Equals("of".AsSpan(), StringComparison.Ordinal))
+                {
+                    TryReadTypeName(line, ref index, out _typeNames, out _typeNamesPos);
+                }
+
+                if (index < line.Length)
+                {
+                    this.Description = line.AsSpan(index).TrimStart().ToString();
+                }
+            }
+
+            internal override bool IsEmpty => string.IsNullOrEmpty(_identifier);
+
+            public override string ToString()
+            {
+                var sb = StringUtils.GetStringBuilder();
+
+                sb.Append(Name);
+                
+                if (_identifier.Length != 0)
+                {
+                    sb.Append(' ');
+                    sb.Append(_identifier);
+                }
+
+                if (_typeNames.Length != 0)
+                {
+                    sb.Append(" of ");
+                    sb.Append(this.TypeNames);
+                }
+
+                if (!string.IsNullOrWhiteSpace(Description))
+                {
+                    sb.Append(' ');
+                    sb.Append(Description);
+                }
+
+                //
+                return StringUtils.ReturnStringBuilder(sb);
             }
         }
 
