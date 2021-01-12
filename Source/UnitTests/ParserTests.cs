@@ -177,6 +177,21 @@ class X {
             }
         }
 
+        [TestMethod]
+        public void AliasesTest()
+        {
+            var codes = new[] {
+                @"<?php use A\{X,Y,};", // <-- trailing comma
+            };
+
+            foreach (var code in codes)
+            {
+                var unit = new CodeSourceUnit(code, "dummy.php", Encoding.UTF8);
+                unit.Parse(new BasicNodesFactory(unit), null);
+                Assert.IsNotNull(unit.Ast);
+            }
+        }
+
         /// <summary>
         /// Helper visitor checking every node has a containing element.
         /// </summary>

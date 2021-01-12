@@ -513,11 +513,15 @@ namespace Devsense.PHP.Syntax.Ast
     /// </summary>
     public sealed class GroupUse : UseBase
     {
-        public QualifiedNameRef Prefix => _prefix;
-        private readonly QualifiedNameRef _prefix;
+        /// <summary>
+        /// Group prefix.
+        /// </summary>
+        public QualifiedNameRef Prefix { get; }
 
-        public SimpleUse[] Uses => _uses;
-        private readonly SimpleUse[] _uses;
+        /// <summary>
+        /// Name suffixes.
+        /// </summary>
+        public SimpleUse[] Uses { get; }
 
         public GroupUse(Span span, QualifiedNameRef prefix, IList<SimpleUse> uses)
             : base(span)
@@ -525,8 +529,8 @@ namespace Devsense.PHP.Syntax.Ast
             Debug.Assert(span.IsValid);
             Debug.Assert(uses != null);
 
-            _prefix = prefix;
-            _uses = uses.AsArray();
+            Prefix = prefix;
+            Uses = uses.AsArray();
         }
     }
 

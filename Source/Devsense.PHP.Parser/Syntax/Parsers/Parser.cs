@@ -294,29 +294,58 @@ namespace Devsense.PHP.Syntax
             return new SimpleUse(alias.Item1, alias.Item3.Span, alias.Item2.Span, new Alias(aliasName, contextType), alias.Item2);
         }
 
+        static Name[] SelectNames(List<string> prefix)
+        {
+            Debug.Assert(prefix != null);
+
+            if (prefix.Count == 0)
+            {
+                return EmptyArray<Name>.Instance;
+            }
+
+            var name = new Name[prefix.Count];
+
+            for (int i = 0; i < prefix.Count; i++)
+            {
+                name[i] = new Name(prefix[i]);
+            }
+
+            return name;
+        }
+
         private GroupUse AddAliases(Span span, List<string> prefix, Span prefixSpan, List<Tuple<QualifiedNameRef, NameRef>> aliases, bool isFullyQualified)
         {
-            List<SimpleUse> uses = new List<SimpleUse>();
-            var prefixNamespaces = prefix.Select(p => new Name(p));
-            foreach (var alias in aliases)
+            var uses = new List<SimpleUse>(aliases.Count);
+            var prefixNamespaces = SelectNames(prefix);
+
+            for (int i = 0; i < aliases.Count; i++)
             {
-                Name[] namespaces = prefixNamespaces.Concat(alias.Item1.QualifiedName.Namespaces).ToArray();
+                var alias = aliases[i];
+                if (alias == null) continue; // trailing comma
+
+                var namespaces = ArrayUtils.Concat(prefixNamespaces, alias.Item1.QualifiedName.Namespaces);
                 uses.Add(AddAlias(new Tuple<QualifiedNameRef, NameRef>(new QualifiedNameRef(alias.Item1.Span, alias.Item1.QualifiedName.Name, namespaces), alias.Item2)));
             }
-            return new GroupUse(span, new QualifiedNameRef(prefixSpan, Name.EmptyBaseName, prefixNamespaces.ToArray(), isFullyQualified), uses);
+
+            return new GroupUse(span, new QualifiedNameRef(prefixSpan, Name.EmptyBaseName, prefixNamespaces, isFullyQualified), uses);
         }
 
         private GroupUse AddAliases(Span span, List<string> prefix, Span prefixSpan, List<Tuple<Span, QualifiedNameRef, NameRef, AliasKind>> aliases, bool isFullyQualified)
         {
-            List<SimpleUse> uses = new List<SimpleUse>();
-            var prefixNamespaces = prefix.Select(p => new Name(p));
-            foreach (var alias in aliases)
+            var uses = new List<SimpleUse>(aliases.Count);
+            var prefixNamespaces = SelectNames(prefix);
+
+            for (int i = 0; i < aliases.Count; i++)
             {
-                Name[] namespaces = prefixNamespaces.Concat(alias.Item2.QualifiedName.Namespaces).ToArray();
+                var alias = aliases[i];
+                if (alias == null) continue; // trailing comma
+
+                var namespaces = ArrayUtils.Concat(prefixNamespaces, alias.Item2.QualifiedName.Namespaces);
                 uses.Add(AddAlias(new Tuple<Span, QualifiedNameRef, NameRef>(
                     alias.Item1, new QualifiedNameRef(alias.Item2.Span, alias.Item2.QualifiedName.Name, namespaces), alias.Item3), alias.Item4));
             }
-            return new GroupUse(span, new QualifiedNameRef(prefixSpan, Name.EmptyBaseName, prefixNamespaces.ToArray(), isFullyQualified), uses);
+
+            return new GroupUse(span, new QualifiedNameRef(prefixSpan, Name.EmptyBaseName, prefixNamespaces, isFullyQualified), uses);
         }
 
         void PushClassContext(string name, TypeRef baseType, PhpMemberAttributes attrs)
