@@ -168,7 +168,7 @@ namespace Devsense.PHP.Text
 
         public Span Slice(int offset)
         {
-            return Slice(offset, _length + offset);
+            return Slice(offset, _length - offset);
         }
 
         public Span Slice(int offset, int count)
