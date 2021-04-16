@@ -498,17 +498,30 @@ namespace Devsense.PHP.Syntax
         public static bool IsAsciiString(string/*!*/ str, int start, int length)
         {
             if (str == null)
-                throw new ArgumentNullException("str");
-            if (start < 0)
-                throw new ArgumentOutOfRangeException("start");
-            if (length < 0 || length > str.Length - start)
-                throw new ArgumentOutOfRangeException("length");
-
-            for (int i = start; i < start + length; i++)
             {
-                if (str[i] > (char)127)
-                    return false;
+                throw new ArgumentNullException(nameof(str));
             }
+
+            if (start < 0 || start > str.Length)
+            {
+                throw new ArgumentOutOfRangeException(nameof(start));
+            }
+
+            var end = start + length;
+
+            if (length < 0 || end > str.Length)
+            {
+                throw new ArgumentOutOfRangeException(nameof(length));
+            }
+
+            for (; start < end; start++)
+            {
+                if (str[start] > 0x7f)
+                {
+                    return false;
+                }
+            }
+
             return true;
         }
 
@@ -808,12 +821,12 @@ namespace Devsense.PHP.Syntax
                 return (wrapper != null) ? (string)wrapper.Value : null;
             }
 
-            public static implicit operator byte[] (UniformWrapper wrapper)
+            public static implicit operator byte[](UniformWrapper wrapper)
             {
                 return (wrapper != null) ? (byte[])wrapper.Value : null;
             }
 
-            public static implicit operator char[] (UniformWrapper wrapper)
+            public static implicit operator char[](UniformWrapper wrapper)
             {
                 return (wrapper != null) ? (char[])wrapper.Value : null;
             }
@@ -1258,7 +1271,7 @@ namespace Devsense.PHP.Syntax
         /// <typeparam name="V">Dictionary value type.</typeparam>
         /// <param name="target">Target dictionary.</param>
         /// <param name="entries">Entries to be added.</param>
-        public static void Add<K,V>(this IDictionary<K,V> target, IDictionary<K, V> entries)
+        public static void Add<K, V>(this IDictionary<K, V> target, IDictionary<K, V> entries)
         {
             entries.Foreach(target.Add);
         }
