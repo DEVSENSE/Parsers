@@ -13,7 +13,7 @@ define("constB", 0);
   "NamingContext" : {},
   "DirectFcnCall" : {
     "Name" : "define",
-    "OrigianlName":"define", 
+    "OriginalName":"define", 
     "FallbackQualifiedName":"",
     "ActualParam" : {  
       "IsUnpack":"False",
@@ -38,7 +38,7 @@ define("constB", 0);
       "BlockStmt":{
         "DirectFcnCall" : {
           "Name" : "MyProject\define",
-          "OrigianlName":"define", 
+          "OriginalName":"define", 
           "FallbackQualifiedName":"define",
           "ActualParam" : {    
             "IsUnpack":"False",

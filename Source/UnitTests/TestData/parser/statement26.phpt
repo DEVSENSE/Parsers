@@ -22,7 +22,7 @@ $arr = array(
     "Item":{"ValueExpr":{"StringLiteral":{"Value":"hello"}}},
     "Item":{"Index":{"DoubleLiteral":{"Value":"1.5"}},"RefToGet":{"DirectVarUse":{"VarName":"x"}}},
     "Item":{"RefToGet":{"DirectVarUse":{"VarName":"x"}}},
-    "Item":{"Index":{"GlobalConstUse":{"Name":"true","OrigianlName":"true","FallbackName":""}},"ValueExpr":{
+    "Item":{"Index":{"GlobalConstUse":{"Name":"true","OriginalName":"true","FallbackName":""}},"ValueExpr":{
       "ArrayEx":{
         "Item":{"Index":{"LongIntLiteral":{"Value":"1"}},"ValueExpr":{"StringLiteral":{"Value":"a"}}}}
       }

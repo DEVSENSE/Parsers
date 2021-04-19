@@ -9,7 +9,7 @@
   "NamingContext":{},
   "DirectFcnCall":{
     "Name":"hello",
-    "OrigianlName":"hello",
+    "OriginalName":"hello",
     "FallbackQualifiedName":"",
     "IsMemberOf":{"StringLiteral":{"Value":"test"}}
   }

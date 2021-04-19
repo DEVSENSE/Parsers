@@ -10,7 +10,7 @@ isset($x,$y,);
 "GlobalCode":
 {
   "NamingContext":{},
-  "DirectFcnCall":{"Name":"foo","OrigianlName":"foo","FallbackQualifiedName":"",
+  "DirectFcnCall":{"Name":"foo","OriginalName":"foo","FallbackQualifiedName":"",
     "ActualParam":{"IsUnpack":"False","DirectVarUse":{"VarName":"bar"}},
     "ActualParam":{"IsUnpack":"False","DirectVarUse":{"VarName":"baz"}}
   },

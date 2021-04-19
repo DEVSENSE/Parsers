@@ -15,14 +15,14 @@ require_once(__ROOT__.'/config.php');
   "IncludingEx":{"InclusionType":"Require",
     "IsConditional":"False",
     "BinaryEx":{"Operation":"Concat",
-      "GlobalConstUse":{"Name":"__ROOT__","OrigianlName":"__ROOT__","FallbackName":""},
+      "GlobalConstUse":{"Name":"__ROOT__","OriginalName":"__ROOT__","FallbackName":""},
       "StringLiteral":{"Value":"/config.php"}
     }
   },
   "IncludingEx":{"InclusionType":"RequireOnce",
     "IsConditional":"False",
     "BinaryEx":{"Operation":"Concat",
-      "GlobalConstUse":{"Name":"__ROOT__","OrigianlName":"__ROOT__","FallbackName":""},
+      "GlobalConstUse":{"Name":"__ROOT__","OriginalName":"__ROOT__","FallbackName":""},
       "StringLiteral":{"Value":"/config.php"}
     }
   }

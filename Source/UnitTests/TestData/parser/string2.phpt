@@ -20,7 +20,7 @@ foo('
   },
   "DirectFcnCall":{
     "Name":"foo",
-    "OrigianlName":"foo",
+    "OriginalName":"foo",
     "FallbackQualifiedName":"",
     "ActualParam":{
       "IsUnpack":"False",

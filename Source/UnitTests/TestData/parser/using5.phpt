@@ -28,8 +28,8 @@ namespace test{
       "BlockStmt":{
         "UseStatement":{"Kind":"Constant","Aliases":{"LCONST":{}}},
         "UseStatement":{"Kind":"Constant","Aliases":{"lconst":{}}},
-        "GlobalConstUse":{"Name":"MySpace\gconst","OrigianlName":"lconst","FallbackName":""},
-        "GlobalConstUse":{"Name":"MySpace\GCONST","OrigianlName":"LCONST","FallbackName":""}
+        "GlobalConstUse":{"Name":"MySpace\gconst","OriginalName":"lconst","FallbackName":""},
+        "GlobalConstUse":{"Name":"MySpace\GCONST","OriginalName":"LCONST","FallbackName":""}
       }
     }
   }

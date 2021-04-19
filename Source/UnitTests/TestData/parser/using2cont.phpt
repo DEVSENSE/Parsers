@@ -45,7 +45,7 @@ namespace test{
         "DirectStFldUse":{"PropertyName":"x","TranslatedTypeRef":{"ClassName":"test\B","OriginalName":"B"}},  
         "ClassConstUse":{"Name":"bConst","TranslatedTypeRef":{"ClassName":"test\B","OriginalName":"B"}},
         "DirectStFldUse":{"PropertyName":"x","ClassTypeRef":{"ClassName":"test\B"}},
-        "DirectFcnCall":{"Name":"foo","OrigianlName":"foo","FallbackQualifiedName":"","IsMemberOf":{"DirectVarUse":{"VarName":"x"}}},
+        "DirectFcnCall":{"Name":"foo","OriginalName":"foo","FallbackQualifiedName":"","IsMemberOf":{"DirectVarUse":{"VarName":"x"}}},
         "TryStmt":{
           "Body":{"BlockStmt":{}},
           "Catches":{
