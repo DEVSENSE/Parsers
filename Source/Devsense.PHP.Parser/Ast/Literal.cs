@@ -17,13 +17,13 @@ using System;
 
 namespace Devsense.PHP.Syntax.Ast
 {
-	#region Literal
+    #region Literal
 
-	/// <summary>
-	/// Base class for literals.
-	/// </summary>
-	public abstract class Literal : Expression
-	{
+    /// <summary>
+    /// Base class for literals.
+    /// </summary>
+    public abstract class Literal : Expression
+    {
         /// <summary>
         /// Gets internal value of literal.
         /// </summary>
@@ -35,9 +35,9 @@ namespace Devsense.PHP.Syntax.Ast
         public string SourceText { get; set; }
 
         protected Literal(Text.Span span)
-			: base(span)
-		{
-		}
+            : base(span)
+        {
+        }
 
         /// <summary>
         /// Creates <see cref="Literal"/> instance for given <paramref name="value"/>.
@@ -82,61 +82,71 @@ namespace Devsense.PHP.Syntax.Ast
                 return new BinaryStringLiteral(span, barr);
             }
 
+            if (value is IStringLiteralValue strvalue)
+            {
+                if (strvalue.Contains8bitText)
+                {
+                    // ...
+                }
+
+                return new StringLiteral(span, strvalue.ToString());
+            }
+
             //
             throw new ArgumentException();
         }
-	}
+    }
 
-	#endregion
+    #endregion
 
-	#region IntLiteral
+    #region IntLiteral
 
-	///// <summary>
-	///// Integer literal.
-	///// </summary>
- //   public sealed class IntLiteral : Literal
-	//{
- //       public override Operations Operation { get { return Operations.IntLiteral; } }
+    ///// <summary>
+    ///// Integer literal.
+    ///// </summary>
+    //   public sealed class IntLiteral : Literal
+    //{
+    //       public override Operations Operation { get { return Operations.IntLiteral; } }
 
- //       /// <summary>
- //       /// Gets internal value of literal.
- //       /// </summary>
- //       internal override object ValueObj { get { return this.value; } }
+    //       /// <summary>
+    //       /// Gets internal value of literal.
+    //       /// </summary>
+    //       internal override object ValueObj { get { return this.value; } }
 
-	//	/// <summary>
-	//	/// Gets a value of the literal.
-	//	/// </summary>
- //       public int Value { get { return value; } }
- //       private int value;
+    //	/// <summary>
+    //	/// Gets a value of the literal.
+    //	/// </summary>
+    //       public int Value { get { return value; } }
+    //       private int value;
 
-	//	/// <summary>
-	//	/// Initializes a new instance of the IntLiteral class.
-	//	/// </summary>
-	//	public IntLiteral(Text.Span span, int value)
- //           : base(span)
-	//	{
-	//		this.value = value;
-	//	}
+    //	/// <summary>
+    //	/// Initializes a new instance of the IntLiteral class.
+    //	/// </summary>
+    //	public IntLiteral(Text.Span span, int value)
+    //           : base(span)
+    //	{
+    //		this.value = value;
+    //	}
 
-	//	/// <summary>
- //       /// Call the right Visit* method on the given Visitor object.
- //       /// </summary>
- //       /// <param name="visitor">Visitor to be called.</param>
- //       public override void VisitMe(TreeVisitor visitor)
- //       {
- //           visitor.VisitIntLiteral(this);
- //       }
-	//}
+    //	/// <summary>
+    //       /// Call the right Visit* method on the given Visitor object.
+    //       /// </summary>
+    //       /// <param name="visitor">Visitor to be called.</param>
+    //       public override void VisitMe(TreeVisitor visitor)
+    //       {
+    //           visitor.VisitIntLiteral(this);
+    //       }
+    //}
 
-	#endregion
+    #endregion
 
-	#region LongIntLiteral
+    #region LongIntLiteral
 
-	/// <summary>
-	/// Integer literal.
-	/// </summary>
+    /// <summary>
+    /// Integer literal.
+    /// </summary>
     public sealed class LongIntLiteral : Literal
-	{
+    {
 
         public override Operations Operation { get { return Operations.LongIntLiteral; } }
 
@@ -145,22 +155,22 @@ namespace Devsense.PHP.Syntax.Ast
         /// </summary>
         internal override object ValueObj { get { return this.value; } }
 
-		/// <summary>
-		/// Gets a value of the literal.
-		/// </summary>
+        /// <summary>
+        /// Gets a value of the literal.
+        /// </summary>
         public long Value { get { return value; } }
-		private long value;
+        private long value;
 
-		/// <summary>
-		/// Initializes a new instance of the IntLiteral class.
-		/// </summary>
-		public LongIntLiteral(Text.Span span, long value)
-			: base(span)
-		{
-			this.value = value;
+        /// <summary>
+        /// Initializes a new instance of the IntLiteral class.
+        /// </summary>
+        public LongIntLiteral(Text.Span span, long value)
+            : base(span)
+        {
+            this.value = value;
         }
 
-		/// <summary>
+        /// <summary>
         /// Call the right Visit* method on the given Visitor object.
         /// </summary>
         /// <param name="visitor">Visitor to be called.</param>
@@ -168,15 +178,15 @@ namespace Devsense.PHP.Syntax.Ast
         {
             visitor.VisitLongIntLiteral(this);
         }
-	}
+    }
 
-	#endregion
+    #endregion
 
-	#region DoubleLiteral
+    #region DoubleLiteral
 
-	/// <summary>
-	/// Double literal.
-	/// </summary>
+    /// <summary>
+    /// Double literal.
+    /// </summary>
     public sealed class DoubleLiteral : Literal
     {
         public override Operations Operation { get { return Operations.DoubleLiteral; } }
@@ -186,11 +196,11 @@ namespace Devsense.PHP.Syntax.Ast
         /// </summary>
         internal override object ValueObj { get { return this.value; } }
 
-		/// <summary>
-		/// Gets a value of the literal.
-		/// </summary>
+        /// <summary>
+        /// Gets a value of the literal.
+        /// </summary>
         public double Value { get { return value; } }
-		private double value;
+        private double value;
 
         /// <summary>
         /// Initializes a new instance of the DoubleLiteral class.
@@ -198,12 +208,12 @@ namespace Devsense.PHP.Syntax.Ast
         /// <param name="p">A position.</param>
         /// <param name="value">A double value to be stored in node.</param>
         public DoubleLiteral(Text.Span p, double value)
-			: base(p)
-		{
-			this.value = value;
+            : base(p)
+        {
+            this.value = value;
         }
 
-		/// <summary>
+        /// <summary>
         /// Call the right Visit* method on the given Visitor object.
         /// </summary>
         /// <param name="visitor">Visitor to be called.</param>
@@ -211,15 +221,31 @@ namespace Devsense.PHP.Syntax.Ast
         {
             visitor.VisitDoubleLiteral(this);
         }
-	}
+    }
 
-	#endregion
+    #endregion
 
-	#region StringLiteral
+    #region IStringLiteralValue
 
-	/// <summary>
-	/// String literal.
-	/// </summary>
+    public interface IStringLiteralValue
+    {
+        /// <summary>
+        /// Gets value indicating the string contains one or more 8bit characters that should not be encoded into UTF-16.
+        /// </summary>
+        bool Contains8bitText { get; }
+
+        string ToString();
+
+        byte[] ToBytes();
+    }
+
+    #endregion
+
+    #region StringLiteral
+
+    /// <summary>
+    /// String literal.
+    /// </summary>
     public sealed class StringLiteral : Literal
     {
         public override Operations Operation { get { return Operations.StringLiteral; } }
@@ -229,26 +255,26 @@ namespace Devsense.PHP.Syntax.Ast
         /// </summary>
         internal override object ValueObj { get { return this.value; } }
 
-		/// <summary>
-		/// A <see cref="string"/> value stored in node.
-		/// </summary>
-		private string value;
+        /// <summary>
+        /// A <see cref="string"/> value stored in node.
+        /// </summary>
+        private string value;
 
-		/// <summary>
-		/// A value of the literal.
-		/// </summary>
+        /// <summary>
+        /// A value of the literal.
+        /// </summary>
         public string Value { get { return value; } }
 
-		/// <summary>
-		/// Initializes a new instance of the StringLiteral class.
-		/// </summary>
-		public StringLiteral(Text.Span span, string value)
-			: base(span)
-		{
-			this.value = value;
+        /// <summary>
+        /// Initializes a new instance of the StringLiteral class.
+        /// </summary>
+        public StringLiteral(Text.Span span, string value)
+            : base(span)
+        {
+            this.value = value;
         }
 
-		/// <summary>
+        /// <summary>
         /// Call the right Visit* method on the given Visitor object.
         /// </summary>
         /// <param name="visitor">Visitor to be called.</param>
@@ -256,17 +282,17 @@ namespace Devsense.PHP.Syntax.Ast
         {
             visitor.VisitStringLiteral(this);
         }
-	}
+    }
 
-	#endregion
+    #endregion
 
-	#region BinaryStringLiteral
+    #region BinaryStringLiteral
 
-	/// <summary>
-	/// String literal.
-	/// </summary>
+    /// <summary>
+    /// String literal.
+    /// </summary>
     public sealed class BinaryStringLiteral : Literal
-	{
+    {
         public override Operations Operation { get { return Operations.BinaryStringLiteral; } }
 
         /// <summary>
@@ -274,26 +300,26 @@ namespace Devsense.PHP.Syntax.Ast
         /// </summary>
         internal override object ValueObj { get { return this.value; } }
 
-		/// <summary>
-		/// A value of the literal.
-		/// </summary>
+        /// <summary>
+        /// A value of the literal.
+        /// </summary>
         public byte[] Value { get { return value; } }
 
         /// <summary>
         /// Binary data stored in the node.
         /// </summary>
         private byte[]/*!*/ value;
-        
-        /// <summary>
-		/// Initializes a new instance of the StringLiteral class.
-		/// </summary>
-		public BinaryStringLiteral(Text.Span span, byte[]/*!*/ value)
-			: base(span)
-		{
-			this.value = value;
-		}
 
-		/// <summary>
+        /// <summary>
+        /// Initializes a new instance of the StringLiteral class.
+        /// </summary>
+        public BinaryStringLiteral(Text.Span span, byte[]/*!*/ value)
+            : base(span)
+        {
+            this.value = value;
+        }
+
+        /// <summary>
         /// Call the right Visit* method on the given Visitor object.
         /// </summary>
         /// <param name="visitor">Visitor to be called.</param>
@@ -301,17 +327,17 @@ namespace Devsense.PHP.Syntax.Ast
         {
             visitor.VisitBinaryStringLiteral(this);
         }
-	}
+    }
 
-	#endregion
+    #endregion
 
-	#region BoolLiteral
+    #region BoolLiteral
 
-	/// <summary>
-	/// Boolean literal.
-	/// </summary>
+    /// <summary>
+    /// Boolean literal.
+    /// </summary>
     public sealed class BoolLiteral : Literal
-	{
+    {
         public override Operations Operation { get { return Operations.BoolLiteral; } }
 
         /// <summary>
@@ -319,19 +345,19 @@ namespace Devsense.PHP.Syntax.Ast
         /// </summary>
         internal override object ValueObj { get { return this.value; } }
 
-		/// <summary>
-		/// Gets a value of the literal.
-		/// </summary>
+        /// <summary>
+        /// Gets a value of the literal.
+        /// </summary>
         public bool Value { get { return value; } }
-		private bool value;
+        private bool value;
 
-		public BoolLiteral(Text.Span span, bool value)
-			: base(span)
-		{
-			this.value = value;
-		}
+        public BoolLiteral(Text.Span span, bool value)
+            : base(span)
+        {
+            this.value = value;
+        }
 
-		/// <summary>
+        /// <summary>
         /// Call the right Visit* method on the given Visitor object.
         /// </summary>
         /// <param name="visitor">Visitor to be called.</param>
@@ -339,17 +365,17 @@ namespace Devsense.PHP.Syntax.Ast
         {
             visitor.VisitBoolLiteral(this);
         }
-	}
+    }
 
-	#endregion
+    #endregion
 
-	#region NullLiteral
+    #region NullLiteral
 
-	/// <summary>
-	/// Null literal.
-	/// </summary>
+    /// <summary>
+    /// Null literal.
+    /// </summary>
     public sealed class NullLiteral : Literal
-	{
+    {
         public override Operations Operation { get { return Operations.NullLiteral; } }
 
         /// <summary>
@@ -357,12 +383,12 @@ namespace Devsense.PHP.Syntax.Ast
         /// </summary>
         internal override object ValueObj { get { return null; } }
 
-		public NullLiteral(Text.Span span)
-			: base(span)
-		{
-		}
+        public NullLiteral(Text.Span span)
+            : base(span)
+        {
+        }
 
-		/// <summary>
+        /// <summary>
         /// Call the right Visit* method on the given Visitor object.
         /// </summary>
         /// <param name="visitor">Visitor to be called.</param>
@@ -370,7 +396,7 @@ namespace Devsense.PHP.Syntax.Ast
         {
             visitor.VisitNullLiteral(this);
         }
-	}
+    }
 
-	#endregion
+    #endregion
 }
