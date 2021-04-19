@@ -254,6 +254,37 @@ namespace Devsense.PHP.Syntax
 
                 return result.ToArray();
             }
+
+            /// <summary>
+            /// Gets enumeration of underlying chunks of <see cref="System.String"/> or <see cref="byte"/>[].
+            /// </summary>
+            public IEnumerable<object> EnumerateChunks()
+            {
+                for (int i = 0; i < ChunksCount; i++)
+                {
+                    var chunk = Chunks[i];
+                    switch (chunk.RawValue)
+                    {
+                        case null:
+                            break;
+
+                        case string str:
+                            yield return str;
+                            break;
+
+                        case byte[] bytes:
+                            yield return bytes;
+                            break;
+
+                        case char[] chars:
+                            yield return new string(chars);
+                            break;
+
+                        default:
+                            throw new InvalidOperationException();
+                    }
+                }
+            }
         }
 
         #endregion
@@ -277,6 +308,11 @@ namespace Devsense.PHP.Syntax
             public override string ToString() => Chunks.ToString(Encoding);
 
             public byte[] ToBytes() => Chunks.ToBytes(Encoding);
+
+            /// <summary>
+            /// Gets enumeration of underlying chunks of <see cref="System.String"/> or <see cref="byte"/>[].
+            /// </summary>
+            public IEnumerable<object> EnumerateChunks() => Chunks.EnumerateChunks();
         }
 
         #endregion

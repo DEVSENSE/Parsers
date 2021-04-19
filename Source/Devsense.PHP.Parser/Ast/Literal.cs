@@ -14,6 +14,7 @@
 // permissions and limitations under the License.
 
 using System;
+using System.Collections.Generic;
 
 namespace Devsense.PHP.Syntax.Ast
 {
@@ -77,19 +78,19 @@ namespace Devsense.PHP.Syntax.Ast
                 return new StringLiteral(span, str);
             }
 
-            if (value is byte[] barr)
-            {
-                return new BinaryStringLiteral(span, barr);
-            }
-
             if (value is IStringLiteralValue strvalue)
             {
                 if (strvalue.Contains8bitText)
                 {
-                    // ...
+                    return new StringLiteral(span, strvalue);
                 }
 
                 return new StringLiteral(span, strvalue.ToString());
+            }
+
+            if (value is byte[] barr)
+            {
+                return new BinaryStringLiteral(span, barr);
             }
 
             //
@@ -234,9 +235,20 @@ namespace Devsense.PHP.Syntax.Ast
         /// </summary>
         bool Contains8bitText { get; }
 
+        /// <summary>
+        /// Gets the <see cref="System.String"/> representation of the value, if possible.
+        /// </summary>
         string ToString();
 
+        /// <summary>
+        /// Gets the 8bit representation of the value, if possible.
+        /// </summary>
         byte[] ToBytes();
+
+        /// <summary>
+        /// Gets enumeration of underlying chunks of <see cref="System.String"/> or <see cref="byte"/>[].
+        /// </summary>
+        IEnumerable<object> EnumerateChunks();
     }
 
     #endregion
@@ -246,24 +258,29 @@ namespace Devsense.PHP.Syntax.Ast
     /// <summary>
     /// String literal.
     /// </summary>
-    public sealed class StringLiteral : Literal
+    public sealed class StringLiteral : Literal, IStringLiteralValue
     {
         public override Operations Operation { get { return Operations.StringLiteral; } }
 
         /// <summary>
         /// Gets internal value of literal.
         /// </summary>
-        internal override object ValueObj { get { return this.value; } }
+        internal override object ValueObj { get { return this.Value; } }
 
         /// <summary>
-        /// A <see cref="string"/> value stored in node.
+        /// UNderlying value, either <see cref="System.String"/> or <see cref="IStringLiteralValue"/>.
         /// </summary>
-        private string value;
+        readonly object _RawValue;
 
         /// <summary>
-        /// A value of the literal.
+        /// A value of the literal as <see cref="System.String"/>.
         /// </summary>
-        public string Value { get { return value; } }
+        public string Value => _RawValue switch
+        {
+            string str => str,
+            IStringLiteralValue value => value.ToString(),
+            _ => throw new InvalidOperationException(),
+        };
 
         /// <summary>
         /// Initializes a new instance of the StringLiteral class.
@@ -271,7 +288,13 @@ namespace Devsense.PHP.Syntax.Ast
         public StringLiteral(Text.Span span, string value)
             : base(span)
         {
-            this.value = value;
+            _RawValue = value ?? throw new ArgumentNullException(nameof(value));
+        }
+
+        internal StringLiteral(Text.Span span, IStringLiteralValue value)
+            : base(span)
+        {
+            _RawValue = value ?? throw new ArgumentNullException(nameof(value));
         }
 
         /// <summary>
@@ -282,6 +305,23 @@ namespace Devsense.PHP.Syntax.Ast
         {
             visitor.VisitStringLiteral(this);
         }
+
+        #region IStringLiteralValue
+
+        bool IStringLiteralValue.Contains8bitText => _RawValue is IStringLiteralValue value && value.Contains8bitText;
+
+        byte[] IStringLiteralValue.ToBytes() => _RawValue is IStringLiteralValue value ? value.ToBytes() : throw new NotSupportedException();
+
+        string IStringLiteralValue.ToString() => Value;
+
+        /// <summary>
+        /// Gets enumeration of underlying chunks of <see cref="System.String"/> or <see cref="byte"/>[].
+        /// </summary>
+        IEnumerable<object> IStringLiteralValue.EnumerateChunks() => _RawValue is IStringLiteralValue value
+            ? value.EnumerateChunks()
+            : new object[] { Value };
+
+        #endregion
     }
 
     #endregion
@@ -291,24 +331,19 @@ namespace Devsense.PHP.Syntax.Ast
     /// <summary>
     /// String literal.
     /// </summary>
-    public sealed class BinaryStringLiteral : Literal
+    public sealed class BinaryStringLiteral : Literal, IStringLiteralValue
     {
         public override Operations Operation { get { return Operations.BinaryStringLiteral; } }
 
         /// <summary>
         /// Gets internal value of literal.
         /// </summary>
-        internal override object ValueObj { get { return this.value; } }
+        internal override object ValueObj { get { return this.Value; } }
 
         /// <summary>
         /// A value of the literal.
         /// </summary>
-        public byte[] Value { get { return value; } }
-
-        /// <summary>
-        /// Binary data stored in the node.
-        /// </summary>
-        private byte[]/*!*/ value;
+        public byte[] Value { get; }
 
         /// <summary>
         /// Initializes a new instance of the StringLiteral class.
@@ -316,7 +351,7 @@ namespace Devsense.PHP.Syntax.Ast
         public BinaryStringLiteral(Text.Span span, byte[]/*!*/ value)
             : base(span)
         {
-            this.value = value;
+            this.Value = value;
         }
 
         /// <summary>
@@ -327,6 +362,21 @@ namespace Devsense.PHP.Syntax.Ast
         {
             visitor.VisitBinaryStringLiteral(this);
         }
+
+        #region IStringLiteralValue
+
+        bool IStringLiteralValue.Contains8bitText => true;
+
+        byte[] IStringLiteralValue.ToBytes() => Value;
+
+        string IStringLiteralValue.ToString() => throw new NotSupportedException();
+
+        /// <summary>
+        /// Gets enumeration of underlying chunks of <see cref="System.String"/> or <see cref="byte"/>[].
+        /// </summary>
+        IEnumerable<object> IStringLiteralValue.EnumerateChunks() => new object[] { Value };
+
+        #endregion
     }
 
     #endregion
