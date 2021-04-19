@@ -655,8 +655,10 @@ namespace Devsense.PHP.Syntax
         {
             for (int i = 0; i < str.Length; i++)
             {
-                if (!Char.IsWhiteSpace(str[i]))
+                if (!char.IsWhiteSpace(str[i]))
+                {
                     return false;
+                }
             }
             return true;
         }
