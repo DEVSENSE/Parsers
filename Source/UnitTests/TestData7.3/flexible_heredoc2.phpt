@@ -17,7 +17,7 @@ END, 'd e f'];
   "NamingContext":{},
   "DirectFcnCall":{
     "Name":"stringManipulator",
-    "OrigianlName":"stringManipulator",
+    "OriginalName":"stringManipulator",
     "FallbackQualifiedName":"",
     "ActualParam":{"IsUnpack":"False","StringLiteral":{"Value":"abc"}}
   },
