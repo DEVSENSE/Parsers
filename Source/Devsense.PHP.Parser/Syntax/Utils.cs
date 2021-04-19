@@ -1744,10 +1744,10 @@ namespace Devsense.PHP.Syntax
         /// <returns>The concatenation of <paramref name="x"/> and <paramref name="y"/>.</returns>
         public static byte[]/*!*/ Concat(byte[]/*!*/ x, byte[]/*!*/ y)
         {
-            if (x == null) throw new ArgumentNullException("x");
-            if (y == null) throw new ArgumentNullException("y");
+            if (x == null) throw new ArgumentNullException(nameof(x));
+            if (y == null) throw new ArgumentNullException(nameof(y));
 
-            byte[] result = new byte[x.Length + y.Length];
+            var result = new byte[x.Length + y.Length];
 
             Buffer.BlockCopy(x, 0, result, 0, x.Length);
             Buffer.BlockCopy(y, 0, result, x.Length, y.Length);
