@@ -25763,7 +25763,7 @@ EOT;", "x.php", Encoding.UTF8);
 
             foreach (var expectedToken in expectedTokens)
             {
-                Tokens token = (Tokens)lexer.GetNextToken();
+                var token = lexer.GetNextToken();
                 Assert.AreEqual(int.Parse(expectedToken[0]), (int)token, path);
                 if (token == Tokens.T_VARIABLE || token == Tokens.T_STRING || token == Tokens.T_END_HEREDOC)
                 {

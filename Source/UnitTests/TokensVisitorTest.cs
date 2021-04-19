@@ -129,7 +129,7 @@ namespace UnitTests
             sourceUnit = new TestSourceUnit(code, path, Encoding.UTF8, Lexer.LexicalStates.INITIAL, LanguageFeatures.Php71Set);
             sourceUnit.Parse(factory, errors, new TestErrorRecovery());
             var newAst = sourceUnit.Ast;
-
+            Assert.IsNotNull(newAst, "Generated code could not be parsed. (Generated code is not valid)");
             var serializer = new JsonNodeWriter();
             var serializerVisitor = new TreeSerializer(serializer);
             ast.VisitMe(visitor);
