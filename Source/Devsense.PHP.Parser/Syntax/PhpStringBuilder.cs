@@ -128,7 +128,7 @@ namespace Devsense.PHP.Syntax
                 null => string.Empty,
                 string str => str,
                 char[] chars => new string(chars),
-                byte[] bytes => encoding.GetString(bytes, 0, bytes.Length),
+                byte[] bytes => bytes.Length == 1 ? ((char)bytes[0]).ToString() : encoding.GetString(bytes, 0, bytes.Length),
                 _ => throw new InvalidOperationException(),
             };
 

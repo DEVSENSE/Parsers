@@ -663,7 +663,7 @@ namespace Devsense.PHP.Syntax
             //
             return lazyBuilder == null
                 ? Intern(buffer, start, length)
-                : lazyBuilder.StringResult; // TODO: .Result; and handle String or byte[] properly
+                : lazyBuilder.Result; // .StringResult;
         }
 
         object GetTokenAsQuotedString(ProcessStringDelegate tryprocess, char quote)
@@ -721,7 +721,7 @@ namespace Devsense.PHP.Syntax
                 output = ProcessStringText(buffer, start, length, _processDoubleQuotedString);
             }
 
-            return output;
+            return output.ToString(); // TODO: handle 8bit values
         }
 
         /// <summary>
@@ -1038,7 +1038,7 @@ namespace Devsense.PHP.Syntax
             var sourcetext = content.ToString();
 
             string text = tryprocess != null
-                ? (string)ProcessStringText(content.Buffer, content.Start, content.Length, tryprocess)
+                ? ProcessStringText(content.Buffer, content.Start, content.Length, tryprocess).ToString() // TODO: handle 8bit values
                 : sourcetext;
 
             text = RemoveHeredocIndentation(text, indentation);
