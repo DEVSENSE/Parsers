@@ -13,6 +13,7 @@
 // See the Apache Version 2.0 License for specific language governing
 // permissions and limitations under the License.
 
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
@@ -27,138 +28,277 @@ namespace Devsense.PHP.Syntax
     /// </summary>
     internal class PhpStringBuilder
     {
-        #region Fields & Properties
-        /// <summary>
-        /// Currently used encoding.
-        /// </summary>
-        private readonly Encoding/*!*/encoding;
+        #region Nested struct: Chunk
 
-        private byte[] BytesBuffer
+        /*readonly*/
+        struct Chunk
         {
-            get
+            /// <summary>
+            /// The underlying value, either string or byte[] or char[].
+            /// </summary>
+            public object RawValue => _value;
+            object _value;
+
+            // TODO: byte, char as a value type
+
+            /// <summary>
+            /// Chunk is constructed from UTF-16 string.
+            /// </summary>
+            public bool IsUnicode => RawValue is string || RawValue is char[];
+
+            /// <summary>
+            /// Chunk is constructed from byte array.
+            /// </summary>
+            public bool Is8Bit => RawValue is byte[];
+
+            /// <summary>
+            /// Chunk is empty.
+            /// </summary>
+            public bool IsEmpty => _value == null || (_value is string str && str.Length == 0) || (_value is byte[] b && b.Length == 0) || (_value is char[] c && c.Length == 0);
+
+            Chunk(object value)
             {
-                if (_encodeBytes == null) _encodeBytes = new byte[4];
-                return _encodeBytes;
+                Debug.Assert(value == null || value is string || value is byte[] || value is char[]);
+                _value = value ?? string.Empty;
             }
-        }
-        private byte[] _encodeBytes;
 
-        private char[] CharsBuffer
-        {
-            get
+            public Chunk(byte[] value) : this((value != null && value.Length != 0) ? (object)value : null)
             {
-                if (_encodeChars == null) _encodeChars = new char[5];
-                return _encodeChars;
             }
-        }
-        private char[] _encodeChars;
 
-        private StringBuilder _unicodeBuilder;
-        private List<byte> _binaryBuilder;
-
-        private bool IsUnicode { get { return !IsBinary; } }
-        private bool IsBinary { get { return _binaryBuilder != null; } }
-
-        private Span span;
-
-        /// <summary>
-        /// Length of contained data (string or byte[]).
-        /// </summary>
-        public int Length
-        {
-            get
+            public Chunk(string value) : this((value != null && value.Length != 0) ? (object)value : null)
             {
-                if (_unicodeBuilder != null)
-                    return _unicodeBuilder.Length;
-                else if (_binaryBuilder != null)
-                    return _binaryBuilder.Count;
+            }
+
+            public Chunk(char[] value) : this((value != null && value.Length != 0) ? (object)value : null)
+            {
+            }
+
+            public Chunk(Span<char> value) : this(value.Length != 0 ? (object)value.ToArray() : null)
+            {
+            }
+
+            public Chunk(char c) : this(c.ToString())
+            {
+            }
+
+            public Chunk(byte b) : this(new byte[] { b })
+            {
+            }
+
+            /// <summary>
+            /// If both given chunks are the same type, merge them.
+            /// </summary>
+            public static bool TryMerge(Chunk a, Chunk b, out Chunk merged)
+            {
+                if (a.IsEmpty)
+                {
+                    merged = b;
+                    return true;
+                }
+                else if (b.IsEmpty)
+                {
+                    merged = a;
+                    return true;
+                }
+                else if (a.RawValue is string stra && b.RawValue is string strb)
+                {
+                    merged = new Chunk(stra + strb);
+                    return true;
+                }
+                else if (a.RawValue is byte[] ba && b.RawValue is byte[] bb)
+                {
+                    merged = new Chunk(ArrayUtils.Concat(ba, bb));
+                    return true;
+                }
+                else if (a.RawValue is char[] ca && b.RawValue is char[] cb)
+                {
+                    merged = new Chunk(ArrayUtils.Concat(ca, cb));
+                    return true;
+                }
                 else
-                    return 0;
+                {
+                    merged = default(Chunk);
+                    return false;
+                }
             }
+
+            public string ToString(Encoding encoding) => RawValue switch
+            {
+                null => string.Empty,
+                string str => str,
+                char[] chars => new string(chars),
+                byte[] bytes => encoding.GetString(bytes, 0, bytes.Length),
+                _ => throw new InvalidOperationException(),
+            };
+
+            public byte[] ToBytes(Encoding encoding) => RawValue switch
+            {
+                null => EmptyArray<byte>.Instance,
+                string str => encoding.GetBytes(str),
+                char[] chars => encoding.GetBytes(chars),
+                byte[] bytes => bytes,
+                _ => throw new InvalidOperationException(),
+            };
         }
 
-        private StringBuilder UnicodeBuilder
-        {
-            get
-            {
-                if (_unicodeBuilder == null)
-                {
-                    if (_binaryBuilder != null && _binaryBuilder.Count != 0)
-                    {
-                        if (_binaryBuilder.Count == 1)
-                        {
-                            _unicodeBuilder = new StringBuilder();
-                            _unicodeBuilder.Append((char)_binaryBuilder[0]);
-                        }
-                        else
-                        {
-                            byte[] bytes = _binaryBuilder.ToArray();
-                            _unicodeBuilder = new StringBuilder(encoding.GetString(bytes, 0, bytes.Length));
-                        }
-                    }
-                    else
-                    {
-                        _unicodeBuilder = new StringBuilder();
-                    }
-                    _binaryBuilder = null;
-                }
+        #endregion
 
-                return _unicodeBuilder;
+        #region Nested struct: ChunkList
+
+        struct ChunkList
+        {
+            /// <summary>
+            /// Raw chunks of string data, either UTF-16 or bytes,
+            /// </summary>
+            public Chunk[] Chunks;
+
+            /// <summary>
+            /// Number of items in <see cref="_chunks"/>.
+            /// </summary>
+            public int ChunksCount;
+
+            /// <summary>
+            /// Gets value indicating the list is empty.
+            /// </summary>
+            public bool IsEmpty => ChunksCount == 0;
+
+            /// <summary>
+            /// Gets value indicating the string contains one or more 8bit characters that should not be encoded into UTF-16.
+            /// </summary>
+            public bool Contains8bitText
+            {
+                get
+                {
+                    for (int i = 0; i < ChunksCount; i++)
+                    {
+                        if (Chunks[i].Is8Bit) return true;
+                    }
+
+                    return false;
+                }
             }
-        }
 
-        private List<byte> BinaryBuilder
-        {
-            get
+            public static ChunkList Create() => new ChunkList()
             {
-                if (_binaryBuilder == null)
+                Chunks = EmptyArray<Chunk>.Instance,
+                ChunksCount = 0,
+            };
+
+            public void Append(Chunk chunk)
+            {
+                if (chunk.IsEmpty) return;
+
+                if (ChunksCount != 0 && Chunk.TryMerge(Chunks[ChunksCount - 1], chunk, out var merged))
                 {
-                    if (_unicodeBuilder != null && _unicodeBuilder.Length > 0)
-                    {
-                        _binaryBuilder = new List<byte>(encoding.GetBytes(_unicodeBuilder.ToString()));
-                    }
-                    else
-                    {
-                        _binaryBuilder = new List<byte>();
-                    }
-                    _unicodeBuilder = null;
+                    Chunks[ChunksCount - 1] = merged;
+                }
+                else
+                {
+                    EnsureCapacity(ChunksCount + 1);
+                    Chunks[ChunksCount++] = chunk;
+                }
+            }
+
+            public void Append(byte b) => Append(new Chunk(new byte[] { b }));
+
+            void EnsureCapacity(int capacity)
+            {
+                if (Chunks.Length < capacity)
+                {
+                    Array.Resize(ref Chunks, capacity + 4);
+                }
+            }
+
+            public string ToString(Encoding encoding)
+            {
+                if (encoding == null)
+                    throw new ArgumentNullException(nameof(encoding));
+
+                if (IsEmpty)
+                {
+                    return string.Empty;
                 }
 
-                return _binaryBuilder;
+                if (ChunksCount == 1 && Chunks[0].RawValue is string str)
+                {
+                    return str;
+                }
+
+                var builder = new StringBuilder(ChunksCount * 2);
+
+                for (int i = 0; i < ChunksCount; i++)
+                {
+                    builder.Append(Chunks[i].ToString(encoding));
+                }
+
+                return builder.ToString();
+            }
+
+            public byte[] ToBytes(Encoding encoding)
+            {
+                if (encoding == null)
+                    throw new ArgumentNullException(nameof(encoding));
+
+                if (IsEmpty)
+                {
+                    return EmptyArray<byte>.Instance;
+                }
+
+                var result = new List<byte>();
+
+                for (int i = 0; i < ChunksCount; i++)
+                {
+                    result.AddRange(Chunks[i].ToBytes(encoding));
+                }
+
+                return result.ToArray();
             }
         }
 
         #endregion
 
-        #region Results
+        #region Nested class: StringLiteralValue
+
+        sealed class StringLiteralValue : IStringLiteralValue
+        {
+            readonly ChunkList Chunks;
+
+            public Encoding Encoding { get; }
+
+            public StringLiteralValue(ChunkList chunks, Encoding encoding)
+            {
+                Chunks = chunks;
+                Encoding = encoding ?? throw new ArgumentNullException(nameof(encoding));
+            }
+
+            public bool Contains8bitText => Chunks.Contains8bitText;
+
+            public override string ToString() => Chunks.ToString(Encoding);
+
+            public byte[] ToBytes() => Chunks.ToBytes(Encoding);
+        }
+
+        #endregion
+
+        #region Fields & Properties
 
         /// <summary>
-        /// The result of builder: String or byte[].
+        /// File encoding.
         /// </summary>
-        public object Result
-        {
-            get
-            {
-                if (IsBinary)
-                    return Length != 0 ? BinaryBuilder.ToArray() : EmptyArray<byte>.Instance;
-                else
-                    return Length != 0 ? UnicodeBuilder.ToString() : string.Empty;
-            }
-        }
+        readonly Encoding/*!*/_encoding;
 
-        public string StringResult
-        {
-            get
-            {
-                if (Length != 0)
-                {
-                    // convert to unicode string:
-                    return UnicodeBuilder.ToString();
-                }
+        ChunkList _chunks = ChunkList.Create();
 
-                return string.Empty;
-            }
-        }
+        private Span span;
+
+        #endregion
+
+        #region Results
+
+        public string StringResult => _chunks.ToString(_encoding);
+
+        public IStringLiteralValue Result => new StringLiteralValue(_chunks, _encoding);
 
         #endregion
 
@@ -175,13 +315,13 @@ namespace Devsense.PHP.Syntax
             Debug.Assert(encoding != null);
             Debug.Assert(maxLength != 0);
 
-            this.encoding = encoding;
+            this._encoding = encoding;
             this.span = Span.Invalid;
 
             //if (binary)
             //    _binaryBuilder = new List<byte>(initialLength);
             //else
-            _unicodeBuilder = new StringBuilder(maxLength, int.MaxValue);
+            //    _unicodeBuilder = new StringBuilder(maxLength, int.MaxValue);
         }
 
         public PhpStringBuilder(Encoding/*!*/encoding, string/*!*/value, Span span)
@@ -199,7 +339,9 @@ namespace Devsense.PHP.Syntax
             if (this.span.IsValid)
             {
                 if (span.IsValid)
+                {
                     this.span = Span.Combine(this.span, span);
+                }
             }
             else
             {
@@ -207,33 +349,24 @@ namespace Devsense.PHP.Syntax
             }
         }
 
+        private void Append(Chunk chunk) => _chunks.Append(chunk);
+
         public void Append(string str, Span span)
         {
             Append(span);
             Append(str);
         }
-        public void Append(string str)
-        {
-            if (IsUnicode)
-            {
-                UnicodeBuilder.Append(str);
-            }
-            else
-            {
-                BinaryBuilder.AddRange(encoding.GetBytes(str));
-            }
-        }
+
+        public void Append(string str) => Append(new Chunk(str));
 
         public void Append(char[] buffer, int start, int length)
         {
-            if (IsUnicode)
+            if (length == 0)
             {
-                UnicodeBuilder.Append(buffer, start, length);
+                return;
             }
-            else
-            {
-                BinaryBuilder.AddRange(encoding.GetBytes(buffer, start, length));
-            }
+
+            Append(new Chunk(buffer.AsSpan(start, length)));
         }
 
         public void Append(char c, Span span)
@@ -241,84 +374,25 @@ namespace Devsense.PHP.Syntax
             Append(span);
             Append(c);
         }
-        public void Append(char c)
-        {
-            if (IsUnicode)
-            {
-                UnicodeBuilder.Append(c);
-            }
-            else
-            {
-                var encodeBytes = BytesBuffer;
-                var encodeChars = CharsBuffer;
 
-                encodeChars[0] = c;
-                int count = encoding.GetBytes(encodeChars, 0, 1, encodeBytes, 0);
-                for (int i = 0; i < count; ++i)
-                    BinaryBuilder.Add(encodeBytes[i]);
-            }
-        }
+        public void Append(char c) => Append(new Chunk(c));
 
         public void Append(byte b, Span span)
         {
             Append(span);
             Append(b);
         }
+
         public void Append(byte b)
         {
-            // force binary string
-
-            if (IsUnicode && b <= 0x7f)
+            if (b <= 0x7f)
             {
-                UnicodeBuilder.Append((char)b);
+                Append((char)b);
             }
             else
             {
-                // we have to store the string as a single-byte array
-                BinaryBuilder.Add(b);
+                _chunks.Append(b);
             }
-        }
-
-        #endregion
-
-        #region Misc
-
-        /// <summary>
-        /// Trim ending /r/n or /n characters. Assuming the string ends with /n.
-        /// </summary>
-        internal void TrimEoln()
-        {
-            if (IsUnicode)
-            {
-                if (UnicodeBuilder.Length > 0)
-                {
-                    if (UnicodeBuilder.Length >= 2 && UnicodeBuilder[UnicodeBuilder.Length - 2] == '\r')
-                    {
-                        // trim ending \r\n:
-                        UnicodeBuilder.Length -= 2;
-                    }
-                    else
-                    {
-                        // trim ending \n:
-                        UnicodeBuilder.Length -= 1;
-                    }
-                }
-            }
-            else
-            {
-                if (BinaryBuilder.Count > 0)
-                {
-                    if (BinaryBuilder.Count >= 2 && BinaryBuilder[BinaryBuilder.Count - 2] == (byte)'\r')
-                    {
-                        BinaryBuilder.RemoveRange(BinaryBuilder.Count - 2, 2);
-                    }
-                    else
-                    {
-                        BinaryBuilder.RemoveAt(BinaryBuilder.Count - 1);
-                    }
-                }
-            }
-
         }
 
         #endregion
