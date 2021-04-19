@@ -127,7 +127,7 @@ using StringPair = System.Collections.Generic.KeyValuePair<string, string>;
 %token <String> T_VARIABLE 320 //"variable (T_VARIABLE)"
 %token <String> T_INLINE_HTML 321
 %token <Strings> T_ENCAPSED_AND_WHITESPACE 316  //"quoted-string and whitespace (T_ENCAPSED_AND_WHITESPACE)"
-%token <String> T_CONSTANT_ENCAPSED_STRING 323 //"quoted-string (T_CONSTANT_ENCAPSED_STRING)"
+%token <Object> T_CONSTANT_ENCAPSED_STRING 323 //"quoted-string (T_CONSTANT_ENCAPSED_STRING)"
 %token <String> T_STRING_VARNAME 318 //"variable name (T_STRING_VARNAME)"
 %token <Long> T_NUM_STRING 325 //"number (T_NUM_STRING)"
 
