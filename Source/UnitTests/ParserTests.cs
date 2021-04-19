@@ -120,6 +120,21 @@ class X {
         }
 
         [TestMethod]
+        public void SingleByteStringTest()
+        {
+            var codes = new[] {
+                @"<?php echo ""\x99\x7a\x7b""",
+            };
+
+            foreach (var code in codes)
+            {
+                var unit = new CodeSourceUnit(code, "dummy.php", Encoding.UTF8);
+                unit.Parse(new BasicNodesFactory(unit), null);
+                Assert.IsNotNull(unit.Ast);
+            }
+        }
+
+        [TestMethod]
         public void ReturnTypeTest()
         {
             var codes = new[] {
