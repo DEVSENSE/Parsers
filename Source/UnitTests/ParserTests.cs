@@ -123,7 +123,7 @@ class X {
         public void SingleByteStringTest()
         {
             var codes = new[] {
-                @"<?php echo ""\x99\x7a\x7b""",
+                @"<?php echo ""\x99\x7a\x7b"";",
             };
 
             foreach (var code in codes)

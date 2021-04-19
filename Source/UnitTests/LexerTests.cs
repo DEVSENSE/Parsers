@@ -134,7 +134,7 @@ namespace UnitTests
                 Assert.AreEqual(Tokens.T_CONSTANT_ENCAPSED_STRING, token);
 
                 var value = lexer.TokenValue;
-                Assert.AreEqual("\xC0", value.String);
+                Assert.AreEqual("\xC0", value.Object.ToString());
             }
         }
 
