@@ -54,10 +54,9 @@ namespace Devsense.PHP.Syntax.Ast
 
 		internal override bool SkipInPureGlobalCode()
 		{
-			StringLiteral literal;
-			if (parameters.Length == 1 && (literal = parameters[0] as StringLiteral) != null)
+			if (parameters.Length == 1 && parameters[0] is StringLiteral literal)
 			{
-				return StringUtils.IsWhitespace((string)literal.Value);
+				return StringUtils.IsWhitespace(literal.Value);
 			}
 			else
 			{
