@@ -19,17 +19,47 @@ using System.Diagnostics;
 namespace Devsense.PHP.Syntax.Ast
 {
     /// <summary>
+    /// An assignment expression.
+    /// </summary>
+    public interface IAssignmentEx : IExpression
+    {
+        /// <summary>
+        /// The left side of the assignment.
+        /// </summary>
+        IExpression Target { get; }
+
+        /// <summary>
+        /// The value of the assignment.
+        /// </summary>
+        IExpression RValue { get; }
+    }
+
+    /// <summary>
     /// Base class for assignment expressions (by-value and by-ref).
     /// </summary>
-    public abstract class AssignEx : Expression
+    public abstract class AssignEx : Expression, IAssignmentEx
     {
-        internal override bool AllowsPassByReference { get { return true; } }
+        internal override bool AllowsPassByReference => true;
 
         /// <summary>Target of assignment</summary>
-        public VarLikeConstructUse LValue { get { return lvalue; } }
-        protected VarLikeConstructUse lvalue;
+        public VarLikeConstructUse LValue { get; }
 
-        protected AssignEx(Text.Span p) : base(p) { }
+        /// <summary>Expression being assigned</summary>
+        public Expression/*!*/RValue { get; }
+
+        protected AssignEx(Text.Span p, VarLikeConstructUse target, Expression rValue) : base(p)
+        {
+            LValue = target ?? throw new ArgumentNullException(nameof(target));
+            RValue = rValue ?? throw new ArgumentNullException(nameof(rValue));
+        }
+
+        #region IAssignmentEx
+
+        IExpression IAssignmentEx.Target => LValue;
+
+        IExpression IAssignmentEx.RValue => RValue;
+
+        #endregion
     }
 
     #region ValueAssignEx
@@ -42,19 +72,12 @@ namespace Devsense.PHP.Syntax.Ast
     /// </remarks>
     public sealed class ValueAssignEx : AssignEx
     {
-        public override Operations Operation { get { return operation; } }
-        internal Operations operation;
-
-        /// <summary>Expression being assigned</summary>
-        public Expression/*!*/RValue { get { return rvalue; } }
-        Expression/*!*/ rvalue;
+        public override Operations Operation { get; }
 
         public ValueAssignEx(Text.Span span, Operations operation, VarLikeConstructUse/*!*/ lvalue, Expression/*!*/ rvalue)
-            : base(span)
+            : base(span, lvalue, rvalue)
         {
-            this.lvalue = lvalue;
-            this.rvalue = rvalue;
-            this.operation = operation;
+            this.Operation = operation;
         }
 
         /// <summary>
@@ -81,10 +104,6 @@ namespace Devsense.PHP.Syntax.Ast
         /// </summary>
         public override Operations Operation => Operations.AssignRef;
 
-        /// <summary>Expression being assigned</summary>
-        public Expression/*!*/RValue { get { return rvalue; } }
-        Expression/*!*/ rvalue;
-
         /// <summary>
         /// Create new assignment.
         /// </summary>
@@ -92,13 +111,9 @@ namespace Devsense.PHP.Syntax.Ast
         /// <param name="lvalue">Assigned variable.</param>
         /// <param name="rvalue">Assigned value.</param>
         public RefAssignEx(Text.Span span, VarLikeConstructUse/*!*/ lvalue, Expression/*!*/ rvalue)
-            : base(span)
+            : base(span, lvalue, rvalue)
         {
-            Debug.Assert(rvalue != null);
             Debug.Assert(rvalue.AllowsPassByReference);
-
-            this.lvalue = lvalue;
-            this.rvalue = rvalue;
         }
 
         /// <summary>
