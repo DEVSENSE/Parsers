@@ -153,8 +153,26 @@ namespace UnitTests
 
             var errors = new TestErrorSink();
             unit.Parse(new BasicNodesFactory(unit), errors);
+
+            Assert.AreEqual(1, errors.Count);
         }
 
+        [TestMethod]
+        public void HeredocCompoundTest()
+        {
+            var unit = new CodeSourceUnit(@"<?php
+echo <<<HTML
+  <span>$vars</span>
+  <div>$vars</div>
+  <b></b>
+  HTML;
+", "index.php", Encoding.UTF8);
+
+            var errors = new TestErrorSink();
+            unit.Parse(new BasicNodesFactory(unit), errors);
+
+            Assert.AreEqual(0, errors.Count);
+        }
         [TestMethod]
         [DataSource("Microsoft.VisualStudio.TestTools.DataSource.CSV", "|DataDirectory|\\TestData.csv", "TestData#csv", DataAccessMethod.Sequential)]
         public void LexerGetNextTokenByLineTest()
