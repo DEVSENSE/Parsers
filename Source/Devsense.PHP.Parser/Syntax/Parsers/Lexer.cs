@@ -76,10 +76,9 @@ namespace Devsense.PHP.Syntax
         private int _charOffset = 0;
 
         /// <summary>
-        /// Last encountered heredoc or nowdoc label
+        /// Information about the expected heredoc end token.
         /// </summary>
-        internal string _hereDocLabel = null;
-
+        internal HereDocTokenValue _hereDocValue = null;
 
         /// <summary>
         /// Get actual doc comment.
@@ -213,8 +212,11 @@ namespace Devsense.PHP.Syntax
                         case ' ': return " ";
                         case '\n': return "\n";
                         case ';': return ";";
+                        case ',': return ",";
                         case '(': return "(";
                         case ')': return ")";
+                        case '[': return "[";
+                        case ']': return "]";
                         case '/': return "/";
                         case '\\': return "\\";
                     }
@@ -905,16 +907,15 @@ namespace Devsense.PHP.Syntax
 
         bool VerifyEndLabel(CharSpan chars)
         {
-            return chars
-                .LastWord()
-                .StartsWith(_hereDocLabel);
+            return
+                _hereDocValue != null &&
+                chars.LastWord().StartsWith(_hereDocValue.Label);
         }
 
         /// <summary>
-        /// Resolves closing label indentation,
-        /// updated the content with trimmed closing line including closing linebreak.
-        /// </summary>
-        CharSpan ResolveHeredocIndentation(ref CharSpan content)
+        /// Resolves closing label indentation (whitespace preceeding the T_END_HEREDOC which is at the last line),
+        /// and trims the last line off</summary>
+        string ResolveHeredocIndentation(ref CharSpan content)
         {
             int from = content.Length;
 
@@ -934,22 +935,22 @@ namespace Devsense.PHP.Syntax
 
             var indent = content.Substring(from);
 
-            // scan line by line and check the line indentation
+            //// scan line by line and check the line indentation
 
-            if (indent.Length != 0)
-            {
-                foreach (var line in content.EnumerateLines(false))
-                {
-                    if (!line.StartsWith(indent) && line.Length != 0)
-                    {
-                        // note: {line.Start} refers to the index in {buffer}
-                        // id {line} is empty, then it is CharSpan.Empty (line.Start will be 0)
-                        var linespan = new Span(_charOffset + (line.Start - token_start), line.Length);
-                        _errors.Error(linespan, FatalErrors.HeredocIndentError);
-                        break;
-                    }
-                }
-            }
+            //if (indent.Length != 0)
+            //{
+            //    foreach (var line in content.EnumerateLines(false))
+            //    {
+            //        if (!line.StartsWith(indent) && line.Length != 0)
+            //        {
+            //            // note: {line.Start} refers to the index in {buffer}
+            //            // id {line} is empty, then it is CharSpan.Empty (line.Start will be 0)
+            //            var linespan = new Span(_charOffset + (line.Start - token_start), line.Length);
+            //            _errors.Error(linespan, FatalErrors.HeredocIndentError);
+            //            break;
+            //        }
+            //    }
+            //}
 
             // trim last line
             content = content.Substring(0, from);
@@ -961,78 +962,78 @@ namespace Devsense.PHP.Syntax
             if (content.LastChar() == '\r') content = content.Substring(0, content.Length - 1);
 
             //
-            return indent;
+            return indent.ToString();
         }
 
-        /// <summary>
-        /// Removes line indentation from the content.
-        /// </summary>
-        static string RemoveHeredocIndentation(string content, CharSpan indentation)
-        {
-            if (indentation.Length == 0 || content.Length == 0)
-            {
-                // no indentation
-                return content;
-            }
+        ///// <summary>
+        ///// Removes line indentation from the content.
+        ///// </summary>
+        //static string RemoveHeredocIndentation(string content, CharSpan indentation)
+        //{
+        //    if (indentation.Length == 0 || content.Length == 0)
+        //    {
+        //        // no indentation
+        //        return content;
+        //    }
 
-            // scan line by line and trim N characters
-            int linestart = 0;
-            var result = StringUtils.GetStringBuilder(content.Length);
+        //    // scan line by line and trim N characters
+        //    int linestart = 0;
+        //    var result = StringUtils.GetStringBuilder(content.Length);
 
-            for (int i = 0; i < content.Length;)
-            {
-                var eol = TextUtils.LengthOfLineBreak(content, i);
-                if (eol != 0)
-                {
-                    i += eol;
+        //    for (int i = 0; i < content.Length;)
+        //    {
+        //        var eol = TextUtils.LengthOfLineBreak(content, i);
+        //        if (eol != 0)
+        //        {
+        //            i += eol;
 
-                    // take [linestart .. i] characters
-                    // without the indentation
-                    var wholeline = content.AsSpan(linestart, i - linestart);
-                    if (wholeline.Length >= indentation.Length && wholeline.StartsWith(indentation))
-                    {
-                        result.Append(content, linestart + indentation.Length, i - linestart - indentation.Length);
-                    }
-                    else
-                    {
-                        // invalid indentation
-                        // add the whole line, syntax error will be reported later
-                        result.Append(content, linestart, i - linestart);
-                    }
-                    
-                    linestart = i;
-                }
-                else
-                {
-                    i++;
-                }
-            }
+        //            // take [linestart .. i] characters
+        //            // without the indentation
+        //            var wholeline = content.AsSpan(linestart, i - linestart);
+        //            if (wholeline.Length >= indentation.Length && wholeline.StartsWith(indentation))
+        //            {
+        //                result.Append(content, linestart + indentation.Length, i - linestart - indentation.Length);
+        //            }
+        //            else
+        //            {
+        //                // invalid indentation
+        //                // add the whole line, syntax error will be reported later
+        //                result.Append(content, linestart, i - linestart);
+        //            }
 
-            var count = content.Length - linestart - indentation.Length;
-            if (count > 0)
-            {
-                var wholeline = content.AsSpan(linestart);
-                if (wholeline.Length >= indentation.Length && wholeline.StartsWith(indentation))
-                {
-                    result.Append(content, linestart + indentation.Length, count);
-                }
-                else
-                {
-                    // invalid indentation
-                    // add the whole line, syntax error will be reported later
-                    result.Append(content, linestart, content.Length - linestart);
-                }
-            }
+        //            linestart = i;
+        //        }
+        //        else
+        //        {
+        //            i++;
+        //        }
+        //    }
 
-            //
-            return StringUtils.ReturnStringBuilder(result);
-        }
+        //    var count = content.Length - linestart - indentation.Length;
+        //    if (count > 0)
+        //    {
+        //        var wholeline = content.AsSpan(linestart);
+        //        if (wholeline.Length >= indentation.Length && wholeline.StartsWith(indentation))
+        //        {
+        //            result.Append(content, linestart + indentation.Length, count);
+        //        }
+        //        else
+        //        {
+        //            // invalid indentation
+        //            // add the whole line, syntax error will be reported later
+        //            result.Append(content, linestart, content.Length - linestart);
+        //        }
+        //    }
+
+        //    //
+        //    return StringUtils.ReturnStringBuilder(result);
+        //}
 
         bool ProcessEndNowDoc(ProcessStringDelegate tryprocess)
         {
             BEGIN(LexicalStates.ST_END_HEREDOC);
 
-            var content = TrimNowDocEnd(this.GetTokenSpan(), _hereDocLabel); // trim label and whitespaces from the heredoc end
+            var content = TrimNowDocEnd(this.GetTokenSpan(), _hereDocValue.Label); // trim label and whitespaces from the heredoc end
             var lookbackfix = TokenLength - content.Length;
             var indentation = ResolveHeredocIndentation(ref content);
             var sourcetext = content.ToString();
@@ -1041,15 +1042,56 @@ namespace Devsense.PHP.Syntax
                 ? ProcessStringText(content.Buffer, content.Start, content.Length, tryprocess).ToString() // TODO: handle 8bit values
                 : sourcetext;
 
-            text = RemoveHeredocIndentation(text, indentation);
+            // text = RemoveHeredocIndentation(text, indentation);
 
             // move back at the end of the heredoc label - yyless does not work properly (requires additional condition for the optional ';')
             lookahead_index = token_end = lookahead_index - lookbackfix;
 
             _tokenSemantics.Object = new KeyValuePair<string, string>(text, sourcetext);
 
+            // remember the expected indentation
+            _hereDocValue = _hereDocValue.WithIndentation(indentation);
+
             //
             return text.Length != 0;
+        }
+
+        /// <summary>
+        /// Annotates <see cref="Tokens.T_START_HEREDOC"/> and <see cref="Tokens.T_END_HEREDOC"/> tokens semantic value.
+        /// </summary>
+        public class HereDocTokenValue : IEquatable<HereDocTokenValue> // SemanticValueType.Object
+        {
+            public string Label { get; }
+
+            public string Indentation { get; }
+
+            public HereDocTokenValue(string label, string indentation = null)
+            {
+                Debug.Assert(string.IsNullOrWhiteSpace(indentation));
+
+                this.Label = label ?? throw new ArgumentNullException(nameof(label));
+                this.Indentation = indentation ?? string.Empty;
+            }
+
+            public HereDocTokenValue Clone()
+            {
+                return new HereDocTokenValue(Label, Indentation);
+            }
+
+            public HereDocTokenValue WithIndentation(string indentation)
+            {
+                return this.Indentation == indentation ? this : new HereDocTokenValue(Label, indentation);
+            }
+
+            public bool Equals(HereDocTokenValue other)
+            {
+                return other != null && other.Label == Label && other.Indentation == Indentation;
+            }
+
+            public override int GetHashCode()
+            {
+                return StringComparer.Ordinal.GetHashCode(Label) ^ StringComparer.Ordinal.GetHashCode(Indentation);
+            }
         }
 
         /// <summary>
@@ -1077,7 +1119,7 @@ namespace Devsense.PHP.Syntax
             }
 
             // trim label
-            Debug.Assert(content.Length >= label.Length);
+            Debug.Assert(content.EndsWith(label));
 
             content = content.Substring(0, content.Length - label.Length);
 
@@ -1172,6 +1214,7 @@ namespace Devsense.PHP.Syntax
         }
 
         bool ProcessShell(int count, out Tokens token) => ProcessText(count, LexicalStates.ST_IN_SHELL, '`', out token);
+
         bool ProcessHeredoc(int count, out Tokens token) => ProcessText(count, LexicalStates.ST_IN_HEREDOC, '\0', out token);
 
         bool ProcessText(int count, LexicalStates newState, char ending, out Tokens token)
@@ -1195,8 +1238,8 @@ namespace Devsense.PHP.Syntax
 
         public struct CompressedState : IEquatable<CompressedState>
         {
-            internal string HereDocLabel => _hereDocLabel;
-            private readonly string _hereDocLabel;
+            internal HereDocTokenValue HereDocValue => _hereDocValue != null ? _hereDocValue.Clone() : null;
+            private readonly HereDocTokenValue _hereDocValue;
 
             internal LexicalStates CurrentState => _currentState;
             private readonly LexicalStates _currentState;
@@ -1208,7 +1251,7 @@ namespace Devsense.PHP.Syntax
 
             public CompressedState(Lexer lexer)
             {
-                this._hereDocLabel = lexer._hereDocLabel;
+                this._hereDocValue = lexer._hereDocValue != null ? lexer._hereDocValue.Clone() : null;
                 this._currentState = lexer.CurrentLexicalState;
                 this._stateStack = lexer.stateStack.ToArray();
                 this._phpDoc = lexer.DocBlock;
@@ -1218,7 +1261,7 @@ namespace Devsense.PHP.Syntax
             {
                 unchecked
                 {
-                    int result = (_hereDocLabel != null) ? _hereDocLabel.GetHashCode() : 0x2312347;
+                    int result = _hereDocValue != null ? _hereDocValue.GetHashCode() : 0x2312347;
                     for (int i = 0; i < _stateStack.Length; i++)
                         result ^= (int)_stateStack[i] << i;
                     return result ^ ((int)_currentState << 7);
@@ -1227,8 +1270,9 @@ namespace Devsense.PHP.Syntax
 
             public bool Equals(CompressedState other)
             {
-                if (_hereDocLabel != other._hereDocLabel) return false;
                 if (_stateStack.Length != other._stateStack.Length) return false;
+                if (_hereDocValue != null && !_hereDocValue.Equals(other._hereDocValue)) return false;
+                if (_hereDocValue == null && other._hereDocValue != null) return false;
 
                 for (int i = 0; i < _stateStack.Length; i++)
                 {
@@ -1252,7 +1296,7 @@ namespace Devsense.PHP.Syntax
 
         public void RestoreCompressedState(CompressedState state)
         {
-            _hereDocLabel = state.HereDocLabel;
+            _hereDocValue = state.HereDocValue;
             stateStack = state.GetStateStack();
             CurrentLexicalState = state.CurrentState;
             DocBlock = state.PhpDoc;

@@ -424,6 +424,7 @@ public partial struct SemanticValueType
 	public AnonymousClass AnonymousClass				{ get { return (AnonymousClass)Object; }			set { Object = value; } }
 	public UseBase Use									{ get { return (UseBase)Object; }					set { Object = value; } }
 	public List<UseBase> UseList						{ get { return (List<UseBase>)Object; }				set { Object = value; } }
+	public Lexer.HereDocTokenValue HereDocValue			{ get { return (Lexer.HereDocTokenValue)Object; }	set { Object = value; } }
 }
 
 public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
@@ -3600,13 +3601,13 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 { yyval.Node = _astFactory.StringEncapsedExpression(yypos, _astFactory.Concat(value_stack.array[value_stack.top-2].yypos, value_stack.array[value_stack.top-2].yyval.NodeList), Tokens.T_DOUBLE_QUOTES); }
         return;
       case 461: // scalar -> T_START_HEREDOC T_END_HEREDOC 
-{ yyval.Node = _astFactory.HeredocExpression(yypos, _astFactory.Literal(new Span(value_stack.array[value_stack.top-2].yypos.End, 0), "", ""), value_stack.array[value_stack.top-2].yyval.QuoteToken, value_stack.array[value_stack.top-2].yyval.String); }
+{ yyval.Node = _astFactory.HeredocExpression(yypos, _astFactory.Literal(new Span(value_stack.array[value_stack.top-2].yypos.End, 0), "", ""), value_stack.array[value_stack.top-2].yyval.QuoteToken, value_stack.array[value_stack.top-1].yyval.HereDocValue); }
         return;
       case 462: // scalar -> T_START_HEREDOC T_ENCAPSED_AND_WHITESPACE T_END_HEREDOC 
-{ yyval.Node = _astFactory.HeredocExpression(yypos, _astFactory.Literal(value_stack.array[value_stack.top-2].yypos, value_stack.array[value_stack.top-2].yyval.Strings.Key, value_stack.array[value_stack.top-2].yyval.Strings.Value), value_stack.array[value_stack.top-3].yyval.QuoteToken, value_stack.array[value_stack.top-3].yyval.String); }
+{ yyval.Node = _astFactory.HeredocExpression(yypos, RemoveHereDocIndentation(_astFactory.Literal(value_stack.array[value_stack.top-2].yypos, value_stack.array[value_stack.top-2].yyval.Strings.Key, value_stack.array[value_stack.top-2].yyval.Strings.Value), value_stack.array[value_stack.top-1].yyval.HereDocValue, true), value_stack.array[value_stack.top-3].yyval.QuoteToken, value_stack.array[value_stack.top-1].yyval.HereDocValue); }
         return;
       case 463: // scalar -> T_START_HEREDOC encaps_list T_END_HEREDOC 
-{ yyval.Node = _astFactory.HeredocExpression(yypos, _astFactory.Concat(value_stack.array[value_stack.top-2].yypos, value_stack.array[value_stack.top-2].yyval.NodeList), value_stack.array[value_stack.top-3].yyval.QuoteToken, value_stack.array[value_stack.top-3].yyval.String); }
+{ yyval.Node = _astFactory.HeredocExpression(yypos, RemoveHereDocIndentation(_astFactory.Concat(value_stack.array[value_stack.top-2].yypos, value_stack.array[value_stack.top-2].yyval.NodeList), value_stack.array[value_stack.top-1].yyval.HereDocValue, true), value_stack.array[value_stack.top-3].yyval.QuoteToken, value_stack.array[value_stack.top-1].yyval.HereDocValue); }
         return;
       case 464: // scalar -> dereferencable_scalar 
 { yyval.Node = value_stack.array[value_stack.top-1].yyval.Node; }

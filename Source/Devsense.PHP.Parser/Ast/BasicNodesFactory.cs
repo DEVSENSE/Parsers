@@ -235,14 +235,16 @@ namespace Devsense.PHP.Syntax.Ast
             }
         }
 
-        public virtual LangElement HeredocExpression(Span span, LangElement expression, Tokens quoteStyle, string label)
+        public virtual LangElement HeredocExpression(Span span, LangElement expression, Tokens quoteStyle, Lexer.HereDocTokenValue heredoc)
         {
+            Debug.Assert(heredoc != null);
+
             switch (quoteStyle)
             {
                 case Tokens.T_SINGLE_QUOTES:
-                    return new NowDocExpression(span, (Expression)expression, label);
+                    return new NowDocExpression(span, (Expression)expression, heredoc.Label);
                 default:
-                    return new HereDocExpression(span, (Expression)expression, label, quoteStyle == Tokens.T_DOUBLE_QUOTES);
+                    return new HereDocExpression(span, (Expression)expression, heredoc.Label, quoteStyle == Tokens.T_DOUBLE_QUOTES);
             }
         }
 

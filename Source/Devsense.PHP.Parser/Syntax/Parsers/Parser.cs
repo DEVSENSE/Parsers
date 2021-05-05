@@ -667,6 +667,75 @@ namespace Devsense.PHP.Syntax
             return element;
         }
 
+        /// <summary>
+        /// Traverse through the expression (either <see cref="IStringLiteralValue"/> or concat of <see cref="IStringLiteralValue"/>s),
+        /// and checks and removes the leading whitespace indentation.
+        /// </summary>
+        /// <param name="element">Either <see cref="IStringLiteralValue"/> or <see cref="IConcatEx"/> with <see cref="IStringLiteralValue"/>s.</param>
+        /// <param name="heredoc">Heredoc information.</param>
+        /// <param name="lineBegin">Whether the element starts at line beginning.</param>
+        LangElement RemoveHereDocIndentation(LangElement element, Lexer.HereDocTokenValue heredoc, bool lineBegin)
+        {
+            var indentation = heredoc.Indentation.AsSpan();
+
+            if (indentation.IsEmpty)
+            {
+                return element;
+            }
+
+            if (!indentation.IsWhiteSpace())
+            {
+                throw new ArgumentException("", nameof(indentation));
+            }
+
+            //
+            if (element is ConcatEx concat)
+            {
+                var parts = concat.Expressions;
+                for (int i = 0; i < parts.Length; i++)
+                {
+                    parts[i] = (Expression)RemoveHereDocIndentation(parts[i], heredoc, lineBegin && i == 0);
+                }
+            }
+            else if (element is IStringLiteralValue str) // i.e. StringLiteral
+            {
+                // if (str.Contains8bitText) // TODO, use str.EnumerateChunks() : byte[]|string
+
+                var content = str.ToString();
+
+                var result = StringUtils.GetStringBuilder(content.Length);
+                var errorreported = false;
+
+                foreach (var lineSpan in TextUtils.EnumerateLines(content, true))
+                {
+
+                    if (lineBegin)
+                    {
+                        var lineText = content.AsSpan(lineSpan.Start, lineSpan.Length);
+                        if (lineText.StartsWith(indentation))
+                        {
+                            result.Append(content, lineSpan.Start + indentation.Length, lineSpan.Length - indentation.Length);
+                            continue;
+                        }
+                        else if (!errorreported)
+                        {
+                            // error
+                            _errors.Error(element.Span, FatalErrors.HeredocIndentError);
+                            errorreported = true; // report error just once
+                        }
+                    }
+
+                    // next lines are from the line begin
+                    lineBegin = true;
+                    result.Append(content, lineSpan.Start, lineSpan.Length);
+                }
+
+                return new StringLiteral(element.Span, StringUtils.ReturnStringBuilder(result));
+            }
+
+            return element;
+        }
+
         #region Aliasing
 
         /// <summary>

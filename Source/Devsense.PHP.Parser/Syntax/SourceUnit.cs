@@ -319,7 +319,7 @@ namespace Devsense.PHP.Syntax
                 errors = (factory as Errors.IErrorSink<Span>) ?? new EmptyErrorSink<Span>();
             }
 
-            var lexer = new Lexer(new StringReader(code), Encoding.UTF8, errors, features, 0, initialState);
+            //var lexer = new Lexer(new StringReader(code), Encoding.UTF8, errors, features, 0, initialState);
 
             unit.Parse(factory, errors, recovery);
             unit.Close();

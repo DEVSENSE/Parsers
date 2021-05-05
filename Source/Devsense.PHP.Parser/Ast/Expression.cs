@@ -425,14 +425,13 @@ namespace Devsense.PHP.Syntax.Ast
             /// <summary>
             /// NOWDOC label
             /// </summary>
-            public string Label => _label;
-            private string _label;
+            public string Label { get; }
 
             public NowDocExpression(Span span, Expression expression, string label)
                 : base(span, expression)
             {
+                this.Label = label;
                 _expression = expression;
-                _label = label;
             }
         }
 
@@ -456,8 +455,7 @@ namespace Devsense.PHP.Syntax.Ast
             /// <summary>
             /// NOWDOC label
             /// </summary>
-            public string Label => _label;
-            private string _label;
+            public string Label { get; }
 
             string QuotedLabel => _quoted ? ("\"" + Label + "\"") : Label;
             readonly bool _quoted;
@@ -465,8 +463,8 @@ namespace Devsense.PHP.Syntax.Ast
             public HereDocExpression(Span span, Expression expression, string label, bool quoted)
                 : base(span, expression)
             {
+                this.Label = label;
                 _expression = expression;
-                _label = label;
                 _quoted = quoted;
             }
         }

@@ -20,9 +20,17 @@ using System.Diagnostics;
 namespace Devsense.PHP.Syntax.Ast
 {
     /// <summary>
-    /// Represents a concatenation expression (dot PHP operator).
+    /// Represents a concatenation expression ('<c>.</c>' PHP operator).
     /// </summary>
-    public sealed class ConcatEx : Expression
+    public interface IConcatEx : IExpression
+    {
+        IReadOnlyList<IExpression> Expressions { get; }
+    }
+
+    /// <summary>
+    /// Represents a concatenation expression ('<c>.</c>' PHP operator).
+    /// </summary>
+    public sealed class ConcatEx : Expression, IConcatEx
     {
         /// <summary>
         /// Operation used to concatenate the expressions.
@@ -33,7 +41,10 @@ namespace Devsense.PHP.Syntax.Ast
         /// Expressions represented by the <see cref="ConcatEx"/>.
         /// </summary>
         public Expression[]/*!*/ Expressions { get { return _expressions; } }
+
         private Expression[]/*!*/ _expressions;
+
+        IReadOnlyList<IExpression> IConcatEx.Expressions { get { return _expressions; } }
 
         /// <summary>
         /// Initialize the ConcatEx AST node and optimize the subtree if possible. Look for child expressions and chain possible concatenations. This prevents StackOverflowException in case of huge concatenation expressions.

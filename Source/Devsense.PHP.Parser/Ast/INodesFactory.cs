@@ -557,8 +557,8 @@ namespace Devsense.PHP.Syntax.Ast
         /// <param name="span">Element span.</param>
         /// <param name="containing">String expression.</param>
         /// <param name="quoteStyle">Either double quote, single quote or zero. Quotes used to enclose the label.</param>
-        /// <param name="label">Label string.</param>
-        TNode HeredocExpression(TSpan span, TNode containing, Tokens quoteStyle, string label);
+        /// <param name="heredoc">Information about the heredoc element.</param>
+        TNode HeredocExpression(TSpan span, TNode containing, Tokens quoteStyle, Lexer.HereDocTokenValue heredoc);
 
         /// <summary>
         /// Creates <c>exit</c> expression with optional result status expression.

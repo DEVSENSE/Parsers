@@ -83,6 +83,7 @@ using StringPair = System.Collections.Generic.KeyValuePair<string, string>;
 	public AnonymousClass AnonymousClass				{ get { return (AnonymousClass)Object; }			set { Object = value; } }
 	public UseBase Use									{ get { return (UseBase)Object; }					set { Object = value; } }
 	public List<UseBase> UseList						{ get { return (List<UseBase>)Object; }				set { Object = value; } }
+	public Lexer.HereDocTokenValue HereDocValue			{ get { return (Lexer.HereDocTokenValue)Object; }	set { Object = value; } }
 }
 
 %left T_THROW
@@ -279,7 +280,7 @@ using StringPair = System.Collections.Generic.KeyValuePair<string, string>;
 %token <Object> T_CLOSE_TAG 384      //"close tag (T_CLOSE_TAG)"
 %token <Object> T_WHITESPACE 382     //"whitespace (T_WHITESPACE)"
 %token T_START_HEREDOC 383  //"heredoc start (T_START_HEREDOC)"
-%token <String> T_END_HEREDOC 387    //"heredoc end (T_END_HEREDOC)"
+%token <HereDocValue> T_END_HEREDOC 387    //"heredoc end (T_END_HEREDOC)"
 %token <Object> T_DOLLAR_OPEN_CURLY_BRACES 385 //"${ (T_DOLLAR_OPEN_CURLY_BRACES)"
 %token <Object> T_CURLY_OPEN 386     //"{$ (T_CURLY_OPEN)"
 %token <Object> T_DOUBLE_COLON 390  //":: (T_DOUBLE_COLON)"
@@ -1457,9 +1458,9 @@ scalar:
 	|	T_NS_C		{ $$ = _astFactory.PseudoConstUse(@$, PseudoConstUse.Types.Namespace); }
 	|	T_CLASS_C	{ $$ = _astFactory.PseudoConstUse(@$, PseudoConstUse.Types.Class); }    
 	|	'"' encaps_list '"' 	{ $$ = _astFactory.StringEncapsedExpression(@$, _astFactory.Concat(@2, $2), Tokens.T_DOUBLE_QUOTES); }
-	|	T_START_HEREDOC T_END_HEREDOC							{ $$ = _astFactory.HeredocExpression(@$, _astFactory.Literal(new Span(@1.End, 0), "", ""), $1.QuoteToken, $1.String); }
-	|	T_START_HEREDOC T_ENCAPSED_AND_WHITESPACE T_END_HEREDOC { $$ = _astFactory.HeredocExpression(@$, _astFactory.Literal(@2, $2.Key, $2.Value), $1.QuoteToken, $1.String); }
-	|	T_START_HEREDOC encaps_list T_END_HEREDOC				{ $$ = _astFactory.HeredocExpression(@$, _astFactory.Concat(@2, $2), $1.QuoteToken, $1.String); }
+	|	T_START_HEREDOC T_END_HEREDOC							{ $$ = _astFactory.HeredocExpression(@$, _astFactory.Literal(new Span(@1.End, 0), "", ""), $1.QuoteToken, $2); }
+	|	T_START_HEREDOC T_ENCAPSED_AND_WHITESPACE T_END_HEREDOC { $$ = _astFactory.HeredocExpression(@$, RemoveHereDocIndentation(_astFactory.Literal(@2, $2.Key, $2.Value), $3, true), $1.QuoteToken, $3); }
+	|	T_START_HEREDOC encaps_list T_END_HEREDOC				{ $$ = _astFactory.HeredocExpression(@$, RemoveHereDocIndentation(_astFactory.Concat(@2, $2), $3, true), $1.QuoteToken, $3); }
 	|	dereferencable_scalar	{ $$ = $1; }
 	|	constant			{ $$ = $1; }
 ;

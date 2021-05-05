@@ -391,8 +391,8 @@ namespace UnitTests
             public override LangElement StringEncapsedExpression(Span span, LangElement expression, Tokens openDelimiter)
                  => CountLE(base.StringEncapsedExpression(span, expression, openDelimiter));
 
-            public override LangElement HeredocExpression(Span span, LangElement expression, Tokens quoteStyle, string label)
-                => CountLE(base.HeredocExpression(span, expression, quoteStyle, label));
+            public override LangElement HeredocExpression(Span span, LangElement expression, Tokens quoteStyle, Lexer.HereDocTokenValue heredoc)
+                => CountLE(base.HeredocExpression(span, expression, quoteStyle, heredoc));
 
             public override LangElement PHPDoc(Span span, LangElement content)
                  => CountLE(base.PHPDoc(span, content));

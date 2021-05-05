@@ -50,6 +50,8 @@ namespace Devsense.PHP.Text
                 : string.Empty;
         }
 
+        public ReadOnlySpan<char> AsSpan() => Buffer.AsSpan(Start, Length);
+
         public override int GetHashCode()
         {
             return StringComparer.Ordinal.GetHashCode(ToString());
@@ -159,34 +161,6 @@ namespace Devsense.PHP.Text
             return chars;
         }
 
-        public static IEnumerable<CharSpan> EnumerateLines(this CharSpan text, bool includeEOL)
-        {
-            int linestart = 0;
-
-            for (int i = 0; i < text.Length;)
-            {
-                var eol = TextUtils.LengthOfLineBreak(text.Buffer, text.Start + i);
-                if (eol != 0)
-                {
-                    yield return text.Substring(linestart, i - linestart + (includeEOL ? eol : 0));
-
-                    i += eol;
-                    linestart = i;
-
-                    if (linestart >= text.Length)
-                    {
-                        yield break;
-                    }
-                }
-                else
-                {
-                    i++;
-                }
-            }
-
-            yield return text.Substring(linestart);
-        }
-
         /// <summary>
         /// Gets last character of the span or '\0' if span is empty.
         /// </summary>
@@ -208,6 +182,42 @@ namespace Devsense.PHP.Text
             if (length > chars.Length - index) throw new ArgumentOutOfRangeException();
 
             return new CharSpan(chars.Buffer, chars.Start + index, length);
+        }
+
+        public static bool EndsWith(this CharSpan chars, string text)
+        {
+            if (text.Length > chars.Length)
+            {
+                return false;
+            }
+
+            for (int i = 0; i < text.Length; i++)
+            {
+                if (text[i] != chars[chars.Length - text.Length + i])
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        public static bool EndsWith(this CharSpan chars, CharSpan text)
+        {
+            if (text.Length > chars.Length)
+            {
+                return false;
+            }
+
+            for (int i = 0; i < text.Length; i++)
+            {
+                if (text[i] != chars[chars.Length - text.Length + i])
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
 
         public static bool StartsWith(this CharSpan chars, string text)

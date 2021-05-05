@@ -14,6 +14,7 @@
 // permissions and limitations under the License.
 
 using System;
+using System.Collections.Generic;
 
 namespace Devsense.PHP.Text
 {
@@ -27,36 +28,15 @@ namespace Devsense.PHP.Text
         /// <param name="text">Document text.</param>
         /// <param name="position">Index of character within <paramref name="text"/> to look at.</param>
         /// <returns>Length of line break character sequence at <paramref name="position"/>. In case of no line break, <c>0</c> is returned.</returns>
-        public static int LengthOfLineBreak(string text, int position)
-        {
-            char c = text[position];
-            if (c == '\r')
-            {
-                // \r
-                if (++position >= text.Length || text[position] != '\n')
-                    return 1;
-
-                // \r\n
-                return 2;
-            }
-            else
-            {
-                // \n
-                // unicode line breaks
-                if (c == '\n' || c == '\u0085' || c == '\u2028' || c == '\u2029')
-                    return 1;
-
-                return 0;
-            }
-        }
+        public static int LengthOfLineBreak(string text, int position) => LengthOfLineBreak(text.AsSpan(), position);
 
         /// <summary>
         /// Gets length of line break character sequence if any.
         /// </summary>
         /// <remarks>See <see cref="LengthOfLineBreak(string, int)"/>.</remarks>
-        public static int LengthOfLineBreak(char[] text, int position)
+        public static int LengthOfLineBreak(ReadOnlySpan<char> text, int position)
         {
-            char c = text[position];
+            var c = text[position];
             if (c == '\r')
             {
                 // \r
@@ -114,6 +94,34 @@ namespace Devsense.PHP.Text
                 case 9: return "9";
                 default: return number.ToString();
             }
+        }
+
+        public static IEnumerable<Span> EnumerateLines(this string text, bool includeEOL)
+        {
+            int linestart = 0;
+
+            for (int i = 0; i < text.Length;)
+            {
+                var eol = TextUtils.LengthOfLineBreak(text, i);
+                if (eol != 0)
+                {
+                    yield return new Span(linestart, i - linestart + (includeEOL ? eol : 0));
+
+                    i += eol;
+                    linestart = i;
+
+                    if (linestart >= text.Length)
+                    {
+                        yield break;
+                    }
+                }
+                else
+                {
+                    i++;
+                }
+            }
+
+            yield return new Span(linestart, text.Length - linestart);
         }
     }
 
