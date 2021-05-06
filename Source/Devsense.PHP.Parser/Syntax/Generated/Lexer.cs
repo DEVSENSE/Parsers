@@ -303,28 +303,28 @@ using Devsense.PHP.Text;
 				case 22:
 					// #line 166
 					{
-						return (Tokens.T_IF);
+						return Identifier(Tokens.T_IF);
 					}
 					break;
 					
 				case 23:
 					// #line 190
 					{
-						return (Tokens.T_DO);
+						return Identifier(Tokens.T_DO);
 					}
 					break;
 					
 				case 24:
 					// #line 122
 					{
-						return (Tokens.T_FN);
+						return Identifier(Tokens.T_FN);
 					}
 					break;
 					
 				case 25:
 					// #line 595
 					{
-						return (Tokens.T_LOGICAL_OR);
+						return Identifier(Tokens.T_LOGICAL_OR);
 					}
 					break;
 					
@@ -338,7 +338,7 @@ using Devsense.PHP.Text;
 				case 27:
 					// #line 222
 					{
-						return (Tokens.T_AS);
+						return Identifier(Tokens.T_AS);
 					}
 					break;
 					
@@ -541,49 +541,49 @@ using Devsense.PHP.Text;
 				case 56:
 					// #line 603
 					{
-						return (Tokens.T_LOGICAL_XOR);
+						return Identifier(Tokens.T_LOGICAL_XOR);
 					}
 					break;
 					
 				case 57:
 					// #line 150
 					{
-						return (Tokens.T_TRY);
+						return Identifier(Tokens.T_TRY);
 					}
 					break;
 					
 				case 58:
 					// #line 118
 					{
-						return (Tokens.T_EXIT);
+						return Identifier(Tokens.T_EXIT);
 					}
 					break;
 					
 				case 59:
 					// #line 194
 					{
-						return (Tokens.T_FOR);
+						return Identifier(Tokens.T_FOR);
 					}
 					break;
 					
 				case 60:
 					// #line 335
 					{
-						return (Tokens.T_NEW);
+						return Identifier(Tokens.T_NEW);
 					}
 					break;
 					
 				case 61:
 					// #line 399
 					{
-						return (Tokens.T_USE);
+						return Identifier(Tokens.T_USE);
 					}
 					break;
 					
 				case 62:
 					// #line 599
 					{
-						return (Tokens.T_LOGICAL_AND);
+						return Identifier(Tokens.T_LOGICAL_AND);
 					}
 					break;
 					
@@ -604,7 +604,7 @@ using Devsense.PHP.Text;
 				case 65:
 					// #line 343
 					{
-						return (Tokens.T_VAR);
+						return Identifier(Tokens.T_VAR);
 					}
 					break;
 					
@@ -660,49 +660,49 @@ using Devsense.PHP.Text;
 				case 73:
 					// #line 114
 					{ 
-						return (Tokens.T_EXIT);
+						return Identifier(Tokens.T_EXIT);
 					}
 					break;
 					
 				case 74:
 					// #line 258
 					{
-						return (Tokens.T_ECHO);
+						return Identifier(Tokens.T_ECHO);
 					}
 					break;
 					
 				case 75:
 					// #line 178
 					{
-						return (Tokens.T_ELSE);
+						return Identifier(Tokens.T_ELSE);
 					}
 					break;
 					
 				case 76:
 					// #line 375
 					{
-						return (Tokens.T_EVAL);
+						return Identifier(Tokens.T_EVAL);
 					}
 					break;
 					
 				case 77:
 					// #line 238
 					{
-						return (Tokens.T_CASE);
+						return Identifier(Tokens.T_CASE);
 					}
 					break;
 					
 				case 78:
 					// #line 483
 					{
-						return (Tokens.T_LIST);
+						return Identifier(Tokens.T_LIST);
 					}
 					break;
 					
 				case 79:
 					// #line 254
 					{
-						return (Tokens.T_GOTO);
+						return Identifier(Tokens.T_GOTO);
 					}
 					break;
 					
@@ -714,119 +714,119 @@ using Devsense.PHP.Text;
 				case 81:
 					// #line 174
 					{
-						return (Tokens.T_ENDIF);
+						return Identifier(Tokens.T_ENDIF);
 					}
 					break;
 					
 				case 82:
 					// #line 415
 					{
-						return (Tokens.T_EMPTY);
+						return Identifier(Tokens.T_EMPTY);
 					}
 					break;
 					
 				case 83:
 					// #line 411
 					{
-						return (Tokens.T_ISSET);
+						return Identifier(Tokens.T_ISSET);
 					}
 					break;
 					
 				case 84:
 					// #line 274
 					{
-						return (Tokens.T_TRAIT);
+						return Identifier(Tokens.T_TRAIT);
 					}
 					break;
 					
 				case 85:
 					// #line 162
 					{
-						return (Tokens.T_THROW);
+						return Identifier(Tokens.T_THROW);
 					}
 					break;
 					
 				case 86:
 					// #line 459
 					{
-						return (Tokens.T_FINAL);
+						return Identifier(Tokens.T_FINAL);
 					}
 					break;
 					
 				case 87:
 					// #line 475
 					{
-						return (Tokens.T_UNSET);
+						return Identifier(Tokens.T_UNSET);
 					}
 					break;
 					
 				case 88:
 					// #line 130
 					{
-						return (Tokens.T_CONST);
+						return Identifier(Tokens.T_CONST);
 					}
 					break;
 					
 				case 89:
 					// #line 339
 					{
-						return (Tokens.T_CLONE);
+						return Identifier(Tokens.T_CLONE);
 					}
 					break;
 					
 				case 90:
 					// #line 266
 					{
-						return (Tokens.T_CLASS);
+						return Identifier(Tokens.T_CLASS);
 					}
 					break;
 					
 				case 91:
 					// #line 154
 					{
-						return (Tokens.T_CATCH);
+						return Identifier(Tokens.T_CATCH);
 					}
 					break;
 					
 				case 92:
 					// #line 146
 					{
-						return (Tokens.T_YIELD);
+						return Identifier(Tokens.T_YIELD);
 					}
 					break;
 					
 				case 93:
 					// #line 230
 					{
-						return (Tokens.T_MATCH);
+						return Identifier(Tokens.T_MATCH);
 					}
 					break;
 					
 				case 94:
 					// #line 487
 					{
-						return (Tokens.T_ARRAY);
+						return Identifier(Tokens.T_ARRAY);
 					}
 					break;
 					
 				case 95:
 					// #line 182
 					{
-						return (Tokens.T_WHILE);
+						return Identifier(Tokens.T_WHILE);
 					}
 					break;
 					
 				case 96:
 					// #line 246
 					{
-						return (Tokens.T_BREAK);
+						return Identifier(Tokens.T_BREAK);
 					}
 					break;
 					
 				case 97:
 					// #line 262
 					{
-						return (Tokens.T_PRINT);
+						return Identifier(Tokens.T_PRINT);
 					}
 					break;
 					
@@ -870,7 +870,7 @@ using Devsense.PHP.Text;
 				case 100:
 					// #line 198
 					{
-						return (Tokens.T_ENDFOR);
+						return Identifier(Tokens.T_ENDFOR);
 					}
 					break;
 					
@@ -884,35 +884,35 @@ using Devsense.PHP.Text;
 				case 102:
 					// #line 451
 					{
-						return (Tokens.T_STATIC);
+						return Identifier(Tokens.T_STATIC);
 					}
 					break;
 					
 				case 103:
 					// #line 226
 					{
-						return (Tokens.T_SWITCH);
+						return Identifier(Tokens.T_SWITCH);
 					}
 					break;
 					
 				case 104:
 					// #line 134
 					{
-						return (Tokens.T_RETURN);
+						return Identifier(Tokens.T_RETURN);
 					}
 					break;
 					
 				case 105:
 					// #line 407
 					{
-						return (Tokens.T_GLOBAL);
+						return Identifier(Tokens.T_GLOBAL);
 					}
 					break;
 					
 				case 106:
 					// #line 471
 					{
-						return (Tokens.T_PUBLIC);
+						return Identifier(Tokens.T_PUBLIC);
 					}
 					break;
 					
@@ -933,56 +933,56 @@ using Devsense.PHP.Text;
 				case 109:
 					// #line 278
 					{
-						return (Tokens.T_EXTENDS);
+						return Identifier(Tokens.T_EXTENDS);
 					}
 					break;
 					
 				case 110:
 					// #line 379
 					{
-						return (Tokens.T_INCLUDE);
+						return Identifier(Tokens.T_INCLUDE);
 					}
 					break;
 					
 				case 111:
 					// #line 242
 					{
-						return (Tokens.T_DEFAULT);
+						return Identifier(Tokens.T_DEFAULT);
 					}
 					break;
 					
 				case 112:
 					// #line 210
 					{
-						return (Tokens.T_DECLARE);
+						return Identifier(Tokens.T_DECLARE);
 					}
 					break;
 					
 				case 113:
 					// #line 158
 					{
-						return (Tokens.T_FINALLY);
+						return Identifier(Tokens.T_FINALLY);
 					}
 					break;
 					
 				case 114:
 					// #line 202
 					{
-						return (Tokens.T_FOREACH);
+						return Identifier(Tokens.T_FOREACH);
 					}
 					break;
 					
 				case 115:
 					// #line 387
 					{
-						return (Tokens.T_REQUIRE);
+						return Identifier(Tokens.T_REQUIRE);
 					}
 					break;
 					
 				case 116:
 					// #line 463
 					{
-						return (Tokens.T_PRIVATE);
+						return Identifier(Tokens.T_PRIVATE);
 					}
 					break;
 					
@@ -1003,42 +1003,42 @@ using Devsense.PHP.Text;
 				case 119:
 					// #line 699
 					{
-						return (Tokens.T_DIR);
+						return Identifier(Tokens.T_DIR);
 					}
 					break;
 					
 				case 120:
 					// #line 186
 					{
-						return (Tokens.T_ENDWHILE);
+						return Identifier(Tokens.T_ENDWHILE);
 					}
 					break;
 					
 				case 121:
 					// #line 126
 					{
-						return (Tokens.T_FUNCTION);
+						return Identifier(Tokens.T_FUNCTION);
 					}
 					break;
 					
 				case 122:
 					// #line 250
 					{
-						return (Tokens.T_CONTINUE);
+						return Identifier(Tokens.T_CONTINUE);
 					}
 					break;
 					
 				case 123:
 					// #line 491
 					{
-						return (Tokens.T_CALLABLE);
+						return Identifier(Tokens.T_CALLABLE);
 					}
 					break;
 					
 				case 124:
 					// #line 455
 					{
-						return (Tokens.T_ABSTRACT);
+						return Identifier(Tokens.T_ABSTRACT);
 					}
 					break;
 					
@@ -1059,133 +1059,133 @@ using Devsense.PHP.Text;
 				case 127:
 					// #line 695
 					{
-						return (Tokens.T_FILE);
+						return Identifier(Tokens.T_FILE);
 					}
 					break;
 					
 				case 128:
 					// #line 691
 					{
-						return (Tokens.T_LINE);
+						return Identifier(Tokens.T_LINE);
 					}
 					break;
 					
 				case 129:
 					// #line 234
 					{
-						return (Tokens.T_ENDSWITCH);
+						return Identifier(Tokens.T_ENDSWITCH);
 					}
 					break;
 					
 				case 130:
 					// #line 270
 					{
-						return (Tokens.T_INTERFACE);
+						return Identifier(Tokens.T_INTERFACE);
 					}
 					break;
 					
 				case 131:
 					// #line 403
 					{
-						return (Tokens.T_INSTEADOF);
+						return Identifier(Tokens.T_INSTEADOF);
 					}
 					break;
 					
 				case 132:
 					// #line 395
 					{
-						return (Tokens.T_NAMESPACE);
+						return Identifier(Tokens.T_NAMESPACE);
 					}
 					break;
 					
 				case 133:
 					// #line 467
 					{
-						return (Tokens.T_PROTECTED);
+						return Identifier(Tokens.T_PROTECTED);
 					}
 					break;
 					
 				case 134:
 					// #line 679
 					{
-						return (Tokens.T_TRAIT_C);
+						return Identifier(Tokens.T_TRAIT_C);
 					}
 					break;
 					
 				case 135:
 					// #line 675
 					{
-						return (Tokens.T_CLASS_C);
+						return Identifier(Tokens.T_CLASS_C);
 					}
 					break;
 					
 				case 136:
 					// #line 214
 					{
-						return (Tokens.T_ENDDECLARE);
+						return Identifier(Tokens.T_ENDDECLARE);
 					}
 					break;
 					
 				case 137:
 					// #line 206
 					{
-						return (Tokens.T_ENDFOREACH);
+						return Identifier(Tokens.T_ENDFOREACH);
 					}
 					break;
 					
 				case 138:
 					// #line 218
 					{
-						return (Tokens.T_INSTANCEOF);
+						return Identifier(Tokens.T_INSTANCEOF);
 					}
 					break;
 					
 				case 139:
 					// #line 282
 					{
-						return (Tokens.T_IMPLEMENTS);
+						return Identifier(Tokens.T_IMPLEMENTS);
 					}
 					break;
 					
 				case 140:
 					// #line 142
 					{
-						return Tokens.T_YIELD_FROM;
+						return Identifier(Tokens.T_YIELD_FROM);
 					}
 					break;
 					
 				case 141:
 					// #line 687
 					{
-						return (Tokens.T_METHOD_C);
+						return Identifier(Tokens.T_METHOD_C);
 					}
 					break;
 					
 				case 142:
 					// #line 383
 					{
-						return (Tokens.T_INCLUDE_ONCE);
+						return Identifier(Tokens.T_INCLUDE_ONCE);
 					}
 					break;
 					
 				case 143:
 					// #line 391
 					{
-						return (Tokens.T_REQUIRE_ONCE);
+						return Identifier(Tokens.T_REQUIRE_ONCE);
 					}
 					break;
 					
 				case 144:
 					// #line 683
 					{
-						return (Tokens.T_FUNC_C);
+						return Identifier(Tokens.T_FUNC_C);
 					}
 					break;
 					
 				case 145:
 					// #line 703
 					{
-						return (Tokens.T_NS_C);
+						return Identifier(Tokens.T_NS_C);
 					}
 					break;
 					
@@ -1194,7 +1194,7 @@ using Devsense.PHP.Text;
 					{
 						// IMPORTANT - Added because PHP lexer explicitly checks halt compiler syntax and reverts to initial state after semicolon
 						yy_push_state(LexicalStates.ST_HALT_COMPILER1); 
-						return (Tokens.T_HALT_COMPILER);
+						return Identifier(Tokens.T_HALT_COMPILER);
 					}
 					break;
 					

@@ -112,27 +112,27 @@ ST_HALT_COMPILER1,ST_HALT_COMPILER2,ST_HALT_COMPILER3>{EOF} {
 }
 
 <ST_IN_SCRIPTING>"exit" { 
-	return (Tokens.T_EXIT);
+	return Identifier(Tokens.T_EXIT);
 }
 
 <ST_IN_SCRIPTING>"die" {
-	return (Tokens.T_EXIT);
+	return Identifier(Tokens.T_EXIT);
 }
 
 <ST_IN_SCRIPTING>"fn" {
-	return (Tokens.T_FN);
+	return Identifier(Tokens.T_FN);
 }
 
 <ST_IN_SCRIPTING>"function" {
-	return (Tokens.T_FUNCTION);
+	return Identifier(Tokens.T_FUNCTION);
 }
 
 <ST_IN_SCRIPTING>"const" {
-	return (Tokens.T_CONST);
+	return Identifier(Tokens.T_CONST);
 }
 
 <ST_IN_SCRIPTING>"return" {
-	return (Tokens.T_RETURN);
+	return Identifier(Tokens.T_RETURN);
 }
 
 <ST_IN_SCRIPTING>"#[" {
@@ -140,31 +140,31 @@ ST_HALT_COMPILER1,ST_HALT_COMPILER2,ST_HALT_COMPILER3>{EOF} {
 }
 
 <ST_IN_SCRIPTING>"yield"{WHITESPACE}"from" {
-	return Tokens.T_YIELD_FROM;
+	return Identifier(Tokens.T_YIELD_FROM);
 }
 
 <ST_IN_SCRIPTING>"yield" {
-	return (Tokens.T_YIELD);
+	return Identifier(Tokens.T_YIELD);
 }
 
 <ST_IN_SCRIPTING>"try" {
-	return (Tokens.T_TRY);
+	return Identifier(Tokens.T_TRY);
 }
 
 <ST_IN_SCRIPTING>"catch" {
-	return (Tokens.T_CATCH);
+	return Identifier(Tokens.T_CATCH);
 }
 
 <ST_IN_SCRIPTING>"finally" {
-	return (Tokens.T_FINALLY);
+	return Identifier(Tokens.T_FINALLY);
 }
 
 <ST_IN_SCRIPTING>"throw" {
-	return (Tokens.T_THROW);
+	return Identifier(Tokens.T_THROW);
 }
 
 <ST_IN_SCRIPTING>"if" {
-	return (Tokens.T_IF);
+	return Identifier(Tokens.T_IF);
 }
 
 <ST_IN_SCRIPTING>"elseif" {
@@ -172,115 +172,115 @@ ST_HALT_COMPILER1,ST_HALT_COMPILER2,ST_HALT_COMPILER3>{EOF} {
 }
 
 <ST_IN_SCRIPTING>"endif" {
-	return (Tokens.T_ENDIF);
+	return Identifier(Tokens.T_ENDIF);
 }
 
 <ST_IN_SCRIPTING>"else" {
-	return (Tokens.T_ELSE);
+	return Identifier(Tokens.T_ELSE);
 }
 
 <ST_IN_SCRIPTING>"while" {
-	return (Tokens.T_WHILE);
+	return Identifier(Tokens.T_WHILE);
 }
 
 <ST_IN_SCRIPTING>"endwhile" {
-	return (Tokens.T_ENDWHILE);
+	return Identifier(Tokens.T_ENDWHILE);
 }
 
 <ST_IN_SCRIPTING>"do" {
-	return (Tokens.T_DO);
+	return Identifier(Tokens.T_DO);
 }
 
 <ST_IN_SCRIPTING>"for" {
-	return (Tokens.T_FOR);
+	return Identifier(Tokens.T_FOR);
 }
 
 <ST_IN_SCRIPTING>"endfor" {
-	return (Tokens.T_ENDFOR);
+	return Identifier(Tokens.T_ENDFOR);
 }
 
 <ST_IN_SCRIPTING>"foreach" {
-	return (Tokens.T_FOREACH);
+	return Identifier(Tokens.T_FOREACH);
 }
 
 <ST_IN_SCRIPTING>"endforeach" {
-	return (Tokens.T_ENDFOREACH);
+	return Identifier(Tokens.T_ENDFOREACH);
 }
 
 <ST_IN_SCRIPTING>"declare" {
-	return (Tokens.T_DECLARE);
+	return Identifier(Tokens.T_DECLARE);
 }
 
 <ST_IN_SCRIPTING>"enddeclare" {
-	return (Tokens.T_ENDDECLARE);
+	return Identifier(Tokens.T_ENDDECLARE);
 }
 
 <ST_IN_SCRIPTING>"instanceof" {
-	return (Tokens.T_INSTANCEOF);
+	return Identifier(Tokens.T_INSTANCEOF);
 }
 
 <ST_IN_SCRIPTING>"as" {
-	return (Tokens.T_AS);
+	return Identifier(Tokens.T_AS);
 }
 
 <ST_IN_SCRIPTING>"switch" {
-	return (Tokens.T_SWITCH);
+	return Identifier(Tokens.T_SWITCH);
 }
 
 <ST_IN_SCRIPTING>"match" {
-	return (Tokens.T_MATCH);
+	return Identifier(Tokens.T_MATCH);
 }
 
 <ST_IN_SCRIPTING>"endswitch" {
-	return (Tokens.T_ENDSWITCH);
+	return Identifier(Tokens.T_ENDSWITCH);
 }
 
 <ST_IN_SCRIPTING>"case" {
-	return (Tokens.T_CASE);
+	return Identifier(Tokens.T_CASE);
 }
 
 <ST_IN_SCRIPTING>"default" {
-	return (Tokens.T_DEFAULT);
+	return Identifier(Tokens.T_DEFAULT);
 }
 
 <ST_IN_SCRIPTING>"break" {
-	return (Tokens.T_BREAK);
+	return Identifier(Tokens.T_BREAK);
 }
 
 <ST_IN_SCRIPTING>"continue" {
-	return (Tokens.T_CONTINUE);
+	return Identifier(Tokens.T_CONTINUE);
 }
 
 <ST_IN_SCRIPTING>"goto" {
-	return (Tokens.T_GOTO);
+	return Identifier(Tokens.T_GOTO);
 }
 
 <ST_IN_SCRIPTING>"echo" {
-	return (Tokens.T_ECHO);
+	return Identifier(Tokens.T_ECHO);
 }
 
 <ST_IN_SCRIPTING>"print" {
-	return (Tokens.T_PRINT);
+	return Identifier(Tokens.T_PRINT);
 }
 
 <ST_IN_SCRIPTING>"class" {
-	return (Tokens.T_CLASS);
+	return Identifier(Tokens.T_CLASS);
 }
 
 <ST_IN_SCRIPTING>"interface" {
-	return (Tokens.T_INTERFACE);
+	return Identifier(Tokens.T_INTERFACE);
 }
 
 <ST_IN_SCRIPTING>"trait" {
-	return (Tokens.T_TRAIT);
+	return Identifier(Tokens.T_TRAIT);
 }
 
 <ST_IN_SCRIPTING>"extends" {
-	return (Tokens.T_EXTENDS);
+	return Identifier(Tokens.T_EXTENDS);
 }
 
 <ST_IN_SCRIPTING>"implements" {
-	return (Tokens.T_IMPLEMENTS);
+	return Identifier(Tokens.T_IMPLEMENTS);
 }
 
 <ST_IN_SCRIPTING>"->" {
@@ -333,15 +333,15 @@ ST_HALT_COMPILER1,ST_HALT_COMPILER2,ST_HALT_COMPILER3>{EOF} {
 }
 
 <ST_IN_SCRIPTING>"new" {
-	return (Tokens.T_NEW);
+	return Identifier(Tokens.T_NEW);
 }
 
 <ST_IN_SCRIPTING>"clone" {
-	return (Tokens.T_CLONE);
+	return Identifier(Tokens.T_CLONE);
 }
 
 <ST_IN_SCRIPTING>"var" {
-	return (Tokens.T_VAR);
+	return Identifier(Tokens.T_VAR);
 }
 
 <ST_IN_SCRIPTING>"("{TABS_AND_SPACES}("int"|"integer"){TABS_AND_SPACES}")" {
@@ -373,47 +373,47 @@ ST_HALT_COMPILER1,ST_HALT_COMPILER2,ST_HALT_COMPILER3>{EOF} {
 }
 
 <ST_IN_SCRIPTING>"eval" {
-	return (Tokens.T_EVAL);
+	return Identifier(Tokens.T_EVAL);
 }
 
 <ST_IN_SCRIPTING>"include" {
-	return (Tokens.T_INCLUDE);
+	return Identifier(Tokens.T_INCLUDE);
 }
 
 <ST_IN_SCRIPTING>"include_once" {
-	return (Tokens.T_INCLUDE_ONCE);
+	return Identifier(Tokens.T_INCLUDE_ONCE);
 }
 
 <ST_IN_SCRIPTING>"require" {
-	return (Tokens.T_REQUIRE);
+	return Identifier(Tokens.T_REQUIRE);
 }
 
 <ST_IN_SCRIPTING>"require_once" {
-	return (Tokens.T_REQUIRE_ONCE);
+	return Identifier(Tokens.T_REQUIRE_ONCE);
 }
 
 <ST_IN_SCRIPTING>"namespace" {
-	return (Tokens.T_NAMESPACE);
+	return Identifier(Tokens.T_NAMESPACE);
 }
 
 <ST_IN_SCRIPTING>"use" {
-	return (Tokens.T_USE);
+	return Identifier(Tokens.T_USE);
 }
 
 <ST_IN_SCRIPTING>"insteadof" {
-	return (Tokens.T_INSTEADOF);
+	return Identifier(Tokens.T_INSTEADOF);
 }
 
 <ST_IN_SCRIPTING>"global" {
-	return (Tokens.T_GLOBAL);
+	return Identifier(Tokens.T_GLOBAL);
 }
 
 <ST_IN_SCRIPTING>"isset" {
-	return (Tokens.T_ISSET);
+	return Identifier(Tokens.T_ISSET);
 }
 
 <ST_IN_SCRIPTING>"empty" {
-	return (Tokens.T_EMPTY);
+	return Identifier(Tokens.T_EMPTY);
 }
 
 <ST_HALT_COMPILER1>"(" {
@@ -434,7 +434,7 @@ ST_HALT_COMPILER1,ST_HALT_COMPILER2,ST_HALT_COMPILER3>{EOF} {
 <ST_IN_SCRIPTING>"__halt_compiler" {
 	// IMPORTANT - Added because PHP lexer explicitly checks halt compiler syntax and reverts to initial state after semicolon
 	yy_push_state(LexicalStates.ST_HALT_COMPILER1); 
-	return (Tokens.T_HALT_COMPILER);
+	return Identifier(Tokens.T_HALT_COMPILER);
 }
 
 <ST_HALT_COMPILER1,ST_HALT_COMPILER2,ST_HALT_COMPILER3>{WHITESPACE}+ { return (Tokens.T_WHITESPACE); }
@@ -449,31 +449,31 @@ ST_HALT_COMPILER1,ST_HALT_COMPILER2,ST_HALT_COMPILER3>{EOF} {
 }
 
 <ST_IN_SCRIPTING>"static" {
-	return (Tokens.T_STATIC);
+	return Identifier(Tokens.T_STATIC);
 }
 
 <ST_IN_SCRIPTING>"abstract" {
-	return (Tokens.T_ABSTRACT);
+	return Identifier(Tokens.T_ABSTRACT);
 }
 
 <ST_IN_SCRIPTING>"final" {
-	return (Tokens.T_FINAL);
+	return Identifier(Tokens.T_FINAL);
 }
 
 <ST_IN_SCRIPTING>"private" {
-	return (Tokens.T_PRIVATE);
+	return Identifier(Tokens.T_PRIVATE);
 }
 
 <ST_IN_SCRIPTING>"protected" {
-	return (Tokens.T_PROTECTED);
+	return Identifier(Tokens.T_PROTECTED);
 }
 
 <ST_IN_SCRIPTING>"public" {
-	return (Tokens.T_PUBLIC);
+	return Identifier(Tokens.T_PUBLIC);
 }
 
 <ST_IN_SCRIPTING>"unset" {
-	return (Tokens.T_UNSET);
+	return Identifier(Tokens.T_UNSET);
 }
 
 <ST_IN_SCRIPTING>"=>" {
@@ -481,15 +481,15 @@ ST_HALT_COMPILER1,ST_HALT_COMPILER2,ST_HALT_COMPILER3>{EOF} {
 }
 
 <ST_IN_SCRIPTING>"list" {
-	return (Tokens.T_LIST);
+	return Identifier(Tokens.T_LIST);
 }
 
 <ST_IN_SCRIPTING>"array" {
-	return (Tokens.T_ARRAY);
+	return Identifier(Tokens.T_ARRAY);
 }
 
 <ST_IN_SCRIPTING>"callable" {
-	return (Tokens.T_CALLABLE);
+	return Identifier(Tokens.T_CALLABLE);
 }
 
 <ST_IN_SCRIPTING>"++" {
@@ -593,15 +593,15 @@ ST_HALT_COMPILER1,ST_HALT_COMPILER2,ST_HALT_COMPILER3>{EOF} {
 }
 
 <ST_IN_SCRIPTING>"OR" {
-	return (Tokens.T_LOGICAL_OR);
+	return Identifier(Tokens.T_LOGICAL_OR);
 }
 
 <ST_IN_SCRIPTING>"AND" {
-	return (Tokens.T_LOGICAL_AND);
+	return Identifier(Tokens.T_LOGICAL_AND);
 }
 
 <ST_IN_SCRIPTING>"XOR" {
-	return (Tokens.T_LOGICAL_XOR);
+	return Identifier(Tokens.T_LOGICAL_XOR);
 }
 
 <ST_IN_SCRIPTING>"<<" {
@@ -673,35 +673,35 @@ ST_HALT_COMPILER1,ST_HALT_COMPILER2,ST_HALT_COMPILER3>{EOF} {
 }
 
 <ST_IN_SCRIPTING>"__CLASS__" {
-	return (Tokens.T_CLASS_C);
+	return Identifier(Tokens.T_CLASS_C);
 }
 
 <ST_IN_SCRIPTING>"__TRAIT__" {
-	return (Tokens.T_TRAIT_C);
+	return Identifier(Tokens.T_TRAIT_C);
 }
 
 <ST_IN_SCRIPTING>"__FUNCTION__" {
-	return (Tokens.T_FUNC_C);
+	return Identifier(Tokens.T_FUNC_C);
 }
 
 <ST_IN_SCRIPTING>"__METHOD__" {
-	return (Tokens.T_METHOD_C);
+	return Identifier(Tokens.T_METHOD_C);
 }
 
 <ST_IN_SCRIPTING>"__LINE__" {
-	return (Tokens.T_LINE);
+	return Identifier(Tokens.T_LINE);
 }
 
 <ST_IN_SCRIPTING>"__FILE__" {
-	return (Tokens.T_FILE);
+	return Identifier(Tokens.T_FILE);
 }
 
 <ST_IN_SCRIPTING>"__DIR__" {
-	return (Tokens.T_DIR);
+	return Identifier(Tokens.T_DIR);
 }
 
 <ST_IN_SCRIPTING>"__NAMESPACE__" {
-	return (Tokens.T_NS_C);
+	return Identifier(Tokens.T_NS_C);
 }
 
 <INITIAL>"<?=" {

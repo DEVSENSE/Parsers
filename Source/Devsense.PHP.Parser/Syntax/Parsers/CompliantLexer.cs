@@ -96,7 +96,6 @@ namespace Devsense.PHP.Syntax
                     case Tokens.T_FN:
                         if (!HasFeatureSet(LanguageFeatures.Php74Set))
                         {
-                            TokenValue = new SemanticValueType() { String = TokenText, };
                             token = Tokens.T_STRING;
                         }
                         break;
@@ -104,7 +103,6 @@ namespace Devsense.PHP.Syntax
                     case Tokens.T_MATCH:
                         if (!HasFeatureSet(LanguageFeatures.Php80Set))
                         {
-                            TokenValue = new SemanticValueType() { String = TokenText, };
                             token = Tokens.T_STRING;
                         }
                         break;

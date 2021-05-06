@@ -219,6 +219,7 @@ namespace Devsense.PHP.Syntax
                         case ']': return "]";
                         case '/': return "/";
                         case '\\': return "\\";
+                        case ':': return ":";
                     }
                     break;
 
@@ -812,6 +813,13 @@ namespace Devsense.PHP.Syntax
         /// </summary>
         public string TokenText => _tokenText ?? (_tokenText = GetTokenString());
 
+        /// <summary>Store the token text into the <see cref="_tokenSemantics"/>.</summary>
+        Tokens Identifier(Tokens t)
+        {
+            _tokenSemantics.String = TokenText;
+            return t;
+        }
+
         Tokens ProcessBinaryNumber()
         {
             // parse binary number value
@@ -828,7 +836,8 @@ namespace Devsense.PHP.Syntax
         Tokens ProcessDecimalNumber()
         {
             // [0-9]* - value is either in octal or in decimal
-            Tokens token = Tokens.END;
+            Tokens token;
+
             if (GetTokenChar(0) == '0')
                 token = GetTokenAsDecimalNumber(1, 8, ref _tokenSemantics);
             else
