@@ -169,6 +169,7 @@ class X {
         {
             var codes = new[] {
                 @"<?php array_fill(start_index: 0, num: 100, value: 50);",
+                @"<?php implode(separator: '.', array: []);"
             };
 
             foreach (var code in codes)

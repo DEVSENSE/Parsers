@@ -137,6 +137,13 @@ namespace Devsense.PHP.Syntax.Ast
         public virtual ActualParam ActualParameter(Span span, LangElement expr, ActualParam.Flags flags, VariableNameRef? nameOpt = default)
         {
             Debug.Assert(expr is Expression);
+
+            if (nameOpt.HasValue)
+            {
+                Debug.Assert(!string.IsNullOrWhiteSpace(nameOpt.Value.Name.Value));
+                Debug.Assert(nameOpt.Value.Name.Value != ":");
+            }
+
             return new ActualParam(span, (Expression)expr, flags, nameOpt);
         }
 
