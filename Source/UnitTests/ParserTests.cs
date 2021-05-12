@@ -188,8 +188,11 @@ class X {
 
             foreach (var code in codes)
             {
+                var errors = new TestErrorSink();
                 var unit = new CodeSourceUnit(code, "dummy.php", Encoding.UTF8, features: LanguageFeatures.Php80Set);
-                unit.Parse(new BasicNodesFactory(unit), null);
+                unit.Parse(new BasicNodesFactory(unit), errors);
+
+                Assert.AreEqual(0, errors.Count);
             }
         }
 
