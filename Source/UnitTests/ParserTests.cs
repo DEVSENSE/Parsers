@@ -147,7 +147,8 @@ class X {
         public void ReturnTypeTest()
         {
             var codes = new[] {
-                @"<?php class X { function foo() : static { } }"
+                @"<?php class X { function foo(): static { } }",
+                @"<?php class X { function foo(): never { } }",
             };
 
             foreach (var code in codes)
@@ -202,6 +203,24 @@ class X {
                 unit.Parse(new BasicNodesFactory(unit), errors);
 
                 Assert.AreEqual(0, errors.Count);
+            }
+        }
+
+        [TestMethod]
+        public void EnumerationTest()
+        {
+            var codes = new[] {
+                @"<?php enum Suit { case Hearts; case Diamonds; case Clubs; case Spades; }",
+                @"<?php enum Suit: int { case Hearts = 1; case Diamonds = 2; case Clubs = 3; case Spades = 4; }",
+            };
+
+            foreach (var code in codes)
+            {
+                var unit = new CodeSourceUnit(code, "dummy.php", Encoding.UTF8, features: LanguageFeatures.Php81Set);
+                unit.Parse(new BasicNodesFactory(unit), null);
+
+                Assert.IsNotNull(unit.Ast);
+                Assert.IsInstanceOfType(unit.Ast.Statements[0], typeof(NamedTypeDecl));
             }
         }
 

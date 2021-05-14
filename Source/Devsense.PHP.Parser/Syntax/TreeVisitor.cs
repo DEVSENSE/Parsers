@@ -307,6 +307,14 @@ namespace Devsense.PHP.Syntax
         }
 
         /// <summary>
+        /// Visit enum case declaration.
+        /// </summary>
+        virtual public void VisitEnumCaseDecl(EnumCaseDecl x)
+        {
+            VisitElement(x.Expression);
+        }
+
+        /// <summary>
         /// Visit function parameters and function body.
         /// </summary>
         /// <param name="x"></param>

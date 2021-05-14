@@ -610,6 +610,39 @@ namespace Devsense.PHP.Syntax.Ast
 
     #endregion
 
+    #region Enum case
+
+    /// <summary>
+    /// Represents the enum case declaration.
+    /// </summary>
+    public sealed class EnumCaseDecl : TypeMemberDecl
+    {
+        /// <summary>
+        /// Optional. The case value.
+        /// </summary>
+        public Expression Expression { get; }
+
+        /// <summary>
+        /// The case name.
+        /// Enum names are case-insensitive.
+        /// </summary>
+        public NameRef Name { get; }
+
+        public EnumCaseDecl(Text.Span span, string name, Text.Span nameSpan, Expression expression)
+            : base(span, PhpMemberAttributes.Public | PhpMemberAttributes.Static)
+        {
+            this.Expression = expression;
+            this.Name = new NameRef(nameSpan, name);
+        }
+
+        public override void VisitMe(TreeVisitor visitor)
+        {
+            visitor.VisitEnumCaseDecl(this);
+        }
+    }
+
+    #endregion
+
     #region Traits
 
     #region TraitAdaptationBlock

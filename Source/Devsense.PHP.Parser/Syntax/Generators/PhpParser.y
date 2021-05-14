@@ -337,6 +337,7 @@ using StringPair = System.Collections.Generic.KeyValuePair<string, string>;
 %type <NodeList> attributes attribute_group
 %type <Node> match match_arm
 %type <NodeList> match_arm_list match_arm_cond_list non_empty_match_arm_list
+%type <Node> enum_declaration_statement enum_backing_type enum_case enum_case_expr
 
 %type <NodeList> top_statement_list const_list class_const_list
 %type <NodeList> inner_statement_list class_statement_list for_exprs
@@ -455,6 +456,7 @@ reserved_non_modifiers:
 	| T_NS_C
 	| T_FN
 	| T_MATCH
+	| T_ENUM
 ;
 
 semi_reserved:
@@ -514,6 +516,7 @@ attributed_statement:
 	|	class_declaration_statement			{ $$ = $1; }
 	|	trait_declaration_statement			{ $$ = $1; }
 	|	interface_declaration_statement		{ $$ = $1; }
+	|	enum_declaration_statement			{ $$ = $1; }
 ;
 
 top_statement:
@@ -773,6 +776,31 @@ interface_declaration_statement:
 			SetDoc($$);
 			PopClassContext();
 		}
+;
+
+enum_declaration_statement:
+		T_ENUM T_STRING enum_backing_type extends_from {PushClassContext($2, $4, PhpMemberAttributes.Enum);} implements_list backup_doc_comment
+		enter_scope '{' class_statement_list '}' exit_scope
+		{ 
+			$$ = _astFactory.Type(@$, CombineSpans(@1, @2, @3, @4, @6), isConditional, PhpMemberAttributes.Enum, new Name($2), @2, null, 
+				ConvertToNamedTypeRef($4), $6.Select(ConvertToNamedTypeRef), $10, CombineSpans(@9, @11)); 
+			SetDoc($$);
+			PopClassContext();
+		}
+;
+
+enum_backing_type:
+		/* empty */		{ $$ = null; }
+	|	':' type_expr	{ $$ = $2; }
+;
+
+enum_case:
+		T_CASE identifier enum_case_expr ';' { $$ = _astFactory.EnumCase(@$, $2, @2, $3); }
+;
+
+enum_case_expr:
+		/* empty */		{ $$ = null; }
+	|	'=' expr		{ $$ = $2; }
 ;
 
 extends_from:
@@ -1037,6 +1065,7 @@ attributed_class_statement:
 					$9, @9, $4, @4, null, $7, CombineSpans(@6, @8), null, $11);
 				SetDoc($$);
 			}
+	|	enum_case { $$ = $1; }
 ;
 
 class_statement:

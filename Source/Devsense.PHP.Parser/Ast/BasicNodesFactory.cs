@@ -153,6 +153,11 @@ namespace Devsense.PHP.Syntax.Ast
             return new ClassConstantDecl(span, name.Value, nameSpan, (Expression)initializer);
         }
 
+        public virtual LangElement EnumCase(Span span, string name, Span nameSpan, LangElement expression)
+        {
+            return new EnumCaseDecl(span, name, nameSpan, (Expression)expression);
+        }
+
         public virtual LangElement ColonBlock(Span span, IEnumerable<LangElement> statements, Tokens endToken)
         {
             return new ColonBlockStmt(BlockSpan(span, statements), statements.CastToArray<Statement>(), endToken);

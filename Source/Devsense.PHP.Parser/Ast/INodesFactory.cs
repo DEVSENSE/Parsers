@@ -273,6 +273,15 @@ namespace Devsense.PHP.Syntax.Ast
             VariableName name, TSpan nameSpan, TNode initializer);
 
         /// <summary>
+        /// Creates enum case declaration.
+        /// </summary>
+        /// <param name="span">Whole span.</param>
+        /// <param name="name">Case name.</param>
+        /// <param name="nameSpan">Case name span.</param>
+        /// <param name="expression">Optional. Case value.</param>
+        TNode EnumCase(TSpan span, string name, TSpan nameSpan, TNode expression);
+
+        /// <summary>
         /// Creates block of code enclosed in braces (<c>{</c> ... <c>}</c>).
         /// </summary>
         /// <param name="span">Entire element span.</param>

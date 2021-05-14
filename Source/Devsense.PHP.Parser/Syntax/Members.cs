@@ -52,6 +52,11 @@ namespace Devsense.PHP.Syntax
         Constructor = 256,
 
         /// <summary>
+        /// The member is "enum".
+        /// </summary>
+        Enum = 512,
+
+        /// <summary>
         /// The member needs to be activated before it can be resolved.
         /// TODO: useful when analysis checks whether there are any imported conditional types/functions.
         /// TODO: add the first conditional to the AC, ignore the others. Add the flag handling to Resolve* and to analyzer.
@@ -76,5 +81,8 @@ namespace Devsense.PHP.Syntax
 
         /// <summary>Gets value indicating an interface declaration.</summary>
         public static bool IsInterface(this PhpMemberAttributes attrs) => (attrs & PhpMemberAttributes.Interface) != 0;
+
+        /// <summary>Gets value indicating an interface declaration.</summary>
+        public static bool IsEnum(this PhpMemberAttributes attrs) => (attrs & PhpMemberAttributes.Enum) != 0;
     }
 }
