@@ -478,6 +478,7 @@ namespace Devsense.PHP.Syntax
         public static readonly QualifiedName Array = new QualifiedName(new Name("array"), Name.EmptyNames);
         public static readonly QualifiedName Object = new QualifiedName(new Name("object"), Name.EmptyNames);
         public static readonly QualifiedName Mixed = new QualifiedName(new Name("mixed"), Name.EmptyNames);
+        public static readonly QualifiedName Never = new QualifiedName(new Name("never"), Name.EmptyNames);
         public static readonly QualifiedName Int = new QualifiedName(new Name("int"), Name.EmptyNames);
         public static readonly QualifiedName Integer = new QualifiedName(new Name("integer"), Name.EmptyNames);
         public static readonly QualifiedName LongInteger = new QualifiedName(new Name("int64"), Name.EmptyNames);
@@ -517,6 +518,7 @@ namespace Devsense.PHP.Syntax
                         Equals(Iterable) || // PHP 7.1
                         Equals(Object) ||   // PHP 7.2
                         Equals(Mixed) ||    // PHP 8.0
+                        Equals(Never) ||    // PHP 8.1
                         false
                         );
             }

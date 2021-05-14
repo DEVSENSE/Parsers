@@ -965,6 +965,7 @@ namespace Devsense.PHP.Syntax
                 {
                     if (names[0] == CommonTypeNames.Void) return CommonTypeNames.VoidArray;
                     if (names[0] == CommonTypeNames.Mixed) return CommonTypeNames.MixedArray;
+                    if (names[0] == CommonTypeNames.Never) return CommonTypeNames.NeverArray;
                 }
 
                 return names.ToArray();
@@ -974,6 +975,7 @@ namespace Devsense.PHP.Syntax
             {
                 if (span.Equals(CommonTypeNames.Void.AsSpan(), StringComparison.Ordinal)) return CommonTypeNames.Void;
                 if (span.Equals(CommonTypeNames.Mixed.AsSpan(), StringComparison.Ordinal)) return CommonTypeNames.Mixed;
+                if (span.Equals(CommonTypeNames.Never.AsSpan(), StringComparison.Ordinal)) return CommonTypeNames.Never;
                 if (span.Equals(CommonTypeNames.Bool.AsSpan(), StringComparison.Ordinal)) return CommonTypeNames.Bool;
 
                 return span.ToString();
@@ -2090,9 +2092,11 @@ namespace Devsense.PHP.Syntax
             public static string Bool => "bool";
             public static string Void => "void";
             public static string Mixed => "mixed";
+            public static string Never => "never";
 
             public static readonly string[] VoidArray = new[] { Void };
             public static readonly string[] MixedArray = new[] { Mixed };
+            public static readonly string[] NeverArray = new[] { Never };
         }
 
         #endregion

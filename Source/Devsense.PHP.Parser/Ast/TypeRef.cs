@@ -247,6 +247,12 @@ namespace Devsense.PHP.Syntax.Ast
             /// </summary>
             /// <remarks>PHP 8.0+</remarks>
             mixed,
+
+            /// <summary>
+            /// Never.<br/>
+            /// Introduced in PHP 8.1.
+            /// </summary>
+            never,
         }
 
         #endregion
@@ -288,6 +294,7 @@ namespace Devsense.PHP.Syntax.Ast
                     PrimitiveType.iterable => Syntax.QualifiedName.Iterable.Name,
                     PrimitiveType.@object => Syntax.QualifiedName.Object.Name,
                     PrimitiveType.mixed => Syntax.QualifiedName.Mixed.Name,
+                    PrimitiveType.never => Syntax.QualifiedName.Never.Name,
                     _ => throw new InvalidOperationException(),  // invalid _typeName
                 };
             }

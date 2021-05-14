@@ -503,6 +503,9 @@ namespace Devsense.PHP.Syntax
         static readonly Dictionary<QualifiedName, PrimitiveTypeRef.PrimitiveType> PHP80PrimitiveTypes = new Dictionary<QualifiedName, PrimitiveTypeRef.PrimitiveType>() {
             { QualifiedName.Mixed, PrimitiveTypeRef.PrimitiveType.mixed },
         };
+        static readonly Dictionary<QualifiedName, PrimitiveTypeRef.PrimitiveType> PHP81PrimitiveTypes = new Dictionary<QualifiedName, PrimitiveTypeRef.PrimitiveType>() {
+            { QualifiedName.Mixed, PrimitiveTypeRef.PrimitiveType.never },
+        };
 
         /// <summary>
         /// Gets map of primitive types for current language features.
@@ -515,25 +518,29 @@ namespace Devsense.PHP.Syntax
                 {
                     // constructs map of primitive types for current language features:
 
-                    var dict = new Dictionary<QualifiedName, PrimitiveTypeRef.PrimitiveType>(12);
+                    var dict = new Dictionary<QualifiedName, PrimitiveTypeRef.PrimitiveType>(14);
 
-                    if ((_languageFeatures.HasFeature(LanguageFeatures.Php80Set)))
+                    if (_languageFeatures.HasFeature(LanguageFeatures.Php81Set))
+                    {
+                        dict.Add(PHP81PrimitiveTypes);
+                    }
+                    if (_languageFeatures.HasFeature(LanguageFeatures.Php80Set))
                     {
                         dict.Add(PHP80PrimitiveTypes);
                     }
-                    if ((_languageFeatures.HasFeature(LanguageFeatures.Php72Set)))
+                    if (_languageFeatures.HasFeature(LanguageFeatures.Php72Set))
                     {
                         dict.Add(PHP72PrimitiveTypes);
                     }
-                    if ((_languageFeatures.HasFeature(LanguageFeatures.Php71Set)))
+                    if (_languageFeatures.HasFeature(LanguageFeatures.Php71Set))
                     {
                         dict.Add(PHP71PrimitiveTypes);
                     }
-                    if ((_languageFeatures.HasFeature(LanguageFeatures.Php70Set)))
+                    if (_languageFeatures.HasFeature(LanguageFeatures.Php70Set))
                     {
                         dict.Add(PHP70PrimitiveTypes);
                     }
-                    if ((_languageFeatures.HasFeature(LanguageFeatures.Php56Set)))
+                    if (_languageFeatures.HasFeature(LanguageFeatures.Php56Set))
                     {
                         dict.Add(PHP56PrimitiveTypes);
                     }
