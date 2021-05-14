@@ -389,7 +389,7 @@ namespace Devsense.PHP.Syntax
         protected Tokens GetTokenAsDecimalNumber(int startIndex, int @base, ref SemanticValueType val)
         {
             long lresult = 0;
-            double dresult = 0;
+            double dresult;
 
             // helper enumerator of digits, ignores '_'
             var digits = new DigitsEnumerator(buffer, token_start + startIndex, @base);
@@ -825,6 +825,19 @@ namespace Devsense.PHP.Syntax
         {
             // parse binary number value
             Tokens token = GetTokenAsDecimalNumber(2, 2, ref _tokenSemantics);
+
+            if (token == Tokens.T_DNUMBER)
+            {
+                // conversion to double causes data loss
+                _errors.Error(_tokenPosition, Warnings.TooBigIntegerConversion, GetTokenString());
+            }
+            return token;
+        }
+
+        Tokens ProcessOctalNumber()
+        {
+            // parse octal number value // 0oXXXX
+            Tokens token = GetTokenAsDecimalNumber(2, 8, ref _tokenSemantics);
 
             if (token == Tokens.T_DNUMBER)
             {

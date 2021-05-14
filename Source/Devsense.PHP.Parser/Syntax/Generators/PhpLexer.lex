@@ -58,6 +58,7 @@ DNUM	({LNUM}?"."{LNUM})|({LNUM}"."{LNUM}?)
 EXPONENT_DNUM	(({LNUM}|{DNUM})[eE][+-]?{LNUM})
 HNUM	"0x"[0-9a-fA-F]+(_[0-9a-fA-F]+)*
 BNUM	"0b"[01]+(_[01]+)*
+ONUM	"0o"[0-7]+(_[0-7]+)*
 LABEL	[a-zA-Z_][a-zA-Z0-9_]* //[a-zA-Z_\x80-\xff][a-zA-Z0-9_\x80-\xff]* // support of unicode
 WHITESPACE [ \n\r\t]+
 JUSTWHITESPACE [ \t]+
@@ -652,6 +653,10 @@ ST_HALT_COMPILER1,ST_HALT_COMPILER2,ST_HALT_COMPILER3>{EOF} {
 	return ProcessBinaryNumber();
 }
 
+<ST_IN_SCRIPTING>{ONUM} {
+	return ProcessOctalNumber();
+}
+
 <ST_IN_SCRIPTING>{LNUM} {
 	return ProcessDecimalNumber();
 }
@@ -664,7 +669,7 @@ ST_HALT_COMPILER1,ST_HALT_COMPILER2,ST_HALT_COMPILER3>{EOF} {
 	return ProcessVariableOffsetNumber();
 }
 
-<ST_VAR_OFFSET>{LNUM}|{HNUM}|{BNUM} { /* Offset must be treated as a string */
+<ST_VAR_OFFSET>{LNUM}|{HNUM}|{BNUM}|{ONUM} { /* Offset must be treated as a string */
 	return ProcessVariableOffsetString();
 }
 

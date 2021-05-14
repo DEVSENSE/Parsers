@@ -25729,12 +25729,12 @@ EOT;", "x.php", Encoding.UTF8);
         public void TestParseNumbers()
         {
             Lexer lexer = new Lexer(
-                new StringReader("1_2_3,999999999999999,999_999_999_999_999_999_999,0b01111111_11111111_11111111,299_792_458,135_00,96_485.332_12,6.626_070_15e-34,0xCAFE_F00D,0x54_4A_42,0b0101_1111"),
+                new StringReader("1_2_3,999999999999999,999_999_999_999_999_999_999,0b01111111_11111111_11111111,299_792_458,135_00,96_485.332_12,6.626_070_15e-34,0xCAFE_F00D,0x54_4A_42,0b0101_1111,0o777"),
                 Encoding.UTF8, new TestErrorSink(),
                 LanguageFeatures.ShortOpenTags, 0, Lexer.LexicalStates.ST_IN_SCRIPTING);
 
             // long or double
-            var expected = new object[] { (long)123, (long)999999999999999, 999_999_999_999_999_999_999.0, (long)0b11111111111111111111111, (long)299792458, (long)13500, 96485.33212, 6.62607015e-34, (long)0xCAFEF00D, (long)0x544A42, (long)0b01011111, };
+            var expected = new object[] { (long)123, (long)999999999999999, 999_999_999_999_999_999_999.0, (long)0b11111111111111111111111, (long)299792458, (long)13500, 96485.33212, 6.62607015e-34, (long)0xCAFEF00D, (long)0x544A42, (long)0b01011111, System.Convert.ToInt64("777", 8) };
 
             Tokens t;
             int n = 0;
@@ -25747,6 +25747,14 @@ EOT;", "x.php", Encoding.UTF8);
                 else if (t == Tokens.T_LNUMBER)
                 {
                     Assert.AreEqual((long)expected[n++], lexer.TokenValue.Long);
+                }
+                else if (t == Tokens.T_COMMA || t == Tokens.T_WHITESPACE)
+                {
+                    // ok
+                }
+                else
+                {
+                    Assert.Fail($"Unexpected token '{t}'");
                 }
             }
         }
