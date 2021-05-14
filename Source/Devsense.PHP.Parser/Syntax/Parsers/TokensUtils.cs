@@ -77,10 +77,11 @@ namespace Devsense.PHP.Syntax
         /// </summary>
         public static Tokens AsTypeKeywordToken(this Ast.TypeDecl tdecl)
         {
-            switch (tdecl.MemberAttributes & (PhpMemberAttributes.Trait | PhpMemberAttributes.Interface))
+            switch (tdecl.MemberAttributes & (PhpMemberAttributes.Trait | PhpMemberAttributes.Interface | PhpMemberAttributes.Enum))
             {
                 case PhpMemberAttributes.Interface: return Tokens.T_INTERFACE;
                 case PhpMemberAttributes.Trait: return Tokens.T_TRAIT;
+                case PhpMemberAttributes.Enum: return Tokens.T_ENUM;
                 default: return Tokens.T_CLASS;
             }
         }
@@ -105,6 +106,8 @@ namespace Devsense.PHP.Syntax
                     return Tokens.T_INTERFACE;
                 case PhpMemberAttributes.Trait:
                     return Tokens.T_TRAIT;
+                case PhpMemberAttributes.Enum:
+                    return Tokens.T_ENUM;
                 default:
                     return Tokens.T_ERROR;
             }
@@ -129,6 +132,8 @@ namespace Devsense.PHP.Syntax
                     return PhpMemberAttributes.Interface;
                 case Tokens.T_TRAIT:
                     return PhpMemberAttributes.Trait;
+                case Tokens.T_ENUM:
+                    return PhpMemberAttributes.Enum;
                 default:
                     return PhpMemberAttributes.None;
             }
@@ -152,6 +157,7 @@ namespace Devsense.PHP.Syntax
                 case Tokens.T_FINALLY:
                 case Tokens.T_THROW:
                 case Tokens.T_INTERFACE:
+                case Tokens.T_ENUM:
                 case Tokens.T_IMPLEMENTS:
                 case Tokens.T_CLONE:
                 case Tokens.T_ABSTRACT:

@@ -37,8 +37,8 @@ namespace Devsense.PHP.Syntax
             {"YIELD", Tokens.T_YIELD},
             {"SWITCH", Tokens.T_SWITCH}, {"ENDSWITCH", Tokens.T_ENDSWITCH}, {"CASE", Tokens.T_CASE}, {"DEFAULT", Tokens.T_DEFAULT}, {"MATCH", Tokens.T_MATCH},
             {"ARRAY", Tokens.T_ARRAY}, { "LIST", Tokens.T_LIST}, {"CALLABLE", Tokens.T_CALLABLE},
-            { "EXTENDS", Tokens.T_EXTENDS}, {"IMPLEMENTS", Tokens.T_IMPLEMENTS}, {"NAMESPACE", Tokens.T_NAMESPACE},
-            {"TRAIT", Tokens.T_TRAIT}, {"INTERFACE", Tokens.T_INTERFACE}, {"CLASS", Tokens.T_CLASS},
+            {"EXTENDS", Tokens.T_EXTENDS}, {"IMPLEMENTS", Tokens.T_IMPLEMENTS}, {"NAMESPACE", Tokens.T_NAMESPACE},
+            {"TRAIT", Tokens.T_TRAIT}, {"INTERFACE", Tokens.T_INTERFACE}, {"ENUM", Tokens.T_ENUM}, {"CLASS", Tokens.T_CLASS},
             {"__CLASS__", Tokens.T_CLASS_C}, {"__TRAIT__", Tokens.T_TRAIT_C}, {"__FUNCTION__", Tokens.T_FUNC_C}, {"__METHOD__", Tokens.T_METHOD_C}, {"__LINE__", Tokens.T_LINE}, {"__FILE__", Tokens.T_FILE}, {"__DIR__", Tokens.T_DIR}, {"__NAMESPACE__", Tokens.T_NS_C},
             {"STATIC", Tokens.T_STATIC}, {"ABSTRACT", Tokens.T_ABSTRACT}, {"FINAL", Tokens.T_FINAL}, {"PRIVATE", Tokens.T_PRIVATE}, {"PROTECTED", Tokens.T_PROTECTED}, {"PUBLIC", Tokens.T_PUBLIC},
         };
@@ -165,6 +165,7 @@ namespace Devsense.PHP.Syntax
                 case Tokens.T_HALT_COMPILER: return "__halt_compiler";
                 case Tokens.T_PRINT: return "print";
                 case Tokens.T_INTERFACE: return "interface";
+                case Tokens.T_ENUM: return "enum";
                 case Tokens.T_TRAIT: return "trait";
                 case Tokens.T_SL: return "<<";
                 case Tokens.T_SR: return ">>";

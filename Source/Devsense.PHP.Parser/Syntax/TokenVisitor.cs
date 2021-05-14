@@ -418,6 +418,20 @@ namespace Devsense.PHP.Syntax
             VisitConstantDecl(x);
         }
 
+        public override void VisitEnumCaseDecl(EnumCaseDecl x)
+        {
+            // case NAME = EXPRESSION ;
+
+            ProcessToken(Tokens.T_CASE, x.Span.IsValid ? new Span(x.Span.Start, 4) : Span.Invalid);
+            ConsumeNameToken(x.Name.Name.Value, x.Name.Span);
+            if (x.Expression != null)
+            {
+                ProcessToken(Tokens.T_EQ, SpanUtils.SpanIntermission(x.Name.Span, x.Expression.Span));
+                VisitElement(x.Expression);
+            }
+            ConsumeToken(Tokens.T_SEMI, SpanUtils.SafeSpan(x.Span.End - 1, 1));
+        }
+
         public override void VisitClassConstUse(ClassConstUse x)
         {
             VisitElement(x.TargetType);
@@ -1580,13 +1594,18 @@ namespace Devsense.PHP.Syntax
             using (new ScopeHelper(this, new DummyTypeDeclHeader(x, x.HeadingSpan)))
             {
                 //
-                // final class|interface|trait [(call signature)] [NAME] extends ... implements ... { MEMBERS }
+                // final class|interface|trait|enum [(call signature)] [NAME] extends ... implements ... { MEMBERS }
                 //
 
                 previous = ConsumeModifiers(x, x.MemberAttributes, prenameSpan).LastOrDefault();
 
-                // interface|trait|class
+                // interface|trait|class|enum
                 previous = ProcessToken(x.AsTypeKeywordToken(), prenameSpan);
+
+                //if (x.MemberAttributes.IsEnum() && x.BakingType != null)
+                //{
+                //    // TODO: ": TYPE"
+                //}
 
                 if (signature.HasValue && signature.Value.Span.IsValid)
                 {

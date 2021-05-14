@@ -52,6 +52,8 @@ namespace Devsense.PHP.Syntax.Ast.Serialization
                     return "Interface";
                 case PhpMemberAttributes.Trait:
                     return "Trait";
+                case PhpMemberAttributes.Enum:
+                    return "Enum";
                 case PhpMemberAttributes.Constructor:
                     return "Constructor";
                 case PhpMemberAttributes.InactiveConditional:
