@@ -309,6 +309,8 @@ T_CLASS=361,
 T_TRAIT=362,
 /// <summary>&quot;interface (T_INTERFACE)&quot;</summary>
 T_INTERFACE=366,
+/// <summary> &quot;enum&quot; (T_ENUM)</summary>
+T_ENUM=388,
 /// <summary>&quot;extends (T_EXTENDS)&quot;</summary>
 T_EXTENDS=364,
 /// <summary>&quot;implements (T_IMPLEMENTS)&quot;</summary>

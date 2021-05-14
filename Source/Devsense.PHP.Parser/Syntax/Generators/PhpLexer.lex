@@ -272,6 +272,15 @@ ST_HALT_COMPILER1,ST_HALT_COMPILER2,ST_HALT_COMPILER3>{EOF} {
 	return Identifier(Tokens.T_INTERFACE);
 }
 
+<ST_IN_SCRIPTING>"enum"{WHITESPACE}("extends"|"implements") {
+	yyless(4); // consume 4 characters
+	return ProcessLabel();
+}
+<ST_IN_SCRIPTING>"enum"{WHITESPACE}[a-zA-Z_\x80-\xff] {
+	yyless(4); // consume 4 characters
+	return Identifier(Tokens.T_ENUM);
+}
+
 <ST_IN_SCRIPTING>"trait" {
 	return Identifier(Tokens.T_TRAIT);
 }

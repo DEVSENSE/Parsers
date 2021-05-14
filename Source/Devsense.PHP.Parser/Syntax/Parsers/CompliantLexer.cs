@@ -72,7 +72,7 @@ namespace Devsense.PHP.Syntax
             {
                 Tokens token = (Tokens)_provider.GetNextToken();
 
-                // origianl zendlex() functionality - skip open and close tags because they are not in the PHP grammar
+                // original zendlex() functionality - skip open and close tags because they are not in the PHP grammar
                 switch (token)
                 {
                     case Tokens.T_DOC_COMMENT:
@@ -102,6 +102,13 @@ namespace Devsense.PHP.Syntax
 
                     case Tokens.T_MATCH:
                         if (!HasFeatureSet(LanguageFeatures.Php80Set))
+                        {
+                            token = Tokens.T_STRING;
+                        }
+                        break;
+
+                    case Tokens.T_ENUM:
+                        if (!HasFeatureSet(LanguageFeatures.Php81Set))
                         {
                             token = Tokens.T_STRING;
                         }

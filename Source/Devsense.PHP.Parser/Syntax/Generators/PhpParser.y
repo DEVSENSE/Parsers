@@ -258,6 +258,7 @@ using StringPair = System.Collections.Generic.KeyValuePair<string, string>;
 %token <Object> T_CLASS 361     //"class (T_CLASS)"
 %token <Object> T_TRAIT 362     //"trait (T_TRAIT)"
 %token <Object> T_INTERFACE 366 //"interface (T_INTERFACE)"
+%token <Object> T_ENUM 388      // "enum" (T_ENUM)
 %token <Object> T_EXTENDS 364   //"extends (T_EXTENDS)"
 %token <Object> T_IMPLEMENTS 365 //"implements (T_IMPLEMENTS)"
 %token <Object> T_OBJECT_OPERATOR 369 //"-> (T_OBJECT_OPERATOR)"
