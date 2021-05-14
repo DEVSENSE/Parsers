@@ -504,7 +504,7 @@ namespace Devsense.PHP.Syntax
             { QualifiedName.Mixed, PrimitiveTypeRef.PrimitiveType.mixed },
         };
         static readonly Dictionary<QualifiedName, PrimitiveTypeRef.PrimitiveType> PHP81PrimitiveTypes = new Dictionary<QualifiedName, PrimitiveTypeRef.PrimitiveType>() {
-            { QualifiedName.Mixed, PrimitiveTypeRef.PrimitiveType.never },
+            { QualifiedName.Never, PrimitiveTypeRef.PrimitiveType.never },
         };
 
         /// <summary>
