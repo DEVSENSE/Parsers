@@ -21,17 +21,26 @@ namespace UnitTests
         [TestMethod]
         public void SimpleParseTest()
         {
-            string code = @"<?php
+            var codes = new[] {
+@"<?php
 class X {
     function static() { }
-}
-";
+}",
+@"<?php
+    class enum extends A {
+}",         
+            };
 
-            var sourceUnit = new CodeSourceUnit(code, "dummy.php", Encoding.UTF8, Lexer.LexicalStates.INITIAL, LanguageFeatures.Basic);
-            var factory = new BasicNodesFactory(sourceUnit);
-            var errors = new TestErrorSink();
+            foreach (var code in codes)
+            {
+                var sourceUnit = new CodeSourceUnit(code, "dummy.php", Encoding.UTF8, Lexer.LexicalStates.INITIAL, LanguageFeatures.Basic);
+                var factory = new BasicNodesFactory(sourceUnit);
+                var errors = new TestErrorSink();
 
-            sourceUnit.Parse(factory, errors, new TestErrorRecovery());
+                sourceUnit.Parse(factory, errors, new TestErrorRecovery());
+
+                Assert.IsNotNull(sourceUnit.Ast);
+            }
         }
 
         public TestContext TestContext { get; set; }
