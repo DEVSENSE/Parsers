@@ -139,7 +139,7 @@ namespace UnitTests
         }
 
         [TestMethod]
-        public void HeredocTest()
+        public void HereDocTest()
         {
             // expects error
             // do not throw exception!
@@ -197,7 +197,7 @@ echo <<<HTML
         }
 
         [TestMethod]
-        public void MyTest()
+        public void LongNowDocTest()
         {
             var unit = new CodeSourceUnit(@"<?php
 
@@ -25723,6 +25723,30 @@ den Vertaler.)
 EOT;", "x.php", Encoding.UTF8);
 
             unit.Parse(new BasicNodesFactory(unit), null);
+        }
+
+        [TestMethod]
+        public void HereDocTest2()
+        {
+            var code = @"<?php
+//$x=<<<XXX
+//line 1
+//) $wgDBTableOptions
+//XXX;
+$x =<<<XXX
+  line 1
+  ) $wgDBTableOptions
+  XXX;";
+
+            var lexer = new Lexer(new StringReader(code), Encoding.UTF8);
+            Tokens token;
+            while ((token = lexer.GetNextToken()) != Tokens.EOF)
+            {
+                if (token == Tokens.T_END_HEREDOC)
+                {
+
+                }
+            }
         }
 
         [TestMethod]
