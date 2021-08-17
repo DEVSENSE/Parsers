@@ -1032,7 +1032,14 @@ namespace Devsense.PHP.Syntax
         public virtual void VisitCallSignature(CallSignature signature)
         {
             ConsumeToken(Tokens.T_LPAREN, SpanUtils.SafeSpan(signature.Span.StartOrInvalid, 1));
-            VisitElementList(signature.Parameters, Tokens.T_COMMA);
+            if (signature.IsCallableConvert)
+            {
+                ConsumeToken(Tokens.T_ELLIPSIS, signature.Parameters[0].Span);  // PHP 8.1: ...
+            }
+            else
+            {
+                VisitElementList(signature.Parameters, Tokens.T_COMMA);
+            }
             ConsumeToken(Tokens.T_RPAREN, SpanUtils.SafeSpan(signature.Span.End - 1, 1));
         }
 
