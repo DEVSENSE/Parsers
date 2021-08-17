@@ -192,6 +192,7 @@ namespace Devsense.PHP.Syntax
             AddModifier(modifiers, PhpMemberAttributes.Static, defaults);
             AddModifier(modifiers, PhpMemberAttributes.Abstract, defaults);
             AddModifier(modifiers, PhpMemberAttributes.Final, defaults);
+            AddModifier(modifiers, PhpMemberAttributes.ReadOnly, defaults);
             var tokens = _provider.GetTokens(span, t => defaults.ContainsKey(t.Token), defaults.Values).AsArray();
             ConsumeModifiers(element, modifiers, tokens, span);
             return tokens;

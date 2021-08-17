@@ -36,6 +36,8 @@ namespace Devsense.PHP.Syntax.Ast.Serialization
             {
                 case PhpMemberAttributes.Public:
                     return "Public";
+                case PhpMemberAttributes.ReadOnly:
+                    return "ReadOnly";
                 case PhpMemberAttributes.Private:
                     return "Private";
                 case PhpMemberAttributes.Protected:

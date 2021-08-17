@@ -481,6 +481,9 @@ ST_HALT_COMPILER1,ST_HALT_COMPILER2,ST_HALT_COMPILER3>{EOF} {
 <ST_IN_SCRIPTING>"public" {
 	return Identifier(Tokens.T_PUBLIC);
 }
+<ST_IN_SCRIPTING>"readonly" {
+	return Identifier(Tokens.T_READONLY);
+}
 
 <ST_IN_SCRIPTING>"unset" {
 	return Identifier(Tokens.T_UNSET);

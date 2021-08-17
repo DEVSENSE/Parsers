@@ -306,13 +306,15 @@ namespace Devsense.PHP.Syntax.Ast
     /// </summary>
     public abstract class TypeMemberDecl : LangElement
     {
-        public PhpMemberAttributes Modifiers { get { return modifiers; } }
-        protected readonly PhpMemberAttributes modifiers;
+        /// <summary>
+        /// Gets the type member modifiers.
+        /// </summary>
+        public PhpMemberAttributes Modifiers { get; }
 
         protected TypeMemberDecl(Text.Span span, PhpMemberAttributes modifiers)
             : base(span)
         {
-            this.modifiers = modifiers;
+            this.Modifiers = modifiers;
         }
     }
 

@@ -120,7 +120,7 @@ using StringPair = System.Collections.Generic.KeyValuePair<string, string>;
 %left T_ELSEIF
 %left T_ELSE
 %left T_ENDIF
-%right T_STATIC T_ABSTRACT T_FINAL T_PRIVATE T_PROTECTED T_PUBLIC
+%right T_STATIC T_ABSTRACT T_FINAL T_PRIVATE T_PROTECTED T_PUBLIC T_READONLY
 
 %token <Long> T_LNUMBER 317   //"integer number (T_LNUMBER)"
 %token <Double> T_DNUMBER 312   //"floating-point number (T_DNUMBER)"
@@ -250,6 +250,7 @@ using StringPair = System.Collections.Generic.KeyValuePair<string, string>;
 %token <Object> T_PRIVATE 313   //"private (T_PRIVATE)"
 %token <Object> T_PROTECTED 357 //"protected (T_PROTECTED)"
 %token <Object> T_PUBLIC 311    //"public (T_PUBLIC)"
+%token <Object> T_READONLY 398    //"readonly (T_READONLY)"
 %token <Object> T_VAR 356        //"var (T_VAR)"
 %token <Object> T_UNSET 360     //"unset (T_UNSET)"
 %token <Object> T_ISSET 358     //"isset (T_ISSET)"
@@ -304,7 +305,7 @@ using StringPair = System.Collections.Generic.KeyValuePair<string, string>;
 %type <Bool> possible_comma
 
 %type <Long> returns_ref function fn is_reference is_variadic variable_modifiers 
-%type <Long> method_modifiers non_empty_member_modifiers member_modifier class_modifier class_modifiers optional_visibility_modifier
+%type <Long> method_modifiers non_empty_member_modifiers member_modifier class_modifier class_modifiers optional_property_modifiers
 %type <Kind> use_type
 
 %type <Object> backup_doc_comment enter_scope exit_scope
@@ -467,6 +468,7 @@ semi_reserved:
 	| T_PRIVATE
 	| T_PROTECTED
 	| T_PUBLIC
+	| T_READONLY
 ;
 
 identifier:
@@ -957,17 +959,18 @@ attributed_parameter:
 	|	parameter				{ $$ = $1; }
 ;
 
-optional_visibility_modifier:
+optional_property_modifiers:
 		/* empty */	{ $$ = 0; /* None */ }
 	|	T_PUBLIC	{ $$ = (long)(PhpMemberAttributes.Public | PhpMemberAttributes.Constructor); }
 	|	T_PROTECTED	{ $$ = (long)(PhpMemberAttributes.Protected | PhpMemberAttributes.Constructor); }
 	|	T_PRIVATE	{ $$ = (long)(PhpMemberAttributes.Private | PhpMemberAttributes.Constructor); }
+	|	T_READONLY	{ $$ = (long)(PhpMemberAttributes.ReadOnly | PhpMemberAttributes.Constructor); }
 ;
 
 parameter:
-		optional_visibility_modifier optional_type is_reference is_variadic T_VARIABLE
+		optional_property_modifiers optional_type is_reference is_variadic T_VARIABLE
 			{ $$ = _astFactory.Parameter(CombineSpans(@1, @2, @3, @4, @5), $5, @5, $2, (FormalParam.Flags)$3|(FormalParam.Flags)$4, null, (PhpMemberAttributes)$1); /* Important - @$ is invalid when optional_type is empty */ }
-	|	optional_visibility_modifier optional_type is_reference is_variadic T_VARIABLE '=' expr
+	|	optional_property_modifiers optional_type is_reference is_variadic T_VARIABLE '=' expr
 			{ $$ = _astFactory.Parameter(CombineSpans(@1, @2, @3, @4, @7), $5, @5, $2, (FormalParam.Flags)$3|(FormalParam.Flags)$4, (Expression)$7, (PhpMemberAttributes)$1); /* Important - @$ is invalid when optional_type is empty */ }
 ;
 
@@ -1157,6 +1160,7 @@ member_modifier:
 	|	T_STATIC				{ $$ = (long)PhpMemberAttributes.Static; }
 	|	T_ABSTRACT				{ $$ = (long)PhpMemberAttributes.Abstract; }
 	|	T_FINAL					{ $$ = (long)PhpMemberAttributes.Final; }
+	|	T_READONLY				{ $$ = (long)PhpMemberAttributes.ReadOnly; }
 ;
 
 property_list:

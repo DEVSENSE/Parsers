@@ -14,8 +14,6 @@
 // permissions and limitations under the License.
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace Devsense.PHP.Syntax
 {
@@ -29,42 +27,48 @@ namespace Devsense.PHP.Syntax
         Public = 0,
         Private = 1,
         Protected = 2,
+
+        /// <summary>
+        /// The member is read-only.
+        /// </summary>
+        ReadOnly = 4,
+
         NamespacePrivate = Private,
 
-        Static = 4,
-        AppStatic = Static | 8,
-        Abstract = 16,
-        Final = 32,
+        Static = 8,
+        AppStatic = Static | 16,
+        Abstract = 32,
+        Final = 64,
 
         /// <summary>
         /// The type is an interface.
         /// </summary>
-        Interface = 64,
+        Interface = 128,
 
         /// <summary>
         /// The type is a trait.
         /// </summary>
-        Trait = 128,
+        Trait = 256,
 
         /// <summary>
         /// The member is a constructor.
         /// </summary>
-        Constructor = 256,
+        Constructor = 512,
 
         /// <summary>
         /// The member is "enum".
         /// </summary>
-        Enum = 512,
+        Enum = 1024,
 
         /// <summary>
         /// The member needs to be activated before it can be resolved.
         /// TODO: useful when analysis checks whether there are any imported conditional types/functions.
         /// TODO: add the first conditional to the AC, ignore the others. Add the flag handling to Resolve* and to analyzer.
         /// </summary>
-        InactiveConditional = 2048,
+        InactiveConditional = 4096,
 
         StaticMask = Static | AppStatic,
-        VisibilityMask = Public | Private | Protected | NamespacePrivate,
+        VisibilityMask = Public | Private | Protected| NamespacePrivate,
         SpecialMembersMask = Constructor,
         PartialMerged = Abstract | Final
     }
@@ -84,5 +88,8 @@ namespace Devsense.PHP.Syntax
 
         /// <summary>Gets value indicating an interface declaration.</summary>
         public static bool IsEnum(this PhpMemberAttributes attrs) => (attrs & PhpMemberAttributes.Enum) != 0;
+
+        /// <summary>Gets value indicating the member is read-only.</summary>
+        public static bool IsReadOnly(this PhpMemberAttributes attrs) => (attrs & PhpMemberAttributes.ReadOnly) != 0;
     }
 }

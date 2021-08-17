@@ -40,7 +40,7 @@ namespace Devsense.PHP.Syntax
             {"EXTENDS", Tokens.T_EXTENDS}, {"IMPLEMENTS", Tokens.T_IMPLEMENTS}, {"NAMESPACE", Tokens.T_NAMESPACE},
             {"TRAIT", Tokens.T_TRAIT}, {"INTERFACE", Tokens.T_INTERFACE}, {"ENUM", Tokens.T_ENUM}, {"CLASS", Tokens.T_CLASS},
             {"__CLASS__", Tokens.T_CLASS_C}, {"__TRAIT__", Tokens.T_TRAIT_C}, {"__FUNCTION__", Tokens.T_FUNC_C}, {"__METHOD__", Tokens.T_METHOD_C}, {"__LINE__", Tokens.T_LINE}, {"__FILE__", Tokens.T_FILE}, {"__DIR__", Tokens.T_DIR}, {"__NAMESPACE__", Tokens.T_NS_C},
-            {"STATIC", Tokens.T_STATIC}, {"ABSTRACT", Tokens.T_ABSTRACT}, {"FINAL", Tokens.T_FINAL}, {"PRIVATE", Tokens.T_PRIVATE}, {"PROTECTED", Tokens.T_PROTECTED}, {"PUBLIC", Tokens.T_PUBLIC},
+            {"STATIC", Tokens.T_STATIC}, {"ABSTRACT", Tokens.T_ABSTRACT}, {"FINAL", Tokens.T_FINAL}, {"PRIVATE", Tokens.T_PRIVATE}, {"PROTECTED", Tokens.T_PROTECTED}, {"PUBLIC", Tokens.T_PUBLIC}, {"readonly", Tokens.T_READONLY},
         };
 
         /// <summary>
@@ -90,6 +90,7 @@ namespace Devsense.PHP.Syntax
                 case Tokens.T_PRIVATE: return "private";
                 case Tokens.T_PROTECTED: return "protected";
                 case Tokens.T_PUBLIC: return "public";
+                case Tokens.T_READONLY: return "readonly";
 
                 case Tokens.T_EXTENDS: return "extends";
                 case Tokens.T_IMPLEMENTS: return "implements";
