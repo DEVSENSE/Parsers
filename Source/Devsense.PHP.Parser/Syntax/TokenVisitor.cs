@@ -689,19 +689,33 @@ namespace Devsense.PHP.Syntax
 
         public override void VisitFormalParam(FormalParam x)
         {
+            // constructor property modifiers
+            if (x.IsConstructorProperty)
+            {
+                this.ConsumeModifiers(x, x.ConstructorPropertyFlags, Span.Invalid);
+            }
+
+            // type hint
             VisitElement(x.TypeHint);
             var modifierSpan = SpanUtils.SpanIntermission(
                 x.TypeHint != null ? x.TypeHint.Span.StartOrInvalid : x.Span.StartOrInvalid, x.Name.Span);
+
+            // &
             if (x.PassedByRef)
             {
                 ProcessToken(Tokens.T_AMP, modifierSpan);
             }
+
+            // ...
             if (x.IsVariadic)
             {
                 ProcessToken(Tokens.T_ELLIPSIS, modifierSpan);
             }
 
+            // ${name}
             VisitVariableName(x.Name.Name, x.Name.Span, true, false);
+
+            // = {init value}
             if (x.InitValue != null)
             {
                 ProcessToken(Tokens.T_EQ, SpanUtils.SpanIntermission(x.Name.Span, x.InitValue.Span));
