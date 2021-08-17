@@ -165,6 +165,7 @@ namespace Devsense.PHP.Syntax
                 case Tokens.T_PRIVATE:
                 case Tokens.T_PROTECTED:
                 case Tokens.T_PUBLIC:
+                case Tokens.T_READONLY:
                 case Tokens.T_INSTANCEOF:
                 case Tokens.T_NAMESPACE:
                 case Tokens.T_USE:
