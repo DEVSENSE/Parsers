@@ -33,6 +33,12 @@ namespace Devsense.PHP.Syntax.Ast
             Default = 0,
             IsByRef = 1,
             IsUnpack = 2,
+
+            /// <summary>
+            /// Flag annotating the "..." special argument making making the containing call converted to a closure.
+            /// Introduced in PHP 8.1: https://wiki.php.net/rfc/first_class_callable_syntax
+            /// </summary>
+            IsCallableConvert = 4,
         }
 
         /// <summary>
@@ -91,6 +97,11 @@ namespace Devsense.PHP.Syntax.Ast
         /// Gets value indicating whether the parameter is passed with <c>...</c> prefix and so it has to be unpacked before passing to the function call.
         /// </summary>
         public bool IsUnpack => (_flags & Flags.IsUnpack) != 0;
+
+        /// <summary>
+        /// Flag annotating the "..." special argument making making the containing call converted to a closure.
+        /// </summary>
+        public bool IsCallableConvert => (_flags & Flags.IsCallableConvert) != 0;
 
         /// <summary>
         /// Gets value indicating it's a named argument.
@@ -158,6 +169,20 @@ namespace Devsense.PHP.Syntax.Ast
     public struct CallSignature
     {
         public static CallSignature Empty => new CallSignature(ArrayUtils.Empty<ActualParam>(), Text.Span.Invalid);
+
+        /// <summary>
+        /// Creates a special signature that is treated like a conversion of the containing call to a Closure.
+        /// Introduced in PHP 8.1: https://wiki.php.net/rfc/first_class_callable_syntax
+        /// </summary>
+        /// <param name="span">Span of the ellipsis '...'.</param>
+        /// <returns>Single item list with parameter denoting it's a callable convert signature.</returns>
+        public static List<ActualParam> CreateCallableConvert(Text.Span span) => new List<ActualParam>() { new ActualParam(span, null, ActualParam.Flags.IsCallableConvert) };
+
+        /// <summary>
+        /// Gets value indicating the object is treated like a conversion of the containing call to a Closure.
+        /// Introduced in PHP 8.1: https://wiki.php.net/rfc/first_class_callable_syntax
+        /// </summary>
+        public bool IsCallableConvert => Parameters != null && Parameters.Length == 1 && Parameters[0].IsCallableConvert;
 
         /// <summary>
         /// Gets value indicating the signature is empty.
