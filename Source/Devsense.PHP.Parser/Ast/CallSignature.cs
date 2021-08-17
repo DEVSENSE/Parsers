@@ -80,7 +80,25 @@ namespace Devsense.PHP.Syntax.Ast
         /// <summary>
         /// The parameter span.
         /// </summary>
-        public Text.Span Span => (Expression != null && Expression.Span.IsValid) ? Text.Span.FromBounds(_spanStart, Expression.Span.End) : Text.Span.Invalid;
+        public Text.Span Span
+        {
+            get
+            {
+                if (_spanStart >= 0)
+                {
+                    if (Expression != null && Expression.Span.IsValid)
+                    {
+                        return Text.Span.FromBounds(_spanStart, Expression.Span.End);
+                    }
+
+                    if (IsCallableConvert)
+                    {
+                        return new Text.Span(_spanStart, 3); // "..."
+                    }
+                }
+                return Text.Span.Invalid;
+            }
+        }
         readonly int _spanStart;
 
         /// <summary>
