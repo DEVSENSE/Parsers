@@ -37,7 +37,8 @@ namespace Devsense.PHP.Syntax.Ast
             IsConstructorPropertyPublic = 8,
             IsConstructorPropertyPrivate = 16,
             IsConstructorPropertyProtected = 32,
-            IsConstructorPropertyMask = IsConstructorPropertyPublic | IsConstructorPropertyPrivate | IsConstructorPropertyProtected,
+            IsConstructorPropertyReadOnly = 64,
+            IsConstructorPropertyMask = IsConstructorPropertyPublic | IsConstructorPropertyPrivate | IsConstructorPropertyProtected | IsConstructorPropertyReadOnly,
         }
 
         /// <summary>
@@ -48,13 +49,12 @@ namespace Devsense.PHP.Syntax.Ast
         /// <summary>
         /// Name of the argument.
         /// </summary>
-        public VariableNameRef Name { get { return _name; } }
-        private VariableNameRef _name;
+        public VariableNameRef Name { get; }
 
         /// <summary>
         /// Whether the parameter is &amp;-modified.
         /// </summary>
-        public bool PassedByRef { get { return (_flags & Flags.IsByRef) != 0; } }
+        public bool PassedByRef => (_flags & Flags.IsByRef) != 0;
 
         /// <summary>
         /// Whether the parameter is an out-parameter. Set by applying the [Out] attribute.
@@ -75,7 +75,7 @@ namespace Devsense.PHP.Syntax.Ast
         /// <summary>
         /// Gets value indicating whether the parameter is variadic and so passed parameters will be packed into the array as passed as one parameter.
         /// </summary>
-        public bool IsVariadic { get { return (_flags & Flags.IsVariadic) != 0; } }
+        public bool IsVariadic => (_flags & Flags.IsVariadic) != 0;
 
         /// <summary>
         /// Gets value indicating the parameter is a constructor property (PHP8).
@@ -85,25 +85,30 @@ namespace Devsense.PHP.Syntax.Ast
         /// <summary>
         /// In case the parameter is <see cref="IsConstructorProperty"/>, gets the member visibility.
         /// </summary>
-        public PhpMemberAttributes ConstructorPropertyVisibility => (_flags & Flags.IsConstructorPropertyMask) switch
+        public PhpMemberAttributes ConstructorPropertyFlags
         {
-            Flags.IsConstructorPropertyPublic => PhpMemberAttributes.Public,
-            Flags.IsConstructorPropertyPrivate => PhpMemberAttributes.Private,
-            Flags.IsConstructorPropertyProtected => PhpMemberAttributes.Protected,
-            _ => PhpMemberAttributes.None, // which is public
-        };
+            get
+            {
+                var result = (PhpMemberAttributes)0;
+
+                if ((_flags & Flags.IsConstructorPropertyPublic) != 0) result |= PhpMemberAttributes.Public; // 0
+                if ((_flags & Flags.IsConstructorPropertyPrivate) != 0) result |= PhpMemberAttributes.Private;
+                if ((_flags & Flags.IsConstructorPropertyProtected) != 0) result |= PhpMemberAttributes.Protected;
+                if ((_flags & Flags.IsConstructorPropertyReadOnly) != 0) result |= PhpMemberAttributes.ReadOnly;
+
+                return result;
+            }
+        }
 
         /// <summary>
         /// Initial value expression. Can be <B>null</B>.
         /// </summary>
-        public Expression InitValue { get { return _initValue; } internal set { _initValue = value; } }
-        private Expression _initValue;
+        public Expression InitValue { get; internal set; }
 
         /// <summary>
         /// Either <see cref="TypeRef"/> or <B>null</B>.
         /// </summary>
-        public TypeRef TypeHint { get { return _typeHint; } }
-        private TypeRef _typeHint;
+        public TypeRef TypeHint { get; }
 
         #region Construction
 
@@ -114,10 +119,11 @@ namespace Devsense.PHP.Syntax.Ast
             PhpMemberAttributes constructorPropertyVisibility = 0)
             : base(span)
         {
-            _name = new VariableNameRef(nameSpan, name);
-            _typeHint = typeHint;
+            this.Name = new VariableNameRef(nameSpan, name);
+            this.TypeHint = typeHint;
+            this.InitValue = initValue;
+
             _flags = flags;
-            _initValue = initValue;
 
             if (constructorPropertyVisibility != 0)
             {
@@ -130,6 +136,11 @@ namespace Devsense.PHP.Syntax.Ast
                     //PhpMemberAttributes.Public => Flags.IsConstructorPropertyPublic,
                     _ => Flags.IsConstructorPropertyPublic,
                 };
+                
+                if (constructorPropertyVisibility.IsReadOnly())
+                {
+                    _flags |= Flags.IsConstructorPropertyReadOnly;
+                }    
             }
         }
 
