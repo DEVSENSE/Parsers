@@ -23,7 +23,7 @@ namespace UnitTests.TestImplementation
 
         private void ProcessToken(Tokens token, string text, Span position)
         {
-            var start = position.StartOrInvalid;
+            var start = position.Start;
             var end = start + text.Length;
             if (_builder.Length <= end)
             {

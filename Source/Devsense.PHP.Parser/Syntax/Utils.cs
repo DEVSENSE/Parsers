@@ -45,7 +45,7 @@ namespace Devsense.PHP.Syntax
             }
             else
             {
-                return previous.StartOrInvalid <= next.End ? Text.Span.Combine(previous, next) : Text.Span.Invalid;
+                return previous.StartOrInvalid() <= next.End ? Text.Span.Combine(previous, next) : Text.Span.Invalid;
             }
         }
 
@@ -100,6 +100,13 @@ namespace Devsense.PHP.Syntax
 
             return Text.Span.Invalid;
         }
+
+        /// <summary>
+        /// Gets <see cref="Text.Span.Start"/> or <c>-1</c> if span is not valid.
+        /// </summary>
+        public static int StartOrInvalid(this Text.Span s) => s.IsValid ? s.Start : -1;
+
+        public static int EndOrInvalid(this Text.Span s) => s.IsValid ? s.End : -1;
     }
 
     #endregion

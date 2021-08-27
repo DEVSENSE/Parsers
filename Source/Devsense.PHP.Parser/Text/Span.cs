@@ -73,11 +73,6 @@ namespace Devsense.PHP.Text
         /// </summary>
         public static Span Invalid { get { return new Span() { _start = 0, _length = -1 }; } }
 
-        /// <summary>
-        /// Gets <see cref="Start"/> or <c>-1</c> if span is not valid.
-        /// </summary>
-        public int StartOrInvalid => IsValid ? Start : -1;
-
         #endregion
 
         #region Construction
