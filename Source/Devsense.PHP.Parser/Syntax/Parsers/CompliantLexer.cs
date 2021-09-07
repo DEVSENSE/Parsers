@@ -107,6 +107,7 @@ namespace Devsense.PHP.Syntax
                         }
                         break;
 
+                    case Tokens.T_READONLY:
                     case Tokens.T_ENUM:
                         if (!HasFeatureSet(LanguageFeatures.Php81Set))
                         {
