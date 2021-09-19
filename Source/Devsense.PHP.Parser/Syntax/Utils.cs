@@ -21,6 +21,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
+using Devsense.PHP.Utilities;
 
 namespace Devsense.PHP.Syntax
 {
@@ -1120,8 +1121,7 @@ namespace Devsense.PHP.Syntax
         }
 
         /// <summary>Pooled string bulder instance.</summary>
-        [ThreadStatic] // TODO: replace with proper pool
-        static StringBuilder s_sb;
+        static readonly ObjectPool<StringBuilder> _sbpool = new ObjectPool<StringBuilder>(() => new StringBuilder());
 
         /// <summary>
         /// Gets pooled string builder instance for this thread.
@@ -1130,9 +1130,7 @@ namespace Devsense.PHP.Syntax
         /// <returns></returns>
         internal static StringBuilder GetStringBuilder(int capacity = 0)
         {
-            var sb = s_sb ?? new StringBuilder(capacity);
-            s_sb = null;
-            return sb;
+            return _sbpool.Allocate();
         }
 
         /// <summary>
@@ -1141,11 +1139,16 @@ namespace Devsense.PHP.Syntax
         /// </summary>
         internal static string ReturnStringBuilder(StringBuilder sb)
         {
-            if (sb == null) throw new ArgumentNullException(nameof(sb));
+            if (sb == null)
+            {
+                throw new ArgumentNullException(nameof(sb));
+            }
 
             var @string = sb.ToString();
+            
             sb.Clear();
-            s_sb = sb;
+            _sbpool.Free(sb);
+
             return @string;
         }
     }
