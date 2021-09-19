@@ -1284,6 +1284,23 @@ namespace Devsense.PHP.Syntax
         {
             entries.Foreach(target.Add);
         }
+
+#if NET45 || NETSTANDARD2_0
+        public static bool TryDequeue<T>(this Queue<T> queue, out T value) // because netstandard2.0, net45
+        {
+            if (queue.Count != 0)
+            {
+                value = queue.Dequeue();
+                return true;
+            }
+            else
+            {
+                value = default(T);
+                return false;
+            }
+        }
+#endif
+
     }
 
     /// <summary>
