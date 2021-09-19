@@ -63,17 +63,18 @@ namespace Devsense.PHP.Syntax.Ast
         public Expression/*!*/ RightExpr { get { return rightExpr; } internal set { Debug.Assert(value != null); rightExpr = value; } }
         private Expression/*!*/ rightExpr;
 
-        public override Operations Operation { get { return operation; } }
-        private Operations operation;
+        public override Operations Operation { get; }
 
         #endregion
 
         #region Construction
 
-        public BinaryEx(Text.Span span, Operations operation, Expression/*!*/ leftExpr, Expression/*!*/ rightExpr)
+        public BinaryEx(Span span, Operations operation, Expression/*!*/ leftExpr, Expression/*!*/ rightExpr)
             : base(span)
         {
-            this.operation = operation;
+            Debug.Assert(leftExpr != rightExpr, "LeftExpr == RightExpr");
+
+            this.Operation = operation;
             this.LeftExpr = leftExpr;
             this.RightExpr = rightExpr;
         }
