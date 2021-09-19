@@ -35,6 +35,12 @@ namespace Devsense.PHP.Utilities
         /// </remarks>
         public delegate T Factory();
 
+        /// <summary>
+        /// Optional callback used to cleanup freed object before it's returned to the pool.
+        /// </summary>
+        /// <param name="obj"></param>
+        public delegate void FreeContract(T obj);
+
         // Storage for the pool objects. The first item is stored in a dedicated field because we
         // expect to be able to satisfy most requests from it.
         private T _firstItem;
@@ -45,14 +51,24 @@ namespace Devsense.PHP.Utilities
         // than "new T()".
         private readonly Factory _factory;
 
+        /// <summary>
+        /// optional delegate to clenaup object returned to the pool.
+        /// </summary>
+        private readonly FreeContract _freeop;
+
         public ObjectPool(Factory factory)
-            : this(factory, Environment.ProcessorCount * 2)
+            : this(factory, Environment.ProcessorCount * 2, null)
         { }
 
         public ObjectPool(Factory factory, int size)
+            : this(factory, size, null)
+        { }
+
+        public ObjectPool(Factory factory, int size, FreeContract freeop)
         {
             Debug.Assert(size >= 1);
             _factory = factory;
+            _freeop = freeop;
             _items = new Element[size - 1];
         }
 
@@ -117,6 +133,11 @@ namespace Devsense.PHP.Utilities
         /// </remarks>
         public void Free(T obj)
         {
+            if (_freeop != null)
+            {
+                _freeop(obj);
+            }
+
             if (_firstItem == null)
             {
                 // Intentionally not using interlocked here. 
