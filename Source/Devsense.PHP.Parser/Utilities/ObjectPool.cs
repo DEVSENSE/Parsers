@@ -56,8 +56,14 @@ namespace Devsense.PHP.Utilities
         /// </summary>
         private readonly FreeContract _freeop;
 
+        static int DefaultSize => Environment.ProcessorCount * 2;
+
         public ObjectPool(Factory factory)
-            : this(factory, Environment.ProcessorCount * 2, null)
+            : this(factory, null)
+        { }
+
+        public ObjectPool(Factory factory, FreeContract freeop)
+            : this(factory, DefaultSize, freeop)
         { }
 
         public ObjectPool(Factory factory, int size)

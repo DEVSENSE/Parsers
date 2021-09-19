@@ -1121,7 +1121,9 @@ namespace Devsense.PHP.Syntax
         }
 
         /// <summary>Pooled string bulder instance.</summary>
-        static readonly ObjectPool<StringBuilder> _sbpool = new ObjectPool<StringBuilder>(() => new StringBuilder());
+        static readonly ObjectPool<StringBuilder> _sbpool = new ObjectPool<StringBuilder>(
+            () => new StringBuilder(),
+            sb => sb.Clear());
 
         /// <summary>
         /// Gets pooled string builder instance for this thread.
@@ -1146,7 +1148,6 @@ namespace Devsense.PHP.Syntax
 
             var @string = sb.ToString();
             
-            sb.Clear();
             _sbpool.Free(sb);
 
             return @string;
