@@ -337,7 +337,7 @@ namespace Devsense.PHP.Syntax.Ast
             var ast = new GlobalCode(span, statements.CastToArray<Statement>(), SourceUnit);
 
             // link to parent nodes
-            UpdateParentVisitor.UpdateParents(ast);
+            Utilities.UpdateParentHelper.UpdateParents(ast);
 
             //
             return ast;
