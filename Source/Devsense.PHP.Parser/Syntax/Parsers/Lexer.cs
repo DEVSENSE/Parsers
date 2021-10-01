@@ -461,7 +461,7 @@ namespace Devsense.PHP.Syntax
             }
             catch (OverflowException)
             {
-                _errors.Error(new Span(_charOffset, this.TokenLength), Warnings.TooBigDouble, GetTokenString());
+                _errors.Error(CurrentTokenSpan, Warnings.TooBigDouble, GetTokenString());
 
                 //
                 return (str.Length > 0 && str[0] == '-') ? double.NegativeInfinity : double.PositiveInfinity;
@@ -814,6 +814,11 @@ namespace Devsense.PHP.Syntax
         /// </summary>
         public string TokenText => _tokenText ?? (_tokenText = GetTokenString());
 
+        /// <summary>
+        /// gets the current token position before the <see cref="_tokenPosition"/> gets updated properly.
+        /// </summary>
+        Span CurrentTokenSpan => new Span(_charOffset, TokenLength);
+
         /// <summary>Store the token text into the <see cref="_tokenSemantics"/>.</summary>
         Tokens Identifier(Tokens t)
         {
@@ -829,7 +834,7 @@ namespace Devsense.PHP.Syntax
             if (token == Tokens.T_DNUMBER)
             {
                 // conversion to double causes data loss
-                _errors.Error(_tokenPosition, Warnings.TooBigIntegerConversion, GetTokenString());
+                _errors.Error(CurrentTokenSpan, Warnings.TooBigIntegerConversion, GetTokenString());
             }
             return token;
         }
@@ -842,7 +847,7 @@ namespace Devsense.PHP.Syntax
             if (token == Tokens.T_DNUMBER)
             {
                 // conversion to double causes data loss
-                _errors.Error(_tokenPosition, Warnings.TooBigIntegerConversion, GetTokenString());
+                _errors.Error(CurrentTokenSpan, Warnings.TooBigIntegerConversion, GetTokenString());
             }
             return token;
         }
@@ -860,7 +865,7 @@ namespace Devsense.PHP.Syntax
             if (token == Tokens.T_DNUMBER)
             {
                 // conversion to double causes data loss
-                _errors.Error(_tokenPosition, Warnings.TooBigIntegerConversion, GetTokenString());
+                _errors.Error(CurrentTokenSpan, Warnings.TooBigIntegerConversion, GetTokenString());
             }
             return token;
         }
@@ -873,7 +878,7 @@ namespace Devsense.PHP.Syntax
             if (token == Tokens.T_DNUMBER)
             {
                 // conversion to double causes data loss
-                _errors.Error(_tokenPosition, Warnings.TooBigIntegerConversion, GetTokenString());
+                _errors.Error(CurrentTokenSpan, Warnings.TooBigIntegerConversion, GetTokenString());
             }
             return token;
         }

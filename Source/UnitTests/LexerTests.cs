@@ -25784,6 +25784,25 @@ $x =<<<XXX
         }
 
         [TestMethod]
+        public void TestTooBigNumber()
+        {
+            var errsink = new TestErrorSink();
+            var lexer = new Lexer(
+                new StringReader(" 12345678901234567890 , 12345678901234567890 , 0x9999999999999999999, 077777777777777777777777777"),
+                Encoding.UTF8, errsink,
+                LanguageFeatures.ShortOpenTags, 0, Lexer.LexicalStates.ST_IN_SCRIPTING);
+
+            Tokens t;
+            while ((t = lexer.GetNextToken()) != Tokens.EOF)
+            {
+                if (t == Tokens.T_COMMA || t == Tokens.T_WHITESPACE) continue;
+
+                Assert.AreEqual(t, Tokens.T_DNUMBER);
+                Assert.AreEqual(lexer.TokenSpan, errsink.Errors.Last().Span);
+            }
+        }
+
+        [TestMethod]
         [DataSource("Microsoft.VisualStudio.TestTools.DataSource.CSV", "|DataDirectory|\\TestData.csv", "TestData#csv", DataAccessMethod.Sequential)]
         public void LexerGetNextTokenTest()
         {
