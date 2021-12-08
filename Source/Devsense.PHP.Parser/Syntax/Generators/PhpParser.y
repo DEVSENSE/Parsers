@@ -104,7 +104,7 @@ using StringPair = System.Collections.Generic.KeyValuePair<string, string>;
 %left T_BOOLEAN_AND
 %left '|'
 %left '^'
-%left '&'
+%left T_AMPERSAND_NOT_FOLLOWED_BY_VAR_OR_VARARG T_AMPERSAND_FOLLOWED_BY_VAR_OR_VARARG
 %nonassoc T_IS_EQUAL T_IS_NOT_EQUAL T_IS_IDENTICAL T_IS_NOT_IDENTICAL T_SPACESHIP
 %nonassoc '<' T_IS_SMALLER_OR_EQUAL '>' T_IS_GREATER_OR_EQUAL
 %left T_SL T_SR
@@ -137,7 +137,6 @@ using StringPair = System.Collections.Generic.KeyValuePair<string, string>;
 %token T_DOUBLE_QUOTES 34 //'"'
 %token T_DOLLAR 36 //'$'
 %token T_PERCENT 37 //'%'
-%token T_AMP 38 //'&'
 %token T_SINGLE_QUOTES 39 //'\''
 %token T_LPAREN 40 //'('
 %token T_RPAREN 41 //')'
@@ -295,6 +294,8 @@ using StringPair = System.Collections.Generic.KeyValuePair<string, string>;
 %token <Object> T_COALESCE 283        //"?? (T_COALESCE)"
 %token <Object> T_POW 305             //"** (T_POW)"
 %token <Object> T_ATTRIBUTE 397             //"#[ (T_ATTRIBUTE)"
+%token <Object> T_AMPERSAND_FOLLOWED_BY_VAR_OR_VARARG 400     // "&"
+%token <Object> T_AMPERSAND_NOT_FOLLOWED_BY_VAR_OR_VARARG 401 // "&"
 
 /* Token used to force a parse error from the lexer */
 %token T_ERROR 257
@@ -316,7 +317,7 @@ using StringPair = System.Collections.Generic.KeyValuePair<string, string>;
 %type <TypeReference> type return_type type_expr optional_type extends_from
 %type <TypeReference> class_name_reference class_name
 
-%type <TypeRefList> name_list catch_name_list implements_list interface_extends_list union_type
+%type <TypeRefList> name_list catch_name_list implements_list interface_extends_list union_type intersection_type
 
 %type <Node> top_statement statement function_declaration_statement class_declaration_statement 
 %type <Node> trait_declaration_statement interface_declaratioimplements_listn_statement 
@@ -469,6 +470,11 @@ semi_reserved:
 	| T_PROTECTED
 	| T_PUBLIC
 	| T_READONLY
+;
+
+ampersand:
+		T_AMPERSAND_FOLLOWED_BY_VAR_OR_VARARG
+	|	T_AMPERSAND_NOT_FOLLOWED_BY_VAR_OR_VARARG
 ;
 
 identifier:
@@ -729,7 +735,7 @@ function_declaration_statement:
 
 is_reference:
 		/* empty */	{ $$ = 0; }
-	|	'&'			{ $$ = (long)FormalParam.Flags.IsByRef; }
+	|	ampersand	{ $$ = (long)FormalParam.Flags.IsByRef; }
 ;
 
 is_variadic:
@@ -822,7 +828,7 @@ implements_list:
 
 foreach_variable:
 		variable			{ $$ = _astFactory.ForeachVariable(@$, $1); }
-	|	'&' variable		{ $$ = _astFactory.ForeachVariable(@$, $2, true); }
+	|	ampersand variable		{ $$ = _astFactory.ForeachVariable(@$, $2, true); }
 	|	T_LIST '(' array_pair_list ')' { $$ = _astFactory.ForeachVariable(@$, _astFactory.List(@$, $3, true)); }
 	|	'[' array_pair_list ']' { $$ = _astFactory.ForeachVariable(@$, _astFactory.List(@$, $2, false)); }
 ;
@@ -984,6 +990,7 @@ type_expr:
 		type		{ $$ = $1; }
 	|	'?' type	{ $$ = _astFactory.NullableTypeReference(@$, $2); }
 	|   union_type  { $$ = _astFactory.TypeReference(@$, $1); }
+	|	intersection_type	{ $$ = _astFactory.IntersectionTypeReference(@$, $1); }
 ;
 
 type:   
@@ -996,6 +1003,11 @@ type:
 union_type:
 		type '|' type       { $$ = new List<TypeRef>(2){ $1, $3 }; }
 	|	union_type '|' type { $$ = AddToList<TypeRef>($1, $3); }
+;
+
+intersection_type:
+		type T_AMPERSAND_NOT_FOLLOWED_BY_VAR_OR_VARARG type       { $$ = new List<TypeRef>(2){ $1, $3 }; }
+	|	intersection_type T_AMPERSAND_NOT_FOLLOWED_BY_VAR_OR_VARARG type { $$ = AddToList<TypeRef>($1, $3); }
 ;
 
 return_type:
@@ -1237,9 +1249,9 @@ expr_without_variable:
 			{ $$ = _astFactory.Assignment(@$, _astFactory.List(CombineSpans(@1, @3), $2, false), $5, Operations.AssignValue); }
 	|	variable '=' expr
 			{ $$ = _astFactory.Assignment(@$, $1, $3, Operations.AssignValue); }
-	|	variable '=' '&' variable
+	|	variable '=' ampersand variable
 			{ $$ = _astFactory.Assignment(@$, $1, $4, Operations.AssignRef); }
-	|	variable '=' '&' new_expr
+	|	variable '=' ampersand new_expr
 			{ $$ = _astFactory.Assignment(@$, $1, $4, Operations.AssignRef); _errors.Error(@$, Warnings.AssignNewByRefDeprecated); }
 	|	T_CLONE expr
 			{ $$ = _astFactory.UnaryOperation(@$, Operations.Clone,   (Expression)$2); }
@@ -1270,7 +1282,7 @@ expr_without_variable:
 	|	variable T_COALESCE_EQUAL expr
 			{ $$ = _astFactory.Assignment(@$, $1, $3, Operations.AssignCoalesce); }
 	|	variable T_INC { $$ = CreateIncDec(@$, $1, true, true); }
-	|	T_INC variable { $$ = CreateIncDec(@$, $2, true,  false); }
+	|	T_INC variable { $$ = CreateIncDec(@$, $2, true, false); }
 	|	variable T_DEC { $$ = CreateIncDec(@$, $1, false, true); }
 	|	T_DEC variable { $$ = CreateIncDec(@$, $2, false, false); }
 	|	expr T_BOOLEAN_OR expr
@@ -1284,7 +1296,8 @@ expr_without_variable:
 	|	expr T_LOGICAL_XOR expr
 			{ $$ = _astFactory.BinaryOperation(@$, Operations.Xor,  $1, $3); }
 	|	expr '|' expr	{ $$ = _astFactory.BinaryOperation(@$, Operations.BitOr,  $1, $3); }
-	|	expr '&' expr	{ $$ = _astFactory.BinaryOperation(@$, Operations.BitAnd, $1, $3); }
+	|	expr T_AMPERSAND_NOT_FOLLOWED_BY_VAR_OR_VARARG expr	{ $$ = _astFactory.BinaryOperation(@$, Operations.BitAnd, $1, $3); }
+	|	expr T_AMPERSAND_FOLLOWED_BY_VAR_OR_VARARG expr	{ $$ = _astFactory.BinaryOperation(@$, Operations.BitAnd, $1, $3); }
 	|	expr '^' expr	{ $$ = _astFactory.BinaryOperation(@$, Operations.BitXor, $1, $3); }
 	|	expr '.' expr 	{ $$ = _astFactory.BinaryOperation(@$, Operations.Concat, $1, $3); }
 	|	expr '+' expr 	{ $$ = _astFactory.BinaryOperation(@$, Operations.Add,    $1, $3); }
@@ -1409,7 +1422,7 @@ backup_lex_pos:
 
 returns_ref:
 		/* empty */	{ $$ = 0; }
-	|	'&'			{ $$ = (long)FormalParam.Flags.IsByRef; }
+	|	ampersand	{ $$ = (long)FormalParam.Flags.IsByRef; }
 ;
 
 lexical_vars:
@@ -1423,8 +1436,8 @@ lexical_var_list:
 ;
 
 lexical_var:
-		T_VARIABLE		{ $$ = _astFactory.Parameter(@$, $1, @1, null, FormalParam.Flags.Default); }
-	|	'&' T_VARIABLE	{ $$ = _astFactory.Parameter(@$, $2, @2, null, FormalParam.Flags.IsByRef); }
+		T_VARIABLE				{ $$ = _astFactory.Parameter(@$, $1, @1, null, FormalParam.Flags.Default); }
+	|	ampersand T_VARIABLE	{ $$ = _astFactory.Parameter(@$, $2, @2, null, FormalParam.Flags.IsByRef); }
 ;
 
 function_call:
@@ -1631,9 +1644,9 @@ array_pair:
 			{ $$ = _astFactory.ArrayItemValue(@$, $1, $3); }
 	|	expr
 			{ $$ = _astFactory.ArrayItemValue(@$, null, $1); }
-	|	expr T_DOUBLE_ARROW '&' variable
+	|	expr T_DOUBLE_ARROW ampersand variable
 			{ $$ = _astFactory.ArrayItemRef(@$, $1, $4); }
-	|	'&' variable
+	|	ampersand variable
 			{ $$ = _astFactory.ArrayItemRef(@$, null, $2); }
 	|	T_ELLIPSIS expr
 			{ $$ = _astFactory.ArrayItemSpread(@$, $2); }
