@@ -112,6 +112,7 @@ namespace Devsense.PHP.Syntax
                     return Tokens.T_ERROR;
             }
         }
+
         public static PhpMemberAttributes ToModifier(this Tokens token)
         {
             switch (token)
@@ -138,6 +139,11 @@ namespace Devsense.PHP.Syntax
                     return PhpMemberAttributes.None;
             }
         }
+
+        /// <summary>
+        /// Gets value indicatng the token is <c>"&amp;"</c>.
+        /// </summary>
+        public static bool IsAmpersand(this Tokens token) => token == Tokens.T_AMPERSAND_FOLLOWED_BY_VAR_OR_VARARG || token == Tokens.T_AMPERSAND_NOT_FOLLOWED_BY_VAR_OR_VARARG;
 
         /// <summary>
         /// Gets category of a token in given lexical context.
@@ -253,7 +259,9 @@ namespace Devsense.PHP.Syntax
                 case Tokens.T_EQ:                   // =
                 case Tokens.T_SLASH:                // /
                 case Tokens.T_CARET:                // ^
-                case Tokens.T_AMP:                  // &
+                //case Tokens.T_AMP:                  // &
+                case Tokens.T_AMPERSAND_FOLLOWED_BY_VAR_OR_VARARG:
+                case Tokens.T_AMPERSAND_NOT_FOLLOWED_BY_VAR_OR_VARARG:
                 case Tokens.T_PLUS:                 // +
                 case Tokens.T_MINUS:                // -
                 case Tokens.T_PIPE:                 // |

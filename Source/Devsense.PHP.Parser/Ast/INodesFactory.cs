@@ -791,6 +791,14 @@ namespace Devsense.PHP.Syntax.Ast
         TypeRef TypeReference(TSpan span, IEnumerable<TNode> classes);
 
         /// <summary>
+        /// Create <c>TypeRef</c> reference to an intersection of types.
+        /// </summary>
+        /// <param name="span">Entire element span.</param>
+        /// <param name="classes">List of all qualified classes in the expression.</param>
+        /// <returns>Type reference.</returns>
+        TypeRef IntersectionTypeReference(TSpan span, IEnumerable<TNode> classes);
+        
+        /// <summary>
         /// Creates anonymous type reference node.
         /// </summary>
         /// <param name="span">Entire element span.</param>

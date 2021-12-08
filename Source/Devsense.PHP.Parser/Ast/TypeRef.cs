@@ -543,12 +543,12 @@ namespace Devsense.PHP.Syntax.Ast
 
     #endregion
 
-    #region MultipleTypeRef
+    #region MultipleTypeRef, IntersectionTypeRef
 
     /// <summary>
     /// <see cref="TypeRef"/> referring to multiple types.
     /// </summary>
-    public sealed class MultipleTypeRef : TypeRef
+    public class MultipleTypeRef : TypeRef
     {
         /// <summary>
         /// List of types represented by this reference.
@@ -568,11 +568,19 @@ namespace Devsense.PHP.Syntax.Ast
 
         public override string ToString() => string.Join(PHPDocBlock.TypeVarDescTag.TypeNamesSeparator.ToString(), (IEnumerable<TypeRef>)MultipleTypes);
 
-        /// <summary>
-        /// Call the right Visit* method on the given Visitor object.
-        /// </summary>
-        /// <param name="visitor">Visitor to be called.</param>
         public override void VisitMe(TreeVisitor visitor) => visitor.VisitMultipleTypeRef(this);
+    }
+
+    public sealed class IntersectionTypeRef : MultipleTypeRef
+    {
+        public IntersectionTypeRef(Span span, IEnumerable<TypeRef> multipleTypes)
+            : base(span, multipleTypes)
+        {
+        }
+
+        public override string ToString() => string.Join(PHPDocBlock.TypeVarDescTag.TypeNamesIntersectionSeparator.ToString(), (IEnumerable<TypeRef>)MultipleTypes);
+
+        public override void VisitMe(TreeVisitor visitor) => visitor.VisitIntersectionTypeRef(this);
     }
 
     #endregion

@@ -448,6 +448,9 @@ namespace UnitTests
                 else return reference;
             }
 
+            public override TypeRef IntersectionTypeReference(Span span, IEnumerable<LangElement> classes)
+                => CountTR(base.IntersectionTypeReference(span, classes));
+
             public override TypeRef PrimitiveTypeReference(Span span, PrimitiveTypeRef.PrimitiveType tname)
                 => CountTR(base.PrimitiveTypeReference(span, tname));
 

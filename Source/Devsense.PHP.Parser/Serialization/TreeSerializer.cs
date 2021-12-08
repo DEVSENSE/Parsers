@@ -554,6 +554,12 @@ namespace Devsense.PHP.Syntax.Ast.Serialization
             base.VisitMultipleTypeRef(x);
             _serializer.EndSerialize();
         }
+        public override void VisitIntersectionTypeRef(IntersectionTypeRef x)
+        {
+            _serializer.StartSerialize(typeof(IntersectionTypeRef).Name, SerializeSpan(x.Span));
+            base.VisitIntersectionTypeRef(x);
+            _serializer.EndSerialize();
+        }
         override public void VisitGenericTypeRef(GenericTypeRef x)
         {
             _serializer.StartSerialize(typeof(GenericTypeRef).Name, SerializeSpan(x.Span));

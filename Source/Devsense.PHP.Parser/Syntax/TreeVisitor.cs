@@ -1078,6 +1078,10 @@ namespace Devsense.PHP.Syntax
         {
             VisitList(x.MultipleTypes);
         }
+        virtual public void VisitIntersectionTypeRef(IntersectionTypeRef x)
+        {
+            VisitList(x.MultipleTypes);
+        }
         virtual public void VisitGenericTypeRef(GenericTypeRef x)
         {
             VisitElement(x.TargetType);

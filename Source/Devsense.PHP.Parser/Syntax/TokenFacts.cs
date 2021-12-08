@@ -69,7 +69,9 @@ namespace Devsense.PHP.Syntax
                 case Tokens.T_PIPE: return "|";
                 case Tokens.T_CARET: return "^";
                 case Tokens.T_ELLIPSIS: return "...";
-                case Tokens.T_AMP: return "&";
+                //case Tokens.T_AMP: return "&";
+                case Tokens.T_AMPERSAND_FOLLOWED_BY_VAR_OR_VARARG:
+                case Tokens.T_AMPERSAND_NOT_FOLLOWED_BY_VAR_OR_VARARG: return "&";
                 case Tokens.T_DOUBLE_COLON: return "::";
                 case Tokens.T_OBJECT_OPERATOR: return "->";
                 case Tokens.T_DOUBLE_ARROW: return "=>";
@@ -287,7 +289,7 @@ namespace Devsense.PHP.Syntax
                 case Operations.And: return Tokens.T_BOOLEAN_AND;
                 case Operations.BitOr: return Tokens.T_PIPE;
                 case Operations.BitXor: return Tokens.T_CARET;
-                case Operations.BitAnd: return Tokens.T_AMP;
+                case Operations.BitAnd: return Tokens.T_AMPERSAND_NOT_FOLLOWED_BY_VAR_OR_VARARG;
                 case Operations.Equal: return Tokens.T_IS_EQUAL;
                 case Operations.NotEqual: return Tokens.T_IS_NOT_EQUAL;
                 case Operations.Identical: return Tokens.T_IS_IDENTICAL;

@@ -756,6 +756,11 @@ namespace Devsense.PHP.Syntax
             public const char TypeNamesSeparator = '|';
 
             /// <summary>
+            /// Character separating intersected type names.
+            /// </summary>
+            public const char TypeNamesIntersectionSeparator = '&';
+
+            /// <summary>
             /// Optional. Type names separated by '|'.
             /// </summary>
             public string TypeNames

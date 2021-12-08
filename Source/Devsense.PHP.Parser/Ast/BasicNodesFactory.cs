@@ -632,19 +632,30 @@ namespace Devsense.PHP.Syntax.Ast
             {
                 return typearr[0];
             }
-            else
+            
+            if (typearr.Length > 1 &&
+                typearr[typearr.Length - 1] is TranslatedTypeRef tt &&
+                tt.OriginalType is ClassTypeRef ct &&
+                ct.ClassName == QualifiedName.Null)
             {
-                if (typearr.Length > 1 &&
-                    typearr[typearr.Length - 1] is TranslatedTypeRef tt &&
-                    tt.OriginalType is ClassTypeRef ct &&
-                    ct.ClassName == QualifiedName.Null)
-                {
-                    // `|null` at the end
-                    typearr[typearr.Length - 1] = ct;
-                }
-
-                return new MultipleTypeRef(span, typearr);
+                // `|null` at the end
+                typearr[typearr.Length - 1] = ct;
             }
+
+            return new MultipleTypeRef(span, typearr);
+        }
+        public virtual TypeRef IntersectionTypeReference(Span span, IEnumerable<LangElement> classes)
+        {
+            Debug.Assert(classes != null && classes.Count() > 0 && classes.All(c => c is TypeRef));
+
+            var typearr = classes is IList<TypeRef> list ? list.ToArray() : classes.CastToArray<TypeRef>();
+
+            if (typearr.Length == 1)
+            {
+                return typearr[0];
+            }
+
+            return new IntersectionTypeRef(span, typearr);
         }
 
         public virtual LangElement While(Span span, LangElement cond, Span condSpan, LangElement body)

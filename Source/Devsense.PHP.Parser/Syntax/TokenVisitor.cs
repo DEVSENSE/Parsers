@@ -215,7 +215,7 @@ namespace Devsense.PHP.Syntax
 
             if (x.Ampersand)
             {
-                ProcessToken(Tokens.T_AMP, SpanUtils.SpanIntermission(x.Span.StartOrInvalid(), x.Expression.Span));
+                ProcessToken(Tokens.T_AMPERSAND_FOLLOWED_BY_VAR_OR_VARARG, SpanUtils.SpanIntermission(x.Span.StartOrInvalid(), x.Expression.Span));
             }
 
             VisitElement(x.Expression);
@@ -287,7 +287,7 @@ namespace Devsense.PHP.Syntax
                 }
                 else if (item is RefItem ri)
                 {
-                    ProcessToken(Tokens.T_AMP, SpanUtils.SpanIntermission(
+                    ProcessToken(Tokens.T_AMPERSAND_NOT_FOLLOWED_BY_VAR_OR_VARARG, SpanUtils.SpanIntermission(
                         item.HasKey ? item.Index.Span : previous.Span, valueSpan));
                     VisitElement(ri.RefToGet);
                 }
@@ -684,7 +684,7 @@ namespace Devsense.PHP.Syntax
         {
             if (x.Alias)
             {
-                ProcessToken(Tokens.T_AMP, SpanUtils.SpanIntermission(x.Span.StartOrInvalid() - 1, x.Target.Span));
+                ProcessToken(Tokens.T_AMPERSAND_FOLLOWED_BY_VAR_OR_VARARG, SpanUtils.SpanIntermission(x.Span.StartOrInvalid() - 1, x.Target.Span));
             }
             VisitElement(x.Target);
         }
@@ -705,7 +705,7 @@ namespace Devsense.PHP.Syntax
             // &
             if (x.PassedByRef)
             {
-                ProcessToken(Tokens.T_AMP, modifierSpan);
+                ProcessToken(Tokens.T_AMPERSAND_FOLLOWED_BY_VAR_OR_VARARG, modifierSpan);
             }
 
             // ...
@@ -777,7 +777,7 @@ namespace Devsense.PHP.Syntax
                 ProcessToken(isArrowFunc ? Tokens.T_FN : Tokens.T_FUNCTION, prenameSpan);
                 if (signature.AliasReturn)
                 {
-                    ProcessToken(Tokens.T_AMP, prenameSpan); // TODO: correct span!
+                    ProcessToken(Tokens.T_AMPERSAND_NOT_FOLLOWED_BY_VAR_OR_VARARG, prenameSpan); // TODO: correct span!
                 }
                 if (nameOpt.HasValue)
                 {
@@ -1242,6 +1242,11 @@ namespace Devsense.PHP.Syntax
             VisitElementList(x.MultipleTypes, Tokens.T_PIPE);
         }
 
+        public override void VisitIntersectionTypeRef(IntersectionTypeRef x)
+        {
+            VisitElementList(x.MultipleTypes, Tokens.T_AMPERSAND_NOT_FOLLOWED_BY_VAR_OR_VARARG);
+        }
+
         //public override void VisitNamedActualParam(NamedActualParam x)
         //{
         //    throw new NotImplementedException();
@@ -1342,7 +1347,7 @@ namespace Devsense.PHP.Syntax
             // L =& R
             VisitElement(x.LValue);
             ProcessToken(Tokens.T_EQ, SpanUtils.SpanIntermission(x.LValue.Span, x.RValue.Span));
-            ProcessToken(Tokens.T_AMP, SpanUtils.SpanIntermission(x.LValue.Span, x.RValue.Span));
+            ProcessToken(Tokens.T_AMPERSAND_NOT_FOLLOWED_BY_VAR_OR_VARARG, SpanUtils.SpanIntermission(x.LValue.Span, x.RValue.Span));
             VisitElement(x.RValue);
         }
 
