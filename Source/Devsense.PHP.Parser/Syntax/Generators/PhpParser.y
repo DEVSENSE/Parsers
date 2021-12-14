@@ -314,10 +314,10 @@ using StringPair = System.Collections.Generic.KeyValuePair<string, string>;
 %type <QualifiedNameReference> name
 %type <Token> object_operator
 
-%type <TypeReference> type return_type type_expr optional_type extends_from
+%type <TypeReference> type type_without_static return_type type_expr type_expr_without_static optional_type optional_type_without_static extends_from
 %type <TypeReference> class_name_reference class_name
 
-%type <TypeRefList> name_list catch_name_list implements_list interface_extends_list union_type intersection_type
+%type <TypeRefList> name_list catch_name_list implements_list interface_extends_list union_type union_type_without_static intersection_type intersection_type_without_static
 
 %type <Node> top_statement statement function_declaration_statement class_declaration_statement 
 %type <Node> trait_declaration_statement interface_declaratioimplements_listn_statement 
@@ -734,8 +734,8 @@ function_declaration_statement:
 ;
 
 is_reference:
-		/* empty */	{ $$ = 0; }
-	|	ampersand	{ $$ = (long)FormalParam.Flags.IsByRef; }
+		/* empty */								{ $$ = 0; }
+	|	T_AMPERSAND_FOLLOWED_BY_VAR_OR_VARARG	{ $$ = (long)FormalParam.Flags.IsByRef; }
 ;
 
 is_variadic:
@@ -985,6 +985,10 @@ optional_type:
 		/* empty */	{ $$ = null; }
 	|	type_expr	{ $$ = $1; }
 ;
+optional_type_without_static:
+		/* empty */	{ $$ = null; }
+	|	type_expr_without_static	{ $$ = $1; }
+;
 
 type_expr:
 		type		{ $$ = $1; }
@@ -993,10 +997,21 @@ type_expr:
 	|	intersection_type	{ $$ = _astFactory.IntersectionTypeReference(@$, $1); }
 ;
 
+type_expr_without_static:
+		type_without_static					{ $$ = $1; }
+	|	'?' type_without_static				{ $$ = _astFactory.NullableTypeReference(@$, $2); }
+	|   union_type_without_static			{ $$ = _astFactory.TypeReference(@$, $1); }
+	|	intersection_type_without_static	{ $$ = _astFactory.IntersectionTypeReference(@$, $1); }
+;
+
 type:   
+		type_without_static		{ $$ = $1; }
+	|	T_STATIC				{ $$ = _astFactory.ReservedTypeReference(@$, _reservedTypeStatic); }
+;
+
+type_without_static:
 		T_ARRAY		{ $$ = _astFactory.PrimitiveTypeReference(@$, PrimitiveTypeRef.PrimitiveType.array); }
 	|	T_CALLABLE	{ $$ = _astFactory.PrimitiveTypeReference(@$, PrimitiveTypeRef.PrimitiveType.callable); }
-	|	T_STATIC    { $$ = _astFactory.ReservedTypeReference(@$, _reservedTypeStatic); }
 	|	name		{ $$ = CreateTypeRef($1, true); }
 ;
 
@@ -1005,9 +1020,19 @@ union_type:
 	|	union_type '|' type { $$ = AddToList<TypeRef>($1, $3); }
 ;
 
+union_type_without_static:
+		type_without_static '|' type_without_static       { $$ = new List<TypeRef>(2){ $1, $3 }; }
+	|	union_type_without_static '|' type_without_static { $$ = AddToList<TypeRef>($1, $3); }
+;
+
 intersection_type:
 		type T_AMPERSAND_NOT_FOLLOWED_BY_VAR_OR_VARARG type       { $$ = new List<TypeRef>(2){ $1, $3 }; }
 	|	intersection_type T_AMPERSAND_NOT_FOLLOWED_BY_VAR_OR_VARARG type { $$ = AddToList<TypeRef>($1, $3); }
+;
+
+intersection_type_without_static:
+		type_without_static T_AMPERSAND_NOT_FOLLOWED_BY_VAR_OR_VARARG type_without_static				{ $$ = new List<TypeRef>(2){ $1, $3 }; }
+	|	intersection_type_without_static T_AMPERSAND_NOT_FOLLOWED_BY_VAR_OR_VARARG type_without_static	{ $$ = AddToList<TypeRef>($1, $3); }
 ;
 
 return_type:
@@ -1064,7 +1089,7 @@ class_statement_list:
 ;
 
 attributed_class_statement:
-		variable_modifiers optional_type property_list ';'
+		variable_modifiers optional_type_without_static property_list ';'
 			{ 
 				$$ = _astFactory.DeclList(@$, (PhpMemberAttributes)$1, $3, $2); 
 				SetDoc($$);
