@@ -104,10 +104,21 @@ namespace Devsense.PHP.Syntax.Ast
                 throw new ArgumentException(nameof(name));
             }
 
+            // TODO: just impl. a proper parser
+
             // multiple types
             var sepindex = name.IndexOf(PHPDocBlock.TypeVarDescTag.TypeNamesSeparator);
             if (sepindex >= 0)
             {
+                const string nullableSuffix = "|null";
+                if (name.EndsWith(nullableSuffix, StringComparison.OrdinalIgnoreCase))
+                {
+                    // <types>|null
+                    var newspan = new Span(span.Start, span.Length - nullableSuffix.Length);
+                    return new NullableTypeRef(span, FromString(newspan, name.Remove(newspan.Length), naming));
+                }
+
+                //
                 var names = name.Split(new char[] { PHPDocBlock.TypeVarDescTag.TypeNamesSeparator });
                 Debug.Assert(names.Length > 1);
                 var trefs = new List<TypeRef>();
@@ -118,22 +129,14 @@ namespace Devsense.PHP.Syntax.Ast
                     if (str.Length != 0)
                     {
                         var tspan = new Span(span.Start + offset, str.Length);
-                        if (i == names.Length - 1 && Syntax.QualifiedName.Null.Name.Equals(str))
-                        {
-                            // `|null` at the end of union type
-                            trefs.Add(new ClassTypeRef(tspan, Syntax.QualifiedName.Null));
-                        }
-                        else
-                        {
-                            trefs.Add(FromString(tspan, str, naming));
-                        }
+                        trefs.Add(FromString(tspan, str, naming));
                     }
                     offset += str.Length + 1; // + separator
                 }
                 return new MultipleTypeRef(span, trefs);
             }
 
-            // nullable
+            // nullable syntax
             if (name[0] == '?')
             {
                 if (name.Length > 1)
