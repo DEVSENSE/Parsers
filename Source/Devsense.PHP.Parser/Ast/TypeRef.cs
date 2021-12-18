@@ -119,20 +119,13 @@ namespace Devsense.PHP.Syntax.Ast
                 }
 
                 //
-                var names = name.Split(new char[] { PHPDocBlock.TypeVarDescTag.TypeNamesSeparator });
-                Debug.Assert(names.Length > 1);
                 var trefs = new List<TypeRef>();
-                int offset = 0;
-                for (int i = 0; i < names.Length; i++)
+                foreach (var nameSpan in name.SplitEnumerator(PHPDocBlock.TypeVarDescTag.TypeNamesSeparator, ignoreEmpty: true))
                 {
-                    var str = names[i];
-                    if (str.Length != 0)
-                    {
-                        var tspan = new Span(span.Start + offset, str.Length);
-                        trefs.Add(FromString(tspan, str, naming));
-                    }
-                    offset += str.Length + 1; // + separator
+                    var tspan = new Span(span.Start + nameSpan.Start, nameSpan.Length);
+                    trefs.Add(FromString(tspan, name.Substring(nameSpan), naming));
                 }
+
                 return new MultipleTypeRef(span, trefs);
             }
 

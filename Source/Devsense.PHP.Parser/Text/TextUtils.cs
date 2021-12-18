@@ -96,6 +96,11 @@ namespace Devsense.PHP.Text
             }
         }
 
+        public static string Substring(this string str, Span span)
+        {
+            return str.Substring(span.Start, span.Length);
+        }
+
         public static IEnumerable<Span> EnumerateLines(this string text, bool includeEOL)
         {
             int linestart = 0;
@@ -122,6 +127,32 @@ namespace Devsense.PHP.Text
             }
 
             yield return new Span(linestart, text.Length - linestart);
+        }
+
+        /// <summary>
+        /// Enumerates spans of text separated by split character.
+        /// </summary>
+        public static IEnumerable<Span> SplitEnumerator(this string text, char splitChar, bool ignoreEmpty = false)
+        {
+            int start = 0;
+
+            for (int i = 0; i < text.Length; i++)
+            {
+                if (text[i] == splitChar)
+                {
+                    if (!ignoreEmpty || start < i)
+                    {
+                        yield return new Span(start, i - start);
+                    }
+
+                    start = i + 1;
+                }
+            }
+
+            if (!ignoreEmpty || start < text.Length)
+            {
+                yield return new Span(start, text.Length - start);
+            }
         }
     }
 
