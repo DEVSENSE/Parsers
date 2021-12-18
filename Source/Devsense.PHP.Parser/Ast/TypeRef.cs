@@ -528,7 +528,7 @@ namespace Devsense.PHP.Syntax.Ast
             _targetType = targetType;
         }
 
-        public override string ToString() => "?" + _targetType.ToString();
+        public override string ToString() => _targetType is MultipleTypeRef ? $"{_targetType}|null" : $"?{_targetType}";
 
         /// <summary>
         /// Call the right Visit* method on the given Visitor object.
