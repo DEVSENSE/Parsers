@@ -1028,10 +1028,12 @@ namespace Devsense.PHP.Syntax
                     return false;
                 }
 
+                const string allowedChars = @"_[]<>|&\";
+
                 for (int i = 1; i < str.Length; i++)
                 {
                     var c = str[i];
-                    if (c != '_' && !char.IsLetterOrDigit(c) && c != '[' && c != ']' && c != '<' && c != '>' && c != TypeNamesSeparator && c != QualifiedName.Separator)
+                    if (!char.IsLetterOrDigit(c) && allowedChars.IndexOf(c) < 0)
                     {
                         return false;
                     }
