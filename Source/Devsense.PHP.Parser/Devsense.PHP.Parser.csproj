@@ -7,7 +7,7 @@
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Company>Devsense</Company>
-    <Copyright>(c) Devsense 2021</Copyright>
+    <Copyright>(c) Devsense 2022</Copyright>
     <ProjectGuid>{4F3BE9D7-1E3D-4BE4-999A-32CCE715AB40}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
@@ -17,7 +17,7 @@
     <FileAlignment>512</FileAlignment>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
-    <TargetFrameworks>netstandard2.0;netstandard2.1;net45</TargetFrameworks>
+    <TargetFrameworks>netstandard2.0;netstandard2.1;net45;net5.0</TargetFrameworks>
     <LangVersion>latest</LangVersion>
     <NoWarn>1701;1702;1705;1591</NoWarn>
     <PackageVersion>$(Version)</PackageVersion>

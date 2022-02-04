@@ -200,7 +200,6 @@ namespace Devsense.PHP.Syntax
 	#region ShiftReduceParser
 
 	public abstract class ShiftReduceParser<ValueType, PositionType>
-		where ValueType : struct
 	{
 		//internal bool Trace = false;
 
