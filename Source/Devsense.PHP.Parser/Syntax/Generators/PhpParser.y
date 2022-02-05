@@ -39,24 +39,20 @@ using StringPair = System.Collections.Generic.KeyValuePair<string, string>;
 	// Integer and Offset are both used when generating code for string 
 	// with 'inline' variables. Other fields are not combined.
 	
-	[FieldOffset(0)]		
-	public bool Bool;
-	[FieldOffset(0)]		
-	public int Integer;
+	public bool Bool		{ get => Long != 0;			set => Long = value ? 1 : 0; }
+	public int Integer		{ get => (int)Long;			set => Long = value; }
+	public AliasKind Kind	{ get => (AliasKind)Long;	set => Long = (long)value; }
+    /// <summary>Token that encapsulates the string literal.</summary>
+    public Tokens QuoteToken { get => (Tokens)Long;		set => Long = (long)value; }
+    /// <summary>The original token.</summary>
+    public Tokens Token		{ get => (Tokens)Long;		set => Long = (long)value; }
+
 	[FieldOffset(0)]
 	public double Double;
 	[FieldOffset(0)]
 	public long Long;
 	[FieldOffset(0)]
 	public QualifiedNameRef QualifiedNameReference;
-	[FieldOffset(0)]
-	public AliasKind Kind;
-	/// <summary>Token that encapsulates the string literal.</summary>
-	[FieldOffset(0)]
-	public Tokens QuoteToken;
-	/// <summary>The original token.</summary>
-	[FieldOffset(0)]
-	public Tokens Token;
 
 	[FieldOffset(8)]
 	public object Object;
