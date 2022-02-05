@@ -36,9 +36,6 @@ using StringPair = System.Collections.Generic.KeyValuePair<string, string>;
 
 %union
 {
-	// Integer and Offset are both used when generating code for string 
-	// with 'inline' variables. Other fields are not combined.
-	
 	public bool Bool		{ get => Long != 0;			set => Long = value ? 1 : 0; }
 	public int Integer		{ get => (int)Long;			set => Long = value; }
 	public AliasKind Kind	{ get => (AliasKind)Long;	set => Long = (long)value; }
@@ -47,16 +44,18 @@ using StringPair = System.Collections.Generic.KeyValuePair<string, string>;
     /// <summary>The original token.</summary>
     public Tokens Token		{ get => (Tokens)Long;		set => Long = (long)value; }
 
+	// Integer and Offset are both used when generating code for string 
+	// with 'inline' variables. Other fields are not combined.
+	
 	[FieldOffset(0)]
 	public double Double;
 	[FieldOffset(0)]
 	public long Long;
-	[FieldOffset(0)]
-	public QualifiedNameRef QualifiedNameReference;
 
 	[FieldOffset(8)]
 	public object Object;
 
+	public QualifiedNameRef QualifiedNameReference		{ get { return (QualifiedNameRef)Object; }			set { Object = value; } }
 	public TypeRef TypeReference						{ get { return (TypeRef)Object; }					set { Object = value; } }
 	public IList<TypeRef> TypeRefList					{ get { return (IList<TypeRef>)Object; }			set { Object = value; } }
 	public LangElement Node								{ get { return (LangElement)Object; }				set { Object = value; } }
