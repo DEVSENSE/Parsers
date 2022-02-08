@@ -44,7 +44,7 @@ namespace Devsense.PHP.Syntax
             /// <summary>
             /// Chunk is constructed from UTF-16 string.
             /// </summary>
-            public bool IsUnicode => RawValue is string || RawValue is char[];
+            public bool IsUnicode => RawValue is string || RawValue is char[] || RawValue is StringBuilder;
 
             /// <summary>
             /// Chunk is constructed from byte array.
@@ -54,11 +54,11 @@ namespace Devsense.PHP.Syntax
             /// <summary>
             /// Chunk is empty.
             /// </summary>
-            public bool IsEmpty => _value == null || (_value is string str && str.Length == 0) || (_value is byte[] b && b.Length == 0) || (_value is char[] c && c.Length == 0);
+            public bool IsEmpty => _value == null || (_value is string str && str.Length == 0) || (_value is byte[] b && b.Length == 0) || (_value is char[] c && c.Length == 0) || (_value is StringBuilder sb && sb.Length != 0);
 
             Chunk(object value)
             {
-                Debug.Assert(value == null || value is string || value is byte[] || value is char[]);
+                Debug.Assert(value == null || value is string || value is StringBuilder || value is byte[] || value is char[]);
                 _value = value ?? string.Empty;
             }
 
@@ -89,44 +89,54 @@ namespace Devsense.PHP.Syntax
             /// <summary>
             /// If both given chunks are the same type, merge them.
             /// </summary>
-            public static bool TryMerge(Chunk a, Chunk b, out Chunk merged)
+            public static bool TryMerge(ref Chunk a, Chunk b)
             {
                 if (a.IsEmpty)
                 {
-                    merged = b;
+                    a = b;
                     return true;
                 }
                 else if (b.IsEmpty)
                 {
-                    merged = a;
                     return true;
                 }
                 else if (a.RawValue is string stra && b.RawValue is string strb)
                 {
-                    merged = new Chunk(stra + strb);
+                    var sb = StringUtils.GetStringBuilder(stra.Length + strb.Length);
+                    sb.Append(stra);
+                    sb.Append(strb);
+
+                    a = new Chunk(sb);
                     return true;
+                }
+                else if (a.RawValue is StringBuilder sba)
+                {
+                    if (b.RawValue is string)
+                    {
+                        sba.Append((string)b.RawValue);
+                        return true;
+                    }
                 }
                 else if (a.RawValue is byte[] ba && b.RawValue is byte[] bb)
                 {
-                    merged = new Chunk(ArrayUtils.Concat(ba, bb));
+                    a = new Chunk(ArrayUtils.Concat(ba, bb));
                     return true;
                 }
                 else if (a.RawValue is char[] ca && b.RawValue is char[] cb)
                 {
-                    merged = new Chunk(ArrayUtils.Concat(ca, cb));
+                    a = new Chunk(ArrayUtils.Concat(ca, cb));
                     return true;
                 }
-                else
-                {
-                    merged = default(Chunk);
-                    return false;
-                }
+
+                // 
+                return false;
             }
 
             public string ToString(Encoding encoding) => RawValue switch
             {
                 null => string.Empty,
                 string str => str,
+                StringBuilder sb => sb.ToString(),
                 char[] chars => new string(chars),
                 byte[] bytes => bytes.Length == 1 ? ((char)bytes[0]).ToString() : encoding.GetString(bytes, 0, bytes.Length),
                 _ => throw new InvalidOperationException(),
@@ -136,6 +146,7 @@ namespace Devsense.PHP.Syntax
             {
                 null => EmptyArray<byte>.Instance,
                 string str => encoding.GetBytes(str),
+                StringBuilder sb => encoding.GetBytes(sb.ToString()),
                 char[] chars => encoding.GetBytes(chars),
                 byte[] bytes => bytes,
                 _ => throw new InvalidOperationException(),
@@ -189,11 +200,7 @@ namespace Devsense.PHP.Syntax
             {
                 if (chunk.IsEmpty) return;
 
-                if (ChunksCount != 0 && Chunk.TryMerge(Chunks[ChunksCount - 1], chunk, out var merged))
-                {
-                    Chunks[ChunksCount - 1] = merged;
-                }
-                else
+                if (ChunksCount == 0 || !Chunk.TryMerge(ref Chunks[ChunksCount - 1], chunk))
                 {
                     EnsureCapacity(ChunksCount + 1);
                     Chunks[ChunksCount++] = chunk;
@@ -270,6 +277,10 @@ namespace Devsense.PHP.Syntax
 
                         case string str:
                             yield return str;
+                            break;
+
+                        case StringBuilder sb:
+                            yield return sb.ToString();
                             break;
 
                         case byte[] bytes:
