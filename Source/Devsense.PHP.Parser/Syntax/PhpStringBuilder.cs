@@ -232,14 +232,14 @@ namespace Devsense.PHP.Syntax
                     return str;
                 }
 
-                var builder = new StringBuilder(ChunksCount * 2);
+                var builder = StringUtils.GetStringBuilder(ChunksCount * 2);
 
                 for (int i = 0; i < ChunksCount; i++)
                 {
                     builder.Append(Chunks[i].ToString(encoding));
                 }
 
-                return builder.ToString();
+                return StringUtils.ReturnStringBuilder(builder);
             }
 
             public byte[] ToBytes(Encoding encoding)
