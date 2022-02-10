@@ -54,7 +54,7 @@ namespace Devsense.PHP.Syntax
             /// <summary>
             /// Chunk is empty.
             /// </summary>
-            public bool IsEmpty => _value == null || (_value is string str && str.Length == 0) || (_value is byte[] b && b.Length == 0) || (_value is char[] c && c.Length == 0) || (_value is StringBuilder sb && sb.Length != 0);
+            public bool IsEmpty => _value == null || (_value is string str && str.Length == 0) || (_value is byte[] b && b.Length == 0) || (_value is char[] c && c.Length == 0) || (_value is StringBuilder sb && sb.Length == 0);
 
             Chunk(object value)
             {
