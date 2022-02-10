@@ -715,7 +715,6 @@ namespace Devsense.PHP.Syntax
 
                 foreach (var lineSpan in TextUtils.EnumerateLines(content, true))
                 {
-
                     if (lineBegin)
                     {
                         var lineText = content.AsSpan(lineSpan.Start, lineSpan.Length);

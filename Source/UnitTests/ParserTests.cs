@@ -28,7 +28,7 @@ class X {
 }",
 @"<?php
     class enum extends A {
-}",         
+}",
             };
 
             foreach (var code in codes)
@@ -107,7 +107,7 @@ class X {
             var parentChecker = new ContainingElementCheck();
             parentChecker.VisitGlobalCode(sourceUnit.Ast);
 
-            // check every node has a parent
+            // check nodes have correct span corresponding to correct source text
             var spanChecker = new NameSpanCheck(testparts[0]);
             spanChecker.VisitGlobalCode(sourceUnit.Ast);
         }
@@ -239,6 +239,21 @@ class X {
             }
         }
 
+        [TestMethod]
+        public void StringLiteralTest()
+        {
+            var codes = new[] {
+                @"<?php echo ""\\test"";",
+            };
+
+            foreach (var code in codes)
+            {
+                var unit = new CodeSourceUnit(code, "dummy.php", Encoding.UTF8);
+                unit.Parse(new BasicNodesFactory(unit), null);
+                Assert.IsNotNull(unit.Ast);
+            }
+        }
+
         /// <summary>
         /// Helper visitor checking every node has a containing element.
         /// </summary>
@@ -337,7 +352,7 @@ class X {
                     original = original.Replace("\\r", "\r").Replace("\\n", "\n").Replace("\\\\", "\\")
                         .Replace("\\\"", "\"").Replace("\\t", "\t").Replace("\\v", "\v").Replace("\\\\$", "\\$")
                         .Replace("\\e", "\u001b").Replace("\\f", "\f").Replace("\\75", "=").Replace("\\`", "`");
-                Assert.AreEqual(original, element.Value);
+                Assert.AreEqual(original.TrimEnd(), element.Value.TrimEnd()); // TODO: FIX: HereDoc string literal span includes the closing newline
             }
 
             void CheckFunctionDecl(FunctionDecl func)

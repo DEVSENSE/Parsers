@@ -16,6 +16,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Text;
 
 using Devsense.PHP.Syntax.Ast;
@@ -30,127 +31,122 @@ namespace Devsense.PHP.Syntax
     {
         #region Nested struct: Chunk
 
-        /*readonly*/
         struct Chunk
         {
             /// <summary>
-            /// The underlying value, either string or byte[] or char[].
+            /// The underlying value: byte[] or char[].
             /// </summary>
-            public object RawValue => _value;
-            object _value;
+            public Array RawArray => _array;
+            Array _array;
 
-            // TODO: byte, char as a value type
+            /// <summary>
+            /// Count of used items in <see cref="RawArray"/>.
+            /// </summary>
+            public int Length { get; set; }
+
+            /// <summary>
+            /// Underlying buffer capacity.
+            /// </summary>
+            public int Capacity => _array != null ? _array.Length : 0;
 
             /// <summary>
             /// Chunk is constructed from UTF-16 string.
             /// </summary>
-            public bool IsUnicode => RawValue is string || RawValue is char[] || RawValue is StringBuilder;
+            public bool IsUnicode => _array is char[];
 
             /// <summary>
             /// Chunk is constructed from byte array.
             /// </summary>
-            public bool Is8Bit => RawValue is byte[];
+            public bool Is8Bit => _array is byte[];
 
             /// <summary>
             /// Chunk is empty.
             /// </summary>
-            public bool IsEmpty => _value == null || (_value is string str && str.Length == 0) || (_value is byte[] b && b.Length == 0) || (_value is char[] c && c.Length == 0) || (_value is StringBuilder sb && sb.Length == 0);
+            public bool IsEmpty => Length == 0;
 
-            Chunk(object value)
+            public void ToString(StringBuilder output, Encoding encoding)
             {
-                Debug.Assert(value == null || value is string || value is StringBuilder || value is byte[] || value is char[]);
-                _value = value ?? string.Empty;
-            }
-
-            public Chunk(byte[] value) : this((value != null && value.Length != 0) ? (object)value : null)
-            {
-            }
-
-            public Chunk(string value) : this((value != null && value.Length != 0) ? (object)value : null)
-            {
-            }
-
-            public Chunk(char[] value) : this((value != null && value.Length != 0) ? (object)value : null)
-            {
-            }
-
-            public Chunk(Span<char> value) : this(value.Length != 0 ? (object)value.ToArray() : null)
-            {
-            }
-
-            public Chunk(char c) : this(c.ToString())
-            {
-            }
-
-            public Chunk(byte b) : this(new byte[] { b })
-            {
-            }
-
-            /// <summary>
-            /// If both given chunks are the same type, merge them.
-            /// </summary>
-            public static bool TryMerge(ref Chunk a, Chunk b)
-            {
-                if (a.IsEmpty)
+                if (_array == null || Length == 0)
                 {
-                    a = b;
-                    return true;
+                    // nothing
                 }
-                else if (b.IsEmpty)
+                else if (_array is char[] chars)
                 {
-                    return true;
+                    // utf chars
+                    output.Append(chars, 0, Length);
                 }
-                else if (a.RawValue is string stra && b.RawValue is string strb)
+                else if (_array is byte[] bytes)
                 {
-                    var sb = StringUtils.GetStringBuilder(stra.Length + strb.Length);
-                    sb.Append(stra);
-                    sb.Append(strb);
-
-                    a = new Chunk(sb);
-                    return true;
-                }
-                else if (a.RawValue is StringBuilder sba)
-                {
-                    if (b.RawValue is string)
+                    // 8bit chars
+                    if (Length == 1)
                     {
-                        sba.Append((string)b.RawValue);
-                        return true;
+                        output.Append((char)bytes[0]);
+                    }
+                    else
+                    {
+                        output.Append(encoding.GetString(bytes, 0, Length));
                     }
                 }
-                else if (a.RawValue is byte[] ba && b.RawValue is byte[] bb)
+                else
                 {
-                    a = new Chunk(ArrayUtils.Concat(ba, bb));
-                    return true;
+                    throw new InvalidOperationException();
                 }
-                else if (a.RawValue is char[] ca && b.RawValue is char[] cb)
+            }
+
+            public void ToBytes(List<byte> output, Encoding encoding)
+            {
+                if (_array == null || Length == 0)
                 {
-                    a = new Chunk(ArrayUtils.Concat(ca, cb));
+                    // nothing
+                }
+                else if (_array is char[] chars)
+                {
+                    // utf chars
+                    output.AddRange(encoding.GetBytes(chars, 0, Length));
+                }
+                else if (_array is byte[] bytes)
+                {
+                    // 8bit chars
+                    output.AddRange(bytes.TakeArray(0, Length));
+                }
+                else
+                {
+                    throw new InvalidOperationException();
+                }
+            }
+
+            public static Chunk Create<T>() => new Chunk { _array = EmptyArray<T>.Instance, };
+
+            static bool EnsureCapacity<T>(ref Array array, int capacity)
+            {
+                if (capacity < 0)
+                {
+                    throw new ArgumentOutOfRangeException();
+                }
+
+                if (array == null)
+                {
+                    array = new T[capacity];
                     return true;
                 }
 
-                // 
+                if (array is T[] typedArray)
+                {
+                    if (typedArray.Length < capacity)
+                    {
+                        var newsize = Math.Max(capacity, typedArray.Length * 2);
+
+                        Array.Resize(ref typedArray, newsize);
+                        array = typedArray;
+                    }
+
+                    return true;
+                }
+
                 return false;
             }
 
-            public string ToString(Encoding encoding) => RawValue switch
-            {
-                null => string.Empty,
-                string str => str,
-                StringBuilder sb => sb.ToString(),
-                char[] chars => new string(chars),
-                byte[] bytes => bytes.Length == 1 ? ((char)bytes[0]).ToString() : encoding.GetString(bytes, 0, bytes.Length),
-                _ => throw new InvalidOperationException(),
-            };
-
-            public byte[] ToBytes(Encoding encoding) => RawValue switch
-            {
-                null => EmptyArray<byte>.Instance,
-                string str => encoding.GetBytes(str),
-                StringBuilder sb => encoding.GetBytes(sb.ToString()),
-                char[] chars => encoding.GetBytes(chars),
-                byte[] bytes => bytes,
-                _ => throw new InvalidOperationException(),
-            };
+            public static bool EnsureCapacity<T>(ref Chunk chunk, int capacity) => EnsureCapacity<T>(ref chunk._array, capacity);
         }
 
         #endregion
@@ -196,18 +192,62 @@ namespace Devsense.PHP.Syntax
                 ChunksCount = 0,
             };
 
-            public void Append(Chunk chunk)
+            Span<T> GetAppendBuffer<T>(int length)
             {
-                if (chunk.IsEmpty) return;
-
-                if (ChunksCount == 0 || !Chunk.TryMerge(ref Chunks[ChunksCount - 1], chunk))
+                if (length <= 0)
                 {
-                    EnsureCapacity(ChunksCount + 1);
-                    Chunks[ChunksCount++] = chunk;
+                    return Span<T>.Empty;
+                }
+
+                if (ChunksCount != 0)
+                {
+                    ref var lastchunk = ref Chunks[ChunksCount - 1];
+                    if (Chunk.EnsureCapacity<T>(ref lastchunk, lastchunk.Length + length))
+                    {
+                        var indexFrom = lastchunk.Length;
+                        lastchunk.Length += length;
+
+                        return ((T[])lastchunk.RawArray).AsSpan(indexFrom, length);
+                    }
+                }
+
+                // add new chunk
+                EnsureCapacity(++ChunksCount);
+                Chunks[ChunksCount - 1] = Chunk.Create<T>();
+                return GetAppendBuffer<T>(length);
+            }
+
+            public void Append(Span<char> chars)
+            {
+                if (chars.Length > 0)
+                {
+                    var span = GetAppendBuffer<char>(chars.Length);
+                    Debug.Assert(span.Length == chars.Length);
+                    chars.CopyTo(span);
                 }
             }
 
-            public void Append(byte b) => Append(new Chunk(new byte[] { b }));
+            public void Append(string str)
+            {
+                if (!string.IsNullOrEmpty(str))
+                {
+                    var span = GetAppendBuffer<char>(str.Length);
+                    Debug.Assert(span.Length == str.Length);
+                    str.AsSpan().CopyTo(span);
+                }
+            }
+
+            public void Append(char c)
+            {
+                var span = GetAppendBuffer<char>(1);
+                span[0] = c;
+            }
+
+            public void Append(byte b)
+            {
+                var span = GetAppendBuffer<byte>(1);
+                span[0] = b;
+            }
 
             void EnsureCapacity(int capacity)
             {
@@ -227,19 +267,14 @@ namespace Devsense.PHP.Syntax
                     return string.Empty;
                 }
 
-                if (ChunksCount == 1 && Chunks[0].RawValue is string str)
-                {
-                    return str;
-                }
-
-                var builder = StringUtils.GetStringBuilder(ChunksCount * 2);
+                var result = StringUtils.GetStringBuilder(ChunksCount * 2);
 
                 for (int i = 0; i < ChunksCount; i++)
                 {
-                    builder.Append(Chunks[i].ToString(encoding));
+                    Chunks[i].ToString(result, encoding);
                 }
 
-                return StringUtils.ReturnStringBuilder(builder);
+                return StringUtils.ReturnStringBuilder(result);
             }
 
             public byte[] ToBytes(Encoding encoding)
@@ -256,7 +291,7 @@ namespace Devsense.PHP.Syntax
 
                 for (int i = 0; i < ChunksCount; i++)
                 {
-                    result.AddRange(Chunks[i].ToBytes(encoding));
+                    Chunks[i].ToBytes(result, encoding);
                 }
 
                 return result.ToArray();
@@ -270,25 +305,17 @@ namespace Devsense.PHP.Syntax
                 for (int i = 0; i < ChunksCount; i++)
                 {
                     var chunk = Chunks[i];
-                    switch (chunk.RawValue)
+                    switch (chunk.RawArray)
                     {
                         case null:
                             break;
 
-                        case string str:
-                            yield return str;
-                            break;
-
-                        case StringBuilder sb:
-                            yield return sb.ToString();
-                            break;
-
                         case byte[] bytes:
-                            yield return bytes;
+                            yield return bytes.TakeArray(0, chunk.Length);
                             break;
 
                         case char[] chars:
-                            yield return new string(chars);
+                            yield return new string(chars, 0, chunk.Length);
                             break;
 
                         default:
@@ -396,15 +423,16 @@ namespace Devsense.PHP.Syntax
             }
         }
 
-        private void Append(Chunk chunk) => _chunks.Append(chunk);
-
         public void Append(string str, Span span)
         {
             Append(span);
             Append(str);
         }
 
-        public void Append(string str) => Append(new Chunk(str));
+        public void Append(string str)
+        {
+            _chunks.Append(str);
+        }
 
         public void Append(char[] buffer, int start, int length)
         {
@@ -413,7 +441,7 @@ namespace Devsense.PHP.Syntax
                 return;
             }
 
-            Append(new Chunk(buffer.AsSpan(start, length)));
+            _chunks.Append(buffer.AsSpan(start, length));
         }
 
         public void Append(char c, Span span)
@@ -422,7 +450,10 @@ namespace Devsense.PHP.Syntax
             Append(c);
         }
 
-        public void Append(char c) => Append(new Chunk(c));
+        public void Append(char c)
+        {
+            _chunks.Append(c);
+        }
 
         public void Append(byte b, Span span)
         {
