@@ -492,13 +492,10 @@ namespace Devsense.PHP.Syntax
         public static readonly QualifiedName Void = new QualifiedName(new Name("void"), Name.EmptyNames);
         public static readonly QualifiedName Iterable = new QualifiedName(new Name("iterable"), Name.EmptyNames);
 
-        public bool IsSimpleName
-        {
-            get
-            {
-                return Namespaces.Length == 0;
-            }
-        }
+        /// <summary>
+        /// Gets value indicating the <see cref="QualifiedName"/> does not specify the <see cref="Namespaces"/> part.
+        /// </summary>
+        public bool IsSimpleName => Namespaces == null || Namespaces.Length == 0;
 
         /// <summary>
         /// Gets value indicating whether this name represents a primitive type.
