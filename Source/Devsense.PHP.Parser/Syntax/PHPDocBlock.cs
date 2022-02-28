@@ -1386,11 +1386,11 @@ namespace Devsense.PHP.Syntax
         /// Documents function return value.
         /// @psalm-return type [description]
         /// </summary>
-        public sealed class PsalReturnTag : TypeVarDescTag
+        public sealed class PsalmReturnTag : TypeVarDescTag
         {
             public const string Name = "@psalm-return";
 
-            public PsalReturnTag(string/*!*/line)
+            public PsalmReturnTag(string/*!*/line)
                 : base(Name, line, false)
             {
             }
