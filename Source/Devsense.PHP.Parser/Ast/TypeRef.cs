@@ -119,7 +119,7 @@ namespace Devsense.PHP.Syntax.Ast
                 }
 
                 //
-                var trefs = new List<TypeRef>();
+                var trefs = new List<TypeRef>(2);
                 foreach (var nameSpan in name.SplitEnumerator(PHPDocBlock.TypeVarDescTag.TypeNamesSeparator, ignoreEmpty: true))
                 {
                     var tspan = new Span(span.Start + nameSpan.Start, nameSpan.Length);
@@ -127,6 +127,19 @@ namespace Devsense.PHP.Syntax.Ast
                 }
 
                 return new MultipleTypeRef(span, trefs);
+            }
+
+            // multiple types separated with '&'
+            if (name.IndexOf(PHPDocBlock.TypeVarDescTag.TypeNamesIntersectionSeparator) >= 0)
+            {
+                var trefs = new List<TypeRef>(2);
+                foreach (var nameSpan in name.SplitEnumerator(PHPDocBlock.TypeVarDescTag.TypeNamesIntersectionSeparator, ignoreEmpty: true))
+                {
+                    var tspan = new Span(span.Start + nameSpan.Start, nameSpan.Length);
+                    trefs.Add(FromString(tspan, name.Substring(nameSpan), naming));
+                }
+
+                return new IntersectionTypeRef(span, trefs);
             }
 
             // nullable syntax
