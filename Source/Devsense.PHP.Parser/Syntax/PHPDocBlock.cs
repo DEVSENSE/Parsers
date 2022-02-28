@@ -1383,6 +1383,25 @@ namespace Devsense.PHP.Syntax
         }
 
         /// <summary>
+        /// Documents function return value.
+        /// @psalm-return type [description]
+        /// </summary>
+        public sealed class PsalReturnTag : TypeVarDescTag
+        {
+            public const string Name = "@psalm-return";
+
+            public PsalReturnTag(string/*!*/line)
+                : base(Name, line, false)
+            {
+            }
+
+            public override string ToString()
+            {
+                return Name + " " + TypeNames + NewLineString + Description;
+            }
+        }
+
+        /// <summary>
         /// Documents an association to any element (global variable, include, page, class, function, define, method, variable).
         /// </summary>
         public sealed class SeeTag : SingleLineTag
