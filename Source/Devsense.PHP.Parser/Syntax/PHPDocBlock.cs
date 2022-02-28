@@ -912,7 +912,7 @@ namespace Devsense.PHP.Syntax
                         for (sep = 0; sep < typename.Length; sep++)
                         {
                             var ch = typename[sep];
-                            if (ch == TypeNamesSeparator)
+                            if (ch == TypeNamesSeparator || ch == TypeNamesIntersectionSeparator)
                             {
                                 if (nested == 0) break;
                             }
