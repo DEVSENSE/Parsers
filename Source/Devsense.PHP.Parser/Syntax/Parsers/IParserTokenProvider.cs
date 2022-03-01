@@ -17,7 +17,7 @@ namespace Devsense.PHP.Syntax
         /// <summary>
         /// List of all PHP Docs analyzed by lexer so far.
         /// </summary>
-        DocCommentList DocBlockList { get; }
+        DocCommentContainer DocCommentList { get; }
 
         /// <summary>
         /// The token returned by lexer before the current one. Default is <see cref="CompleteToken.Empty"/>.

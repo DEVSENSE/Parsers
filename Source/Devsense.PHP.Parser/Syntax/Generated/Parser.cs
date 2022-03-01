@@ -2215,7 +2215,7 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
       case 3: // start -> @1 top_statement_list 
 { 
 		AssignNamingContext(); 
-        _lexer.DocBlockList.Merge(new Span(0, int.MaxValue), value_stack.array[value_stack.top-1].yyval.NodeList, _astFactory);
+        _lexer.DocCommentList.Merge(new Span(0, int.MaxValue), value_stack.array[value_stack.top-1].yyval.NodeList, _astFactory);
 		AssignStatements(value_stack.array[value_stack.top-1].yyval.NodeList);
 		_astRoot = _astFactory.GlobalCode(yypos, value_stack.array[value_stack.top-1].yyval.NodeList, namingContext);
 	}

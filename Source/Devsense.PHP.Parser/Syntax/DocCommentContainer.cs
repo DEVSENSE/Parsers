@@ -1,27 +1,42 @@
 ﻿using Devsense.PHP.Syntax.Ast;
 using Devsense.PHP.Text;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 
 namespace Devsense.PHP.Syntax
 {
+    interface IPhpDocExtent
+    {
+        /// <summary>
+        /// The actual PHPDoc comment block.
+        /// </summary>
+        PHPDocBlock DocComment { get; }
+
+        /// <summary>
+        /// Span where the comment block is applicable.
+        /// This includes the trailing whitespaces, regular comments, attributes, and other white tokens.
+        /// </summary>
+        Span Extent { get; set; }
+    }
+
     /// <summary>
     /// Helper class containing list of DOC comments during tokenization.
     /// Provides searching for DOC comment above given position.
     /// </summary>
-    internal class DocCommentList
+    class DocCommentContainer
     {
-        private struct DocInfo
+        sealed class PhpDocExtent : IPhpDocExtent
         {
-            /// <summary>
-            /// DOC comment instance.
-            /// </summary>
-            public PHPDocBlock PhpDoc;
+            public PHPDocBlock DocComment { get; }
 
-            /// <summary>
-            /// DOC comment span including following whitespace.
-            /// </summary>
-            public Span Extent;
+            public Span Extent { get; set; }
+
+            public PhpDocExtent(PHPDocBlock phpdoc)
+            {
+                this.DocComment = phpdoc ?? throw new ArgumentNullException(nameof(phpdoc));
+                this.Extent = phpdoc.Span;
+            }
 
             /// <summary>
             /// Determines whether this block is above given element.
@@ -37,42 +52,33 @@ namespace Devsense.PHP.Syntax
         #region Fields & Properties
 
         /// <summary>
-        /// Ordered list of DOC comments. Can be <c>null</c>.
+        /// Ordered list of DOC comments..
         /// </summary>
-        private List<DocInfo> _doclist = new List<DocInfo>();
+        readonly List<PhpDocExtent> _doclist = new List<PhpDocExtent>();
 
         /// <summary>
         /// Extent of included DOC comments span.
         /// </summary>
-        public Span Extent { get { return _span; } }
-        private Span _span = Span.Invalid;
+        public Span Extent => (_doclist != null && _doclist.Count != 0)
+            ? Span.FromBounds(_doclist[0].Extent.Start, _doclist.Last().Extent.End)
+            : Span.Invalid;
 
         #endregion
 
         /// <summary>
         /// Inserts DOC block into the list.
         /// </summary>
-        public void AppendBlock(PHPDocBlock/*!*/phpDoc, int endPosition)
+        public IPhpDocExtent/*!*/Append(PHPDocBlock/*!*/phpdoc)
         {
-            Debug.Assert(phpDoc != null);
-            Debug.Assert(endPosition >= phpDoc.Span.End);
-            Debug.Assert(_doclist == null || _doclist.Count == 0 || _doclist.Last().Extent.Start < phpDoc.Span.Start, "Blocks have to be appended in order.");
+            Debug.Assert(phpdoc != null);
+            Debug.Assert(_doclist == null || _doclist.Count == 0 || _doclist.Last().Extent.Start < phpdoc.Span.Start, "Blocks have to be appended in order.");
 
-            var docinfo = new DocInfo()
-            {
-                PhpDoc = phpDoc,
-                Extent = Span.FromBounds(phpDoc.Span.Start, endPosition)
-            };
+            var docinfo = new PhpDocExtent(phpdoc);
 
-            var list = _doclist;
-            if (list == null)
-            {
-                _doclist = list = new List<DocInfo>(4);
-            }
+            _doclist.Add(docinfo);
 
-            list.Add(docinfo);
-
-            _span = Span.FromBounds(list[0].Extent.Start, list.Last().Extent.End);
+            //
+            return docinfo;
         }
 
         /// <summary>
@@ -101,9 +107,8 @@ namespace Devsense.PHP.Syntax
             if (index >= 0 && index < _doclist.Count)
             {
                 var list = _doclist;
-                phpdoc = list[index].PhpDoc;
+                phpdoc = list[index].DocComment;
                 list.RemoveAt(index);
-                this.UpdateSpan();
 
                 //
                 return true;
@@ -119,8 +124,7 @@ namespace Devsense.PHP.Syntax
         /// </summary>
         public void Annotate(LangElement element)
         {
-            PHPDocBlock phpdoc;
-            if (TryReleaseBlock(element.Span.Start, out phpdoc))
+            if (TryReleaseBlock(element.Span.Start, out var phpdoc))
             {
                 element.SetPHPDoc(phpdoc);
             }
@@ -131,9 +135,8 @@ namespace Devsense.PHP.Syntax
         /// </summary>
         public void AnnotateMember(LangElement element)
         {
-            PHPDocBlock phpdoc;
-            if (LastDocBlock != null && LastDocBlock.Span.End > element.Span.Start && 
-                TryReleaseBlock(Span.Combine(element.Span, LastDocBlock.Span), out phpdoc))
+            if (LastDocBlock != null && LastDocBlock.Span.End > element.Span.Start &&
+                TryReleaseBlock(Span.Combine(element.Span, LastDocBlock.Span), out var phpdoc))
             {
                 element.SetPHPDoc(phpdoc);
             }
@@ -150,13 +153,13 @@ namespace Devsense.PHP.Syntax
             Debug.Assert(extent.IsValid);
             Debug.Assert(stmts != null);
 
-            if (_span.OverlapsWith(extent))
+            if (this.Extent.OverlapsWith(extent))
             {
                 var list = _doclist;
                 int insertAt = 0;
                 int count = 0;
 
-                DocInfo doc;
+                PhpDocExtent doc;
                 int indexFrom = FindFirstIn(list, extent);
 
                 for (var index = indexFrom; index < list.Count && (doc = list[index]).Extent.OverlapsWith(extent); index++)
@@ -170,7 +173,7 @@ namespace Devsense.PHP.Syntax
                     // insert {doc} into {stmts}
                     if (insertAt == stmts.Count || doc.IsAbove(stmts[insertAt]))
                     {
-                        stmts.Insert(insertAt, factory.PHPDoc(doc.PhpDoc.Span, doc.PhpDoc));
+                        stmts.Insert(insertAt, factory.PHPDoc(doc.DocComment.Span, doc.DocComment));
                         insertAt++;
                     }
 
@@ -182,17 +185,8 @@ namespace Devsense.PHP.Syntax
                 if (count != 0)
                 {
                     list.RemoveRange(indexFrom, count);
-                    this.UpdateSpan();
                 }
             }
-        }
-
-        private void UpdateSpan()
-        {
-            var list = _doclist;
-            _span = (list == null || list.Count == 0)
-                    ? Span.Invalid
-                    : Span.FromBounds(list[0].Extent.Start, list.Last().Extent.End);
         }
 
         /// <summary>
@@ -200,7 +194,7 @@ namespace Devsense.PHP.Syntax
         /// </summary>
         private int FindIndex(int position)
         {
-            if (_span.Contains(position))
+            if (this.Extent.Contains(position))
             {
                 Debug.Assert(_doclist != null);
                 int index = FindIndex(_doclist, position);
@@ -216,7 +210,7 @@ namespace Devsense.PHP.Syntax
         /// <summary>
         /// Binary search.
         /// </summary>
-        private static int FindIndex(List<DocInfo>/*!*/list, int position)
+        private static int FindIndex(List<PhpDocExtent>/*!*/list, int position)
         {
             int a = 0, b = list.Count - 1;
             while (a <= b)
@@ -238,7 +232,7 @@ namespace Devsense.PHP.Syntax
         /// <summary>
         /// Gets lowest index of DOC comment that intersects given span. Returns count of items if nothing was found.
         /// </summary>
-        private static int FindFirstIn(List<DocInfo>/*!*/list, Span span)
+        private static int FindFirstIn(List<PhpDocExtent>/*!*/list, Span span)
         {
             Debug.Assert(span.IsValid);
             Debug.Assert(list != null);
@@ -270,6 +264,6 @@ namespace Devsense.PHP.Syntax
             return result;
         }
 
-        public PHPDocBlock LastDocBlock => _doclist.Count > 0? _doclist.Last().PhpDoc: null;
+        public PHPDocBlock LastDocBlock => _doclist.Count > 0 ? _doclist.Last().DocComment : null;
     }
 }

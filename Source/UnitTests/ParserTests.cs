@@ -175,6 +175,37 @@ class X {
         }
 
         [TestMethod]
+        public void PhpDocAttributesTest()
+        {
+            var codes = new[] {
+                @"<?php
+/** phpdoc */
+#[ClassName(1,2,3)]
+class X {
+    /** phpdoc */
+    #[ClassName]
+    function foo() { }
+}",
+            };
+
+            foreach (var code in codes)
+            {
+                var unit = new CodeSourceUnit(code, "dummy.php", Encoding.UTF8);
+                unit.Parse(new BasicNodesFactory(unit), null);
+
+                foreach (var tdecl in unit.Ast.TraverseNamedTypeDeclarations())
+                {
+                    Assert.IsNotNull(tdecl.PHPDoc);
+
+                    foreach (var m in tdecl.Members.OfType<MethodDecl>())
+                    {
+                        Assert.IsNotNull(m.PHPDoc);
+                    }
+                }
+            }
+        }
+
+        [TestMethod]
         public void NamedArgTest()
         {
             var codes = new[] {

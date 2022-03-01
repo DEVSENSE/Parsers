@@ -27,7 +27,7 @@ namespace Devsense.PHP.Syntax
     {
         readonly ITokenProvider<SemanticValueType, Span> _provider;
 
-        readonly DocCommentList _phpDocs = new DocCommentList();
+        readonly DocCommentContainer _phpDocs = new DocCommentContainer();
 
         readonly LanguageFeatures _features;
 
@@ -42,11 +42,16 @@ namespace Devsense.PHP.Syntax
             _features = language;
         }
 
-        PHPDocBlock backupDocBlock = null;
+        IPhpDocExtent _backup_doc_comment = null;
+        int _backup_attribute_level = 0; // nesting level of #[ ... ]
 
-        public PHPDocBlock DocBlock { get { return _phpDocs.LastDocBlock; } set { } }
+        public PHPDocBlock DocComment
+        {
+            get { return _phpDocs.LastDocBlock; }
+            set { /*not supported*/ }
+        }
 
-        DocCommentList IParserTokenProvider<SemanticValueType, Span>.DocBlockList { get { return _phpDocs; } }
+        DocCommentContainer IParserTokenProvider<SemanticValueType, Span>.DocCommentList { get { return _phpDocs; } }
 
         public Span TokenPosition => _provider.TokenPosition;
 
@@ -67,7 +72,6 @@ namespace Devsense.PHP.Syntax
         /// <returns>Next token.</returns>
         public int GetNextToken()
         {
-            int docBlockExtend = -1;
             for (; ; )
             {
                 Tokens token = (Tokens)_provider.GetNextToken();
@@ -76,13 +80,12 @@ namespace Devsense.PHP.Syntax
                 switch (token)
                 {
                     case Tokens.T_DOC_COMMENT:
-                        SaveDocComment(docBlockExtend);
-                        backupDocBlock = _provider.DocBlock;
-                        docBlockExtend = TokenPosition.End;
+                        _backup_doc_comment = _phpDocs.Append(_provider.DocComment);
+                        // TODO: nullify once consumed
                         continue;
                     case Tokens.T_WHITESPACE:
                     case Tokens.T_COMMENT:
-                        docBlockExtend = TokenPosition.End;
+                        UpdateDocCommentExtent(TokenPosition);
                         continue;
                     case Tokens.T_OPEN_TAG:
                         continue;
@@ -91,6 +94,18 @@ namespace Devsense.PHP.Syntax
                         break;
                     case Tokens.T_OPEN_TAG_WITH_ECHO:
                         token = Tokens.T_ECHO;
+                        break;
+
+                    //case Tokens.T_ATTRIBUTE:
+                    //    if (!HasFeatureSet(LanguageFeatures.Php80Set))
+                    //    {
+                    //        token = Tokens.T_COMMENT; // should be merged with the rest of the line
+                    //        goto token;
+                    //    }
+                    //    break;
+
+                    case Tokens.T_ATTRIBUTE:
+                        _backup_attribute_level++;
                         break;
 
                     case Tokens.T_FN:
@@ -115,18 +130,30 @@ namespace Devsense.PHP.Syntax
                         }
                         break;
                 }
-                SaveDocComment(docBlockExtend);
+
+                if (_backup_attribute_level > 0)
+                {
+                    // extend the span of preceeding doc comment block
+                    // so it can be properly applied to the next language element
+                    UpdateDocCommentExtent(TokenPosition);
+
+                    // update the nesting level eventually
+                    if (token == Tokens.T_LBRACKET)
+                        _backup_attribute_level++;
+                    else if (token == Tokens.T_RBRACKET)
+                        _backup_attribute_level--;
+                }
 
                 return (int)token;
             }
         }
 
-        void SaveDocComment(int extend)
+        void UpdateDocCommentExtent(Span whitespan)
         {
-            if (backupDocBlock != null)
+            var doccomment = _backup_doc_comment;
+            if (doccomment != null && doccomment.Extent.End == whitespan.Start)
             {
-                _phpDocs.AppendBlock(backupDocBlock, extend);
-                backupDocBlock = null;
+                doccomment.Extent = Span.FromBounds(doccomment.Extent.Start, whitespan.End);
             }
         }
 

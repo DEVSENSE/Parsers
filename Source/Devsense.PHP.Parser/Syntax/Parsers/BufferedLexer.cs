@@ -50,19 +50,19 @@ namespace Devsense.PHP.Syntax
 
         public string TokenText => _buffer.Count > 0 ? _buffer.Peek().TokenText : _provider.TokenText;
 
-        public PHPDocBlock DocBlock
+        public PHPDocBlock DocComment
         {
             get
             {
-                return _provider.DocBlock;
+                return _provider.DocComment;
             }
             set
             {
-                _provider.DocBlock = value;
+                _provider.DocComment = value;
             }
         }
 
-        public DocCommentList DocBlockList => _provider.DocBlockList;
+        public DocCommentContainer DocCommentList => _provider.DocCommentList;
 
         public void ReportError(string[] expectedTokens) => _provider.ReportError(expectedTokens);
 

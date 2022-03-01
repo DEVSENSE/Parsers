@@ -83,10 +83,10 @@ namespace Devsense.PHP.Syntax
         /// <summary>
         /// Get actual doc comment.
         /// </summary>
-        public PHPDocBlock DocBlock { get; set; }
+        public PHPDocBlock DocComment { get; set; }
 
-        void SetDocBlock() => DocBlock = new PHPDocBlock(GetTokenString(intern: false), new Span(_charOffset, this.TokenLength));    // TokenPosition is not updated yet at this point
-        void ResetDocBlock() => DocBlock = null;
+        void SetDocBlock() => DocComment = new PHPDocBlock(GetTokenString(intern: false), new Span(_charOffset, this.TokenLength));    // TokenPosition is not updated yet at this point
+        void ResetDocBlock() => DocComment = null;
 
         /// <summary>
         /// Lexer constructor that initializes all the necessary members
@@ -1282,7 +1282,7 @@ namespace Devsense.PHP.Syntax
                 this._hereDocValue = lexer._hereDocValue != null ? lexer._hereDocValue.Clone() : null;
                 this._currentState = lexer.CurrentLexicalState;
                 this._stateStack = lexer.stateStack.ToArray();
-                this._phpDoc = lexer.DocBlock;
+                this._phpDoc = lexer.DocComment;
             }
 
             public override int GetHashCode()
@@ -1327,7 +1327,7 @@ namespace Devsense.PHP.Syntax
             _hereDocValue = state.HereDocValue;
             stateStack = state.GetStateStack();
             CurrentLexicalState = state.CurrentState;
-            DocBlock = state.PhpDoc;
+            DocComment = state.PhpDoc;
         }
 
         #endregion

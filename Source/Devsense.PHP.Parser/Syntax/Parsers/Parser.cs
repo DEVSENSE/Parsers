@@ -411,7 +411,7 @@ namespace Devsense.PHP.Syntax
 
         private LangElement StatementsToBlock(Span span, List<LangElement> statements, Tokens endToken)
         {
-            _lexer.DocBlockList.Merge(span, statements, _astFactory);
+            _lexer.DocCommentList.Merge(span, statements, _astFactory);
             return _astFactory.ColonBlock(span, statements, endToken);
         }
 
@@ -862,14 +862,14 @@ namespace Devsense.PHP.Syntax
         private Span CombineSpans(Span a, Span b) => a.IsValid ? (b.IsValid ? Span.Combine(a, b) : a) : b;
 
         /// <summary>
-        /// Associates givcen <paramref name="target"/> refering to instance of <see cref="PHPDocBlock"/> to a target which must be an instance of <see cref="IPropertyCollection"/>.
+        /// Associates given <paramref name="target"/> referring to instance of <see cref="PHPDocBlock"/> to a target which must be an instance of <see cref="IPropertyCollection"/>.
         /// </summary>
         /// <param name="target"><see cref="IPropertyCollection"/> instance. Must not be <c>null</c>.</param>
         void SetDoc(object target)
         {
             Debug.Assert(target != null);
             Debug.Assert(target is IPropertyCollection);
-            _lexer.DocBlockList.Annotate((LangElement)target);
+            _lexer.DocCommentList.Annotate((LangElement)target);
         }
 
         /// <summary>
@@ -880,7 +880,7 @@ namespace Devsense.PHP.Syntax
         {
             Debug.Assert(target != null);
             Debug.Assert(target is IPropertyCollection);
-            _lexer.DocBlockList.AnnotateMember((LangElement)target);
+            _lexer.DocCommentList.AnnotateMember((LangElement)target);
         }
 
         /// <summary>
@@ -893,7 +893,7 @@ namespace Devsense.PHP.Syntax
         BlockStmt CreateBlock(Span span, List<LangElement> statements)
         {
             Debug.Assert(statements.All(s => s != null));
-            _lexer.DocBlockList.Merge(span, statements, _astFactory);
+            _lexer.DocCommentList.Merge(span, statements, _astFactory);
             return (BlockStmt)_astFactory.Block(span, statements);
         }
 
@@ -906,10 +906,18 @@ namespace Devsense.PHP.Syntax
         /// <returns>Complete block statement.</returns>
         BlockStmt CreateCaseBlock(Span separatorSpan, List<LangElement> statements)
         {
+            Span bodySpan;
+
             if (statements.Count == 0)
-                return (BlockStmt)_astFactory.Block(separatorSpan, statements);
-            Span bodySpan = Span.Combine(separatorSpan, statements.Last().Span);
-            _lexer.DocBlockList.Merge(bodySpan, statements, _astFactory);
+            {
+                bodySpan = separatorSpan;
+            }
+            else
+            {
+                bodySpan = Span.Combine(separatorSpan, statements.Last().Span);
+                _lexer.DocCommentList.Merge(bodySpan, statements, _astFactory);
+            }
+
             return (BlockStmt)_astFactory.Block(bodySpan, statements);
         }
 

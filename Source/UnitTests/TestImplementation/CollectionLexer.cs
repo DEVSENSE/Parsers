@@ -75,7 +75,7 @@ namespace UnitTests.TestImplementation
 
         public CompleteToken PreviousToken => CompleteToken.Empty;
 
-        public PHPDocBlock DocBlock { get => null; set => throw new NotImplementedException(); }
+        public PHPDocBlock DocComment { get => null; set => throw new NotImplementedException(); }
 
         public void AddNextTokens(IList<CompleteToken> tokensBuffer, CompleteToken previousToken) { }
     }
