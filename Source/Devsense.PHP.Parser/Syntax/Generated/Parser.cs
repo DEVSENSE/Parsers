@@ -2602,6 +2602,7 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 			yyval.Node = _astFactory.Type(yypos, CombineSpans(value_stack.array[value_stack.top-12].yypos, value_stack.array[value_stack.top-11].yypos, value_stack.array[value_stack.top-10].yypos, value_stack.array[value_stack.top-9].yypos, value_stack.array[value_stack.top-7].yypos), isConditional, PhpMemberAttributes.Enum, new Name(value_stack.array[value_stack.top-11].yyval.String), value_stack.array[value_stack.top-11].yypos, null, 
 				ConvertToNamedTypeRef(value_stack.array[value_stack.top-9].yyval.TypeReference), value_stack.array[value_stack.top-7].yyval.TypeRefList.Select(ConvertToNamedTypeRef), value_stack.array[value_stack.top-3].yyval.NodeList, CombineSpans(value_stack.array[value_stack.top-4].yypos, value_stack.array[value_stack.top-2].yypos)); 
 			SetDoc(yyval.Node);
+			SetEnumBackingType(yyval.Node, value_stack.array[value_stack.top-10].yyval.Node);
 			PopClassContext();
 		}
         return;

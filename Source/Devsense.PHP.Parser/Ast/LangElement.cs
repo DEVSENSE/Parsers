@@ -321,6 +321,59 @@ namespace Devsense.PHP.Syntax.Ast
                 node.SetProperty(attributes);
             }
         }
+        
+        /// <summary>
+        /// Container for enum's backing type.
+        /// </summary>
+        class EnumBackingType
+        {
+            public TypeRef Type { get; set; }
+        }
+
+        /// <summary>
+        /// Associates enum with its backing type.
+        /// </summary>
+        internal static void SetEnumBackingType(this TypeDecl tdecl, TypeRef backingType)
+        {
+            if (backingType != null)
+            {
+                tdecl.Properties.SetProperty(new EnumBackingType { Type = backingType });
+            }
+            else
+            {
+                tdecl.Properties.RemoveProperty<EnumBackingType>();
+            }
+        }
+
+        /// <summary>
+        /// In case the type represents `enum` type, gets its baking type (the type specified after <c>:</c>).
+        /// </summary>
+        public static TypeRef GetEnumBackingType(this TypeDecl tdecl)
+        {
+            if (tdecl.MemberAttributes.IsEnum() && tdecl.Properties.TryGetProperty<EnumBackingType>(out var value))
+            {
+                return value.Type;
+            }
+
+            return null;
+        }
+
+        internal static void SetTypeSignature(this TypeDecl tdecl, TypeSignature tsig)
+        {
+            if (tsig != null)
+            {
+                tdecl.Properties.SetProperty(tsig);
+            }
+            else
+            {
+                tdecl.Properties.RemoveProperty<TypeSignature>();
+            }
+        }
+
+        internal static TypeSignature GetTypeSignature(this TypeDecl tdecl)
+        {
+            return tdecl.Properties.GetProperty<TypeSignature>();
+        }
     }
 
     #endregion

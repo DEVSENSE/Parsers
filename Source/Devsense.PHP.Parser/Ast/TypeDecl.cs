@@ -60,10 +60,12 @@ namespace Devsense.PHP.Syntax.Ast
 
     #region TypeSignature
 
-    public struct TypeSignature
+    public class TypeSignature
     {
         internal FormalTypeParam[]/*!!*/ TypeParams { get { return typeParams; } }
         private readonly FormalTypeParam[]/*!!*/ typeParams;
+
+        internal static readonly TypeSignature s_empty = new TypeSignature(EmptyArray<FormalTypeParam>.Instance);
 
         #region Construction
 
@@ -114,9 +116,8 @@ namespace Devsense.PHP.Syntax.Ast
         /// <summary>
         /// Type parameters.
         /// </summary>
-        public TypeSignature TypeSignature { get { return typeSignature; } }
-        internal readonly TypeSignature typeSignature;
-
+        public TypeSignature TypeSignature { get { return this.GetTypeSignature() ?? TypeSignature.s_empty; } }
+        
         /// <summary>
         /// Member declarations. Partial classes merged to the aggregate has this field <B>null</B>ed.
         /// </summary>
@@ -153,7 +154,6 @@ namespace Devsense.PHP.Syntax.Ast
             Debug.Assert(genericParams != null && implementsList != null && elements != null);
             Debug.Assert((memberAttributes & PhpMemberAttributes.Trait) == 0 || (memberAttributes & PhpMemberAttributes.Interface) == 0, "Interface cannot be a trait");
 
-            this.typeSignature = new TypeSignature(genericParams);
             this.baseClass = baseClass;
             this.MemberAttributes = memberAttributes;
             this.IsConditional = isConditional;
@@ -162,6 +162,11 @@ namespace Devsense.PHP.Syntax.Ast
             this.headingSpan = headingSpan;
             this.bodySpan = bodySpan;
             this.partialKeyword = isPartial;
+
+            if (genericParams.Count != 0)
+            {
+                this.SetTypeSignature(new TypeSignature(genericParams));
+            }
         }
 
         #endregion

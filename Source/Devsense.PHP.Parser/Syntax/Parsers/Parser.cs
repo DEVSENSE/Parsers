@@ -884,6 +884,22 @@ namespace Devsense.PHP.Syntax
         }
 
         /// <summary>
+        /// Assocates enum type with its backing type.
+        /// </summary>
+        /// <param name="target"><see cref="TypeDecl"/> representing enum.</param>
+        /// <param name="backingType">Enum's backing type (<see cref="TypeRef"/>), or null.</param>
+        void SetEnumBackingType(LangElement target, LangElement backingType)
+        {
+            Debug.Assert(target is TypeDecl);
+            Debug.Assert(((TypeDecl)target).MemberAttributes.IsEnum());
+
+            if (backingType is TypeRef tref)
+            {
+                ((TypeDecl)target).SetEnumBackingType(tref);
+            }
+        }
+
+        /// <summary>
         /// Creates a <see cref="BlockStmt"/> statement from a list of statements.
         /// Unassigned PHPDoc comments are merged to the statements as <see cref="PHPDocStmt"/>.
         /// </summary>

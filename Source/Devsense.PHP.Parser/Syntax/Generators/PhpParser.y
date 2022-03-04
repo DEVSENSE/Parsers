@@ -378,7 +378,7 @@ start:
 	top_statement_list
 	{ 
 		AssignNamingContext(); 
-        _lexer.DocBlockList.Merge(new Span(0, int.MaxValue), $2, _astFactory);
+        _lexer.DocCommentList.Merge(new Span(0, int.MaxValue), $2, _astFactory);
 		AssignStatements($2);
 		_astRoot = _astFactory.GlobalCode(@$, $2, namingContext);
 	}
@@ -788,6 +788,7 @@ enum_declaration_statement:
 			$$ = _astFactory.Type(@$, CombineSpans(@1, @2, @3, @4, @6), isConditional, PhpMemberAttributes.Enum, new Name($2), @2, null, 
 				ConvertToNamedTypeRef($4), $6.Select(ConvertToNamedTypeRef), $10, CombineSpans(@9, @11)); 
 			SetDoc($$);
+			SetEnumBackingType($$, $3);
 			PopClassContext();
 		}
 ;
