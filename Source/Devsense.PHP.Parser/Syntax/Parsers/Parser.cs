@@ -723,6 +723,13 @@ namespace Devsense.PHP.Syntax
                             result.Append(content, lineSpan.Start + indentation.Length, lineSpan.Length - indentation.Length);
                             continue;
                         }
+                        else if (lineText.IsWhiteSpace())
+                        {
+                            // allowed, empty line
+                            // add the line break
+                            result.Append(lineText.TrimStart(" \t".AsSpan()).ToString());
+                            continue;
+                        }
                         else if (!errorreported)
                         {
                             // error

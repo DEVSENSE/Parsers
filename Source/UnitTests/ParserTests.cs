@@ -160,6 +160,28 @@ class X {
         }
 
         [TestMethod]
+        public void HeredocTest()
+        {
+            var codes = new[] {
+               @"<?php
+$x = <<<XXX
+
+  /**
+   * text
+   */
+
+  XXX;",
+            };
+
+            foreach (var code in codes)
+            {
+                var unit = new CodeSourceUnit(code, "dummy.php", Encoding.UTF8);
+                unit.Parse(new BasicNodesFactory(unit), null);
+                Assert.IsNotNull(unit.Ast);
+            }
+        }
+
+        [TestMethod]
         public void AttributesTest()
         {
             var codes = new[] {

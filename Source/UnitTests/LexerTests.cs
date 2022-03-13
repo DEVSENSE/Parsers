@@ -25750,6 +25750,31 @@ $x =<<<XXX
         }
 
         [TestMethod]
+        public void HereDocTest_WhiteLines()
+        {
+            var code = @"<?php
+$x = <<<XXX
+
+  /**
+   * text
+   */
+
+  XXX;";
+            var errors = new TestErrorSink();
+            var lexer = new Lexer(new StringReader(code), Encoding.UTF8, errors);
+            Tokens token;
+            while ((token = lexer.GetNextToken()) != Tokens.EOF)
+            {
+                if (token == Tokens.T_END_HEREDOC)
+                {
+
+                }
+            }
+
+            Assert.AreEqual(0, errors.Count);
+        }
+
+        [TestMethod]
         public void TestParseNumbers()
         {
             Lexer lexer = new Lexer(
