@@ -358,22 +358,13 @@ namespace Devsense.PHP.Syntax.Ast
             return null;
         }
 
-        internal static void SetTypeSignature(this TypeDecl tdecl, TypeSignature tsig)
-        {
-            if (tsig != null)
-            {
-                tdecl.Properties.SetProperty(tsig);
-            }
-            else
-            {
-                tdecl.Properties.RemoveProperty<TypeSignature>();
-            }
-        }
+        internal static void SetTypeSignature(this TypeDecl tdecl, TypeSignature tsig) => tdecl.Properties.SetProperty(tsig);
 
-        internal static TypeSignature GetTypeSignature(this TypeDecl tdecl)
-        {
-            return tdecl.Properties.GetProperty<TypeSignature>();
-        }
+        internal static TypeSignature GetTypeSignature(this TypeDecl tdecl) => tdecl.Properties.GetProperty<TypeSignature>();
+
+        internal static void SetTypeSignature(this TypeMemberDecl member, TypeSignature tsig) => member.Properties.SetProperty(tsig);
+
+        internal static TypeSignature GetTypeSignature(this TypeMemberDecl member) => member.Properties.GetProperty<TypeSignature>();
     }
 
     #endregion

@@ -163,7 +163,7 @@ namespace Devsense.PHP.Syntax.Ast
             this.bodySpan = bodySpan;
             this.partialKeyword = isPartial;
 
-            if (genericParams.Count != 0)
+            if (genericParams != null && genericParams.Count != 0)
             {
                 this.SetTypeSignature(new TypeSignature(genericParams));
             }
@@ -347,8 +347,7 @@ namespace Devsense.PHP.Syntax.Ast
         /// <summary>
         /// Type parameter signatture for generics.
         /// </summary>
-        public TypeSignature TypeSignature { get { return typeSignature; } }
-        private readonly TypeSignature typeSignature;
+        public TypeSignature TypeSignature { get { return this.GetTypeSignature() ?? TypeSignature.s_empty; } }
 
         /// <summary>
         /// Method content.
@@ -419,10 +418,14 @@ namespace Devsense.PHP.Syntax.Ast
 
             this.name = name;
             this.signature = new Signature(aliasReturn, formalParams, paramsSpan);
-            this.typeSignature = new TypeSignature(genericParams);
             this.body = body;
             this.baseCtorParams = baseCtorParams.AsArray();
             this.returnType = returnType;
+
+            if (genericParams != null && genericParams.Count != 0)
+            {
+                this.SetTypeSignature(new TypeSignature(genericParams));
+            }
         }
 
         #endregion
