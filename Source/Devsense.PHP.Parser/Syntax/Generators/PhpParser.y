@@ -106,7 +106,7 @@ using StringPair = System.Collections.Generic.KeyValuePair<string, string>;
 %left '+' '-' '.'
 %left '*' '/' '%'
 %right '!'
-%nonassoc T_INSTANCEOF
+%right T_INSTANCEOF
 %right '~' T_INC T_DEC T_INT_CAST T_DOUBLE_CAST T_STRING_CAST T_ARRAY_CAST T_OBJECT_CAST T_BOOL_CAST T_UNSET_CAST '@'
 %right T_POW
 %right '['
@@ -301,7 +301,8 @@ using StringPair = System.Collections.Generic.KeyValuePair<string, string>;
 %type <Bool> possible_comma
 
 %type <Long> returns_ref function fn is_reference is_variadic variable_modifiers 
-%type <Long> method_modifiers non_empty_member_modifiers member_modifier class_modifier class_modifiers optional_property_modifiers
+%type <Long> method_modifiers non_empty_member_modifiers member_modifier class_modifier class_modifiers
+%type <Long> optional_property_modifiers property_modifier
 %type <Kind> use_type
 
 %type <Object> backup_doc_comment enter_scope exit_scope
@@ -962,17 +963,21 @@ attributed_parameter:
 ;
 
 optional_property_modifiers:
-		/* empty */	{ $$ = 0; /* None */ }
-	|	T_PUBLIC	{ $$ = (long)(PhpMemberAttributes.Public | PhpMemberAttributes.Constructor); }
-	|	T_PROTECTED	{ $$ = (long)(PhpMemberAttributes.Protected | PhpMemberAttributes.Constructor); }
-	|	T_PRIVATE	{ $$ = (long)(PhpMemberAttributes.Private | PhpMemberAttributes.Constructor); }
-	|	T_READONLY	{ $$ = (long)(PhpMemberAttributes.ReadOnly | PhpMemberAttributes.Constructor); }
+		/* empty */				{ $$ = 0; /* None */ }
+	|	optional_property_modifiers property_modifier	{ $$ = $1 | $2 | (long)PhpMemberAttributes.Constructor; }
+;
+
+property_modifier:
+		T_PUBLIC	{ $$ = (long)PhpMemberAttributes.Public; }
+	|	T_PROTECTED	{ $$ = (long)PhpMemberAttributes.Protected; }
+	|	T_PRIVATE	{ $$ = (long)PhpMemberAttributes.Private; }
+	|	T_READONLY	{ $$ = (long)PhpMemberAttributes.ReadOnly; }
 ;
 
 parameter:
-		optional_property_modifiers optional_type is_reference is_variadic T_VARIABLE
+		optional_property_modifiers optional_type_without_static is_reference is_variadic T_VARIABLE
 			{ $$ = _astFactory.Parameter(CombineSpans(@1, @2, @3, @4, @5), $5, @5, $2, (FormalParam.Flags)$3|(FormalParam.Flags)$4, null, (PhpMemberAttributes)$1); /* Important - @$ is invalid when optional_type is empty */ }
-	|	optional_property_modifiers optional_type is_reference is_variadic T_VARIABLE '=' expr
+	|	optional_property_modifiers optional_type_without_static is_reference is_variadic T_VARIABLE '=' expr
 			{ $$ = _astFactory.Parameter(CombineSpans(@1, @2, @3, @4, @7), $5, @5, $2, (FormalParam.Flags)$3|(FormalParam.Flags)$4, (Expression)$7, (PhpMemberAttributes)$1); /* Important - @$ is invalid when optional_type is empty */ }
 ;
 
