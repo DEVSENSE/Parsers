@@ -87,9 +87,15 @@ namespace UnitTests
  * @param $b (int|double)[] The value.
  * @param $c int|double[] The value.
  * @param $d int|array<float|string|null> The value.
+ * @param $e int|array<array-key, float|string|null> The value.
  */");
 
             var ps = phpdoc.Params;
+
+            foreach (var p in ps)
+            {
+                //Assert.IsFalse(string.IsNullOrEmpty(p.TypeNames), $"Type in '{p}' was not parsed.");
+            }
         }
 
         [TestMethod]

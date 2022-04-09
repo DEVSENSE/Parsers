@@ -883,6 +883,44 @@ namespace Devsense.PHP.Syntax
 
             #region Helpers
 
+            static ReadOnlySpan<char> NextTypeName(string text, ref int index)
+            {
+                // trim leading whitespace
+                while (index < text.Length && char.IsWhiteSpace(text[index]))
+                {
+                    index++;
+                }
+
+                int start = index;
+
+                // TNAME1<A, B>|TNAME2
+                int nested = 0;
+                int rel = 0;
+                int end = start;
+
+                for (; end < text.Length; end++)
+                {
+                    rel++;
+                    var c = text[end];
+
+                    if (char.IsLetter(c) || c == '_' || c == QualifiedName.Separator) continue;
+                    if (c == TypeNamesSeparator || c == TypeNamesIntersectionSeparator) { rel = 0; continue; }
+                    if (rel == 1 && (c == '?')) continue;
+                    if (rel > 1 && char.IsNumber(c)) continue;
+
+                    if (c == '<' || c == '[') { nested++; rel = 0; continue; }
+                    if ((c == '>' || c == ']') && nested > 0) { nested--; continue; }
+                    if ((c == ' ' || c == '-' || c == ',') && nested > 0) continue; // allowed in generics // <int, int> or <array-key, int>
+
+                    // not valid char
+                    break;
+                }
+
+                //
+                index = end;
+                return text.AsSpan(start, end - start);
+            }
+
             /// <summary>
             /// Tries to recognize a type name starting at given <paramref name="index"/>.
             /// </summary>
@@ -896,8 +934,8 @@ namespace Devsense.PHP.Syntax
                 // [type]
 
                 var typenameend = index;
-                var typename = NextWord(text, ref typenameend);
-                if (IsTypeName(typename))
+                var typename = NextTypeName(text, ref typenameend);
+                if (typename.Length != 0)
                 {
                     List<int> positions = new List<int>(1);
                     List<string> names = new List<string>(1);
