@@ -62,6 +62,8 @@ namespace Devsense.PHP.Syntax.Ast
         /// </summary>
         public override SourceUnit ContainingSourceUnit => sourceUnit;
 
+        public override TypeDecl ContainingType => null;
+
         #region Constructors
 
         /// <summary>
