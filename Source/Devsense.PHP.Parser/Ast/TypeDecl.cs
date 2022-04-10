@@ -117,7 +117,7 @@ namespace Devsense.PHP.Syntax.Ast
         /// Type parameters.
         /// </summary>
         public TypeSignature TypeSignature { get { return this.GetTypeSignature() ?? TypeSignature.s_empty; } }
-        
+
         /// <summary>
         /// Member declarations. Partial classes merged to the aggregate has this field <B>null</B>ed.
         /// </summary>
@@ -332,17 +332,31 @@ namespace Devsense.PHP.Syntax.Ast
     /// </summary>
     public sealed class MethodDecl : TypeMemberDecl
     {
+        #region Nested class: BaseCtorParamsHolder
+
+        /// <summary>
+        /// Legacy thing (CLR); remember parameters passed to base() ctor.
+        /// </summary>
+        sealed class BaseCtorParamsHolder
+        {
+            /// <summary>
+            /// Parameters passed to base() construct.
+            /// <!--see cref="LanguageFeatures.Clr"/-->
+            /// </summary>
+            public ActualParam[] BaseCtorParams;
+        }
+
+        #endregion
+
         /// <summary>
         /// Name of the method.
         /// </summary>
-        public NameRef Name { get { return name; } }
-        private readonly NameRef name;
+        public NameRef Name { get; }
 
         /// <summary>
         /// Method signature containing all the parameters and parentheses.
         /// </summary>
-        public Signature Signature { get { return signature; } }
-        private readonly Signature signature;
+        public Signature Signature { get; }
 
         /// <summary>
         /// Type parameter signatture for generics.
@@ -356,10 +370,10 @@ namespace Devsense.PHP.Syntax.Ast
         private BlockStmt body;
 
         /// <summary>
-        /// Paramters used to initialize the base class.
+        /// Parameters used to initialize the base class.
+        /// Not used.
         /// </summary>
-        public ActualParam[] BaseCtorParams { get { return baseCtorParams; } internal set { baseCtorParams = value; } }
-        private ActualParam[] baseCtorParams;
+        public ActualParam[] BaseCtorParams => this.TryGetProperty<BaseCtorParamsHolder>(out var holder) ? holder.BaseCtorParams : EmptyArray<ActualParam>.Instance;
 
         /// <summary>
         /// Span of the entire signature.
@@ -375,7 +389,7 @@ namespace Devsense.PHP.Syntax.Ast
             {
                 if (Span.IsValid)
                 {
-                    var endspan = returnType != null ? returnType.Span : Signature.Span;
+                    var endspan = ReturnType != null ? ReturnType.Span : Signature.Span;
                     if (endspan.IsValid)
                     {
                         return Text.Span.FromBounds(Span.Start, endspan.End);
@@ -390,8 +404,7 @@ namespace Devsense.PHP.Syntax.Ast
         /// <summary>
         /// Return type hint, optional.
         /// </summary>
-        public TypeRef ReturnType { get { return returnType; } }
-        private TypeRef returnType;
+        public TypeRef ReturnType { get; }
 
         #region Construction
 
@@ -416,15 +429,19 @@ namespace Devsense.PHP.Syntax.Ast
         {
             Debug.Assert(genericParams != null && formalParams != null);
 
-            this.name = name;
-            this.signature = new Signature(aliasReturn, formalParams, paramsSpan);
+            this.Name = name;
+            this.Signature = new Signature(aliasReturn, formalParams, paramsSpan);
             this.body = body;
-            this.baseCtorParams = baseCtorParams.AsArray();
-            this.returnType = returnType;
+            this.ReturnType = returnType;
 
             if (genericParams != null && genericParams.Count != 0)
             {
                 this.SetTypeSignature(new TypeSignature(genericParams));
+            }
+
+            if (baseCtorParams != null && baseCtorParams.Count != 0)
+            {
+                this.SetProperty(new BaseCtorParamsHolder { BaseCtorParams = baseCtorParams.AsArray(), });
             }
         }
 
