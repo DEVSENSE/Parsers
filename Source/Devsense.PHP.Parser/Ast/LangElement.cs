@@ -195,7 +195,7 @@ namespace Devsense.PHP.Syntax.Ast
         /// <summary>
         /// Gets reference to containing type declaration.
         /// </summary>
-        public TypeDecl ContainingType => ContainingElement.LookupContainingElement<TypeDecl>();
+        public virtual TypeDecl ContainingType => ContainingElement.LookupContainingElement<TypeDecl>();
 
         /// <summary>
         /// Gets reference to containing source unit.
@@ -211,9 +211,9 @@ namespace Devsense.PHP.Syntax.Ast
         {
             for (var x = this; x != null; x = x.ContainingElement)
             {
-                if (x is T)
+                if (x is T t)
                 {
-                    return (T)x;
+                    return t;
                 }
             }
 
