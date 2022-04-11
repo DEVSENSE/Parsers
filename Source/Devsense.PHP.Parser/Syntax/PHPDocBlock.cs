@@ -78,7 +78,7 @@ namespace Devsense.PHP.Syntax
 
             static Element()
             {
-                // initilize dictionary of known tags and their factories:
+                // initialize dictionary of known tags and their factories:
                 s_elementFactories = new Dictionary<string, Func<string, string, Element>>(36, StringComparer.OrdinalIgnoreCase);
                 var types = typeof(PHPDocBlock).GetTypeInfo().DeclaredNestedTypes.Where(t => t.IsNestedPublic && !t.IsAbstract);
                 var eltype = typeof(Element).GetTypeInfo();
@@ -1370,16 +1370,19 @@ namespace Devsense.PHP.Syntax
         /// </summary>
         public sealed class ParamTag : TypeVarDescTag
         {
-            public const string Name = "@param";
+            public const string Name1 = "@param";
+            public const string Name2 = "@psalm-param";
 
-            public ParamTag(string/*!*/line)
-                : base(Name, line, true)
+            public ParamTag(string tagName, string/*!*/line)
+                : base(tagName, line, true)
             {
             }
 
             public override string ToString()
             {
-                StringBuilder result = new StringBuilder(Name, Name.Length + ((this.Description != null) ? this.Description.Length : 0) + 16);
+                var result = StringUtils.GetStringBuilder();
+
+                result.Append(Name1);
 
                 if (this.TypeNames != null)
                 {
@@ -1397,7 +1400,7 @@ namespace Devsense.PHP.Syntax
                     result.Append(this.Description);
                 }
                 //
-                return result.ToString();
+                return StringUtils.ReturnStringBuilder(result);
             }
         }
 
@@ -2079,7 +2082,8 @@ namespace Devsense.PHP.Syntax
 
         public sealed class TemplateTag : TypeVarDescTag
         {
-            public const string Name = "@template";
+            public const string Name1 = "@template";
+            public const string Name2 = "@psalm-template";
 
             /// <summary>
             /// The template identifier.
@@ -2092,7 +2096,7 @@ namespace Devsense.PHP.Syntax
             readonly int _identifierStart;
 
             public TemplateTag(string tagName, string/*!*/line)
-                : base(Name, Name, false) // empty line
+                : base(tagName, tagName/*do not consume the following type here*/, false) // empty line
             {
                 // @template {Identifier} of {TypeNames}
                 Debug.Assert(line.StartsWith(tagName));
