@@ -1410,35 +1410,37 @@ namespace Devsense.PHP.Syntax
         /// </summary>
         public sealed class ReturnTag : TypeVarDescTag
         {
-            public const string Name = "@return";
+            public const string Name1 = "@return";
+            public const string Name2 = "@psalm-return";
 
-            public ReturnTag(string/*!*/line)
-                : base(Name, line, false)
+            public ReturnTag(string tagName, string/*!*/line)
+                : base(tagName, line, false)
             {
             }
 
             public override string ToString()
             {
-                return Name + " " + TypeNames + NewLineString + Description;
+                return Name1 + " " + TypeNames + NewLineString + Description;
             }
         }
 
         /// <summary>
-        /// Documents function return value.
-        /// @psalm-return type [description]
+        /// Documents trait `use` type. Provides additional template arguments if necessary.
+        /// @use type&lt;,&gt;
         /// </summary>
-        public sealed class PsalmReturnTag : TypeVarDescTag
+        public sealed class UseTag : TypeVarDescTag
         {
-            public const string Name = "@psalm-return";
+            public const string Name1 = "@use";
+            public const string Name2 = "@psalm-use";
 
-            public PsalmReturnTag(string/*!*/line)
-                : base(Name, line, false)
+            public UseTag(string tagName, string/*!*/line)
+                : base(tagName, line, false)
             {
             }
 
             public override string ToString()
             {
-                return Name + " " + TypeNames + NewLineString + Description;
+                return Name1 + " " + TypeNames;
             }
         }
 
