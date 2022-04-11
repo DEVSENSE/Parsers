@@ -2128,7 +2128,7 @@ namespace Devsense.PHP.Syntax
             {
                 var sb = StringUtils.GetStringBuilder();
 
-                sb.Append(Name);
+                sb.Append(Name1);
                 
                 if (_identifier.Length != 0)
                 {
