@@ -858,9 +858,10 @@ namespace Devsense.PHP.Syntax
                 // [type] [$varname] [type] [description]
 
                 int index = tagName.Length; // current index within line
+                var extended = tagName.StartsWith("psalm", StringComparison.Ordinal);
 
                 // try to find [type]
-                TryReadTypeName(line, ref index, out _typeNames, out _typeNamesPos);
+                TryReadTypeName(line, ref index, out _typeNames, out _typeNamesPos, extended);
 
                 if (allowVariableName)
                 {
@@ -870,7 +871,7 @@ namespace Devsense.PHP.Syntax
                         // try to find [type] if it was not found yet, user may specified it after variable name
                         if (_typeNames == null || _typeNames.Length == 0)
                         {
-                            TryReadTypeName(line, ref index, out _typeNames, out _typeNamesPos);
+                            TryReadTypeName(line, ref index, out _typeNames, out _typeNamesPos, extended);
                         }
                     }
                 }
@@ -883,7 +884,7 @@ namespace Devsense.PHP.Syntax
 
             #region Helpers
 
-            static ReadOnlySpan<char> NextTypeName(string text, ref int index)
+            static ReadOnlySpan<char> NextTypeName(string text, ref int index, bool extended)
             {
                 // trim leading whitespace
                 while (index < text.Length && char.IsWhiteSpace(text[index]))
@@ -910,7 +911,7 @@ namespace Devsense.PHP.Syntax
 
                     if (c == '<' || c == '[') { nested++; rel = 0; continue; }
                     if ((c == '>' || c == ']') && nested > 0) { nested--; continue; }
-                    if ((c == ' ' || c == '-' || c == ',') && nested > 0) continue; // allowed in generics // <int, int> or <array-key, int>
+                    if ((c == ' ' || c == '-' || c == ',') && (nested > 0 || extended)) continue; // allowed in generics // <int, int> or <array-key, int>
 
                     // not valid char
                     break;
@@ -928,13 +929,14 @@ namespace Devsense.PHP.Syntax
             /// <param name="index">Index within <paramref name="text"/> to start read.</param>
             /// <param name="typenames">Resulting type name(s) separated by <c>|</c>.</param>
             /// <param name="typenamesPos">Type names span or invalid span.</param>
+            /// <param name="extended">Extended syntax allowing `-` characters in a type name.</param>
             /// <returns>Whether the type name was parsed.</returns>
-            internal static bool TryReadTypeName(string/*!*/text, ref int index, out string[] typenames, out int[] typenamesPos)
+            internal static bool TryReadTypeName(string/*!*/text, ref int index, out string[] typenames, out int[] typenamesPos, bool extended = false)
             {
                 // [type]
 
                 var typenameend = index;
-                var typename = NextTypeName(text, ref typenameend);
+                var typename = NextTypeName(text, ref typenameend, extended);
                 if (typename.Length != 0)
                 {
                     List<int> positions = new List<int>(1);
