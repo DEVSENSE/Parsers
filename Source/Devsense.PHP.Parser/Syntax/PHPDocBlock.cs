@@ -1440,10 +1440,41 @@ namespace Devsense.PHP.Syntax
             {
             }
 
-            public override string ToString()
+            public override string ToString() => Name1 + " " + TypeNames;
+        }
+
+        /// <summary>
+        /// Documents extended `implements` type. Provides additional template arguments if necessary.
+        /// @implements type&lt;,&gt;
+        /// </summary>
+        public sealed class ImplementsTag : TypeVarDescTag
+        {
+            public const string Name1 = "@implements";
+            public const string Name2 = "@psalm-implements";
+
+            public ImplementsTag(string tagName, string/*!*/line)
+                : base(tagName, line, false)
             {
-                return Name1 + " " + TypeNames;
             }
+
+            public override string ToString() => Name1 + " " + TypeNames;
+        }
+
+        /// <summary>
+        /// Documents extended `extends` type. Provides additional template arguments if necessary.
+        /// @extends type&lt;,&gt;
+        /// </summary>
+        public sealed class ExtendsTag : TypeVarDescTag
+        {
+            public const string Name1 = "@extends";
+            public const string Name2 = "@psalm-extends";
+
+            public ExtendsTag(string tagName, string/*!*/line)
+                : base(tagName, line, false)
+            {
+            }
+
+            public override string ToString() => Name1 + " " + TypeNames;
         }
 
         /// <summary>
@@ -2115,7 +2146,7 @@ namespace Devsense.PHP.Syntax
                 var of = NextWord(line, ref index);
                 if (of.Equals("of".AsSpan(), StringComparison.Ordinal))
                 {
-                    TryReadTypeName(line, ref index, out _typeNames, out _typeNamesPos);
+                    TryReadTypeName(line, ref index, out _typeNames, out _typeNamesPos, extended: true);
                 }
 
                 if (index < line.Length)
