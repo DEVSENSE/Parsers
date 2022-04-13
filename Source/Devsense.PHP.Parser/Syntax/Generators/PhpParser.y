@@ -495,9 +495,9 @@ name:	// TODO - count as translate (use a helper object)
 ;
 
 attribute_decl:
-		class_name_reference
+		class_name
 			{ $$ = _astFactory.Attribute(@$, $1); }
-	|	class_name_reference argument_list
+	|	class_name argument_list
 			{ $$ = _astFactory.Attribute(@$, $1, new CallSignature($2, @2)); }
 ;
 
@@ -1495,6 +1495,7 @@ class_name:
 class_name_reference:
 		class_name		{ $$ = $1; }
 	|	new_variable	{ $$ = _astFactory.TypeReference(@$, $1); }
+	|	'(' expr ')'	{ $$ = _astFactory.TypeReference(@$, _astFactory.EncapsedExpression(@$, $2, Tokens.T_LPAREN)); }
 ;
 
 exit_expr:
