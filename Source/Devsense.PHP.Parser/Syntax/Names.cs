@@ -982,38 +982,33 @@ namespace Devsense.PHP.Syntax
         /// <summary>
         /// Empty GenericQualifiedName array.
         /// </summary>
-        public static readonly GenericQualifiedName[] EmptyGenericQualifiedNames = new GenericQualifiedName[0];
+        public static GenericQualifiedName[] EmptyGenericQualifiedNames => EmptyArray<GenericQualifiedName>.Instance;
 
         /// <summary>
         /// Qualified name without generics.
         /// </summary>
-		public QualifiedName QualifiedName { get { return qualifiedName; } }
-        private QualifiedName qualifiedName;
+		public QualifiedName QualifiedName { get; }
 
         /// <summary>
-        /// Array of <see cref="GenericQualifiedName"/> or <see cref="QualifiedName"/>.
+        /// Array of generic type arguments.
         /// </summary>
-        public object[]/*!!*/ GenericParams { get { return genericParams; } }
-        private object[]/*!!*/ genericParams;
+        public GenericQualifiedName[]/*!!*/ GenericParams { get; }
 
         /// <summary>
         /// Gets value indicating whether the name has generic type parameters.
         /// </summary>
-        public bool IsGeneric { get { return genericParams != null && genericParams.Length != 0; } }
+        public bool IsGeneric => GenericParams != null && GenericParams.Length != 0;
 
-        public GenericQualifiedName(QualifiedName qualifiedName, object[]/*!!*/ genericParams)
+        public GenericQualifiedName(QualifiedName qualifiedName, GenericQualifiedName[] genericParams)
         {
-            Debug.Assert(genericParams != null);
-            Debug.Assert(genericParams.All(obj => obj == null || obj is QualifiedName || obj is GenericQualifiedName));
-
-            this.qualifiedName = qualifiedName;
-            this.genericParams = genericParams;
+            this.QualifiedName = qualifiedName;
+            this.GenericParams = genericParams ?? EmptyGenericQualifiedNames;
         }
 
         public GenericQualifiedName(QualifiedName qualifiedName)
         {
-            this.qualifiedName = qualifiedName;
-            this.genericParams = ArrayUtils.EmptyObjects;
+            this.QualifiedName = qualifiedName;
+            this.GenericParams = EmptyGenericQualifiedNames;
         }
     }
 

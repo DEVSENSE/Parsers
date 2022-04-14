@@ -664,7 +664,7 @@ namespace Devsense.PHP.Syntax.Ast
                 if (t.HasValue && !t.Value.IsGeneric)
                 {
                     bool resolved = true;
-                    var generics = new object[x.GenericParams.Count];
+                    var generics = new GenericQualifiedName[x.GenericParams.Count];
                     for (int i = 0; i < generics.Length; i++)
                     {
                         VisitElement(x.GenericParams[i]);
