@@ -851,14 +851,15 @@ namespace Devsense.PHP.Syntax
             /// </summary>
             public string Description { get; protected set; }
 
-            protected TypeVarDescTag(string/*!*/tagName, string/*!*/line, bool allowVariableName)
+            protected TypeVarDescTag(string/*!*/tagName, string/*!*/line, bool allowVariableName, bool extended = false)
             {
                 Debug.Assert(line.StartsWith(tagName));
 
                 // [type] [$varname] [type] [description]
 
                 int index = tagName.Length; // current index within line
-                var extended = tagName.StartsWith("psalm", StringComparison.Ordinal);
+                
+                extended = extended || tagName.StartsWith("psalm", StringComparison.Ordinal);
 
                 // try to find [type]
                 TryReadTypeName(line, ref index, out _typeNames, out _typeNamesPos, extended);
@@ -1434,9 +1435,10 @@ namespace Devsense.PHP.Syntax
         {
             public const string Name1 = "@use";
             public const string Name2 = "@psalm-use";
+            public const string Name3 = "@template-use";
 
             public UseTag(string tagName, string/*!*/line)
-                : base(tagName, line, false)
+                : base(tagName, line, false, extended: true)
             {
             }
 
@@ -1451,9 +1453,10 @@ namespace Devsense.PHP.Syntax
         {
             public const string Name1 = "@implements";
             public const string Name2 = "@psalm-implements";
+            public const string Name3 = "@template-implements";
 
             public ImplementsTag(string tagName, string/*!*/line)
-                : base(tagName, line, false)
+                : base(tagName, line, false, extended: true)
             {
             }
 
@@ -1468,9 +1471,10 @@ namespace Devsense.PHP.Syntax
         {
             public const string Name1 = "@extends";
             public const string Name2 = "@psalm-extends";
+            public const string Name3 = "@template-extends";
 
             public ExtendsTag(string tagName, string/*!*/line)
-                : base(tagName, line, false)
+                : base(tagName, line, false, extended: true)
             {
             }
 
