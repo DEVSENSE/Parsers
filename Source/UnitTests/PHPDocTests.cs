@@ -94,7 +94,25 @@ namespace UnitTests
 
             foreach (var p in ps)
             {
-                //Assert.IsFalse(string.IsNullOrEmpty(p.TypeNames), $"Type in '{p}' was not parsed.");
+                Assert.IsFalse(string.IsNullOrEmpty(p.TypeNames), $"Type in '{p}' was not parsed.");
+            }
+        }
+
+
+        [TestMethod]
+        public void CallableSyntaxTest()
+        {
+            var phpdoc = NewPHPDoc(@"
+/**
+ * @param $a (Closure(): \Generator<TKey, TValue, mixed, void>) The value.
+ * @param $b (callable(): mixed) The value.
+ */");
+
+            var ps = phpdoc.Params;
+
+            foreach (var p in ps)
+            {
+                Assert.IsFalse(string.IsNullOrEmpty(p.TypeNames), $"Type in '{p}' was not parsed.");
             }
         }
 

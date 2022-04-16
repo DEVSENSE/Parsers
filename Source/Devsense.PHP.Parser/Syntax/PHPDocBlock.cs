@@ -885,6 +885,11 @@ namespace Devsense.PHP.Syntax
 
             #region Helpers
 
+            /// <summary>
+            /// Additional characters allowed in type name syntax in extended "mode" (psalm, etc).
+            /// </summary>
+            static string ExtendedTypeChars => "-,: ";
+
             static ReadOnlySpan<char> NextTypeName(string text, ref int index, bool extended)
             {
                 // trim leading whitespace
@@ -910,9 +915,9 @@ namespace Devsense.PHP.Syntax
                     if (rel == 1 && (c == '?')) continue;
                     if (rel > 1 && char.IsNumber(c)) continue;
 
-                    if (c == '<' || c == '[') { nested++; rel = 0; continue; }
-                    if ((c == '>' || c == ']') && nested > 0) { nested--; continue; }
-                    if ((c == ' ' || c == '-' || c == ',') && (nested > 0 || extended)) continue; // allowed in generics // <int, int> or <array-key, int>
+                    if (c == '<' || c == '[' || c == '(') { nested++; rel = 0; continue; }
+                    if ((c == '>' || c == ']' || c == ')') && nested > 0) { nested--; continue; }
+                    if ((nested > 0 || extended) && ExtendedTypeChars.IndexOf(c) >= 0) continue; // allowed in extended syntax // <int, int> or <array-key, int> or (callable() : mixed)
 
                     // not valid char
                     break;
@@ -953,18 +958,22 @@ namespace Devsense.PHP.Syntax
                         for (sep = 0; sep < typename.Length; sep++)
                         {
                             var ch = typename[sep];
-                            if (ch == TypeNamesSeparator || ch == TypeNamesIntersectionSeparator)
+                            if (nested == 0 && (ch == TypeNamesSeparator || ch == TypeNamesIntersectionSeparator))
                             {
-                                if (nested == 0) break;
+                                break;
                             }
-                            else if (ch == '<' || ch == '[')
+                            else if (ch == '<' || ch == '[' || ch == '(')
                             {
                                 nested++;
                             }
-                            else if (ch == '>' || ch == ']')
+                            else if (ch == '>' || ch == ']' || ch == ')')
                             {
                                 nested--;
                             }
+                            //else if ((extended || nested > 0) && ExtendedTypeChars.IndexOf(ch) >= 0)
+                            //{
+                            //    continue;
+                            //}
                         }
 
                         // name: [0..sep)
