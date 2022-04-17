@@ -1440,6 +1440,7 @@ namespace Devsense.PHP.Syntax
         {
             public const string Name1 = "@param";
             public const string Name2 = "@psalm-param";
+            public const string Name3 = "@phpstan-param";
 
             public ParamTag(string tagName, string/*!*/line)
                 : base(tagName, line, true)
@@ -1480,6 +1481,7 @@ namespace Devsense.PHP.Syntax
         {
             public const string Name1 = "@return";
             public const string Name2 = "@psalm-return";
+            public const string Name3 = "@phpstan-return";
 
             public ReturnTag(string tagName, string/*!*/line)
                 : base(tagName, line, false)
@@ -2188,6 +2190,7 @@ namespace Devsense.PHP.Syntax
         {
             public const string Name1 = "@template";
             public const string Name2 = "@psalm-template";
+            public const string Name3 = "@phpstan-template";
 
             /// <summary>
             /// The template identifier.
