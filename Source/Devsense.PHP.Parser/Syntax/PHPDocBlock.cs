@@ -328,21 +328,31 @@ namespace Devsense.PHP.Syntax
 
             #region Helpers
 
-            protected static ReadOnlySpan<char> NextWord(string/*!*/text, ref int index)
+            protected static int ConsumeWhitespaces(ReadOnlySpan<char>/*!*/text, ref int index)
             {
-                return NextWord(text.AsSpan(), ref index);
+                int n = 0;
+                while (index < text.Length && char.IsWhiteSpace(text[index]))
+                {
+                    index++;
+                    n++;
+                }
+
+                return n;
             }
+
+            protected static ReadOnlySpan<char> NextWord(string/*!*/text, ref int index) => NextWord(text.AsSpan(), ref index);
 
             protected static ReadOnlySpan<char> NextWord(ReadOnlySpan<char>/*!*/text, ref int index)
             {
                 // skip whitespaces:
-                while (index < text.Length && char.IsWhiteSpace(text[index]))
-                    index++;
+                ConsumeWhitespaces(text, ref index);
 
                 // read word:
                 int startIndex = index;
                 while (index < text.Length && !char.IsWhiteSpace(text[index]))
+                {
                     index++;
+                }
 
                 // cut off the word:
                 if (startIndex < index)
@@ -858,7 +868,7 @@ namespace Devsense.PHP.Syntax
                 // [type] [$varname] [type] [description]
 
                 int index = tagName.Length; // current index within line
-                
+
                 extended = extended || tagName.StartsWith("psalm", StringComparison.Ordinal);
 
                 // try to find [type]
@@ -885,18 +895,37 @@ namespace Devsense.PHP.Syntax
 
             #region Helpers
 
-            /// <summary>
-            /// Additional characters allowed in type name syntax in extended "mode" (psalm, etc).
-            /// </summary>
-            static string ExtendedTypeChars => "-,: ";
+            static bool ConsumeEnclosed(string text, ref int index, char opening = '(', char closing = ')')
+            {
+                if (text[index] == opening)
+                {
+                    for (int i = index, level = 0; i < text.Length; i++)
+                    {
+                        if (text[i] == opening) level++;
+                        else if (text[i] == closing) level--;
+
+                        if (level == 0)
+                        {
+                            index = i + 1;
+                            return true;
+                        }
+                    }
+                }
+
+                return false;
+            }
+
+            //static bool ConsumeIdentifier(ReadOnlySpan<char> text, ref int index, out ReadOnlySpan<char> identifier)
+            //{
+
+            //}
 
             static ReadOnlySpan<char> NextTypeName(string text, ref int index, bool extended)
             {
+                // TODO: just write a regular grammar already
+
                 // trim leading whitespace
-                while (index < text.Length && char.IsWhiteSpace(text[index]))
-                {
-                    index++;
-                }
+                ConsumeWhitespaces(text.AsSpan(), ref index);
 
                 int start = index;
 
@@ -910,14 +939,41 @@ namespace Devsense.PHP.Syntax
                     rel++;
                     var c = text[end];
 
+                    if (rel == 1) // first letter
+                    {
+                        if (c == '?') continue;
+                    }
+                    else
+                    {
+                        if (char.IsNumber(c)) continue;
+                    }
+
                     if (char.IsLetter(c) || c == '_' || c == QualifiedName.Separator) continue;
                     if (c == TypeNamesSeparator || c == TypeNamesIntersectionSeparator) { rel = 0; continue; }
-                    if (rel == 1 && (c == '?')) continue;
-                    if (rel > 1 && char.IsNumber(c)) continue;
 
+                    if (c == '(' && text.AsSpan(start, end - start).EndsWith("callable".AsSpan(), StringComparison.Ordinal)) // callable( ...
+                    {
+                        // callable(...) : (typename)
+                        int i = end; // (
+                        if (ConsumeEnclosed(text, ref i, '(', ')'))
+                        {
+                            ConsumeWhitespaces(text.AsSpan(), ref i);
+                            if (i < text.Length && text[i++] == ':')
+                            {
+                                ConsumeWhitespaces(text.AsSpan(), ref i);
+                                end = i - 1;
+                                continue;
+                            }
+                        }
+                    }
+
+                    // brackets
                     if (c == '<' || c == '[' || c == '(') { nested++; rel = 0; continue; }
                     if ((c == '>' || c == ']' || c == ')') && nested > 0) { nested--; continue; }
-                    if ((nested > 0 || extended) && ExtendedTypeChars.IndexOf(c) >= 0) continue; // allowed in extended syntax // <int, int> or <array-key, int> or (callable() : mixed)
+
+                    // allowed in extended syntax // <int, int> or <array-key, int> or (callable() : mixed)
+                    if ((c == '-' || c == ',') && (nested > 0 || extended)) continue;
+                    if (c == ' ' && nested > 0) continue;
 
                     // not valid char
                     break;
@@ -2155,7 +2211,7 @@ namespace Devsense.PHP.Syntax
 
                 _identifier = identifier.ToString();
                 _identifierStart = index - identifier.Length;
-                
+
                 var of = NextWord(line, ref index);
                 if (of.Equals("of".AsSpan(), StringComparison.Ordinal))
                 {
@@ -2175,7 +2231,7 @@ namespace Devsense.PHP.Syntax
                 var sb = StringUtils.GetStringBuilder();
 
                 sb.Append(Name1);
-                
+
                 if (_identifier.Length != 0)
                 {
                     sb.Append(' ');

@@ -106,6 +106,7 @@ namespace UnitTests
 /**
  * @param $a (Closure(): \Generator<TKey, TValue, mixed, void>) The value.
  * @param $b (callable(): mixed) The value.
+ * @param callable(): mixed $c Used in \LazyOption.php.
  */");
 
             var ps = phpdoc.Params;
