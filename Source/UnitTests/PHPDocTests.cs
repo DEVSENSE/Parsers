@@ -88,6 +88,8 @@ namespace UnitTests
  * @param $c int|double[] The value.
  * @param $d int|array<float|string|null> The value.
  * @param $e int|array<array-key, float|string|null> The value.
+ * @param non-empty-string   $pattern
+ * @param array<int|string, list<array{string|null, int}>> $matches Set by method
  */");
 
             var ps = phpdoc.Params;

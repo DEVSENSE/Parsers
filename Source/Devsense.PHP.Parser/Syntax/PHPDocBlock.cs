@@ -948,9 +948,14 @@ namespace Devsense.PHP.Syntax
                         if (char.IsNumber(c)) continue;
                     }
 
-                    if (char.IsLetter(c) || c == '_' || c == QualifiedName.Separator) continue;
+                    // standard type characters
+                    if (char.IsLetter(c) || c == QualifiedName.Separator || c == '_') continue;
                     if (c == TypeNamesSeparator || c == TypeNamesIntersectionSeparator) { rel = 0; continue; }
 
+                    // '-' for phpstan/psalm annotations
+                    if (c == '-') continue;
+
+                    //
                     if (c == '(' && text.AsSpan(start, end - start).EndsWith("callable".AsSpan(), StringComparison.Ordinal)) // callable( ...
                     {
                         // callable(...) : (typename)
@@ -969,11 +974,11 @@ namespace Devsense.PHP.Syntax
 
                     // brackets
                     if (c == '<' || c == '[' || c == '(') { nested++; rel = 0; continue; }
-                    if ((c == '>' || c == ']' || c == ')') && nested > 0) { nested--; continue; }
+                    if ((c == '>' || c == ']' || c == ')' || c == '}') && nested > 0) { nested--; continue; }
+                    if (c == '{' && nested > 0) { nested++; rel = 0; continue; } // nested {} syntax // list<array{string}>
 
-                    // allowed in extended syntax // <int, int> or <array-key, int> or (callable() : mixed)
-                    if ((c == '-' || c == ',') && (nested > 0 || extended)) continue;
-                    if (c == ' ' && nested > 0) continue;
+                    // allowed when nested in brackets // <int, int> or <array-key, int> or (callable() : mixed)
+                    if ((c == ',' || c == ' ') && nested > 0) continue;
 
                     // not valid char
                     break;
