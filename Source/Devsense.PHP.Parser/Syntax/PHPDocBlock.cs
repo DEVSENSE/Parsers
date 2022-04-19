@@ -942,6 +942,7 @@ namespace Devsense.PHP.Syntax
                     if (rel == 1) // first letter
                     {
                         if (c == '?') continue;
+                        if (nested > 0 && char.IsNumber(c)) continue; // e.g. "<0, max>"
                     }
                     else
                     {

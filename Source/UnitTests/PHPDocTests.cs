@@ -90,6 +90,7 @@ namespace UnitTests
  * @param $e int|array<array-key, float|string|null> The value.
  * @param non-empty-string   $pattern
  * @param array<int|string, list<array{string|null, int}>> $matches Set by method
+ * @param list<array{string, int<0, max>}> $matches Set by method
  */");
 
             var ps = phpdoc.Params;
