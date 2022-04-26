@@ -109,6 +109,7 @@ namespace UnitTests
 /**
  * @param $a (Closure(): \Generator<TKey, TValue, mixed, void>) The value.
  * @param $b (callable(): mixed) The value.
+ * @param TFirstDefault|(\Closure(): TFirstDefault) $c.
  * @param callable(): mixed $c Used in \LazyOption.php.
  */");
 

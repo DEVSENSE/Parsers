@@ -957,18 +957,22 @@ namespace Devsense.PHP.Syntax
                     if (c == '-') continue;
 
                     //
-                    if (c == '(' && text.AsSpan(start, end - start).EndsWith("callable".AsSpan(), StringComparison.Ordinal)) // callable( ...
+                    if (c == '(')
                     {
-                        // callable(...) : (typename)
-                        int i = end; // (
-                        if (ConsumeEnclosed(text, ref i, '(', ')'))
+                        if (text.AsSpan(start, end - start).EndsWith("callable".AsSpan(), StringComparison.Ordinal) ||  // callable( ...
+                            text.AsSpan(start, end - start).EndsWith("Closure".AsSpan(), StringComparison.Ordinal))     // Closure( ...
                         {
-                            ConsumeWhitespaces(text.AsSpan(), ref i);
-                            if (i < text.Length && text[i++] == ':')
+                            // callable(...) : (typename)
+                            int i = end; // (
+                            if (ConsumeEnclosed(text, ref i, '(', ')'))
                             {
                                 ConsumeWhitespaces(text.AsSpan(), ref i);
-                                end = i - 1;
-                                continue;
+                                if (i < text.Length && text[i++] == ':')
+                                {
+                                    ConsumeWhitespaces(text.AsSpan(), ref i);
+                                    end = i - 1;
+                                    continue;
+                                }
                             }
                         }
                     }
