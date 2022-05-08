@@ -55,7 +55,7 @@ namespace Devsense.PHP.Syntax
         /// <summary>
         /// Gets the enumeration of <see cref="IDocEntry"/> list.
         /// </summary>
-        public DocBlockEntriesEnumerator GetEnumerator() => new DocBlockEntriesEnumerator(Entries);
+        public DocBlockEntriesEnumerator<IDocEntry> GetEnumerator() => new DocBlockEntriesEnumerator<IDocEntry>(Entries);
 
         #endregion
 

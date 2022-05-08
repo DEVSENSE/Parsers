@@ -7,7 +7,7 @@ namespace Devsense.PHP.Ast.DocBlock
     /// <summary>
     /// Enumerator of <see cref="IDocEntry"/> list.
     /// </summary>
-    public struct DocBlockEntriesEnumerator
+    public struct DocBlockEntriesEnumerator<T> where T : IDocEntry
     {
         IDocEntry _next;
 
@@ -22,7 +22,7 @@ namespace Devsense.PHP.Ast.DocBlock
             if (_next != null)
             {
                 _next = (this.Current = _next).Next;
-                return true;
+                return Current is T ? true : MoveNext();
             }
             else
             {

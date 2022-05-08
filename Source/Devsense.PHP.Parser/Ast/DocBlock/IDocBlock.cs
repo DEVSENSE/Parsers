@@ -20,6 +20,6 @@ namespace Devsense.PHP.Ast.DocBlock
         /// <summary>
         /// Gets the enumeration of <see cref="IDocEntry"/> list.
         /// </summary>
-        DocBlockEntriesEnumerator GetEnumerator();
+        DocBlockEntriesEnumerator<IDocEntry> GetEnumerator();
     }
 }
