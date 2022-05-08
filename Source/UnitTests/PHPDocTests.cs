@@ -8,16 +8,17 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using UnitTests.TestImplementation;
 using Devsense.PHP.Syntax;
+using Devsense.PHP.Ast.DocBlock;
 
 namespace UnitTests
 {
     [TestClass]
     public class PHPDocTests
     {
-        static PHPDocBlock NewPHPDoc(string code)
+        static IDocBlock NewPHPDoc(string code)
         {
             code = code.Trim();
-            return new PHPDocBlock(code, new Span(0, code.Length));
+            return (new DefaultDocBlockFactory()).CreateDocBlock(new Span(0, code.Length), code);
         }
 
         [TestMethod]

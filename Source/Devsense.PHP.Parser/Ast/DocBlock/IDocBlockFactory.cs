@@ -25,6 +25,11 @@ namespace Devsense.PHP.Ast.DocBlock
     /// </summary>
     public class DefaultDocBlockFactory : IDocBlockFactory
     {
+        /// <summary>
+        /// Singletong instance of this factory class.
+        /// </summary>
+        public static readonly IDocBlockFactory Instance = new DefaultDocBlockFactory();
+
         public IDocBlock CreateDocBlock(Span span, string source) => new PHPDocBlock(source, span);
     }
 }

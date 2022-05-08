@@ -24,7 +24,9 @@ namespace UnitTests.TestImplementation
         {
             // TODO: should have CompliantLexer a LanguageFeatures !!!
 
-            _provider = new Lexer(source, Encoding.UTF8, errors, LanguageFeatures.Basic, 0, Lexer.LexicalStates.INITIAL);
+            _provider = new Lexer(source, Encoding.UTF8, errors,
+                features: LanguageFeatures.Basic,
+                initialState: Lexer.LexicalStates.INITIAL);
         }
 
         public Span TokenPosition => _provider.TokenPosition;

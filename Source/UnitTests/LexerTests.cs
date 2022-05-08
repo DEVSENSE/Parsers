@@ -61,8 +61,7 @@ namespace UnitTests
         {
             string path = (string)TestContext.DataRow["files"];
             SourceUnit sourceUnit = new CodeSourceUnit(File.ReadAllText(path), path, Encoding.UTF8, Lexer.LexicalStates.INITIAL, LanguageFeatures.Basic);
-            ITokenProvider<SemanticValueType, Span> lexer = new Lexer(new StreamReader(path), Encoding.UTF8, new TestErrorSink(),
-                LanguageFeatures.ShortOpenTags, 0, Lexer.LexicalStates.INITIAL);
+            ITokenProvider<SemanticValueType, Span> lexer = new Lexer(new StreamReader(path), Encoding.UTF8, new TestErrorSink(), LanguageFeatures.ShortOpenTags);
             Assert.AreNotEqual(null, lexer);
         }
 
@@ -87,8 +86,7 @@ namespace UnitTests
         public void LexerStringsTest()
         {
             TestErrorSink errorSink = new TestErrorSink();
-            Lexer lexer = new Lexer(new StringReader("\"\""), Encoding.UTF8, errorSink,
-                LanguageFeatures.ShortOpenTags, 0, Lexer.LexicalStates.INITIAL);
+            Lexer lexer = new Lexer(new StringReader("\"\""), Encoding.UTF8, errorSink, LanguageFeatures.ShortOpenTags);
 
             var charSet = new[] { new [] { '$', '{', 'n', '\0', '\r', '\n', ' ' },
                 new [] { '\'', '\\', 'x', 'c', '"', '`', '8', '0' },
@@ -123,7 +121,8 @@ namespace UnitTests
         {
             var errorSink = new TestErrorSink();
             var lexer = new Lexer(new StringReader(@"""\xC0"""), Encoding.UTF8, errorSink,
-                LanguageFeatures.Basic, 0, Lexer.LexicalStates.ST_IN_SCRIPTING);
+                features: LanguageFeatures.Basic,
+                initialState: Lexer.LexicalStates.ST_IN_SCRIPTING);
 
             for (; ; )
             {
@@ -180,8 +179,7 @@ echo <<<HTML
             string path = (string)TestContext.DataRow["files"];
 
             TestErrorSink errorSink = new TestErrorSink();
-            Lexer lexer = new Lexer(new StreamReader(path), Encoding.UTF8, errorSink,
-                LanguageFeatures.ShortOpenTags, 0, Lexer.LexicalStates.INITIAL);
+            Lexer lexer = new Lexer(new StreamReader(path), Encoding.UTF8, errorSink, LanguageFeatures.ShortOpenTags);
 
             Lexer.LexicalStates previousState = Lexer.LexicalStates.INITIAL;
             foreach (var line in File.ReadAllLines(path))
@@ -25780,7 +25778,8 @@ $x = <<<XXX
             Lexer lexer = new Lexer(
                 new StringReader("1_2_3,999999999999999,999_999_999_999_999_999_999,0b01111111_11111111_11111111,299_792_458,135_00,96_485.332_12,6.626_070_15e-34,0xCAFE_F00D,0x54_4A_42,0b0101_1111,0o777"),
                 Encoding.UTF8, new TestErrorSink(),
-                LanguageFeatures.ShortOpenTags, 0, Lexer.LexicalStates.ST_IN_SCRIPTING);
+                LanguageFeatures.ShortOpenTags,
+                initialState: Lexer.LexicalStates.ST_IN_SCRIPTING);
 
             // long or double
             var expected = new object[] { (long)123, (long)999999999999999, 999_999_999_999_999_999_999.0, (long)0b11111111111111111111111, (long)299792458, (long)13500, 96485.33212, 6.62607015e-34, (long)0xCAFEF00D, (long)0x544A42, (long)0b01011111, System.Convert.ToInt64("777", 8) };
@@ -25815,7 +25814,8 @@ $x = <<<XXX
             var lexer = new Lexer(
                 new StringReader(" 12345678901234567890 , 12345678901234567890 , 0x9999999999999999999, 077777777777777777777777777"),
                 Encoding.UTF8, errsink,
-                LanguageFeatures.ShortOpenTags, 0, Lexer.LexicalStates.ST_IN_SCRIPTING);
+                LanguageFeatures.ShortOpenTags,
+                initialState: Lexer.LexicalStates.ST_IN_SCRIPTING);
 
             Tokens t;
             while ((t = lexer.GetNextToken()) != Tokens.EOF)
@@ -25834,8 +25834,7 @@ $x = <<<XXX
             string path = (string)TestContext.DataRow["files"];
 
             TestErrorSink errorSink = new TestErrorSink();
-            Lexer lexer = new Lexer(new StreamReader(path), Encoding.UTF8, errorSink,
-                LanguageFeatures.ShortOpenTags, 0, Lexer.LexicalStates.INITIAL);
+            Lexer lexer = new Lexer(new StreamReader(path), Encoding.UTF8, errorSink, LanguageFeatures.ShortOpenTags);
 
             string parsed = ParseByPhp(path);
             parsed = parsed.Substring(0, parsed.LastIndexOf('-'));

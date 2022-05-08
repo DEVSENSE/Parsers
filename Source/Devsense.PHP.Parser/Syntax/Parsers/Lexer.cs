@@ -67,7 +67,12 @@ namespace Devsense.PHP.Syntax
         /// <summary>
         /// Sink used to report lexical errors.
         /// </summary>
-        IErrorSink<Span> _errors;
+        readonly IErrorSink<Span> _errors;
+
+        /// <summary>
+        /// Factory of documentary comment blocks.
+        /// </summary>
+        readonly IDocBlockFactory _docblockFactory;
 
         private StringTable _strings;
 
@@ -86,7 +91,7 @@ namespace Devsense.PHP.Syntax
         /// </summary>
         public IDocBlock DocComment { get; set; }
 
-        void SetDocBlock() => DocComment = new PHPDocBlock(GetTokenString(intern: false), new Span(_charOffset, this.TokenLength));    // TokenPosition is not updated yet at this point
+        void SetDocBlock() => DocComment = _docblockFactory.CreateDocBlock(new Span(_charOffset, this.TokenLength), GetTokenString(intern: false));    // TokenPosition is not updated yet at this point
         void ResetDocBlock() => DocComment = null;
 
         /// <summary>
@@ -96,6 +101,7 @@ namespace Devsense.PHP.Syntax
         /// <param name="encoding">Source file encoding to convert UTF characters.</param>
         /// <param name="errors">Error sink used to report lexical error.</param>
         /// <param name="features">Allow or disable short oppening tags for PHP.</param>
+        /// <param name="docBlockFactory">Factory for documentary comment semantic elements.</param>
         /// <param name="positionShift">Starting position of the first token, used during custom restart.</param>
         /// <param name="initialState">Initial state of the lexer, used during custom restart.</param>
         public Lexer(
@@ -103,11 +109,13 @@ namespace Devsense.PHP.Syntax
             Encoding encoding,
             IErrorSink<Span> errors = null,
             LanguageFeatures features = LanguageFeatures.Basic,
+            IDocBlockFactory docBlockFactory = null,
             int positionShift = 0,
             LexicalStates initialState = LexicalStates.INITIAL)
         {
             _encoding = encoding ?? Encoding.UTF8;
             _errors = errors ?? new EmptyErrorSink<Span>();
+            _docblockFactory = docBlockFactory ?? DefaultDocBlockFactory.Instance;
             _charOffset = positionShift;
             _features = features;
             _strings = StringTable.GetInstance();
