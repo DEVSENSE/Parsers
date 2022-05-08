@@ -16,6 +16,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using Devsense.PHP.Ast.DocBlock;
 using Devsense.PHP.Syntax.Ast;
 
 namespace Devsense.PHP.Syntax
@@ -1096,7 +1097,7 @@ namespace Devsense.PHP.Syntax
             // TODO: x.DescriptionEx
         }
 
-        virtual public void VisitPHPDocBlock(PHPDocBlock x)
+        virtual public void VisitPHPDocBlock(IDocBlock x)
         {
             // nothing
         }

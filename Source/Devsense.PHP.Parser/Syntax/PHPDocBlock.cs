@@ -277,7 +277,7 @@ namespace Devsense.PHP.Syntax
             }
             else
             {
-                properties.RemoveProperty<PHPDocBlock>();
+                properties.RemoveProperty<IDocBlock>();
             }
         }
     }

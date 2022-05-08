@@ -8,6 +8,7 @@ using System.Globalization;
 using Devsense.PHP.Text;
 using static Devsense.PHP.Syntax.Ast.EncapsedExpression;
 using Devsense.PHP.Syntax.Visitor;
+using Devsense.PHP.Ast.DocBlock;
 
 namespace Devsense.PHP.Syntax
 {
@@ -1308,7 +1309,7 @@ namespace Devsense.PHP.Syntax
             ConsumeLiteral(x);
         }
 
-        public override void VisitPHPDocBlock(PHPDocBlock x)
+        public override void VisitPHPDocBlock(IDocBlock x)
         {
             // ignore
         }
