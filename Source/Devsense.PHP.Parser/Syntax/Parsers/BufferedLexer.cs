@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Devsense.PHP.Text;
 using System.Diagnostics;
+using Devsense.PHP.Ast.DocBlock;
 
 namespace Devsense.PHP.Syntax
 {
@@ -50,7 +51,7 @@ namespace Devsense.PHP.Syntax
 
         public string TokenText => _buffer.Count > 0 ? _buffer.Peek().TokenText : _provider.TokenText;
 
-        public PHPDocBlock DocComment
+        public IDocBlock DocComment
         {
             get
             {

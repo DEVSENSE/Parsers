@@ -23,6 +23,7 @@ using Devsense.PHP.Errors;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using Devsense.PHP.Utilities;
+using Devsense.PHP.Ast.DocBlock;
 
 namespace Devsense.PHP.Syntax
 {
@@ -83,7 +84,7 @@ namespace Devsense.PHP.Syntax
         /// <summary>
         /// Get actual doc comment.
         /// </summary>
-        public PHPDocBlock DocComment { get; set; }
+        public IDocBlock DocComment { get; set; }
 
         void SetDocBlock() => DocComment = new PHPDocBlock(GetTokenString(intern: false), new Span(_charOffset, this.TokenLength));    // TokenPosition is not updated yet at this point
         void ResetDocBlock() => DocComment = null;
@@ -1274,8 +1275,8 @@ namespace Devsense.PHP.Syntax
 
             private readonly LexicalStates[]/*!*/ _stateStack;
 
-            private PHPDocBlock _phpDoc;
-            public PHPDocBlock PhpDoc => _phpDoc;
+            private IDocBlock _phpDoc;
+            public IDocBlock PhpDoc => _phpDoc;
 
             public CompressedState(Lexer lexer)
             {

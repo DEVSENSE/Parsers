@@ -90,101 +90,6 @@ namespace Devsense.PHP.Syntax.Ast
             throw new ArgumentException("obj");
         }
 
-        /// <summary>
-        /// Creates direct type reference from a string.
-        /// </summary>
-        /// <param name="span">Position of the name.</param>
-        /// <param name="name">Input string, primitive type name or a class name.</param>
-        /// <param name="naming">Optional the naming context. The name will be translated.</param>
-        /// <returns>Type reference. Cannot be <c>null</c>.</returns>
-        public static TypeRef FromString(Span span, string name, NamingContext naming = null)
-        {
-            if (string.IsNullOrEmpty(name))
-            {
-                throw new ArgumentException(nameof(name));
-            }
-
-            // TODO: just impl. a proper parser
-
-            // multiple types
-            var sepindex = name.IndexOf(PHPDocBlock.TypeVarDescTag.TypeNamesSeparator);
-            if (sepindex >= 0)
-            {
-                const string nullableSuffix = "|null";
-                if (name.EndsWith(nullableSuffix, StringComparison.OrdinalIgnoreCase))
-                {
-                    // <types>|null
-                    var newspan = new Span(span.Start, span.Length - nullableSuffix.Length);
-                    return new NullableTypeRef(span, FromString(newspan, name.Remove(newspan.Length), naming));
-                }
-
-                //
-                var trefs = new List<TypeRef>(2);
-                foreach (var nameSpan in name.SplitEnumerator(PHPDocBlock.TypeVarDescTag.TypeNamesSeparator, ignoreEmpty: true))
-                {
-                    var tspan = new Span(span.Start + nameSpan.Start, nameSpan.Length);
-                    trefs.Add(FromString(tspan, name.Substring(nameSpan), naming));
-                }
-
-                return new MultipleTypeRef(span, trefs);
-            }
-
-            // multiple types separated with '&'
-            if (name.IndexOf(PHPDocBlock.TypeVarDescTag.TypeNamesIntersectionSeparator) >= 0)
-            {
-                var trefs = new List<TypeRef>(2);
-                foreach (var nameSpan in name.SplitEnumerator(PHPDocBlock.TypeVarDescTag.TypeNamesIntersectionSeparator, ignoreEmpty: true))
-                {
-                    var tspan = new Span(span.Start + nameSpan.Start, nameSpan.Length);
-                    trefs.Add(FromString(tspan, name.Substring(nameSpan), naming));
-                }
-
-                return new IntersectionTypeRef(span, trefs);
-            }
-
-            // nullable syntax
-            if (name[0] == '?')
-            {
-                if (name.Length > 1)
-                {
-                    return new NullableTypeRef(span, FromString(new Span(span.Start + 1, span.Length - 1), name.Substring(1), naming));
-                }
-                else
-                {
-                    return null; // ?mixed
-                }
-            }
-
-            // TODO: handle array types []
-
-            //
-            var qname = Syntax.QualifiedName.Parse(name, false);
-
-            // primitive types
-            if (qname.IsSimpleName && Enum.TryParse<PrimitiveTypeRef.PrimitiveType>(qname.Name.Value, true, out var primitive))
-            {
-                return new PrimitiveTypeRef(span, primitive);
-            }
-
-            // reserved type names
-            if (qname.IsSimpleName && ReservedTypeRef.ReservedTypes.TryGetValue(qname.Name, out var rtype))
-            {
-                return new ReservedTypeRef(span, rtype);
-            }
-
-            // direct types
-            TypeRef result = new ClassTypeRef(span, qname);
-
-            // apply naming context
-            if (Syntax.QualifiedName.TryTranslateAlias(qname, naming, out var translated))
-            {
-                result = new TranslatedTypeRef(span, translated, result);
-            }
-
-            //
-            return result;
-        }
-
         #endregion
     }
 
@@ -575,7 +480,7 @@ namespace Devsense.PHP.Syntax.Ast
             this.MultipleTypes = multipleTypes.AsArray();
         }
 
-        public override string ToString() => string.Join(PHPDocBlock.TypeVarDescTag.TypeNamesSeparator.ToString(), (IEnumerable<TypeRef>)MultipleTypes);
+        public override string ToString() => string.Join("|", (IEnumerable<TypeRef>)MultipleTypes);
 
         public override void VisitMe(TreeVisitor visitor) => visitor.VisitMultipleTypeRef(this);
     }
@@ -587,7 +492,7 @@ namespace Devsense.PHP.Syntax.Ast
         {
         }
 
-        public override string ToString() => string.Join(PHPDocBlock.TypeVarDescTag.TypeNamesIntersectionSeparator.ToString(), (IEnumerable<TypeRef>)MultipleTypes);
+        public override string ToString() => string.Join("&", (IEnumerable<TypeRef>)MultipleTypes);
 
         public override void VisitMe(TreeVisitor visitor) => visitor.VisitIntersectionTypeRef(this);
     }
@@ -616,7 +521,7 @@ namespace Devsense.PHP.Syntax.Ast
 
             readonly Stack<GenericQualifiedName?> _results = new Stack<GenericQualifiedName?>();
 
-            public override void VisitElement(LangElement element)
+            public override void VisitElement(ILangElement element)
             {
                 Debug.Assert(element is TypeRef);
                 var stack = _results.Count;

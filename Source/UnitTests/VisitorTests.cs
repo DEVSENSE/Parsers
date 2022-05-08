@@ -1,4 +1,5 @@
-﻿using Devsense.PHP.Syntax;
+﻿using Devsense.PHP.Ast.DocBlock;
+using Devsense.PHP.Syntax;
 using Devsense.PHP.Syntax.Ast;
 using Devsense.PHP.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -64,13 +65,13 @@ namespace UnitTests
             }
         }
 
-        class LangElementComparer : IEqualityComparer<LangElement>
+        class LangElementComparer : IEqualityComparer<ILangElement>
         {
             public static readonly LangElementComparer Singleton = new LangElementComparer();
 
-            public bool Equals(LangElement x, LangElement y) => x.Span.Equals(y.Span) && x.GetType().Equals(y.GetType());
+            public bool Equals(ILangElement x, ILangElement y) => x.Span.Equals(y.Span) && x.GetType().Equals(y.GetType());
 
-            public int GetHashCode(LangElement obj) => obj.Span.GetHashCode() | obj.GetType().GetHashCode();
+            public int GetHashCode(ILangElement obj) => obj.Span.GetHashCode() | obj.GetType().GetHashCode();
         }
 
         /// <summary>
@@ -85,10 +86,10 @@ namespace UnitTests
             int _foreachVarCount = 0;
             public int ForeachVarCount => _foreachVarCount;
 
-            HashSet<LangElement> _visitedElements = new HashSet<LangElement>(LangElementComparer.Singleton);
-            public HashSet<LangElement> VisitedElements => _visitedElements;
+            HashSet<ILangElement> _visitedElements = new HashSet<ILangElement>(LangElementComparer.Singleton);
+            public HashSet<ILangElement> VisitedElements => _visitedElements;
 
-            public override void VisitElement(LangElement element)
+            public override void VisitElement(ILangElement element)
             {
                 // TODO - PHPDocBlock is not created by Lexer and CompliantLexer, without the factory
                 if (element != null && !(element is PHPDocBlock))
@@ -394,7 +395,7 @@ namespace UnitTests
             public override LangElement HeredocExpression(Span span, LangElement expression, Tokens quoteStyle, Lexer.HereDocTokenValue heredoc)
                 => CountLE(base.HeredocExpression(span, expression, quoteStyle, heredoc));
 
-            public override LangElement PHPDoc(Span span, LangElement content)
+            public override LangElement PHPDoc(Span span, IDocBlock content)
                  => CountLE(base.PHPDoc(span, content));
 
             public override LangElement PseudoConstUse(Span span, PseudoConstUse.Types type)

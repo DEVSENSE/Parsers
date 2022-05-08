@@ -1,4 +1,5 @@
-﻿using Devsense.PHP.Errors;
+﻿using Devsense.PHP.Ast.DocBlock;
+using Devsense.PHP.Errors;
 using Devsense.PHP.Syntax;
 using Devsense.PHP.Text;
 using System;
@@ -75,7 +76,7 @@ namespace UnitTests.TestImplementation
 
         public CompleteToken PreviousToken => CompleteToken.Empty;
 
-        public PHPDocBlock DocComment { get => null; set => throw new NotImplementedException(); }
+        public IDocBlock DocComment { get => null; set => throw new NotImplementedException(); }
 
         public void AddNextTokens(IList<CompleteToken> tokensBuffer, CompleteToken previousToken) { }
     }

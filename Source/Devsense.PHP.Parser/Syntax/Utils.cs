@@ -1147,10 +1147,23 @@ namespace Devsense.PHP.Syntax
             }
 
             var @string = sb.ToString();
-            
+
             _sbpool.Free(sb);
 
             return @string;
+        }
+
+        /// <summary>
+        /// Append <see cref="ReadOnlySpan{T}"/> to the string builder.
+        /// Uses efficient impl. on NETSTANDARD2_1_OR_GREATER
+        /// </summary>
+        internal static void AppendSpan(this StringBuilder sb, ReadOnlySpan<char> span)
+        {
+#if NETSTANDARD2_1_OR_GREATER
+            sb.Append(span);
+#else
+            sb.Append(span.ToString());
+#endif
         }
     }
 

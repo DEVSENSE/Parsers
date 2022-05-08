@@ -16,7 +16,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-
+using Devsense.PHP.Ast.DocBlock;
 using Devsense.PHP.Text;
 
 namespace Devsense.PHP.Syntax.Ast.Serialization
@@ -101,10 +101,10 @@ namespace Devsense.PHP.Syntax.Ast.Serialization
             _serializer.EndSerialize();
         }
 
-        void SerializePHPDoc(PHPDocBlock doc)
+        void SerializePHPDoc(IDocBlock doc)
         {
             if (doc != null)
-                _serializer.Serialize("PHPDoc", SerializeSpan(doc.Span), new NodeObj("Comment", doc.ToString() ?? string.Empty));
+                _serializer.Serialize("PHPDoc", SerializeSpan(doc.Span), new NodeObj("Comment", doc.Summary ?? string.Empty));
         }
 
         NodeObj SerializeSpan(Span span)

@@ -15,7 +15,7 @@
 
 using System;
 using System.Collections.Generic;
-
+using Devsense.PHP.Ast.DocBlock;
 using Devsense.PHP.Errors;
 using Devsense.PHP.Text;
 
@@ -1025,7 +1025,7 @@ namespace Devsense.PHP.Syntax.Ast
         /// <param name="span">Entire element span.</param>
         /// <param name="content">Content of the comment including leading <c>/**</c> and trailing <c>*/</c>.</param>
         /// <returns>PHPDoc comment element.</returns>
-        TNode PHPDoc(TSpan span, TNode content);
+        TNode PHPDoc(TSpan span, IDocBlock content);
 
         /// <summary>
         /// Creates line comment.

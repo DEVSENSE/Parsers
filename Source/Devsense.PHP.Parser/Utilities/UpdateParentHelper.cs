@@ -36,11 +36,11 @@ namespace Devsense.PHP.Utilities
             /// <summary>
             /// Buffer.
             /// </summary>
-            LangElement[] _children = EmptyArray<LangElement>.Instance;
+            ILangElement[] _children = EmptyArray<ILangElement>.Instance;
 
             int _childrenCount = 0;
 
-            void AddChild(LangElement element)
+            void AddChild(ILangElement element)
             {
                 if (element != null)
                 {
@@ -57,7 +57,7 @@ namespace Devsense.PHP.Utilities
             /// Gets list of direct child nodes.
             /// Cannot be <c>null</c>.
             /// </summary>
-            public ReadOnlySpan<LangElement> GetChildren(LangElement element)
+            public ReadOnlySpan<ILangElement> GetChildren(ILangElement element)
             {
                 if (element != null)
                 {
@@ -67,10 +67,10 @@ namespace Devsense.PHP.Utilities
                 }
 
                 //
-                return ReadOnlySpan<LangElement>.Empty;
+                return ReadOnlySpan<ILangElement>.Empty;
             }
 
-            public override void VisitElement(LangElement element)
+            public override void VisitElement(ILangElement element)
             {
                 AddChild(element);
 
@@ -88,7 +88,7 @@ namespace Devsense.PHP.Utilities
                 return;
             }
 
-            var queue = new Queue<LangElement>(32);
+            var queue = new Queue<ILangElement>(32);
             var childvisitor = new GetChildrenVisitor();
 
             queue.Enqueue(ast);
@@ -100,14 +100,14 @@ namespace Devsense.PHP.Utilities
                 foreach (var child in children)
                 {
                     Connect(child, x);
-                    Connect(child.GetPHPDoc(), child);
+                    Connect(child.Properties.GetPHPDoc(), child);
 
                     queue.Enqueue(child);
                 }
             }
         }
 
-        static void Connect(LangElement element, LangElement parent)
+        static void Connect(ILangElement element, ILangElement parent)
         {
             if (element != null)
             {

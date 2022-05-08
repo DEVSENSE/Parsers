@@ -1,4 +1,5 @@
-﻿using Devsense.PHP.Syntax.Ast;
+﻿using Devsense.PHP.Ast.DocBlock;
+using Devsense.PHP.Syntax.Ast;
 using Devsense.PHP.Text;
 using System;
 using System.Collections.Generic;
@@ -11,7 +12,7 @@ namespace Devsense.PHP.Syntax
         /// <summary>
         /// The actual PHPDoc comment block.
         /// </summary>
-        PHPDocBlock DocComment { get; }
+        IDocBlock DocComment { get; }
 
         /// <summary>
         /// Span where the comment block is applicable.
@@ -28,11 +29,11 @@ namespace Devsense.PHP.Syntax
     {
         sealed class PhpDocExtent : IPhpDocExtent
         {
-            public PHPDocBlock DocComment { get; }
+            public IDocBlock DocComment { get; }
 
             public Span Extent { get; set; }
 
-            public PhpDocExtent(PHPDocBlock phpdoc)
+            public PhpDocExtent(IDocBlock phpdoc)
             {
                 this.DocComment = phpdoc ?? throw new ArgumentNullException(nameof(phpdoc));
                 this.Extent = phpdoc.Span;
@@ -68,7 +69,7 @@ namespace Devsense.PHP.Syntax
         /// <summary>
         /// Inserts DOC block into the list.
         /// </summary>
-        public IPhpDocExtent/*!*/Append(PHPDocBlock/*!*/phpdoc)
+        public IPhpDocExtent/*!*/Append(IDocBlock/*!*/phpdoc)
         {
             Debug.Assert(phpdoc != null);
             Debug.Assert(_doclist == null || _doclist.Count == 0 || _doclist.Last().Extent.Start < phpdoc.Span.Start, "Blocks have to be appended in order.");
@@ -84,7 +85,7 @@ namespace Devsense.PHP.Syntax
         /// <summary>
         /// Finds DOC comment above given position, removes it from the internal list and returns its reference.
         /// </summary>
-        public bool TryReleaseBlock(int position, out PHPDocBlock phpdoc)
+        public bool TryReleaseBlock(int position, out IDocBlock phpdoc)
         {
             var index = this.FindIndex(position - 1);
             return TryReleaseIndexedBlock(index, out phpdoc);
@@ -93,7 +94,7 @@ namespace Devsense.PHP.Syntax
         /// <summary>
         /// Finds DOC comment inside given position, removes it from the internal list and returns its reference.
         /// </summary>
-        public bool TryReleaseBlock(Span position, out PHPDocBlock phpdoc)
+        public bool TryReleaseBlock(Span position, out IDocBlock phpdoc)
         {
             var index = FindFirstIn(_doclist, position);
             return TryReleaseIndexedBlock(index, out phpdoc);
@@ -102,7 +103,7 @@ namespace Devsense.PHP.Syntax
         /// <summary>
         /// Finds DOC comment above given position, removes it from the internal list and returns its reference.
         /// </summary>
-        public bool TryReleaseIndexedBlock(int index, out PHPDocBlock phpdoc)
+        public bool TryReleaseIndexedBlock(int index, out IDocBlock phpdoc)
         {
             if (index >= 0 && index < _doclist.Count)
             {
@@ -264,6 +265,6 @@ namespace Devsense.PHP.Syntax
             return result;
         }
 
-        public PHPDocBlock LastDocBlock => _doclist.Count > 0 ? _doclist.Last().DocComment : null;
+        public IDocBlock LastDocBlock => _doclist.Count > 0 ? _doclist.Last().DocComment : null;
     }
 }

@@ -15,6 +15,7 @@
 
 using System;
 using System.Collections.Generic;
+using Devsense.PHP.Ast.DocBlock;
 using Devsense.PHP.Text;
 
 namespace Devsense.PHP.Syntax
@@ -45,7 +46,7 @@ namespace Devsense.PHP.Syntax
         IPhpDocExtent _backup_doc_comment = null;
         int _backup_attribute_level = 0; // nesting level of #[ ... ]
 
-        public PHPDocBlock DocComment
+        public IDocBlock DocComment
         {
             get { return _phpDocs.LastDocBlock; }
             set { /*not supported*/ }

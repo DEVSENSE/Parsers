@@ -28,23 +28,31 @@ namespace Devsense.PHP.Text
         /// <param name="text">Document text.</param>
         /// <param name="position">Index of character within <paramref name="text"/> to look at.</param>
         /// <returns>Length of line break character sequence at <paramref name="position"/>. In case of no line break, <c>0</c> is returned.</returns>
-        public static int LengthOfLineBreak(string text, int position) => LengthOfLineBreak(text.AsSpan(), position);
+        public static int LengthOfLineBreak(string text, int position) => LengthOfLineBreak(text.AsSpan(position));
 
         /// <summary>
         /// Gets length of line break character sequence if any.
         /// </summary>
         /// <remarks>See <see cref="LengthOfLineBreak(string, int)"/>.</remarks>
-        public static int LengthOfLineBreak(ReadOnlySpan<char> text, int position)
+        public static int LengthOfLineBreak(ReadOnlySpan<char> text, int position) => LengthOfLineBreak(text.Slice(position));
+
+        /// <summary>
+        /// Gets length of line break character sequence if any.
+        /// </summary>
+        /// <remarks>See <see cref="LengthOfLineBreak(string, int)"/>.</remarks>
+        public static int LengthOfLineBreak(ReadOnlySpan<char> text)
         {
-            var c = text[position];
+            var c = text[0];
             if (c == '\r')
             {
-                // \r
-                if (++position >= text.Length || text[position] != '\n')
-                    return 1;
-
                 // \r\n
-                return 2;
+                if (text.Length > 1 && text[1] == '\n')
+                {
+                    return 2;
+                }
+
+                // \r
+                return 1;
             }
             else
             {
@@ -53,6 +61,7 @@ namespace Devsense.PHP.Text
                 if (c == '\n' || c == '\u0085' || c == '\u2028' || c == '\u2029')
                     return 1;
 
+                //
                 return 0;
             }
         }

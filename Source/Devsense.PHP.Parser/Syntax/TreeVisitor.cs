@@ -30,7 +30,7 @@ namespace Devsense.PHP.Syntax
         /// Depth-first search.
         /// </summary>
         /// <param name="element">Any LanguageElement. Can be null.</param>
-        public virtual void VisitElement(LangElement element)
+        public virtual void VisitElement(ILangElement element)
         {
             element?.VisitMe(this);
         }
@@ -39,7 +39,7 @@ namespace Devsense.PHP.Syntax
         {
             if (node != null)
             {
-                if (node is LangElement element)
+                if (node is ILangElement element)
                 {
                     VisitElement(element);
                 }

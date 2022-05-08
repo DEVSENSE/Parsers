@@ -167,7 +167,10 @@ namespace Devsense.PHP.Syntax.Ast
     /// </summary>
     public interface ILangElement : IAstNode, ITreeNode
     {
-
+        /// <summary>
+        /// Gets the parent symbol in the AST hierarchy.
+        /// </summary>
+        ILangElement ContainingElement { get; set; }
     }
 
     /// <summary>
@@ -185,12 +188,12 @@ namespace Devsense.PHP.Syntax.Ast
         /// <summary>
         /// Gets the parent symbol in the AST hierarchy.
         /// </summary>
-        public virtual LangElement ContainingElement { get; set; }
+        public virtual ILangElement ContainingElement { get; set; }
 
         /// <summary>
         /// Gets reference to containing namespace scope or <c>null</c> in case of global namespace.
         /// </summary>
-        public NamespaceDecl ContainingNamespace => LookupContainingElement<NamespaceDecl>();
+        public NamespaceDecl ContainingNamespace => this.LookupContainingElement<NamespaceDecl>();
 
         /// <summary>
         /// Gets reference to containing type declaration.
@@ -200,25 +203,7 @@ namespace Devsense.PHP.Syntax.Ast
         /// <summary>
         /// Gets reference to containing source unit.
         /// </summary>
-        public virtual SourceUnit ContainingSourceUnit => LookupContainingElement<GlobalCode>()?.ContainingSourceUnit;
-
-        /// <summary>
-        /// Iterates through containing elements to find closest element of type <typeparamref name="T"/>.
-        /// </summary>
-        /// <typeparam name="T">Type of element to look for.</typeparam>
-        /// <returns>Reference to element of type <typeparamref name="T"/> or <c>null</c> is not containing.</returns>
-        protected T LookupContainingElement<T>() where T : LangElement
-        {
-            for (var x = this; x != null; x = x.ContainingElement)
-            {
-                if (x is T t)
-                {
-                    return t;
-                }
-            }
-
-            return null;
-        }
+        public virtual SourceUnit ContainingSourceUnit => this.LookupContainingElement<GlobalCode>()?.ContainingSourceUnit;
 
         #endregion
 
@@ -365,6 +350,24 @@ namespace Devsense.PHP.Syntax.Ast
         internal static void SetTypeSignature(this TypeMemberDecl member, TypeSignature tsig) => member.Properties.SetProperty(tsig);
 
         internal static TypeSignature GetTypeSignature(this TypeMemberDecl member) => member.Properties.GetProperty<TypeSignature>();
+
+        /// <summary>
+        /// Iterates through containing elements to find closest element of type <typeparamref name="T"/>.
+        /// </summary>
+        /// <typeparam name="T">Type of element to look for.</typeparam>
+        /// <returns>Reference to element of type <typeparamref name="T"/> or <c>null</c> is not containing.</returns>
+        internal static T LookupContainingElement<T>(this ILangElement element) where T : ILangElement
+        {
+            for (; element != null; element = element.ContainingElement)
+            {
+                if (element is T t)
+                {
+                    return t;
+                }
+            }
+
+            return default(T);
+        }
     }
 
     #endregion

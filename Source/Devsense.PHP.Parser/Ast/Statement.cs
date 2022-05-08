@@ -13,6 +13,7 @@
 // See the Apache Version 2.0 License for specific language governing
 // permissions and limitations under the License.
 
+using Devsense.PHP.Ast.DocBlock;
 using Devsense.PHP.Text;
 using System;
 using System.Collections.Generic;
@@ -244,15 +245,14 @@ namespace Devsense.PHP.Syntax.Ast
     /// </summary>
     public sealed class PHPDocStmt : Statement
     {
-        public PHPDocBlock/*!*/PHPDoc { get { return _phpdoc; } }
-        private readonly PHPDocBlock _phpdoc;
+        public IDocBlock/*!*/PHPDoc { get; }
 
         internal override bool SkipInPureGlobalCode() { return true; }
 
-        public PHPDocStmt(PHPDocBlock/*!*/phpdoc) : base(phpdoc.Span)
+        public PHPDocStmt(IDocBlock/*!*/docblock) : base(docblock.Span)
         {
-            Debug.Assert(phpdoc != null);
-            _phpdoc = phpdoc;
+            Debug.Assert(docblock != null);
+            this.PHPDoc = docblock ?? throw new ArgumentNullException(nameof(docblock));
         }
 
         public override void VisitMe(TreeVisitor visitor)

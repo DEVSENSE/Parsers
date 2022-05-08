@@ -17,7 +17,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-
+using Devsense.PHP.Ast.DocBlock;
 using Devsense.PHP.Errors;
 using Devsense.PHP.Text;
 using static Devsense.PHP.Syntax.Ast.EncapsedExpression;
@@ -456,9 +456,9 @@ namespace Devsense.PHP.Syntax.Ast
             return ArrayEx.CreateArray(span, IsAllNull(items) ? null : items, !isOldNotation);
         }
 
-        public virtual LangElement PHPDoc(Span span, LangElement block)
+        public virtual LangElement PHPDoc(Span span, IDocBlock block)
         {
-            return new PHPDocStmt((PHPDocBlock)block);
+            return new PHPDocStmt(block);
         }
 
         public virtual LangElement Shell(Span span, LangElement command)

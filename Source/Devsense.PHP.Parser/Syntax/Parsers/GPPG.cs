@@ -21,6 +21,7 @@
 
 */
 
+using Devsense.PHP.Ast.DocBlock;
 using System;
 using System.Collections.Generic;
 
@@ -121,10 +122,10 @@ namespace Devsense.PHP.Syntax
 
 		void ReportError(string[] expectedTokens);
 
-        /// <summary>
-        /// Gets current DOC block that will be assigned to the next declaration.
-        /// </summary>
-        PHPDocBlock DocComment { get; set; }
+		/// <summary>
+		/// Gets current DOC block that will be assigned to the next declaration.
+		/// </summary>
+		IDocBlock DocComment { get; set; }
     }
 
 	#endregion

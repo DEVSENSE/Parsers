@@ -13,6 +13,7 @@
 // See the Apache Version 2.0 License for specific language governing
 // permissions and limitations under the License.
 
+using Devsense.PHP.Ast.DocBlock;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -89,9 +90,9 @@ namespace Devsense.PHP.Syntax.Ast
         }
 
         /// <summary>
-        /// <see cref="PHPDocBlock"/> instance or <c>null</c> reference.
+        /// <see cref="IDocBlock"/> instance or <c>null</c> reference.
         /// </summary>
-        public PHPDocBlock PHPDoc
+        public IDocBlock PHPDoc
         {
             get { return this.GetPHPDoc(); }
             set { this.SetPHPDoc(value); }
@@ -169,9 +170,9 @@ namespace Devsense.PHP.Syntax.Ast
         }
 
         /// <summary>
-        /// <see cref="PHPDocBlock"/> instance or <c>null</c> reference.
+        /// <see cref="IDocBlock"/> instance or <c>null</c> reference.
         /// </summary>
-        public PHPDocBlock PHPDoc
+        public IDocBlock PHPDoc
         {
             get { return this.GetPHPDoc(); }
             set { this.SetPHPDoc(value); }
@@ -213,9 +214,9 @@ namespace Devsense.PHP.Syntax.Ast
         }
 
         /// <summary>
-        /// <see cref="PHPDocBlock"/> instance or <c>null</c> reference.
+        /// <see cref="IDocBlock"/> instance or <c>null</c> reference.
         /// </summary>
-        public PHPDocBlock PHPDoc
+        public IDocBlock PHPDoc
         {
             get { return this.GetPHPDoc(); }
             set { this.SetPHPDoc(value); }
@@ -246,9 +247,9 @@ namespace Devsense.PHP.Syntax.Ast
         }
 
         /// <summary>
-        /// <see cref="PHPDocBlock"/> instance or <c>null</c> reference.
+        /// <see cref="IDocBlock"/> instance or <c>null</c> reference.
         /// </summary>
-        public PHPDocBlock PHPDoc
+        public IDocBlock PHPDoc
         {
             get { return this.GetPHPDoc(); }
             set { this.SetPHPDoc(value); }

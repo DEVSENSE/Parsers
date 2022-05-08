@@ -82,7 +82,7 @@ namespace Devsense.PHP.Syntax.Visitor
         /// <summary>
         /// Path from the current node to the root.
         /// </summary>
-        IEnumerable<AstNode> Scope { get; }
+        IEnumerable<IAstNode> Scope { get; }
 
         /// <summary>
         /// Provided <see cref="ILineBreaks"/> instance which corresponds to provided <see cref="Span"/>s.
@@ -100,12 +100,12 @@ namespace Devsense.PHP.Syntax.Visitor
     public class TreeContext : ITreeContext
     {
         readonly GlobalCode _ast;
-        readonly Stack<AstNode> _scope = new Stack<AstNode>();
+        readonly Stack<IAstNode> _scope = new Stack<IAstNode>();
 
         /// <summary>
         /// Path from the current node to the root.
         /// </summary>
-        public IEnumerable<AstNode> Scope => _scope;
+        public IEnumerable<IAstNode> Scope => _scope;
 
         /// <summary>
         /// Provided <see cref="ILineBreaks"/> instance which corresponds to provided <see cref="Span"/>s.
@@ -124,7 +124,7 @@ namespace Devsense.PHP.Syntax.Visitor
         /// <summary>
         /// Enter the scope.
         /// </summary>
-        public virtual void EnterScope(AstNode node)
+        public virtual void EnterScope(IAstNode node)
         {
             _scope.Push(node);
         }
@@ -132,7 +132,7 @@ namespace Devsense.PHP.Syntax.Visitor
         /// <summary>
         /// Leave the scope. Must corespond to <see cref="EnterScope"/>
         /// </summary>
-        public virtual void LeaveScope(AstNode node)
+        public virtual void LeaveScope(IAstNode node)
         {
             var pop = _scope.Pop();
             Debug.Assert(pop == node);
@@ -235,7 +235,7 @@ namespace Devsense.PHP.Syntax.Visitor
         /// <summary>
         /// Counts scopes matching given predicate.
         /// </summary>
-        public static int Count(this ITreeContext context, Func<AstNode, bool> predicate) => context.Scope.Count(predicate);
+        public static int Count(this ITreeContext context, Func<IAstNode, bool> predicate) => context.Scope.Count(predicate);
 
         /// <summary>
         /// Counts scopes that causes an indentation by default.
@@ -243,7 +243,7 @@ namespace Devsense.PHP.Syntax.Visitor
         /// </summary>
         public static int CountIndent(this ITreeContext context) => Count(context, s_indentnodes);
 
-        readonly static Func<AstNode, bool> s_indentnodes = new Func<AstNode, bool>( // sample indent function, should be replaced by actual implementation
+        readonly static Func<IAstNode, bool> s_indentnodes = new Func<IAstNode, bool>( // sample indent function, should be replaced by actual implementation
             node => (node is DummyInsideBlockStmt db && !(db.OriginalBlock is SimpleBlockStmt)));
     }
 
@@ -263,9 +263,9 @@ namespace Devsense.PHP.Syntax
         internal struct ScopeHelper : IDisposable
         {
             readonly TreeContextVisitor _visitor;
-            readonly AstNode _node;
+            readonly IAstNode _node;
 
-            public ScopeHelper(TreeContextVisitor visitor, AstNode scope)
+            public ScopeHelper(TreeContextVisitor visitor, IAstNode scope)
             {
                 Debug.Assert(visitor != null);
 
@@ -288,7 +288,7 @@ namespace Devsense.PHP.Syntax
         /// </summary>
         protected TreeContext Context { get; private set; }
 
-        protected virtual bool IsScopeElement(LangElement element)
+        protected virtual bool IsScopeElement(ILangElement element)
         {
             return
                 element is IStatement ||
@@ -307,7 +307,7 @@ namespace Devsense.PHP.Syntax
             Context = context ?? throw new ArgumentNullException(nameof(context));
         }
 
-        public override void VisitElement(LangElement element)
+        public override void VisitElement(ILangElement element)
         {
             if (IsScopeElement(element))
             {

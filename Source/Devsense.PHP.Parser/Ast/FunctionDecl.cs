@@ -16,6 +16,7 @@
 using System;
 using System.Diagnostics;
 using System.Collections.Generic;
+using Devsense.PHP.Ast.DocBlock;
 
 namespace Devsense.PHP.Syntax.Ast
 {
@@ -136,11 +137,11 @@ namespace Devsense.PHP.Syntax.Ast
                     //PhpMemberAttributes.Public => Flags.IsConstructorPropertyPublic,
                     _ => Flags.IsConstructorPropertyPublic,
                 };
-                
+
                 if (constructorPropertyVisibility.IsReadOnly())
                 {
                     _flags |= Flags.IsConstructorPropertyReadOnly;
-                }    
+                }
             }
         }
 
@@ -273,12 +274,12 @@ namespace Devsense.PHP.Syntax.Ast
         }
 
         /// <summary>
-        /// <see cref="PHPDocBlock"/> instance or <c>null</c> reference.
+        /// <see cref="IDocBlock"/> instance or <c>null</c> reference.
         /// </summary>
-        public PHPDocBlock PHPDoc
+        public IDocBlock PHPDoc
         {
-            get { return this.GetPHPDoc(); }
-            set { this.SetPHPDoc(value); }
+            get => this.GetPHPDoc();
+            set => this.SetPHPDoc(value);
         }
     }
 

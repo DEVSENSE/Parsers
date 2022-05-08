@@ -330,7 +330,7 @@ class X {
         /// </summary>
         sealed class ContainingElementCheck : TreeVisitor
         {
-            public override void VisitElement(LangElement element)
+            public override void VisitElement(ILangElement element)
             {
                 if (element != null)
                 {
@@ -355,7 +355,7 @@ class X {
 
             List<Span> inclusion = new List<Span>() { new Span(0, int.MaxValue) };
 
-            public override void VisitElement(LangElement element)
+            public override void VisitElement(ILangElement element)
             {
                 if (element != null)
                 {
