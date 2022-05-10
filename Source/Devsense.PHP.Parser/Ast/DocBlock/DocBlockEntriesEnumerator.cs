@@ -9,9 +9,12 @@ namespace Devsense.PHP.Ast.DocBlock
     /// </summary>
     public struct DocBlockEntriesEnumerator<T> where T : IDocEntry
     {
-        IDocEntry _next;
+        IDocEntry Next { get; set; }
 
-        public IDocEntry Current { get; private set; }
+        /// <summary>
+        /// Gets the current enumerator entry. Cannot be <c>null</c>.
+        /// </summary>
+        public T/*!*/Current { get; private set; }
 
         //public int Index { get; private set; }
 
@@ -19,21 +22,24 @@ namespace Devsense.PHP.Ast.DocBlock
 
         public bool MoveNext()
         {
-            if (_next != null)
+            for (var item = this.Next; item != null; item = item.Next)
             {
-                _next = (this.Current = _next).Next;
-                return Current is T ? true : MoveNext();
+                if (item is T)
+                {
+                    this.Current = (T)item;
+                    this.Next = item.Next;
+                    return true;
+                }
             }
-            else
-            {
-                return false;
-            }
+
+            //
+            return false;
         }
 
         public DocBlockEntriesEnumerator(IDocEntry head/*, Func<IDocEntry, bool> predicate*/)
         {
-            this.Current = null;
-            _next = head;
+            this.Current = default(T);
+            this.Next = head;
             //_predicate = predicate;
         }
     }
