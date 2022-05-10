@@ -356,7 +356,7 @@ namespace Devsense.PHP.Syntax.Ast
         /// </summary>
         /// <typeparam name="T">Type of element to look for.</typeparam>
         /// <returns>Reference to element of type <typeparamref name="T"/> or <c>null</c> is not containing.</returns>
-        internal static T LookupContainingElement<T>(this ILangElement element) where T : ILangElement
+        public static T LookupContainingElement<T>(this ILangElement element) where T : ILangElement
         {
             for (; element != null; element = element.ContainingElement)
             {
