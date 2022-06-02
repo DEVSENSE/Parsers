@@ -27,8 +27,11 @@ class X {
     function static() { }
 }",
 @"<?php
-    class enum extends A {
+class enum extends A {
 }",
+@"<?php
+A::E->foo(); // dereferencable class const
+",
             };
 
             foreach (var code in codes)

@@ -319,12 +319,12 @@ using StringPair = System.Collections.Generic.KeyValuePair<string, string>;
 %type <Node> trait_declaration_statement interface_declaratioimplements_listn_statement 
 %type <Node> interface_declaration_statement inline_html isset_variable expr variable 
 %type <Node> expr_without_variable new_expr internal_functions_in_yacc callable_variable 
-%type <Node> simple_variable scalar constant dereferencable_scalar function_call
+%type <Node> simple_variable scalar constant class_constant dereferencable_scalar function_call
 %type <Node> static_member if_stmt alt_if_stmt const_decl unset_variable
 %type <Node> global_var static_var echo_expr optional_expr 
 %type <Node> property encaps_var encaps_var_offset declare_statement
 %type <Node> trait_adaptation trait_precedence trait_alias
-%type <Node> class_const_decl dereferencable for_statement foreach_statement
+%type <Node> class_const_decl dereferencable array_object_dereferenceable for_statement foreach_statement
 %type <Node> while_statement backticks_expr method_body exit_expr
 %type <Node> finally_statement new_variable callable_expr
 %type <Node> trait_adaptations variable_class_name inner_statement class_statement
@@ -1537,16 +1537,17 @@ scalar:
 	|	T_START_HEREDOC T_ENCAPSED_AND_WHITESPACE T_END_HEREDOC { $$ = _astFactory.HeredocExpression(@$, RemoveHereDocIndentation(_astFactory.Literal(@2, $2.Key, $2.Value), $3, true), $1.QuoteToken, $3); }
 	|	T_START_HEREDOC encaps_list T_END_HEREDOC				{ $$ = _astFactory.HeredocExpression(@$, RemoveHereDocIndentation(_astFactory.Concat(@2, $2), $3, true), $1.QuoteToken, $3); }
 	|	dereferencable_scalar	{ $$ = $1; }
-	|	constant			{ $$ = $1; }
+	|	constant				{ $$ = $1; }
+	|	class_constant			{ $$ = $1; }
 ;
 
 constant:
-		name 
-			{ $$ = _astFactory.ConstUse(@$, TranslateQNRConstant($1)); }
-	|	class_name T_DOUBLE_COLON identifier
-			{ $$ = _astFactory.ClassConstUse(@$, $1, new Name($3), @3); }
-	|	variable_class_name T_DOUBLE_COLON identifier
-			{ $$ = _astFactory.ClassConstUse(@$, _astFactory.TypeReference(@1, $1), new Name($3), @3); }
+		name	{ $$ = _astFactory.ConstUse(@$, TranslateQNRConstant($1)); }
+;
+
+class_constant:
+		class_name T_DOUBLE_COLON identifier			{ $$ = _astFactory.ClassConstUse(@$, $1, new Name($3), @3); }
+	|	variable_class_name T_DOUBLE_COLON identifier	{ $$ = _astFactory.ClassConstUse(@$, _astFactory.TypeReference(@1, $1), new Name($3), @3); }
 ;
 
 expr:
@@ -1572,6 +1573,12 @@ dereferencable:
 		variable				{ $$ = $1; }
 	|	'(' expr ')'			{ $$ = _astFactory.EncapsedExpression(@$, $2, Tokens.T_LPAREN); } 
 	|	dereferencable_scalar	{ $$ = $1; }
+	|	class_constant			{ $$ = $1; }
+;
+
+array_object_dereferenceable:
+		dereferencable			{ $$ = $1; }
+	|	constant				{ $$ = $1; }
 ;
 
 callable_expr:
@@ -1583,13 +1590,11 @@ callable_expr:
 callable_variable:
 		simple_variable
 			{ $$ = $1; }
-	|	dereferencable '[' optional_expr ']'
+	|	array_object_dereferenceable '[' optional_expr ']'
 			{ $$ = _astFactory.ArrayItem(@$, false, $1, $3); }
-	|	constant '[' optional_expr ']'
-			{ $$ = _astFactory.ArrayItem(@$, false, $1, $3); }
-	|	dereferencable '{' expr '}'
+	|	array_object_dereferenceable '{' expr '}'
 			{ $$ = _astFactory.ArrayItem(@$, true, $1, $3); }
-	|	dereferencable object_operator property_name argument_list
+	|	array_object_dereferenceable object_operator property_name argument_list
 		{
 			if ($3 is string name)
 				$$ = _astFactory.Call(@$, new TranslatedQualifiedName(new QualifiedName(new Name(name)), @3), new CallSignature($4, @4), VerifyMemberOf($1));
@@ -1604,7 +1609,7 @@ callable_variable:
 variable:
 		callable_variable	{ $$ = $1; }
 	|	static_member		{ $$ = $1; }
-	|	dereferencable object_operator property_name
+	|	array_object_dereferenceable object_operator property_name
 		{
 			$$ = AdjustNullSafeOperator(CreateProperty(@$, $1, $3), $2);
 		}
