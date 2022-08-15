@@ -493,22 +493,31 @@ namespace Devsense.PHP.Syntax
 
         public override void VisitDeclareStmt(DeclareStmt x)
         {
-            if (x.Statement == null && x.Statement is EmptyStmt)
+            // declare(...)
+            ConsumeToken(Tokens.T_DECLARE, SpanUtils.SafeSpan(x.Span.StartOrInvalid(), 7));
+            ProcessToken(Tokens.T_LPAREN, SpanUtils.SpanIntermission(x.Span.StartOrInvalid(), x.ConstantDeclarations[0].Span));
+            VisitElementList(x.ConstantDeclarations, Tokens.T_COMMA);
+            ProcessToken(Tokens.T_RPAREN, SpanUtils.SpanIntermission(x.ConstantDeclarations[x.ConstantDeclarations.Length - 1].Span, x.Statement.Span));
+
+            //
+            if (x.Statement == null || x.Statement is EmptyStmt)
             {
                 // declare(...);
+                ConsumeToken(Tokens.T_SEMI, SpanUtils.SafeSpan(x.Span.End - 1, 1));
             }
             else
             {
                 // declare(...):
                 // ...
                 // enddeclare;
-            }
 
-            ConsumeToken(Tokens.T_DECLARE, SpanUtils.SafeSpan(x.Span.StartOrInvalid(), 7));
-            ProcessToken(Tokens.T_LPAREN, SpanUtils.SpanIntermission(x.Span.StartOrInvalid(), x.ConstantDeclarations[0].Span));
-            VisitElementList(x.ConstantDeclarations, Tokens.T_COMMA);
-            ProcessToken(Tokens.T_RPAREN, SpanUtils.SpanIntermission(x.ConstantDeclarations[x.ConstantDeclarations.Length - 1].Span, x.Statement.Span));
-            VisitElement(x.Statement);
+                // or
+
+                // declare(...) {
+                // ...
+                // }
+                VisitElement(x.Statement);
+            }
         }
 
         public override void VisitDirectFcnCall(DirectFcnCall x)
