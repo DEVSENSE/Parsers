@@ -493,6 +493,17 @@ namespace Devsense.PHP.Syntax
 
         public override void VisitDeclareStmt(DeclareStmt x)
         {
+            if (x.Statement == null && x.Statement is EmptyStmt)
+            {
+                // declare(...);
+            }
+            else
+            {
+                // declare(...):
+                // ...
+                // enddeclare;
+            }
+
             ConsumeToken(Tokens.T_DECLARE, SpanUtils.SafeSpan(x.Span.StartOrInvalid(), 7));
             ProcessToken(Tokens.T_LPAREN, SpanUtils.SpanIntermission(x.Span.StartOrInvalid(), x.ConstantDeclarations[0].Span));
             VisitElementList(x.ConstantDeclarations, Tokens.T_COMMA);
