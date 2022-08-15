@@ -758,6 +758,7 @@ class_modifiers:
 class_modifier:
 		T_ABSTRACT 		{ $$ = (long)PhpMemberAttributes.Abstract; }
 	|	T_FINAL 		{ $$ = (long)PhpMemberAttributes.Final; }
+	|	T_READONLY		{ $$ = (long)PhpMemberAttributes.ReadOnly; }
 ;
 
 trait_declaration_statement:
