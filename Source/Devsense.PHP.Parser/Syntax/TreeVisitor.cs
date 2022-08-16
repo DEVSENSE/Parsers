@@ -166,6 +166,7 @@ namespace Devsense.PHP.Syntax
         /// </summary>
         virtual public void VisitDeclareStmt(DeclareStmt x)
         {
+            VisitList(x.ConstantDeclarations);
             VisitElement(x.Statement);
         }
 
