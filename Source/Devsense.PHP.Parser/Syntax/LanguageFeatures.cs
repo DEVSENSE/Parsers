@@ -31,7 +31,7 @@ namespace Devsense.PHP.Syntax
         /// <summary>
         /// Basic features - always present.
         /// </summary>
-        Basic = Php81Set,
+        Basic = Php82Set,
 
         /// <summary>
         /// Allows using short open tags in the script.
@@ -87,6 +87,11 @@ namespace Devsense.PHP.Syntax
         /// PHP 8.1 feature set.
         /// </summary>
         Php81Set = Php80Set | (1 << 13),
+
+        /// <summary>
+        /// PHP 8.2 feature set.
+        /// </summary>
+        Php82Set = Php81Set | (1 << 14),
     }
 
     public static class LanguageFeaturesExtensions
