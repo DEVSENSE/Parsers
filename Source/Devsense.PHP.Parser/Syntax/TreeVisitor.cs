@@ -314,6 +314,7 @@ namespace Devsense.PHP.Syntax
         virtual public void VisitEnumCaseDecl(EnumCaseDecl x)
         {
             VisitElement(x.Expression);
+            VisitAttributes(x);
         }
 
         /// <summary>
