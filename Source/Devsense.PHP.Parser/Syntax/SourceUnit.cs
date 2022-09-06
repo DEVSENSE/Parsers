@@ -258,9 +258,9 @@ namespace Devsense.PHP.Syntax
         {
             using (var source = new StringReader(this.Code))
             {
-                using (var lexer = new Lexer(source, Encoding.UTF8, errors, features, initialState: initialState))
+                using (var lexer = new Lexer(source, Encoding.UTF8, errors, features, initialState: initialState, docBlockFactory: factory))
                 {
-                    ast = new Parser().Parse(lexer, factory, this.features, errors, recovery);
+                    ast = new Parser().Parse(lexer, factory, features, errors, recovery);
                 }
             }
         }

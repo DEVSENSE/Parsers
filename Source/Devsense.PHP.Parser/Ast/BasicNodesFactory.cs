@@ -456,6 +456,8 @@ namespace Devsense.PHP.Syntax.Ast
             return ArrayEx.CreateArray(span, IsAllNull(items) ? null : items, !isOldNotation);
         }
 
+        public virtual IDocBlock CreateDocBlock(Span span, string source) => DefaultDocBlockFactory.Instance.CreateDocBlock(span, source);
+
         public virtual LangElement PHPDoc(Span span, IDocBlock block)
         {
             return new PHPDocStmt(block);

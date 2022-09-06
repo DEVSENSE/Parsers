@@ -21,7 +21,6 @@ using System.Globalization;
 using Devsense.PHP.Text;
 using Devsense.PHP.Errors;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
 using Devsense.PHP.Utilities;
 using Devsense.PHP.Ast.DocBlock;
 
@@ -72,7 +71,7 @@ namespace Devsense.PHP.Syntax
         /// <summary>
         /// Factory of documentary comment blocks.
         /// </summary>
-        readonly IDocBlockFactory _docblockFactory;
+        readonly IDocBlockFactory<Span> _docblockFactory;
 
         private StringTable _strings;
 
@@ -109,7 +108,7 @@ namespace Devsense.PHP.Syntax
             Encoding encoding,
             IErrorSink<Span> errors = null,
             LanguageFeatures features = LanguageFeatures.Basic,
-            IDocBlockFactory docBlockFactory = null,
+            IDocBlockFactory<Span> docBlockFactory = null,
             int positionShift = 0,
             LexicalStates initialState = LexicalStates.INITIAL)
         {
