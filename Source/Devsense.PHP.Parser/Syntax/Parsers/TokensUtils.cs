@@ -382,5 +382,24 @@ namespace Devsense.PHP.Syntax
                     return TokenCategory.Unknown;
             }
         }
+
+        /// <summary>
+        /// Indicates if token is a cast operator
+        /// </summary>
+        public static bool IsCast(this Tokens token)
+        {
+            switch (token)
+            {
+                case Tokens.T_UNSET_CAST:           // (unset)
+                case Tokens.T_BOOL_CAST:            // (bool)
+                case Tokens.T_OBJECT_CAST:          // (object)
+                case Tokens.T_ARRAY_CAST:           // (array)
+                case Tokens.T_STRING_CAST:          // (string)
+                case Tokens.T_DOUBLE_CAST:          // (double)
+                case Tokens.T_INT_CAST:             // (int)
+                    return true;
+            }
+            return false;
+        }
     }
 }

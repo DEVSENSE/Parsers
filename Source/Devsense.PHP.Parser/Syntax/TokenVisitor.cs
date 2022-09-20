@@ -1703,8 +1703,19 @@ namespace Devsense.PHP.Syntax
         public override void VisitUnaryEx(UnaryEx x)
         {
             var token = TokenFacts.GetOperationToken(x.Operation);
-            var sourceToken = _provider.GetTokenAt(x.Span, token, null);
-            var text = _provider.GetTokenText(sourceToken, null);
+            string text;
+            if (token.IsCast())
+            {
+                //In case of cast there are variants which are not represented in AST (e.g. boolean, real, double) => take it from source so we do not change it
+                var sourceToken = _provider.GetTokenAt(x.Span, token, null);
+                text = _provider.GetTokenText(sourceToken, null);
+                //Remove spaces
+                text = text.Replace(" ", string.Empty);
+            }
+            else
+            {
+                text = TokenFacts.GetTokenText(token);
+            }
 
             ConsumeToken(token, text, SpanUtils.SafeSpan(x.Span.StartOrInvalid(), text.Length));
             VisitElement(x.Expr);
