@@ -1703,7 +1703,9 @@ namespace Devsense.PHP.Syntax
         public override void VisitUnaryEx(UnaryEx x)
         {
             var token = TokenFacts.GetOperationToken(x.Operation);
-            var text = TokenFacts.GetTokenText(token);
+            var sourceToken = _provider.GetTokenAt(x.Span, token, null);
+            var text = _provider.GetTokenText(sourceToken, null);
+
             ConsumeToken(token, text, SpanUtils.SafeSpan(x.Span.StartOrInvalid(), text.Length));
             VisitElement(x.Expr);
         }
