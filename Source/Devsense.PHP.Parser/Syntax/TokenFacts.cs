@@ -138,7 +138,7 @@ namespace Devsense.PHP.Syntax
 
                 case Tokens.T_BOOL_CAST: return "(bool)";
                 case Tokens.T_INT_CAST: return "(int)";
-                case Tokens.T_DOUBLE_CAST: return "(double)";
+                case Tokens.T_DOUBLE_CAST: return "(float)";
                 case Tokens.T_STRING_CAST: return "(string)";
                 case Tokens.T_OBJECT_CAST: return "(object)";
                 case Tokens.T_ARRAY_CAST: return "(array)";
