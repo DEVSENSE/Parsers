@@ -715,7 +715,9 @@ namespace Devsense.PHP.Syntax
             // constructor property modifiers
             if (x.IsConstructorProperty)
             {
-                this.ConsumeModifiers(x, x.ConstructorPropertyFlags, Span.Invalid);
+                this.ConsumeModifiers(x, x.ConstructorPropertyFlags, SpanUtils.SpanIntermission(
+                    x.Span.StartOrInvalid(),
+                    x.TypeHint != null ? x.TypeHint.Span : x.Name.Span));
             }
 
             // type hint
