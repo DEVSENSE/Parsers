@@ -965,7 +965,7 @@ attributed_parameter:
 
 optional_property_modifiers:
 		/* empty */				{ $$ = 0; /* None */ }
-	|	optional_property_modifiers property_modifier	{ $$ = $1 | $2 | (long)PhpMemberAttributes.Constructor; }
+	|	property_modifier	{ $$ = $1 | (long)PhpMemberAttributes.Constructor; }
 ;
 
 property_modifier:
