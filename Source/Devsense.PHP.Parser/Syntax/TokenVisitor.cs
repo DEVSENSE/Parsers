@@ -184,7 +184,7 @@ namespace Devsense.PHP.Syntax
         protected virtual ISourceToken[] ConsumeModifiers(LangElement element, PhpMemberAttributes modifiers, Span span)
         {
             var defaults = new Dictionary<Tokens, ISourceToken>();
-            if (element is MethodDecl || element is FieldDeclList || element is ConstDeclList)
+            if (element is MethodDecl || element is FieldDeclList || element is ConstDeclList || element is FormalParam)
             {
                 AddPublicModifier(modifiers, defaults);
             }
