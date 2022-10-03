@@ -1532,7 +1532,13 @@ namespace Devsense.PHP.Syntax
             var arrowSpan = SpanUtils.SpanIntermission(x.ConditionList.Last().Span.End, x.Expression.Span);
             ProcessToken(Tokens.T_DOUBLE_ARROW, arrowSpan);
             VisitElement(x.Expression);
-            ProcessToken(Tokens.T_COMMA, x.Expression.Span.IsValid ? new Span(x.Expression.Span.End - 1, 1) : Span.Invalid);
+
+            var commaSpan = x.Expression.Span.IsValid ? new Span(x.Expression.Span.End, 1) : Span.Invalid;
+            var comma = _provider.GetTokenAt(commaSpan, Tokens.T_COMMA, null);
+            if (comma != null) // Comma after last match item is optional
+            {
+                ConsumeToken(Tokens.T_COMMA, commaSpan);
+            }
         }
 
         public override void VisitThrowEx(ThrowEx x)
