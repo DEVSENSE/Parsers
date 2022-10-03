@@ -1496,7 +1496,7 @@ namespace Devsense.PHP.Syntax
         public override void VisitMatchEx(MatchEx x)
         {
             // match(VALUE){ARMS}
-            ConsumeToken(Tokens.T_MATCH, SpanUtils.SafeSpan(x.Span.StartOrInvalid(), 6));
+            ConsumeToken(Tokens.T_MATCH, SpanUtils.SafeSpan(x.Span.StartOrInvalid(), 5));
             ProcessToken(Tokens.T_LPAREN, x.Span);
             VisitElement(x.MatchValue);
 
@@ -1506,13 +1506,9 @@ namespace Devsense.PHP.Syntax
             // {
             var lBraceSpan = SpanUtils.SpanIntermission(
                 x.MatchValue.Span,
-                x.MatchItems.Length != 0 ? x.MatchItems[0].Span : rBraceSpan);
+                x.MatchItems.Length > 0 ? x.MatchItems.First().Span.StartOrInvalid() : rBraceSpan.EndOrInvalid());
 
-            // )
-            var rParenSpan = SpanUtils.SpanIntermission(x.MatchValue.Span, lBraceSpan);
-
-            ProcessToken(Tokens.T_RPAREN, rParenSpan);
-
+            ProcessToken(Tokens.T_RPAREN, lBraceSpan);
             ProcessToken(Tokens.T_LBRACE, lBraceSpan);
             using (new ScopeHelper(this, new DummyInsideBlockStmt(x)))
             {
@@ -1532,7 +1528,9 @@ namespace Devsense.PHP.Syntax
             {
                 VisitElementList(x.ConditionList, Tokens.T_COMMA);
             }
-            ProcessToken(Tokens.T_DOUBLE_ARROW, Span.Invalid);
+
+            var arrowSpan = SpanUtils.SpanIntermission(x.ConditionList.Last().Span.End, x.Expression.Span);
+            ProcessToken(Tokens.T_DOUBLE_ARROW, arrowSpan);
             VisitElement(x.Expression);
             ProcessToken(Tokens.T_COMMA, x.Expression.Span.IsValid ? new Span(x.Expression.Span.End - 1, 1) : Span.Invalid);
         }
