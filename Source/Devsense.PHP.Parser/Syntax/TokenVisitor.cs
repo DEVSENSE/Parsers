@@ -1519,17 +1519,21 @@ namespace Devsense.PHP.Syntax
 
         public override void VisitMatchItem(MatchArm x)
         {
+            Span arrowSpan;
+
             // {CONDITIONS} => {EXPRESSION},
             if (x.IsDefault)
             {
-                ProcessToken(Tokens.T_DEFAULT, x.Span);
+                var defaultSpan = SpanUtils.SafeSpan(x.Span.StartOrInvalid(), 7);
+                ConsumeToken(Tokens.T_DEFAULT, defaultSpan);
+                arrowSpan = SpanUtils.SpanIntermission(defaultSpan.End, x.Expression.Span);
             }
             else
             {
                 VisitElementList(x.ConditionList, Tokens.T_COMMA);
+                arrowSpan = SpanUtils.SpanIntermission(x.ConditionList.Last().Span.End, x.Expression.Span);
             }
 
-            var arrowSpan = SpanUtils.SpanIntermission(x.ConditionList.Last().Span.End, x.Expression.Span);
             ProcessToken(Tokens.T_DOUBLE_ARROW, arrowSpan);
             VisitElement(x.Expression);
 
