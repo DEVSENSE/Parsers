@@ -107,12 +107,18 @@ namespace Devsense.PHP.Syntax
                 {
                     if (literal.Span.Length != 0)   // literal must exist or invalid
                     {
-                        ConsumeToken(
-                            (literal.ContainingElement is ConcatEx || (literal.ContainingElement is StringEncapsedExpression stre && stre.OpenToken == Tokens.T_START_HEREDOC))
+                        var hereorNowDoc = literal.ContainingElement is StringEncapsedExpression stre && stre.OpenToken == Tokens.T_START_HEREDOC;
+                        var token = literal.ContainingElement is ConcatEx || hereorNowDoc
                                 ? Tokens.T_ENCAPSED_AND_WHITESPACE
-                                : Tokens.T_CONSTANT_ENCAPSED_STRING,
-                            literal.SourceText ?? $"\"{slit.Value}\"",
-                            literal.Span);
+                                : Tokens.T_CONSTANT_ENCAPSED_STRING;
+
+                        var text = literal.SourceText;
+                        if (hereorNowDoc)
+                            text = _provider.GetTokenText(new SourceToken(token, literal.Span), slit.Value);
+                        else
+                            text = $"\"{slit.Value}\"";
+
+                        ConsumeToken(token, text, literal.Span);
                     }
                 }
             }
