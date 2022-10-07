@@ -1216,6 +1216,20 @@ namespace Devsense.PHP.Syntax
             }
         }
 
+        protected virtual void VisitElementList(IList<MatchArm> list, Tokens separatorToken, int next)
+        {
+            var separatorTokenText = TokenFacts.GetTokenText(separatorToken);
+            for (int i = 0; i < list.Count; i++)
+            {
+                if (i != 0) ProcessToken(separatorToken, separatorTokenText,
+                    SpanUtils.SpanIntermission(
+                        list[i - 1] != null ? list[i - 1].Span : Span.Invalid,
+                        list[i] != null ? list[i].Span : Span.Invalid));
+                VisitMatchItem(list[i]);
+            }
+            ProcessOptionalToken(separatorToken, list.LastOrDefault()?.Span ?? Span.Invalid, next);
+        }
+
         protected virtual void VisitElementList(IList<UseBase> list, Tokens separatorToken, QualifiedName prefix, bool printKind, int next)
         {
             // TODO - unify UseBase
@@ -1230,16 +1244,16 @@ namespace Devsense.PHP.Syntax
                         list[i] != null ? list[i].Span : Span.Invalid));
                 VisitUse(list[i], prefix, printKind);
             }
-            ProcessOptionalComma(list.LastOrDefault()?.Span ?? Span.Invalid, next);
+            ProcessOptionalToken(separatorToken, list.LastOrDefault()?.Span ?? Span.Invalid, next);
         }
 
-        private void ProcessOptionalComma(Span previous, int next)
-        {          
+        private void ProcessOptionalToken(Tokens token, Span previous, int next)
+        {
             var commaSpan = SpanUtils.SpanIntermission(previous, next);
-            var comma = _provider.GetTokenAt(commaSpan, Tokens.T_COMMA, null);
+            var comma = _provider.GetTokenAt(commaSpan, token, null);
             if (comma != null) // Comma is optional
             {
-                ProcessToken(Tokens.T_COMMA, commaSpan);
+                ProcessToken(token, commaSpan);
             }
         }
 
@@ -1523,8 +1537,7 @@ namespace Devsense.PHP.Syntax
             ProcessToken(Tokens.T_LBRACE, lBraceSpan);
             using (new ScopeHelper(this, new DummyInsideBlockStmt(x)))
             {
-                VisitList(x.MatchItems);
-                ProcessOptionalComma(x.MatchItems.LastOrDefault()?.Span ?? Span.Invalid, rBraceSpan.StartOrInvalid());
+                VisitElementList(x.MatchItems, Tokens.T_COMMA, rBraceSpan.EndOrInvalid());
             }
             ProcessToken(Tokens.T_RBRACE, rBraceSpan);
         }
