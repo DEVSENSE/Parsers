@@ -75,12 +75,12 @@ namespace Devsense.PHP.Syntax
             {
                 ConsumeToken(Tokens.T_STRING, literal.SourceText ?? "null", literal.Span);
             }
-            else if (literal is LongIntLiteral)
+            else if (literal is LongIntLiteral longLit)
             {
                 bool isArrayItemInConcat = literal.ContainingElement is ItemUse && literal.ContainingElement.ContainingElement is ConcatEx;
                 ConsumeToken(
                     isArrayItemInConcat ? Tokens.T_NUM_STRING : Tokens.T_LNUMBER,
-                    literal.SourceText ?? ((LongIntLiteral)literal).Value.ToString(CultureInfo.InvariantCulture),
+                    literal.SourceText ?? longLit.Value.ToString(CultureInfo.InvariantCulture),
                     literal.Span);
             }
             else if (literal is StringLiteral slit)
@@ -552,7 +552,7 @@ namespace Devsense.PHP.Syntax
         {
             VisitIsMemberOf(x.IsMemberOf, x.Span);
             VisitVariableName(x.VarName, x.Span, x.IsMemberOf == null &&
-                !(x.ContainingElement is DollarBracesExpression) &&
+                x.ContainingElement is not DollarBracesExpression &&
                 !(x.ContainingElement is ItemUse &&
                 x == ((ItemUse)x.ContainingElement).Array &&
                 x.ContainingElement.ContainingElement is DollarBracesExpression), x.ContainingElement is DollarBracesExpression ||
