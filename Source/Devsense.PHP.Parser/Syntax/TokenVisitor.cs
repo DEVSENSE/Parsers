@@ -1762,10 +1762,7 @@ namespace Devsense.PHP.Syntax
                 case AliasKind.Constant: ProcessToken(Tokens.T_CONST, SpanUtils.SafeSpan(x.Span.StartOrInvalid(), 5)); break;
                 case AliasKind.Function: ProcessToken(Tokens.T_FUNCTION, SpanUtils.SafeSpan(x.Span.StartOrInvalid(), 8)); break;
             }
-            using (new ScopeHelper(this, new DummyInsideBlockStmt(x)))
-            {
-                VisitElementList(x.Uses, Tokens.T_COMMA, new QualifiedName(), x.Kind == AliasKind.Type && x.Uses.Length == 1 && x.Uses[0] is GroupUse, x.Span.EndOrInvalid());
-            }
+            VisitElementList(x.Uses, Tokens.T_COMMA, new QualifiedName(), x.Kind == AliasKind.Type && x.Uses.Length == 1 && x.Uses[0] is GroupUse, x.Span.EndOrInvalid());
             ConsumeToken(Tokens.T_SEMI, SpanUtils.SafeSpan(x.Span.End - 1, 1));
         }
 
@@ -1798,19 +1795,22 @@ namespace Devsense.PHP.Syntax
             VisitQualifiedName(use.Prefix.QualifiedName, use.Prefix.Span);
             var span = SpanUtils.SpanIntermission(use.Prefix.Span, use.Span.End);
             ProcessToken(Tokens.T_LBRACE, span);
-            VisitElementList(use.Uses, Tokens.T_COMMA, use.Prefix.QualifiedName, printKind, use.Span.EndOrInvalid());
+            using (new ScopeHelper(this, new DummyInsideBlockStmt(/*for now we cannot put use there since it's not a LangElement */)))
+            {
+                VisitElementList(use.Uses, Tokens.T_COMMA, use.Prefix.QualifiedName, printKind, use.Span.EndOrInvalid());
+            }
             ConsumeToken(Tokens.T_RBRACE, SpanUtils.SafeSpan(use.Span.End - 1, 1));
         }
 
         protected virtual void VisitUse(UseBase use, QualifiedName prefix, bool printKind)
         {
-            if (use is SimpleUse)
+            if (use is SimpleUse simpleUse)
             {
-                VisitUse((SimpleUse)use, prefix, printKind);
+                VisitUse(simpleUse, prefix, printKind);
             }
-            else if (use is GroupUse)
+            else if (use is GroupUse groupUse)
             {
-                VisitUse((GroupUse)use, printKind);
+                VisitUse(groupUse, printKind);
             }
         }
 

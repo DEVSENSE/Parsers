@@ -57,7 +57,7 @@ namespace Devsense.PHP.Syntax.Visitor
     /// <summary>
     /// Represents <see cref="BlockStmt"/> when inside its closing tokens ({, }, :, endif, ...).
     /// </summary>
-    public sealed class DummyInsideBlockStmt : AstNode
+    public class DummyInsideBlockStmt : AstNode
     {
         /// <summary>
         /// The original block statement.
@@ -67,6 +67,10 @@ namespace Devsense.PHP.Syntax.Visitor
         public DummyInsideBlockStmt(ILangElement originalBlock)
         {
             this.OriginalBlock = originalBlock ?? throw new ArgumentNullException(nameof(originalBlock));
+        }
+
+        public DummyInsideBlockStmt() // TODO: This is here only because of GroupUse, since it's not ILangElement
+        {
         }
     }
 
