@@ -112,11 +112,11 @@ namespace Devsense.PHP.Syntax
                                 ? Tokens.T_ENCAPSED_AND_WHITESPACE
                                 : Tokens.T_CONSTANT_ENCAPSED_STRING;
 
-                        var text = literal.SourceText;
+                        string text;
                         if (hereorNowDoc)
                             text = _provider.GetTokenText(new SourceToken(token, literal.Span), slit.Value);
                         else
-                            text = $"\"{slit.Value}\"";
+                            text = literal.SourceText ?? $"\"{slit.Value}\"";
 
                         ConsumeToken(token, text, literal.Span);
                     }
