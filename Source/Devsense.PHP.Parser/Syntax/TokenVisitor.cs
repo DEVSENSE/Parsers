@@ -1749,8 +1749,10 @@ namespace Devsense.PHP.Syntax
                 case AliasKind.Constant: ProcessToken(Tokens.T_CONST, SpanUtils.SafeSpan(x.Span.StartOrInvalid(), 5)); break;
                 case AliasKind.Function: ProcessToken(Tokens.T_FUNCTION, SpanUtils.SafeSpan(x.Span.StartOrInvalid(), 8)); break;
             }
-
-            VisitElementList(x.Uses, Tokens.T_COMMA, new QualifiedName(), x.Kind == AliasKind.Type && x.Uses.Length == 1 && x.Uses[0] is GroupUse, x.Span.EndOrInvalid());
+            using (new ScopeHelper(this, new DummyInsideBlockStmt(x)))
+            {
+                VisitElementList(x.Uses, Tokens.T_COMMA, new QualifiedName(), x.Kind == AliasKind.Type && x.Uses.Length == 1 && x.Uses[0] is GroupUse, x.Span.EndOrInvalid());
+            }
             ConsumeToken(Tokens.T_SEMI, SpanUtils.SafeSpan(x.Span.End - 1, 1));
         }
 
