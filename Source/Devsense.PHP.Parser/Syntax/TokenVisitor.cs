@@ -1216,7 +1216,7 @@ namespace Devsense.PHP.Syntax
             }
         }
 
-        protected virtual void VisitElementList(IList<UseBase> list, Tokens separatorToken, QualifiedName prefix, bool printKind)
+        protected virtual void VisitElementList(IList<UseBase> list, Tokens separatorToken, QualifiedName prefix, bool printKind, int next)
         {
             // TODO - unify UseBase
             Debug.Assert(list != null, nameof(list));
@@ -1229,6 +1229,17 @@ namespace Devsense.PHP.Syntax
                         list[i - 1] != null ? list[i - 1].Span : Span.Invalid,
                         list[i] != null ? list[i].Span : Span.Invalid));
                 VisitUse(list[i], prefix, printKind);
+            }
+            ProcessOptionalComma(list.LastOrDefault()?.Span ?? Span.Invalid, next);
+        }
+
+        private void ProcessOptionalComma(Span previous, int next)
+        {          
+            var commaSpan = SpanUtils.SpanIntermission(previous, next);
+            var comma = _provider.GetTokenAt(commaSpan, Tokens.T_COMMA, null);
+            if (comma != null) // Comma is optional
+            {
+                ProcessToken(Tokens.T_COMMA, commaSpan);
             }
         }
 
@@ -1513,6 +1524,7 @@ namespace Devsense.PHP.Syntax
             using (new ScopeHelper(this, new DummyInsideBlockStmt(x)))
             {
                 VisitList(x.MatchItems);
+                ProcessOptionalComma(x.MatchItems.LastOrDefault()?.Span ?? Span.Invalid, rBraceSpan.StartOrInvalid());
             }
             ProcessToken(Tokens.T_RBRACE, rBraceSpan);
         }
@@ -1536,13 +1548,6 @@ namespace Devsense.PHP.Syntax
 
             ProcessToken(Tokens.T_DOUBLE_ARROW, arrowSpan);
             VisitElement(x.Expression);
-
-            var commaSpan = x.Expression.Span.IsValid ? new Span(x.Expression.Span.End, 1) : Span.Invalid;
-            var comma = _provider.GetTokenAt(commaSpan, Tokens.T_COMMA, null);
-            if (comma != null) // Comma after last match item is optional
-            {
-                ConsumeToken(Tokens.T_COMMA, commaSpan);
-            }
         }
 
         public override void VisitThrowEx(ThrowEx x)
@@ -1745,7 +1750,7 @@ namespace Devsense.PHP.Syntax
                 case AliasKind.Function: ProcessToken(Tokens.T_FUNCTION, SpanUtils.SafeSpan(x.Span.StartOrInvalid(), 8)); break;
             }
 
-            VisitElementList(x.Uses, Tokens.T_COMMA, new QualifiedName(), x.Kind == AliasKind.Type && x.Uses.Length == 1 && x.Uses[0] is GroupUse);
+            VisitElementList(x.Uses, Tokens.T_COMMA, new QualifiedName(), x.Kind == AliasKind.Type && x.Uses.Length == 1 && x.Uses[0] is GroupUse, x.Span.EndOrInvalid());
             ConsumeToken(Tokens.T_SEMI, SpanUtils.SafeSpan(x.Span.End - 1, 1));
         }
 
@@ -1778,7 +1783,7 @@ namespace Devsense.PHP.Syntax
             VisitQualifiedName(use.Prefix.QualifiedName, use.Prefix.Span);
             var span = SpanUtils.SpanIntermission(use.Prefix.Span, use.Span.End);
             ProcessToken(Tokens.T_LBRACE, span);
-            VisitElementList(use.Uses, Tokens.T_COMMA, use.Prefix.QualifiedName, printKind);
+            VisitElementList(use.Uses, Tokens.T_COMMA, use.Prefix.QualifiedName, printKind, use.Span.EndOrInvalid());
             ConsumeToken(Tokens.T_RBRACE, SpanUtils.SafeSpan(use.Span.End - 1, 1));
         }
 
