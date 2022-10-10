@@ -3065,7 +3065,7 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 { yyval.Long = value_stack.array[value_stack.top-1].yyval.Long; }
         return;
       case 337: // non_empty_member_modifiers -> non_empty_member_modifiers member_modifier 
-{ yyval.Long = AddModifier(value_stack.array[value_stack.top-2].yyval.Long, value_stack.array[value_stack.top-1].yyval.Long); }
+{ yyval.Long = AddModifier(value_stack.array[value_stack.top-2].yyval.Long, value_stack.array[value_stack.top-1].yyval.Long, value_stack.array[value_stack.top-1].yypos); }
         return;
       case 338: // member_modifier -> T_PUBLIC 
 { yyval.Long = (long)PhpMemberAttributes.Public; }

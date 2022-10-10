@@ -869,6 +869,8 @@ namespace Devsense.PHP.Syntax
         /// <returns>Combined span.</returns>
         private Span CombineSpans(Span a, Span b) => a.IsValid ? (b.IsValid ? Span.Combine(a, b) : a) : b;
 
+        private long AddModifier(long a, long b, Span bSpan) => (long)AddModifier((PhpMemberAttributes)a, (PhpMemberAttributes)b, bSpan);
+
         private PhpMemberAttributes AddModifier(PhpMemberAttributes a, PhpMemberAttributes b, Span bSpan)
         {
             // check there is no duplicit modifier

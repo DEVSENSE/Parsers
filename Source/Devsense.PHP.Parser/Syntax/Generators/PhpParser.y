@@ -1189,7 +1189,7 @@ method_modifiers:
 
 non_empty_member_modifiers:
 		member_modifier			{ $$ = $1; }
-	|	non_empty_member_modifiers member_modifier { $$ = AddModifier($1, $2); }
+	|	non_empty_member_modifiers member_modifier { $$ = AddModifier($1, $2, @2); }
 ;
 
 member_modifier:
