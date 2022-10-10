@@ -32,6 +32,14 @@ class enum extends A {
 @"<?php
 A::E->foo(); // dereferencable class const
 ",
+@"<?php
+
+class X {
+    public function __construct(
+        private readonly T $t, // private readonly
+    ) {
+    }
+}"
             };
 
             foreach (var code in codes)
