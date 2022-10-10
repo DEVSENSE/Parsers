@@ -2576,7 +2576,7 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 { yyval.Long = (long)PhpMemberAttributes.None; }
         return;
       case 189: // class_modifiers -> class_modifier class_modifiers 
-{ yyval.Long = value_stack.array[value_stack.top-2].yyval.Long | value_stack.array[value_stack.top-1].yyval.Long; }
+{ yyval.Long = AddModifier(value_stack.array[value_stack.top-2].yyval.Long, value_stack.array[value_stack.top-1].yyval.Long, value_stack.array[value_stack.top-1].yypos); }
         return;
       case 190: // class_modifier -> T_ABSTRACT 
 { yyval.Long = (long)PhpMemberAttributes.Abstract; }
@@ -2804,7 +2804,7 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 { yyval.Long = 0; /* None */ }
         return;
       case 255: // optional_property_modifiers -> optional_property_modifiers property_modifier 
-{ yyval.Long = value_stack.array[value_stack.top-2].yyval.Long | value_stack.array[value_stack.top-1].yyval.Long | (long)PhpMemberAttributes.Constructor; }
+{ yyval.Long = AddModifier(value_stack.array[value_stack.top-2].yyval.Long, value_stack.array[value_stack.top-1].yyval.Long, value_stack.array[value_stack.top-1].yypos) | (long)PhpMemberAttributes.Constructor; }
         return;
       case 256: // property_modifier -> T_PUBLIC 
 { yyval.Long = (long)PhpMemberAttributes.Public; }
@@ -3065,7 +3065,7 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 { yyval.Long = value_stack.array[value_stack.top-1].yyval.Long; }
         return;
       case 337: // non_empty_member_modifiers -> non_empty_member_modifiers member_modifier 
-{ yyval.Long = value_stack.array[value_stack.top-2].yyval.Long | value_stack.array[value_stack.top-1].yyval.Long; }
+{ yyval.Long = AddModifier(value_stack.array[value_stack.top-2].yyval.Long, value_stack.array[value_stack.top-1].yyval.Long); }
         return;
       case 338: // member_modifier -> T_PUBLIC 
 { yyval.Long = (long)PhpMemberAttributes.Public; }

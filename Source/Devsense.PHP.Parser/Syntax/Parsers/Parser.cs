@@ -23,6 +23,7 @@ using Devsense.PHP.Syntax.Ast;
 using Devsense.PHP.Errors;
 using System.Xml;
 using System.Threading;
+using System.Xml.Linq;
 
 namespace Devsense.PHP.Syntax
 {
@@ -867,6 +868,17 @@ namespace Devsense.PHP.Syntax
         /// <param name="b">Second span.</param>
         /// <returns>Combined span.</returns>
         private Span CombineSpans(Span a, Span b) => a.IsValid ? (b.IsValid ? Span.Combine(a, b) : a) : b;
+
+        private PhpMemberAttributes AddModifier(PhpMemberAttributes a, PhpMemberAttributes b, Span bSpan)
+        {
+            // check there is no duplicit modifier
+            if ((a & b) != 0)
+            {
+                _errors.Error(bSpan, Errors.Errors.MultipleVisibilityModifiers);
+            }
+
+            return a | b;
+        }
 
         /// <summary>
         /// Associates given <paramref name="target"/> referring to instance of <see cref="PHPDocBlock"/> to a target which must be an instance of <see cref="IPropertyCollection"/>.

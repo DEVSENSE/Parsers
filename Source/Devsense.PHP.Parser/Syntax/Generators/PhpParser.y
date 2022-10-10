@@ -752,7 +752,7 @@ class_declaration_statement:
 
 class_modifiers:
 		/* empty */						{ $$ = (long)PhpMemberAttributes.None; }
-	|	class_modifier class_modifiers 	{ $$ = $1 | $2; }
+	|	class_modifier class_modifiers 	{ $$ = AddModifier($1, $2, @2); }
 ;
 
 class_modifier:
@@ -965,7 +965,7 @@ attributed_parameter:
 
 optional_property_modifiers:
 		/* empty */				{ $$ = 0; /* None */ }
-	|	optional_property_modifiers property_modifier	{ $$ = $1 | $2 | (long)PhpMemberAttributes.Constructor; }
+	|	optional_property_modifiers property_modifier	{ $$ = AddModifier($1, $2, @2) | (long)PhpMemberAttributes.Constructor; }
 ;
 
 property_modifier:
@@ -1189,8 +1189,7 @@ method_modifiers:
 
 non_empty_member_modifiers:
 		member_modifier			{ $$ = $1; }
-	|	non_empty_member_modifiers member_modifier
-			{ $$ = $1 | $2; }
+	|	non_empty_member_modifiers member_modifier { $$ = AddModifier($1, $2); }
 ;
 
 member_modifier:
