@@ -215,6 +215,12 @@ namespace Devsense.PHP.Syntax
 
         public override void VisitActualParam(ActualParam x)
         {
+            if (x.IsNamedArgument)
+            {
+                ProcessToken(Tokens.T_STRING, x.Name.ToString(), SpanUtils.SpanIntermission(x.Span.StartOrInvalid(), x.Expression.Span));
+                ProcessToken(Tokens.T_COLON, SpanUtils.SpanIntermission(x.Span.StartOrInvalid(), x.Expression.Span));
+            }
+
             if (x.IsUnpack)
             {
                 ProcessToken(Tokens.T_ELLIPSIS, SpanUtils.SpanIntermission(x.Span.StartOrInvalid(), x.Expression.Span));
