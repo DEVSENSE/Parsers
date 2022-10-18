@@ -407,6 +407,7 @@ public partial struct SemanticValueType
 	public IList<TypeRef> TypeRefList					{ get { return (IList<TypeRef>)Object; }			set { Object = value; } }
 	public LangElement Node								{ get { return (LangElement)Object; }				set { Object = value; } }
 	public List<LangElement> NodeList					{ get { return (List<LangElement>)Object; }			set { Object = value; } }
+	internal SwitchObject SwitchObject					{ get { return (SwitchObject)Object; }				set { Object = value; } }
 	public string String								{ get { return (string)Object; }					set { Object = value; } }
 	public StringPair Strings							{ get { return (StringPair)Object; }				set { Object = value; } }
 	public List<string> StringList						{ get { return (List<string>)Object; }				set { Object = value; } }
@@ -606,11 +607,11 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
       new State(154, -455, new int[] {-168,155}),
       new State(155, -448),
       new State(156, new int[] {40,157}),
-      new State(157, new int[] {320,99,36,100,353,185,319,204,391,205,393,208,40,299,368,303,91,320,323,325,367,332,307,338,303,340,302,351,43,355,45,357,33,359,126,361,306,364,358,397,359,405,262,409,261,411,260,413,259,417,258,419,301,421,300,423,299,425,298,427,297,429,296,431,304,433,326,435,64,440,317,443,312,444,370,445,371,446,375,447,374,448,378,449,376,450,392,451,373,452,34,453,383,478,96,490,266,496,267,498,269,502,352,504,346,186,343,507,397,512,395,524,59,-356}, new int[] {-116,158,-127,941,-50,944,-51,110,-55,116,-56,117,-80,118,-79,123,-62,124,-32,125,-21,199,-133,201,-91,210,-60,302,-59,326,-58,327,-61,328,-89,329,-52,331,-53,363,-54,396,-57,442,-84,489,-94,506,-5,141,-6,187,-100,508,-98,522,-102,523}),
+      new State(157, new int[] {320,99,36,100,353,185,319,204,391,205,393,208,40,299,368,303,91,320,323,325,367,332,307,338,303,340,302,351,43,355,45,357,33,359,126,361,306,364,358,397,359,405,262,409,261,411,260,413,259,417,258,419,301,421,300,423,299,425,298,427,297,429,296,431,304,433,326,435,64,440,317,443,312,444,370,445,371,446,375,447,374,448,378,449,376,450,392,451,373,452,34,453,383,478,96,490,266,496,267,498,269,502,352,504,346,186,343,507,397,512,395,524,59,-356}, new int[] {-116,158,-125,941,-50,944,-51,110,-55,116,-56,117,-80,118,-79,123,-62,124,-32,125,-21,199,-133,201,-91,210,-60,302,-59,326,-58,327,-61,328,-89,329,-52,331,-53,363,-54,396,-57,442,-84,489,-94,506,-5,141,-6,187,-100,508,-98,522,-102,523}),
       new State(158, new int[] {59,159}),
-      new State(159, new int[] {320,99,36,100,353,185,319,204,391,205,393,208,40,299,368,303,91,320,323,325,367,332,307,338,303,340,302,351,43,355,45,357,33,359,126,361,306,364,358,397,359,405,262,409,261,411,260,413,259,417,258,419,301,421,300,423,299,425,298,427,297,429,296,431,304,433,326,435,64,440,317,443,312,444,370,445,371,446,375,447,374,448,378,449,376,450,392,451,373,452,34,453,383,478,96,490,266,496,267,498,269,502,352,504,346,186,343,507,397,512,395,524,59,-356}, new int[] {-116,160,-127,941,-50,944,-51,110,-55,116,-56,117,-80,118,-79,123,-62,124,-32,125,-21,199,-133,201,-91,210,-60,302,-59,326,-58,327,-61,328,-89,329,-52,331,-53,363,-54,396,-57,442,-84,489,-94,506,-5,141,-6,187,-100,508,-98,522,-102,523}),
+      new State(159, new int[] {320,99,36,100,353,185,319,204,391,205,393,208,40,299,368,303,91,320,323,325,367,332,307,338,303,340,302,351,43,355,45,357,33,359,126,361,306,364,358,397,359,405,262,409,261,411,260,413,259,417,258,419,301,421,300,423,299,425,298,427,297,429,296,431,304,433,326,435,64,440,317,443,312,444,370,445,371,446,375,447,374,448,378,449,376,450,392,451,373,452,34,453,383,478,96,490,266,496,267,498,269,502,352,504,346,186,343,507,397,512,395,524,59,-356}, new int[] {-116,160,-125,941,-50,944,-51,110,-55,116,-56,117,-80,118,-79,123,-62,124,-32,125,-21,199,-133,201,-91,210,-60,302,-59,326,-58,327,-61,328,-89,329,-52,331,-53,363,-54,396,-57,442,-84,489,-94,506,-5,141,-6,187,-100,508,-98,522,-102,523}),
       new State(160, new int[] {59,161}),
-      new State(161, new int[] {320,99,36,100,353,185,319,204,391,205,393,208,40,299,368,303,91,320,323,325,367,332,307,338,303,340,302,351,43,355,45,357,33,359,126,361,306,364,358,397,359,405,262,409,261,411,260,413,259,417,258,419,301,421,300,423,299,425,298,427,297,429,296,431,304,433,326,435,64,440,317,443,312,444,370,445,371,446,375,447,374,448,378,449,376,450,392,451,373,452,34,453,383,478,96,490,266,496,267,498,269,502,352,504,346,186,343,507,397,512,395,524,41,-356}, new int[] {-116,162,-127,941,-50,944,-51,110,-55,116,-56,117,-80,118,-79,123,-62,124,-32,125,-21,199,-133,201,-91,210,-60,302,-59,326,-58,327,-61,328,-89,329,-52,331,-53,363,-54,396,-57,442,-84,489,-94,506,-5,141,-6,187,-100,508,-98,522,-102,523}),
+      new State(161, new int[] {320,99,36,100,353,185,319,204,391,205,393,208,40,299,368,303,91,320,323,325,367,332,307,338,303,340,302,351,43,355,45,357,33,359,126,361,306,364,358,397,359,405,262,409,261,411,260,413,259,417,258,419,301,421,300,423,299,425,298,427,297,429,296,431,304,433,326,435,64,440,317,443,312,444,370,445,371,446,375,447,374,448,378,449,376,450,392,451,373,452,34,453,383,478,96,490,266,496,267,498,269,502,352,504,346,186,343,507,397,512,395,524,41,-356}, new int[] {-116,162,-125,941,-50,944,-51,110,-55,116,-56,117,-80,118,-79,123,-62,124,-32,125,-21,199,-133,201,-91,210,-60,302,-59,326,-58,327,-61,328,-89,329,-52,331,-53,363,-54,396,-57,442,-84,489,-94,506,-5,141,-6,187,-100,508,-98,522,-102,523}),
       new State(162, new int[] {41,163}),
       new State(163, -453, new int[] {-19,164}),
       new State(164, new int[] {123,7,330,23,329,31,328,156,335,168,339,182,340,605,348,608,355,611,353,618,324,627,321,634,320,99,36,100,319,637,391,205,393,208,40,299,368,303,91,320,323,325,367,332,307,338,303,340,302,351,43,355,45,357,33,359,126,361,306,364,358,397,359,405,262,409,261,411,260,413,259,417,258,419,301,421,300,423,299,425,298,427,297,429,296,431,304,433,326,435,64,440,317,443,312,444,370,445,371,446,375,447,374,448,378,449,376,450,392,451,373,452,34,453,383,478,96,490,266,496,267,498,269,502,352,504,346,186,343,507,397,512,395,524,360,776,334,786,332,796,59,802,349,803,345,819,58,937,322,-453}, new int[] {-81,165,-42,167,-19,12,-50,635,-51,110,-55,116,-56,117,-80,118,-79,123,-62,124,-32,125,-21,199,-133,201,-91,210,-60,302,-59,326,-58,327,-61,328,-89,329,-52,331,-53,363,-54,396,-57,442,-84,489,-94,506,-5,141,-6,187,-100,508,-98,522,-102,523}),
@@ -621,10 +622,10 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
       new State(169, new int[] {320,99,36,100,353,185,319,204,391,205,393,208,40,299,368,303,91,320,323,325,367,332,307,338,303,340,302,351,43,355,45,357,33,359,126,361,306,364,358,397,359,405,262,409,261,411,260,413,259,417,258,419,301,421,300,423,299,425,298,427,297,429,296,431,304,433,326,435,64,440,317,443,312,444,370,445,371,446,375,447,374,448,378,449,376,450,392,451,373,452,34,453,383,478,96,490,266,496,267,498,269,502,352,504,346,186,343,507,397,512,395,524}, new int[] {-50,170,-51,110,-55,116,-56,117,-80,118,-79,123,-62,124,-32,125,-21,199,-133,201,-91,210,-60,302,-59,326,-58,327,-61,328,-89,329,-52,331,-53,363,-54,396,-57,442,-84,489,-94,506,-5,141,-6,187,-100,508,-98,522,-102,523}),
       new State(170, new int[] {41,171,284,40,285,42,263,44,265,46,264,48,124,50,401,52,400,54,94,56,46,58,43,60,45,62,42,64,305,66,47,68,37,70,293,72,294,74,287,76,286,78,289,80,288,82,60,84,291,86,62,88,292,90,290,92,295,94,63,104,283,108}),
       new State(171, -453, new int[] {-19,172}),
-      new State(172, new int[] {123,175,58,929}, new int[] {-126,173}),
+      new State(172, new int[] {123,175,58,929}, new int[] {-129,173}),
       new State(173, -454, new int[] {-20,174}),
       new State(174, -153),
-      new State(175, new int[] {59,926,125,-224,341,-224,342,-224}, new int[] {-125,176}),
+      new State(175, new int[] {59,926,125,-224,341,-224,342,-224}, new int[] {-128,176}),
       new State(176, new int[] {125,177,341,178,342,923}),
       new State(177, -220),
       new State(178, new int[] {320,99,36,100,353,185,319,204,391,205,393,208,40,299,368,303,91,320,323,325,367,332,307,338,303,340,302,351,43,355,45,357,33,359,126,361,306,364,358,397,359,405,262,409,261,411,260,413,259,417,258,419,301,421,300,423,299,425,298,427,297,429,296,431,304,433,326,435,64,440,317,443,312,444,370,445,371,446,375,447,374,448,378,449,376,450,392,451,373,452,34,453,383,478,96,490,266,496,267,498,269,502,352,504,346,186,343,507,397,512,395,524}, new int[] {-50,179,-51,110,-55,116,-56,117,-80,118,-79,123,-62,124,-32,125,-21,199,-133,201,-91,210,-60,302,-59,326,-58,327,-61,328,-89,329,-52,331,-53,363,-54,396,-57,442,-84,489,-94,506,-5,141,-6,187,-100,508,-98,522,-102,523}),
@@ -1256,13 +1257,13 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
       new State(804, -142, new int[] {-114,805}),
       new State(805, new int[] {125,806,123,7,330,23,329,31,328,156,335,168,339,182,340,605,348,608,355,611,353,618,324,627,321,634,320,99,36,100,319,637,391,205,393,208,40,299,368,303,91,320,323,325,367,332,307,338,303,340,302,351,43,355,45,357,33,359,126,361,306,364,358,397,359,405,262,409,261,411,260,413,259,417,258,419,301,421,300,423,299,425,298,427,297,429,296,431,304,433,326,435,64,440,317,443,312,444,370,445,371,446,375,447,374,448,378,449,376,450,392,451,373,452,34,453,383,478,96,490,266,496,267,498,269,502,352,504,346,186,343,507,397,512,395,524,360,776,334,786,332,796,59,802,349,803,345,819,315,720,314,721,398,722,362,724,366,734,388,747,363,823,322,-453,361,-188}, new int[] {-92,10,-42,11,-19,12,-50,635,-51,110,-55,116,-56,117,-80,118,-79,123,-62,124,-32,125,-21,199,-133,201,-91,210,-60,302,-59,326,-58,327,-61,328,-89,329,-52,331,-53,363,-54,396,-57,442,-84,489,-94,506,-5,639,-6,187,-100,654,-98,522,-102,523,-95,822,-43,656,-44,657,-14,658,-13,718,-45,723,-47,733,-107,746}),
       new State(806, -453, new int[] {-19,807}),
-      new State(807, -170, new int[] {-128,808}),
+      new State(807, -170, new int[] {-126,808}),
       new State(808, new int[] {347,811,351,831,123,-176,330,-176,329,-176,328,-176,335,-176,339,-176,340,-176,348,-176,355,-176,353,-176,324,-176,321,-176,320,-176,36,-176,319,-176,391,-176,393,-176,40,-176,368,-176,91,-176,323,-176,367,-176,307,-176,303,-176,302,-176,43,-176,45,-176,33,-176,126,-176,306,-176,358,-176,359,-176,262,-176,261,-176,260,-176,259,-176,258,-176,301,-176,300,-176,299,-176,298,-176,297,-176,296,-176,304,-176,326,-176,64,-176,317,-176,312,-176,370,-176,371,-176,375,-176,374,-176,378,-176,376,-176,392,-176,373,-176,34,-176,383,-176,96,-176,266,-176,267,-176,269,-176,352,-176,346,-176,343,-176,397,-176,395,-176,360,-176,334,-176,332,-176,59,-176,349,-176,345,-176,315,-176,314,-176,398,-176,362,-176,366,-176,388,-176,363,-176,350,-176,344,-176,322,-176,361,-176,0,-176,125,-176,308,-176,309,-176,341,-176,342,-176,336,-176,337,-176,331,-176,333,-176,327,-176,310,-176}, new int[] {-87,809}),
       new State(809, -454, new int[] {-20,810}),
       new State(810, -167),
       new State(811, new int[] {40,812}),
       new State(812, new int[] {319,204,391,205,393,208}, new int[] {-34,813,-21,830,-133,201}),
-      new State(813, new int[] {124,827,320,829,41,-172}, new int[] {-129,814}),
+      new State(813, new int[] {124,827,320,829,41,-172}, new int[] {-127,814}),
       new State(814, new int[] {41,815}),
       new State(815, new int[] {123,816}),
       new State(816, -142, new int[] {-114,817}),
@@ -1375,14 +1376,14 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
       new State(923, new int[] {58,921,59,922}, new int[] {-173,924}),
       new State(924, -142, new int[] {-114,925}),
       new State(925, new int[] {123,7,330,23,329,31,328,156,335,168,339,182,340,605,348,608,355,611,353,618,324,627,321,634,320,99,36,100,319,637,391,205,393,208,40,299,368,303,91,320,323,325,367,332,307,338,303,340,302,351,43,355,45,357,33,359,126,361,306,364,358,397,359,405,262,409,261,411,260,413,259,417,258,419,301,421,300,423,299,425,298,427,297,429,296,431,304,433,326,435,64,440,317,443,312,444,370,445,371,446,375,447,374,448,378,449,376,450,392,451,373,452,34,453,383,478,96,490,266,496,267,498,269,502,352,504,346,186,343,507,397,512,395,524,360,776,334,786,332,796,59,802,349,803,345,819,315,720,314,721,398,722,362,724,366,734,388,747,363,823,125,-226,341,-226,342,-226,336,-226,322,-453,361,-188}, new int[] {-92,10,-42,11,-19,12,-50,635,-51,110,-55,116,-56,117,-80,118,-79,123,-62,124,-32,125,-21,199,-133,201,-91,210,-60,302,-59,326,-58,327,-61,328,-89,329,-52,331,-53,363,-54,396,-57,442,-84,489,-94,506,-5,639,-6,187,-100,654,-98,522,-102,523,-95,822,-43,656,-44,657,-14,658,-13,718,-45,723,-47,733,-107,746}),
-      new State(926, -224, new int[] {-125,927}),
+      new State(926, -224, new int[] {-128,927}),
       new State(927, new int[] {125,928,341,178,342,923}),
       new State(928, -221),
-      new State(929, new int[] {59,933,336,-224,341,-224,342,-224}, new int[] {-125,930}),
+      new State(929, new int[] {59,933,336,-224,341,-224,342,-224}, new int[] {-128,930}),
       new State(930, new int[] {336,931,341,178,342,923}),
       new State(931, new int[] {59,932}),
       new State(932, -222),
-      new State(933, -224, new int[] {-125,934}),
+      new State(933, -224, new int[] {-128,934}),
       new State(934, new int[] {336,935,341,178,342,923}),
       new State(935, new int[] {59,936}),
       new State(936, -223),
@@ -1740,7 +1741,7 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
     new Rule(-42, new int[]{330,40,-50,41,-19,-83,-20}),
     new Rule(-42, new int[]{329,-19,-42,330,40,-50,41,59,-20}),
     new Rule(-42, new int[]{328,40,-116,59,-116,59,-116,41,-19,-81,-20}),
-    new Rule(-42, new int[]{335,40,-50,41,-19,-126,-20}),
+    new Rule(-42, new int[]{335,40,-50,41,-19,-129,-20}),
     new Rule(-42, new int[]{339,-70,59}),
     new Rule(-42, new int[]{340,-70,59}),
     new Rule(-42, new int[]{348,-70,59}),
@@ -1754,13 +1755,13 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
     new Rule(-42, new int[]{334,40,-50,338,-157,268,-157,41,-19,-82,-20}),
     new Rule(-42, new int[]{332,40,-112,41,-74}),
     new Rule(-42, new int[]{59}),
-    new Rule(-42, new int[]{349,123,-114,125,-19,-128,-87,-20}),
+    new Rule(-42, new int[]{349,123,-114,125,-19,-126,-87,-20}),
     new Rule(-42, new int[]{345,319,59}),
     new Rule(-42, new int[]{319,58}),
-    new Rule(-128, new int[]{}),
-    new Rule(-128, new int[]{-128,347,40,-34,-129,41,123,-114,125}),
-    new Rule(-129, new int[]{}),
-    new Rule(-129, new int[]{320}),
+    new Rule(-126, new int[]{}),
+    new Rule(-126, new int[]{-126,347,40,-34,-127,41,123,-114,125}),
+    new Rule(-127, new int[]{}),
+    new Rule(-127, new int[]{320}),
     new Rule(-34, new int[]{-21}),
     new Rule(-34, new int[]{-34,124,-21}),
     new Rule(-87, new int[]{}),
@@ -1807,13 +1808,13 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
     new Rule(-82, new int[]{58,-114,331,59}),
     new Rule(-74, new int[]{-42}),
     new Rule(-74, new int[]{58,-114,337,59}),
-    new Rule(-126, new int[]{123,-125,125}),
-    new Rule(-126, new int[]{123,59,-125,125}),
-    new Rule(-126, new int[]{58,-125,336,59}),
-    new Rule(-126, new int[]{58,59,-125,336,59}),
-    new Rule(-125, new int[]{}),
-    new Rule(-125, new int[]{-125,341,-50,-173,-114}),
-    new Rule(-125, new int[]{-125,342,-173,-114}),
+    new Rule(-129, new int[]{123,-128,125}),
+    new Rule(-129, new int[]{123,59,-128,125}),
+    new Rule(-129, new int[]{58,-128,336,59}),
+    new Rule(-129, new int[]{58,59,-128,336,59}),
+    new Rule(-128, new int[]{}),
+    new Rule(-128, new int[]{-128,341,-50,-173,-114}),
+    new Rule(-128, new int[]{-128,342,-173,-114}),
     new Rule(-173, new int[]{58}),
     new Rule(-173, new int[]{59}),
     new Rule(-102, new int[]{395,40,-50,41,123,-104,125}),
@@ -1944,9 +1945,9 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
     new Rule(-119, new int[]{-69}),
     new Rule(-69, new int[]{-50}),
     new Rule(-116, new int[]{}),
-    new Rule(-116, new int[]{-127}),
-    new Rule(-127, new int[]{-127,44,-50}),
-    new Rule(-127, new int[]{-50}),
+    new Rule(-116, new int[]{-125}),
+    new Rule(-125, new int[]{-125,44,-50}),
+    new Rule(-125, new int[]{-50}),
     new Rule(-174, new int[]{}),
     new Rule(-158, new int[]{361,-142,-30,-174,-35,-18,-19,123,-115,125,-20}),
     new Rule(-53, new int[]{306,-31,-142}),
@@ -2201,18 +2202,18 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
       "const_list", "class_const_list", "inner_statement_list", "class_statement_list", 
       "for_exprs", "global_var_list", "static_var_list", "echo_expr_list", "unset_variables", 
       "trait_adaptation_list", "encaps_list", "isset_variables", "property_list", 
-      "case_list", "switch_case_list", "non_empty_for_exprs", "catch_list", "optional_variable", 
-      "identifier", "semi_reserved", "reserved_non_modifiers", "namespace_name", 
-      "unprefixed_use_declaration", "trait_method_reference", "absolute_trait_method_reference", 
-      "use_declaration", "unprefixed_use_declarations", "inline_use_declaration", 
-      "inline_use_declarations", "argument", "ctor_arguments", "argument_list", 
-      "non_empty_argument_list", "parameter", "lexical_var", "parameter_list", 
-      "non_empty_parameter_list", "lexical_vars", "lexical_var_list", "possible_array_pair", 
-      "array_pair", "non_empty_array_pair_list", "array_pair_list", "if_stmt_without_else", 
-      "alt_if_stmt_without_else", "foreach_variable", "anonymous_class", "use_declarations", 
-      "group_use_declaration", "mixed_group_use_declaration", "start", "$accept", 
-      "@1", "ampersand", "@2", "@3", "backup_fn_flags", "@4", "@5", "@6", "@7", 
-      "case_separator", "@8", "backup_lex_pos", };
+      "non_empty_for_exprs", "catch_list", "optional_variable", "case_list", 
+      "switch_case_list", "identifier", "semi_reserved", "reserved_non_modifiers", 
+      "namespace_name", "unprefixed_use_declaration", "trait_method_reference", 
+      "absolute_trait_method_reference", "use_declaration", "unprefixed_use_declarations", 
+      "inline_use_declaration", "inline_use_declarations", "argument", "ctor_arguments", 
+      "argument_list", "non_empty_argument_list", "parameter", "lexical_var", 
+      "parameter_list", "non_empty_parameter_list", "lexical_vars", "lexical_var_list", 
+      "possible_array_pair", "array_pair", "non_empty_array_pair_list", "array_pair_list", 
+      "if_stmt_without_else", "alt_if_stmt_without_else", "foreach_variable", 
+      "anonymous_class", "use_declarations", "group_use_declaration", "mixed_group_use_declaration", 
+      "start", "$accept", "@1", "ampersand", "@2", "@3", "backup_fn_flags", "@4", 
+      "@5", "@6", "@7", "case_separator", "@8", "backup_lex_pos", };
   }
 
   #endregion
@@ -2455,7 +2456,7 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 { yyval.Node = _astFactory.For(yypos, value_stack.array[value_stack.top-9].yyval.NodeList, value_stack.array[value_stack.top-7].yyval.NodeList, value_stack.array[value_stack.top-5].yyval.NodeList, CombineSpans(value_stack.array[value_stack.top-10].yypos, value_stack.array[value_stack.top-4].yypos), value_stack.array[value_stack.top-2].yyval.Node); }
         return;
       case 153: // statement -> T_SWITCH '(' expr ')' enter_scope switch_case_list exit_scope 
-{ yyval.Node = _astFactory.Switch(yypos, value_stack.array[value_stack.top-5].yyval.Node, value_stack.array[value_stack.top-2].yyval.NodeList); }
+{ yyval.Node = _astFactory.Switch(yypos, value_stack.array[value_stack.top-5].yyval.Node, value_stack.array[value_stack.top-2].yyval.SwitchObject.CaseList, value_stack.array[value_stack.top-2].yyval.SwitchObject.ClosingToken, value_stack.array[value_stack.top-2].yyval.SwitchObject.ClosingTokenSpan); }
         return;
       case 154: // statement -> T_BREAK optional_expr ';' 
 { yyval.Node = _astFactory.Jump(yypos, JumpStmt.Types.Break, value_stack.array[value_stack.top-2].yyval.Node);}
@@ -2685,27 +2686,39 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 { yyval.Node = StatementsToBlock(value_stack.array[value_stack.top-4].yypos, value_stack.array[value_stack.top-2].yypos, value_stack.array[value_stack.top-3].yyval.NodeList, Tokens.T_ENDDECLARE); }
         return;
       case 220: // switch_case_list -> '{' case_list '}' 
-{ yyval.NodeList = value_stack.array[value_stack.top-2].yyval.NodeList; }
+{ yyval.SwitchObject = value_stack.array[value_stack.top-2].yyval.SwitchObject.WithClosingToken(Tokens.T_RBRACE, value_stack.array[value_stack.top-1].yypos); }
         return;
       case 221: // switch_case_list -> '{' ';' case_list '}' 
-{ yyval.NodeList = value_stack.array[value_stack.top-2].yyval.NodeList; }
+{ yyval.SwitchObject = value_stack.array[value_stack.top-2].yyval.SwitchObject.WithClosingToken(Tokens.T_RBRACE, value_stack.array[value_stack.top-1].yypos); }
         return;
       case 222: // switch_case_list -> ':' case_list T_ENDSWITCH ';' 
-{ yyval.NodeList = value_stack.array[value_stack.top-3].yyval.NodeList; }
+{ yyval.SwitchObject = value_stack.array[value_stack.top-3].yyval.SwitchObject.WithClosingToken(Tokens.T_ENDSWITCH, value_stack.array[value_stack.top-2].yypos); }
         return;
       case 223: // switch_case_list -> ':' ';' case_list T_ENDSWITCH ';' 
-{ yyval.NodeList = value_stack.array[value_stack.top-3].yyval.NodeList; }
+{ yyval.SwitchObject = value_stack.array[value_stack.top-3].yyval.SwitchObject.WithClosingToken(Tokens.T_ENDSWITCH, value_stack.array[value_stack.top-2].yypos); }
         return;
       case 224: // case_list -> 
-{ yyval.NodeList = new List<LangElement>(); }
+{
+			yyval.SwitchObject = new SwitchObject();
+		}
         return;
       case 225: // case_list -> case_list T_CASE expr case_separator inner_statement_list 
-{ yyval.NodeList = AddToList<LangElement>(value_stack.array[value_stack.top-5].yyval.NodeList, _astFactory.Case(CombineSpans(value_stack.array[value_stack.top-4].yypos, value_stack.array[value_stack.top-3].yypos, value_stack.array[value_stack.top-2].yypos, value_stack.array[value_stack.top-1].yypos), 
-				value_stack.array[value_stack.top-3].yyval.Node, CreateCaseBlock(CombineSpans(value_stack.array[value_stack.top-2].yypos, value_stack.array[value_stack.top-1].yypos), value_stack.array[value_stack.top-1].yyval.NodeList))); }
+{
+			AddToList<LangElement>(
+				value_stack.array[value_stack.top-5].yyval.SwitchObject.CaseList,
+				_astFactory.Case(CombineSpans(value_stack.array[value_stack.top-4].yypos, value_stack.array[value_stack.top-3].yypos, value_stack.array[value_stack.top-2].yypos, value_stack.array[value_stack.top-1].yypos), value_stack.array[value_stack.top-3].yyval.Node, CreateCaseBlock(CombineSpans(value_stack.array[value_stack.top-2].yypos, value_stack.array[value_stack.top-1].yypos), value_stack.array[value_stack.top-1].yyval.NodeList))
+			);
+			yyval.SwitchObject = value_stack.array[value_stack.top-5].yyval.SwitchObject;
+		}
         return;
       case 226: // case_list -> case_list T_DEFAULT case_separator inner_statement_list 
-{ yyval.NodeList = AddToList<LangElement>(value_stack.array[value_stack.top-4].yyval.NodeList, _astFactory.Case(CombineSpans(value_stack.array[value_stack.top-3].yypos, value_stack.array[value_stack.top-2].yypos, value_stack.array[value_stack.top-1].yypos), 
-				null, CreateCaseBlock(CombineSpans(value_stack.array[value_stack.top-2].yypos, value_stack.array[value_stack.top-1].yypos), value_stack.array[value_stack.top-1].yyval.NodeList))); }
+{
+			AddToList<LangElement>(
+				value_stack.array[value_stack.top-4].yyval.SwitchObject.CaseList,
+				_astFactory.Case(CombineSpans(value_stack.array[value_stack.top-3].yypos, value_stack.array[value_stack.top-2].yypos, value_stack.array[value_stack.top-1].yypos), null, CreateCaseBlock(CombineSpans(value_stack.array[value_stack.top-2].yypos, value_stack.array[value_stack.top-1].yypos), value_stack.array[value_stack.top-1].yyval.NodeList))
+			);
+			yyval.SwitchObject = value_stack.array[value_stack.top-4].yyval.SwitchObject;
+		}
         return;
       case 229: // match -> T_MATCH '(' expr ')' '{' match_arm_list '}' 
 { yyval.Node = (LangElement)_astFactory.Match(yypos, value_stack.array[value_stack.top-5].yyval.Node, value_stack.array[value_stack.top-2].yyval.NodeList); }

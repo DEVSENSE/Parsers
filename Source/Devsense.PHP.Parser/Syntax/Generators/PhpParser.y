@@ -60,6 +60,7 @@ using StringPair = System.Collections.Generic.KeyValuePair<string, string>;
 	public IList<TypeRef> TypeRefList					{ get { return (IList<TypeRef>)Object; }			set { Object = value; } }
 	public LangElement Node								{ get { return (LangElement)Object; }				set { Object = value; } }
 	public List<LangElement> NodeList					{ get { return (List<LangElement>)Object; }			set { Object = value; } }
+	internal SwitchObject SwitchObject					{ get { return (SwitchObject)Object; }				set { Object = value; } }
 	public string String								{ get { return (string)Object; }					set { Object = value; } }
 	public StringPair Strings							{ get { return (StringPair)Object; }				set { Object = value; } }
 	public List<string> StringList						{ get { return (List<string>)Object; }				set { Object = value; } }
@@ -341,8 +342,9 @@ using StringPair = System.Collections.Generic.KeyValuePair<string, string>;
 %type <NodeList> inner_statement_list class_statement_list for_exprs
 %type <NodeList> global_var_list static_var_list echo_expr_list unset_variables
 %type <NodeList> trait_adaptation_list encaps_list isset_variables property_list
-%type <NodeList> case_list switch_case_list non_empty_for_exprs catch_list
+%type <NodeList> non_empty_for_exprs catch_list
 %type <Node> optional_variable
+%type <SwitchObject> case_list switch_case_list
 
 %type <String> identifier semi_reserved reserved_non_modifiers
 %type <StringList> namespace_name
@@ -661,7 +663,7 @@ statement:
 	|	T_FOR '(' for_exprs ';' for_exprs ';' for_exprs ')' enter_scope for_statement exit_scope
 			{ $$ = _astFactory.For(@$, $3, $5, $7, CombineSpans(@2, @8), $10); }
 	|	T_SWITCH '(' expr ')' enter_scope switch_case_list exit_scope
-			{ $$ = _astFactory.Switch(@$, $3, $6); }
+			{ $$ = _astFactory.Switch(@$, $3, $6.CaseList, $6.ClosingToken, $6.ClosingTokenSpan); }
 	|	T_BREAK optional_expr ';'		{ $$ = _astFactory.Jump(@$, JumpStmt.Types.Break, $2);}
 	|	T_CONTINUE optional_expr ';'	{ $$ = _astFactory.Jump(@$, JumpStmt.Types.Continue, $2); }
 	|	T_RETURN optional_expr ';'		{ $$ = _astFactory.Jump(@$, JumpStmt.Types.Return, $2); }
@@ -847,20 +849,30 @@ declare_statement:
 ;
 
 switch_case_list:
-		'{' case_list '}'					{ $$ = $2; }
-	|	'{' ';' case_list '}'				{ $$ = $3; }
-	|	':' case_list T_ENDSWITCH ';'		{ $$ = $2; }
-	|	':' ';' case_list T_ENDSWITCH ';'	{ $$ = $3; }
+		'{' case_list '}'					{ $$ = $2.WithClosingToken(Tokens.T_RBRACE, @3); }
+	|	'{' ';' case_list '}'				{ $$ = $3.WithClosingToken(Tokens.T_RBRACE, @4); }
+	|	':' case_list T_ENDSWITCH ';'		{ $$ = $2.WithClosingToken(Tokens.T_ENDSWITCH, @3); }
+	|	':' ';' case_list T_ENDSWITCH ';'	{ $$ = $3.WithClosingToken(Tokens.T_ENDSWITCH, @4); }
 ;
 
 case_list:
-		/* empty */ { $$ = new List<LangElement>(); }
-	|	case_list T_CASE expr case_separator inner_statement_list
-			{ $$ = AddToList<LangElement>($1, _astFactory.Case(CombineSpans(@2, @3, @4, @5), 
-				$3, CreateCaseBlock(CombineSpans(@4, @5), $5))); }
-	|	case_list T_DEFAULT case_separator inner_statement_list
-			{ $$ = AddToList<LangElement>($1, _astFactory.Case(CombineSpans(@2, @3, @4), 
-				null, CreateCaseBlock(CombineSpans(@3, @4), $4))); }
+		/* empty */ {
+			$$ = new SwitchObject();
+		}
+	|	case_list T_CASE expr case_separator inner_statement_list {
+			AddToList<LangElement>(
+				$1.CaseList,
+				_astFactory.Case(CombineSpans(@2, @3, @4, @5), $3, CreateCaseBlock(CombineSpans(@4, @5), $5))
+			);
+			$$ = $1;
+		}
+	|	case_list T_DEFAULT case_separator inner_statement_list {
+			AddToList<LangElement>(
+				$1.CaseList,
+				_astFactory.Case(CombineSpans(@2, @3, @4), null, CreateCaseBlock(CombineSpans(@3, @4), $4))
+			);
+			$$ = $1;
+		}
 ;
 
 case_separator:

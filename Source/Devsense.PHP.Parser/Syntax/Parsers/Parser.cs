@@ -27,7 +27,7 @@ using System.Xml.Linq;
 
 namespace Devsense.PHP.Syntax
 {
-    internal struct IfStatement
+    struct IfStatement
     {
         public readonly Span Span;
         public readonly LangElement Condition;
@@ -38,6 +38,25 @@ namespace Devsense.PHP.Syntax
             Span = span;
             Condition = condition;
             Body = body;
+        }
+    }
+
+    /// <summary>
+    /// Parser information for the <c>switch</c> statement.
+    /// </summary>
+    class SwitchObject
+    {
+        public List<LangElement> CaseList { get; } = new List<LangElement>();
+
+        public Tokens ClosingToken { get; set; } = Tokens.T_RBRACE;
+
+        public Span ClosingTokenSpan { get; set; } = Span.Invalid;
+
+        public SwitchObject WithClosingToken(Tokens closing, Span closingSpan)
+        {
+            this.ClosingToken = closing;
+            this.ClosingTokenSpan = closingSpan;
+            return this;
         }
     }
 

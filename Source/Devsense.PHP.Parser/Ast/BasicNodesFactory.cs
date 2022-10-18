@@ -469,9 +469,15 @@ namespace Devsense.PHP.Syntax.Ast
             return new ShellEx(span, (Expression)command);
         }
 
-        public virtual LangElement Switch(Span span, LangElement value, List<LangElement> block)
+        public virtual LangElement Switch(Span span, LangElement value, List<LangElement> block, Tokens endToken, Span endTokenSpan)
         {
-            return new SwitchStmt(span, (Expression)value, block.CastToArray<SwitchItem>());
+            return new SwitchStmt(
+                span,
+                (Expression)value,
+                block.CastToArray<SwitchItem>(),
+                endToken,
+                endTokenSpan
+            );
         }
 
         public virtual LangElement Case(Span span, LangElement valueOpt, LangElement block)

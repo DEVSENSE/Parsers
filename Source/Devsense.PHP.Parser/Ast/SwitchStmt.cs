@@ -27,19 +27,33 @@ namespace Devsense.PHP.Syntax.Ast
 	public sealed class SwitchStmt : Statement
 	{
 		/// <summary>Value to switch by</summary>
-        public Expression/*!*/ SwitchValue { get { return switchValue; } internal set { switchValue = value; } }
-        private Expression/*!*/ switchValue;
+        public Expression/*!*/ SwitchValue { get; internal set; }
+
         /// <summary>Body of switch statement</summary>
-        public SwitchItem[]/*!*/ SwitchItems { get { return switchItems; } }
-        private SwitchItem[]/*!*/ switchItems;
-        
-		public SwitchStmt(Text.Span span, Expression/*!*/ switchValue, IList<SwitchItem>/*!*/ switchItems)
+        public SwitchItem[]/*!*/ SwitchItems { get; }
+
+        /// <summary>
+        /// A token that closes the block.
+        /// Can be <c>}</c>, <c>endswitch</c>.
+        /// </summary>
+        public Tokens ClosingToken { get; }
+
+		/// <summary>
+		/// <see cref="ClosingToken"/> position.
+		/// </summary>
+        public Text.Span ClosingTokenSpan { get; }
+
+        public SwitchStmt(Text.Span span,
+			Expression/*!*/ switchValue, IList<SwitchItem>/*!*/ switchItems,
+			Tokens closingToken, Text.Span closingTokenSpan)
 			: base(span)
 		{
 			Debug.Assert(switchValue != null && switchItems != null);
 
-			this.switchValue = switchValue;
-			this.switchItems = switchItems.AsArray();
+			this.SwitchValue = switchValue;
+			this.SwitchItems = switchItems.AsArray();
+			this.ClosingToken = closingToken;
+			this.ClosingTokenSpan = closingTokenSpan;
 		}
 
 		/// <summary>
