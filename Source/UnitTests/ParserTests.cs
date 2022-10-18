@@ -11,6 +11,7 @@ using Devsense.PHP.Errors;
 using Devsense.PHP.Text;
 using System.Collections.Generic;
 using UnitTests.TestImplementation;
+using Devsense.PHP.Ast.DocBlock;
 
 namespace UnitTests
 {
@@ -204,6 +205,37 @@ $x = <<<XXX
             {
                 var unit = new CodeSourceUnit(code, "dummy.php", Encoding.UTF8);
                 unit.Parse(new BasicNodesFactory(unit), null);
+            }
+        }
+
+        [TestMethod]
+        public void FormalParamDocBlockTest()
+        {
+            var codes = new[] {
+                @"<?php
+class X {
+    function __construct(
+        /** @var int */
+        public $p1
+        ) { }
+}",
+            };
+
+            foreach (var code in codes)
+            {
+                var unit = new CodeSourceUnit(code, "dummy.php", Encoding.UTF8);
+                unit.Parse(new BasicNodesFactory(unit), null);
+
+                foreach (var tdecl in unit.Ast.TraverseNamedTypeDeclarations())
+                {
+                    foreach (var m in tdecl.Members.OfType<MethodDecl>())
+                    {
+                        foreach (var p in m.Signature.FormalParams)
+                        {
+                            Assert.IsNotNull(p.GetProperty<IDocBlock>());
+                        }
+                    }
+                }
             }
         }
 

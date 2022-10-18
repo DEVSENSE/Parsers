@@ -2817,7 +2817,10 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 { yyval.Long = 0; /* None */ }
         return;
       case 255: // optional_property_modifiers -> optional_property_modifiers property_modifier 
-{ yyval.Long = AddModifier(value_stack.array[value_stack.top-2].yyval.Long, value_stack.array[value_stack.top-1].yyval.Long, value_stack.array[value_stack.top-1].yypos) | (long)PhpMemberAttributes.Constructor; }
+{
+			yyval.Long = AddModifier(value_stack.array[value_stack.top-2].yyval.Long, value_stack.array[value_stack.top-1].yyval.Long, value_stack.array[value_stack.top-1].yypos) | (long)PhpMemberAttributes.Constructor;
+			yypos = CombineSpans(value_stack.array[value_stack.top-2].yypos, value_stack.array[value_stack.top-1].yypos);
+		}
         return;
       case 256: // property_modifier -> T_PUBLIC 
 { yyval.Long = (long)PhpMemberAttributes.Public; }
@@ -2832,10 +2835,28 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 { yyval.Long = (long)PhpMemberAttributes.ReadOnly; }
         return;
       case 260: // parameter -> optional_property_modifiers optional_type_without_static is_reference is_variadic T_VARIABLE 
-{ yyval.FormalParam = _astFactory.Parameter(CombineSpans(value_stack.array[value_stack.top-5].yypos, value_stack.array[value_stack.top-4].yypos, value_stack.array[value_stack.top-3].yypos, value_stack.array[value_stack.top-2].yypos, value_stack.array[value_stack.top-1].yypos), value_stack.array[value_stack.top-1].yyval.String, value_stack.array[value_stack.top-1].yypos, value_stack.array[value_stack.top-4].yyval.TypeReference, (FormalParam.Flags)value_stack.array[value_stack.top-3].yyval.Long|(FormalParam.Flags)value_stack.array[value_stack.top-2].yyval.Long, null, (PhpMemberAttributes)value_stack.array[value_stack.top-5].yyval.Long); /* Important - @$ is invalid when optional_type is empty */ }
+{
+			/* Important - @$ is invalid when optional_type is empty */
+			yyval.FormalParam = _astFactory.Parameter(
+				CombineSpans(value_stack.array[value_stack.top-5].yypos, value_stack.array[value_stack.top-4].yypos, value_stack.array[value_stack.top-3].yypos, value_stack.array[value_stack.top-2].yypos, value_stack.array[value_stack.top-1].yypos), value_stack.array[value_stack.top-1].yyval.String, value_stack.array[value_stack.top-1].yypos, value_stack.array[value_stack.top-4].yyval.TypeReference,
+				(FormalParam.Flags)value_stack.array[value_stack.top-3].yyval.Long|(FormalParam.Flags)value_stack.array[value_stack.top-2].yyval.Long,
+				null,
+				(PhpMemberAttributes)value_stack.array[value_stack.top-5].yyval.Long
+			);
+			SetDoc(yyval.FormalParam);
+		}
         return;
       case 261: // parameter -> optional_property_modifiers optional_type_without_static is_reference is_variadic T_VARIABLE '=' expr 
-{ yyval.FormalParam = _astFactory.Parameter(CombineSpans(value_stack.array[value_stack.top-7].yypos, value_stack.array[value_stack.top-6].yypos, value_stack.array[value_stack.top-5].yypos, value_stack.array[value_stack.top-4].yypos, value_stack.array[value_stack.top-1].yypos), value_stack.array[value_stack.top-3].yyval.String, value_stack.array[value_stack.top-3].yypos, value_stack.array[value_stack.top-6].yyval.TypeReference, (FormalParam.Flags)value_stack.array[value_stack.top-5].yyval.Long|(FormalParam.Flags)value_stack.array[value_stack.top-4].yyval.Long, (Expression)value_stack.array[value_stack.top-1].yyval.Node, (PhpMemberAttributes)value_stack.array[value_stack.top-7].yyval.Long); /* Important - @$ is invalid when optional_type is empty */ }
+{
+			/* Important - @$ is invalid when optional_type is empty */
+			yyval.FormalParam = _astFactory.Parameter(
+				CombineSpans(value_stack.array[value_stack.top-7].yypos, value_stack.array[value_stack.top-6].yypos, value_stack.array[value_stack.top-5].yypos, value_stack.array[value_stack.top-4].yypos, value_stack.array[value_stack.top-1].yypos), value_stack.array[value_stack.top-3].yyval.String, value_stack.array[value_stack.top-3].yypos, value_stack.array[value_stack.top-6].yyval.TypeReference,
+				(FormalParam.Flags)value_stack.array[value_stack.top-5].yyval.Long|(FormalParam.Flags)value_stack.array[value_stack.top-4].yyval.Long,
+				(Expression)value_stack.array[value_stack.top-1].yyval.Node,
+				(PhpMemberAttributes)value_stack.array[value_stack.top-7].yyval.Long
+			);
+			SetDoc(yyval.FormalParam);
+		}
         return;
       case 262: // optional_type -> 
 { yyval.TypeReference = null; }
@@ -3478,10 +3499,16 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 { yyval.FormalParamList = new List<FormalParam>() { (FormalParam)value_stack.array[value_stack.top-1].yyval.FormalParam }; }
         return;
       case 463: // lexical_var -> T_VARIABLE 
-{ yyval.FormalParam = _astFactory.Parameter(yypos, value_stack.array[value_stack.top-1].yyval.String, value_stack.array[value_stack.top-1].yypos, null, FormalParam.Flags.Default); }
+{
+			yyval.FormalParam = _astFactory.Parameter(yypos, value_stack.array[value_stack.top-1].yyval.String, value_stack.array[value_stack.top-1].yypos, null, FormalParam.Flags.Default);
+			SetDoc(yyval.FormalParam);
+		}
         return;
       case 464: // lexical_var -> ampersand T_VARIABLE 
-{ yyval.FormalParam = _astFactory.Parameter(yypos, value_stack.array[value_stack.top-1].yyval.String, value_stack.array[value_stack.top-1].yypos, null, FormalParam.Flags.IsByRef); }
+{
+			yyval.FormalParam = _astFactory.Parameter(yypos, value_stack.array[value_stack.top-1].yyval.String, value_stack.array[value_stack.top-1].yypos, null, FormalParam.Flags.IsByRef);
+			SetDoc(yyval.FormalParam);
+		}
         return;
       case 465: // function_call -> name argument_list 
 { yyval.Node = _astFactory.Call(yypos, TranslateQNRFunction(value_stack.array[value_stack.top-2].yyval.QualifiedNameReference), new CallSignature(value_stack.array[value_stack.top-1].yyval.ParamList, value_stack.array[value_stack.top-1].yypos), null); }

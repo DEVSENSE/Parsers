@@ -977,7 +977,10 @@ attributed_parameter:
 
 optional_property_modifiers:
 		/* empty */				{ $$ = 0; /* None */ }
-	|	optional_property_modifiers property_modifier	{ $$ = AddModifier($1, $2, @2) | (long)PhpMemberAttributes.Constructor; }
+	|	optional_property_modifiers property_modifier {
+			$$ = AddModifier($1, $2, @2) | (long)PhpMemberAttributes.Constructor;
+			yypos = CombineSpans(@1, @2);
+		}
 ;
 
 property_modifier:
@@ -988,10 +991,26 @@ property_modifier:
 ;
 
 parameter:
-		optional_property_modifiers optional_type_without_static is_reference is_variadic T_VARIABLE
-			{ $$ = _astFactory.Parameter(CombineSpans(@1, @2, @3, @4, @5), $5, @5, $2, (FormalParam.Flags)$3|(FormalParam.Flags)$4, null, (PhpMemberAttributes)$1); /* Important - @$ is invalid when optional_type is empty */ }
-	|	optional_property_modifiers optional_type_without_static is_reference is_variadic T_VARIABLE '=' expr
-			{ $$ = _astFactory.Parameter(CombineSpans(@1, @2, @3, @4, @7), $5, @5, $2, (FormalParam.Flags)$3|(FormalParam.Flags)$4, (Expression)$7, (PhpMemberAttributes)$1); /* Important - @$ is invalid when optional_type is empty */ }
+		optional_property_modifiers optional_type_without_static is_reference is_variadic T_VARIABLE {
+			/* Important - @$ is invalid when optional_type is empty */
+			$$ = _astFactory.Parameter(
+				CombineSpans(@1, @2, @3, @4, @5), $5, @5, $2,
+				(FormalParam.Flags)$3|(FormalParam.Flags)$4,
+				null,
+				(PhpMemberAttributes)$1
+			);
+			SetDoc($$);
+		}
+	|	optional_property_modifiers optional_type_without_static is_reference is_variadic T_VARIABLE '=' expr {
+			/* Important - @$ is invalid when optional_type is empty */
+			$$ = _astFactory.Parameter(
+				CombineSpans(@1, @2, @3, @4, @7), $5, @5, $2,
+				(FormalParam.Flags)$3|(FormalParam.Flags)$4,
+				(Expression)$7,
+				(PhpMemberAttributes)$1
+			);
+			SetDoc($$);
+		}
 ;
 
 
@@ -1474,8 +1493,14 @@ lexical_var_list:
 ;
 
 lexical_var:
-		T_VARIABLE				{ $$ = _astFactory.Parameter(@$, $1, @1, null, FormalParam.Flags.Default); }
-	|	ampersand T_VARIABLE	{ $$ = _astFactory.Parameter(@$, $2, @2, null, FormalParam.Flags.IsByRef); }
+		T_VARIABLE {
+			$$ = _astFactory.Parameter(@$, $1, @1, null, FormalParam.Flags.Default);
+			SetDoc($$);
+		}
+	|	ampersand T_VARIABLE {
+			$$ = _astFactory.Parameter(@$, $2, @2, null, FormalParam.Flags.IsByRef);
+			SetDoc($$);
+		}
 ;
 
 function_call:
