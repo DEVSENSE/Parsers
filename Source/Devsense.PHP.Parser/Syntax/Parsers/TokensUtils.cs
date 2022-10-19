@@ -96,6 +96,8 @@ namespace Devsense.PHP.Syntax
                     return Tokens.T_PRIVATE;
                 case PhpMemberAttributes.Protected:
                     return Tokens.T_PROTECTED;
+                case PhpMemberAttributes.ReadOnly:
+                    return Tokens.T_READONLY;
                 case PhpMemberAttributes.Static:
                     return Tokens.T_STATIC;
                 case PhpMemberAttributes.Abstract:
@@ -104,8 +106,6 @@ namespace Devsense.PHP.Syntax
                     return Tokens.T_FINAL;
                 case PhpMemberAttributes.Interface:
                     return Tokens.T_INTERFACE;
-                case PhpMemberAttributes.ReadOnly:
-                    return Tokens.T_READONLY;
                 case PhpMemberAttributes.Trait:
                     return Tokens.T_TRAIT;
                 case PhpMemberAttributes.Enum:
@@ -125,6 +125,8 @@ namespace Devsense.PHP.Syntax
                     return PhpMemberAttributes.Private;
                 case Tokens.T_PROTECTED:
                     return PhpMemberAttributes.Protected;
+                case Tokens.T_READONLY:
+                    return PhpMemberAttributes.ReadOnly;
                 case Tokens.T_STATIC:
                     return PhpMemberAttributes.Static;
                 case Tokens.T_ABSTRACT:
