@@ -754,7 +754,10 @@ class_declaration_statement:
 
 class_modifiers:
 		/* empty */						{ $$ = (long)PhpMemberAttributes.None; }
-	|	class_modifier class_modifiers 	{ $$ = AddModifier($1, $2, @2); }
+	|	class_modifiers class_modifier 	{
+			$$ = AddModifier($1, $2, @2);
+			yypos = CombineSpans(@1, @2);
+		}
 ;
 
 class_modifier:
