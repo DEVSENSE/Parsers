@@ -104,6 +104,8 @@ namespace Devsense.PHP.Syntax
                     return Tokens.T_FINAL;
                 case PhpMemberAttributes.Interface:
                     return Tokens.T_INTERFACE;
+                case PhpMemberAttributes.ReadOnly:
+                    return Tokens.T_READONLY;
                 case PhpMemberAttributes.Trait:
                     return Tokens.T_TRAIT;
                 case PhpMemberAttributes.Enum:
