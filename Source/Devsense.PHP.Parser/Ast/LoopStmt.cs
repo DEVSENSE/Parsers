@@ -44,8 +44,12 @@ namespace Devsense.PHP.Syntax.Ast
         /// <summary>
         /// Position of the header parentheses.
         /// </summary>
-        public Text.Span ConditionPosition { get { return _conditionPosition; } }
-        private Text.Span _conditionPosition;
+        public Text.Span ConditionSpan { get; }
+
+        /// <summary>
+        /// Position of <c>while</c> keyword.
+        /// </summary>
+        public Text.Span WhileSpan { get; }
 
         /// <summary>Body of loop</summary>
         public Statement/*!*/ Body { get { return body; } internal set { body = value; } }
@@ -58,8 +62,9 @@ namespace Devsense.PHP.Syntax.Ast
         /// <param name="type">Loop type.</param>
         /// <param name="condExpr">Loop condition.</param>
         /// <param name="conditionSpan">Condition span.</param>
+        /// <param name="whileSpan">"while" keyword span.</param>
         /// <param name="body">Loop body.</param>
-        public WhileStmt(Text.Span span, Type type, Expression/*!*/ condExpr, Text.Span conditionSpan, Statement/*!*/ body)
+        public WhileStmt(Text.Span span, Type type, Expression/*!*/ condExpr, Text.Span conditionSpan, Text.Span whileSpan, Statement/*!*/ body)
             : base(span)
         {
             Debug.Assert(condExpr != null && body != null);
@@ -67,7 +72,8 @@ namespace Devsense.PHP.Syntax.Ast
             this.type = type;
             this.condExpr = condExpr;
             this.body = body;
-            this._conditionPosition = conditionSpan;
+            this.ConditionSpan = conditionSpan;
+            this.WhileSpan = whileSpan;
         }
 
         /// <summary>

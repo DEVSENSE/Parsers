@@ -659,7 +659,7 @@ statement:
 	|	T_WHILE '(' expr ')' enter_scope while_statement exit_scope
 			{ $$ = _astFactory.While(@$, $3, CombineSpans(@2, @4), $6); }
 	|	T_DO enter_scope statement T_WHILE '(' expr ')' ';' exit_scope
-			{ $$ = _astFactory.Do(@$, $3, $6, CombineSpans(@5, @7)); }
+			{ $$ = _astFactory.Do(@$, $3, $6, CombineSpans(@5, @7), @4); }
 	|	T_FOR '(' for_exprs ';' for_exprs ';' for_exprs ')' enter_scope for_statement exit_scope
 			{ $$ = _astFactory.For(@$, $3, $5, $7, CombineSpans(@2, @8), $10); }
 	|	T_SWITCH '(' expr ')' enter_scope switch_case_list exit_scope

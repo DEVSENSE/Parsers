@@ -40,7 +40,10 @@ class X {
         private readonly T $t, // private readonly
     ) {
     }
-}"
+}",
+@"<?php
+
+do { } while (false);"
             };
 
             foreach (var code in codes)

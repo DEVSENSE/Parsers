@@ -2449,7 +2449,7 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 { yyval.Node = _astFactory.While(yypos, value_stack.array[value_stack.top-5].yyval.Node, CombineSpans(value_stack.array[value_stack.top-6].yypos, value_stack.array[value_stack.top-4].yypos), value_stack.array[value_stack.top-2].yyval.Node); }
         return;
       case 151: // statement -> T_DO enter_scope statement T_WHILE '(' expr ')' ';' exit_scope 
-{ yyval.Node = _astFactory.Do(yypos, value_stack.array[value_stack.top-7].yyval.Node, value_stack.array[value_stack.top-4].yyval.Node, CombineSpans(value_stack.array[value_stack.top-5].yypos, value_stack.array[value_stack.top-3].yypos)); }
+{ yyval.Node = _astFactory.Do(yypos, value_stack.array[value_stack.top-7].yyval.Node, value_stack.array[value_stack.top-4].yyval.Node, CombineSpans(value_stack.array[value_stack.top-5].yypos, value_stack.array[value_stack.top-3].yypos), value_stack.array[value_stack.top-6].yypos); }
         return;
       case 152: // statement -> T_FOR '(' for_exprs ';' for_exprs ';' for_exprs ')' enter_scope for_statement exit_scope 
 { yyval.Node = _astFactory.For(yypos, value_stack.array[value_stack.top-9].yyval.NodeList, value_stack.array[value_stack.top-7].yyval.NodeList, value_stack.array[value_stack.top-5].yyval.NodeList, CombineSpans(value_stack.array[value_stack.top-10].yypos, value_stack.array[value_stack.top-4].yypos), value_stack.array[value_stack.top-2].yyval.Node); }

@@ -428,8 +428,9 @@ namespace Devsense.PHP.Syntax.Ast
         /// <param name="body">Loop body.</param>
         /// <param name="cond">Condition that breaks the loop.</param>
         /// <param name="condSpan">Position of the condition parentheses.</param>
+        /// <param name="whileSpan">Position of "while" keyword.</param>
         /// <returns>Do statement.</returns>
-        TNode Do(TSpan span, TNode body, TNode cond, TSpan condSpan);
+        TNode Do(TSpan span, TNode body, TNode cond, TSpan condSpan, TSpan whileSpan);
 
         /// <summary>
         /// Creates <c>while</c> statement.

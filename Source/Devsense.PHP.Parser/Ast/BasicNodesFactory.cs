@@ -198,9 +198,9 @@ namespace Devsense.PHP.Syntax.Ast
             }
         }
 
-        public virtual LangElement Do(Span span, LangElement body, LangElement cond, Span condSpan)
+        public virtual LangElement Do(Span span, LangElement body, LangElement cond, Span condSpan, Span whileSpan)
         {
-            return new WhileStmt(span, WhileStmt.Type.Do, (Expression)cond, condSpan, (Statement)body);
+            return new WhileStmt(span, WhileStmt.Type.Do, (Expression)cond, condSpan, whileSpan, (Statement)body);
         }
 
         public virtual LangElement Echo(Span span, IEnumerable<LangElement> parameters)
@@ -669,7 +669,13 @@ namespace Devsense.PHP.Syntax.Ast
         public virtual LangElement While(Span span, LangElement cond, Span condSpan, LangElement body)
         {
             Debug.Assert(cond is Expression && body is Statement);
-            return new WhileStmt(span, WhileStmt.Type.While, (Expression)cond, condSpan, (Statement)body);
+            return new WhileStmt(
+                span,
+                WhileStmt.Type.While,
+                (Expression)cond,
+                condSpan,
+                span.IsValid ? new Span(span.Start, "while".Length) : Span.Invalid,
+                (Statement)body);
         }
 
         public virtual LangElement Yield(Span span, LangElement keyOpt, LangElement valueOpt)
