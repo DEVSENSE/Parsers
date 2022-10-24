@@ -745,7 +745,7 @@ class_declaration_statement:
 		class_modifiers T_CLASS T_STRING extends_from {PushClassContext($3, $4, (PhpMemberAttributes)$1);} implements_list backup_doc_comment
 		enter_scope '{' class_statement_list '}' exit_scope
 		{ 
-			$$ = _astFactory.Type(@$, CombineSpans(@1, @2, @3, @4, @6), isConditional, (PhpMemberAttributes)$1, new Name($3), @3, null, 
+			$$ = _astFactory.Type(CombineSpans(@1, @11), CombineSpans(@1, @2, @3, @4, @6), isConditional, (PhpMemberAttributes)$1, new Name($3), @3, null, 
 				ConvertToNamedTypeRef($4), $6.Select(ConvertToNamedTypeRef), $10, CombineSpans(@9, @11)); 
 			SetDoc($$);
 			PopClassContext();
