@@ -16,7 +16,7 @@ namespace Devsense.PHP.Syntax.Visitor
     /// <summary>
     /// Dummy AST node representing a function or type header.
     /// </summary>
-    internal abstract class DummyDeclHeader : AstNode
+    public abstract class DummyDeclHeader : AstNode
     {
         public DummyDeclHeader(AstNode decl, Span span) : base()
         {
@@ -35,19 +35,19 @@ namespace Devsense.PHP.Syntax.Visitor
         public Span Span { get; private set; }
     }
 
-    internal sealed class DummyFunctionDeclHeader : DummyDeclHeader
+    public sealed class DummyFunctionDeclHeader : DummyDeclHeader
     {
         public DummyFunctionDeclHeader(AstNode decl, Span span) : base(decl, span)
         {
         }
     }
-    internal sealed class DummyTypeDeclHeader : DummyDeclHeader
+    public sealed class DummyTypeDeclHeader : DummyDeclHeader
     {
         public DummyTypeDeclHeader(AstNode decl, Span span) : base(decl, span)
         {
         }
     }
-    internal sealed class DummyMethodDeclHeader : DummyDeclHeader
+    public sealed class DummyMethodDeclHeader : DummyDeclHeader
     {
         public DummyMethodDeclHeader(AstNode decl, Span span) : base(decl, span)
         {
