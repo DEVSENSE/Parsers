@@ -916,11 +916,11 @@ while_statement:
 if_stmt_without_else:
 		T_IF '(' expr ')' statement
 			{ $$ = new List<IfStatement>() { 
-				new IfStatement(@$, $3, $5) }; 
+				new IfStatement(@$, $3, CombineSpans(@2, @4), $5) }; 
 			}
 	|	if_stmt_without_else T_ELSEIF '(' expr ')' statement
 			{ $$ = AddToList<IfStatement>($1, 
-				new IfStatement(CombineSpans(@2, @5, @6), $4, $6)); 
+				new IfStatement(CombineSpans(@2, @5, @6), $4, CombineSpans(@3, @5), $6)); 
 			}
 ;
 
@@ -928,23 +928,23 @@ if_stmt:
 		if_stmt_without_else %prec T_NOELSE 
 			{ ((List<IfStatement>)$1).Reverse(); $$ = null; 
 			foreach (var item in (List<IfStatement>)$1) 
-				$$ = _astFactory.If($$ != null? CombineSpans(item.Span, ($$).Span): item.Span, item.Condition, item.Body, $$); }
+				$$ = _astFactory.If($$ != null? CombineSpans(item.Span, ($$).Span): item.Span, item.Condition, item.ConditionSpan, item.Body, $$); }
 	|	if_stmt_without_else T_ELSE statement
-			{ ((List<IfStatement>)$1).Reverse(); $$ = _astFactory.If(CombineSpans(@2, @3), null, $3, null); 
-			foreach (var item in (List<IfStatement>)$1) $$ = _astFactory.If(CombineSpans(item.Span, ($$).Span), item.Condition, item.Body, $$); }
+			{ ((List<IfStatement>)$1).Reverse(); $$ = _astFactory.If(CombineSpans(@2, @3), null, @2, $3, null); 
+			foreach (var item in (List<IfStatement>)$1) $$ = _astFactory.If(CombineSpans(item.Span, ($$).Span), item.Condition, item.ConditionSpan, item.Body, $$); }
 ;
 
 alt_if_stmt_without_else:
 		T_IF '(' expr ')' ':' inner_statement_list
 			{ 
-				$$ = new List<IfStatement>() { new IfStatement(@$, $3, StatementsToBlock(@5, @5, $6, Tokens.END)) }; 
+				$$ = new List<IfStatement>() { new IfStatement(@$, $3, CombineSpans(@2, @4), StatementsToBlock(@5, @5, $6, Tokens.END)) }; 
 			}
 			
 	|	alt_if_stmt_without_else T_ELSEIF '(' expr ')' ':' inner_statement_list
 			{ 
 				RebuildLast($1, @2, Tokens.T_ELSEIF);
 				$$ = AddToList<IfStatement>($1, 
-					new IfStatement(CombineSpans(@2, @6, @7), $4, StatementsToBlock(@6, @6, $7, Tokens.END))); 
+					new IfStatement(CombineSpans(@2, @6, @7), $4, CombineSpans(@3, @5), StatementsToBlock(@6, @6, $7, Tokens.END))); 
 			}
 ;
 
@@ -953,11 +953,11 @@ alt_if_stmt:
 			{ RebuildLast($1, @2, Tokens.T_ENDIF);
 			 ((List<IfStatement>)$1).Reverse(); $$ = null; 
 			foreach (var item in (List<IfStatement>)$1) 
-				$$ = _astFactory.If($$ != null? CombineSpans(item.Span, ($$).Span): item.Span, item.Condition, item.Body, $$); }
+				$$ = _astFactory.If($$ != null? CombineSpans(item.Span, ($$).Span): item.Span, item.Condition, item.ConditionSpan, item.Body, $$); }
 	|	alt_if_stmt_without_else T_ELSE ':' inner_statement_list T_ENDIF ';'
 			{ RebuildLast($1, @2, Tokens.T_ELSE);
-			((List<IfStatement>)$1).Reverse(); $$ = _astFactory.If(CombineSpans(@2, @6), null, StatementsToBlock(@3, @5, $4, Tokens.T_ENDIF), null); 
-			foreach (var item in (List<IfStatement>)$1) $$ = _astFactory.If(CombineSpans(item.Span, ($$).Span), item.Condition, item.Body, $$); }
+			((List<IfStatement>)$1).Reverse(); $$ = _astFactory.If(CombineSpans(@2, @6), null, @2, StatementsToBlock(@3, @5, $4, Tokens.T_ENDIF), null); 
+			foreach (var item in (List<IfStatement>)$1) $$ = _astFactory.If(CombineSpans(item.Span, ($$).Span), item.Condition, item.ConditionSpan, item.Body, $$); }
 ;
 
 parameter_list:

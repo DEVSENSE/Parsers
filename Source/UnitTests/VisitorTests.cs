@@ -316,12 +316,12 @@ namespace UnitTests
             public override LangElement HaltCompiler(Span span)
                  => CountLE(base.HaltCompiler(span));
 
-            public override LangElement If(Span span, LangElement cond, LangElement body, LangElement elseOpt)
+            public override LangElement If(Span span, LangElement cond, Span condSpan, LangElement body, LangElement elseOpt)
             {
                 // TODO - else or elseif is passed as an IfStmt that is discarded and only its conditions used
                 if (elseOpt != null)
                     _createdElements.Remove(elseOpt);
-                return CountLE(base.If(span, cond, body, elseOpt));
+                return CountLE(base.If(span, cond, condSpan, body, elseOpt));
             }
 
             public override LangElement Inclusion(Span span, bool conditional, InclusionTypes type, LangElement fileNameExpression)

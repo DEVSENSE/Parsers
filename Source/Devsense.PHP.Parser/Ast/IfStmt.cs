@@ -65,11 +65,17 @@ namespace Devsense.PHP.Syntax.Ast
         /// </summary>
         public readonly Text.Span Span;
 
-        public ConditionalStmt(Text.Span span, Expression condition, Statement/*!*/ statement)
+        /// <summary>
+        /// Position of the header parentheses.
+        /// </summary>
+        public readonly Text.Span ConditionSpan;
+
+        public ConditionalStmt(Text.Span span, Expression condition, Text.Span condSpan, Statement/*!*/ statement)
 		{
             this.Span = span;
 			this.condition = condition;
 			this.statement = statement;
+            this.ConditionSpan = condSpan;
         }
 
         /// <summary>

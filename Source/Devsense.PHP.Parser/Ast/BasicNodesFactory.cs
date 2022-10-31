@@ -358,9 +358,9 @@ namespace Devsense.PHP.Syntax.Ast
             return new HaltCompiler(span);
         }
 
-        public virtual LangElement If(Span span, LangElement cond, LangElement body, LangElement elseOpt)
+        public virtual LangElement If(Span span, LangElement cond, Span condSpan, LangElement body, LangElement elseOpt)
         {
-            var conditions = new List<ConditionalStmt>() { new ConditionalStmt(span, (Expression)cond, (Statement)body) };
+            var conditions = new List<ConditionalStmt>() { new ConditionalStmt(span, (Expression)cond, condSpan, (Statement)body) };
             if (elseOpt != null)
             {
                 Debug.Assert(elseOpt is IfStmt);

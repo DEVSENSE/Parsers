@@ -31,12 +31,14 @@ namespace Devsense.PHP.Syntax
     {
         public readonly Span Span;
         public readonly LangElement Condition;
+        public readonly Span ConditionSpan;
         public readonly LangElement Body;
 
-        public IfStatement(Span span, LangElement condition, LangElement body)
+        public IfStatement(Span span, LangElement condition, Span condSpan, LangElement body)
         {
             Span = span;
             Condition = condition;
+            ConditionSpan = condSpan;
             Body = body;
         }
     }
@@ -449,7 +451,7 @@ namespace Devsense.PHP.Syntax
             colon.ExtendSpan(Span.FromBounds(block.Body.Span.Start, end.Start));
             colon.SetClosingToken(token);
             condList.Remove(block);
-            condList.Add(new IfStatement(Span.FromBounds(block.Span.Start, end.Start), block.Condition, block.Body));
+            condList.Add(new IfStatement(Span.FromBounds(block.Span.Start, end.Start), block.Condition, block.ConditionSpan, block.Body));
         }
 
         private LangElement CreateProperty(Span span, LangElement objectExpr, object name)
