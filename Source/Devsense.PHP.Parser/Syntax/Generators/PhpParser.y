@@ -930,7 +930,7 @@ if_stmt:
 			foreach (var item in (List<IfStatement>)$1) 
 				$$ = _astFactory.If($$ != null? CombineSpans(item.Span, ($$).Span): item.Span, item.Condition, item.ConditionSpan, item.Body, $$); }
 	|	if_stmt_without_else T_ELSE statement
-			{ ((List<IfStatement>)$1).Reverse(); $$ = _astFactory.If(CombineSpans(@2, @3), null, @2, $3, null); 
+			{ ((List<IfStatement>)$1).Reverse(); $$ = _astFactory.If(CombineSpans(@2, @3), null, Span.Invalid, $3, null); 
 			foreach (var item in (List<IfStatement>)$1) $$ = _astFactory.If(CombineSpans(item.Span, ($$).Span), item.Condition, item.ConditionSpan, item.Body, $$); }
 ;
 

@@ -2771,7 +2771,7 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 				yyval.Node = _astFactory.If(yyval.Node != null? CombineSpans(item.Span, (yyval.Node).Span): item.Span, item.Condition, item.ConditionSpan, item.Body, yyval.Node); }
         return;
       case 243: // if_stmt -> if_stmt_without_else T_ELSE statement 
-{ ((List<IfStatement>)value_stack.array[value_stack.top-3].yyval.IfItemList).Reverse(); yyval.Node = _astFactory.If(CombineSpans(value_stack.array[value_stack.top-2].yypos, value_stack.array[value_stack.top-1].yypos), null, value_stack.array[value_stack.top-2].yypos, value_stack.array[value_stack.top-1].yyval.Node, null); 
+{ ((List<IfStatement>)value_stack.array[value_stack.top-3].yyval.IfItemList).Reverse(); yyval.Node = _astFactory.If(CombineSpans(value_stack.array[value_stack.top-2].yypos, value_stack.array[value_stack.top-1].yypos), null, Span.Invalid, value_stack.array[value_stack.top-1].yyval.Node, null); 
 			foreach (var item in (List<IfStatement>)value_stack.array[value_stack.top-3].yyval.IfItemList) yyval.Node = _astFactory.If(CombineSpans(item.Span, (yyval.Node).Span), item.Condition, item.ConditionSpan, item.Body, yyval.Node); }
         return;
       case 244: // alt_if_stmt_without_else -> T_IF '(' expr ')' ':' inner_statement_list 
