@@ -166,7 +166,6 @@ namespace Devsense.PHP.Syntax.Ast
         {
             return new SimpleBlockStmt(BlockSpan(span, statements), statements.CastToArray<Statement>());
         }
-
         public virtual LangElement Concat(Span span, IEnumerable<LangElement> expressions)
         {
             return new ConcatEx(span, expressions.CastToArray<Expression>());
@@ -469,11 +468,12 @@ namespace Devsense.PHP.Syntax.Ast
             return new ShellEx(span, (Expression)command);
         }
 
-        public virtual LangElement Switch(Span span, LangElement value, List<LangElement> block, Tokens endToken, Span endTokenSpan)
+        public virtual LangElement Switch(Span span, LangElement value, Span valueSpan, List<LangElement> block, Tokens endToken, Span endTokenSpan)
         {
             return new SwitchStmt(
                 span,
                 (Expression)value,
+                valueSpan,
                 block.CastToArray<SwitchItem>(),
                 endToken,
                 endTokenSpan

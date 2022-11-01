@@ -413,8 +413,8 @@ namespace UnitTests
             public override LangElement StaticVarDecl(Span span, VariableName name, LangElement initializerOpt)
                  => CountLE(base.StaticVarDecl(span, name, initializerOpt));
 
-            public override LangElement Switch(Span span, LangElement value, List<LangElement> block, Tokens endToken, Span endTokenSpan)
-                 => CountLE(base.Switch(span, value, block, endToken, endTokenSpan));
+            public override LangElement Switch(Span span, LangElement value, Span valueSpan, List<LangElement> block, Tokens endToken, Span endTokenSpan)
+                 => CountLE(base.Switch(span, value, valueSpan, block, endToken, endTokenSpan));
 
             public override LangElement Throw(Span span, LangElement expression)
                  => CountLE(base.Throw(span, expression));

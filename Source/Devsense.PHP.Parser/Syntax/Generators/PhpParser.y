@@ -663,7 +663,7 @@ statement:
 	|	T_FOR '(' for_exprs ';' for_exprs ';' for_exprs ')' enter_scope for_statement exit_scope
 			{ $$ = _astFactory.For(@$, $3, $5, $7, CombineSpans(@2, @8), $10); }
 	|	T_SWITCH '(' expr ')' enter_scope switch_case_list exit_scope
-			{ $$ = _astFactory.Switch(@$, $3, $6.CaseList, $6.ClosingToken, $6.ClosingTokenSpan); }
+			{ $$ = _astFactory.Switch(@$, $3, CombineSpans(@2, @4), $6.CaseList, $6.ClosingToken, $6.ClosingTokenSpan); }
 	|	T_BREAK optional_expr ';'		{ $$ = _astFactory.Jump(@$, JumpStmt.Types.Break, $2);}
 	|	T_CONTINUE optional_expr ';'	{ $$ = _astFactory.Jump(@$, JumpStmt.Types.Continue, $2); }
 	|	T_RETURN optional_expr ';'		{ $$ = _astFactory.Jump(@$, JumpStmt.Types.Return, $2); }

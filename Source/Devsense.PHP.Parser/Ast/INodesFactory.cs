@@ -482,11 +482,12 @@ namespace Devsense.PHP.Syntax.Ast
         /// </summary>
         /// <param name="span">Entire element span.</param>
         /// <param name="value">Switch value expression.</param>
+        /// <param name="valueSpan">Position of the value parentheses.</param>
         /// <param name="block">List of statements containing only <see cref="SwitchItem"/> statements.</param>
         /// <param name="endToken">The switch closing token.</param>
         /// <param name="endTokenSpan">The <paramref name="endToken"/> span.</param>
         /// <returns>Switch statement.</returns>
-        TNode Switch(TSpan span, TNode value, List<TNode> block, Tokens endToken, TSpan endTokenSpan);
+        TNode Switch(TSpan span, TNode value, TSpan valueSpan, List<TNode> block, Tokens endToken, TSpan endTokenSpan);
 
         /// <summary>
         /// Creates <c>case</c> or <c>default</c> statement used in <c>switch</c> statement.

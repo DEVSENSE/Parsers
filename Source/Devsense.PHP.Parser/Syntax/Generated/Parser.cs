@@ -2455,7 +2455,7 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 { yyval.Node = _astFactory.For(yypos, value_stack.array[value_stack.top-9].yyval.NodeList, value_stack.array[value_stack.top-7].yyval.NodeList, value_stack.array[value_stack.top-5].yyval.NodeList, CombineSpans(value_stack.array[value_stack.top-10].yypos, value_stack.array[value_stack.top-4].yypos), value_stack.array[value_stack.top-2].yyval.Node); }
         return;
       case 153: // statement -> T_SWITCH '(' expr ')' enter_scope switch_case_list exit_scope 
-{ yyval.Node = _astFactory.Switch(yypos, value_stack.array[value_stack.top-5].yyval.Node, value_stack.array[value_stack.top-2].yyval.SwitchObject.CaseList, value_stack.array[value_stack.top-2].yyval.SwitchObject.ClosingToken, value_stack.array[value_stack.top-2].yyval.SwitchObject.ClosingTokenSpan); }
+{ yyval.Node = _astFactory.Switch(yypos, value_stack.array[value_stack.top-5].yyval.Node, CombineSpans(value_stack.array[value_stack.top-6].yypos, value_stack.array[value_stack.top-4].yypos), value_stack.array[value_stack.top-2].yyval.SwitchObject.CaseList, value_stack.array[value_stack.top-2].yyval.SwitchObject.ClosingToken, value_stack.array[value_stack.top-2].yyval.SwitchObject.ClosingTokenSpan); }
         return;
       case 154: // statement -> T_BREAK optional_expr ';' 
 { yyval.Node = _astFactory.Jump(yypos, JumpStmt.Types.Break, value_stack.array[value_stack.top-2].yyval.Node);}

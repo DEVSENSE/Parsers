@@ -13,6 +13,7 @@
 // See the Apache Version 2.0 License for specific language governing
 // permissions and limitations under the License.
 
+using Devsense.PHP.Text;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -29,6 +30,11 @@ namespace Devsense.PHP.Syntax.Ast
 		/// <summary>Value to switch by</summary>
         public Expression/*!*/ SwitchValue { get; internal set; }
 
+        /// <summary>
+        /// Position of the header parentheses.
+        /// </summary>
+        public Text.Span ValueSpan { get; }
+
         /// <summary>Body of switch statement</summary>
         public SwitchItem[]/*!*/ SwitchItems { get; }
 
@@ -44,13 +50,17 @@ namespace Devsense.PHP.Syntax.Ast
         public Text.Span ClosingTokenSpan { get; }
 
         public SwitchStmt(Text.Span span,
-			Expression/*!*/ switchValue, IList<SwitchItem>/*!*/ switchItems,
-			Tokens closingToken, Text.Span closingTokenSpan)
+			Expression/*!*/ switchValue,
+            Text.Span valueSpan,
+            IList<SwitchItem>/*!*/ switchItems,
+			Tokens closingToken, 
+			Text.Span closingTokenSpan)
 			: base(span)
 		{
 			Debug.Assert(switchValue != null && switchItems != null);
 
 			this.SwitchValue = switchValue;
+			this.ValueSpan = valueSpan;
 			this.SwitchItems = switchItems.AsArray();
 			this.ClosingToken = closingToken;
 			this.ClosingTokenSpan = closingTokenSpan;
