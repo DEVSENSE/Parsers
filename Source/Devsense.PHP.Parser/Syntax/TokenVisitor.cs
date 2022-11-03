@@ -724,6 +724,11 @@ namespace Devsense.PHP.Syntax
 
         public override void VisitFormalParam(FormalParam x)
         {
+            //Is this fake parameter?
+            //It is if it doesn't have a name => ignore it
+            if (string.IsNullOrEmpty(x.Name.Name.Value))
+                return;
+
             // constructor property modifiers
             if (x.IsConstructorProperty)
             {
