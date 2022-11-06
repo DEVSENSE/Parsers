@@ -28,15 +28,14 @@ namespace Devsense.PHP.Syntax.Ast
 		/// <summary>
 		/// List of conditions including the if-conditions and the final else.
 		/// </summary>
-		private List<ConditionalStmt>/*!!*/ conditions;
-        public List<ConditionalStmt>/*!!*/ Conditions { get { return conditions; } internal set { conditions = value; } }
+		public List<ConditionalStmt>/*!!*/ Conditions { get; internal set; }
 
 		public IfStmt(Text.Span span, List<ConditionalStmt>/*!!*/ conditions)
 			: base(span)
 		{
 			Debug.Assert(conditions != null && conditions.Count > 0);
 			Debug.Assert(conditions.All((x) => x != null));
-			this.conditions = conditions;
+			this.Conditions = conditions;
 		}
 
         /// <summary>
@@ -54,28 +53,30 @@ namespace Devsense.PHP.Syntax.Ast
 		/// <summary>
 		/// Condition or a <B>null</B> reference for the case of "else" branch.
 		/// </summary>
-		public Expression Condition { get { return condition; } internal set { condition = value; } }
-		private Expression condition;
+		public Expression Condition { get; internal set; }
 
-        public Statement/*!*/ Statement { get { return statement; } internal set { statement = value; } }
-		private Statement/*!*/ statement;
+        /// <summary>
+        /// Position of the header parentheses encapsulating <see cref="Condition"/>.
+        /// If it is "else" branch with no <see cref="Condition"/>, it is set to <see cref="Text.Span.Invalid"/>.
+        /// </summary>
+        public Text.Span ParenthesesSpan { get; }
+
+        /// <summary>
+        /// The branch statement.
+        /// </summary>
+        public Statement/*!*/ Statement { get; internal set; }
 
         /// <summary>
         /// Beginning of <see cref="ConditionalStmt"/>.
         /// </summary>
         public readonly Text.Span Span;
 
-        /// <summary>
-        /// Position of the header parentheses.
-        /// </summary>
-        public readonly Text.Span ConditionSpan;
-
-        public ConditionalStmt(Text.Span span, Expression condition, Text.Span condSpan, Statement/*!*/ statement)
+        public ConditionalStmt(Text.Span span, Expression condition, Text.Span parenthesesSpan, Statement/*!*/ statement)
 		{
             this.Span = span;
-			this.condition = condition;
-			this.statement = statement;
-            this.ConditionSpan = condSpan;
+			this.Condition = condition;
+            this.ParenthesesSpan = parenthesesSpan;
+			this.Statement = statement;
         }
 
         /// <summary>

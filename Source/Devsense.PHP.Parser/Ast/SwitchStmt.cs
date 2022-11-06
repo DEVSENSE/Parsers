@@ -31,9 +31,9 @@ namespace Devsense.PHP.Syntax.Ast
         public Expression/*!*/ SwitchValue { get; internal set; }
 
         /// <summary>
-        /// Position of the header parentheses.
+        /// Position of the header parentheses encapsulating <see cref="SwitchValue"/>.
         /// </summary>
-        public Text.Span ValueSpan { get; }
+        public Text.Span ParenthesesSpan { get; }
 
         /// <summary>Body of switch statement</summary>
         public SwitchItem[]/*!*/ SwitchItems { get; }
@@ -51,7 +51,7 @@ namespace Devsense.PHP.Syntax.Ast
 
         public SwitchStmt(Text.Span span,
 			Expression/*!*/ switchValue,
-            Text.Span valueSpan,
+            Text.Span parenthesesSpan,
             IList<SwitchItem>/*!*/ switchItems,
 			Tokens closingToken, 
 			Text.Span closingTokenSpan)
@@ -60,7 +60,7 @@ namespace Devsense.PHP.Syntax.Ast
 			Debug.Assert(switchValue != null && switchItems != null);
 
 			this.SwitchValue = switchValue;
-			this.ValueSpan = valueSpan;
+			this.ParenthesesSpan = parenthesesSpan;
 			this.SwitchItems = switchItems.AsArray();
 			this.ClosingToken = closingToken;
 			this.ClosingTokenSpan = closingTokenSpan;
