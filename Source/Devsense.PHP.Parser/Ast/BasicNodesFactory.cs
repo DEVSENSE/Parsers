@@ -197,9 +197,9 @@ namespace Devsense.PHP.Syntax.Ast
             }
         }
 
-        public virtual LangElement Do(Span span, LangElement body, LangElement cond, Span condSpan, Span whileSpan)
+        public virtual LangElement Do(Span span, LangElement body, LangElement cond, Span parenthesesSpan, Span whileSpan)
         {
-            return new WhileStmt(span, WhileStmt.Type.Do, (Expression)cond, condSpan, whileSpan, (Statement)body);
+            return new WhileStmt(span, WhileStmt.Type.Do, (Expression)cond, parenthesesSpan, whileSpan, (Statement)body);
         }
 
         public virtual LangElement Echo(Span span, IEnumerable<LangElement> parameters)
@@ -287,9 +287,9 @@ namespace Devsense.PHP.Syntax.Ast
             return new FieldDecl(span, name.Value, (Expression)initializerOpt);
         }
 
-        public virtual LangElement For(Span span, IEnumerable<LangElement> init, IEnumerable<LangElement> cond, IEnumerable<LangElement> action, Span condSpan, LangElement body)
+        public virtual LangElement For(Span span, IEnumerable<LangElement> init, IEnumerable<LangElement> cond, IEnumerable<LangElement> action, Span parenthesesSpan, LangElement body)
         {
-            return new ForStmt(span, init.CastToArray<Expression>(), cond.CastToArray<Expression>(), action.CastToArray<Expression>(), condSpan, (Statement)body);
+            return new ForStmt(span, init.CastToArray<Expression>(), cond.CastToArray<Expression>(), action.CastToArray<Expression>(), parenthesesSpan, (Statement)body);
         }
 
         public virtual LangElement Foreach(Span span, LangElement enumeree, ForeachVar keyOpt, ForeachVar value, LangElement body)
@@ -357,9 +357,9 @@ namespace Devsense.PHP.Syntax.Ast
             return new HaltCompiler(span);
         }
 
-        public virtual LangElement If(Span span, LangElement cond, Span condSpan, LangElement body, LangElement elseOpt)
+        public virtual LangElement If(Span span, LangElement cond, Span parenthesesSpan, LangElement body, LangElement elseOpt)
         {
-            var conditions = new List<ConditionalStmt>() { new ConditionalStmt(span, (Expression)cond, condSpan, (Statement)body) };
+            var conditions = new List<ConditionalStmt>() { new ConditionalStmt(span, (Expression)cond, parenthesesSpan, (Statement)body) };
             if (elseOpt != null)
             {
                 Debug.Assert(elseOpt is IfStmt);
@@ -666,14 +666,14 @@ namespace Devsense.PHP.Syntax.Ast
             return new IntersectionTypeRef(span, typearr);
         }
 
-        public virtual LangElement While(Span span, LangElement cond, Span condSpan, LangElement body)
+        public virtual LangElement While(Span span, LangElement cond, Span parenthesesSpan, LangElement body)
         {
             Debug.Assert(cond is Expression && body is Statement);
             return new WhileStmt(
                 span,
                 WhileStmt.Type.While,
                 (Expression)cond,
-                condSpan,
+                parenthesesSpan,
                 span.IsValid ? new Span(span.Start, "while".Length) : Span.Invalid,
                 (Statement)body);
         }

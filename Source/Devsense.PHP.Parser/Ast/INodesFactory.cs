@@ -427,20 +427,20 @@ namespace Devsense.PHP.Syntax.Ast
         /// <param name="span">Entire element span.</param>
         /// <param name="body">Loop body.</param>
         /// <param name="cond">Condition that breaks the loop.</param>
-        /// <param name="condSpan">Position of the condition parentheses.</param>
+        /// <param name="parenthesesSpan">Position of the condition parentheses.</param>
         /// <param name="whileSpan">Position of "while" keyword.</param>
         /// <returns>Do statement.</returns>
-        TNode Do(TSpan span, TNode body, TNode cond, TSpan condSpan, TSpan whileSpan);
+        TNode Do(TSpan span, TNode body, TNode cond, TSpan parenthesesSpan, TSpan whileSpan);
 
         /// <summary>
         /// Creates <c>while</c> statement.
         /// </summary>
         /// <param name="span">Entire element span.</param>
         /// <param name="cond">Condition that breaks the loop.</param>
-        /// <param name="condSpan">Position of the condition parentheses.</param>
+        /// <param name="parenthesesSpan">Position of the condition parentheses.</param>
         /// <param name="body">Loop body.</param>
         /// <returns>While statement.</returns>
-        TNode While(TSpan span, TNode cond, TSpan condSpan, TNode body);
+        TNode While(TSpan span, TNode cond, TSpan parenthesesSpan, TNode body);
 
         /// <summary>
         /// Creates <c>for</c> statement.
@@ -449,10 +449,10 @@ namespace Devsense.PHP.Syntax.Ast
         /// <param name="init">Initializer expressions.</param>
         /// <param name="cond">Conditions, none, one or more. Only the last one breaks the loop.</param>
         /// <param name="action">Actions to be performed after each loop.</param>
-        /// <param name="condSpan">Position of the condition parentheses.</param>
+        /// <param name="parenthesesSpan">Position of the condition parentheses.</param>
         /// <param name="body">Loop body.</param>
         /// <returns>For statement.</returns>
-        TNode For(TSpan span, IEnumerable<TNode> init, IEnumerable<TNode> cond, IEnumerable<TNode> action, TSpan condSpan, TNode body);
+        TNode For(TSpan span, IEnumerable<TNode> init, IEnumerable<TNode> cond, IEnumerable<TNode> action, TSpan parenthesesSpan, TNode body);
 
         /// <summary>
         /// Creates <c>foreach</c> statement.
@@ -470,12 +470,12 @@ namespace Devsense.PHP.Syntax.Ast
         /// </summary>
         /// <param name="span">Entire element span.</param>
         /// <param name="cond">Condition expression.</param>
-        /// <param name="condSpan">Position of the condition parentheses.</param>
+        /// <param name="parenthesesSpan">Position of the condition parentheses.</param>
         /// <param name="body">True branch statement.</param>
         /// <param name="elseOpt">Optional. False branch statement.
         /// Can be another <c>if</c> in case of <c>elseif</c>, another statement in case of <c>else</c> or <c>null</c>.</param>
         /// <returns>If statement.</returns>
-        TNode If(TSpan span, TNode cond, TSpan condSpan, TNode body, TNode elseOpt);
+        TNode If(TSpan span, TNode cond, TSpan parenthesesSpan, TNode body, TNode elseOpt);
 
         /// <summary>
         /// Creates <c>switch</c> statement.
