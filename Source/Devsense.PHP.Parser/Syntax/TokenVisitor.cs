@@ -724,11 +724,6 @@ namespace Devsense.PHP.Syntax
 
         public override void VisitFormalParam(FormalParam x)
         {
-            //Is this fake parameter?
-            //It is if it doesn't have a name => ignore it
-            if (string.IsNullOrEmpty(x.Name.Name.Value))
-                return;
-
             // constructor property modifiers
             if (x.IsConstructorProperty)
             {
@@ -1102,7 +1097,7 @@ namespace Devsense.PHP.Syntax
         public virtual void VisitSignature(Signature signature)
         {
             ConsumeToken(Tokens.T_LPAREN, SpanUtils.SafeSpan(signature.Span.StartOrInvalid(), 1));
-            VisitElementList(signature.FormalParams, Tokens.T_COMMA);
+            VisitElementList(signature.FormalParams, Tokens.T_COMMA, signature.Span.EndOrInvalid());
             ConsumeToken(Tokens.T_RPAREN, SpanUtils.SafeSpan(signature.Span.End - 1, 1));
         }
 
@@ -1231,6 +1226,32 @@ namespace Devsense.PHP.Syntax
             {
                 VisitElement(list[i]);
             }
+        }
+
+        protected virtual void VisitElementList(IList<FormalParam> list, Tokens separatorToken, int next)
+        {
+            Debug.Assert(list != null, nameof(list));
+
+            var separatorTokenText = TokenFacts.GetTokenText(separatorToken);
+            var lastParam = list.FirstOrDefault();
+            for (int i = 0; i < list.Count; i++)
+            {
+                // Is this a fake parameter?
+                // It is if it doesn't have a name => ignore it
+                if (list[i] != null && string.IsNullOrEmpty(list[i].Name.Name.Value))
+                    continue;
+
+                if (i != 0) ProcessToken(separatorToken, separatorTokenText,
+                    SpanUtils.SpanIntermission(
+                        list[i - 1] != null ? list[i - 1].Span : Span.Invalid,
+                        list[i] != null ? list[i].Span : Span.Invalid));
+
+                Visit(list[i]);
+
+                if (list[i] != null)
+                    lastParam = list[i];
+            }
+            ProcessOptionalToken(separatorToken, lastParam?.Span ?? Span.Invalid, next);
         }
 
         protected virtual void VisitElementList(IList<MatchArm> list, Tokens separatorToken, int next)
