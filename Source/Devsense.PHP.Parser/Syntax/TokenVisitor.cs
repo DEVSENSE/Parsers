@@ -790,12 +790,23 @@ namespace Devsense.PHP.Syntax
         {
             if (!headerSpan.IsValid)
             {
+                // quess the ending span
+                ILangElement span3 = null;
+                if (returnTypeOpt != null)
+                {
+                    span3 = returnTypeOpt;
+                }
+                else if (useParams != null && useParams.Count != 0)
+                {
+                    span3 = useParams.LastOrDefault(u => u != null);
+                }
+
                 // guess the header span
                 headerSpan =
                     SpanUtils.CombineValid(
                     element.Span.IsValid ? new Span(element.Span.Start, 0) : Span.Invalid,
                     signature.Span,
-                    returnTypeOpt != null ? returnTypeOpt.Span : (useParams != null && useParams.Count != 0) ? useParams.Last().Span : Span.Invalid);
+                    span3 != null ? span3.Span: Span.Invalid);
             }
 
             bool isArrowFunc = !nameOpt.HasValue && body is Expression; // arrow func (PHP 7.4), lambda function with expression instead of body
@@ -821,17 +832,18 @@ namespace Devsense.PHP.Syntax
 
                 VisitSignature(signature);
 
-                if (useParams != null && useParams.Count != 0)
+                if (useParams != null)
                 {
                     var useSpan = SpanUtils.SpanIntermission(
                         signature.Span,
                         returnTypeOpt != null ? returnTypeOpt.Span.StartOrInvalid() : (body != null ? body.Span.StartOrInvalid() : element.Span.End));
+                    var lastUseParam = useParams.LastOrDefault(u => u != null);
 
                     ProcessToken(Tokens.T_USE, useSpan);
                     ProcessToken(Tokens.T_LPAREN, useSpan);
                     VisitElementList(useParams, Tokens.T_COMMA);
-                    ProcessToken(Tokens.T_RPAREN, useParams.Count > 0
-                        ? SpanUtils.SpanIntermission(useParams.Last().Span, useSpan.End)
+                    ProcessToken(Tokens.T_RPAREN, lastUseParam != null
+                        ? SpanUtils.SpanIntermission(lastUseParam.Span, useSpan.End)
                         : useSpan);
                 }
 
