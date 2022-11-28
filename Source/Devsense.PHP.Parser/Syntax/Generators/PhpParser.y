@@ -1487,7 +1487,7 @@ returns_ref:
 
 lexical_vars:
 		/* empty */ { $$ = new List<FormalParam>(); }
-	|	T_USE '(' lexical_var_list ')' { $$ = $3; }
+	|	T_USE '(' lexical_var_list possible_comma ')' { $$ = AddTrailingComma($3, $4); }
 ;
 
 lexical_var_list:

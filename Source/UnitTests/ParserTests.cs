@@ -43,7 +43,9 @@ class X {
 }",
 @"<?php
 
-do { } while (false);"
+do { } while (false);",
+@"<?php
+$fn = function () use ($a,): int {};"
             };
 
             foreach (var code in codes)
