@@ -838,13 +838,15 @@ namespace Devsense.PHP.Syntax
                         signature.Span,
                         returnTypeOpt != null ? returnTypeOpt.Span.StartOrInvalid() : (body != null ? body.Span.StartOrInvalid() : element.Span.End));
                     var lastUseParam = useParams.LastOrDefault(u => u != null);
-
-                    ProcessToken(Tokens.T_USE, useSpan);
-                    ProcessToken(Tokens.T_LPAREN, useSpan);
-                    VisitElementList(useParams, Tokens.T_COMMA);
-                    ProcessToken(Tokens.T_RPAREN, lastUseParam != null
-                        ? SpanUtils.SpanIntermission(lastUseParam.Span, useSpan.End)
-                        : useSpan);
+                    if (lastUseParam != null) // actually has a use param
+                    {
+                        ProcessToken(Tokens.T_USE, useSpan);
+                        ProcessToken(Tokens.T_LPAREN, useSpan);
+                        VisitElementList(useParams, Tokens.T_COMMA);
+                        ProcessToken(Tokens.T_RPAREN, lastUseParam != null // TODO: no way to distinguish "use ()" and no use
+                            ? SpanUtils.SpanIntermission(lastUseParam.Span, useSpan.End)
+                            : useSpan);
+                    }
                 }
 
                 if (returnTypeOpt != null)
