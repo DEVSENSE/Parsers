@@ -816,13 +816,12 @@ namespace Devsense.PHP.Syntax
 
             bool isArrowFunc = !nameOpt.HasValue && body is Expression; // arrow func (PHP 7.4), lambda function with expression instead of body
 
+            VisitAttributes(element);
+
             using (new ScopeHelper(this, element is FunctionDecl ?
                 (DummyDeclHeader)new DummyFunctionDeclHeader(element, headerSpan) :
                 (DummyDeclHeader)new DummyMethodDeclHeader(element, headerSpan)))
             {
-
-                VisitAttributes(element);
-
                 // function &NAME SIGNATURE : RETURN_TYPE
                 // function &SIGNATURE : RETURN_TYPE
                 // fn &SIGNATURE : RETURN_TYPE
@@ -1734,11 +1733,10 @@ namespace Devsense.PHP.Syntax
             var prenameSpan = SpanUtils.SpanIntermission(x.Span.StartOrInvalid(), nameSpan);
             ISourceToken previous;
 
+            VisitAttributes(x);
+
             using (new ScopeHelper(this, new DummyTypeDeclHeader(x, x.HeadingSpan)))
             {
-                // [#attributes]
-                VisitAttributes(x);
-
                 //
                 // final class|interface|trait|enum [(call signature)] [NAME] extends ... implements ... { MEMBERS }
                 //
