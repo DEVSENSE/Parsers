@@ -61,7 +61,7 @@ namespace Devsense.PHP.Syntax
                 case Tokens.T_LBRACKET: return "[";
                 case Tokens.T_RBRACKET: return "]";
 
-                case Tokens.T_ATTRIBUTE: return "[#";
+                case Tokens.T_ATTRIBUTE: return "#[";
 
                 case Tokens.T_LOGICAL_XOR: return "xor";
                 case Tokens.T_LOGICAL_OR: return "or";
