@@ -534,7 +534,7 @@ namespace Devsense.PHP.Syntax
 
         public override void VisitDirectFcnCall(DirectFcnCall x)
         {
-            VisitIsMemberOf(x.IsMemberOf, x.NameSpan);
+            VisitIsMemberOf(x.IsMemberOf, x.IsNullSafeObjectOperation, x.NameSpan);
             VisitQualifiedName(x.FullName.OriginalName, x.NameSpan);
             VisitCallSignature(x.CallSignature);
         }
@@ -556,7 +556,7 @@ namespace Devsense.PHP.Syntax
 
         public override void VisitDirectVarUse(DirectVarUse x)
         {
-            VisitIsMemberOf(x.IsMemberOf, x.Span);
+            VisitIsMemberOf(x.IsMemberOf,x.IsNullSafeObjectOperation, x.Span);
             VisitVariableName(x.VarName, x.Span, x.IsMemberOf == null &&
                 x.ContainingElement is not DollarBracesExpression &&
                 !(x.ContainingElement is ItemUse &&
@@ -1005,7 +1005,7 @@ namespace Devsense.PHP.Syntax
 
         public override void VisitIndirectFcnCall(IndirectFcnCall x)
         {
-            VisitIsMemberOf(x.IsMemberOf, x.NameExpr.Span);
+            VisitIsMemberOf(x.IsMemberOf, x.IsNullSafeObjectOperation, x.NameExpr.Span);
             VisitElement(x.NameExpr);
             VisitCallSignature(x.CallSignature);
         }
@@ -1139,7 +1139,7 @@ namespace Devsense.PHP.Syntax
 
         public override void VisitIndirectVarUse(IndirectVarUse x)
         {
-            VisitIsMemberOf(x.IsMemberOf, x.VarNameEx.Span);
+            VisitIsMemberOf(x.IsMemberOf,x.IsNullSafeObjectOperation, x.VarNameEx.Span);
             if (x.IsMemberOf == null && !(x.ContainingElement is DollarBracesExpression))
             {
                 ProcessToken(Tokens.T_DOLLAR, x.Span);
@@ -1164,7 +1164,7 @@ namespace Devsense.PHP.Syntax
 
         public override void VisitItemUse(ItemUse x)
         {
-            VisitIsMemberOf(x.IsMemberOf, x.Array.Span);
+            VisitIsMemberOf(x.IsMemberOf, x.IsNullSafeObjectOperation, x.Array.Span);
             VisitElement(x.Array);
             ProcessToken(x.IsBraces ? Tokens.T_LBRACE : Tokens.T_LBRACKET, SpanUtils.SpanIntermission(x.Array.Span,
                 x.Index != null ? x.Index.Span.StartOrInvalid() : x.Span.End));
@@ -1172,12 +1172,16 @@ namespace Devsense.PHP.Syntax
             ConsumeToken(x.IsBraces ? Tokens.T_RBRACE : Tokens.T_RBRACKET, SpanUtils.SafeSpan(x.Span.End - 1, 1));
         }
 
-        public virtual void VisitIsMemberOf(Expression isMemberOf, Span next)
+        public virtual void VisitIsMemberOf(Expression isMemberOf, bool nullSafe, Span next)
         {
             if (isMemberOf != null)
             {
                 VisitElement(isMemberOf);
-                ProcessToken(Tokens.T_OBJECT_OPERATOR, SpanUtils.SpanIntermission(isMemberOf.Span, next));
+
+                if (nullSafe) 
+                    ProcessToken(Tokens.T_NULLSAFE_OBJECT_OPERATOR, SpanUtils.SpanIntermission(isMemberOf.Span, next));
+                else
+                    ProcessToken(Tokens.T_OBJECT_OPERATOR, SpanUtils.SpanIntermission(isMemberOf.Span, next));
             }
         }
 

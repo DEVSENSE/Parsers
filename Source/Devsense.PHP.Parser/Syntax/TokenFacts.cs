@@ -74,6 +74,7 @@ namespace Devsense.PHP.Syntax
                 case Tokens.T_AMPERSAND_NOT_FOLLOWED_BY_VAR_OR_VARARG: return "&";
                 case Tokens.T_DOUBLE_COLON: return "::";
                 case Tokens.T_OBJECT_OPERATOR: return "->";
+                case Tokens.T_NULLSAFE_OBJECT_OPERATOR: return "?->";
                 case Tokens.T_DOUBLE_ARROW: return "=>";
 
                 case Tokens.T_IS_EQUAL: return "==";
