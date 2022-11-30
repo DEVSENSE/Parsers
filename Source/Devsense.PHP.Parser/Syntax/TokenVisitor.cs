@@ -436,6 +436,8 @@ namespace Devsense.PHP.Syntax
 
         public override void VisitEnumCaseDecl(EnumCaseDecl x)
         {
+            VisitAttributes(x);
+
             // case NAME = EXPRESSION ;
 
             ProcessToken(Tokens.T_CASE, x.Span.IsValid ? new Span(x.Span.Start, 4) : Span.Invalid);
@@ -495,6 +497,7 @@ namespace Devsense.PHP.Syntax
 
         public override void VisitConstDeclList(ConstDeclList x)
         {
+            VisitAttributes(x);
             var constSpan = x.Constants == null || x.Constants.Count == 0 ? x.Span :
                 SpanUtils.SpanIntermission(x.Span.StartOrInvalid(), x.Constants[0].Span);
             ConsumeModifiers(x, x.Modifiers, constSpan);
@@ -672,6 +675,8 @@ namespace Devsense.PHP.Syntax
                     modifiersSpan = SpanUtils.SpanIntermission(x.Span.Start, x.Fields[0].Span);
                 }
             }
+            
+            VisitAttributes(x);
 
             var modifiers = ConsumeModifiers(x, x.Modifiers, modifiersSpan);
             if (modifiers.Length == 0)
@@ -815,6 +820,9 @@ namespace Devsense.PHP.Syntax
                 (DummyDeclHeader)new DummyFunctionDeclHeader(element, headerSpan) :
                 (DummyDeclHeader)new DummyMethodDeclHeader(element, headerSpan)))
             {
+
+                VisitAttributes(element);
+
                 // function &NAME SIGNATURE : RETURN_TYPE
                 // function &SIGNATURE : RETURN_TYPE
                 // fn &SIGNATURE : RETURN_TYPE
@@ -1303,6 +1311,20 @@ namespace Devsense.PHP.Syntax
             ProcessOptionalToken(separatorToken, list.LastOrDefault()?.Span ?? Span.Invalid, next);
         }
 
+        protected virtual void VisitElementList(IList<IAttributeElement> list, Tokens separatorToken, int next)
+        {
+            var separatorTokenText = TokenFacts.GetTokenText(separatorToken);
+            for (int i = 0; i < list.Count; i++)
+            {
+                if (i != 0) ProcessToken(separatorToken, separatorTokenText,
+                    SpanUtils.SpanIntermission(
+                        list[i - 1] != null ? list[i - 1].Span : Span.Invalid,
+                        list[i] != null ? list[i].Span : Span.Invalid));
+                VisitElement(list[i]);
+            }
+            ProcessOptionalToken(separatorToken, list.LastOrDefault()?.Span ?? Span.Invalid, next);
+        }
+
         private void ProcessOptionalToken(Tokens token, Span previous, int next)
         {
             var commaSpan = SpanUtils.SpanIntermission(previous, next);
@@ -1727,6 +1749,9 @@ namespace Devsense.PHP.Syntax
 
             using (new ScopeHelper(this, new DummyTypeDeclHeader(x, x.HeadingSpan)))
             {
+                // [#attributes]
+                VisitAttributes(x);
+
                 //
                 // final class|interface|trait|enum [(call signature)] [NAME] extends ... implements ... { MEMBERS }
                 //
@@ -1937,17 +1962,18 @@ namespace Devsense.PHP.Syntax
 
         public override void VisitAttribute(AttributeElement x)
         {
-            // << attribute() >>
-
-            ConsumeToken(Tokens.T_SL, SpanUtils.SafeSpan(x.Span.StartOrInvalid(), 2));
-
             VisitElement(x.ClassRef);
+            if (!x.CallSignature.IsEmpty || x.CallSignature.Span.Length > 0)
+            {
+                VisitCallSignature(x.CallSignature);
+            }
+        }
 
-            // ()
-            VisitCallSignature(x.CallSignature);
-
-            //
-            ConsumeToken(Tokens.T_SR, SpanUtils.SafeSpan(x.Span.StartOrInvalid(), 2));
+        public override void VisitAttributeGroup(AttributeGroup x)
+        {
+            ProcessToken(Tokens.T_ATTRIBUTE, SpanUtils.SafeSpan(x.Span.StartOrInvalid(), 2));
+            VisitElementList(x.Attributes, Tokens.T_COMMA, x.Span.EndOrInvalid());
+            ProcessToken(Tokens.T_RBRACKET, SpanUtils.SafeSpan(x.Span.End - 1, 1));
         }
 
         #endregion
