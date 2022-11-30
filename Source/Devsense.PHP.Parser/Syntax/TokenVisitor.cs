@@ -1280,7 +1280,7 @@ namespace Devsense.PHP.Syntax
             ProcessOptionalToken(separatorToken, lastParam?.Span ?? Span.Invalid, next);
         }
 
-        protected virtual void VisitElementList(IList<MatchArm> list, Tokens separatorToken, int next)
+        protected virtual void VisitElementList<TElement>(IList<TElement> list, Tokens separatorToken, int next) where TElement : ILangElement
         {
             var separatorTokenText = TokenFacts.GetTokenText(separatorToken);
             for (int i = 0; i < list.Count; i++)
@@ -1289,7 +1289,7 @@ namespace Devsense.PHP.Syntax
                     SpanUtils.SpanIntermission(
                         list[i - 1] != null ? list[i - 1].Span : Span.Invalid,
                         list[i] != null ? list[i].Span : Span.Invalid));
-                VisitMatchItem(list[i]);
+                VisitElement(list[i]);
             }
             ProcessOptionalToken(separatorToken, list.LastOrDefault()?.Span ?? Span.Invalid, next);
         }
@@ -1311,19 +1311,6 @@ namespace Devsense.PHP.Syntax
             ProcessOptionalToken(separatorToken, list.LastOrDefault()?.Span ?? Span.Invalid, next);
         }
 
-        protected virtual void VisitElementList(IList<IAttributeElement> list, Tokens separatorToken, int next)
-        {
-            var separatorTokenText = TokenFacts.GetTokenText(separatorToken);
-            for (int i = 0; i < list.Count; i++)
-            {
-                if (i != 0) ProcessToken(separatorToken, separatorTokenText,
-                    SpanUtils.SpanIntermission(
-                        list[i - 1] != null ? list[i - 1].Span : Span.Invalid,
-                        list[i] != null ? list[i].Span : Span.Invalid));
-                VisitElement(list[i]);
-            }
-            ProcessOptionalToken(separatorToken, list.LastOrDefault()?.Span ?? Span.Invalid, next);
-        }
 
         private void ProcessOptionalToken(Tokens token, Span previous, int next)
         {
