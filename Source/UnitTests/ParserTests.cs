@@ -45,7 +45,9 @@ class X {
 
 do { } while (false);",
 @"<?php
-$fn = function () use ($a,): int {};"
+$fn = function () use ($a,): int {};",
+@"<?php use X\enum;",
+@"<?php use X\Enum as BaseEnum",
             };
 
             foreach (var code in codes)

@@ -46,6 +46,8 @@ namespace Devsense.PHP.Syntax
         IPhpDocExtent _backup_doc_comment = null;
         int _backup_attribute_level = 0; // nesting level of #[ ... ]
 
+        Tokens _backup_token = Tokens.EOF;
+
         public IDocBlock DocComment
         {
             get { return _phpDocs.LastDocBlock; }
@@ -124,8 +126,15 @@ namespace Devsense.PHP.Syntax
                         break;
 
                     case Tokens.T_READONLY:
-                    case Tokens.T_ENUM:
                         if (!HasFeatureSet(LanguageFeatures.Php81Set))
+                        {
+                            token = Tokens.T_STRING;
+                        }
+                        break;
+
+                    case Tokens.T_ENUM:
+                        if (!HasFeatureSet(LanguageFeatures.Php81Set) ||
+                            _backup_token == Tokens.T_NS_SEPARATOR) // after "\", it is treated as identifier. See T_NAME_QUALIFIED in Zend. We don't, since it would break backward compatibility with older parsers.
                         {
                             token = Tokens.T_STRING;
                         }
@@ -145,6 +154,10 @@ namespace Devsense.PHP.Syntax
                         _backup_attribute_level--;
                 }
 
+                //
+                _backup_token = token;
+
+                //
                 return (int)token;
             }
         }
