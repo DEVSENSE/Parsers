@@ -18,6 +18,7 @@ using System.Linq;
 using System.Diagnostics;
 using System.Collections.Generic;
 using Devsense.PHP.Text;
+using Devsense.PHP.Utilities;
 
 namespace Devsense.PHP.Syntax.Ast
 {
@@ -32,6 +33,15 @@ namespace Devsense.PHP.Syntax.Ast
         /// Gets qualified name of the named type.
         /// </summary>
         QualifiedName ClassName { get; }
+    }
+
+    #endregion
+
+    #region IMultipleTypeRef
+
+    public interface IMultipleTypeRef
+    {
+        TypeRef[]/*!*/ MultipleTypes { get; }
     }
 
     #endregion
@@ -462,7 +472,7 @@ namespace Devsense.PHP.Syntax.Ast
     /// <summary>
     /// <see cref="TypeRef"/> referring to multiple types.
     /// </summary>
-    public class MultipleTypeRef : TypeRef
+    public class MultipleTypeRef : TypeRef, IMultipleTypeRef
     {
         /// <summary>
         /// List of types represented by this reference.
@@ -470,6 +480,8 @@ namespace Devsense.PHP.Syntax.Ast
         public TypeRef[]/*!*/ MultipleTypes { get; }
 
         public override QualifiedName? QualifiedName => null;
+
+        protected virtual char Separator => '|';
 
         public MultipleTypeRef(Span span, IEnumerable<TypeRef>/*!*/ multipleTypes)
             : base(span)
@@ -480,19 +492,50 @@ namespace Devsense.PHP.Syntax.Ast
             this.MultipleTypes = multipleTypes.AsArray();
         }
 
-        public override string ToString() => string.Join("|", (IEnumerable<TypeRef>)MultipleTypes);
+        public override string ToString()
+        {
+            var result = StringUtils.GetStringBuilder();
+            var types = this.MultipleTypes;
+
+            for (int i = 0; i < types.Length; i++)
+            {
+                if (i != 0)
+                {
+                    // |
+                    // &
+                    result.Append(Separator);
+                }
+
+                var tref = types[i];
+                if (tref is MultipleTypeRef nested)
+                {
+                    // ( tref )
+                    result.Append('(');
+                    result.Append(tref.ToString());
+                    result.Append(')');
+                }
+                else
+                {
+                    // tref
+                    result.Append(tref.ToString());
+                }
+            }
+
+            //
+            return StringUtils.ReturnStringBuilder(result);
+        }
 
         public override void VisitMe(TreeVisitor visitor) => visitor.VisitMultipleTypeRef(this);
     }
 
     public sealed class IntersectionTypeRef : MultipleTypeRef
     {
+        protected override char Separator => '&';
+
         public IntersectionTypeRef(Span span, IEnumerable<TypeRef> multipleTypes)
             : base(span, multipleTypes)
         {
         }
-
-        public override string ToString() => string.Join("&", (IEnumerable<TypeRef>)MultipleTypes);
 
         public override void VisitMe(TreeVisitor visitor) => visitor.VisitIntersectionTypeRef(this);
     }

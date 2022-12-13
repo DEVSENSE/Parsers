@@ -311,7 +311,7 @@ using StringPair = System.Collections.Generic.KeyValuePair<string, string>;
 %type <QualifiedNameReference> name
 %type <Token> object_operator
 
-%type <TypeReference> type type_without_static return_type type_expr type_expr_without_static optional_type optional_type_without_static extends_from
+%type <TypeReference> type type_without_static return_type type_expr type_expr_without_static optional_type optional_type_without_static extends_from union_type_element union_type_without_static_element
 %type <TypeReference> class_name_reference class_name
 
 %type <TypeRefList> name_list catch_name_list implements_list interface_extends_list union_type union_type_without_static intersection_type intersection_type_without_static
@@ -1051,14 +1051,24 @@ type_without_static:
 	|	name		{ $$ = CreateTypeRef($1, true); }
 ;
 
+union_type_element:
+		type						{ $$ = $1; }
+	|	'(' intersection_type ')'	{ $$ = _astFactory.IntersectionTypeReference(@$, $2); }
+;
+
 union_type:
-		type '|' type       { $$ = new List<TypeRef>(2){ $1, $3 }; }
-	|	union_type '|' type { $$ = AddToList<TypeRef>($1, $3); }
+		union_type_element '|' union_type_element	{ $$ = new List<TypeRef>(2){ $1, $3 }; }
+	|	union_type '|' union_type_element			{ $$ = AddToList<TypeRef>($1, $3); }
+;
+
+union_type_without_static_element:
+		type_without_static							{ $$ = $1; }
+	|	'(' intersection_type_without_static ')'	{ $$ = _astFactory.IntersectionTypeReference(@$, $2); }
 ;
 
 union_type_without_static:
-		type_without_static '|' type_without_static       { $$ = new List<TypeRef>(2){ $1, $3 }; }
-	|	union_type_without_static '|' type_without_static { $$ = AddToList<TypeRef>($1, $3); }
+		union_type_without_static_element '|' union_type_without_static_element	{ $$ = new List<TypeRef>(2){ $1, $3 }; }
+	|	union_type_without_static '|' union_type_without_static_element			{ $$ = AddToList<TypeRef>($1, $3); }
 ;
 
 intersection_type:
