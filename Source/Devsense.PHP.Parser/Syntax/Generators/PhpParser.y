@@ -245,7 +245,7 @@ using StringPair = System.Collections.Generic.KeyValuePair<string, string>;
 %token <Object> T_PRIVATE 313   //"private (T_PRIVATE)"
 %token <Object> T_PROTECTED 357 //"protected (T_PROTECTED)"
 %token <Object> T_PUBLIC 311    //"public (T_PUBLIC)"
-%token <Object> T_READONLY 398    //"readonly (T_READONLY)"
+%token <String> T_READONLY 398  //"readonly (T_READONLY)"
 %token <Object> T_VAR 356        //"var (T_VAR)"
 %token <Object> T_UNSET 360     //"unset (T_UNSET)"
 %token <Object> T_ISSET 358     //"isset (T_ISSET)"
@@ -346,7 +346,7 @@ using StringPair = System.Collections.Generic.KeyValuePair<string, string>;
 %type <Node> optional_variable
 %type <SwitchObject> case_list switch_case_list
 
-%type <String> identifier semi_reserved reserved_non_modifiers
+%type <String> identifier semi_reserved reserved_non_modifiers function_name
 %type <StringList> namespace_name
 
 %type <Alias> unprefixed_use_declaration
@@ -720,8 +720,13 @@ unset_variable:
 		variable { $$ = $1; }
 ;
 
+function_name:
+		T_STRING
+	|	T_READONLY
+;
+
 function_declaration_statement:
-	function returns_ref T_STRING backup_doc_comment '(' parameter_list ')' return_type
+	function returns_ref function_name backup_doc_comment '(' parameter_list ')' return_type
 	backup_fn_flags enter_scope '{' inner_statement_list '}' exit_scope backup_fn_flags
 		{ 
 			$$ = _astFactory.Function(@$, isConditional, $2 == (long)FormalParam.Flags.IsByRef, PhpMemberAttributes.None, $8, 
