@@ -126,7 +126,8 @@ namespace Devsense.PHP.Syntax
                         break;
 
                     case Tokens.T_READONLY:
-                        if (!HasFeatureSet(LanguageFeatures.Php81Set))
+                        if (!HasFeatureSet(LanguageFeatures.Php81Set) ||
+                            _backup_token == Tokens.T_NS_SEPARATOR) // not after '\'
                         {
                             token = Tokens.T_STRING;
                         }
