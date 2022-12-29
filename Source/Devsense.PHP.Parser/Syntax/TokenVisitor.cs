@@ -1086,7 +1086,7 @@ namespace Devsense.PHP.Syntax
             int nsCount = initNamespace;
             for (int i = 0; i < tokens.Length; i++)
             {
-                if (tokens[i].Token != Tokens.T_STRING)
+                if (tokens[i].Token != Tokens.T_STRING && tokens[i].Token != Tokens.T_READONLY)
                 {
                     ConsumeToken(tokens[i].Token, tokens[i].Span);
                 }
