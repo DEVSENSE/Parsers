@@ -1356,7 +1356,9 @@ namespace Devsense.PHP.Syntax
 
         public override void VisitIntersectionTypeRef(IntersectionTypeRef x)
         {
+            ProcessToken(Tokens.T_LPAREN, SpanUtils.SafeSpan(x.Span.StartOrInvalid(), 1));
             VisitElementList(x.MultipleTypes, Tokens.T_AMPERSAND_NOT_FOLLOWED_BY_VAR_OR_VARARG);
+            ProcessToken(Tokens.T_RPAREN, SpanUtils.SafeSpan(x.Span.End - 1, 1));
         }
 
         //public override void VisitNamedActualParam(NamedActualParam x)
