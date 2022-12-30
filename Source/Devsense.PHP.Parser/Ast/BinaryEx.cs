@@ -33,11 +33,6 @@ namespace Devsense.PHP.Syntax.Ast
         /// Right operand.
         /// </summary>
         IExpression Right { get; set; }
-
-        /// <summary>
-        /// The operator span.
-        /// </summary>
-        Span OperatorSpan { get; }
     }
 
     /// <summary>
@@ -50,8 +45,6 @@ namespace Devsense.PHP.Syntax.Ast
         IExpression IBinaryExpression.Left { get => LeftExpr; set => LeftExpr = (Expression)value; }
 
         IExpression IBinaryExpression.Right { get => RightExpr; set => RightExpr = (Expression)value; }
-
-        public Span OperatorSpan => SpanUtils.SpanIntermission(leftExpr.Span, rightExpr.Span);
 
         #endregion
 

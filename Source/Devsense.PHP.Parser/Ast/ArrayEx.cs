@@ -153,8 +153,6 @@ namespace Devsense.PHP.Syntax.Ast
         {
             this.Index = index;
         }
-
-        internal bool HasKey => Index != null;
     }
 
     #endregion

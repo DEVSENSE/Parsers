@@ -1,11 +1,13 @@
 ﻿using Devsense.PHP.Syntax.Ast;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
-namespace Devsense.PHP.Syntax
+namespace UnitTests.TestImplementation
 {
-    public static class SyntaxExtensions
+    internal static class SyntaxExtensions
     {
         /// <summary>
         /// Enumerates all the type declarations (excluding anonymous classes).
