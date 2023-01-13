@@ -21,9 +21,8 @@ using System.Linq;
 using Devsense.PHP.Text;
 using Devsense.PHP.Syntax.Ast;
 using Devsense.PHP.Errors;
-using System.Xml;
 using System.Threading;
-using System.Xml.Linq;
+using Devsense.PHP.Utilities;
 
 namespace Devsense.PHP.Syntax
 {
@@ -71,8 +70,8 @@ namespace Devsense.PHP.Syntax
         Scope _currentScope;
         bool isConditional => !_currentScope.IsGlobal;
         NamespaceDecl _currentNamespace = null;
-        readonly Stack<NamingContext> _context = new Stack<NamingContext>();
-        NamingContext namingContext => _context.Peek();
+        Stack<NamingContext> _namingContext;
+        NamingContext namingContext => _namingContext.Peek();
         AliasKind _contextType = AliasKind.Type;
         LanguageFeatures _languageFeatures;
 
@@ -94,8 +93,9 @@ namespace Devsense.PHP.Syntax
         /// <summary>
         /// Stack of class contexts used to resolve reserved type names and to determine whether we are inside or outside the class.
         /// </summary>
-        Stack<ClassContext> ClassContexts { get { return _classContexts ?? (_classContexts = new Stack<ClassContext>()); } }
+        Stack<ClassContext> ClassContexts { get { return _classContexts ?? (_classContexts = StackObjectPool<ClassContext>.Allocate()); } }
         Stack<ClassContext> _classContexts = null;
+
         bool IsInClassContext { get { return _classContexts != null && _classContexts.Count != 0; } }
 
         struct ClassContext
@@ -147,6 +147,7 @@ namespace Devsense.PHP.Syntax
             _lexer = new CompliantLexer(lexer, language);
             _astFactory = astFactory ?? throw new ArgumentNullException(nameof(astFactory));
             _errors = errors ?? new EmptyErrorSink<Span>();
+            _namingContext = StackObjectPool<NamingContext>.Allocate();
 
             if (errorRecovery != null)
             {
@@ -164,6 +165,18 @@ namespace Devsense.PHP.Syntax
             base.Scanner = _lexer;
             bool accept = base.Parse();
 
+            // cleanup
+            if (_classContexts != null)
+            {
+                StackObjectPool<ClassContext>.Free(_classContexts);
+                _classContexts = null;
+            }
+            if (_namingContext != null)
+            {
+                StackObjectPool<NamingContext>.Free(_namingContext);
+                _namingContext = null;
+            }
+
             //
             return _astRoot;
         }
@@ -174,19 +187,19 @@ namespace Devsense.PHP.Syntax
                 ? (QualifiedName?)new QualifiedName(ns, false, true)
                 : null;
 
-            _context.Push(new NamingContext(qname));
+            _namingContext.Push(new NamingContext(qname));
         }
 
         void ResetNamingContext()
         {
-            _context.Pop();
+            _namingContext.Pop();
         }
 
         void AssignNamingContext()
         {
             if (_currentNamespace != null)
             {
-                Debug.Assert(_context.Count == 2);
+                Debug.Assert(_namingContext.Count == 2);
                 Debug.Assert(_currentNamespace.Naming == namingContext);
                 ResetNamingContext();
             }
@@ -269,7 +282,7 @@ namespace Devsense.PHP.Syntax
                             span = new Span(ns.Span.Start, "namespace".Length);
                         }
 
-                        this.ErrorSink.Error(ns.QualifiedName.Span, FatalErrors.MixedNamespacedeclarations);
+                        this.ErrorSink.Error(ns.QualifiedName.Span, FatalErrors.MixedNamespaceDeclarations);
                     }
                 }
                 else
@@ -610,7 +623,8 @@ namespace Devsense.PHP.Syntax
                                 }
                                 else
                                 {
-                                    this.ErrorSink.Error(span, FatalErrors.ParentAccessedInParentlessClass);
+                                    // NOTE: allowed on closures
+                                    //this.ErrorSink.Error(span, FatalErrors.ParentAccessedInParentlessClass);
                                 }
                                 break;
 
