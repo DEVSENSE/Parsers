@@ -125,14 +125,10 @@ namespace Devsense.PHP.Syntax
                         }
                         break;
 
+                    // reinterpret T_NAME_QUALIFIED
+                    case Tokens.T_GLOBAL:
+                    case Tokens.T_STATIC:
                     case Tokens.T_READONLY:
-                        if (!HasFeatureSet(LanguageFeatures.Php81Set) ||
-                            _backup_token == Tokens.T_NS_SEPARATOR) // not after '\'
-                        {
-                            token = Tokens.T_STRING;
-                        }
-                        break;
-
                     case Tokens.T_ENUM:
                         if (!HasFeatureSet(LanguageFeatures.Php81Set) ||
                             _backup_token == Tokens.T_NS_SEPARATOR) // after "\", it is treated as identifier. See T_NAME_QUALIFIED in Zend. We don't, since it would break backward compatibility with older parsers.
