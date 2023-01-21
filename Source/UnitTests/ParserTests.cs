@@ -48,6 +48,11 @@ do { } while (false);",
 $fn = function () use ($a,): int {};",
 @"<?php use X\enum;",
 @"<?php use X\Enum as BaseEnum",
+@"<?php
+function test(){
+    global $test;
+	$test = 1;
+}",
             };
 
             foreach (var code in codes)

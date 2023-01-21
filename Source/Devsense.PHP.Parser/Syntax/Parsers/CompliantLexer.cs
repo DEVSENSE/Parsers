@@ -126,12 +126,20 @@ namespace Devsense.PHP.Syntax
                         break;
 
                     // reinterpret T_NAME_QUALIFIED
-                    case Tokens.T_GLOBAL:
-                    case Tokens.T_STATIC:
+                    // reinterpret T_STRING if PHP < 8.1
                     case Tokens.T_READONLY:
                     case Tokens.T_ENUM:
                         if (!HasFeatureSet(LanguageFeatures.Php81Set) ||
                             _backup_token == Tokens.T_NS_SEPARATOR) // after "\", it is treated as identifier. See T_NAME_QUALIFIED in Zend. We don't, since it would break backward compatibility with older parsers.
+                        {
+                            token = Tokens.T_STRING;
+                        }
+                        break;
+
+                    // reinterpret T_NAME_QUALIFIED
+                    case Tokens.T_GLOBAL:
+                    case Tokens.T_STATIC:
+                        if (_backup_token == Tokens.T_NS_SEPARATOR) // after "\", it is treated as identifier. See T_NAME_QUALIFIED in Zend. We don't, since it would break backward compatibility with older parsers.
                         {
                             token = Tokens.T_STRING;
                         }
