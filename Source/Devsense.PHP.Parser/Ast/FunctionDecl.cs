@@ -20,6 +20,35 @@ using Devsense.PHP.Ast.DocBlock;
 
 namespace Devsense.PHP.Syntax.Ast
 {
+    /// <summary>
+    /// A function/method/lambda declaration.
+    /// </summary>
+    public interface IFunctionDeclaration : ILangElement
+    {
+        /// <summary>
+        /// Function signature.
+        /// </summary>
+        Signature Signature { get; }
+
+        /// <summary>
+        /// Return type if present.
+        /// </summary>
+        TypeRef ReturnType { get; }
+
+        /// <summary>
+        /// Function body. Is either a block statement (function, method, closure) or an expression (arrow func).
+        /// </summary>
+        ILangElement Body { get; }
+    }
+
+    /// <summary>
+    /// A function with name (global function or method).
+    /// </summary>
+    public interface INamedFunctionDeclaration : IFunctionDeclaration
+    {
+        NameRef Name { get; }
+    }
+
     #region FormalParam
 
     /// <summary>
@@ -190,9 +219,11 @@ namespace Devsense.PHP.Syntax.Ast
     /// <summary>
     /// Represents a function declaration.
     /// </summary>
-    public sealed class FunctionDecl : Statement
+    public sealed class FunctionDecl : Statement, INamedFunctionDeclaration
     {
         internal override bool IsDeclaration { get { return true; } }
+
+        ILangElement IFunctionDeclaration.Body => this.Body;
 
         public NameRef Name { get { return name; } }
         private readonly NameRef name;

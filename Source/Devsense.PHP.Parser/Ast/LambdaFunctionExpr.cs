@@ -23,27 +23,12 @@ namespace Devsense.PHP.Syntax.Ast
     /// <summary>
     /// Common interface for lambda function expression, encapsulates closures and arrow functions.
     /// </summary>
-    public interface ILambdaExpression : IExpression
+    public interface ILambdaExpression : IFunctionDeclaration, IExpression
     {
-        /// <summary>
-        /// Function signature.
-        /// </summary>
-        Signature Signature { get; }
-
-        /// <summary>
-        /// Return type if present.
-        /// </summary>
-        TypeRef ReturnType { get; }
-
         /// <summary>
         /// Whether the function is 'static'.
         /// </summary>
         bool IsStatic { get; set; }
-
-        /// <summary>
-        /// Anonymous function body. Is either a block statement (closure) or an expression (arrow func).
-        /// </summary>
-        ILangElement Body { get; }
     }
 
     /// <summary>
@@ -81,7 +66,8 @@ namespace Devsense.PHP.Syntax.Ast
         public BlockStmt/*!*/Body { get { return body as BlockStmt; } }
         public Expression/*!*/Expression { get { return body as Expression; } }
 
-        ILangElement ILambdaExpression.Body { get { return body; } }
+        ILangElement IFunctionDeclaration.Body { get { return body; } }
+
         private readonly ILangElement/*!*/ body;
 
         /// <summary>

@@ -331,7 +331,7 @@ namespace Devsense.PHP.Syntax.Ast
     /// <summary>
     /// Represents a method declaration.
     /// </summary>
-    public sealed class MethodDecl : TypeMemberDecl
+    public sealed class MethodDecl : TypeMemberDecl, INamedFunctionDeclaration
     {
         #region Nested class: BaseCtorParamsHolder
 
@@ -363,6 +363,8 @@ namespace Devsense.PHP.Syntax.Ast
         /// Type parameter signatture for generics.
         /// </summary>
         public TypeSignature TypeSignature { get { return this.GetTypeSignature() ?? TypeSignature.s_empty; } }
+
+        ILangElement IFunctionDeclaration.Body => Body;
 
         /// <summary>
         /// Method content.
