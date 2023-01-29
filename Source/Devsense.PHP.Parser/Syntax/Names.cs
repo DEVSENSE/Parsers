@@ -623,7 +623,9 @@ namespace Devsense.PHP.Syntax
             }
 
             for (int i = 0; i < namespaces.Length; i++)
+            {
                 namespaces[i] = new Name(names[i]);
+            }
 
             //
             isFullyQualifiedName = fullyQualified;
