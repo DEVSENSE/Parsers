@@ -2431,7 +2431,7 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 			}
         return;
       case 139: // const_list -> const_list ',' const_decl 
-{ yyval.NodeList = AddToList<LangElement>(value_stack.array[value_stack.top-3].yyval.NodeList, value_stack.array[value_stack.top-1].yyval.Node); }
+{ yyval.NodeList = Add(value_stack.array[value_stack.top-3].yyval.NodeList, value_stack.array[value_stack.top-1].yyval.Node); }
         return;
       case 140: // const_list -> const_decl 
 { yyval.NodeList = new List<LangElement>() { value_stack.array[value_stack.top-1].yyval.Node }; }
@@ -2694,19 +2694,19 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 { yyval.Node = value_stack.array[value_stack.top-1].yyval.Node; }
         return;
       case 217: // for_statement -> ':' inner_statement_list T_ENDFOR ';' 
-{ yyval.Node = StatementsToBlock(value_stack.array[value_stack.top-4].yypos, value_stack.array[value_stack.top-2].yypos, value_stack.array[value_stack.top-3].yyval.NodeList, Tokens.T_ENDFOR); }
+{ yyval.Node = CreateBlock(value_stack.array[value_stack.top-4].yypos, value_stack.array[value_stack.top-2].yypos, value_stack.array[value_stack.top-3].yyval.NodeList, Tokens.T_ENDFOR); }
         return;
       case 218: // foreach_statement -> statement 
 { yyval.Node = value_stack.array[value_stack.top-1].yyval.Node; }
         return;
       case 219: // foreach_statement -> ':' inner_statement_list T_ENDFOREACH ';' 
-{ yyval.Node = StatementsToBlock(value_stack.array[value_stack.top-4].yypos, value_stack.array[value_stack.top-2].yypos, value_stack.array[value_stack.top-3].yyval.NodeList, Tokens.T_ENDFOREACH); }
+{ yyval.Node = CreateBlock(value_stack.array[value_stack.top-4].yypos, value_stack.array[value_stack.top-2].yypos, value_stack.array[value_stack.top-3].yyval.NodeList, Tokens.T_ENDFOREACH); }
         return;
       case 220: // declare_statement -> statement 
 { yyval.Node = value_stack.array[value_stack.top-1].yyval.Node; }
         return;
       case 221: // declare_statement -> ':' inner_statement_list T_ENDDECLARE ';' 
-{ yyval.Node = StatementsToBlock(value_stack.array[value_stack.top-4].yypos, value_stack.array[value_stack.top-2].yypos, value_stack.array[value_stack.top-3].yyval.NodeList, Tokens.T_ENDDECLARE); }
+{ yyval.Node = CreateBlock(value_stack.array[value_stack.top-4].yypos, value_stack.array[value_stack.top-2].yypos, value_stack.array[value_stack.top-3].yyval.NodeList, Tokens.T_ENDDECLARE); }
         return;
       case 222: // switch_case_list -> '{' case_list '}' 
 { yyval.SwitchObject = value_stack.array[value_stack.top-2].yyval.SwitchObject.WithClosingToken(Tokens.T_RBRACE, value_stack.array[value_stack.top-1].yypos); }
@@ -2774,7 +2774,7 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 { yyval.Node = value_stack.array[value_stack.top-1].yyval.Node; }
         return;
       case 241: // while_statement -> ':' inner_statement_list T_ENDWHILE ';' 
-{ yyval.Node = StatementsToBlock(value_stack.array[value_stack.top-4].yypos, value_stack.array[value_stack.top-2].yypos, value_stack.array[value_stack.top-3].yyval.NodeList, Tokens.T_ENDWHILE); }
+{ yyval.Node = CreateBlock(value_stack.array[value_stack.top-4].yypos, value_stack.array[value_stack.top-2].yypos, value_stack.array[value_stack.top-3].yyval.NodeList, Tokens.T_ENDWHILE); }
         return;
       case 242: // if_stmt_without_else -> T_IF '(' expr ')' statement 
 { yyval.IfItemList = new List<IfStatement>() { 
@@ -2797,26 +2797,33 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
         return;
       case 246: // alt_if_stmt_without_else -> T_IF '(' expr ')' ':' inner_statement_list 
 { 
-				yyval.IfItemList = new List<IfStatement>() { new IfStatement(yypos, value_stack.array[value_stack.top-4].yyval.Node, CombineSpans(value_stack.array[value_stack.top-5].yypos, value_stack.array[value_stack.top-3].yypos), StatementsToBlock(value_stack.array[value_stack.top-2].yypos, value_stack.array[value_stack.top-2].yypos, value_stack.array[value_stack.top-1].yyval.NodeList, Tokens.END)) }; 
+				yyval.IfItemList = new List<IfStatement>() { new IfStatement(yypos, value_stack.array[value_stack.top-4].yyval.Node, CombineSpans(value_stack.array[value_stack.top-5].yypos, value_stack.array[value_stack.top-3].yypos), CreateBlock(value_stack.array[value_stack.top-2].yypos, value_stack.array[value_stack.top-2].yypos, value_stack.array[value_stack.top-1].yyval.NodeList, Tokens.END)) }; 
 			}
         return;
       case 247: // alt_if_stmt_without_else -> alt_if_stmt_without_else T_ELSEIF '(' expr ')' ':' inner_statement_list 
 { 
 				RebuildLast(value_stack.array[value_stack.top-7].yyval.IfItemList, value_stack.array[value_stack.top-6].yypos, Tokens.T_ELSEIF);
 				yyval.IfItemList = AddToList<IfStatement>(value_stack.array[value_stack.top-7].yyval.IfItemList, 
-					new IfStatement(CombineSpans(value_stack.array[value_stack.top-6].yypos, value_stack.array[value_stack.top-2].yypos, value_stack.array[value_stack.top-1].yypos), value_stack.array[value_stack.top-4].yyval.Node, CombineSpans(value_stack.array[value_stack.top-5].yypos, value_stack.array[value_stack.top-3].yypos), StatementsToBlock(value_stack.array[value_stack.top-2].yypos, value_stack.array[value_stack.top-2].yypos, value_stack.array[value_stack.top-1].yyval.NodeList, Tokens.END))); 
+					new IfStatement(CombineSpans(value_stack.array[value_stack.top-6].yypos, value_stack.array[value_stack.top-2].yypos, value_stack.array[value_stack.top-1].yypos), value_stack.array[value_stack.top-4].yyval.Node, CombineSpans(value_stack.array[value_stack.top-5].yypos, value_stack.array[value_stack.top-3].yypos), CreateBlock(value_stack.array[value_stack.top-2].yypos, value_stack.array[value_stack.top-2].yypos, value_stack.array[value_stack.top-1].yyval.NodeList, Tokens.END))); 
 			}
         return;
       case 248: // alt_if_stmt -> alt_if_stmt_without_else T_ENDIF ';' 
-{ RebuildLast(value_stack.array[value_stack.top-3].yyval.IfItemList, value_stack.array[value_stack.top-2].yypos, Tokens.T_ENDIF);
-			 ((List<IfStatement>)value_stack.array[value_stack.top-3].yyval.IfItemList).Reverse(); yyval.Node = null; 
-			foreach (var item in (List<IfStatement>)value_stack.array[value_stack.top-3].yyval.IfItemList) 
-				yyval.Node = _astFactory.If(yyval.Node != null? CombineSpans(item.Span, (yyval.Node).Span): item.Span, item.Condition, item.ConditionSpan, item.Body, yyval.Node); }
+{
+				RebuildLast(value_stack.array[value_stack.top-3].yyval.IfItemList, value_stack.array[value_stack.top-2].yypos, Tokens.T_ENDIF);
+				value_stack.array[value_stack.top-3].yyval.IfItemList.Reverse();
+				yyval.Node = null; 
+				foreach (var item in value_stack.array[value_stack.top-3].yyval.IfItemList)
+					yyval.Node = _astFactory.If(yyval.Node != null? CombineSpans(item.Span, (yyval.Node).Span): item.Span, item.Condition, item.ConditionSpan, item.Body, yyval.Node);
+			}
         return;
       case 249: // alt_if_stmt -> alt_if_stmt_without_else T_ELSE ':' inner_statement_list T_ENDIF ';' 
-{ RebuildLast(value_stack.array[value_stack.top-6].yyval.IfItemList, value_stack.array[value_stack.top-5].yypos, Tokens.T_ELSE);
-			((List<IfStatement>)value_stack.array[value_stack.top-6].yyval.IfItemList).Reverse(); yyval.Node = _astFactory.If(CombineSpans(value_stack.array[value_stack.top-5].yypos, value_stack.array[value_stack.top-1].yypos), null, value_stack.array[value_stack.top-5].yypos, StatementsToBlock(value_stack.array[value_stack.top-4].yypos, value_stack.array[value_stack.top-2].yypos, value_stack.array[value_stack.top-3].yyval.NodeList, Tokens.T_ENDIF), null); 
-			foreach (var item in (List<IfStatement>)value_stack.array[value_stack.top-6].yyval.IfItemList) yyval.Node = _astFactory.If(CombineSpans(item.Span, (yyval.Node).Span), item.Condition, item.ConditionSpan, item.Body, yyval.Node); }
+{
+				RebuildLast(value_stack.array[value_stack.top-6].yyval.IfItemList, value_stack.array[value_stack.top-5].yypos, Tokens.T_ELSE);
+				value_stack.array[value_stack.top-6].yyval.IfItemList.Reverse();
+				yyval.Node = _astFactory.If(CombineSpans(value_stack.array[value_stack.top-5].yypos, value_stack.array[value_stack.top-1].yypos), null, value_stack.array[value_stack.top-5].yypos, CreateBlock(value_stack.array[value_stack.top-4].yypos, value_stack.array[value_stack.top-2].yypos, value_stack.array[value_stack.top-3].yyval.NodeList, Tokens.T_ENDIF), null); 
+				foreach (var item in value_stack.array[value_stack.top-6].yyval.IfItemList)
+					yyval.Node = _astFactory.If(CombineSpans(item.Span, (yyval.Node).Span), item.Condition, item.ConditionSpan, item.Body, yyval.Node);
+			}
         return;
       case 250: // parameter_list -> non_empty_parameter_list possible_comma 
 { yyval.FormalParamList = AddTrailingComma(value_stack.array[value_stack.top-2].yyval.FormalParamList, value_stack.array[value_stack.top-1].yyval.Bool); }

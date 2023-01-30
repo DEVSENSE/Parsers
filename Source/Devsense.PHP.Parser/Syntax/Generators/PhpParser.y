@@ -482,7 +482,7 @@ identifier:
 
 top_statement_list:
 		top_statement_list top_statement	{ $$ = AddNotNull($1, $2); }
-	|	/* empty */							{ $$ = NewList<LangElement>(); }
+	|	/* empty */							{ $$ = NewList<LangElement>(); /* returned to the pool by CreateBlock() or "start" rule */ }
 ;
 
 namespace_name:
@@ -635,7 +635,7 @@ const_list:
 
 inner_statement_list:
 		inner_statement_list inner_statement	{ $$ = AddNotNull($1, $2); }
-	|	/* empty */								{ $$ = new List<LangElement>(); }
+	|	/* empty */								{ $$ = NewList<LangElement>(); /* returned to the bool by CreateBlock() or CreateCaseBlock() */ }
 ;
 
 inner_statement:
@@ -840,17 +840,17 @@ foreach_variable:
 
 for_statement:
 		statement { $$ = $1; }
-	|	':' inner_statement_list T_ENDFOR ';' { $$ = StatementsToBlock(@1, @3, $2, Tokens.T_ENDFOR); }
+	|	':' inner_statement_list T_ENDFOR ';' { $$ = CreateBlock(@1, @3, $2, Tokens.T_ENDFOR); }
 ;
 
 foreach_statement:
 		statement { $$ = $1; }
-	|	':' inner_statement_list T_ENDFOREACH ';' { $$ = StatementsToBlock(@1, @3, $2, Tokens.T_ENDFOREACH); }
+	|	':' inner_statement_list T_ENDFOREACH ';' { $$ = CreateBlock(@1, @3, $2, Tokens.T_ENDFOREACH); }
 ;
 
 declare_statement:
 		statement { $$ = $1; }
-	|	':' inner_statement_list T_ENDDECLARE ';' { $$ = StatementsToBlock(@1, @3, $2, Tokens.T_ENDDECLARE); }
+	|	':' inner_statement_list T_ENDDECLARE ';' { $$ = CreateBlock(@1, @3, $2, Tokens.T_ENDDECLARE); }
 ;
 
 switch_case_list:
@@ -911,7 +911,7 @@ match_arm_cond_list:
 
 while_statement:
 		statement { $$ = $1; }
-	|	':' inner_statement_list T_ENDWHILE ';' { $$ = StatementsToBlock(@1, @3, $2, Tokens.T_ENDWHILE); }
+	|	':' inner_statement_list T_ENDWHILE ';' { $$ = CreateBlock(@1, @3, $2, Tokens.T_ENDWHILE); }
 ;
 
 
@@ -939,27 +939,34 @@ if_stmt:
 alt_if_stmt_without_else:
 		T_IF '(' expr ')' ':' inner_statement_list
 			{ 
-				$$ = new List<IfStatement>() { new IfStatement(@$, $3, CombineSpans(@2, @4), StatementsToBlock(@5, @5, $6, Tokens.END)) }; 
+				$$ = new List<IfStatement>() { new IfStatement(@$, $3, CombineSpans(@2, @4), CreateBlock(@5, @5, $6, Tokens.END)) }; 
 			}
 			
 	|	alt_if_stmt_without_else T_ELSEIF '(' expr ')' ':' inner_statement_list
 			{ 
 				RebuildLast($1, @2, Tokens.T_ELSEIF);
 				$$ = AddToList<IfStatement>($1, 
-					new IfStatement(CombineSpans(@2, @6, @7), $4, CombineSpans(@3, @5), StatementsToBlock(@6, @6, $7, Tokens.END))); 
+					new IfStatement(CombineSpans(@2, @6, @7), $4, CombineSpans(@3, @5), CreateBlock(@6, @6, $7, Tokens.END))); 
 			}
 ;
 
 alt_if_stmt:
 		alt_if_stmt_without_else T_ENDIF ';' 
-			{ RebuildLast($1, @2, Tokens.T_ENDIF);
-			 ((List<IfStatement>)$1).Reverse(); $$ = null; 
-			foreach (var item in (List<IfStatement>)$1) 
-				$$ = _astFactory.If($$ != null? CombineSpans(item.Span, ($$).Span): item.Span, item.Condition, item.ConditionSpan, item.Body, $$); }
+			{
+				RebuildLast($1, @2, Tokens.T_ENDIF);
+				$1.Reverse();
+				$$ = null; 
+				foreach (var item in $1)
+					$$ = _astFactory.If($$ != null? CombineSpans(item.Span, ($$).Span): item.Span, item.Condition, item.ConditionSpan, item.Body, $$);
+			}
 	|	alt_if_stmt_without_else T_ELSE ':' inner_statement_list T_ENDIF ';'
-			{ RebuildLast($1, @2, Tokens.T_ELSE);
-			((List<IfStatement>)$1).Reverse(); $$ = _astFactory.If(CombineSpans(@2, @6), null, @2, StatementsToBlock(@3, @5, $4, Tokens.T_ENDIF), null); 
-			foreach (var item in (List<IfStatement>)$1) $$ = _astFactory.If(CombineSpans(item.Span, ($$).Span), item.Condition, item.ConditionSpan, item.Body, $$); }
+			{
+				RebuildLast($1, @2, Tokens.T_ELSE);
+				$1.Reverse();
+				$$ = _astFactory.If(CombineSpans(@2, @6), null, @2, CreateBlock(@3, @5, $4, Tokens.T_ENDIF), null); 
+				foreach (var item in $1)
+					$$ = _astFactory.If(CombineSpans(item.Span, ($$).Span), item.Condition, item.ConditionSpan, item.Body, $$);
+			}
 ;
 
 parameter_list:

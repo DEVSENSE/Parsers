@@ -467,17 +467,6 @@ namespace Devsense.PHP.Syntax
             return new Tuple<T1, T2, T3, T4>(span, first.Item1, first.Item2, second);
         }
 
-        private LangElement StatementsToBlock(Span span, List<LangElement> statements, Tokens endToken)
-        {
-            _lexer.DocCommentList.Merge(span, statements, _astFactory);
-            return _astFactory.ColonBlock(span, statements, endToken);
-        }
-
-        private LangElement StatementsToBlock(Span span, Span endSpan, List<LangElement> statements, Tokens endToken)
-        {
-            return StatementsToBlock(Span.FromBounds(span.Start, endSpan.Start), statements, endToken);
-        }
-
         void RebuildLast(List<IfStatement> condList, Span end, Tokens token)
         {
             var block = condList.Last();
@@ -976,8 +965,6 @@ namespace Devsense.PHP.Syntax
             }
         }
 
-        //BlockStmt CreateBlock(Span span, List<LangElement> statements) => CreateBlock(span, statements.CastToArray<Statement>());
-
         /// <summary>
         /// Creates a <see cref="BlockStmt"/> statement from a list of statements.
         /// Unassigned PHPDoc comments are merged to the statements as <see cref="PHPDocStmt"/>.
@@ -985,11 +972,26 @@ namespace Devsense.PHP.Syntax
         /// <param name="span">Span of the entire block.</param>
         /// <param name="statements">List of statements in the block.</param>
         /// <returns>Complete block statement.</returns>
+        /// <remarks>Returns <paramref name="statements"/> to the pool.</remarks>
         BlockStmt CreateBlock(Span span, List<LangElement> statements)
         {
             Debug.Assert(statements.All(s => s != null));
             _lexer.DocCommentList.Merge(span, statements, _astFactory);
-            return (BlockStmt)_astFactory.Block(span, statements);
+
+            return (BlockStmt)_astFactory.Block(span, FreeStatements(statements));
+        }
+
+        /// <remarks>Returns <paramref name="statements"/> to the pool.</remarks>
+        private LangElement CreateBlock(Span span, List<LangElement> statements, Tokens endToken)
+        {
+            _lexer.DocCommentList.Merge(span, statements, _astFactory);
+
+            return _astFactory.ColonBlock(span, FreeStatements(statements), endToken);
+        }
+
+        private LangElement CreateBlock(Span span, Span endSpan, List<LangElement> statements, Tokens endToken)
+        {
+            return CreateBlock(Span.FromBounds(span.Start, endSpan.Start), statements, endToken);
         }
 
         /// <summary>
@@ -999,6 +1001,7 @@ namespace Devsense.PHP.Syntax
         /// <param name="separatorSpan">Span of the separator ':'.</param>
         /// <param name="statements">List of statements in the block.</param>
         /// <returns>Complete block statement.</returns>
+        /// <remarks>Returns <paramref name="statements"/> to the pool.</remarks>
         BlockStmt CreateCaseBlock(Span separatorSpan, List<LangElement> statements)
         {
             Span bodySpan;
@@ -1013,7 +1016,7 @@ namespace Devsense.PHP.Syntax
                 _lexer.DocCommentList.Merge(bodySpan, statements, _astFactory);
             }
 
-            return (BlockStmt)_astFactory.Block(bodySpan, statements);
+            return (BlockStmt)_astFactory.Block(bodySpan, FreeStatements(statements));
         }
 
         /// <summary>
