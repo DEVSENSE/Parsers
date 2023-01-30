@@ -629,7 +629,7 @@ use_declaration:
 ;
 
 const_list:
-		const_list ',' const_decl { $$ = AddToList<LangElement>($1, $3); }
+		const_list ',' const_decl { $$ = Add($1, $3); }
 	|	const_decl { $$ = new List<LangElement>() { $1 }; }
 ;
 
