@@ -426,6 +426,21 @@ namespace Devsense.PHP.Syntax
             ClassContexts.Pop();
         }
 
+        /// <summary>Allocate pooled instance of <see cref="List{T}"/>.</summary>
+        /// <remarks>Responsibility of caller to return the instance to the pool.</remarks>
+        static List<T> NewList<T>() => ListObjectPool<T>.Allocate();
+
+        /// <summary>Returns the instance to the pool.</summary>
+        static TTarget[] GetArrayAndFree<TSource, TTarget>(List<TSource> list)
+        {
+            var array = list.CastToArray<TTarget>();
+            ListObjectPool<TSource>.Free(list);
+            return array;
+        }
+
+        /// <summary>Alias to <see cref="GetArrayAndFree{LangElement, Statement}"/></summary>
+        static Statement[] FreeStatements(List<LangElement> list) => GetArrayAndFree<LangElement, Statement>(list);
+
         protected TElement WithAttributes<TElement>(TElement node, List<LangElement> attributes) where TElement : IPropertyCollection
         {
             if (attributes != null && attributes.Count != 0)
@@ -436,26 +451,16 @@ namespace Devsense.PHP.Syntax
             return node;
         }
 
-        private List<T> AddToTopStatementList<T>(List<T> list, T item) where T : LangElement
-        {
-            if (item != null)
-            {
-                list.Add(item);
-            }
-            return list;
-        }
+        private List<T> AddNotNull<T>(List<T> list, T item) => item != null ? Add(list, item) : list;
 
-        private IList<T> AddToList<T>(IList<T> list, T item)
+        private List<T> Add<T>(List<T> list, T item)
         {
             list.Add(item);
             return list;
         }
 
-        private List<T> AddToList<T>(List<T> list, T item)
-        {
-            list.Add(item);
-            return list;
-        }
+        /// <summary>Alias to <see cref="Add"/></summary>
+        private List<T> AddToList<T>(List<T> list, T item) => Add(list, item);
 
         private Tuple<T1, T2, T3, T4> JoinTuples<T1, T2, T3, T4>(T1 span, Tuple<T2, T3> first, T4 second)
         {
@@ -468,11 +473,9 @@ namespace Devsense.PHP.Syntax
             return _astFactory.ColonBlock(span, statements, endToken);
         }
 
-        private LangElement StatementsToBlock(Span span, Span endSpan, object statements, Tokens endToken)
+        private LangElement StatementsToBlock(Span span, Span endSpan, List<LangElement> statements, Tokens endToken)
         {
-            Debug.Assert(statements is List<LangElement>);
-            var statemenList = (List<LangElement>)statements;
-            return StatementsToBlock(Span.FromBounds(span.Start, endSpan.Start), statemenList, endToken);
+            return StatementsToBlock(Span.FromBounds(span.Start, endSpan.Start), statements, endToken);
         }
 
         void RebuildLast(List<IfStatement> condList, Span end, Tokens token)
@@ -973,6 +976,8 @@ namespace Devsense.PHP.Syntax
             }
         }
 
+        //BlockStmt CreateBlock(Span span, List<LangElement> statements) => CreateBlock(span, statements.CastToArray<Statement>());
+
         /// <summary>
         /// Creates a <see cref="BlockStmt"/> statement from a list of statements.
         /// Unassigned PHPDoc comments are merged to the statements as <see cref="PHPDocStmt"/>.
@@ -1018,10 +1023,10 @@ namespace Devsense.PHP.Syntax
         /// <param name="currentNamespace">Current namespace name, can be <c>null</c>.</param>
         /// <param name="suffix">Rest of the name, after current namespace.</param>
         /// <returns>Complete qualified name</returns>
-        QualifiedName MergeWithCurrentNamespace(QualifiedName? currentNamespace, IList<string> suffix)
+        QualifiedName MergeWithCurrentNamespace(QualifiedName? currentNamespace, List<string> suffix)
         {
             if (!currentNamespace.HasValue)
-                return new QualifiedName((List<string>)suffix, true, true);
+                return new QualifiedName(suffix, true, true);
 
             QualifiedName currentNS = currentNamespace.Value;
             Name[] namespaces = new Name[currentNS.Namespaces.Length + suffix.Count - 1];

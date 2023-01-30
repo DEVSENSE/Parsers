@@ -304,7 +304,7 @@ namespace UnitTests
             public override LangElement Global(Span span, List<LangElement> variables)
                  => CountLE(base.Global(span, variables));
 
-            public override LangElement GlobalCode(Span span, IEnumerable<LangElement> statements, NamingContext context)
+            public override LangElement GlobalCode(Span span, Statement[] statements, NamingContext context)
                  => CountLE(base.GlobalCode(span, statements, context));
 
             public override LangElement GlobalConstDecl(Span span, bool conditional, VariableName name, Span nameSpan, LangElement initializer)

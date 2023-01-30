@@ -404,7 +404,7 @@ public partial struct SemanticValueType
 
 	public QualifiedNameRef QualifiedNameReference		{ get { return (QualifiedNameRef)Object; }			set { Object = value; } }
 	public TypeRef TypeReference						{ get { return (TypeRef)Object; }					set { Object = value; } }
-	public IList<TypeRef> TypeRefList					{ get { return (IList<TypeRef>)Object; }			set { Object = value; } }
+	public List<TypeRef> TypeRefList					{ get { return (List<TypeRef>)Object; }				set { Object = value; } }
 	public LangElement Node								{ get { return (LangElement)Object; }				set { Object = value; } }
 	public List<LangElement> NodeList					{ get { return (List<LangElement>)Object; }			set { Object = value; } }
 	internal SwitchObject SwitchObject					{ get { return (SwitchObject)Object; }				set { Object = value; } }
@@ -2250,20 +2250,20 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 		AssignNamingContext(); 
         _lexer.DocCommentList.Merge(new Span(0, int.MaxValue), value_stack.array[value_stack.top-1].yyval.NodeList, _astFactory);
 		AssignStatements(value_stack.array[value_stack.top-1].yyval.NodeList);
-		_astRoot = _astFactory.GlobalCode(yypos, value_stack.array[value_stack.top-1].yyval.NodeList, namingContext);
+		_astRoot = _astFactory.GlobalCode(yypos, GetArrayAndFree<LangElement, Statement>(value_stack.array[value_stack.top-1].yyval.NodeList), namingContext);
 	}
         return;
       case 86: // top_statement_list -> top_statement_list top_statement 
-{ yyval.NodeList = AddToTopStatementList<LangElement>(value_stack.array[value_stack.top-2].yyval.NodeList, value_stack.array[value_stack.top-1].yyval.Node); }
+{ yyval.NodeList = AddNotNull(value_stack.array[value_stack.top-2].yyval.NodeList, value_stack.array[value_stack.top-1].yyval.Node); }
         return;
       case 87: // top_statement_list -> 
-{ yyval.NodeList = new List<LangElement>(); }
+{ yyval.NodeList = NewList<LangElement>(); }
         return;
       case 88: // namespace_name -> T_STRING 
-{ yyval.StringList = new List<string>() { value_stack.array[value_stack.top-1].yyval.String }; }
+{ yyval.StringList = Add(new List<string>(), value_stack.array[value_stack.top-1].yyval.String); }
         return;
       case 89: // namespace_name -> namespace_name T_NS_SEPARATOR T_STRING 
-{ yyval.StringList = AddToList<string>(value_stack.array[value_stack.top-3].yyval.StringList, value_stack.array[value_stack.top-1].yyval.String); }
+{ yyval.StringList = Add(value_stack.array[value_stack.top-3].yyval.StringList, value_stack.array[value_stack.top-1].yyval.String); }
         return;
       case 90: // name -> namespace_name 
 { yyval.QualifiedNameReference = new QualifiedNameRef(yypos, new QualifiedName(value_stack.array[value_stack.top-1].yyval.StringList, true, false)); }
@@ -2437,7 +2437,7 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 { yyval.NodeList = new List<LangElement>() { value_stack.array[value_stack.top-1].yyval.Node }; }
         return;
       case 141: // inner_statement_list -> inner_statement_list inner_statement 
-{ yyval.NodeList = AddToTopStatementList<LangElement>(value_stack.array[value_stack.top-2].yyval.NodeList, value_stack.array[value_stack.top-1].yyval.Node); }
+{ yyval.NodeList = AddNotNull(value_stack.array[value_stack.top-2].yyval.NodeList, value_stack.array[value_stack.top-1].yyval.Node); }
         return;
       case 142: // inner_statement_list -> 
 { yyval.NodeList = new List<LangElement>(); }

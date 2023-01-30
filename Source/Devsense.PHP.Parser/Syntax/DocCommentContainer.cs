@@ -42,12 +42,12 @@ namespace Devsense.PHP.Syntax
             /// <summary>
             /// Determines whether this block is above given element.
             /// </summary>
-            public bool IsAbove(LangElement element) => element != null && Extent.End <= element.Span.Start;
+            public bool IsAbove(ILangElement element) => element != null && Extent.End <= element.Span.Start;
 
             /// <summary>
             /// Determines whether this block is below given element or element is <c>null</c>.
             /// </summary>
-            public bool IsBelowOrNull(LangElement element) => element == null || Extent.End > element.Span.End;
+            public bool IsBelowOrNull(ILangElement element) => element == null || Extent.End > element.Span.End;
         }
 
         #region Fields & Properties
@@ -149,7 +149,7 @@ namespace Devsense.PHP.Syntax
         /// <param name="extent">Span of code block containing <paramref name="stmts"/>.</param>
         /// <param name="stmts">List of statements to be merged with overlapping DOC comments.</param>
         /// <param name="factory">Factory used to create PHPDoc statements.</param>
-        public void Merge(Text.Span extent, IList<LangElement>/*!*/stmts, INodesFactory<LangElement, Span> factory)
+        public void Merge(Text.Span extent, List<LangElement>/*!*/stmts, INodesFactory<LangElement, Span> factory)
         {
             Debug.Assert(extent.IsValid);
             Debug.Assert(stmts != null);

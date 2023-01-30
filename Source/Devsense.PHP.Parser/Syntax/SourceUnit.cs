@@ -270,7 +270,7 @@ namespace Devsense.PHP.Syntax
         /// </summary>
         internal void SetEmptyAst()
         {
-            this.ast = new GlobalCode(new Span(), new List<Statement>(), this);
+            this.ast = new GlobalCode(new Span(), EmptyArray<Statement>.Instance, this);
         }
 
         public override string GetSourceCode(Span span)

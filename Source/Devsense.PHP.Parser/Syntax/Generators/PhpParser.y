@@ -57,7 +57,7 @@ using StringPair = System.Collections.Generic.KeyValuePair<string, string>;
 
 	public QualifiedNameRef QualifiedNameReference		{ get { return (QualifiedNameRef)Object; }			set { Object = value; } }
 	public TypeRef TypeReference						{ get { return (TypeRef)Object; }					set { Object = value; } }
-	public IList<TypeRef> TypeRefList					{ get { return (IList<TypeRef>)Object; }			set { Object = value; } }
+	public List<TypeRef> TypeRefList					{ get { return (List<TypeRef>)Object; }				set { Object = value; } }
 	public LangElement Node								{ get { return (LangElement)Object; }				set { Object = value; } }
 	public List<LangElement> NodeList					{ get { return (List<LangElement>)Object; }			set { Object = value; } }
 	internal SwitchObject SwitchObject					{ get { return (SwitchObject)Object; }				set { Object = value; } }
@@ -383,7 +383,7 @@ start:
 		AssignNamingContext(); 
         _lexer.DocCommentList.Merge(new Span(0, int.MaxValue), $2, _astFactory);
 		AssignStatements($2);
-		_astRoot = _astFactory.GlobalCode(@$, $2, namingContext);
+		_astRoot = _astFactory.GlobalCode(@$, GetArrayAndFree<LangElement, Statement>($2), namingContext);
 	}
 ;
 reserved_non_modifiers:
@@ -481,13 +481,13 @@ identifier:
 ;
 
 top_statement_list:
-		top_statement_list top_statement { $$ = AddToTopStatementList<LangElement>($1, $2); }
-	|	/* empty */ { $$ = new List<LangElement>(); }
+		top_statement_list top_statement	{ $$ = AddNotNull($1, $2); }
+	|	/* empty */							{ $$ = NewList<LangElement>(); }
 ;
 
 namespace_name:
-		T_STRING								{ $$ = new List<string>() { $1 }; }
-	|	namespace_name T_NS_SEPARATOR T_STRING	{ $$ = AddToList<string>($1, $3); }
+		T_STRING								{ $$ = Add(new List<string>(), $1); }
+	|	namespace_name T_NS_SEPARATOR T_STRING	{ $$ = Add($1, $3); }
 ;
 
 name:	// TODO - count as translate (use a helper object)
@@ -634,12 +634,9 @@ const_list:
 ;
 
 inner_statement_list:
-		inner_statement_list inner_statement
-			{ $$ = AddToTopStatementList<LangElement>($1, $2); }
-	|	/* empty */
-			{ $$ = new List<LangElement>(); }
+		inner_statement_list inner_statement	{ $$ = AddNotNull($1, $2); }
+	|	/* empty */								{ $$ = new List<LangElement>(); }
 ;
-
 
 inner_statement:
 		statement								{ $$ = $1; }

@@ -39,7 +39,7 @@ namespace Devsense.PHP.Syntax.Ast
         /// <param name="statements">Top statements.</param>
         /// <param name="context">Global code naming context.</param>
         /// <returns>Global code node.</returns>
-        TNode GlobalCode(TSpan span, IEnumerable<TNode> statements, NamingContext context);
+        TNode GlobalCode(TSpan span, Statement[] statements, NamingContext context);
 
         #endregion
 

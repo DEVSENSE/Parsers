@@ -70,12 +70,12 @@ namespace Devsense.PHP.Syntax.Ast
         /// <summary>
         /// Initializes a new instance of the GlobalCode class.
         /// </summary>
-        public GlobalCode(Text.Span span, IList<Statement>/*!*/ statements, SourceUnit/*!*/ sourceUnit) : base(span)
+        public GlobalCode(Text.Span span, Statement[]/*!*/ statements, SourceUnit/*!*/ sourceUnit) : base(span)
         {
             Debug.Assert(statements != null && sourceUnit != null);
 
             this.sourceUnit = sourceUnit;
-            this.statements = statements.AsArray();
+            this.statements = statements;
         }
 
         #endregion

@@ -331,13 +331,13 @@ namespace Devsense.PHP.Syntax.Ast
             return new FormalParam(span, name, nameSpan, typeOpt, flags, initValue, constructorPropertyVisibility: visibility);
         }
 
-        public virtual LangElement GlobalCode(Span span, IEnumerable<LangElement> statements, NamingContext context)
+        public virtual LangElement GlobalCode(Span span, Statement[] statements, NamingContext context)
         {
             SourceUnit.Naming = context;
-            var ast = new GlobalCode(span, statements.CastToArray<Statement>(), SourceUnit);
+            var ast = new GlobalCode(span, statements ?? EmptyArray<Statement>.Instance, SourceUnit);
 
             // link to parent nodes
-            Utilities.UpdateParentHelper.UpdateParents(ast);
+            UpdateParentHelper.UpdateParents(ast);
 
             //
             return ast;
