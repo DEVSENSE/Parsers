@@ -20,23 +20,23 @@ using System.Diagnostics;
 
 namespace Devsense.PHP.Syntax.Ast
 {
-	/// <summary>
-	/// Represents an if-statement.
-	/// </summary>
-	public sealed class IfStmt : Statement
-	{
-		/// <summary>
-		/// List of conditions including the if-conditions and the final else.
-		/// </summary>
-		public List<ConditionalStmt>/*!!*/ Conditions { get; internal set; }
+    /// <summary>
+    /// Represents an if-statement.
+    /// </summary>
+    public sealed class IfStmt : Statement
+    {
+        /// <summary>
+        /// List of conditions including the if-conditions and the final else.
+        /// </summary>
+        public ConditionalStmt[]/*!!*/ Conditions { get; internal set; }
 
-		public IfStmt(Text.Span span, List<ConditionalStmt>/*!!*/ conditions)
-			: base(span)
-		{
-			Debug.Assert(conditions != null && conditions.Count > 0);
-			Debug.Assert(conditions.All((x) => x != null));
-			this.Conditions = conditions;
-		}
+        public IfStmt(Text.Span span, ConditionalStmt[]/*!!*/ conditions)
+            : base(span)
+        {
+            Debug.Assert(conditions != null && conditions.Length != 0);
+            Debug.Assert(conditions.All((x) => x != null));
+            this.Conditions = conditions;
+        }
 
         /// <summary>
         /// Call the right Visit* method on the given Visitor object.
@@ -46,14 +46,14 @@ namespace Devsense.PHP.Syntax.Ast
         {
             visitor.VisitIfStmt(this);
         }
-	}
+    }
 
-	public sealed class ConditionalStmt : AstNode
-	{
-		/// <summary>
-		/// Condition or a <B>null</B> reference for the case of "else" branch.
-		/// </summary>
-		public Expression Condition { get; internal set; }
+    public sealed class ConditionalStmt : AstNode
+    {
+        /// <summary>
+        /// Condition or a <B>null</B> reference for the case of "else" branch.
+        /// </summary>
+        public Expression Condition { get; internal set; }
 
         /// <summary>
         /// Position of the header parentheses encapsulating <see cref="Condition"/>.
@@ -72,11 +72,11 @@ namespace Devsense.PHP.Syntax.Ast
         public readonly Text.Span Span;
 
         public ConditionalStmt(Text.Span span, Expression condition, Text.Span parenthesesSpan, Statement/*!*/ statement)
-		{
+        {
             this.Span = span;
-			this.Condition = condition;
+            this.Condition = condition;
             this.ParenthesesSpan = parenthesesSpan;
-			this.Statement = statement;
+            this.Statement = statement;
         }
 
         /// <summary>
@@ -87,5 +87,5 @@ namespace Devsense.PHP.Syntax.Ast
         {
             visitor.VisitConditionalStmt(this);
         }
-	}
+    }
 }

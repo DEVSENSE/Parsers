@@ -192,7 +192,7 @@ namespace Devsense.PHP.Syntax
         /// </summary>
         virtual public void VisitIfStmt(IfStmt x)
         {
-            for (int i = 0; i < x.Conditions.Count; i++)
+            for (int i = 0; i < x.Conditions.Length; i++)
             {
                 VisitConditionalStmt(x.Conditions[i]);
             }

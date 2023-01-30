@@ -20,6 +20,7 @@ using System.Linq;
 using Devsense.PHP.Ast.DocBlock;
 using Devsense.PHP.Errors;
 using Devsense.PHP.Text;
+using Devsense.PHP.Utilities;
 using static Devsense.PHP.Syntax.Ast.EncapsedExpression;
 
 namespace Devsense.PHP.Syntax.Ast
@@ -359,14 +360,17 @@ namespace Devsense.PHP.Syntax.Ast
 
         public virtual LangElement If(Span span, LangElement cond, Span parenthesesSpan, LangElement body, LangElement elseOpt)
         {
-            var conditions = new List<ConditionalStmt>() { new ConditionalStmt(span, (Expression)cond, parenthesesSpan, (Statement)body) };
+            var conditions = ListObjectPool<ConditionalStmt>.Allocate();
+
+            conditions.Add(new ConditionalStmt(span, (Expression)cond, parenthesesSpan, (Statement)body));
+
             if (elseOpt != null)
             {
                 Debug.Assert(elseOpt is IfStmt);
                 conditions.AddRange(((IfStmt)elseOpt).Conditions);
             }
 
-            return new IfStmt(span, conditions);
+            return new IfStmt(span, ListObjectPool<ConditionalStmt>.GetArrayAndFree(conditions));
         }
 
         public virtual LangElement Inclusion(Span span, bool conditional, InclusionTypes type, LangElement fileNameExpression)
@@ -640,7 +644,7 @@ namespace Devsense.PHP.Syntax.Ast
             {
                 return typearr[0];
             }
-            
+
             if (typearr.Length > 1 &&
                 typearr[typearr.Length - 1] is TranslatedTypeRef tt &&
                 tt.OriginalType is ClassTypeRef ct &&
