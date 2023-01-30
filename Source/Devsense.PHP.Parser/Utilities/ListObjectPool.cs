@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using Devsense.PHP.Syntax;
 
 namespace Devsense.PHP.Utilities
 {
@@ -22,6 +23,29 @@ namespace Devsense.PHP.Utilities
             {
                 _pool.Free(value);
             }
+        }
+
+        /// <summary>
+        /// Gets new array of items in the list and frees the list into the pool.
+        /// </summary>
+        /// <param name="value">List to free, can be null.</param>
+        /// <returns>Array of items in the list. Cannot be <c>null</c>.</returns>
+        public static T[] GetArrayAndFree(List<T> value)
+        {
+            T[] array;
+
+            if (value != null && value.Count != 0)
+            {
+                array = value.ToArray();
+            }
+            else
+            {
+                array = EmptyArray<T>.Instance;
+            }
+
+            Free(value);
+
+            return array;
         }
     }
 }
