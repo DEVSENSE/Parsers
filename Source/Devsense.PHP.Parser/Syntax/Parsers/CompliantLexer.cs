@@ -139,6 +139,7 @@ namespace Devsense.PHP.Syntax
                     // reinterpret T_NAME_QUALIFIED
                     case Tokens.T_GLOBAL:
                     case Tokens.T_STATIC:
+                    case Tokens.T_DEFAULT:
                         if (_backup_token == Tokens.T_NS_SEPARATOR) // after "\", it is treated as identifier. See T_NAME_QUALIFIED in Zend. We don't, since it would break backward compatibility with older parsers.
                         {
                             token = Tokens.T_STRING;
