@@ -190,6 +190,7 @@ namespace Devsense.PHP.Syntax
         }
 
         protected char[] Buffer { get { return buffer; } }
+
         protected int BufferTokenStart { get { return token_start; } }
 
         public string Intern(StringBuilder text)
@@ -199,7 +200,7 @@ namespace Devsense.PHP.Syntax
 
         public string Intern(char[] array, int start, int length)
         {
-            return _strings.Add(array, start, length);
+            return StringInterns.TryIntern(array, start, length) ?? _strings.Add(array, start, length);
         }
 
         public CharSpan GetTokenSpan()
@@ -209,38 +210,12 @@ namespace Devsense.PHP.Syntax
 
         public string GetText(int offset, int length, bool intern)
         {
-            // PERF: Whether interning or not, there are some frequently occurring easy cases we can pick off easily.
-            switch (length)
-            {
-                case 0:
-                    return string.Empty;
-
-                case 1:
-                    switch (buffer[offset])
-                    {
-                        case ' ': return " ";
-                        case '\n': return "\n";
-                        case ';': return ";";
-                        case ',': return ",";
-                        case '(': return "(";
-                        case ')': return ")";
-                        case '[': return "[";
-                        case ']': return "]";
-                        case '/': return "/";
-                        case '\\': return "\\";
-                        case ':': return ":";
-                    }
-                    break;
-
-                case 2:
-                    if (buffer[offset] == '\r' && buffer[offset + 1] == '\n') return "\r\n";
-                    //if (buffer[offset] == '/' && buffer[offset + 1] == '/') return "//";
-                    break;
-            }
-
-            return intern
-                ? this.Intern(buffer, offset, length)
-                : new String(buffer, offset, length);
+            return
+                StringInterns.TryIntern(buffer, offset, length) // always try most frequent strings fast
+                ?? (intern
+                    ? _strings.Add(buffer, offset, length)
+                    : new String(buffer, offset, length)
+                );
         }
 
         protected char GetTokenChar(int index)
