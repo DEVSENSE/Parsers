@@ -1,0 +1,20 @@
+<Project>
+
+	<PropertyGroup>
+
+		<!-- version -->
+		<AccelerateBuildsInVisualStudio>true</AccelerateBuildsInVisualStudio>
+		<LangVersion>latest</LangVersion>
+		<!-- SourceLink -->
+		<!--
+		<PublishRepositoryUrl>true</PublishRepositoryUrl>
+		<EmbedUntrackedSources>false</EmbedUntrackedSources>
+		-->
+
+		<!-- symbols -->
+		<IncludeSymbols>true</IncludeSymbols>
+		<SymbolPackageFormat>snupkg</SymbolPackageFormat>
+
+	</PropertyGroup>
+	
+</Project>
