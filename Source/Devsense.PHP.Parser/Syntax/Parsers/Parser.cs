@@ -503,12 +503,6 @@ namespace Devsense.PHP.Syntax
         private LangElement CreateStaticProperty(Span span, LangElement objectExpr, Span objectNamePos, object name) =>
             CreateStaticProperty(span, _astFactory.TypeReference(objectNamePos, objectExpr), objectNamePos, name);
 
-        private Span CombineSpans(params Span[] spans)
-        {
-            var validSpans = spans.Where(s => s.IsValid);
-            return Span.FromBounds(validSpans.Min(s => s.Start), validSpans.Max(s => s.End));
-        }
-
         private List<T> AddTrailingComma<T>(List<T> list, bool addComma) where T : class
         {
             if (addComma)
@@ -906,13 +900,29 @@ namespace Devsense.PHP.Syntax
 
         private bool IsInGlobalNamespace => !namingContext.CurrentNamespace.HasValue || namingContext.CurrentNamespace.Value.Namespaces.Length == 0;
 
-        /// <summary>
-        /// Combine spans if they are valid.
-        /// </summary>
-        /// <param name="a">First span.</param>
-        /// <param name="b">Second span.</param>
-        /// <returns>Combined span.</returns>
+        /// <summary>Combine spans if they are valid.</summary>
         private Span CombineSpans(Span a, Span b) => a.IsValid ? (b.IsValid ? Span.Combine(a, b) : a) : b;
+
+        /// <summary>Combine spans if they are valid.</summary>
+        private Span CombineSpans(Span a, Span b, Span c) => CombineSpans(a, CombineSpans(b, c));
+
+        private Span CombineSpans(params Span[] spans)
+        {
+            int min = -1, max = -1;
+            for (int i = 0; i < spans.Length; i++)
+            {
+                var span = spans[i];
+                if (span.IsValid)
+                {
+                    min = (min < 0) | (min > span.Start) ? span.Start : min;
+                    max = (max < 0) | (max < span.End) ? span.End : max;
+                }
+            }
+
+            Debug.Assert(min <= max);
+
+            return min >= 0 ? Span.FromBounds(min, max) : Span.Invalid;
+        }
 
         private long AddModifier(long a, long b, Span bSpan) => (long)AddModifier((PhpMemberAttributes)a, (PhpMemberAttributes)b, bSpan);
 
