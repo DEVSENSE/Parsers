@@ -88,6 +88,48 @@ namespace Devsense.PHP.Syntax.Ast
     /// </summary>
     public abstract class TypeDecl : Statement
     {
+        sealed class PartialKeywordFlag
+        {
+            public static bool HasFlag(AstNode node) => node.TryGetProperty<PartialKeywordFlag>(out _);
+
+            public static void SetFlag(AstNode node, bool value)
+            {
+                if (value)
+                {
+                    node.SetProperty(Instance);
+                }
+                else
+                {
+                    ((IPropertyCollection)node).RemoveProperty<PartialKeywordFlag>();
+                }
+            }
+
+            static readonly PartialKeywordFlag Instance = new PartialKeywordFlag();
+
+            private PartialKeywordFlag() { }
+        }
+
+        sealed class IsConditionalFlag
+        {
+            public static bool HasFlag(AstNode node) => node.TryGetProperty<IsConditionalFlag>(out _);
+
+            public static void SetFlag(AstNode node, bool value)
+            {
+                if (value)
+                {
+                    node.SetProperty(Instance);
+                }
+                else
+                {
+                    ((IPropertyCollection)node).RemoveProperty<IsConditionalFlag>();
+                }
+            }
+
+            static readonly IsConditionalFlag Instance = new IsConditionalFlag();
+
+            private IsConditionalFlag() { }
+        }
+
         #region Properties
 
         internal override bool IsDeclaration { get { return true; } }
@@ -109,10 +151,10 @@ namespace Devsense.PHP.Syntax.Ast
         /// <summary>Name of the base class.</summary>
         public INamedTypeRef BaseClass { get { return baseClass; } }
 
-        public PhpMemberAttributes MemberAttributes { get; private set; }
+        public PhpMemberAttributes MemberAttributes { get; }
 
         /// <summary>Implemented interface name indices. </summary>
-        public INamedTypeRef[]/*!!*/ ImplementsList { get; private set; }
+        public INamedTypeRef[]/*!!*/ ImplementsList { get; }
 
         /// <summary>
         /// Type parameters.
@@ -125,21 +167,17 @@ namespace Devsense.PHP.Syntax.Ast
         public IList<TypeMemberDecl> Members { get { return members; } internal set { members = value; } }
         private IList<TypeMemberDecl> members;
 
-        public Text.Span HeadingSpan { get { return headingSpan; } }
-        private Text.Span headingSpan;
+        public Text.Span HeadingSpan { get; }
 
-        public Text.Span BodySpan { get { return bodySpan; } }
-        private Text.Span bodySpan;
+        public Text.Span BodySpan { get; }
 
         /// <summary>Indicates if type was decorated with partial keyword (Pure mode only).</summary>
-        public bool PartialKeyword { get { return partialKeyword; } }
-        /// <summary>Contains value of the <see cref="PartialKeyword"/> property</summary>
-        private bool partialKeyword;
+        public bool PartialKeyword => PartialKeywordFlag.HasFlag(this);
 
         /// <summary>
         /// Gets value indicating whether the declaration is conditional.
         /// </summary>
-        public bool IsConditional { get; internal set; }
+        public bool IsConditional => IsConditionalFlag.HasFlag(this);
 
         #endregion
 
@@ -157,12 +195,20 @@ namespace Devsense.PHP.Syntax.Ast
 
             this.baseClass = baseClass;
             this.MemberAttributes = memberAttributes;
-            this.IsConditional = isConditional;
             this.ImplementsList = implementsList.AsArray();
             this.members = elements.AsArray();
-            this.headingSpan = headingSpan;
-            this.bodySpan = bodySpan;
-            this.partialKeyword = isPartial;
+            this.HeadingSpan = headingSpan;
+            this.BodySpan = bodySpan;
+
+            if (isConditional)
+            {
+                IsConditionalFlag.SetFlag(this, true);
+            }
+
+            if (isPartial)
+            {
+                PartialKeywordFlag.SetFlag(this, true);
+            }
 
             if (genericParams != null && genericParams.Count != 0)
             {
