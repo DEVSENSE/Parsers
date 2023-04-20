@@ -268,7 +268,7 @@ namespace Devsense.PHP.Syntax.Ast
         internal override object ValueObj { get { return this.Value; } }
 
         /// <summary>
-        /// UNderlying value, either <see cref="System.String"/> or <see cref="IStringLiteralValue"/>.
+        /// Underlying value, either <see cref="System.String"/> or <see cref="IStringLiteralValue"/>.
         /// </summary>
         readonly object _RawValue;
 
