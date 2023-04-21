@@ -258,7 +258,7 @@ namespace Devsense.PHP.Syntax.Ast
             {
                 if (Span.IsValid)
                 {
-                    var endspan = returnType != null ? returnType.Span : Signature.Span;
+                    var endspan = ReturnType != null ? ReturnType.Span : Signature.Span;
                     if (endspan.IsValid)
                     {
                         return Text.Span.FromBounds(Span.Start, endspan.End);
@@ -270,8 +270,7 @@ namespace Devsense.PHP.Syntax.Ast
             }
         }
 
-        public TypeRef ReturnType { get { return returnType; } }
-        private TypeRef returnType;
+        public TypeRef ReturnType { get; }
 
         #region Construction
 
@@ -290,7 +289,7 @@ namespace Devsense.PHP.Syntax.Ast
             this.body = body;
             this.IsConditional = isConditional;
             this.MemberAttributes = memberAttributes;
-            this.returnType = returnType;
+            this.ReturnType = returnType;
         }
 
         #endregion
