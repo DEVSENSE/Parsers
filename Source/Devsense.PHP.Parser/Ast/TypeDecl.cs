@@ -88,47 +88,55 @@ namespace Devsense.PHP.Syntax.Ast
     /// </summary>
     public abstract class TypeDecl : Statement
     {
-        sealed class PartialKeywordFlag
-        {
-            public static bool HasFlag(AstNode node) => node.TryGetProperty<PartialKeywordFlag>(out _);
+        #region Nested class: TypeDeclData
 
-            public static void SetFlag(AstNode node, bool value)
+        /// <summary>
+        /// Additional data for <see cref="TypeDecl"/>, mostly not needed to save mem.
+        /// </summary>
+        class TypeDeclData
+        {
+            enum Fields
             {
-                if (value)
+                IsConditional = 1,
+                IsPartial = 2,
+            }
+
+            Fields _fields;
+
+            public bool IsConditional
+            {
+                get => (_fields & Fields.IsConditional) != 0;
+                set
                 {
-                    node.SetProperty(Instance);
-                }
-                else
-                {
-                    ((IPropertyCollection)node).RemoveProperty<PartialKeywordFlag>();
+                    if (value) _fields |= Fields.IsConditional;
+                    else _fields &= ~Fields.IsConditional;
                 }
             }
 
-            static readonly PartialKeywordFlag Instance = new PartialKeywordFlag();
-
-            private PartialKeywordFlag() { }
-        }
-
-        sealed class IsConditionalFlag
-        {
-            public static bool HasFlag(AstNode node) => node.TryGetProperty<IsConditionalFlag>(out _);
-
-            public static void SetFlag(AstNode node, bool value)
+            public bool IsPartial
             {
-                if (value)
+                get => (_fields & Fields.IsPartial) != 0;
+                set
                 {
-                    node.SetProperty(Instance);
-                }
-                else
-                {
-                    ((IPropertyCollection)node).RemoveProperty<IsConditionalFlag>();
+                    if (value) _fields |= Fields.IsPartial;
+                    else _fields &= ~Fields.IsPartial;
                 }
             }
 
-            static readonly IsConditionalFlag Instance = new IsConditionalFlag();
+            public static bool TryGet(TypeDecl tdecl, out TypeDeclData data) => tdecl.TryGetProperty<TypeDeclData>(out data);
 
-            private IsConditionalFlag() { }
+            public static TypeDeclData GetOrAdd(TypeDecl tdecl) => TryGet(tdecl, out var data) ? data : Set(tdecl, new TypeDeclData());
+
+            public static TypeDeclData Set(TypeDecl tdecl, TypeDeclData data)
+            {
+                if (data != null) tdecl.SetProperty(data);
+                else tdecl.Properties.RemoveProperty<TypeDeclData>();
+
+                return data;
+            }
         }
+
+        #endregion
 
         #region Properties
 
@@ -172,12 +180,12 @@ namespace Devsense.PHP.Syntax.Ast
         public Text.Span BodySpan { get; }
 
         /// <summary>Indicates if type was decorated with partial keyword (Pure mode only).</summary>
-        public bool PartialKeyword => PartialKeywordFlag.HasFlag(this);
+        public bool PartialKeyword => TypeDeclData.TryGet(this, out var data) && data.IsPartial;
 
         /// <summary>
         /// Gets value indicating whether the declaration is conditional.
         /// </summary>
-        public bool IsConditional => IsConditionalFlag.HasFlag(this);
+        public bool IsConditional => TypeDeclData.TryGet(this, out var data) && data.IsConditional;
 
         #endregion
 
@@ -202,12 +210,12 @@ namespace Devsense.PHP.Syntax.Ast
 
             if (isConditional)
             {
-                IsConditionalFlag.SetFlag(this, true);
+                TypeDeclData.GetOrAdd(this).IsConditional = true;
             }
 
             if (isPartial)
             {
-                PartialKeywordFlag.SetFlag(this, true);
+                TypeDeclData.GetOrAdd(this).IsPartial = true;
             }
 
             if (genericParams != null && genericParams.Count != 0)
