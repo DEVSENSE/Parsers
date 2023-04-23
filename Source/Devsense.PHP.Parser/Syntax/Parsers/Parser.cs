@@ -149,7 +149,7 @@ namespace Devsense.PHP.Syntax
             _errors = errors ?? new EmptyErrorSink<Span>();
             _namingContext = StackObjectPool<NamingContext>.Allocate();
 
-            if (errorRecovery != null)
+            if (errorRecovery != null && errorRecovery != EmptyErrorRecovery.Instance)
             {
                 _lexer = new BufferedLexer(_lexer);
                 _errorRecovery = errorRecovery;
