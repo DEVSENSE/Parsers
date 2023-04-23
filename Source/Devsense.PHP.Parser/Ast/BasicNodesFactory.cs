@@ -423,18 +423,20 @@ namespace Devsense.PHP.Syntax.Ast
 
         public virtual LangElement Namespace(Span span, QualifiedName? name, Span nameSpan, NamingContext context)
         {
-            NamespaceDecl space = new NamespaceDecl(span, name.HasValue ? new QualifiedNameRef(nameSpan, name.Value) : QualifiedNameRef.Invalid, true);
-            space.Naming = context;
-            return space;
+            return new NamespaceDecl(span, name.HasValue ? new QualifiedNameRef(nameSpan, name.Value) : QualifiedNameRef.Invalid, true)
+            {
+                Naming = context
+            };
         }
 
         public virtual LangElement Namespace(Span span, QualifiedName? name, Span nameSpan, LangElement block, NamingContext context)
         {
             Debug.Assert(block != null);
-            NamespaceDecl space = new NamespaceDecl(span, name.HasValue ? new QualifiedNameRef(nameSpan, name.Value) : QualifiedNameRef.Invalid, false);
-            space.Naming = context;
-            space.Body = (BlockStmt)block;
-            return space;
+            return new NamespaceDecl(span, name.HasValue ? new QualifiedNameRef(nameSpan, name.Value) : QualifiedNameRef.Invalid, false)
+            {
+                Naming = context,
+                Body = (BlockStmt)block
+            };
         }
 
         public virtual LangElement Declare(Span span, IEnumerable<LangElement> decls, LangElement statement)
@@ -598,8 +600,8 @@ namespace Devsense.PHP.Syntax.Ast
 
         public virtual ForeachVar ForeachVariable(Span span, LangElement variable, bool alias)
         {
-            if (variable is IArrayExpression)
-                return new ForeachVar((IArrayExpression)variable);
+            if (variable is IArrayExpression arrexpr)
+                return new ForeachVar(arrexpr);
             else
                 return new ForeachVar((VariableUse)variable, alias);
         }
