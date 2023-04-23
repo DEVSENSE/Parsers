@@ -65,6 +65,22 @@ namespace Devsense.PHP.Syntax.Ast
         /// <summary>
         /// Creates <see cref="Literal"/> instance for given <paramref name="value"/>.
         /// </summary>
+        public static Literal Create(Text.Span span, long value, ReadOnlySpan<char> sourceText = default)
+        {
+            return new LongIntLiteral(span, value, DetermineNumberLiteralFlags(sourceText));
+        }
+
+        /// <summary>
+        /// Creates <see cref="Literal"/> instance for given <paramref name="value"/>.
+        /// </summary>
+        public static Literal Create(Text.Span span, double value, ReadOnlySpan<char> sourceText = default)
+        {
+            return new DoubleLiteral(span, value, DetermineNumberLiteralFlags(sourceText) | NumberLiteralFlags.FloatingPointNumber);
+        }
+
+        /// <summary>
+        /// Creates <see cref="Literal"/> instance for given <paramref name="value"/>.
+        /// </summary>
         /// <param name="span">Element span.</param>
         /// <param name="value">Value of the literal.</param>
         /// <param name="sourceText">Optional original literal source text to determine additional features.</param>
@@ -78,17 +94,17 @@ namespace Devsense.PHP.Syntax.Ast
 
             if (value is long l)
             {
-                return new LongIntLiteral(span, l, DetermineNumberLiteralFlags(sourceText));
+                return Create(span, l, sourceText);
             }
 
             if (value is int i)
             {
-                return new LongIntLiteral(span, i, DetermineNumberLiteralFlags(sourceText));
+                return Create(span, (long)i, sourceText);
             }
 
             if (value is double d)
             {
-                return new DoubleLiteral(span, d, DetermineNumberLiteralFlags(sourceText) | NumberLiteralFlags.FloatingPointNumber);
+                return Create(span, d, sourceText);
             }
 
             if (value is bool b)

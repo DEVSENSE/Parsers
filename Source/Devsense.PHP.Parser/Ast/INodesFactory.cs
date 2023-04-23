@@ -626,6 +626,24 @@ namespace Devsense.PHP.Syntax.Ast
         TNode Literal(TSpan span, object value, ReadOnlySpan<char> originalValue = default);
 
         /// <summary>
+        /// Creates int64 literal expression.
+        /// </summary>
+        /// <param name="span">Entire element span.</param>
+        /// <param name="value">Literal value.</param>
+        /// <param name="originalValue">Literal original value.</param>
+        /// <returns>Literal expression.</returns>
+        TNode Literal(TSpan span, long value, ReadOnlySpan<char> originalValue = default);
+
+        /// <summary>
+        /// Creates int64 literal expression.
+        /// </summary>
+        /// <param name="span">Entire element span.</param>
+        /// <param name="value">Literal value.</param>
+        /// <param name="originalValue">Literal original value.</param>
+        /// <returns>Literal expression.</returns>
+        TNode Literal(TSpan span, double value, ReadOnlySpan<char> originalValue = default);
+
+        /// <summary>
         /// Creates binary operation expression.
         /// </summary>
         /// <param name="span">Entire element span.</param>

@@ -421,6 +421,20 @@ namespace Devsense.PHP.Syntax.Ast
             return result;
         }
 
+        public virtual LangElement Literal(Span span, long value, ReadOnlySpan<char> originalValue)
+        {
+            var result = Ast.Literal.Create(span, value, originalValue);
+            result.SourceText = originalValue.IsEmpty ? null : originalValue.ToString();
+            return result;
+        }
+
+        public virtual LangElement Literal(Span span, double value, ReadOnlySpan<char> originalValue)
+        {
+            var result = Ast.Literal.Create(span, value, originalValue);
+            result.SourceText = originalValue.IsEmpty ? null : originalValue.ToString();
+            return result;
+        }
+
         public virtual LangElement Namespace(Span span, QualifiedName? name, Span nameSpan, NamingContext context)
         {
             return new NamespaceDecl(span, name.HasValue ? new QualifiedNameRef(nameSpan, name.Value) : QualifiedNameRef.Invalid, true)
