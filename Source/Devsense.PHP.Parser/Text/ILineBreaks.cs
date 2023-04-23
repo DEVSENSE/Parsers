@@ -18,6 +18,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 using Devsense.PHP.Syntax;
+using Devsense.PHP.Utilities;
 
 namespace Devsense.PHP.Text
 {
@@ -129,7 +130,15 @@ namespace Devsense.PHP.Text
 
         public static LineBreaks/*!*/Create(string text)
         {
-            return Create(text, CalculateLineEnds(text));
+            var lineends = ListObjectPool<int>.Allocate();
+            CalculateLineEnds(lineends, text);
+            
+            var linebreaks = Create(text, lineends);
+
+            ListObjectPool<int>.Free(lineends);
+
+            //
+            return linebreaks;
         }
 
         public static LineBreaks/*!*/Create(string text, List<int>/*!*/lineEnds)
@@ -161,11 +170,11 @@ namespace Devsense.PHP.Text
         /// <summary>
         /// Gets list of line ends position.
         /// </summary>
+        /// <param name="list">Where to put the position of line ends.</param>
         /// <param name="text">Document text.</param>
         /// <returns>List of line ends position.</returns>
-        private static List<int>/*!*/CalculateLineEnds(string text)
+        private static void CalculateLineEnds(List<int> list, string text)
         {
-            List<int> list = new List<int>();
             if (text != null)
             {
                 int i = 0;
@@ -183,7 +192,6 @@ namespace Devsense.PHP.Text
                     }
                 }
             }
-            return list;
         }
     }
 
@@ -196,7 +204,7 @@ namespace Devsense.PHP.Text
     /// </summary>
     internal sealed class ShortLineBreaks : LineBreaks
     {
-        private readonly ushort[]/*!*/_lineEnds;
+        readonly ushort[]/*!*/_lineEnds;
 
         public ShortLineBreaks(int textLength, List<int> lineEnds)
             :base(textLength)
@@ -208,21 +216,17 @@ namespace Devsense.PHP.Text
             }
             else
             {
-                _lineEnds = new ushort[count];
-                for (int i = 0; i < count; i++)
-                    _lineEnds[i] = (ushort)lineEnds[i];
+                var lineends = _lineEnds = new ushort[count];
+                for (int i = 0; i < lineends.Length; i++)
+                {
+                    lineends[i] = unchecked((ushort)lineEnds[i]);
+                }
             }
         }
 
-        public override int Count
-        {
-            get { return _lineEnds.Length; }
-        }
+        public override int Count => _lineEnds.Length;
 
-        public override int EndOfLineBreak(int index)
-        {
-            return (int)_lineEnds[index];
-        }
+        public override int EndOfLineBreak(int index) => (int)_lineEnds[index];
     }
 
     #endregion
@@ -250,15 +254,9 @@ namespace Devsense.PHP.Text
             }
         }
 
-        public override int Count
-        {
-            get { return _lineEnds.Length; }
-        }
+        public override int Count => _lineEnds.Length;
 
-        public override int EndOfLineBreak(int index)
-        {
-            return (int)_lineEnds[index];
-        }
+        public override int EndOfLineBreak(int index) => _lineEnds[index];
     }
 
     #endregion
