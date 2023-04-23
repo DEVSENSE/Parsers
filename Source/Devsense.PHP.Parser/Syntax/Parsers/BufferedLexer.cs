@@ -47,9 +47,11 @@ namespace Devsense.PHP.Syntax
             set => throw new NotSupportedException();
         }
 
-        public Span TokenPosition => _buffer.Count > 0 ? _buffer.Peek().TokenPosition : _provider.TokenPosition;
+        public Span TokenPosition => _buffer.Count != 0 ? _buffer.Peek().TokenPosition : _provider.TokenPosition;
 
-        public string TokenText => _buffer.Count > 0 ? _buffer.Peek().TokenText : _provider.TokenText;
+        public string TokenText => _buffer.Count != 0 ? _buffer.Peek().TokenText : _provider.TokenText;
+
+        public ReadOnlySpan<char> TokenTextSpan => TokenText.AsSpan();
 
         public IDocBlock DocComment
         {

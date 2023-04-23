@@ -60,6 +60,8 @@ namespace Devsense.PHP.Syntax
 
         public string TokenText => _provider.TokenText;
 
+        public ReadOnlySpan<char> TokenTextSpan => _provider.TokenTextSpan;
+
         public SemanticValueType TokenValue
         {
             get => _provider.TokenValue;

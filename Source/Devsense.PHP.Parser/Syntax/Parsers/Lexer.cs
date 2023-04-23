@@ -203,10 +203,9 @@ namespace Devsense.PHP.Syntax
             return StringInterns.TryIntern(array, start, length) ?? _strings.Add(array, start, length);
         }
 
-        public CharSpan GetTokenSpan()
-        {
-            return new CharSpan(buffer, token_start, TokenLength);
-        }
+        public CharSpan GetTokenSpan() => new CharSpan(buffer, token_start, TokenLength);
+
+        public ReadOnlySpan<char> TokenTextSpan => GetTokenSpan();
 
         public string GetText(int offset, int length, bool intern)
         {
@@ -795,7 +794,7 @@ namespace Devsense.PHP.Syntax
         /// <summary>
         /// Gets source text of the current token.
         /// </summary>
-        public string TokenText => _tokenText ?? (_tokenText = GetTokenString());
+        public string TokenText => _tokenText ??= GetTokenString();
 
         /// <summary>
         /// gets the current token position before the <see cref="_tokenPosition"/> gets updated properly.

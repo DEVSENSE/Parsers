@@ -362,7 +362,7 @@ namespace UnitTests
             public override LangElement List(Span span, IEnumerable<Item> targets, bool isOldNotation)
                  => CountLE(base.List(span, targets, isOldNotation));
 
-            public override LangElement Literal(Span span, object value, string originalValue)
+            public override LangElement Literal(Span span, object value, ReadOnlySpan<char> originalValue)
                  => CountLE(base.Literal(span, value, originalValue));
 
             public override LangElement Method(Span span, bool aliasReturn, PhpMemberAttributes attributes, TypeRef returnType, Span returnTypeSpan, string name, Span nameSpan, IEnumerable<FormalTypeParam> typeParamsOpt, IEnumerable<FormalParam> formalParams, Span formalParamsSpan, IEnumerable<ActualParam> baseCtorParams, LangElement body)

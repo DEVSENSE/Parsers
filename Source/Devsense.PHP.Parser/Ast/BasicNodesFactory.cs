@@ -414,10 +414,10 @@ namespace Devsense.PHP.Syntax.Ast
             return ArrayEx.CreateList(span, IsAllNull(items) ? null : items, !isOldNotation);
         }
 
-        public virtual LangElement Literal(Span span, object value, string originalValue)
+        public virtual LangElement Literal(Span span, object value, ReadOnlySpan<char> originalValue)
         {
-            var result = Ast.Literal.Create(span, value);
-            result.SourceText = originalValue;
+            var result = Ast.Literal.Create(span, value, originalValue);
+            result.SourceText = originalValue.IsEmpty ? null : originalValue.ToString();
             return result;
         }
 

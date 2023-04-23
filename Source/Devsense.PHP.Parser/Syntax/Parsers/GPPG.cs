@@ -114,6 +114,11 @@ namespace Devsense.PHP.Syntax
         /// </summary>
         string TokenText { get; }
 
+		/// <summary>
+		/// Gets current token text as <see cref="ReadOnlySpan{T}"/>.
+		/// </summary>
+		ReadOnlySpan<char> TokenTextSpan { get; }
+
         /// <summary>
         /// Proceeds to the next token and returns its identifier.
         /// </summary>

@@ -40,13 +40,36 @@ namespace Devsense.PHP.Syntax.Ast
         {
         }
 
+        static NumberLiteralFlags DetermineNumberLiteralFlags(ReadOnlySpan<char> sourceText)
+        {
+            var flags = NumberLiteralFlags.Default;
+
+            if (!sourceText.IsEmpty)
+            {
+                if (sourceText.Length > 1 && sourceText[0] == '0')
+                {
+                    // 0b
+                    if (sourceText[1] == 'b') flags |= NumberLiteralFlags.Binary;
+                    else if (sourceText[1] == 'x') flags |= NumberLiteralFlags.Hexadecimal;
+                    else if (sourceText[1] == 'o') flags |= NumberLiteralFlags.Octal;
+                    else if (sourceText[1] != '_') flags |= NumberLiteralFlags.Octal; // 0123 -> octal format
+                }
+
+                if (sourceText.IndexOfAny('e', 'E') > 0) flags |= NumberLiteralFlags.HasExp;
+                if (sourceText.IndexOf('_') >= 0) flags |= NumberLiteralFlags.HasUnderscores;
+            }
+
+            return flags;
+        }
+
         /// <summary>
         /// Creates <see cref="Literal"/> instance for given <paramref name="value"/>.
         /// </summary>
         /// <param name="span">Element span.</param>
         /// <param name="value">Value of the literal.</param>
+        /// <param name="sourceText">Optional original literal source text to determine additional features.</param>
         /// <returns>Instance of the <see cref="Literal"/> containing <paramref name="value"/>.</returns>
-        public static Literal Create(Text.Span span, object value)
+        public static Literal Create(Text.Span span, object value, ReadOnlySpan<char> sourceText = default)
         {
             if (ReferenceEquals(value, null))
             {
@@ -55,17 +78,17 @@ namespace Devsense.PHP.Syntax.Ast
 
             if (value is long l)
             {
-                return new LongIntLiteral(span, l);
+                return new LongIntLiteral(span, l, DetermineNumberLiteralFlags(sourceText));
             }
 
             if (value is int i)
             {
-                return new LongIntLiteral(span, i);
+                return new LongIntLiteral(span, i, DetermineNumberLiteralFlags(sourceText));
             }
 
             if (value is double d)
             {
-                return new DoubleLiteral(span, d);
+                return new DoubleLiteral(span, d, DetermineNumberLiteralFlags(sourceText) | NumberLiteralFlags.FloatingPointNumber);
             }
 
             if (value is bool b)
@@ -96,6 +119,25 @@ namespace Devsense.PHP.Syntax.Ast
             //
             throw new ArgumentException();
         }
+    }
+
+    #endregion
+
+    #region NumberLiteralFlags
+
+    [Flags]
+    public enum NumberLiteralFlags
+    {
+        Default = 0, // decimal plain number
+
+        FloatingPointNumber = 1, // float number
+
+        Binary = 2, // binary format, i.e. 0b100
+        Octal = 4, // octal format, i.e. 0o123
+        Hexadecimal = 8, // hexadecimal format, i.e. 0x123
+
+        HasUnderscores = 16, // contains PHP7.4 underscores, i.e. 1_234
+        HasExp = 32, // in form of 1e2
     }
 
     #endregion
@@ -148,27 +190,31 @@ namespace Devsense.PHP.Syntax.Ast
     /// </summary>
     public sealed class LongIntLiteral : Literal
     {
+        /// <summary>
+        /// Original number format.
+        /// </summary>
+        public NumberLiteralFlags Flags { get; }
 
-        public override Operations Operation { get { return Operations.LongIntLiteral; } }
+        public override Operations Operation => Operations.LongIntLiteral;
 
         /// <summary>
         /// Gets internal value of literal.
         /// </summary>
-        internal override object ValueObj { get { return this.value; } }
+        internal override object ValueObj => this.Value;
 
         /// <summary>
         /// Gets a value of the literal.
         /// </summary>
-        public long Value { get { return value; } }
-        private long value;
+        public long Value { get; }
 
         /// <summary>
         /// Initializes a new instance of the IntLiteral class.
         /// </summary>
-        public LongIntLiteral(Text.Span span, long value)
+        public LongIntLiteral(Text.Span span, long value, NumberLiteralFlags flags)
             : base(span)
         {
-            this.value = value;
+            this.Value = value;
+            this.Flags = flags;
         }
 
         /// <summary>
@@ -190,28 +236,31 @@ namespace Devsense.PHP.Syntax.Ast
     /// </summary>
     public sealed class DoubleLiteral : Literal
     {
+        public NumberLiteralFlags Flags { get; }
+
         public override Operations Operation { get { return Operations.DoubleLiteral; } }
 
         /// <summary>
         /// Gets internal value of literal.
         /// </summary>
-        internal override object ValueObj { get { return this.value; } }
+        internal override object ValueObj => this.Value;
 
         /// <summary>
         /// Gets a value of the literal.
         /// </summary>
-        public double Value { get { return value; } }
-        private double value;
+        public double Value { get; }
 
         /// <summary>
         /// Initializes a new instance of the DoubleLiteral class.
         /// </summary>
         /// <param name="p">A position.</param>
         /// <param name="value">A double value to be stored in node.</param>
-        public DoubleLiteral(Text.Span p, double value)
+        /// <param name="flags">Literal format.</param>
+        public DoubleLiteral(Text.Span p, double value, NumberLiteralFlags flags)
             : base(p)
         {
-            this.value = value;
+            this.Value = value;
+            this.Flags = flags;
         }
 
         /// <summary>

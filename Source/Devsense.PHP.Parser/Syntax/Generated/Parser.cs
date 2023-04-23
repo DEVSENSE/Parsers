@@ -2257,7 +2257,7 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 { yyval.NodeList = AddNotNull(value_stack.array[value_stack.top-2].yyval.NodeList, value_stack.array[value_stack.top-1].yyval.Node); }
         return;
       case 87: // top_statement_list -> 
-{ yyval.NodeList = NewList<LangElement>(); }
+{ yyval.NodeList = NewList<LangElement>(); /* returned to the pool by CreateBlock() or "start" rule */ }
         return;
       case 88: // namespace_name -> T_STRING 
 { yyval.StringList = Add(new List<string>(), value_stack.array[value_stack.top-1].yyval.String); }
@@ -2440,7 +2440,7 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 { yyval.NodeList = AddNotNull(value_stack.array[value_stack.top-2].yyval.NodeList, value_stack.array[value_stack.top-1].yyval.Node); }
         return;
       case 142: // inner_statement_list -> 
-{ yyval.NodeList = new List<LangElement>(); }
+{ yyval.NodeList = NewList<LangElement>(); /* returned to the bool by CreateBlock() or CreateCaseBlock() */ }
         return;
       case 143: // inner_statement -> statement 
 { yyval.Node = value_stack.array[value_stack.top-1].yyval.Node; }
@@ -3596,10 +3596,10 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 { yyval.Node = value_stack.array[value_stack.top-2].yyval.Node == null? null: _astFactory.EncapsedExpression(yypos, value_stack.array[value_stack.top-2].yyval.Node, Tokens.T_LPAREN); }
         return;
       case 482: // backticks_expr -> '`' '`' 
-{ yyval.Node = _astFactory.Literal(yypos, string.Empty, "``"); }
+{ yyval.Node = _astFactory.Literal(yypos, string.Empty, "``".AsSpan()); }
         return;
       case 483: // backticks_expr -> '`' T_ENCAPSED_AND_WHITESPACE '`' 
-{ yyval.Node = _astFactory.Literal(yypos, value_stack.array[value_stack.top-2].yyval.Strings.Key, string.Format("`{0}`", value_stack.array[value_stack.top-2].yyval.Strings.Value)); }
+{ yyval.Node = _astFactory.Literal(yypos, value_stack.array[value_stack.top-2].yyval.Strings.Key, string.Format("`{0}`", value_stack.array[value_stack.top-2].yyval.Strings.Value).AsSpan()); }
         return;
       case 484: // backticks_expr -> '`' encaps_list '`' 
 { yyval.Node = _astFactory.StringEncapsedExpression(yypos, _astFactory.Concat(value_stack.array[value_stack.top-2].yypos, value_stack.array[value_stack.top-2].yyval.NodeList), Tokens.T_BACKQUOTE); }
@@ -3617,13 +3617,13 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 { yyval.Node = _astFactory.NewArray(yypos, value_stack.array[value_stack.top-2].yyval.ItemList, false); }
         return;
       case 489: // dereferencable_scalar -> T_CONSTANT_ENCAPSED_STRING 
-{ yyval.Node = _astFactory.Literal(yypos, value_stack.array[value_stack.top-1].yyval.Object, _lexer.TokenText); }
+{ yyval.Node = _astFactory.Literal(yypos, value_stack.array[value_stack.top-1].yyval.Object, _lexer.TokenTextSpan); }
         return;
       case 490: // scalar -> T_LNUMBER 
-{ yyval.Node = _astFactory.Literal(yypos, value_stack.array[value_stack.top-1].yyval.Long, _lexer.TokenText); }
+{ yyval.Node = _astFactory.Literal(yypos, value_stack.array[value_stack.top-1].yyval.Long, _lexer.TokenTextSpan); }
         return;
       case 491: // scalar -> T_DNUMBER 
-{ yyval.Node = _astFactory.Literal(yypos, value_stack.array[value_stack.top-1].yyval.Double, _lexer.TokenText); }
+{ yyval.Node = _astFactory.Literal(yypos, value_stack.array[value_stack.top-1].yyval.Double, _lexer.TokenTextSpan); }
         return;
       case 492: // scalar -> T_LINE 
 { yyval.Node = _astFactory.PseudoConstUse(yypos, PseudoConstUse.Types.Line); }
@@ -3653,10 +3653,10 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 { yyval.Node = _astFactory.StringEncapsedExpression(yypos, _astFactory.Concat(value_stack.array[value_stack.top-2].yypos, value_stack.array[value_stack.top-2].yyval.NodeList), Tokens.T_DOUBLE_QUOTES); }
         return;
       case 501: // scalar -> T_START_HEREDOC T_END_HEREDOC 
-{ yyval.Node = _astFactory.HeredocExpression(yypos, _astFactory.Literal(new Span(value_stack.array[value_stack.top-2].yypos.End, 0), "", ""), value_stack.array[value_stack.top-2].yyval.QuoteToken, value_stack.array[value_stack.top-1].yyval.HereDocValue); }
+{ yyval.Node = _astFactory.HeredocExpression(yypos, _astFactory.Literal(new Span(value_stack.array[value_stack.top-2].yypos.End, 0), "", string.Empty.AsSpan()), value_stack.array[value_stack.top-2].yyval.QuoteToken, value_stack.array[value_stack.top-1].yyval.HereDocValue); }
         return;
       case 502: // scalar -> T_START_HEREDOC T_ENCAPSED_AND_WHITESPACE T_END_HEREDOC 
-{ yyval.Node = _astFactory.HeredocExpression(yypos, RemoveHereDocIndentation(_astFactory.Literal(value_stack.array[value_stack.top-2].yypos, value_stack.array[value_stack.top-2].yyval.Strings.Key, value_stack.array[value_stack.top-2].yyval.Strings.Value), value_stack.array[value_stack.top-1].yyval.HereDocValue, true), value_stack.array[value_stack.top-3].yyval.QuoteToken, value_stack.array[value_stack.top-1].yyval.HereDocValue); }
+{ yyval.Node = _astFactory.HeredocExpression(yypos, RemoveHereDocIndentation(_astFactory.Literal(value_stack.array[value_stack.top-2].yypos, value_stack.array[value_stack.top-2].yyval.Strings.Key, value_stack.array[value_stack.top-2].yyval.Strings.Value.AsSpan()), value_stack.array[value_stack.top-1].yyval.HereDocValue, true), value_stack.array[value_stack.top-3].yyval.QuoteToken, value_stack.array[value_stack.top-1].yyval.HereDocValue); }
         return;
       case 503: // scalar -> T_START_HEREDOC encaps_list T_END_HEREDOC 
 { yyval.Node = _astFactory.HeredocExpression(yypos, RemoveHereDocIndentation(_astFactory.Concat(value_stack.array[value_stack.top-2].yypos, value_stack.array[value_stack.top-2].yyval.NodeList), value_stack.array[value_stack.top-1].yyval.HereDocValue, true), value_stack.array[value_stack.top-3].yyval.QuoteToken, value_stack.array[value_stack.top-1].yyval.HereDocValue); }
@@ -3851,13 +3851,13 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 { yyval.NodeList = AddToList<LangElement>(value_stack.array[value_stack.top-2].yyval.NodeList, value_stack.array[value_stack.top-1].yyval.Node); }
         return;
       case 564: // encaps_list -> encaps_list T_ENCAPSED_AND_WHITESPACE 
-{ yyval.NodeList = AddToList<LangElement>(value_stack.array[value_stack.top-2].yyval.NodeList, _astFactory.Literal(value_stack.array[value_stack.top-1].yypos, value_stack.array[value_stack.top-1].yyval.Strings.Key, _lexer.TokenText)); }
+{ yyval.NodeList = AddToList<LangElement>(value_stack.array[value_stack.top-2].yyval.NodeList, _astFactory.Literal(value_stack.array[value_stack.top-1].yypos, value_stack.array[value_stack.top-1].yyval.Strings.Key, _lexer.TokenTextSpan)); }
         return;
       case 565: // encaps_list -> encaps_var 
 { yyval.NodeList = new List<LangElement>() { value_stack.array[value_stack.top-1].yyval.Node }; }
         return;
       case 566: // encaps_list -> T_ENCAPSED_AND_WHITESPACE encaps_var 
-{ yyval.NodeList = new List<LangElement>() { _astFactory.Literal(value_stack.array[value_stack.top-2].yypos, value_stack.array[value_stack.top-2].yyval.Strings.Key, value_stack.array[value_stack.top-2].yyval.Strings.Value), value_stack.array[value_stack.top-1].yyval.Node }; }
+{ yyval.NodeList = new List<LangElement>() { _astFactory.Literal(value_stack.array[value_stack.top-2].yypos, value_stack.array[value_stack.top-2].yyval.Strings.Key, value_stack.array[value_stack.top-2].yyval.Strings.Value.AsSpan()), value_stack.array[value_stack.top-1].yyval.Node }; }
         return;
       case 567: // encaps_var -> T_VARIABLE 
 { yyval.Node = _astFactory.Variable(yypos, value_stack.array[value_stack.top-1].yyval.String, NullLangElement, true); }
@@ -3883,10 +3883,10 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 { yyval.Node = _astFactory.EncapsedExpression(yypos, value_stack.array[value_stack.top-2].yyval.Node, Tokens.T_LBRACE); }
         return;
       case 574: // encaps_var_offset -> T_STRING 
-{ yyval.Node = _astFactory.Literal(yypos, value_stack.array[value_stack.top-1].yyval.String, _lexer.TokenText); }
+{ yyval.Node = _astFactory.Literal(yypos, value_stack.array[value_stack.top-1].yyval.String, _lexer.TokenTextSpan); }
         return;
       case 575: // encaps_var_offset -> T_NUM_STRING 
-{ yyval.Node = _astFactory.Literal(yypos, value_stack.array[value_stack.top-1].yyval.Long, _lexer.TokenText); }
+{ yyval.Node = _astFactory.Literal(yypos, value_stack.array[value_stack.top-1].yyval.Long, _lexer.TokenTextSpan); }
         return;
       case 576: // encaps_var_offset -> T_VARIABLE 
 { yyval.Node = _astFactory.Variable(yypos, value_stack.array[value_stack.top-1].yyval.String, NullLangElement, true); }

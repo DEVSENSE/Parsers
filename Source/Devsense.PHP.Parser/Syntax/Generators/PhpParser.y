@@ -1563,8 +1563,8 @@ exit_expr:
 ;
 
 backticks_expr:
-		'`' '`' { $$ = _astFactory.Literal(@$, string.Empty, "``"); }
-	|	'`' T_ENCAPSED_AND_WHITESPACE '`' { $$ = _astFactory.Literal(@$, $2.Key, string.Format("`{0}`", $2.Value)); }
+		'`' '`' { $$ = _astFactory.Literal(@$, string.Empty, "``".AsSpan()); }
+	|	'`' T_ENCAPSED_AND_WHITESPACE '`' { $$ = _astFactory.Literal(@$, $2.Key, string.Format("`{0}`", $2.Value).AsSpan()); }
 	|	'`' encaps_list '`' { $$ = _astFactory.StringEncapsedExpression(@$, _astFactory.Concat(@2, $2), Tokens.T_BACKQUOTE); }
 ;
 
@@ -1577,12 +1577,12 @@ ctor_arguments:
 dereferencable_scalar:
 		T_ARRAY '(' array_pair_list ')'	{ $$ = _astFactory.NewArray(@$, $3, true); }
 	|	'[' array_pair_list ']'			{ $$ = _astFactory.NewArray(@$, $2, false); }
-	|	T_CONSTANT_ENCAPSED_STRING		{ $$ = _astFactory.Literal(@$, $1, _lexer.TokenText); }
+	|	T_CONSTANT_ENCAPSED_STRING		{ $$ = _astFactory.Literal(@$, $1, _lexer.TokenTextSpan); }
 ;
 
 scalar:
-		T_LNUMBER 	{ $$ = _astFactory.Literal(@$, $1, _lexer.TokenText); }
-	|	T_DNUMBER 	{ $$ = _astFactory.Literal(@$, $1, _lexer.TokenText); }
+		T_LNUMBER 	{ $$ = _astFactory.Literal(@$, $1, _lexer.TokenTextSpan); }
+	|	T_DNUMBER 	{ $$ = _astFactory.Literal(@$, $1, _lexer.TokenTextSpan); }
 	|	T_LINE 		{ $$ = _astFactory.PseudoConstUse(@$, PseudoConstUse.Types.Line); }
 	|	T_FILE 		{ $$ = _astFactory.PseudoConstUse(@$, PseudoConstUse.Types.File); }     
 	|	T_DIR   	{ $$ = _astFactory.PseudoConstUse(@$, PseudoConstUse.Types.Dir); }      
@@ -1592,8 +1592,8 @@ scalar:
 	|	T_NS_C		{ $$ = _astFactory.PseudoConstUse(@$, PseudoConstUse.Types.Namespace); }
 	|	T_CLASS_C	{ $$ = _astFactory.PseudoConstUse(@$, PseudoConstUse.Types.Class); }    
 	|	'"' encaps_list '"' 	{ $$ = _astFactory.StringEncapsedExpression(@$, _astFactory.Concat(@2, $2), Tokens.T_DOUBLE_QUOTES); }
-	|	T_START_HEREDOC T_END_HEREDOC							{ $$ = _astFactory.HeredocExpression(@$, _astFactory.Literal(new Span(@1.End, 0), "", ""), $1.QuoteToken, $2); }
-	|	T_START_HEREDOC T_ENCAPSED_AND_WHITESPACE T_END_HEREDOC { $$ = _astFactory.HeredocExpression(@$, RemoveHereDocIndentation(_astFactory.Literal(@2, $2.Key, $2.Value), $3, true), $1.QuoteToken, $3); }
+	|	T_START_HEREDOC T_END_HEREDOC							{ $$ = _astFactory.HeredocExpression(@$, _astFactory.Literal(new Span(@1.End, 0), "", string.Empty.AsSpan()), $1.QuoteToken, $2); }
+	|	T_START_HEREDOC T_ENCAPSED_AND_WHITESPACE T_END_HEREDOC { $$ = _astFactory.HeredocExpression(@$, RemoveHereDocIndentation(_astFactory.Literal(@2, $2.Key, $2.Value.AsSpan()), $3, true), $1.QuoteToken, $3); }
 	|	T_START_HEREDOC encaps_list T_END_HEREDOC				{ $$ = _astFactory.HeredocExpression(@$, RemoveHereDocIndentation(_astFactory.Concat(@2, $2), $3, true), $1.QuoteToken, $3); }
 	|	dereferencable_scalar	{ $$ = $1; }
 	|	constant				{ $$ = $1; }
@@ -1751,11 +1751,11 @@ encaps_list:
 		encaps_list encaps_var
 			{ $$ = AddToList<LangElement>($1, $2); }
 	|	encaps_list T_ENCAPSED_AND_WHITESPACE
-			{ $$ = AddToList<LangElement>($1, _astFactory.Literal(@2, $2.Key, _lexer.TokenText)); }
+			{ $$ = AddToList<LangElement>($1, _astFactory.Literal(@2, $2.Key, _lexer.TokenTextSpan)); }
 	|	encaps_var
 			{ $$ = new List<LangElement>() { $1 }; }
 	|	T_ENCAPSED_AND_WHITESPACE encaps_var
-			{ $$ = new List<LangElement>() { _astFactory.Literal(@1, $1.Key, $1.Value), $2 }; }
+			{ $$ = new List<LangElement>() { _astFactory.Literal(@1, $1.Key, $1.Value.AsSpan()), $2 }; }
 ;
 
 encaps_var:
@@ -1777,8 +1777,8 @@ encaps_var:
 ;
 
 encaps_var_offset:
-		T_STRING		{ $$ = _astFactory.Literal(@$, $1, _lexer.TokenText); }
-	|	T_NUM_STRING	{ $$ = _astFactory.Literal(@$, $1, _lexer.TokenText); }
+		T_STRING		{ $$ = _astFactory.Literal(@$, $1, _lexer.TokenTextSpan); }
+	|	T_NUM_STRING	{ $$ = _astFactory.Literal(@$, $1, _lexer.TokenTextSpan); }
 	|	T_VARIABLE		{ $$ = _astFactory.Variable(@$, $1, NullLangElement, true); }
 ;
 

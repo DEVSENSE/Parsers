@@ -623,7 +623,7 @@ namespace Devsense.PHP.Syntax.Ast
         /// <param name="value">Literal value.</param>
         /// <param name="originalValue">Literal original value.</param>
         /// <returns>Literal expression.</returns>
-        TNode Literal(TSpan span, object value, string originalValue = null);
+        TNode Literal(TSpan span, object value, ReadOnlySpan<char> originalValue = default);
 
         /// <summary>
         /// Creates binary operation expression.
