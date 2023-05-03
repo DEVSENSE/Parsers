@@ -153,11 +153,11 @@ namespace Devsense.PHP.Syntax.Ast
 
         Binary = 2, // binary format, i.e. 0b100
         Octal = 4, // octal format, i.e. 0123
-        OctalExplicit = 8, // new octal format, 0o123
-        Hexadecimal = 8, // hexadecimal format, i.e. 0x123
+        OctalExplicit = Octal | 8, // new octal format, 0o123
+        Hexadecimal = 16, // hexadecimal format, i.e. 0x123
 
-        HasUnderscores = 16, // contains PHP7.4 underscores, i.e. 1_234
-        HasExp = 32, // in form of 1e2
+        HasUnderscores = 32, // contains PHP7.4 underscores, i.e. 1_234
+        HasExp = 64, // in form of 1e2
     }
 
     #endregion
