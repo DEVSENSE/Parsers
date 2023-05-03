@@ -50,8 +50,11 @@ namespace Devsense.PHP.Syntax.Ast
                 {
                     // 0b
                     if (sourceText[1] == 'b') flags |= NumberLiteralFlags.Binary;
+                    // 0x
                     else if (sourceText[1] == 'x') flags |= NumberLiteralFlags.Hexadecimal;
-                    else if (sourceText[1] == 'o') flags |= NumberLiteralFlags.Octal;
+                    // 0o
+                    else if (sourceText[1] == 'o') flags |= NumberLiteralFlags.OctalExplicit;
+                    // 0...
                     else if (sourceText[1] != '_') flags |= NumberLiteralFlags.Octal; // 0123 -> octal format
                 }
 
@@ -149,7 +152,8 @@ namespace Devsense.PHP.Syntax.Ast
         FloatingPointNumber = 1, // float number
 
         Binary = 2, // binary format, i.e. 0b100
-        Octal = 4, // octal format, i.e. 0o123
+        Octal = 4, // octal format, i.e. 0123
+        OctalExplicit = 8, // new octal format, 0o123
         Hexadecimal = 8, // hexadecimal format, i.e. 0x123
 
         HasUnderscores = 16, // contains PHP7.4 underscores, i.e. 1_234
