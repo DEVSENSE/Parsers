@@ -1167,8 +1167,10 @@ attributed_class_statement:
 class_statement:
 		attributed_class_statement				{ $$ = $1; }
 	|   attributes attributed_class_statement	{ $$ = WithAttributes($2, $1); }
-	|	T_USE name_list trait_adaptations
-			{ $$ = _astFactory.TraitUse(@$, $2, $3); }
+	|	T_USE name_list trait_adaptations {
+			$$ = _astFactory.TraitUse(@$, $2, $3);
+			SetDoc($$);
+		}
 ;
 
 name_list:

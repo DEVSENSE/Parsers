@@ -283,6 +283,32 @@ class X {
         }
 
         [TestMethod]
+        public void PhpDocTraitUseTest()
+        {
+            var codes = new[] {
+                @"<?php
+class X {
+  /** @use T<int> */
+  use T;
+}",
+            };
+
+            foreach (var code in codes)
+            {
+                var unit = new CodeSourceUnit(code, "dummy.php", Encoding.UTF8);
+                unit.Parse(new BasicNodesFactory(unit), null);
+
+                foreach (var tdecl in unit.Ast.TraverseNamedTypeDeclarations())
+                {
+                    foreach (var m in tdecl.Members.OfType<TraitsUse>())
+                    {
+                        Assert.IsTrue(m.TryGetProperty<IDocBlock>(out var phpdoc));
+                    }
+                }
+            }
+        }
+
+        [TestMethod]
         public void NamedArgTest()
         {
             var codes = new[] {
