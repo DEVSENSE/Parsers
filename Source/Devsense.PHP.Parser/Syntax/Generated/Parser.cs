@@ -3061,7 +3061,10 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 { yyval.Node = WithAttributes(value_stack.array[value_stack.top-1].yyval.Node, value_stack.array[value_stack.top-2].yyval.NodeList); }
         return;
       case 318: // class_statement -> T_USE name_list trait_adaptations 
-{ yyval.Node = _astFactory.TraitUse(yypos, value_stack.array[value_stack.top-2].yyval.TypeRefList, value_stack.array[value_stack.top-1].yyval.Node); }
+{
+			yyval.Node = _astFactory.TraitUse(yypos, value_stack.array[value_stack.top-2].yyval.TypeRefList, value_stack.array[value_stack.top-1].yyval.Node);
+			SetDoc(yyval.Node);
+		}
         return;
       case 319: // name_list -> name 
 { yyval.TypeRefList = new List<TypeRef>() { CreateTypeRef(value_stack.array[value_stack.top-1].yyval.QualifiedNameReference) }; }
