@@ -114,14 +114,16 @@ namespace Devsense.PHP.Syntax
                         break;
 
                     case Tokens.T_FN:
-                        if (!HasFeatureSet(LanguageFeatures.Php74Set))
+                        if (!HasFeatureSet(LanguageFeatures.Php74Set) ||
+                            _backup_token == Tokens.T_NS_SEPARATOR)
                         {
                             token = Tokens.T_STRING;
                         }
                         break;
 
                     case Tokens.T_MATCH:
-                        if (!HasFeatureSet(LanguageFeatures.Php80Set))
+                        if (!HasFeatureSet(LanguageFeatures.Php80Set) ||
+                            _backup_token == Tokens.T_NS_SEPARATOR)
                         {
                             token = Tokens.T_STRING;
                         }
