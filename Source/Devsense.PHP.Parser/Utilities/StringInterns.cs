@@ -22,6 +22,8 @@ namespace Devsense.PHP.Utilities
                         case '\r': return "\r";
                         case ';': return ";";
                         case ',': return ",";
+                        case '-': return "-";
+                        case '|': return "|";
                         case '(': return "(";
                         case ')': return ")";
                         case '[': return "[";
@@ -37,6 +39,10 @@ namespace Devsense.PHP.Utilities
                         case 'b': return "b";
                         case 'c': return "c";
                         case 'i': return "i";
+                        case 'n': return "n";
+                        case 'm': return "m";
+                        case 's': return "s";
+                        case 'u': return "u";
                         case 'x': return "x";
                         case 'y': return "y";
                         case '.': return ".";
@@ -64,6 +70,12 @@ namespace Devsense.PHP.Utilities
                         case 'i':
                             if (span[1] == 'n' && span[2] == 't') return "int";
                             break;
+                        case '/':
+                            if (span[1] == '.' && span[2] == '.') return "/..";
+                            break;
+                        case '[':
+                            if (span[1] == '?' && span[2] == ']') return "[?]";
+                            break;
                     }
                     break;
 
@@ -79,6 +91,13 @@ namespace Devsense.PHP.Utilities
                             break;
                         case 'n':
                             if (MemoryExtensions.Equals(span, "null".AsSpan(), StringComparison.Ordinal)) return "null";
+                            if (MemoryExtensions.Equals(span, "name".AsSpan(), StringComparison.Ordinal)) return "name";
+                            break;
+                        case 't':
+                            if (MemoryExtensions.Equals(span, "type".AsSpan(), StringComparison.Ordinal)) return "type";
+                            break;
+                        case 'v':
+                            if (MemoryExtensions.Equals(span, "void".AsSpan(), StringComparison.Ordinal)) return "void";
                             break;
                     }
                     break;
@@ -89,6 +108,12 @@ namespace Devsense.PHP.Utilities
                         case 'c':
                             if (MemoryExtensions.Equals(span, "class".AsSpan(), StringComparison.Ordinal)) return "class";
                             break;
+                        case 'U':
+                            if (MemoryExtensions.Equals(span, "UTF-8".AsSpan(), StringComparison.Ordinal)) return "UTF-8";
+                            break;
+                        case 'v':
+                            if (MemoryExtensions.Equals(span, "value".AsSpan(), StringComparison.Ordinal)) return "value";
+                            break;
                     }
                     break;
 
@@ -97,6 +122,7 @@ namespace Devsense.PHP.Utilities
                     {
                         case 's':
                             if (MemoryExtensions.Equals(span, "static".AsSpan(), StringComparison.Ordinal)) return "static";
+                            if (MemoryExtensions.Equals(span, "string".AsSpan(), StringComparison.Ordinal)) return "string";
                             break;
                         case 'p':
                             if (MemoryExtensions.Equals(span, "public".AsSpan(), StringComparison.Ordinal)) return "public";
