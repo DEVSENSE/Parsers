@@ -6,10 +6,8 @@ namespace Devsense.PHP.Utilities
 {
     internal static class StringInterns
     {
-        public static string TryIntern(char[] buffer, int start, int length)
+        public static string TryIntern(ReadOnlySpan<char> span)
         {
-            var span = buffer.AsSpan(start, length);
-
             // PERF: Whether interning or not, there are some frequently occurring easy cases we can pick off easily.
             switch (span.Length)
             {

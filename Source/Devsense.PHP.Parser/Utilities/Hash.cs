@@ -233,12 +233,19 @@ namespace Devsense.PHP.Utilities
         /// <param name="start">The start index of the first character to hash</param>
         /// <param name="length">The number of characters, beginning with <paramref name="start"/> to hash</param>
         /// <returns>The FNV-1a hash code of the substring beginning at <paramref name="start"/> and ending after <paramref name="length"/> characters.</returns>
-        internal static int GetFNVHashCode(char[] text, int start, int length)
+        internal static int GetFNVHashCode(char[] text, int start, int length) => GetFNVHashCode(text.AsSpan(start, length));
+
+        /// <summary>
+        /// Compute the hashcode of a sub string using FNV-1a
+        /// See http://en.wikipedia.org/wiki/Fowler%E2%80%93Noll%E2%80%93Vo_hash_function
+        /// </summary>
+        /// <param name="text">The input string.</param>
+        /// <returns>The FNV-1a hash code of the <paramref name="text"/>.</returns>
+        internal static int GetFNVHashCode(ReadOnlySpan<char> text)
         {
             int hashCode = Hash.FnvOffsetBias;
-            int end = start + length;
 
-            for (int i = start; i < end; i++)
+            for (int i = 0; i < text.Length; i++)
             {
                 hashCode = unchecked((hashCode ^ text[i]) * Hash.FnvPrime);
             }

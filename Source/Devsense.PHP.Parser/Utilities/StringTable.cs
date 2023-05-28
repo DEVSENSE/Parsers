@@ -104,6 +104,40 @@ namespace Devsense.PHP.Utilities
 
         #endregion // Poolable
 
+        public string Add(ReadOnlySpan<char> chars)
+        {
+            var hashCode = Hash.GetFNVHashCode(chars);
+
+            // capture array to avoid extra range checks
+            var arr = _localTable;
+            var idx = LocalIdxFromHash(hashCode);
+
+            var text = arr[idx].Text;
+
+            if (text != null && arr[idx].HashCode == hashCode)
+            {
+                var result = arr[idx].Text;
+                if (StringTable.TextEquals(result, chars))
+                {
+                    return result;
+                }
+            }
+
+            string shared = FindSharedEntry(chars, hashCode);
+            if (shared != null)
+            {
+                // PERF: the following code does element-wise assignment of a struct
+                //       because current JIT produces better code compared to
+                //       arr[idx] = new Entry(...)
+                arr[idx].HashCode = hashCode;
+                arr[idx].Text = shared;
+
+                return shared;
+            }
+
+            return AddItem(chars, hashCode);
+        }
+
         public string Add(char[] chars, int start, int len)
         {
             var hashCode = Hash.GetFNVHashCode(chars, start, len);
@@ -275,7 +309,9 @@ namespace Devsense.PHP.Utilities
             return chars;
         }
 
-        private static string FindSharedEntry(char[] chars, int start, int len, int hashCode)
+        private static string FindSharedEntry(char[] chars, int start, int len, int hashCode) => FindSharedEntry(chars.AsSpan(start, len), hashCode);
+
+        private static string FindSharedEntry(ReadOnlySpan<char> chars, int hashCode)
         {
             var arr = s_sharedTable;
             int idx = SharedIdxFromHash(hashCode);
@@ -290,7 +326,7 @@ namespace Devsense.PHP.Utilities
 
                 if (e != null)
                 {
-                    if (hash == hashCode && TextEquals(e, chars, start, len))
+                    if (hash == hashCode && TextEquals(e, chars))
                     {
                         break;
                     }
@@ -310,40 +346,7 @@ namespace Devsense.PHP.Utilities
             return e;
         }
 
-        private static string FindSharedEntry(string chars, int start, int len, int hashCode)
-        {
-            var arr = s_sharedTable;
-            int idx = SharedIdxFromHash(hashCode);
-
-            string e = null;
-            // we use quadratic probing here
-            // bucket positions are (n^2 + n)/2 relative to the masked hashcode
-            for (int i = 1; i < SharedBucketSize + 1; i++)
-            {
-                e = arr[idx].Text;
-                int hash = arr[idx].HashCode;
-
-                if (e != null)
-                {
-                    if (hash == hashCode && TextEquals(e, chars, start, len))
-                    {
-                        break;
-                    }
-
-                    // this is not e we are looking for
-                    e = null;
-                }
-                else
-                {
-                    // once we see unfilled entry, the rest of the bucket will be empty
-                    break;
-                }
-
-                idx = (idx + i) & SharedSizeMask;
-            }
-
-            return e;
-        }
+        private static string FindSharedEntry(string chars, int start, int len, int hashCode) => FindSharedEntry(chars.AsSpan(start, len), hashCode);
 
         private static string FindSharedEntry(char chars, int hashCode)
         {
@@ -450,19 +453,16 @@ namespace Devsense.PHP.Utilities
         }
 
 
-        private string AddItem(char[] chars, int start, int len, int hashCode)
+        private string AddItem(char[] chars, int start, int len, int hashCode) => AddItem(chars.AsSpan(start, len), hashCode);
+
+        private string AddItem(ReadOnlySpan<char> chars, int hashCode)
         {
-            var text = new String(chars, start, len);
+            var text = chars.ToString();
             AddCore(text, hashCode);
             return text;
         }
 
-        private string AddItem(string chars, int start, int len, int hashCode)
-        {
-            var text = chars.Substring(start, len);
-            AddCore(text, hashCode);
-            return text;
-        }
+        private string AddItem(string chars, int start, int len, int hashCode) => AddItem(chars.AsSpan(start, len), hashCode);
 
         private string AddItem(char chars, int hashCode)
         {
@@ -477,7 +477,6 @@ namespace Devsense.PHP.Utilities
             AddCore(text, hashCode);
             return text;
         }
-
 
         private void AddCore(string chars, int hashCode)
         {
@@ -592,24 +591,7 @@ namespace Devsense.PHP.Utilities
             return Interlocked.Increment(ref StringTable.s_sharedRandom);
         }
 
-        public static bool TextEquals(string array, string text, int start, int length)
-        {
-            if (array.Length != length)
-            {
-                return false;
-            }
-
-            // use array.Length to eliminate the range check
-            for (var i = 0; i < array.Length; i++)
-            {
-                if (array[i] != text[start + i])
-                {
-                    return false;
-                }
-            }
-
-            return true;
-        }
+        public static bool TextEquals(string array, string text, int start, int length) => TextEquals(array, text.AsSpan(start, length));
 
         public static bool TextEquals(string array, StringBuilder text)
         {
@@ -631,15 +613,19 @@ namespace Devsense.PHP.Utilities
             return true;
         }
 
-        public static bool TextEquals(string array, char[] text, int start, int length)
+        public static bool TextEquals(string array, char[] text, int start, int length) => TextEquals(array, text.AsSpan(start, length));
+
+        public static bool TextEquals(string array, ReadOnlySpan<char> text)
         {
-            return array.Length == length && TextEqualsCore(array, text, start);
+            return array.Length == text.Length && TextEqualsCore(array, text);
         }
 
-        private static bool TextEqualsCore(string array, char[] text, int start)
+        private static bool TextEqualsCore(string array, char[] text, int start) => TextEqualsCore(array, text.AsSpan(start));
+
+        private static bool TextEqualsCore(string array, ReadOnlySpan<char> text)
         {
             // use array.Length to eliminate the range check
-            int s = start;
+            int s = 0;
             for (var i = 0; i < array.Length; i++)
             {
                 if (array[i] != text[s])

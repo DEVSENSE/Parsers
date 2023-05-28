@@ -200,7 +200,9 @@ namespace Devsense.PHP.Syntax
 
         public string Intern(char[] array, int start, int length)
         {
-            return StringInterns.TryIntern(array, start, length) ?? _strings.Add(array, start, length);
+            var text = array.AsSpan(start, length);
+
+            return StringInterns.TryIntern(text) ?? _strings.Add(text);
         }
 
         public CharSpan GetTokenSpan() => new CharSpan(buffer, token_start, TokenLength);
@@ -209,11 +211,13 @@ namespace Devsense.PHP.Syntax
 
         public string GetText(int offset, int length, bool intern)
         {
+            var text = buffer.AsSpan(offset, length);
+
             return
-                StringInterns.TryIntern(buffer, offset, length) // always try most frequent strings fast
+                StringInterns.TryIntern(text) // always try most frequent strings fast
                 ?? (intern
-                    ? _strings.Add(buffer, offset, length)
-                    : new String(buffer, offset, length)
+                    ? _strings.Add(text)
+                    : text.ToString()
                 );
         }
 
