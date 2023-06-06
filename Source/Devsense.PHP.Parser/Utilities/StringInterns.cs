@@ -35,6 +35,8 @@ namespace Devsense.PHP.Utilities
                         case '/': return "/";
                         case '\\': return "\\";
                         case ':': return ":";
+                        case '\'': return "'";
+                        case '\"': return "\"";
                         case 'a': return "a";
                         case 'b': return "b";
                         case 'c': return "c";
@@ -95,6 +97,7 @@ namespace Devsense.PHP.Utilities
                             break;
                         case 't':
                             if (MemoryExtensions.Equals(span, "type".AsSpan(), StringComparison.Ordinal)) return "type";
+                            if (MemoryExtensions.Equals(span, "text".AsSpan(), StringComparison.Ordinal)) return "text";
                             break;
                         case 'v':
                             if (MemoryExtensions.Equals(span, "void".AsSpan(), StringComparison.Ordinal)) return "void";
