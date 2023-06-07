@@ -146,6 +146,8 @@ namespace Devsense.PHP.Syntax
                     case Tokens.T_DEFAULT:
                     case Tokens.T_EVAL:
                     case Tokens.T_CONST:
+                    case Tokens.T_INTERFACE:
+                    case Tokens.T_TRAIT:
                         if (_backup_token == Tokens.T_NS_SEPARATOR) // after "\", it is treated as identifier. See T_NAME_QUALIFIED in Zend. We don't, since it would break backward compatibility with older parsers.
                         {
                             token = Tokens.T_STRING;
