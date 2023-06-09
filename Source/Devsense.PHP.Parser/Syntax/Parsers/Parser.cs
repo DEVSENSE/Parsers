@@ -545,6 +545,11 @@ namespace Devsense.PHP.Syntax
         static readonly Dictionary<QualifiedName, PrimitiveTypeRef.PrimitiveType> PHP81PrimitiveTypes = new Dictionary<QualifiedName, PrimitiveTypeRef.PrimitiveType>() {
             { QualifiedName.Never, PrimitiveTypeRef.PrimitiveType.never },
         };
+        static readonly Dictionary<QualifiedName, PrimitiveTypeRef.PrimitiveType> PHP82PrimitiveTypes = new Dictionary<QualifiedName, PrimitiveTypeRef.PrimitiveType>() {
+            { QualifiedName.True, PrimitiveTypeRef.PrimitiveType.@true },
+            { QualifiedName.False, PrimitiveTypeRef.PrimitiveType.@false },
+            { QualifiedName.Null, PrimitiveTypeRef.PrimitiveType.@null },
+        };
 
         /// <summary>
         /// Gets map of primitive types for current language features.
@@ -559,6 +564,10 @@ namespace Devsense.PHP.Syntax
 
                     var dict = new Dictionary<QualifiedName, PrimitiveTypeRef.PrimitiveType>(14);
 
+                    if (_languageFeatures.HasFeature(LanguageFeatures.Php82Set))
+                    {
+                        dict.Add(PHP82PrimitiveTypes);
+                    }
                     if (_languageFeatures.HasFeature(LanguageFeatures.Php81Set))
                     {
                         dict.Add(PHP81PrimitiveTypes);
@@ -605,7 +614,7 @@ namespace Devsense.PHP.Syntax
             var span = tname.Span;
 
             // primitive type name ?
-            if (qname.IsSimpleName)
+            if (qname.IsSimpleName && !qname.IsFullyQualifiedName)
             {
                 if (ReservedTypeRef.ReservedTypes.TryGetValue(qname.Name, out ReservedTypeRef.ReservedType reserved))
                 {

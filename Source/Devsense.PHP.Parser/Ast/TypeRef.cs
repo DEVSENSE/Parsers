@@ -177,6 +177,13 @@ namespace Devsense.PHP.Syntax.Ast
             /// Introduced in PHP 8.1.
             /// </summary>
             never,
+
+            /// <summary><c>true</c>, PHP >= 8.2.</summary>
+            @true,
+            /// <summary><c>false</c>, PHP >= 8.2.</summary>
+            @false,
+            /// <summary><c>null</c>, PHP >= 8.2.</summary>
+            @null,
         }
 
         #endregion
@@ -219,6 +226,9 @@ namespace Devsense.PHP.Syntax.Ast
                     PrimitiveType.@object => Syntax.QualifiedName.Object.Name,
                     PrimitiveType.mixed => Syntax.QualifiedName.Mixed.Name,
                     PrimitiveType.never => Syntax.QualifiedName.Never.Name,
+                    PrimitiveType.@true => Syntax.QualifiedName.True.Name,
+                    PrimitiveType.@false=> Syntax.QualifiedName.False.Name,
+                    PrimitiveType.@null => Syntax.QualifiedName.Null.Name,
                     _ => throw new InvalidOperationException(),  // invalid _typeName
                 };
             }
