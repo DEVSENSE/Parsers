@@ -648,30 +648,64 @@ namespace Devsense.PHP.Syntax.Ast
         }
         public virtual TypeRef TypeReference(Span span, LangElement varName)
         {
-            return new IndirectTypeRef(span, (Expression)varName);
+            return varName as TypeRef ?? new IndirectTypeRef(span, (Expression)varName);
         }
         public virtual TypeRef TypeReference(Span span, IEnumerable<LangElement> classes)
         {
             Debug.Assert(classes != null && classes.Count() > 0 && classes.All(c => c is TypeRef));
 
-            var typearr = classes is IList<TypeRef> list ? list.ToArray() : classes.CastToArray<TypeRef>();
+            var typearr = classes.CastToArray<TypeRef>();
 
-            if (typearr.Length == 1)
+            // true|false|null at the end? (PHP <= 8.1)
+            bool IsSuffixedPrimitiveTypeName(QualifiedName qname, out PrimitiveTypeRef.PrimitiveType ptype)
             {
-                return typearr[0];
+                if (qname.IsSimpleName && qname.IsFullyQualifiedName == false)
+                {
+                    if (qname.Equals(QualifiedName.Null))
+                    {
+                        ptype = PrimitiveTypeRef.PrimitiveType.@null;
+                        return true;
+                    }
+
+                    if (qname.Equals(QualifiedName.True))
+                    {
+                        ptype = PrimitiveTypeRef.PrimitiveType.@true;
+                        return true;
+                    }
+
+                    if (qname.Equals(QualifiedName.False))
+                    {
+                        ptype = PrimitiveTypeRef.PrimitiveType.@false;
+                        return true;
+                    }
+                }
+
+                //
+                ptype = default(PrimitiveTypeRef.PrimitiveType);
+                return false;
             }
 
-            if (typearr.Length > 1 &&
-                typearr[typearr.Length - 1] is TranslatedTypeRef tt &&
-                tt.OriginalType is ClassTypeRef ct &&
-                ct.ClassName == QualifiedName.Null)
+            for (int i = typearr.Length - 1; i >= 0; i--)
             {
-                // `|null` at the end
-                typearr[typearr.Length - 1] = ct;
+                if (typearr[i] is TranslatedTypeRef tt &&
+                    tt.OriginalType is ClassTypeRef ct &&
+                    IsSuffixedPrimitiveTypeName(ct.ClassName, out var ptype))
+                {
+                    typearr[i] = new PrimitiveTypeRef(ct.Span, ptype);
+                }
+                else
+                {
+                    break;
+                }
             }
 
-            return new MultipleTypeRef(span, typearr);
+            //
+            return typearr.Length == 1
+                ? typearr[0]
+                : new MultipleTypeRef(span, typearr)
+                ;
         }
+
         public virtual TypeRef IntersectionTypeReference(Span span, IEnumerable<LangElement> classes)
         {
             Debug.Assert(classes != null && classes.Count() > 0 && classes.All(c => c is TypeRef));
