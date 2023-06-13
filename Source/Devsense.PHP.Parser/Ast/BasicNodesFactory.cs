@@ -657,26 +657,36 @@ namespace Devsense.PHP.Syntax.Ast
             var typearr = classes.CastToArray<TypeRef>();
 
             // true|false|null at the end? (PHP <= 8.1)
-            bool IsSuffixedPrimitiveTypeName(QualifiedName qname, out PrimitiveTypeRef.PrimitiveType ptype)
+            bool IsSuffixedPrimitiveTypeName(INamedTypeRef named, out PrimitiveTypeRef.PrimitiveType ptype)
             {
-                if (qname.IsSimpleName && qname.IsFullyQualifiedName == false)
+                if (named is TranslatedTypeRef tt)
                 {
-                    if (qname.Equals(QualifiedName.Null))
-                    {
-                        ptype = PrimitiveTypeRef.PrimitiveType.@null;
-                        return true;
-                    }
+                    named = tt.OriginalType as INamedTypeRef;
+                }
 
-                    if (qname.Equals(QualifiedName.True))
-                    {
-                        ptype = PrimitiveTypeRef.PrimitiveType.@true;
-                        return true;
-                    }
+                if (named != null)
+                {
+                    var qname = named.ClassName;
 
-                    if (qname.Equals(QualifiedName.False))
+                    if (qname.IsSimpleName && !qname.IsFullyQualifiedName)
                     {
-                        ptype = PrimitiveTypeRef.PrimitiveType.@false;
-                        return true;
+                        if (qname.Equals(QualifiedName.Null))
+                        {
+                            ptype = PrimitiveTypeRef.PrimitiveType.@null;
+                            return true;
+                        }
+
+                        if (qname.Equals(QualifiedName.True))
+                        {
+                            ptype = PrimitiveTypeRef.PrimitiveType.@true;
+                            return true;
+                        }
+
+                        if (qname.Equals(QualifiedName.False))
+                        {
+                            ptype = PrimitiveTypeRef.PrimitiveType.@false;
+                            return true;
+                        }
                     }
                 }
 
@@ -687,11 +697,11 @@ namespace Devsense.PHP.Syntax.Ast
 
             for (int i = typearr.Length - 1; i >= 0; i--)
             {
-                if (typearr[i] is TranslatedTypeRef tt &&
-                    tt.OriginalType is ClassTypeRef ct &&
-                    IsSuffixedPrimitiveTypeName(ct.ClassName, out var ptype))
+                // null|true|false -> primitive type reference
+                if (typearr[i] is INamedTypeRef named &&
+                    IsSuffixedPrimitiveTypeName(named, out var ptype))
                 {
-                    typearr[i] = new PrimitiveTypeRef(ct.Span, ptype);
+                    typearr[i] = new PrimitiveTypeRef(named.Span, ptype);
                 }
                 else
                 {
