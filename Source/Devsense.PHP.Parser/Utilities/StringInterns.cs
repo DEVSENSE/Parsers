@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Devsense.PHP.Utilities
 {
-    internal static class StringInterns
+    public static class StringInterns
     {
         public static string TryIntern(ReadOnlySpan<char> span)
         {
