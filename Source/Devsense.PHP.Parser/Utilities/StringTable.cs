@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.Text;
 using System.Threading;
+using Devsense.PHP.Text;
 
 namespace Devsense.PHP.Utilities
 {
@@ -9,7 +10,7 @@ namespace Devsense.PHP.Utilities
     /// This is basically a lossy cache of strings that is searchable by
     /// strings, string sub ranges, character array ranges or string-builder.
     /// </summary>
-    public class StringTable
+    public class StringTable : IStringTable
     {
         // entry in the caches
         [DebuggerDisplay("{Text}")]
@@ -104,8 +105,15 @@ namespace Devsense.PHP.Utilities
 
         #endregion // Poolable
 
+        string IStringTable.GetOrAdd(ReadOnlySpan<char> text) => Add(text);
+
         public string Add(ReadOnlySpan<char> chars)
         {
+            if (chars.IsEmpty)
+            {
+                return string.Empty;
+            }
+
             var hashCode = Hash.GetFNVHashCode(chars);
 
             // capture array to avoid extra range checks

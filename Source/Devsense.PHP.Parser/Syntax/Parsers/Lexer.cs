@@ -73,7 +73,9 @@ namespace Devsense.PHP.Syntax
         /// </summary>
         readonly IDocBlockFactory<Span> _docblockFactory;
 
-        private StringTable _strings;
+        private IStringTable _strings;
+
+        private StringTable _private_strings;
 
         /// <summary>
         /// Token position
@@ -103,6 +105,7 @@ namespace Devsense.PHP.Syntax
         /// <param name="docBlockFactory">Factory for documentary comment semantic elements.</param>
         /// <param name="positionShift">Starting position of the first token, used during custom restart.</param>
         /// <param name="initialState">Initial state of the lexer, used during custom restart.</param>
+        /// <param name="strings">Optionally string table to be used for strings interning. If not specified, temporary instance of <see cref="StringTable"/> will be used.</param>
         public Lexer(
             System.IO.TextReader reader,
             Encoding encoding,
@@ -110,14 +113,15 @@ namespace Devsense.PHP.Syntax
             LanguageFeatures features = LanguageFeatures.Basic,
             IDocBlockFactory<Span> docBlockFactory = null,
             int positionShift = 0,
-            LexicalStates initialState = LexicalStates.INITIAL)
+            LexicalStates initialState = LexicalStates.INITIAL,
+            IStringTable strings = null)
         {
             _encoding = encoding ?? Encoding.UTF8;
             _errors = errors ?? new EmptyErrorSink<Span>();
             _docblockFactory = docBlockFactory ?? DefaultDocBlockFactory.Instance;
             _charOffset = positionShift;
             _features = features;
-            _strings = StringTable.GetInstance();
+            _strings = strings ?? (_private_strings = StringTable.GetInstance());
             _processDoubleQuotedString = ProcessDoubleQuotedString;
 
             Initialize(reader, initialState);
@@ -134,11 +138,9 @@ namespace Devsense.PHP.Syntax
 
         public void Dispose()
         {
-            if (_strings != null)
-            {
-                _strings.Free();
-                _strings = null;
-            }
+            _strings = null;
+            _private_strings?.Free();
+            _private_strings = null;
         }
 
         /// <summary>
@@ -193,16 +195,11 @@ namespace Devsense.PHP.Syntax
 
         protected int BufferTokenStart { get { return token_start; } }
 
-        public string Intern(StringBuilder text)
-        {
-            return _strings.Add(text);
-        }
-
         public string Intern(char[] array, int start, int length)
         {
             var text = array.AsSpan(start, length);
 
-            return StringInterns.TryIntern(text) ?? _strings.Add(text);
+            return StringInterns.TryIntern(text) ?? _strings.GetOrAdd(text);
         }
 
         public CharSpan GetTokenSpan() => new CharSpan(buffer, token_start, TokenLength);
@@ -216,7 +213,7 @@ namespace Devsense.PHP.Syntax
             return
                 StringInterns.TryIntern(text) // always try most frequent strings fast
                 ?? (intern
-                    ? _strings.Add(text)
+                    ? _strings.GetOrAdd(text)
                     : text.ToString()
                 );
         }
