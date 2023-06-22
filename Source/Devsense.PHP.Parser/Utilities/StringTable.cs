@@ -523,7 +523,7 @@ namespace Devsense.PHP.Utilities
             var i1 = LocalNextRandom() & SharedBucketSizeMask;
             idx = (idx + ((i1 * i1 + i1) / 2)) & SharedSizeMask;
 
-            foundIdx:
+        foundIdx:
             arr[idx].HashCode = hashCode;
             Volatile.Write(ref arr[idx].Text, text);
         }
@@ -532,23 +532,22 @@ namespace Devsense.PHP.Utilities
         {
             var hashCode = Hash.GetFNVHashCode(chars);
 
-            string shared = FindSharedEntry(chars, hashCode);
-            if (shared != null)
-            {
-                return shared;
-            }
+            return FindSharedEntry(chars, hashCode) ?? AddSharedSlow(hashCode, chars);
+        }
 
-            return AddSharedSlow(hashCode, chars);
+        public static string AddShared(ReadOnlySpan<char> chars)
+        {
+            var hashCode = Hash.GetFNVHashCode(chars);
+
+            return FindSharedEntry(chars, hashCode) ?? AddSharedSlow(hashCode, chars.ToString());
         }
 
         private static string AddSharedSlow(int hashCode, StringBuilder builder)
         {
-            string text = builder.ToString();
-            AddSharedSlow(hashCode, text);
-            return text;
+            return AddSharedSlow(hashCode, builder.ToString());
         }
 
-        private static void AddSharedSlow(int hashCode, string text)
+        private static string AddSharedSlow(int hashCode, string text)
         {
             var arr = s_sharedTable;
             int idx = SharedIdxFromHash(hashCode);
@@ -573,9 +572,12 @@ namespace Devsense.PHP.Utilities
             var i1 = SharedNextRandom() & SharedBucketSizeMask;
             idx = (idx + ((i1 * i1 + i1) / 2)) & SharedSizeMask;
 
-            foundIdx:
+        foundIdx:
             arr[idx].HashCode = hashCode;
             Volatile.Write(ref arr[idx].Text, text);
+
+            //
+            return text;
         }
 
         private static int LocalIdxFromHash(int hash)
