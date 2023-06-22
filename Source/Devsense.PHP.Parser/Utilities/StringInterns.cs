@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Xml.Serialization;
 
 namespace Devsense.PHP.Utilities
 {
@@ -51,6 +52,12 @@ namespace Devsense.PHP.Utilities
                         case '=': return "=";
                         case '0': return "0";
                         case '1': return "1";
+                        case '2': return "2";
+                        case '3': return "3";
+                        case '4': return "4";
+                        case '5': return "5";
+                        case '6': return "6";
+                        case '7': return "7";
                     }
                     break;
 
@@ -59,6 +66,8 @@ namespace Devsense.PHP.Utilities
                     //if (span[0] == '/' && span[1] == '/') return "//";
                     if (span[0] == 'f' && span[1] == 'n') return "fn";
                     if (span[0] == '-' && span[1] == '>') return "->";
+                    if (span[0] == '\"' && span[1] == '\"') return "\"\"";
+                    if (span[0] == '\'' && span[1] == '\'') return "''";
                     break;
 
                 // most frequent keywords
