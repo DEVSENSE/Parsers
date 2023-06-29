@@ -37,16 +37,17 @@ namespace Devsense.PHP.Syntax
         /// Source file containing the unit. For evals, it can be even a non-php source file.
         /// Used for emitting debug information and error reporting.
         /// </summary>
-        public string/*!*/ FilePath { get { return _filePath; } }
-        readonly string/*!*/ _filePath;
+        public string/*!*/ FilePath { get; }
 
-        public GlobalCode Ast { get { return (GlobalCode)ast; } }
-        protected AstNode ast;
+        /// <summary>
+        /// Parsed syntax tree.
+        /// </summary>
+        public GlobalCode Ast { get; protected set; }
 
         /// <summary>
         /// Set of object properties.
         /// </summary>
-        private PropertyCollection innerProps;
+        private PropertyCollection _innerProps;
 
         /// <summary>
         /// Gets line breaks for this source unit.
@@ -76,17 +77,16 @@ namespace Devsense.PHP.Syntax
         /// <summary>
         /// Current namespace (in case we are compiling through eval from within namespace).
         /// </summary>
-        public QualifiedName? CurrentNamespace { get { return this._naming.CurrentNamespace; } }
-        
-        public List<QualifiedName>/*!*/ImportedNamespaces { get { return importedNamespaces; } }
-        private readonly List<QualifiedName>/*!*/importedNamespaces = new List<QualifiedName>();
-        public bool HasImportedNamespaces { get { return this.importedNamespaces != null && this.importedNamespaces.Count != 0; } }
+        public QualifiedName? CurrentNamespace => this._naming.CurrentNamespace;
+
+        //public List<QualifiedName>/*!*/ImportedNamespaces { get { return importedNamespaces; } }
+        //private readonly List<QualifiedName>/*!*/importedNamespaces = new List<QualifiedName>();
+        //public bool HasImportedNamespaces { get { return this.importedNamespaces != null && this.importedNamespaces.Count != 0; } }
 
         /// <summary>
         /// Encoding of the file or the containing file.
         /// </summary>
-        public Encoding/*!*/ Encoding { get { return _encoding; } }
-        protected readonly Encoding/*!*/ _encoding;
+        public Encoding/*!*/ Encoding => _innerProps.GetProperty<Encoding>() ?? Encoding.UTF8;
 
         /// <summary>
         /// Gets value indicating whether we are in pure mode.
@@ -107,10 +107,15 @@ namespace Devsense.PHP.Syntax
             Debug.Assert(filePath != null && encoding != null);
             Debug.Assert(lineBreaks != null);
 
-            _filePath = filePath;
-            _encoding = encoding;
+            this.FilePath = filePath;
+
             _innerLineBreaks = lineBreaks;
             _naming = new NamingContext(null);
+
+            if (encoding != null && encoding != Encoding.UTF8)
+            {
+                _innerProps.SetProperty<Encoding>(encoding);
+            }
         }
 
         #endregion
@@ -127,30 +132,15 @@ namespace Devsense.PHP.Syntax
 
         #region ILineBreaks Members
 
-        int ILineBreaks.Count
-        {
-            get { return this._innerLineBreaks.Count; }
-        }
+        int ILineBreaks.Count => this._innerLineBreaks.Count;
 
-        int ILineBreaks.TextLength
-        {
-            get { return this._innerLineBreaks.TextLength; }
-        }
+        int ILineBreaks.TextLength => _innerLineBreaks.TextLength;
 
-        int ILineBreaks.EndOfLineBreak(int index)
-        {
-            return this._innerLineBreaks.EndOfLineBreak(index);
-        }
+        int ILineBreaks.EndOfLineBreak(int index) => this._innerLineBreaks.EndOfLineBreak(index);
 
-        public virtual int GetLineFromPosition(int position)
-        {
-            return this._innerLineBreaks.GetLineFromPosition(position);
-        }
+        public virtual int GetLineFromPosition(int position) => this._innerLineBreaks.GetLineFromPosition(position);
 
-        public virtual void GetLineColumnFromPosition(int position, out int line, out int column)
-        {
-            this._innerLineBreaks.GetLineColumnFromPosition(position, out line, out column);
-        }
+        public virtual void GetLineColumnFromPosition(int position, out int line, out int column) => this._innerLineBreaks.GetLineColumnFromPosition(position, out line, out column);
 
         #endregion
 
@@ -158,58 +148,58 @@ namespace Devsense.PHP.Syntax
 
         void IPropertyCollection.SetProperty(object key, object value)
         {
-            innerProps.SetProperty(key, value);
+            _innerProps.SetProperty(key, value);
         }
 
         void IPropertyCollection.SetProperty<T>(T value)
         {
-            innerProps.SetProperty<T>(value);
+            _innerProps.SetProperty<T>(value);
         }
 
         object IPropertyCollection.GetProperty(object key)
         {
-            return innerProps.GetProperty(key);
+            return _innerProps.GetProperty(key);
         }
 
         T IPropertyCollection.GetProperty<T>()
         {
-            return innerProps.GetProperty<T>();
+            return _innerProps.GetProperty<T>();
         }
 
         bool IPropertyCollection.TryGetProperty(object key, out object value)
         {
-            return innerProps.TryGetProperty(key, out value);
+            return _innerProps.TryGetProperty(key, out value);
         }
 
         bool IPropertyCollection.TryGetProperty<T>(out T value)
         {
-            return innerProps.TryGetProperty<T>(out value);
+            return _innerProps.TryGetProperty<T>(out value);
         }
 
         bool IPropertyCollection.RemoveProperty(object key)
         {
-            return innerProps.RemoveProperty(key);
+            return _innerProps.RemoveProperty(key);
         }
 
         bool IPropertyCollection.RemoveProperty<T>()
         {
-            return innerProps.RemoveProperty<T>();
+            return _innerProps.RemoveProperty<T>();
         }
 
         void IPropertyCollection.ClearProperties()
         {
-            innerProps.ClearProperties();
+            _innerProps.ClearProperties();
         }
 
         object IPropertyCollection.this[object key]
         {
             get
             {
-                return innerProps[key];
+                return _innerProps[key];
             }
             set
             {
-                innerProps[key] = value;
+                _innerProps[key] = value;
             }
         }
 
@@ -227,17 +217,14 @@ namespace Devsense.PHP.Syntax
     {
         #region Fields & Properties
 
-        public string/*!*/ Code { get { return code; } }
-        private readonly string/*!*/ code;
+        public string/*!*/ Code { get; }
 
         /// <summary>
         /// Initial state of source code parser. Used by <see cref="Parse"/>.
         /// </summary>
-        private readonly Lexer.LexicalStates initialState;
+        public Lexer.LexicalStates/*!*/ InitialState { get; }
 
-        public Lexer.LexicalStates/*!*/ InitialState { get { return initialState; } }
-
-        readonly LanguageFeatures features;
+        readonly LanguageFeatures _features;
 
         #endregion
 
@@ -249,18 +236,18 @@ namespace Devsense.PHP.Syntax
             LanguageFeatures features = LanguageFeatures.Basic)
             : base(filePath, encoding, Text.LineBreaks.Create(code))
         {
-            this.code = code;
-            this.initialState = initialState;
-            this.features = features;
+            this.Code = code;
+            this.InitialState = initialState;
+            this._features = features;
         }
 
         public override void Parse(INodesFactory<LangElement, Span> factory, Errors.IErrorSink<Span> errors, Errors.IErrorRecovery recovery = null)
         {
             using (var source = new StringReader(this.Code))
             {
-                using (var lexer = new Lexer(source, Encoding.UTF8, errors, features, initialState: initialState, docBlockFactory: factory))
+                using (var lexer = new Lexer(source, this.Encoding, errors, _features, initialState: this.InitialState, docBlockFactory: factory))
                 {
-                    ast = new Parser().Parse(lexer, factory, features, errors, recovery);
+                    this.Ast = (GlobalCode)new Parser().Parse(lexer, factory, _features, errors, recovery);
                 }
             }
         }
@@ -270,12 +257,12 @@ namespace Devsense.PHP.Syntax
         /// </summary>
         internal void SetEmptyAst()
         {
-            this.ast = new GlobalCode(new Span(), EmptyArray<Statement>.Instance, this);
+            this.Ast = new GlobalCode(new Span(), EmptyArray<Statement>.Instance, this);
         }
 
         public override string GetSourceCode(Span span)
         {
-            return span.GetText(code);
+            return span.GetText(this.Code);
         }
 
         public override void Close()
@@ -329,7 +316,7 @@ namespace Devsense.PHP.Syntax
         }
 
         #endregion
-        
+
     }
 
     #endregion

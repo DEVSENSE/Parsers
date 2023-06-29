@@ -30,7 +30,7 @@ namespace UnitTests.TestImplementation
             using (var source = new StringReader(this.Code))
             {
                 _lexer = new CollectionLexer(source, errors);
-                ast = new Parser().Parse(_lexer, factory, _features, errors, recovery);
+                this.Ast = (GlobalCode)new Parser().Parse(_lexer, factory, _features, errors, recovery);
             }
         }
     }
