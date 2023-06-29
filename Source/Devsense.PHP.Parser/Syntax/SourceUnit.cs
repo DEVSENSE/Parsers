@@ -53,12 +53,17 @@ namespace Devsense.PHP.Syntax
         /// Gets line breaks for this source unit.
         /// </summary>
         /// <remarks>Line breaks are used to resolve line and column number from given position.</remarks>
-        public ILineBreaks/*!*/LineBreaks { get { return (ILineBreaks)this; } }
+        public ILineBreaks/*!*/LineBreaks => this;
 
         /// <summary>
         /// Line breaks managed internally.
         /// </summary>
         protected ILineBreaks _innerLineBreaks;
+
+        /// <summary>
+        /// Properties associated with this source unit.
+        /// </summary>
+        public IPropertyCollection/*!*/PropertyCollection => this;
 
         /// <summary>
         /// Naming context defining aliases.
