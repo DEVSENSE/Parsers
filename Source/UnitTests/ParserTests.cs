@@ -422,6 +422,35 @@ class X {
             }
         }
 
+        [TestMethod]
+        public void HeredocIndentTest()
+        {
+            var codes = new[] {
+               @"<?php
+$x = ""hello"";
+
+    echo <<<FOO
+  $x   // error: wrong indentation
+    FOO;",
+                              @"<?php
+$x = ""hello"";
+
+    echo <<<FOO
+$x   // error: wrong indentation
+    FOO;",
+            };
+
+            foreach (var code in codes)
+            {
+                var errors = new TestErrorSink();
+                var unit = new CodeSourceUnit(code, "dummy.php", Encoding.UTF8);
+                unit.Parse(new BasicNodesFactory(unit), errors);
+
+                Assert.IsNotNull(unit.Ast);
+                Assert.AreEqual(1, errors.Count);
+            }
+        }
+
         /// <summary>
         /// Helper visitor checking every node has a containing element.
         /// </summary>
