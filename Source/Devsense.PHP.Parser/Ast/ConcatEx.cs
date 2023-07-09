@@ -40,11 +40,9 @@ namespace Devsense.PHP.Syntax.Ast
         /// <summary>
         /// Expressions represented by the <see cref="ConcatEx"/>.
         /// </summary>
-        public Expression[]/*!*/ Expressions { get { return _expressions; } }
+        public Expression[]/*!*/ Expressions { get; }
 
-        private Expression[]/*!*/ _expressions;
-
-        IReadOnlyList<IExpression> IConcatEx.Expressions { get { return _expressions; } }
+        IReadOnlyList<IExpression> IConcatEx.Expressions => this.Expressions;
 
         /// <summary>
         /// Initialize the ConcatEx AST node and optimize the subtree if possible. Look for child expressions and chain possible concatenations. This prevents StackOverflowException in case of huge concatenation expressions.
@@ -56,7 +54,7 @@ namespace Devsense.PHP.Syntax.Ast
             : base(span)
         {
             Debug.Assert(expressions != null);
-            _expressions = expressions.AsArray();
+            this.Expressions = expressions.AsArray();
         }
 
         /// <summary>
@@ -69,4 +67,3 @@ namespace Devsense.PHP.Syntax.Ast
         }
     }
 }
-

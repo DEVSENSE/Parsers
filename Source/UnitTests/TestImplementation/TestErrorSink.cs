@@ -8,7 +8,6 @@ using Devsense.PHP.Errors;
 
 namespace UnitTests.TestImplementation
 {
-
     sealed internal class TestErrorSink : IErrorSink<Span>
     {
         public class ErrorInstance

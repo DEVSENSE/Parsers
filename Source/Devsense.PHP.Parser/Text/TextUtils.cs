@@ -66,6 +66,11 @@ namespace Devsense.PHP.Text
             }
         }
 
+        internal static bool EndsWithEol(ReadOnlySpan<char> text)
+        {
+            return text.Length != 0 && (LengthOfLineBreak(text.Slice(text.Length - 1)) != 0);
+        }
+
         /// <summary>
         /// Gets <see cref="Span"/> of whole <paramref name="line"/>.
         /// </summary>
@@ -163,6 +168,10 @@ namespace Devsense.PHP.Text
                 yield return new Span(start, text.Length - start);
             }
         }
+
+        public static ReadOnlySpan<char> AsSpan(this string text, Span ourspan) => (ourspan.Length <= 0)
+            ? ReadOnlySpan<char>.Empty
+            : text.AsSpan(ourspan.Start, ourspan.Length);
     }
 
     #endregion
