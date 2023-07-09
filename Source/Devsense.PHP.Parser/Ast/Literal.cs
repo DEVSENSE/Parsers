@@ -18,12 +18,17 @@ using System.Collections.Generic;
 
 namespace Devsense.PHP.Syntax.Ast
 {
+    public interface ILiteral : IExpression
+    {
+
+    }
+
     #region Literal
 
     /// <summary>
     /// Base class for literals.
     /// </summary>
-    public abstract class Literal : Expression
+    public abstract class Literal : Expression, ILiteral
     {
         /// <summary>
         /// Gets internal value of literal.
