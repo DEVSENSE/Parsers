@@ -729,9 +729,10 @@ namespace Devsense.PHP.Syntax
         /// </summary>
         /// <param name="element">Either <see cref="IStringLiteralValue"/> or <see cref="IConcatEx"/> with <see cref="IStringLiteralValue"/>s.</param>
         /// <param name="heredoc">Heredoc information.</param>
-        /// <param name="lineBegin">Whether the element starts at line beginning.</param>
-        LangElement RemoveHereDocIndentation(LangElement element, Lexer.HereDocTokenValue heredoc, bool lineBegin)
+        LangElement RemoveHereDocIndentation(LangElement element, Lexer.HereDocTokenValue heredoc, bool _)
         {
+            // CONSIDER: do it properly in lexer ...
+
             var indentation = heredoc.Indentation.AsSpan();
 
             if (indentation.IsEmpty)
@@ -741,61 +742,93 @@ namespace Devsense.PHP.Syntax
 
             if (!indentation.IsWhiteSpace())
             {
-                throw new ArgumentException("", nameof(indentation));
+                throw new ArgumentException(string.Empty, nameof(indentation));
             }
 
             //
-            if (element is ConcatEx concat)
+            var expressions = element is ConcatEx concat
+                ? concat.Expressions
+                : new[] { element }
+                ;
+
+            var eol = true;
+            var errorreported = false;
+            var current_indentation = ReadOnlySpan<char>.Empty;
+
+            for (int i = 0; i < expressions.Length; i++)
             {
-                var parts = concat.Expressions;
-                for (int i = 0; i < parts.Length; i++)
+                var expr = expressions[i];
+                if (expr is IStringLiteralValue str) // {StringLiteral}
                 {
-                    parts[i] = (Expression)RemoveHereDocIndentation(parts[i], heredoc, lineBegin && i == 0);
-                }
-            }
-            else if (element is IStringLiteralValue str) // i.e. StringLiteral
-            {
-                // if (str.Contains8bitText) // TODO, use str.EnumerateChunks() : byte[]|string
+                    // if (str.Contains8bitText) // TODO, use str.EnumerateChunks() : byte[]|string
 
-                var content = str.ToString();
+                    var content = str.ToString();
+                    var result = StringUtils.GetStringBuilder(content.Length);
 
-                var result = StringUtils.GetStringBuilder(content.Length);
-                var errorreported = false;
-
-                foreach (var lineSpan in TextUtils.EnumerateLines(content, true))
-                {
-                    if (lineBegin)
+                    foreach (var lineSpan in TextUtils.EnumerateLines(content, true))
                     {
-                        var lineText = content.AsSpan(lineSpan.Start, lineSpan.Length);
-                        if (lineText.StartsWith(indentation))
+                        var line = content.AsSpan(lineSpan);
+                        var waseol = eol;
+
+                        eol = TextUtils.EndsWithEol(line);
+
+                        if (waseol)
                         {
-                            result.Append(content, lineSpan.Start + indentation.Length, lineSpan.Length - indentation.Length);
-                            continue;
+                            if (line.StartsWith(indentation, StringComparison.Ordinal))
+                            {
+                                current_indentation = indentation;
+                                result.Append(content, lineSpan.Start + indentation.Length, lineSpan.Length - indentation.Length);
+                                continue;
+                            }
+                            else if (line.IsWhiteSpace())
+                            {
+                                if (!eol)
+                                {
+                                    current_indentation = line;
+                                }
+
+                                // allowed, empty line
+                                // add the line break
+                                result.Append(line.TrimStart(" \t".AsSpan()).ToString());
+                                continue;
+                            }
+                            else
+                            {
+                                current_indentation = ReadOnlySpan<char>.Empty;
+
+                                if (!errorreported)
+                                {
+                                    errorreported = true; // report error just once
+                                    _errors.Error(expr.Span, FatalErrors.HeredocIndentError);
+                                }
+                            }
                         }
-                        else if (lineText.IsWhiteSpace())
-                        {
-                            // allowed, empty line
-                            // add the line break
-                            result.Append(lineText.TrimStart(" \t".AsSpan()).ToString());
-                            continue;
-                        }
-                        else if (!errorreported)
-                        {
-                            // error
-                            _errors.Error(element.Span, FatalErrors.HeredocIndentError);
-                            errorreported = true; // report error just once
-                        }
+
+                        result.Append(content, lineSpan.Start, lineSpan.Length);
                     }
 
-                    // next lines are from the line begin
-                    lineBegin = true;
-                    result.Append(content, lineSpan.Start, lineSpan.Length);
-                }
+                    if (eol)
+                    {
+                        current_indentation = ReadOnlySpan<char>.Empty;
+                    }
 
-                return new StringLiteral(element.Span, StringUtils.ReturnStringBuilder(result));
+                    expressions[i] = new StringLiteral(expr.Span, StringUtils.ReturnStringBuilder(result));
+                }
+                else if (expr is VarLikeConstructUse)
+                {
+                    eol = false;
+
+                    // check current_indentatiom
+                    if (!current_indentation.StartsWith(indentation, StringComparison.Ordinal) && !errorreported)
+                    {
+                        errorreported = true; // report error just once
+                        _errors.Error(expr.Span, FatalErrors.HeredocIndentError);
+                    }
+                }
             }
 
-            return element;
+            //
+            return expressions.Length == 1 ? expressions[0] : element;
         }
 
         #region Aliasing
