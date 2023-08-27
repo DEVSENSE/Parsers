@@ -871,27 +871,26 @@ namespace Devsense.PHP.Syntax
             get
             {
                 var ns = this.namespaces;
-                if (ns.Length == 1)
+                switch (ns.Length)
                 {
-                    return ns[0].Value;
-                }
-                else if (ns.Length != 0)
-                {
-                    var result = StringUtils.GetStringBuilder();
+                    case 0: return string.Empty;
 
-                    result.Append(ns[0].Value);
+                    case 1: return ns[0].Value;
 
-                    for (int i = 1; i < ns.Length; i++)
-                    {
-                        result.Append(Separator);
-                        result.Append(ns[i].Value);
-                    }
+                    case 2: return ns[0].Value + "\\" + ns[1].Value;
 
-                    return StringUtils.ReturnStringBuilder(result);
-                }
-                else
-                {
-                    return string.Empty;
+                    default:
+                        var result = StringUtils.GetStringBuilder();
+
+                        result.Append(ns[0].Value);
+
+                        for (int i = 1; i < ns.Length; i++)
+                        {
+                            result.Append(Separator);
+                            result.Append(ns[i].Value);
+                        }
+
+                        return StringUtils.ReturnStringBuilder(result);
                 }
             }
         }
