@@ -871,7 +871,11 @@ namespace Devsense.PHP.Syntax
             get
             {
                 var ns = this.namespaces;
-                if (ns.Length != 0)
+                if (ns.Length == 1)
+                {
+                    return ns[0].Value;
+                }
+                else if (ns.Length != 0)
                 {
                     var result = StringUtils.GetStringBuilder();
 
