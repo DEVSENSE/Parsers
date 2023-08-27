@@ -873,13 +873,17 @@ namespace Devsense.PHP.Syntax
                 var ns = this.namespaces;
                 if (ns.Length != 0)
                 {
-                    StringBuilder result = new StringBuilder(ns[0].Value, ns.Length * 8);
+                    var result = StringUtils.GetStringBuilder();
+
+                    result.Append(ns[0].Value);
+
                     for (int i = 1; i < ns.Length; i++)
                     {
                         result.Append(Separator);
                         result.Append(ns[i].Value);
                     }
-                    return result.ToString();
+
+                    return StringUtils.ReturnStringBuilder(result);
                 }
                 else
                 {
