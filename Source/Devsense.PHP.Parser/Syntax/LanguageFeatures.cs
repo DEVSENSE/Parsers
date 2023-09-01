@@ -96,7 +96,7 @@ namespace Devsense.PHP.Syntax
         /// <summary>
         /// PHP 8.3 feature set.
         /// </summary>
-        Php83Set = Php81Set | (1 << 15),
+        Php83Set = Php82Set | (1 << 15),
     }
 
     public static class LanguageFeaturesExtensions
