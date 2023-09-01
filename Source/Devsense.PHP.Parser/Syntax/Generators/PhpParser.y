@@ -1624,6 +1624,8 @@ constant:
 class_constant:
 		class_name T_DOUBLE_COLON identifier			{ $$ = _astFactory.ClassConstUse(@$, $1, new Name($3), @3); }
 	|	variable_class_name T_DOUBLE_COLON identifier	{ $$ = _astFactory.ClassConstUse(@$, _astFactory.TypeReference(@1, $1), new Name($3), @3); }
+	|	class_name T_DOUBLE_COLON  '{' expr '}'				{ $$ = _astFactory.ClassConstUse(@$, $1, $4); }
+	|	variable_class_name T_DOUBLE_COLON  '{' expr '}'	{ $$ = _astFactory.ClassConstUse(@$, _astFactory.TypeReference(@1, $1), $4); }
 ;
 
 expr:

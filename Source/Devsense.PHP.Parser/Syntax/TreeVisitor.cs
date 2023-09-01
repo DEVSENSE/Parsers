@@ -583,6 +583,15 @@ namespace Devsense.PHP.Syntax
             VisitElement(x.TargetType);
             VisitConstantUse(x);
         }
+        virtual public void VisitDirectClassConstUse(DirectClassConstUse x)
+        {
+            VisitClassConstUse(x);
+        }
+        virtual public void VisitIndirectClassConstUse(IndirectClassConstUse x)
+        {
+            VisitClassConstUse(x);
+            VisitElement(x.NameExpression);
+        }
         virtual public void VisitPseudoClassConstUse(PseudoClassConstUse x)
         {
             VisitClassConstUse(x);

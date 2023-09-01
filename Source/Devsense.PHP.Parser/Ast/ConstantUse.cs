@@ -80,32 +80,26 @@ namespace Devsense.PHP.Syntax.Ast
     /// <summary>
     /// Class constant use.
     /// </summary>
-    public class ClassConstUse : ConstantUse
+    public abstract class ClassConstUse : ConstantUse
     {
         public override Operations Operation { get { return Operations.ClassConstUse; } }
 
         /// <summary>
         /// Class type reference.
         /// </summary>
-        public TypeRef/*!*/TargetType { get { return this.targetType; } }
-        private readonly TypeRef/*!*/targetType;
-
-        public VariableName Name => name.Name;
-        private readonly VariableNameRef name;
+        public TypeRef/*!*/TargetType { get; }
 
         /// <summary>
-        /// Position of <see cref="Name"/> part of the constant use.
+        /// Position of the constant name itself within the constant use.
         /// </summary>
-        public Text.Span NamePosition => name.Span;
+        public abstract Text.Span NamePosition { get; }
 
-        public ClassConstUse(Text.Span span, TypeRef/*!*/typeRef, VariableNameRef/*!*/ name)
+        protected ClassConstUse(Text.Span span, TypeRef/*!*/typeRef)
             : base(span)
         {
             Debug.Assert(typeRef != null);
-            Debug.Assert(!string.IsNullOrEmpty(name.Name.Value));
-
-            this.targetType = typeRef;
-            this.name = name;
+            
+            this.TargetType = typeRef;
         }
 
         /// <summary>
@@ -115,6 +109,59 @@ namespace Devsense.PHP.Syntax.Ast
         public override void VisitMe(TreeVisitor visitor)
         {
             visitor.VisitClassConstUse(this);
+        }
+    }
+
+    public class DirectClassConstUse : ClassConstUse
+    {
+        public VariableName Name { get; }
+
+        public override Text.Span NamePosition { get; }
+
+        public DirectClassConstUse(Text.Span span, TypeRef/*!*/typeRef, VariableNameRef name)
+            : base(span, typeRef)
+        {
+            Debug.Assert(!string.IsNullOrEmpty(name.Name.Value));
+
+            this.Name = name.Name;
+            this.NamePosition = name.Span;
+        }
+
+        /// <summary>
+        /// Call the right Visit* method on the given Visitor object.
+        /// </summary>
+        /// <param name="visitor">Visitor to be called.</param>
+        public override void VisitMe(TreeVisitor visitor)
+        {
+            visitor.VisitDirectClassConstUse(this);
+        }
+    }
+
+    /// <summary>
+    /// Class constant use.
+    /// </summary>
+    public class IndirectClassConstUse : ClassConstUse
+    {
+        /// <summary>
+        /// The indirect class name.
+        /// </summary>
+        public IExpression NameExpression { get; }
+
+        public override Text.Span NamePosition => NameExpression.Span;
+
+        public IndirectClassConstUse(Text.Span span, TypeRef typeRef, IExpression nameExpr)
+            : base(span, typeRef)
+        {
+            this.NameExpression = nameExpr ?? throw new ArgumentNullException(nameof(nameExpr));
+        }
+
+        /// <summary>
+        /// Call the right Visit* method on the given Visitor object.
+        /// </summary>
+        /// <param name="visitor">Visitor to be called.</param>
+        public override void VisitMe(TreeVisitor visitor)
+        {
+            visitor.VisitIndirectClassConstUse(this);
         }
     }
 
@@ -134,6 +181,10 @@ namespace Devsense.PHP.Syntax.Ast
         /// <summary>Type of pseudoconstant</summary>
         public Types Type { get; }
 
+        public VariableName Name => TypeToName(this.Type);
+
+        public override Text.Span NamePosition { get; }
+
         /// <summary>
         /// Gets string representation of <see cref="Types"/>.
         /// </summary>
@@ -152,9 +203,10 @@ namespace Devsense.PHP.Syntax.Ast
         }
 
         public PseudoClassConstUse(Text.Span span, TypeRef/*!*/typeRef, Types type, Text.Span namePosition)
-            : base(span, typeRef, new VariableNameRef(namePosition, TypeToName(type)))
+            : base(span, typeRef)
         {
             this.Type = type;
+            this.NamePosition = namePosition;
         }
 
         public override void VisitMe(TreeVisitor visitor)

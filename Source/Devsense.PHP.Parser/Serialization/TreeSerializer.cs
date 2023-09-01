@@ -838,11 +838,11 @@ namespace Devsense.PHP.Syntax.Ast.Serialization
             base.VisitGlobalConstUse(x);
             _serializer.EndSerialize();
         }
-        override public void VisitClassConstUse(ClassConstUse x)
+        public override void VisitDirectClassConstUse(DirectClassConstUse x)
         {
             _serializer.StartSerialize(typeof(ClassConstUse).Name, SerializeSpan(x.Span),
                 new NodeObj("Name", x.Name.ToString()));
-            base.VisitClassConstUse(x);
+            base.VisitDirectClassConstUse(x);
             _serializer.EndSerialize();
         }
         override public void VisitItemUse(ItemUse x)

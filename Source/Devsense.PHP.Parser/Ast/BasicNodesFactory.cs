@@ -769,7 +769,12 @@ namespace Devsense.PHP.Syntax.Ast
 
         public virtual LangElement ClassConstUse(Span span, TypeRef tref, Name name, Span nameSpan)
         {
-            return new ClassConstUse(span, tref, new VariableNameRef(nameSpan, name.Value));
+            return new DirectClassConstUse(span, tref, new VariableNameRef(nameSpan, name.Value));
+        }
+
+        public virtual LangElement ClassConstUse(Span span, TypeRef tref, LangElement expr)
+        {
+            return new IndirectClassConstUse(span, tref, (IExpression)expr);
         }
 
         public virtual LangElement ConditionalEx(Span span, LangElement condExpr, LangElement trueExpr, LangElement falseExpr)

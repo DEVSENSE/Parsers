@@ -861,7 +861,7 @@ namespace Devsense.PHP.Syntax.Ast
         TNode ConstUse(TSpan span, TranslatedQualifiedName name);
 
         /// <summary>
-        /// Creates global constant use.
+        /// Creates class constant use.
         /// </summary>
         /// <param name="span">Entire element span.</param>
         /// <param name="tref">Containing class name.</param>
@@ -869,6 +869,15 @@ namespace Devsense.PHP.Syntax.Ast
         /// <param name="nameSpan">Span of <paramref name="name"/>.</param>
         /// <returns>Class constant access expression.</returns>
         TNode ClassConstUse(TSpan span, TypeRef tref, Name name, TSpan nameSpan);
+
+        /// <summary>
+        /// Creates class constant use.
+        /// </summary>
+        /// <param name="span">Entire element span.</param>
+        /// <param name="tref">Containing class name.</param>
+        /// <param name="expr">Constant indirect name.</param>
+        /// <returns>Class constant access expression.</returns>
+        TNode ClassConstUse(TSpan span, TypeRef tref, TNode expr);
 
         /// <summary>
         /// Creates function or instance method call expression.
