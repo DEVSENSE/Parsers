@@ -423,8 +423,7 @@ namespace Devsense.PHP.Syntax.Ast
         /// <summary>
         /// Method content.
         /// </summary>
-        public BlockStmt Body { get { return body; } internal set { body = value; } }
-        private BlockStmt body;
+        public BlockStmt Body { get; set; }
 
         /// <summary>
         /// Parameters used to initialize the base class.
@@ -488,7 +487,7 @@ namespace Devsense.PHP.Syntax.Ast
 
             this.Name = name;
             this.Signature = new Signature(aliasReturn, formalParams, paramsSpan);
-            this.body = body;
+            this.Body = body;
             this.ReturnType = returnType;
 
             if (genericParams != null && genericParams.Count != 0)

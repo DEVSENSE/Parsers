@@ -234,8 +234,7 @@ namespace Devsense.PHP.Syntax.Ast
         public TypeSignature TypeSignature { get { return typeSignature; } }
         private readonly TypeSignature typeSignature;
 
-        public BlockStmt/*!*/ Body { get { return body; } }
-        private readonly BlockStmt/*!*/ body;
+        public BlockStmt/*!*/ Body { get; set; }
 
         /// <summary>
         /// Gets value indicating whether the function is declared conditionally.
@@ -278,7 +277,7 @@ namespace Devsense.PHP.Syntax.Ast
             Text.Span span,
             bool isConditional, PhpMemberAttributes memberAttributes, NameRef/*!*/ name,
             bool aliasReturn, IList<FormalParam>/*!*/ formalParams, Text.Span paramsSpan, IList<FormalTypeParam>/*!*/ genericParams,
-            BlockStmt/*!*/ body, TypeRef returnType)
+            BlockStmt body, TypeRef returnType)
             : base(span)
         {
             Debug.Assert(genericParams != null && formalParams != null && body != null);
@@ -286,7 +285,7 @@ namespace Devsense.PHP.Syntax.Ast
             this.name = name;
             this.signature = new Signature(aliasReturn, formalParams, paramsSpan);
             this.typeSignature = new TypeSignature(genericParams);
-            this.body = body;
+            this.Body = body;
             this.IsConditional = isConditional;
             this.MemberAttributes = memberAttributes;
             this.ReturnType = returnType;
