@@ -1309,12 +1309,22 @@ non_empty_for_exprs:
 ;
 
 anonymous_class:
-        T_CLASS ctor_arguments extends_from { PushAnonymousClassContext($3); } implements_list backup_doc_comment
+        class_modifiers T_CLASS ctor_arguments extends_from { PushAnonymousClassContext($4); } implements_list backup_doc_comment
 		enter_scope '{' class_statement_list '}' exit_scope
 		{
-			var typeRef = _astFactory.AnonymousTypeReference(@$, CombineSpans(@1, @2, @3, @5), isConditional, PhpMemberAttributes.None, null, ConvertToNamedTypeRef($3), $5.Select(ConvertToNamedTypeRef), $9, CombineSpans(@8, @10));
+			var typeRef = _astFactory.AnonymousTypeReference(
+				@$,
+				CombineSpans(@1, @2, @3, @4, @6),
+				isConditional,
+				(PhpMemberAttributes)$1,
+				null,
+				ConvertToNamedTypeRef($4),
+				$6.Select(ConvertToNamedTypeRef),
+				$10,
+				CombineSpans(@9, @11)
+			);
 			SetDoc(((AnonymousTypeRef)typeRef).TypeDeclaration);
-			$$ = new AnonymousClass(typeRef, $2, @2); 
+			$$ = new AnonymousClass(typeRef, $3, @3); 
 			PopClassContext();
 		}
 ;

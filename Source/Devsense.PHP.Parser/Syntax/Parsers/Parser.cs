@@ -948,6 +948,8 @@ namespace Devsense.PHP.Syntax
         /// <summary>Combine spans if they are valid.</summary>
         private Span CombineSpans(Span a, Span b, Span c) => CombineSpans(a, CombineSpans(b, c));
 
+        private Span CombineSpans(Span a, Span b, Span c, Span d, Span e) => CombineSpans(a, CombineSpans(b, CombineSpans(c, CombineSpans(d, e))));
+
         private Span CombineSpans(params Span[] spans)
         {
             int min = -1, max = -1;
