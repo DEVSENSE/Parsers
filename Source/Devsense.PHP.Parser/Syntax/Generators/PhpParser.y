@@ -1154,6 +1154,11 @@ attributed_class_statement:
 				$$ = _astFactory.DeclList(@$, (PhpMemberAttributes)$1, $3, null); 
 				SetDoc($$);
 			}
+	|	method_modifiers T_CONST type_expr class_const_list ';'
+			{ 
+				$$ = _astFactory.DeclList(@$, (PhpMemberAttributes)$1, $4, $3); 
+				SetDoc($$);
+			}
 	|	method_modifiers function returns_ref identifier backup_doc_comment '(' parameter_list ')'
 		return_type backup_fn_flags method_body backup_fn_flags
 			{	

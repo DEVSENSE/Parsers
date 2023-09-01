@@ -341,6 +341,27 @@ class X {
         }
 
         [TestMethod]
+        public void TypedClassConstTest()
+        {
+            var codes = new[] {
+                @"<?php
+class X {
+  const int A = 1, B = 2;
+}
+",
+            };
+
+            foreach (var code in codes)
+            {
+                var errors = new TestErrorSink();
+                var unit = new CodeSourceUnit(code, "dummy.php", Encoding.UTF8, features: LanguageFeatures.Php80Set);
+                unit.Parse(new BasicNodesFactory(unit), errors);
+
+                Assert.AreEqual(0, errors.Count);
+            }
+        }
+
+        [TestMethod]
         public void InstanceOfTest()
         {
             var codes = new[] {

@@ -185,7 +185,7 @@ namespace Devsense.PHP.Syntax.Ast
             else if (decls[0] is ClassConstantDecl)
             {
                 Debug.Assert(decls.All(e => e is ClassConstantDecl));
-                return new ConstDeclList(span, attributes, decls.CastToArray<ClassConstantDecl>());
+                return new ConstDeclList(span, attributes, decls.CastToArray<ClassConstantDecl>(), type);
             }
             else if (decls[0] is GlobalConstantDecl)
             {

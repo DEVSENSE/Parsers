@@ -287,6 +287,7 @@ namespace Devsense.PHP.Syntax
         {
             VisitElement(x.PHPDoc);
             VisitAttributes(x);
+            VisitElement(x.Type);
             VisitList(x.Constants);
         }
 

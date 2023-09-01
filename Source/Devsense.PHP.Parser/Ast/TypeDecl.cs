@@ -640,10 +640,14 @@ namespace Devsense.PHP.Syntax.Ast
         /// <summary>List of constants in this list</summary>
         public IList<ClassConstantDecl>/*!*/ Constants { get; }
 
-        public ConstDeclList(Text.Span span, PhpMemberAttributes modifiers, IList<ClassConstantDecl>/*!*/ constants)
+        /// <summary>Optional type of constants.</summary>
+        public TypeRef Type { get; }
+
+        public ConstDeclList(Text.Span span, PhpMemberAttributes modifiers, IList<ClassConstantDecl>/*!*/ constants, TypeRef type)
             : base(span, modifiers)
         {
             this.Constants = constants ?? throw new ArgumentNullException(nameof(constants));
+            this.Type = type;
         }
 
         /// <summary>
