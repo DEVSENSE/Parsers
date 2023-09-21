@@ -1313,7 +1313,7 @@ anonymous_class:
 		enter_scope '{' class_statement_list '}' exit_scope
 		{
 			var typeRef = _astFactory.AnonymousTypeReference(
-				@$,
+				CombineSpans(@1, @2, @11),
 				CombineSpans(@1, @2, @3, @4, @6),
 				isConditional,
 				(PhpMemberAttributes)$1,

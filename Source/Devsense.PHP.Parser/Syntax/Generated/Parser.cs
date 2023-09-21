@@ -3242,7 +3242,7 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
       case 368: // anonymous_class -> class_modifiers T_CLASS ctor_arguments extends_from @8 implements_list backup_doc_comment enter_scope '{' class_statement_list '}' exit_scope 
 {
 			var typeRef = _astFactory.AnonymousTypeReference(
-				yypos,
+				CombineSpans(value_stack.array[value_stack.top-12].yypos, value_stack.array[value_stack.top-11].yypos, value_stack.array[value_stack.top-2].yypos),
 				CombineSpans(value_stack.array[value_stack.top-12].yypos, value_stack.array[value_stack.top-11].yypos, value_stack.array[value_stack.top-10].yypos, value_stack.array[value_stack.top-9].yypos, value_stack.array[value_stack.top-7].yypos),
 				isConditional,
 				(PhpMemberAttributes)value_stack.array[value_stack.top-12].yyval.Long,
