@@ -143,6 +143,8 @@ namespace Devsense.PHP.Syntax
                     // reinterpret T_NAME_QUALIFIED
                     case Tokens.T_GLOBAL:
                     case Tokens.T_STATIC:
+                    case Tokens.T_ABSTRACT:
+                    case Tokens.T_FINAL:
                     case Tokens.T_DEFAULT:
                     case Tokens.T_EVAL:
                     case Tokens.T_CONST:
