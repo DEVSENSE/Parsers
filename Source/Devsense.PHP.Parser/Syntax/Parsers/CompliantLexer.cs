@@ -157,6 +157,10 @@ namespace Devsense.PHP.Syntax
                     case Tokens.T_SWITCH:
                     case Tokens.T_PRINT:
                     case Tokens.T_CLONE:
+                    case Tokens.T_DO:
+                    case Tokens.T_WHILE:
+                    case Tokens.T_FOR:
+                    case Tokens.T_IF:
                         if (_backup_token == Tokens.T_NS_SEPARATOR) // after "\", it is treated as identifier. See T_NAME_QUALIFIED in Zend. We don't, since it would break backward compatibility with older parsers.
                         {
                             token = Tokens.T_STRING;
