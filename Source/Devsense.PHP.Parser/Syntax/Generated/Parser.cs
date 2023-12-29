@@ -3808,7 +3808,7 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 { yyval.Node = _astFactory.Variable(yypos, value_stack.array[value_stack.top-1].yyval.Node, NullLangElement); }
         return;
       case 540: // static_member -> class_name T_DOUBLE_COLON simple_variable 
-{ yyval.Node = CreateStaticProperty(yypos, value_stack.array[value_stack.top-3].yyval.TypeReference, value_stack.array[value_stack.top-3].yypos, value_stack.array[value_stack.top-1].yyval.Node); }
+{ yyval.Node = CreateStaticProperty(yypos, value_stack.array[value_stack.top-3].yyval.TypeReference, value_stack.array[value_stack.top-1].yyval.Node); }
         return;
       case 541: // static_member -> variable_class_name T_DOUBLE_COLON simple_variable 
 { yyval.Node = CreateStaticProperty(yypos, value_stack.array[value_stack.top-3].yyval.Node, value_stack.array[value_stack.top-3].yypos, value_stack.array[value_stack.top-1].yyval.Node); }
@@ -3826,7 +3826,7 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 { yyval.Node = AdjustNullSafeOperator(CreateProperty(yypos, value_stack.array[value_stack.top-3].yyval.Node, value_stack.array[value_stack.top-1].yyval.Object), value_stack.array[value_stack.top-2].yyval.Token); }
         return;
       case 546: // new_variable -> class_name T_DOUBLE_COLON simple_variable 
-{ yyval.Node = CreateStaticProperty(yypos, value_stack.array[value_stack.top-3].yyval.TypeReference, value_stack.array[value_stack.top-3].yypos, value_stack.array[value_stack.top-1].yyval.Node); }
+{ yyval.Node = CreateStaticProperty(yypos, value_stack.array[value_stack.top-3].yyval.TypeReference, value_stack.array[value_stack.top-1].yyval.Node); }
         return;
       case 547: // new_variable -> new_variable T_DOUBLE_COLON simple_variable 
 { yyval.Node = CreateStaticProperty(yypos, value_stack.array[value_stack.top-3].yyval.Node, value_stack.array[value_stack.top-3].yypos, value_stack.array[value_stack.top-1].yyval.Node); }

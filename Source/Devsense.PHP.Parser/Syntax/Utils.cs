@@ -125,7 +125,7 @@ namespace Devsense.PHP.Syntax
         /// <exception cref="ArgumentNullException"><paramref name="str"/> is a <B>null</B> reference.</exception>
         public static string/*!*/ AddCSlashes(string/*!*/ str, bool singleQuotes, bool doubleQuotes, bool nul)
         {
-            if (str == null) throw new ArgumentNullException("str");
+            if (str == null) throw new ArgumentNullException(nameof(str));
 
             StringBuilder result = new StringBuilder(str.Length);
 
@@ -158,22 +158,25 @@ namespace Devsense.PHP.Syntax
         /// <returns>Escaped string.</returns>
         public static string/*!*/ EscapeStringCustom(string/*!*/str, char[]/*!*/toEscape, char escape)
         {
-            if (str == null) throw new ArgumentNullException("str");
-            if (toEscape == null) throw new ArgumentNullException("toEscape");
+            if (str == null) throw new ArgumentNullException(nameof(str));
+            if (toEscape == null) throw new ArgumentNullException(nameof(toEscape));
 
-            StringBuilder result = new StringBuilder(str.Length);
+            var result = GetStringBuilder(str.Length);
 
-            Dictionary<char, bool> charsToEscape = new Dictionary<char, bool>(toEscape.Length);
-            foreach (char c in toEscape) charsToEscape.Add(c, true);
+            var charsToEscape = new HashSet<char>(toEscape);
 
-            foreach (char c in str)
+            for (int i = 0; i < str.Length; i++)
             {
-                if (charsToEscape.ContainsKey(c)) result.Append(escape);
+                var c = str[i];
+
+                if (charsToEscape.Contains(c))
+                    result.Append(escape);
 
                 result.Append(c);
             }
 
-            return result.ToString();
+            //
+            return ReturnStringBuilder(result);
         }
 
         /// <summary>
@@ -223,7 +226,7 @@ namespace Devsense.PHP.Syntax
         /// <exception cref="ArgumentNullException"><paramref name="str"/> is a <B>null</B> reference.</exception>
         public static string/*!*/ AddDbSlashes(string/*!*/ str)
         {
-            if (str == null) throw new ArgumentNullException("str");
+            if (str == null) throw new ArgumentNullException(nameof(str));
 
             StringBuilder result = new StringBuilder(str.Length);
 
@@ -248,7 +251,7 @@ namespace Devsense.PHP.Syntax
         /// <returns>String with replaced characters.</returns>
         public static string/*!*/ StripDbSlashes(string/*!*/ str)
         {
-            if (str == null) throw new ArgumentNullException("str");
+            if (str == null) throw new ArgumentNullException(nameof(str));
 
             StringBuilder result = new StringBuilder(str.Length);
 
@@ -458,9 +461,9 @@ namespace Devsense.PHP.Syntax
           out UnicodeCategory category)
         {
             if (str == null)
-                throw new ArgumentNullException("str");
+                throw new ArgumentNullException(nameof(str));
             if (pos < 0)
-                throw new ArgumentOutOfRangeException("pos");
+                throw new ArgumentOutOfRangeException(nameof(pos));
 
             category = 0;
             group = (UnicodeCategoryGroup)'\0';
@@ -776,7 +779,7 @@ namespace Devsense.PHP.Syntax
 
         public sealed class BytesWrapper : UniformWrapper
         {
-            private byte[]/*!*/ bytes;
+            private readonly byte[]/*!*/ bytes;
 
             public override object Value
             {
@@ -815,7 +818,7 @@ namespace Devsense.PHP.Syntax
 
             public sealed class Builder : UniformBuilder
             {
-                private MemoryStream stream;
+                private readonly MemoryStream stream;
 
                 public Builder(MemoryStream stream)
                 {
@@ -838,7 +841,7 @@ namespace Devsense.PHP.Syntax
 
         public sealed class CharsWrapper : UniformWrapper
         {
-            private char[]/*!*/ chars;
+            private readonly char[]/*!*/ chars;
 
             public override object Value
             {
@@ -858,7 +861,7 @@ namespace Devsense.PHP.Syntax
 
         public sealed class StringWrapper : UniformWrapper
         {
-            private string/*!*/ str;
+            private readonly string/*!*/ str;
 
             public override char this[int index] { get { return str[index]; } }
 
@@ -891,9 +894,9 @@ namespace Devsense.PHP.Syntax
 
             public sealed class Builder : UniformBuilder
             {
-                private System.Text.StringBuilder builder;
+                private readonly StringBuilder builder;
 
-                public Builder(System.Text.StringBuilder builder)
+                public Builder(StringBuilder builder)
                 {
                     this.builder = builder;
                 }
@@ -914,7 +917,7 @@ namespace Devsense.PHP.Syntax
 
         public sealed class StringBuilderWrapper : UniformWrapper
         {
-            private StringBuilder/*!*/ builder;
+            private readonly StringBuilder/*!*/ builder;
 
             public override char this[int index] { get { return builder[index]; } }
 
@@ -936,8 +939,8 @@ namespace Devsense.PHP.Syntax
 
         internal static string ToClsCompliantIdentifier(string/*!*/ name)
         {
-            if (String.IsNullOrEmpty(name))
-                throw new ArgumentNullException("name");
+            if (string.IsNullOrEmpty(name))
+                throw new ArgumentNullException(nameof(name));
 
             StringBuilder result = new StringBuilder(name.Length);
 
@@ -979,6 +982,11 @@ namespace Devsense.PHP.Syntax
             }
             return c;
         }
+
+        /// <summary>
+        /// Character is ' ' or '\t'.
+        /// </summary>
+        public static bool IsTabOrSpace(this char c) => c == ' ' || c == '\t';
 
         /// <summary>
         /// Returns last character of string or -1 if empty
@@ -1101,7 +1109,7 @@ namespace Devsense.PHP.Syntax
         public static bool ContainsString(IEnumerable/*!*/ collection, string str, bool ignoreCase)
         {
             if (collection == null)
-                throw new ArgumentNullException("collection");
+                throw new ArgumentNullException(nameof(collection));
 
             foreach (string item in collection)
             {
@@ -1126,8 +1134,7 @@ namespace Devsense.PHP.Syntax
 
         public static int IncrementValue<TKey>(Dictionary<TKey, int>/*!*/ dictionary, TKey key, int amount)
         {
-            int value = 0;
-            dictionary.TryGetValue(key, out value);
+            dictionary.TryGetValue(key, out var value);
             dictionary[key] = value + 1;
             return value;
         }
@@ -1165,8 +1172,7 @@ namespace Devsense.PHP.Syntax
             {
                 if (!en) return ret;
 
-                IList<K> tmp;
-                if (!ret.TryGetValue(ek.Current, out tmp))
+                if (!ret.TryGetValue(ek.Current, out var tmp))
                     ret.Add(ek.Current, tmp = new List<K>());
                 tmp.Add(ev.Current);
             }

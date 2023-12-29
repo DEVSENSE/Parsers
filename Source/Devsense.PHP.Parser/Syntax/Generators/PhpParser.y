@@ -1701,7 +1701,7 @@ simple_variable:
 
 static_member:
 		class_name T_DOUBLE_COLON simple_variable
-			{ $$ = CreateStaticProperty(@$, $1, @1, $3); }	
+			{ $$ = CreateStaticProperty(@$, $1, $3); }	
 	|	variable_class_name T_DOUBLE_COLON simple_variable
 			{ $$ = CreateStaticProperty(@$, $1, @1, $3); }
 ;
@@ -1716,7 +1716,7 @@ new_variable:
 	|	new_variable object_operator property_name
 			{ $$ = AdjustNullSafeOperator(CreateProperty(@$, $1, $3), $2); }
 	|	class_name T_DOUBLE_COLON simple_variable
-			{ $$ = CreateStaticProperty(@$, $1, @1, $3); }
+			{ $$ = CreateStaticProperty(@$, $1, $3); }
 	|	new_variable T_DOUBLE_COLON simple_variable
 			{ $$ = CreateStaticProperty(@$, $1, @1, $3); }
 ;

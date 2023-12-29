@@ -88,7 +88,8 @@ namespace Devsense.PHP.Syntax
         /// </summary>
         public IErrorSink<Span> ErrorSink => _errors;
 
-        LangElement NullLangElement => null;
+        /// <summary><c>(LangElement)null</c></summary>
+        static LangElement NullLangElement => null;
 
         /// <summary>
         /// Stack of class contexts used to resolve reserved type names and to determine whether we are inside or outside the class.
@@ -203,17 +204,6 @@ namespace Devsense.PHP.Syntax
                 Debug.Assert(_currentNamespace.Naming == namingContext);
                 ResetNamingContext();
             }
-        }
-
-        Span SignatureSpan(IList<FormalParam> parameters)
-        {
-            if (parameters != null && parameters.Count > 0)
-            {
-                var last = parameters[parameters.Count - 1];
-                parameters.RemoveAt(parameters.Count - 1);
-                return last.Span;
-            }
-            return Span.Invalid;
         }
 
         void AssignStatements(List<LangElement> statements)
@@ -441,7 +431,7 @@ namespace Devsense.PHP.Syntax
         /// <summary>Alias to <see cref="GetArrayAndFree{LangElement, Statement}"/></summary>
         static Statement[] FreeStatements(List<LangElement> list) => GetArrayAndFree<LangElement, Statement>(list);
 
-        protected TElement WithAttributes<TElement>(TElement node, List<LangElement> attributes) where TElement : IPropertyCollection
+        protected static TElement WithAttributes<TElement>(TElement node, List<LangElement> attributes) where TElement : IPropertyCollection
         {
             if (attributes != null && attributes.Count != 0)
             {
@@ -451,23 +441,23 @@ namespace Devsense.PHP.Syntax
             return node;
         }
 
-        private List<T> AddNotNull<T>(List<T> list, T item) => item != null ? Add(list, item) : list;
+        private static List<T> AddNotNull<T>(List<T> list, T item) => item != null ? Add(list, item) : list;
 
-        private List<T> Add<T>(List<T> list, T item)
+        private static List<T> Add<T>(List<T> list, T item)
         {
             list.Add(item);
             return list;
         }
 
         /// <summary>Alias to <see cref="Add"/></summary>
-        private List<T> AddToList<T>(List<T> list, T item) => Add(list, item);
+        private static List<T> AddToList<T>(List<T> list, T item) => Add(list, item);
 
-        private Tuple<T1, T2, T3, T4> JoinTuples<T1, T2, T3, T4>(T1 span, Tuple<T2, T3> first, T4 second)
+        private static Tuple<T1, T2, T3, T4> JoinTuples<T1, T2, T3, T4>(T1 span, Tuple<T2, T3> first, T4 second)
         {
             return new Tuple<T1, T2, T3, T4>(span, first.Item1, first.Item2, second);
         }
 
-        void RebuildLast(List<IfStatement> condList, Span end, Tokens token)
+        static void RebuildLast(List<IfStatement> condList, Span end, Tokens token)
         {
             var block = condList.Last();
             var colon = ((ColonBlockStmt)block.Body);
@@ -492,7 +482,7 @@ namespace Devsense.PHP.Syntax
             }
         }
 
-        private LangElement CreateStaticProperty(Span span, TypeRef objectName, Span objectNamePos, object name)
+        private LangElement CreateStaticProperty(Span span, TypeRef objectName, object name)
         {
             if (name is DirectVarUse)
                 return _astFactory.Variable(span, ((DirectVarUse)name).VarName.Value, objectName);
@@ -501,9 +491,9 @@ namespace Devsense.PHP.Syntax
         }
 
         private LangElement CreateStaticProperty(Span span, LangElement objectExpr, Span objectNamePos, object name) =>
-            CreateStaticProperty(span, _astFactory.TypeReference(objectNamePos, objectExpr), objectNamePos, name);
+            CreateStaticProperty(span, _astFactory.TypeReference(objectNamePos, objectExpr), name);
 
-        private List<T> AddTrailingComma<T>(List<T> list, bool addComma) where T : class
+        private static List<T> AddTrailingComma<T>(List<T> list, bool addComma) where T : class
         {
             if (addComma)
             {
@@ -512,7 +502,7 @@ namespace Devsense.PHP.Syntax
             return list;
         }
 
-        private List<ActualParam> AddTrailingComma(List<ActualParam> list, bool addComma)
+        private static List<ActualParam> AddTrailingComma(List<ActualParam> list, bool addComma)
         {
             if (addComma)
             {
@@ -729,6 +719,7 @@ namespace Devsense.PHP.Syntax
         /// </summary>
         /// <param name="element">Either <see cref="IStringLiteralValue"/> or <see cref="IConcatEx"/> with <see cref="IStringLiteralValue"/>s.</param>
         /// <param name="heredoc">Heredoc information.</param>
+        /// <param name="_">Ignored.</param>
         LangElement RemoveHereDocIndentation(LangElement element, Lexer.HereDocTokenValue heredoc, bool _)
         {
             // CONSIDER: do it properly in lexer ...
@@ -742,7 +733,7 @@ namespace Devsense.PHP.Syntax
 
             if (!indentation.IsWhiteSpace())
             {
-                throw new ArgumentException(string.Empty, nameof(indentation));
+                throw new InvalidOperationException($"heredoc.Indentation is expected to be a whitespace!");
             }
 
             //
@@ -788,8 +779,12 @@ namespace Devsense.PHP.Syntax
                                 }
 
                                 // allowed, empty line
-                                // add the line break
-                                result.Append(line.TrimStart(" \t".AsSpan()).ToString());
+                                // add the line break from the line (ignore ' ' and '\t' from the beginning)
+                                var nlspan = lineSpan;
+                                while (nlspan.Length > 0 && content[nlspan.Start].IsTabOrSpace())
+                                    nlspan = nlspan.Slice(1);
+
+                                result.Append(content, nlspan.Start, nlspan.Length);
                                 continue;
                             }
                             else
@@ -870,16 +865,14 @@ namespace Devsense.PHP.Syntax
         private TranslatedQualifiedName TranslateFallbackQualifiedName(QualifiedNameRef qname, AliasKind kind)
         {
             // aliasing
-            QualifiedName tmp;
             if (qname.QualifiedName.IsSimpleName && this.namingContext.Aliases != null &&
-                this.namingContext.Aliases.TryGetValue(new Alias(qname.QualifiedName.Name, kind), out tmp))
+                this.namingContext.Aliases.TryGetValue(new Alias(qname.QualifiedName.Name, kind), out var tmp))
             {
                 return new TranslatedQualifiedName(tmp, qname.Span, qname, null);
             }
 
             //
-            QualifiedName translatedQName;
-            bool translated = TranslateNamespace(qname, out translatedQName);
+            var translated = TranslateNamespace(qname, out var translatedQName);
             if (!translatedQName.IsFullyQualifiedName && translatedQName.IsSimpleName && !IsInGlobalNamespace)
             {
                 // "\foo"
@@ -921,8 +914,7 @@ namespace Devsense.PHP.Syntax
 
         private QualifiedName TranslateAny(QualifiedName qname)
         {
-            QualifiedName name;
-            TryTranslateAny(qname, out name);
+            TryTranslateAny(qname, out var name);
             return name;
         }
 
@@ -943,14 +935,14 @@ namespace Devsense.PHP.Syntax
         private bool IsInGlobalNamespace => !namingContext.CurrentNamespace.HasValue || namingContext.CurrentNamespace.Value.Namespaces.Length == 0;
 
         /// <summary>Combine spans if they are valid.</summary>
-        private Span CombineSpans(Span a, Span b) => a.IsValid ? (b.IsValid ? Span.Combine(a, b) : a) : b;
+        private static Span CombineSpans(Span a, Span b) => a.IsValid ? (b.IsValid ? Span.Combine(a, b) : a) : b;
 
         /// <summary>Combine spans if they are valid.</summary>
-        private Span CombineSpans(Span a, Span b, Span c) => CombineSpans(a, CombineSpans(b, c));
+        private static Span CombineSpans(Span a, Span b, Span c) => CombineSpans(a, CombineSpans(b, c));
 
-        private Span CombineSpans(Span a, Span b, Span c, Span d, Span e) => CombineSpans(a, CombineSpans(b, CombineSpans(c, CombineSpans(d, e))));
+        private static Span CombineSpans(Span a, Span b, Span c, Span d, Span e) => CombineSpans(a, CombineSpans(b, CombineSpans(c, CombineSpans(d, e))));
 
-        private Span CombineSpans(params Span[] spans)
+        private static Span CombineSpans(params Span[] spans)
         {
             int min = -1, max = -1;
             for (int i = 0; i < spans.Length; i++)
@@ -1008,7 +1000,7 @@ namespace Devsense.PHP.Syntax
         /// </summary>
         /// <param name="target"><see cref="TypeDecl"/> representing enum.</param>
         /// <param name="backingType">Enum's backing type (<see cref="TypeRef"/>), or null.</param>
-        void SetEnumBackingType(LangElement target, LangElement backingType)
+        static void SetEnumBackingType(LangElement target, LangElement backingType)
         {
             Debug.Assert(target is TypeDecl);
             Debug.Assert(((TypeDecl)target).MemberAttributes.IsEnum());
@@ -1080,7 +1072,7 @@ namespace Devsense.PHP.Syntax
         /// <param name="currentNamespace">Current namespace name, can be <c>null</c>.</param>
         /// <param name="suffix">Rest of the name, after current namespace.</param>
         /// <returns>Complete qualified name</returns>
-        QualifiedName MergeWithCurrentNamespace(QualifiedName? currentNamespace, List<string> suffix)
+        static QualifiedName MergeWithCurrentNamespace(QualifiedName? currentNamespace, List<string> suffix)
         {
             if (!currentNamespace.HasValue)
                 return new QualifiedName(suffix, true, true);
@@ -1116,10 +1108,10 @@ namespace Devsense.PHP.Syntax
         /// <returns>Representation of the <paramref name="type"/> that implements <see cref="INamedTypeRef"/>.</returns>
         INamedTypeRef ConvertToNamedTypeRef(TypeRef type)
         {
-            if (type == null || type is INamedTypeRef)
-            {
-                return type as INamedTypeRef;
-            }
+            if (type == null) return null;
+
+            if (type is INamedTypeRef named) return named;
+
             var name = type.QualifiedName.HasValue ? type.QualifiedName.Value : new QualifiedName();
             _errors.Error(type.Span, Errors.Errors.NonClassExtended, name.ToString());
             return (INamedTypeRef)CreateNamedTypeRef(type.Span, name);
