@@ -390,7 +390,7 @@ namespace Devsense.PHP.Syntax.Ast
         public StaticVarDecl(Text.Span span, VariableName variableName, Expression initializer)
             : base(span)
         {
-            Debug.Assert(variableName != null);
+            Debug.Assert(variableName.Value != null);
 
             this.variable = variableName;
             this.initializer = initializer;

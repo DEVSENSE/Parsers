@@ -51,9 +51,11 @@ namespace Devsense.PHP.Syntax
         private readonly string/*!*/ value;
         private readonly int hashCode;
 
+        static StringComparer Comparer => StringComparer.OrdinalIgnoreCase;
+
         #region Special Names
 
-        public static readonly Name[] EmptyNames = new Name[0];
+        public static readonly Name[] EmptyNames = EmptyArray<Name>.Instance;
         public static readonly Name EmptyBaseName = new Name("");
         public static readonly Name SelfClassName = new Name("self");
         public static readonly Name StaticClassName = new Name("static");
@@ -204,7 +206,7 @@ namespace Devsense.PHP.Syntax
         {
             Debug.Assert(value != null);
             this.value = value;
-            this.hashCode = StringComparer.OrdinalIgnoreCase.GetHashCode(value);
+            this.hashCode = Comparer.GetHashCode(value);
         }
 
         #region Utils
@@ -256,29 +258,19 @@ namespace Devsense.PHP.Syntax
 
         #region Basic Overrides
 
-        public override bool Equals(object obj)
-        {
-            return obj != null && obj.GetType() == typeof(Name) && Equals((Name)obj);
-        }
+        public override bool Equals(object obj) =>
+            obj is Name name ? Equals(name) :
+            false;
 
-        public override int GetHashCode()
-        {
-            return this.hashCode;
-        }
+        public override int GetHashCode() => this.hashCode;
 
-        public override string ToString()
-        {
-            return this.value;
-        }
+        public override string ToString() => this.value;
 
         #endregion
 
         #region IEquatable<Name> Members
 
-        public bool Equals(Name other)
-        {
-            return this.GetHashCode() == other.GetHashCode() && Equals(other.Value);
-        }
+        public bool Equals(Name other) => this.GetHashCode() == other.GetHashCode() && Equals(other.Value);
 
         public static bool operator ==(Name name, Name other)
         {
@@ -294,10 +286,7 @@ namespace Devsense.PHP.Syntax
 
         #region IEquatable<string> Members
 
-        public bool Equals(string other)
-        {
-            return string.Equals(value, other, StringComparison.OrdinalIgnoreCase);
-        }
+        public bool Equals(string other) => Comparer.Equals(value, other);
 
         #endregion
     }
@@ -400,59 +389,44 @@ namespace Devsense.PHP.Syntax
 
         #region Basic Overrides
 
-        public override bool Equals(object obj)
-        {
-            if (!(obj is VariableName)) return false;
-            return Equals((VariableName)obj);
-        }
+        public override bool Equals(object obj) =>
+            obj is string str ? Equals(str) :
+            obj is VariableName name ? Equals(name) :
+            false;
 
-        public override int GetHashCode()
-        {
-            return value.GetHashCode();
-        }
+        public override int GetHashCode() => StringComparer.InvariantCulture.GetHashCode(value);
 
-        public override string ToString()
-        {
-            return this.value;
-        }
+        public override string ToString() => this.value;
 
         #endregion
 
         #region IEquatable<VariableName> Members
 
-        public bool Equals(VariableName other)
-        {
-            return this.value.Equals(other.value);
-        }
+        public bool Equals(VariableName other) => this.value.Equals(other.value);
 
-        public static bool operator ==(VariableName name, VariableName other)
-        {
-            return name.Equals(other);
-        }
+        public static bool operator ==(VariableName name, VariableName other) => name.Equals(other);
 
-        public static bool operator !=(VariableName name, VariableName other)
-        {
-            return !name.Equals(other);
-        }
+        public static bool operator !=(VariableName name, VariableName other) => !name.Equals(other);
 
         #endregion
 
         #region IEquatable<string> Members
 
-        public bool Equals(string other)
-        {
-            return value.Equals(other);
-        }
+        public bool Equals(string other) => value.Equals(other, StringComparison.InvariantCulture);
 
-        public static bool operator ==(VariableName name, string str)
-        {
-            return name.Equals(str);
-        }
+        public static bool operator ==(VariableName name, string str) => name.Equals(str);
 
-        public static bool operator !=(VariableName name, string str)
-        {
-            return !name.Equals(str);
-        }
+        public static bool operator !=(VariableName name, string str) => !name.Equals(str);
+
+        #endregion
+
+        #region IEquatable<ReadOnlySpan<char>>
+
+        public bool Equals(ReadOnlySpan<char> other) => value.AsSpan().Equals(other, StringComparison.InvariantCulture);
+
+        public static bool operator ==(VariableName name, ReadOnlySpan<char> str) => name.Equals(str);
+
+        public static bool operator !=(VariableName name, ReadOnlySpan<char> str) => !name.Equals(str);
 
         #endregion
     }
@@ -644,7 +618,7 @@ namespace Devsense.PHP.Syntax
         public QualifiedName(Name name, Name[]/*!*/ namespaces, bool fullyQualified)
         {
             if (namespaces == null)
-                throw new ArgumentNullException("namespaces");
+                throw new ArgumentNullException(nameof(namespaces));
 
             this.name = name;
             this.namespaces = namespaces;
@@ -752,8 +726,7 @@ namespace Devsense.PHP.Syntax
         /// </summary>
         public static QualifiedName TranslateAlias(QualifiedName qname, AliasKind kind, Dictionary<Alias, QualifiedName> aliases, QualifiedName? currentNamespace)
         {
-            QualifiedName translated;
-            TryTranslateAlias(qname, kind, aliases, currentNamespace, out translated);
+            TryTranslateAlias(qname, kind, aliases, currentNamespace, out var translated);
             return translated;
         }
 

@@ -30,20 +30,17 @@ namespace Devsense.PHP.Syntax
     /// Represents a variable name and its position within AST.
     /// </summary>
     [DebuggerDisplay("{_span,nq} {_name}")]
-    public struct VariableNameRef
+    public struct VariableNameRef : IEquatable<VariableName>, IEquatable<string>
     {
-        private readonly Span _span;
-        private readonly VariableName _name;
-
         /// <summary>
         /// Position of the name.
         /// </summary>
-        public Span Span => _span;
+        public Span Span { get; }
 
         /// <summary>
         /// Variable name.
         /// </summary>
-        public VariableName Name => _name;
+        public VariableName Name { get; }
 
         public VariableNameRef(Span span, string name)
             : this(span, new VariableName(name))
@@ -52,13 +49,41 @@ namespace Devsense.PHP.Syntax
 
         public VariableNameRef(Span span, VariableName name)
         {
-            _span = span;
-            _name = name;
+            this.Span = span;
+            this.Name = name;
         }
 
-        public override string ToString() => _name.ToString();
+        public override string ToString() => this.Name.ToString();
 
         public static implicit operator VariableName(VariableNameRef self) => self.Name;
+
+        public override bool Equals(object obj) =>
+            obj is VariableName name ? Equals(name) :
+            obj is VariableNameRef nameref ? Equals(nameref) :
+            obj is string str ? Equals(str) :
+            false;
+
+        public override int GetHashCode() => this.Name.GetHashCode();
+
+        #region IEquatable<VariableName>
+
+        public bool Equals(VariableName other) => this.Name.Equals(other);
+
+        public static bool operator ==(VariableNameRef name, VariableName other) => name.Equals(other);
+
+        public static bool operator !=(VariableNameRef name, VariableName other) => !name.Equals(other);
+
+        #endregion
+
+        #region IEquatable<string>
+
+        public bool Equals(string other) => this.Name.Equals(other);
+
+        public static bool operator ==(VariableNameRef name, string other) => name.Equals(other);
+
+        public static bool operator !=(VariableNameRef name, string other) => !name.Equals(other);
+
+        #endregion
     }
 
     #endregion
