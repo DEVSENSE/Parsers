@@ -42,6 +42,11 @@ namespace Devsense.PHP.Syntax
         /// </summary>
         public VariableName Name { get; }
 
+        /// <summary>
+        /// Gets value indicating the value is not empty.
+        /// </summary>
+        public bool HasValue => !string.IsNullOrEmpty(Name.Value);
+
         public VariableNameRef(Span span, string name)
             : this(span, new VariableName(name))
         {

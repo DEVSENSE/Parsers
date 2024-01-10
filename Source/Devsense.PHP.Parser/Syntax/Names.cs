@@ -42,12 +42,9 @@ namespace Devsense.PHP.Syntax
     /// Used for names of methods and namespace components.
     /// </summary>
     [DebuggerNonUserCode]
-    public struct Name : IEquatable<Name>, IEquatable<string>
+    public readonly struct Name : IEquatable<Name>, IEquatable<string>
     {
-        public string/*!*/ Value
-        {
-            get { return value; }
-        }
+        public string/*!*/ Value => this.value;
         private readonly string/*!*/ value;
         private readonly int hashCode;
 
@@ -300,10 +297,13 @@ namespace Devsense.PHP.Syntax
     /// Used for names of variables and constants.
     /// </summary>
     [DebuggerNonUserCode]
-    public struct VariableName : IEquatable<VariableName>, IEquatable<string>
+    public readonly struct VariableName : IEquatable<VariableName>, IEquatable<string>
     {
-        public string/*!*/ Value { get { return value; } set { this.value = value; } }
-        private string/*!*/ value;
+        public string Value => this.value;
+
+        readonly string value;
+
+        static StringComparison Comparison => StringComparison.InvariantCulture;
 
         #region Special Names
 
@@ -402,7 +402,7 @@ namespace Devsense.PHP.Syntax
 
         #region IEquatable<VariableName> Members
 
-        public bool Equals(VariableName other) => this.value.Equals(other.value);
+        public bool Equals(VariableName other) => string.Equals(this.value, other.value, Comparison);
 
         public static bool operator ==(VariableName name, VariableName other) => name.Equals(other);
 
@@ -412,7 +412,7 @@ namespace Devsense.PHP.Syntax
 
         #region IEquatable<string> Members
 
-        public bool Equals(string other) => value.Equals(other, StringComparison.InvariantCulture);
+        public bool Equals(string other) => string.Equals(value, other, Comparison);
 
         public static bool operator ==(VariableName name, string str) => name.Equals(str);
 
@@ -422,7 +422,7 @@ namespace Devsense.PHP.Syntax
 
         #region IEquatable<ReadOnlySpan<char>>
 
-        public bool Equals(ReadOnlySpan<char> other) => value.AsSpan().Equals(other, StringComparison.InvariantCulture);
+        public bool Equals(ReadOnlySpan<char> other) => value.AsSpan().Equals(other, Comparison);
 
         public static bool operator ==(VariableName name, ReadOnlySpan<char> str) => name.Equals(str);
 
