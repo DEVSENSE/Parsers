@@ -96,10 +96,9 @@ function test(){
                 var knownErrors = matches[0].Groups["Number"].Value.Split(',');
                 Assert.AreEqual(1, matches.Count, path);
                 Assert.AreEqual(knownErrors.Length, errors.Count, path);
-                int errorid = 0;
                 for (int i = 0; i < knownErrors.Length; i++)
                 {
-                    Assert.IsTrue(int.TryParse(knownErrors[i], out errorid), path);
+                    Assert.IsTrue(int.TryParse(knownErrors[i], out var errorid), path);
                     Assert.AreEqual(errorid, errors.Errors[i].Error.Id, path);
                     Assert.IsNotNull(errors.Errors[i].ToString());
                 }
