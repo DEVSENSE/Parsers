@@ -35,7 +35,7 @@ namespace Devsense.PHP.Syntax
         /// <summary>
         /// Position of the name.
         /// </summary>
-        public Span Span { get; }
+        public Span Span => HasValue ? new Span(_span_start, Name.Value.Length + 1) : Span.Invalid;
 
         /// <summary>
         /// Variable name.
@@ -43,18 +43,28 @@ namespace Devsense.PHP.Syntax
         public VariableName Name { get; }
 
         /// <summary>
+        /// Position of the <c>$variable</c> in source code.
+        /// </summary>
+        private readonly int _span_start;
+
+        /// <summary>
         /// Gets value indicating the value is not empty.
         /// </summary>
         public bool HasValue => !string.IsNullOrEmpty(Name.Value);
 
         public VariableNameRef(Span span, string name)
-            : this(span, new VariableName(name))
+            : this(span.Start, new VariableName(name))
         {
         }
 
         public VariableNameRef(Span span, VariableName name)
+            : this(span.Start, name)
         {
-            this.Span = span;
+        }
+
+        public VariableNameRef(int start, VariableName name)
+        {
+            _span_start = start;
             this.Name = name;
         }
 

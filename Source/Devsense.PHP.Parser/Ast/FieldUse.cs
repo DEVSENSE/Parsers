@@ -57,7 +57,7 @@ namespace Devsense.PHP.Syntax.Ast
     {
         public override Operations Operation { get { return Operations.DirectStaticFieldUse; } }
 
-        private VariableNameRef propertyName;
+        private readonly VariableNameRef propertyName;
 
         /// <summary>Name of static field being accessed</summary>
         public VariableName PropertyName => propertyName.Name;
@@ -67,15 +67,10 @@ namespace Devsense.PHP.Syntax.Ast
         /// </summary>
         public override Span NameSpan => propertyName.Span;
 
-        public DirectStFldUse(Span span, TypeRef typeRef, VariableName propertyName, Span propertyNamePosition)
+        public DirectStFldUse(Span span, TypeRef typeRef, VariableNameRef propertyName)
             : base(span, typeRef)
         {
-            this.propertyName = new VariableNameRef(propertyNamePosition, propertyName);
-        }
-
-        internal DirectStFldUse(Text.Span span, GenericQualifiedName qualifiedName, Span qualifiedNameSpan, VariableName propertyName, Span propertyNameSpan)
-            : this(span, TypeRef.FromGenericQualifiedName(qualifiedNameSpan, qualifiedName), propertyName, propertyNameSpan)
-        {
+            this.propertyName = propertyName;
         }
 
         /// <summary>

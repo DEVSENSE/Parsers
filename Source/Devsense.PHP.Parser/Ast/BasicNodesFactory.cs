@@ -603,7 +603,7 @@ namespace Devsense.PHP.Syntax.Ast
         public virtual LangElement Variable(Span span, string name, TypeRef typeRef)
         {
             Debug.Assert(typeRef != null);
-            return new DirectStFldUse(span, typeRef, new VariableName(name), new Span(span.End - name.Length - 1, name.Length + 1));
+            return new DirectStFldUse(span, typeRef, new VariableNameRef(span.End - name.Length - 1, new VariableName(name)));
         }
 
         public virtual LangElement Variable(Span span, string name, LangElement memberOfOpt, bool hasDollar)
