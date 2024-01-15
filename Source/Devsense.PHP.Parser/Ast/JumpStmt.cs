@@ -101,7 +101,9 @@ namespace Devsense.PHP.Syntax.Ast
 		/// <summary>
 		/// <see cref="Label"/> span.
 		/// </summary>
-		public Text.Span LabelSpan { get; }
+		public Text.Span LabelSpan => _label_pos >= 0 ? new Text.Span(_label_pos, Label.Length) : Text.Span.Invalid;
+
+        int _label_pos;
 
 		internal bool IsReferred { get { return isReferred; } set { isReferred = value; } }
 		private bool isReferred;
@@ -113,7 +115,7 @@ namespace Devsense.PHP.Syntax.Ast
             Debug.Assert(!string.IsNullOrEmpty(label));
 
 			this.Label = label;
-			this.LabelSpan = labelSpan;
+            _label_pos = labelSpan.IsValid ? labelSpan.Start : -1;
 		}
 
 		/// <summary>
