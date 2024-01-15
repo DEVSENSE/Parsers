@@ -400,7 +400,7 @@ namespace Devsense.PHP.Syntax.Ast
 
         public virtual LangElement Label(Span span, string label, Span labelSpan)
         {
-            return new LabelStmt(span, new VariableNameRef(labelSpan, label));
+            return new LabelStmt(span, label, labelSpan);
         }
 
         public virtual LangElement LineComment(Span span, string content)

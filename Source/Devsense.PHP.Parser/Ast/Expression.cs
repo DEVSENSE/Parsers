@@ -184,8 +184,9 @@ namespace Devsense.PHP.Syntax.Ast
         /// <summary>
         /// Constant name.
         /// </summary>
-        public VariableNameRef Name { get { return name; } }
-        protected VariableNameRef name;
+        public VariableName Name { get; } // NOTE: Variable actually
+        
+        public Span NameSpan { get; }
 
         /// <summary>
         /// Initial value of the constant.
@@ -203,8 +204,9 @@ namespace Devsense.PHP.Syntax.Ast
         public ConstantDecl(Text.Span span, string/*!*/ name, Text.Span namePos, Expression/*!*/ initializer)
             : base(span)
         {
-            System.Diagnostics.Debug.Assert(initializer != null);
-            this.name = new VariableNameRef(namePos, name);
+            Debug.Assert(initializer != null);
+            this.Name = new VariableName(name);
+            this.NameSpan = namePos;
             this.initializer = initializer;
         }
     }

@@ -93,19 +93,27 @@ namespace Devsense.PHP.Syntax.Ast
 
     public sealed class LabelStmt : Statement
 	{
-        public VariableNameRef Name { get { return _name; } }
-		private VariableNameRef _name;
+		/// <summary>
+		/// Case-sensitive label.
+		/// </summary>
+        public string Label { get; }
+		
+		/// <summary>
+		/// <see cref="Label"/> span.
+		/// </summary>
+		public Text.Span LabelSpan { get; }
 
 		internal bool IsReferred { get { return isReferred; } set { isReferred = value; } }
 		private bool isReferred;
         
 
-		public LabelStmt(Text.Span span, VariableNameRef/*!*/name)
+		public LabelStmt(Text.Span span, string label, Text.Span labelSpan)
 			: base(span)
 		{
-            Debug.Assert(!string.IsNullOrEmpty(name.Name.Value));
+            Debug.Assert(!string.IsNullOrEmpty(label));
 
-			_name = name;
+			this.Label = label;
+			this.LabelSpan = LabelSpan;
 		}
 
 		/// <summary>
