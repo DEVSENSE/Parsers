@@ -118,13 +118,13 @@ namespace Devsense.PHP.Syntax.Ast
 
         public override Text.Span NamePosition { get; }
 
-        public DirectClassConstUse(Text.Span span, TypeRef/*!*/typeRef, VariableNameRef name)
+        public DirectClassConstUse(Text.Span span, TypeRef/*!*/typeRef, Text.Span nameSpan, string name)
             : base(span, typeRef)
         {
-            Debug.Assert(!string.IsNullOrEmpty(name.Name.Value));
+            Debug.Assert(!string.IsNullOrEmpty(name));
 
-            this.Name = name.Name;
-            this.NamePosition = name.Span;
+            this.Name = new VariableName(name);
+            this.NamePosition = nameSpan;
         }
 
         /// <summary>
