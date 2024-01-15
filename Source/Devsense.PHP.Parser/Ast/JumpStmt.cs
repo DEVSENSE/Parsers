@@ -113,7 +113,7 @@ namespace Devsense.PHP.Syntax.Ast
             Debug.Assert(!string.IsNullOrEmpty(label));
 
 			this.Label = label;
-			this.LabelSpan = LabelSpan;
+			this.LabelSpan = labelSpan;
 		}
 
 		/// <summary>
