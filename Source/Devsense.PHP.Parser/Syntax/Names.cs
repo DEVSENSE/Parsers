@@ -322,27 +322,61 @@ namespace Devsense.PHP.Syntax
         public const string FilesName = "_FILES";
         public const string SessionName = "_SESSION";
 
+        static readonly HashSet<VariableName> s_AutoGlobals = new HashSet<VariableName>()
+        {
+            new VariableName(EnvName),
+            new VariableName(ServerName),
+            new VariableName(GlobalsName),
+            new VariableName(RequestName),
+            new VariableName(GetName),
+            new VariableName(PostName),
+            new VariableName(CookieName),
+            new VariableName(HttpRawPostDataName),
+            new VariableName(FilesName),
+            new VariableName(SessionName),
+        };
+
+        /// <summary>
+        /// Enumeration of autoglobal variables.
+        /// </summary>
+        public static IEnumerable<VariableName> AutoGlobals => s_AutoGlobals;
+
         #endregion
 
-        public bool IsThisVariableName
-        {
-            get
-            {
-                return this == ThisVariableName;
-            }
-        }
+        /// <summary>
+        /// Gets value indicating this object represents the special variable name <c>$this</c>.
+        /// </summary>
+        public bool IsThisVariableName => ThisVariableName.Equals(this.value);
 
         #region IsAutoGlobal
 
         /// <summary>
         /// Gets value indicting whether the name represents an auto-global variable.
         /// </summary>
-        public bool IsAutoGlobal
+        public bool IsAutoGlobal => IsAutoGlobalVariableName(this);
+
+        /// <summary>
+        /// Checks whether a specified name is the name of an auto-global variable.
+        /// </summary>
+        /// <param name="name">The name.</param>
+        /// <returns>Whether <paramref name="name"/> is auto-global.</returns>
+        public static bool IsAutoGlobalVariableName(VariableName name)
         {
-            get
+            if (!string.IsNullOrEmpty(name.value))
             {
-                return IsAutoGlobalVariableName(this.Value);
+                switch (name.value[0])
+                {
+                    case '_':
+                        return s_AutoGlobals.Contains(name);
+                    case 'G':
+                        return name.Equals(GlobalsName);
+                    case 'H':
+                        return name.Equals(HttpRawPostDataName);
+                }
+
             }
+
+            return false;
         }
 
         /// <summary>
@@ -350,26 +384,7 @@ namespace Devsense.PHP.Syntax
         /// </summary>
         /// <param name="name">The name.</param>
         /// <returns>Whether <paramref name="name"/> is auto-global.</returns>
-        public static bool IsAutoGlobalVariableName(string name)
-        {
-            switch (name)
-            {
-                case GlobalsName:
-                case ServerName:
-                case EnvName:
-                case CookieName:
-                case HttpRawPostDataName:
-                case FilesName:
-                case RequestName:
-                case GetName:
-                case PostName:
-                case SessionName:
-                    return true;
-
-                default:
-                    return false;
-            }
-        }
+        public static bool IsAutoGlobalVariableName(string name) => IsAutoGlobalVariableName(new VariableName(name));
 
         #endregion
 
