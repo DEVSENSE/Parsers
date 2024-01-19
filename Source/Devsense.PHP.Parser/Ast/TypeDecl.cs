@@ -242,11 +242,21 @@ namespace Devsense.PHP.Syntax.Ast
     public sealed class NamedTypeDecl : TypeDecl
     {
         #region Properties
+
         /// <summary>
         /// Name of the class.
         /// </summary>
-        public override NameRef Name { get { return name; } }
-        private readonly NameRef name;
+        public override NameRef Name { get; }
+
+        /// <summary>
+        /// Remember containinng ns, frequent op.
+        /// </summary>
+        private NamespaceDecl _ContainingNamespace;
+
+        /// <summary>
+        /// Gets the <see cref="NamespaceDecl"/> containining this type, or <c>null</c> reference if the type is declared in a global namespace.
+        /// </summary>
+        public new NamespaceDecl ContainingNamespace => _ContainingNamespace ?? (_ContainingNamespace = base.ContainingNamespace);
 
         /// <summary>
         /// Fully qualified name.
@@ -256,14 +266,17 @@ namespace Devsense.PHP.Syntax.Ast
             get
             {
                 var ns = this.ContainingNamespace;
-                if (ns != null && ns.QualifiedName.HasValue)
+                if (ns != null)
                 {
-                    return new QualifiedName(Name, ns.QualifiedName.QualifiedName.Namespaces, true);
+                    var ns_fqn = ns.QualifiedName.QualifiedName.Namespaces;
+                    if (ns_fqn != null && ns_fqn.Length != 0)
+                    {
+                        return new QualifiedName(Name.Name, ns_fqn, true);
+                    }
                 }
-                else
-                {
-                    return new QualifiedName(Name, Syntax.Name.EmptyNames, true);
-                }
+                
+                //
+                return new QualifiedName(Name.Name, Syntax.Name.EmptyNames, true);
             }
         }
 
@@ -281,7 +294,7 @@ namespace Devsense.PHP.Syntax.Ast
             Debug.Assert(genericParams != null && implementsList != null && elements != null);
             Debug.Assert((memberAttributes & PhpMemberAttributes.Trait) == 0 || (memberAttributes & PhpMemberAttributes.Interface) == 0, "Interface cannot be a trait");
 
-            this.name = className;
+            this.Name = className;
         }
 
         #endregion

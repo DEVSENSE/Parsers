@@ -112,8 +112,11 @@ namespace Devsense.PHP.Syntax.Ast
         /// </summary>
         public readonly bool IsSimpleSyntax;
 
-        public QualifiedNameRef QualifiedName { get { return this.qualifiedName; } }
-        private QualifiedNameRef qualifiedName;
+        /// <summary>
+        /// Namespace name.
+        /// Can be empty with invalid <see cref="Text.Span"/>.
+        /// </summary>
+        public QualifiedNameRef QualifiedName { get; }
 
         /// <summary>
         /// Naming context defining aliases.
@@ -137,7 +140,7 @@ namespace Devsense.PHP.Syntax.Ast
             : this(p, QualifiedNameRef.Invalid, false)
         {
             this.isAnonymous = true;
-            this.qualifiedName = new QualifiedNameRef(Text.Span.Invalid, Name.EmptyBaseName, Name.EmptyNames);
+            this.QualifiedName = new QualifiedNameRef(Text.Span.Invalid, Name.EmptyBaseName, Name.EmptyNames);
             this.IsSimpleSyntax = false;
         }
 
@@ -145,7 +148,7 @@ namespace Devsense.PHP.Syntax.Ast
             : base(p)
         {
             this.isAnonymous = false;
-            this.qualifiedName = name;
+            this.QualifiedName = name;
             this.IsSimpleSyntax = simpleSyntax;
         }
 
