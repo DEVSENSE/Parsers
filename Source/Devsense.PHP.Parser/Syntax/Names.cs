@@ -48,7 +48,7 @@ namespace Devsense.PHP.Syntax
         private readonly string/*!*/ value;
         private readonly int hashCode;
 
-        static StringComparer Comparer => StringComparer.OrdinalIgnoreCase;
+        public static StringComparer Comparer => StringComparer.OrdinalIgnoreCase;
 
         #region Special Names
 
@@ -303,7 +303,7 @@ namespace Devsense.PHP.Syntax
 
         readonly string value;
 
-        static StringComparison Comparison => StringComparison.InvariantCulture;
+        public static StringComparison Comparison => StringComparison.InvariantCulture;
 
         #region Special Names
 
