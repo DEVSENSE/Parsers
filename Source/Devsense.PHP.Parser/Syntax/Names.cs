@@ -303,7 +303,7 @@ namespace Devsense.PHP.Syntax
 
         readonly string value;
 
-        public static StringComparison Comparison => StringComparison.InvariantCulture;
+        public static StringComparison Comparison => StringComparison.Ordinal;
 
         #region Special Names
 
