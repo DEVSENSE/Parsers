@@ -19,6 +19,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using Devsense.PHP.Text;
+using Devsense.PHP.Utilities;
 
 namespace Devsense.PHP.Syntax
 {
@@ -703,7 +704,7 @@ namespace Devsense.PHP.Syntax
             }
             else
             {
-                var namespacesList = new List<Name>();
+                var namespacesList = ListObjectPool<Name>.Allocate();
 
                 int sep;
                 while ((sep = name.IndexOf(Separator)) >= 0)
@@ -716,7 +717,8 @@ namespace Devsense.PHP.Syntax
                     name = name.Slice(sep + 1);
                 }
 
-                namespaces = namespacesList.ToArray();
+                //
+                namespaces = ListObjectPool<Name>.GetArrayAndFree(namespacesList);
             }
 
             // create QualifiedName
