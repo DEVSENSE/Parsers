@@ -70,6 +70,17 @@ namespace Devsense.PHP.Utilities
                 return ReadOnlySpan<ILangElement>.Empty;
             }
 
+            //protected override void VisitList(INamedTypeRef[] items)
+            //{
+            //    if (items != null)
+            //    {
+            //        for (int i = 0; i < items.Length; i++)
+            //        {
+            //            AddChild(items[i]);
+            //        }
+            //    }
+            //}
+
             public override void VisitElement(ILangElement element)
             {
                 AddChild(element);

@@ -390,16 +390,16 @@ namespace Devsense.PHP.Syntax
             }
         }
 
-        protected void VisitList(INamedTypeRef[] items)
-        {
-            if (items != null)
-            {
-                for (int i = 0; i < items.Length; i++)
-                {
-                    items[i]?.VisitMe(this);
-                }
-            }
-        }
+        //protected virtual void VisitList(INamedTypeRef[] items)
+        //{
+        //    if (items != null)
+        //    {
+        //        for (int i = 0; i < items.Length; i++)
+        //        {
+        //            items[i]?.VisitMe(this);
+        //        }
+        //    }
+        //}
 
         /// <summary>
         /// Visit all elements in the given list.
