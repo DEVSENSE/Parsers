@@ -231,6 +231,9 @@ namespace Devsense.PHP.Syntax
 
         readonly LanguageFeatures _features;
 
+        /// <summary>Position shift.</summary>
+        readonly int _offset = 0;
+
         #endregion
 
         #region SourceUnit
@@ -238,19 +241,21 @@ namespace Devsense.PHP.Syntax
         public CodeSourceUnit(string/*!*/ code, string/*!*/ filePath,
             Encoding/*!*/ encoding,
             Lexer.LexicalStates initialState = Lexer.LexicalStates.INITIAL,
-            LanguageFeatures features = LanguageFeatures.Basic)
+            LanguageFeatures features = LanguageFeatures.Basic,
+            int offset = 0)
             : base(filePath, encoding, Text.LineBreaks.Create(code))
         {
             this.Code = code;
             this.InitialState = initialState;
             this._features = features;
+            this._offset = offset;
         }
 
         public override void Parse(INodesFactory<LangElement, Span> factory, Errors.IErrorSink<Span> errors, Errors.IErrorRecovery recovery = null)
         {
             using (var source = new StringReader(this.Code))
             {
-                using (var lexer = new Lexer(source, this.Encoding, errors, _features, initialState: this.InitialState, docBlockFactory: factory))
+                using (var lexer = new Lexer(source, this.Encoding, errors, _features, positionShift: _offset, initialState: this.InitialState, docBlockFactory: factory))
                 {
                     this.Ast = (GlobalCode)new Parser().Parse(lexer, factory, _features, errors, recovery);
                 }
@@ -291,15 +296,17 @@ namespace Devsense.PHP.Syntax
         /// <param name="initialState">
         /// Optional. Initial parser state.
         /// This allows e.g. to parse PHP code without encapsulating the code into opening and closing tags.</param>
+        /// <param name="offset">Optional span offset.</param>
         /// <returns>New <see cref="CodeSourceUnit"/> object.</returns>
         public static SourceUnit/*!*/ParseCode(string code, string filePath,
             INodesFactory<LangElement, Span> factory = null,
             Errors.IErrorSink<Span> errors = null,
             Errors.IErrorRecovery recovery = null,
             LanguageFeatures features = LanguageFeatures.Basic,
-            Lexer.LexicalStates initialState = Lexer.LexicalStates.INITIAL)
+            Lexer.LexicalStates initialState = Lexer.LexicalStates.INITIAL,
+            int offset = 0)
         {
-            var unit = new CodeSourceUnit(code, filePath, Encoding.UTF8, initialState, features);
+            var unit = new CodeSourceUnit(code, filePath, Encoding.UTF8, initialState, features, offset: offset);
 
             if (factory == null)
             {
@@ -311,7 +318,7 @@ namespace Devsense.PHP.Syntax
                 errors = (factory as Errors.IErrorSink<Span>) ?? new EmptyErrorSink<Span>();
             }
 
-            //var lexer = new Lexer(new StringReader(code), Encoding.UTF8, errors, features, 0, initialState);
+            //var lexer = new Lexer(new StringReader(code), Encoding.UTF8, errors, features, offset, initialState);
 
             unit.Parse(factory, errors, recovery);
             unit.Close();
