@@ -985,6 +985,17 @@ namespace Devsense.PHP.Syntax
         }
 
         /// <summary>
+        /// Associates given <paramref name="target"/> referring to instance of <see cref="PHPDocBlock"/> to a target which must be an instance of <see cref="IPropertyCollection"/>.
+        /// </summary>
+        /// <param name="target"><see cref="IPropertyCollection"/> instance. Must not be <c>null</c>.</param>
+        void SetDocSpan(object target)
+        {
+            Debug.Assert(target != null);
+            Debug.Assert(target is IPropertyCollection);
+            _lexer.DocCommentList.AnnotateSpan((LangElement)target);
+        }
+
+        /// <summary>
         /// Associates given <paramref name="target"/> refering to instance of <see cref="PHPDocBlock"/> to a target which must be an instance of <see cref="IPropertyCollection"/>.
         /// </summary>
         /// <param name="target"><see cref="IPropertyCollection"/> instance. Must not be <c>null</c>.</param>

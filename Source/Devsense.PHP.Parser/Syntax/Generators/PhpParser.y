@@ -983,7 +983,10 @@ non_empty_parameter_list:
 ;
 
 attributed_parameter:
-		attributes parameter	{ $$ = WithAttributes($2, $1); }
+		attributes parameter	{
+			$$ = WithAttributes($2, $1);
+			SetDocSpan($$);
+		}
 	|	parameter				{ $$ = $1; }
 ;
 
@@ -1011,7 +1014,7 @@ parameter:
 				null,
 				(PhpMemberAttributes)$1
 			);
-			SetDoc($$);
+			SetDocSpan($$);
 		}
 	|	optional_property_modifiers optional_type_without_static is_reference is_variadic T_VARIABLE '=' expr {
 			/* Important - @$ is invalid when optional_type is empty */
@@ -1021,7 +1024,7 @@ parameter:
 				(Expression)$7,
 				(PhpMemberAttributes)$1
 			);
-			SetDoc($$);
+			SetDocSpan($$);
 		}
 ;
 

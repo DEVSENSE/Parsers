@@ -2851,7 +2851,10 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 { yyval.FormalParamList = AddToList<FormalParam>(value_stack.array[value_stack.top-3].yyval.FormalParamList, value_stack.array[value_stack.top-1].yyval.FormalParam); }
         return;
       case 254: // attributed_parameter -> attributes parameter 
-{ yyval.FormalParam = WithAttributes(value_stack.array[value_stack.top-1].yyval.FormalParam, value_stack.array[value_stack.top-2].yyval.NodeList); }
+{
+			yyval.FormalParam = WithAttributes(value_stack.array[value_stack.top-1].yyval.FormalParam, value_stack.array[value_stack.top-2].yyval.NodeList);
+			SetDocSpan(yyval.FormalParam);
+		}
         return;
       case 255: // attributed_parameter -> parameter 
 { yyval.FormalParam = value_stack.array[value_stack.top-1].yyval.FormalParam; }
@@ -2886,7 +2889,7 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 				null,
 				(PhpMemberAttributes)value_stack.array[value_stack.top-5].yyval.Long
 			);
-			SetDoc(yyval.FormalParam);
+			SetDocSpan(yyval.FormalParam);
 		}
         return;
       case 263: // parameter -> optional_property_modifiers optional_type_without_static is_reference is_variadic T_VARIABLE '=' expr 
@@ -2898,7 +2901,7 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 				(Expression)value_stack.array[value_stack.top-1].yyval.Node,
 				(PhpMemberAttributes)value_stack.array[value_stack.top-7].yyval.Long
 			);
-			SetDoc(yyval.FormalParam);
+			SetDocSpan(yyval.FormalParam);
 		}
         return;
       case 264: // optional_type -> 

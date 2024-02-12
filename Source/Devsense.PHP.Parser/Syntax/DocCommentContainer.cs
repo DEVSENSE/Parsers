@@ -132,6 +132,17 @@ namespace Devsense.PHP.Syntax
         }
 
         /// <summary>
+        /// Finds DOC comment intersecting given span and annotates statement with it.
+        /// </summary>
+        public void AnnotateSpan(LangElement element)
+        {
+            if (TryReleaseBlock(Span.FromBounds(element.Span.Start - 1, element.Span.End), out var phpdoc))
+            {
+                element.SetPHPDoc(phpdoc);
+            }
+        }
+
+        /// <summary>
         /// Finds DOC comment at given position and annotates statement with it.
         /// </summary>
         public void AnnotateMember(LangElement element)

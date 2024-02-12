@@ -1235,6 +1235,20 @@ namespace Devsense.PHP.Syntax
                 return false;
             }
         }
+
+        public static bool TryPop<T>(this Stack<T> stack, out T value) // because netstandard2.0, net45
+        {
+            if (stack.Count != 0)
+            {
+                value = stack.Pop();
+                return true;
+            }
+            else
+            {
+                value = default(T);
+                return false;
+            }
+        }
 #endif
 
     }

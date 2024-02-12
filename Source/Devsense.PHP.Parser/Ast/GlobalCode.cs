@@ -42,7 +42,7 @@ namespace Devsense.PHP.Syntax.Ast
     {
         #region IGlobalCode
 
-        IReadOnlyCollection<IStatement> IBlockStatement.Statements => statements;
+        IReadOnlyCollection<IStatement> IBlockStatement.Statements => Statements;
 
         Tokens IBlockStatement.OpeningToken => 0;
 
@@ -53,15 +53,12 @@ namespace Devsense.PHP.Syntax.Ast
         /// <summary>
         /// Array of nodes representing statements in PHP global code
         /// </summary>
-        public Statement[]/*!*/ Statements { get { return statements; } internal set { statements = value; } }
-        private Statement[]/*!*/ statements;
-
-        private readonly SourceUnit/*!*/ sourceUnit;
+        public Statement[]/*!*/ Statements { get; }
 
         /// <summary>
         /// Represented source unit.
         /// </summary>
-        public override SourceUnit ContainingSourceUnit => sourceUnit;
+        public override SourceUnit ContainingSourceUnit { get; }
 
         public override TypeDecl ContainingType => null;
 
@@ -72,10 +69,8 @@ namespace Devsense.PHP.Syntax.Ast
         /// </summary>
         public GlobalCode(Text.Span span, Statement[]/*!*/ statements, SourceUnit/*!*/ sourceUnit) : base(span)
         {
-            Debug.Assert(statements != null && sourceUnit != null);
-
-            this.sourceUnit = sourceUnit;
-            this.statements = statements;
+            this.ContainingSourceUnit = sourceUnit ?? throw new ArgumentNullException(nameof(sourceUnit));
+            this.Statements = statements ?? throw new ArgumentNullException(nameof(statements));
         }
 
         #endregion

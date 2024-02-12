@@ -67,6 +67,7 @@
     <Compile Include="TestImplementation\SyntaxExtensions.cs" />
     <Compile Include="TestImplementation\TestErrorRecovery.cs" />
     <Compile Include="TestImplementation\TestErrorSink.cs" />
+    <Compile Include="TestImplementation\TestNodeFactory.cs" />
     <Compile Include="TestImplementation\TestSourceUnit.cs" />
     <Compile Include="VisitorTests.cs" />
   </ItemGroup>

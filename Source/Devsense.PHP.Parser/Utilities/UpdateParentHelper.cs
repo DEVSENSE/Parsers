@@ -28,10 +28,15 @@ namespace Devsense.PHP.Utilities
     /// </summary>
     static class UpdateParentHelper
     {
+        static readonly ObjectPool<GetChildrenVisitor> s_visitorPool = new ObjectPool<GetChildrenVisitor>(
+            () => new GetChildrenVisitor(),
+            (obj) => obj.Reset()
+        );
+
         /// <summary>
         /// Collects element child elements.
         /// </summary>
-        class GetChildrenVisitor : TreeVisitor
+        sealed class GetChildrenVisitor : TreeVisitor
         {
             /// <summary>
             /// Buffer.
@@ -39,6 +44,11 @@ namespace Devsense.PHP.Utilities
             ILangElement[] _children = EmptyArray<ILangElement>.Instance;
 
             int _childrenCount = 0;
+
+            public void Reset()
+            {
+                _childrenCount = 0;
+            }
 
             void AddChild(ILangElement element)
             {
@@ -99,22 +109,32 @@ namespace Devsense.PHP.Utilities
                 return;
             }
 
-            var queue = new Queue<ILangElement>(32);
-            var childvisitor = new GetChildrenVisitor();
+            var childvisitor = s_visitorPool.Allocate();
+            var stack = StackObjectPool<ILangElement>.Allocate();
 
-            queue.Enqueue(ast);
+            stack.Push(ast);
 
-            while (queue.TryDequeue(out var x))
+            try
             {
-                var children = childvisitor.GetChildren(x);
 
-                foreach (var child in children)
+                while (stack.TryPop(out var x))
                 {
-                    Connect(child, x);
-                    Connect(child.Properties.GetPHPDoc(), child);
+                    var children = childvisitor.GetChildren(x);
 
-                    queue.Enqueue(child);
+                    foreach (var child in children)
+                    {
+                        Connect(child, x);
+                        Connect(child.Properties.GetPHPDoc(), child);
+
+                        stack.Push(child);
+                    }
                 }
+
+            }
+            finally
+            {
+                StackObjectPool<ILangElement>.Free(stack);
+                s_visitorPool.Free(childvisitor);
             }
         }
 
