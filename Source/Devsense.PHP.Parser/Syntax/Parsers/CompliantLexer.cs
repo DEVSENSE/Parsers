@@ -151,6 +151,7 @@ namespace Devsense.PHP.Syntax
                     case Tokens.T_DEFAULT:
                     case Tokens.T_EVAL:
                     case Tokens.T_CONST:
+                    case Tokens.T_CLASS:
                     case Tokens.T_INTERFACE:
                     case Tokens.T_TRAIT:
                     case Tokens.T_LIST:
