@@ -67,10 +67,10 @@ namespace Devsense.PHP.Syntax
         /// </summary>
         InactiveConditional = 4096,
 
+        TypeMask = Interface | Trait | Enum /*| Class = 0*/,
         StaticMask = Static | AppStatic,
-        VisibilityMask = Public | Private | Protected| NamespacePrivate,
-        SpecialMembersMask = Constructor,
-        PartialMerged = Abstract | Final
+        VisibilityMask = Public | Private | Protected | NamespacePrivate,
+        SpecialMembersMask = Constructor
     }
 
     #endregion
