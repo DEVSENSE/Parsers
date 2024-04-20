@@ -30,6 +30,9 @@ namespace Devsense.PHP.Syntax.Ast
 
         internal override bool AllowsPassByReference { get { return true; } }
 
+        /// <remarks>Always <c>null</c>.</remarks>
+        public override sealed Expression IsMemberOf => null;
+
         /// <summary>Type of class being instantiated</summary>
         public TypeRef /*!*/ ClassNameRef { get; }
 

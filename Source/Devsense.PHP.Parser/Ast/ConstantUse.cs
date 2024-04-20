@@ -25,6 +25,8 @@ namespace Devsense.PHP.Syntax.Ast
     /// </summary>
     public abstract class ConstantUse : VarLikeConstructUse
     {
+        public override Expression IsMemberOf => null;
+
         public ConstantUse(Text.Span span)
             : base(span)
         {

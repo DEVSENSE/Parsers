@@ -80,7 +80,9 @@ namespace Devsense.PHP.Syntax.Ast
 
         public override Operations Operation => ((_flags & Flags.Array) != 0) ? Operations.Array : Operations.List;
 
-        internal override bool AllowsPassByReference { get { return false; } }
+        internal override bool AllowsPassByReference => false;
+
+        public override Expression IsMemberOf => null;
 
         /// <summary>
         /// Gets array items.

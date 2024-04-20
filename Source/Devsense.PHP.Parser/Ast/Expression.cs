@@ -220,8 +220,7 @@ namespace Devsense.PHP.Syntax.Ast
     /// </summary>
     public abstract class VarLikeConstructUse : Expression
     {
-        public Expression IsMemberOf { get { return isMemberOf; } set { isMemberOf = value; } }
-        protected Expression isMemberOf;
+        public abstract Expression IsMemberOf { get; }
 
         sealed class NullSafeOperationFlag
         {
@@ -249,7 +248,7 @@ namespace Devsense.PHP.Syntax.Ast
         /// </summary>
         public bool IsNullSafeObjectOperation
         {
-            get => isMemberOf != null && NullSafeOperationFlag.HasFlag(this);
+            get => IsMemberOf != null && NullSafeOperationFlag.HasFlag(this);
             internal set => NullSafeOperationFlag.SetFlag(this, value);
         }
 

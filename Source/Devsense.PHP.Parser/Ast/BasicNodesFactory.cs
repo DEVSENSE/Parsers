@@ -122,7 +122,7 @@ namespace Devsense.PHP.Syntax.Ast
         public virtual LangElement Call(Span span, LangElement nameExpr, CallSignature signature, LangElement memberOfOpt)
         {
             Debug.Assert(nameExpr is Expression);
-            return new IndirectFcnCall(span, (Expression)nameExpr, signature) { IsMemberOf = (Expression)memberOfOpt };
+            return new IndirectFcnCall(span, (Expression)nameExpr, signature, (Expression)memberOfOpt);
         }
 
         public virtual LangElement Call(Span span, Name name, Span nameSpan, CallSignature signature, TypeRef typeRef)
@@ -133,7 +133,7 @@ namespace Devsense.PHP.Syntax.Ast
         public virtual LangElement Call(Span span, TranslatedQualifiedName name, CallSignature signature, LangElement memberOfOpt)
         {
             Debug.Assert(memberOfOpt == null || memberOfOpt is Expression);
-            return new DirectFcnCall(span, name, signature) { IsMemberOf = (Expression)memberOfOpt };
+            return DirectFcnCall.Create(span, name, signature, isMemberOf: (Expression)memberOfOpt);
         }
         public virtual ActualParam ActualParameter(Span span, LangElement expr, ActualParam.Flags flags, VariableNameRef? nameOpt = default)
         {
@@ -597,7 +597,7 @@ namespace Devsense.PHP.Syntax.Ast
 
         public virtual LangElement Variable(Span span, LangElement nameExpr, LangElement memberOfOpt)
         {
-            return new IndirectVarUse(span, 1, (Expression)nameExpr) { IsMemberOf = (Expression)memberOfOpt };
+            return new IndirectVarUse(span, 1, (Expression)nameExpr, isMemberOf: (Expression)memberOfOpt);
         }
 
         public virtual LangElement Variable(Span span, string name, TypeRef typeRef)
@@ -609,7 +609,12 @@ namespace Devsense.PHP.Syntax.Ast
         public virtual LangElement Variable(Span span, string name, LangElement memberOfOpt, bool hasDollar)
         {
             int nameLength = name.Length + (hasDollar ? 1 : 0);
-            return new DirectVarUse(new Span(span.End - nameLength, nameLength), name) { IsMemberOf = (Expression)memberOfOpt };
+
+            return DirectVarUse.Create(
+                new Span(span.End - nameLength, nameLength),
+                new VariableName(name),
+                (Expression)memberOfOpt
+            );
         }
 
         public virtual ForeachVar ForeachVariable(Span span, LangElement variable, bool alias)

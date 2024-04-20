@@ -32,7 +32,7 @@ namespace Devsense.PHP.Syntax.Ast
         public abstract Text.Span NameSpan { get; }
 
         public FunctionCall(Text.Span span, CallSignature signature)
-            :base(span)
+            : base(span)
         {
             Debug.Assert(signature.Parameters != null);
 
@@ -44,8 +44,29 @@ namespace Devsense.PHP.Syntax.Ast
 
     #region DirectFcnCall
 
-    public sealed class DirectFcnCall : FunctionCall
+    public abstract class DirectFcnCall : FunctionCall
     {
+        sealed class LocalDirectFcnCall : DirectFcnCall
+        {
+            public override Expression IsMemberOf => null;
+
+            public LocalDirectFcnCall(Text.Span span, TranslatedQualifiedName name, CallSignature signature)
+                : base(span, name, signature)
+            {
+            }
+        }
+
+        sealed class MemberDirectFcnCall : DirectFcnCall
+        {
+            public override Expression IsMemberOf { get; }
+
+            public MemberDirectFcnCall(Text.Span span, TranslatedQualifiedName name, CallSignature signature, Expression isMemberOf)
+                : base(span, name, signature)
+            {
+                this.IsMemberOf = isMemberOf;
+            }
+        }
+
         public override Operations Operation { get { return Operations.DirectCall; } }
 
         /// <summary>
@@ -63,7 +84,15 @@ namespace Devsense.PHP.Syntax.Ast
 
         public override Text.Span NameSpan => _fullName.Span;
 
-        public DirectFcnCall(Text.Span span, TranslatedQualifiedName name, CallSignature signature)
+        public static DirectFcnCall Create(Text.Span span, TranslatedQualifiedName name, CallSignature signature) => new LocalDirectFcnCall(span, name, signature);
+
+        public static DirectFcnCall Create(Text.Span span, TranslatedQualifiedName name, CallSignature signature, Expression isMemberOf) =>
+            isMemberOf != null
+            ? new MemberDirectFcnCall(span, name, signature, isMemberOf)
+            : Create(span, name, signature)
+            ;
+
+        protected DirectFcnCall(Text.Span span, TranslatedQualifiedName name, CallSignature signature)
             : base(span, signature)
         {
             _fullName = name;
@@ -87,14 +116,16 @@ namespace Devsense.PHP.Syntax.Ast
     {
         public override Operations Operation { get { return Operations.IndirectCall; } }
 
-        public Expression/*!*/ NameExpr { get { return nameExpr; } }
-        internal Expression/*!*/ nameExpr;
+        public Expression/*!*/ NameExpr { get; }
         public override Text.Span NameSpan => NameExpr.Span;
 
-        public IndirectFcnCall(Text.Span p, Expression/*!*/ nameExpr, CallSignature signature)
+        public override Expression IsMemberOf { get; }
+
+        public IndirectFcnCall(Text.Span p, Expression/*!*/ nameExpr, CallSignature signature, Expression isMemberOf = null)
             : base(p, signature)
         {
-            this.nameExpr = nameExpr;
+            this.NameExpr = nameExpr;
+            this.IsMemberOf = isMemberOf;
         }
 
         /// <summary>
@@ -113,6 +144,8 @@ namespace Devsense.PHP.Syntax.Ast
 
     public abstract class StaticMtdCall : FunctionCall
     {
+        public override sealed Expression IsMemberOf => null;
+
         public TypeRef TargetType => this.typeRef;
         protected readonly TypeRef/*!*/typeRef;
 

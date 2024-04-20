@@ -28,6 +28,9 @@ namespace Devsense.PHP.Syntax.Ast
     {
         public override Operations Operation { get { return Operations.ItemUse; } }
 
+        /// <remarks>Always <c>null</c>.</remarks>
+        public override Expression IsMemberOf => null;
+
         /// <summary>
         /// Whether this represents function array dereferencing.
         /// </summary>

@@ -25,10 +25,12 @@ namespace Devsense.PHP.Syntax.Ast
 	{
         public override Operations Operation { get { return Operations.IndirectVarUse; } }
 
-		public Expression VarNameEx { get { return varNameEx; } }
+		public Expression VarNameEx => this.varNameEx;
 		internal Expression varNameEx;
 
-		public IndirectVarUse(Text.Span span, int levelOfIndirection, Expression varNameEx)
+		public override Expression IsMemberOf { get; }
+
+        public IndirectVarUse(Text.Span span, int levelOfIndirection, Expression varNameEx, Expression isMemberOf = null)
             : base(span)
 		{
 			Debug.Assert(levelOfIndirection > 0 && varNameEx != null);
@@ -42,7 +44,9 @@ namespace Devsense.PHP.Syntax.Ast
                 Text.Span varspan = new Text.Span(span.Start + 1, span.Length - 1);
                 this.varNameEx = new IndirectVarUse(varspan, --levelOfIndirection, varNameEx);
 			}
-		}
+
+			this.IsMemberOf = isMemberOf;
+        }
 
         /// <summary>
         /// Call the right Visit* method on the given Visitor object.

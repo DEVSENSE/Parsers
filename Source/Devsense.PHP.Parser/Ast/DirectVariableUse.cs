@@ -20,23 +20,44 @@ namespace Devsense.PHP.Syntax.Ast
 	/// <summary>
 	/// Direct variable use - a variable or a field accessed by an identifier.
 	/// </summary>
-	public sealed class DirectVarUse : SimpleVarUse
+	public abstract class DirectVarUse : SimpleVarUse
 	{
-        public override Operations Operation { get { return Operations.DirectVarUse; } }
+		sealed class LocalDirectVarUse : DirectVarUse
+		{
+			public override Expression IsMemberOf => null;
 
-		public VariableName VarName { get { return varName; } set { varName = value; } }
-		private VariableName varName;
+            public LocalDirectVarUse(Text.Span span, VariableName varName)
+				: base(span, varName)
+			{
+			}
+        }
 
-		public DirectVarUse(Text.Span span, VariableName varName)
+        sealed class MemberDirectVarUse : DirectVarUse
+        {
+			public override Expression IsMemberOf { get; }
+
+            public MemberDirectVarUse(Text.Span span, VariableName varName, Expression isMemberOf)
+                : base(span, varName)
+            {
+				this.IsMemberOf = isMemberOf;
+            }
+        }
+
+		public static DirectVarUse Create(Text.Span span, VariableName varName) => new LocalDirectVarUse(span, varName);
+
+        public static DirectVarUse Create(Text.Span span, VariableName varName, Expression isMemberOf) => isMemberOf != null
+			? new MemberDirectVarUse(span, varName, isMemberOf)
+			: Create(span, varName)
+			;
+
+        public override Operations Operation => Operations.DirectVarUse;
+
+		public VariableName VarName { get; set; }
+
+		protected DirectVarUse(Text.Span span, VariableName varName)
             : base(span)
 		{
-			this.varName = varName;
-		}
-
-		public DirectVarUse(Text.Span span, string/*!*/ varName)
-            : base(span)
-		{
-			this.varName = new VariableName(varName);
+			this.VarName = varName;
 		}
 
 		/// <summary>
