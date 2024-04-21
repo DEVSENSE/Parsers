@@ -158,6 +158,7 @@ namespace Devsense.PHP.Syntax
                     case Tokens.T_SWITCH:
                     case Tokens.T_PRINT:
                     case Tokens.T_CLONE:
+                    case Tokens.T_ARRAY:
                     case Tokens.T_DO:
                     case Tokens.T_WHILE:
                     case Tokens.T_FOR:
