@@ -147,15 +147,6 @@ namespace Devsense.PHP.Syntax.Ast
             this.IsSimpleSyntax = simpleSyntax;
         }
 
-        /// <summary>
-        /// Finish parsing of namespace, complete its position.
-        /// </summary>
-        /// <param name="p"></param>
-        internal void UpdatePosition(Text.Span p)
-        {
-            this.Span = p;
-        }
-
         #endregion
 
         /// <summary>
