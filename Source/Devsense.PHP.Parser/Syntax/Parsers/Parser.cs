@@ -162,6 +162,7 @@ namespace Devsense.PHP.Syntax
             //InitializeFields();
 
             _currentScope = new Scope(0);
+            _recoveryCount = 0;
 
             this.value_stack.Clear();
             base.Scanner = _lexer;
@@ -181,6 +182,18 @@ namespace Devsense.PHP.Syntax
 
             //
             return _astRoot;
+        }
+
+        public void Clear()
+        {
+            _astRoot = null;
+            _lazyPrimitiveTypes = null;
+            _lexer = null;
+            _astFactory = null;
+            _currentNamespace = null;
+            _contextType = AliasKind.Type;
+            _namingContext = null;
+            _classContexts = null;
         }
 
         void SetNamingContext(List<string> ns)
