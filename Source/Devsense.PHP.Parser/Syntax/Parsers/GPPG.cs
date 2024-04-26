@@ -256,11 +256,23 @@ namespace Devsense.PHP.Syntax
 			this.eofToken = EofToken;
 			this.invalidPosition = InvalidPosition;
 
+			Initialize();
+
 			if (states == null || rules == null || nonTerminals == null)
 				throw new InvalidOperationException();
 		}
 
-		public bool Parse()
+        protected void Initialize()
+        {
+			yyval = default(ValueType);
+			yypos = default(PositionType);
+			yypos_valid = false;
+			current_state_index = 0;
+            state_stack.Clear();
+            value_stack.Clear();
+        }
+
+        public bool Parse()
 		{
 			next = 0;
             current_state_index = 0;// current_state = states[0];
@@ -310,7 +322,6 @@ namespace Devsense.PHP.Syntax
                 }
             }
 		}
-
 
 		protected void Shift(int state_nr)
 		{

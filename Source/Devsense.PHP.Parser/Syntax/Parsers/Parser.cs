@@ -186,6 +186,8 @@ namespace Devsense.PHP.Syntax
 
         public void Clear()
         {
+            base.Initialize();
+
             _astRoot = null;
             _lazyPrimitiveTypes = null;
             _lexer = null;
