@@ -170,6 +170,11 @@ namespace Devsense.PHP.Syntax
 			top++;
 		}
 
+		public void Clear()
+		{
+			top = 0;
+		}
+
 		public void Pop()
 		{
 			--top;

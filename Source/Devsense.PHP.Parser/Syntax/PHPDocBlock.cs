@@ -222,6 +222,8 @@ namespace Devsense.PHP.Syntax
                 var result = StringUtils.GetStringBuilder();
                 result.AppendLine("/**");
 
+                // TODO: +summary
+
                 foreach (var element in this)
                 {
                     var str = element.ToString();

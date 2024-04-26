@@ -163,6 +163,7 @@ namespace Devsense.PHP.Syntax
 
             _currentScope = new Scope(0);
 
+            this.value_stack.Clear();
             base.Scanner = _lexer;
             bool accept = base.Parse();
 
