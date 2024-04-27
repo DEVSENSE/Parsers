@@ -47,6 +47,7 @@ namespace Devsense.PHP.Utilities
 
             public void Reset()
             {
+                Array.Clear(_children, 0, _childrenCount);
                 _childrenCount = 0;
             }
 
@@ -71,7 +72,8 @@ namespace Devsense.PHP.Utilities
             {
                 if (element != null)
                 {
-                    _childrenCount = 0;
+                    Reset();
+
                     element.VisitMe(this);
                     return _children.AsSpan(0, _childrenCount);
                 }
