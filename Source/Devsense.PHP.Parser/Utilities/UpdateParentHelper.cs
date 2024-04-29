@@ -30,7 +30,7 @@ namespace Devsense.PHP.Utilities
     {
         static readonly ObjectPool<GetChildrenVisitor> s_visitorPool = new ObjectPool<GetChildrenVisitor>(
             () => new GetChildrenVisitor(),
-            (obj) => obj.Reset()
+            (obj) => obj.Free()
         );
 
         /// <summary>
@@ -44,11 +44,13 @@ namespace Devsense.PHP.Utilities
             ILangElement[] _children = EmptyArray<ILangElement>.Instance;
 
             int _childrenCount = 0;
+            int _childrenUsed = 0;
 
-            public void Reset()
+            public void Free()
             {
-                Array.Clear(_children, 0, _childrenCount);
+                Array.Clear(_children, 0, _childrenUsed);
                 _childrenCount = 0;
+                _childrenUsed = 0;
             }
 
             void AddChild(ILangElement element)
@@ -61,6 +63,7 @@ namespace Devsense.PHP.Utilities
                     }
 
                     _children[_childrenCount++] = element;
+                    _childrenUsed = Math.Max(_childrenUsed, _childrenCount); // remember how much elements we've used so we can clear them
                 }
             }
 
@@ -70,16 +73,14 @@ namespace Devsense.PHP.Utilities
             /// </summary>
             public ReadOnlySpan<ILangElement> GetChildren(ILangElement element)
             {
+                _childrenCount = 0;
+
                 if (element != null)
                 {
-                    Reset();
-
                     element.VisitMe(this);
-                    return _children.AsSpan(0, _childrenCount);
                 }
 
-                //
-                return ReadOnlySpan<ILangElement>.Empty;
+                return _children.AsSpan(0, _childrenCount);
             }
 
             //protected override void VisitList(INamedTypeRef[] items)
