@@ -1087,7 +1087,7 @@ namespace Devsense.PHP.Syntax
         }
         virtual public void VisitTranslatedTypeRef(TranslatedTypeRef x)
         {
-            // note - eventually we want to vist original type
+            VisitElement(x.OriginalType);
         }
         virtual public void VisitReservedTypeRef(ReservedTypeRef x)
         {
