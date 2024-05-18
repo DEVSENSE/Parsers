@@ -873,15 +873,24 @@ namespace Devsense.PHP.Syntax
                 qname.IsFullyQualifiedName = true;
                 return new TranslatedQualifiedName(qname, nref.Span, qname, null);
             }
-            else return TranslateFallbackQualifiedName(nref, AliasKind.Constant);
+            else
+            {
+                return TranslateFallbackQualifiedName(nref, AliasKind.Constant);
+            }
         }
 
         #endregion
 
         private TranslatedQualifiedName TranslateFallbackQualifiedName(QualifiedNameRef qname, AliasKind kind)
         {
-            // aliasing
-            if (qname.QualifiedName.IsSimpleName && this.namingContext.Aliases != null &&
+            if (qname.QualifiedName.IsFullyQualifiedName)
+            {
+                return new TranslatedQualifiedName(qname.QualifiedName, qname.Span);
+            }
+
+            // quick aliasing
+            if (qname.QualifiedName.IsSimpleName &&
+                this.namingContext.Aliases != null &&
                 this.namingContext.Aliases.TryGetValue(new Alias(qname.QualifiedName.Name, kind), out var tmp))
             {
                 return new TranslatedQualifiedName(tmp, qname.Span, qname, null);
