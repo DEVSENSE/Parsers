@@ -728,15 +728,21 @@ namespace Devsense.PHP.Syntax
         /// <summary>
         /// Translates <see cref="QualifiedName"/> according to given naming.
         /// </summary>
-        public static bool TryTranslateAlias(QualifiedName qname, NamingContext naming, out QualifiedName translated)
+        public static bool TryTranslateAlias(QualifiedName qname, AliasKind kind, NamingContext naming, out QualifiedName translated)
         {
             if (naming != null)
             {
-                return TryTranslateAlias(qname, AliasKind.Type, naming.Aliases, naming.CurrentNamespace, out translated);
+                return TryTranslateAlias(qname, kind, naming.Aliases, naming.CurrentNamespace, out translated);
             }
             translated = qname;
             return false;
         }
+
+        /// <summary>
+        /// Translates <see cref="QualifiedName"/> according to given naming.
+        /// </summary>
+        public static bool TryTranslateAlias(QualifiedName qname, NamingContext naming, out QualifiedName translated) =>
+            TryTranslateAlias(qname, AliasKind.Type, naming, out translated);
 
         /// <summary>
         /// Translates <see cref="QualifiedName"/> according to given naming.
@@ -764,8 +770,7 @@ namespace Devsense.PHP.Syntax
                 string first = qname.IsSimpleName ? qname.Name.Value : qname.Namespaces[0].Value;
 
                 // return the alias if found:
-                QualifiedName alias;
-                if (aliases != null && aliases.TryGetValue(new Alias(first, kind), out alias))
+                if (aliases != null && aliases.TryGetValue(new Alias(first, kind), out var alias))
                 {
                     if (qname.IsSimpleName)
                     {
