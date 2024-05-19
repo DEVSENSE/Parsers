@@ -131,8 +131,6 @@ namespace Devsense.PHP.Syntax
 
         public abstract void Close();
 
-        public abstract string GetSourceCode(Span span);
-
         #endregion
 
         #region ILineBreaks Members
@@ -268,11 +266,6 @@ namespace Devsense.PHP.Syntax
         internal void SetEmptyAst()
         {
             this.Ast = new GlobalCode(new Span(), EmptyArray<Statement>.Instance, this);
-        }
-
-        public override string GetSourceCode(Span span)
-        {
-            return span.GetText(this.Code);
         }
 
         public override void Close()
