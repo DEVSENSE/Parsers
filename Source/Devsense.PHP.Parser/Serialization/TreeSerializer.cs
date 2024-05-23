@@ -65,7 +65,7 @@ namespace Devsense.PHP.Syntax.Ast.Serialization
             }
         }
 
-        void SerializeOptionalProperty(string name, LangElement x)
+        void SerializeOptionalProperty(string name, ILangElement x)
         {
             if (x != null)
             {
@@ -75,29 +75,23 @@ namespace Devsense.PHP.Syntax.Ast.Serialization
             }
         }
 
-        void SerializeItem(ValueItem item)
+        void SerializeItem(IArrayItem item)
         {
             _serializer.StartSerialize("Item");
-            SerializeOptionalProperty("Index", item.Index);
-            SerializeOptionalProperty("ValueExpr", item.ValueExpr);
-            _serializer.EndSerialize();
-        }
-
-        void SerializeItem(RefItem item)
-        {
-            if (item != null)
+            if (item.IsSpreadItem)
             {
-                _serializer.StartSerialize("Item");
-                SerializeOptionalProperty("Index", item.Index);
-                SerializeOptionalProperty("RefToGet", item.RefToGet);
-                _serializer.EndSerialize();
+                SerializeOptionalProperty("Expression", (Expression)item.Value);
             }
-        }
-
-        void SerializeItem(SpreadItem item)
-        {
-            _serializer.StartSerialize("Item");
-            SerializeOptionalProperty("Expression", item.Expression);
+            else if (item.IsByRef)
+            {
+                SerializeOptionalProperty("Index", item.Index);
+                SerializeOptionalProperty("RefToGet", (LangElement)item.Value);
+            }
+            else
+            {
+                SerializeOptionalProperty("Index", item.Index); // null
+                SerializeOptionalProperty("ValueExpr", (Expression)item.Value);
+            }
             _serializer.EndSerialize();
         }
 
@@ -865,10 +859,7 @@ namespace Devsense.PHP.Syntax.Ast.Serialization
             {
                 if (item != null)
                 {
-                    if (item is ValueItem vi) SerializeItem(vi);
-                    else if (item is RefItem ri) SerializeItem(ri);
-                    else if (item is SpreadItem si) SerializeItem(si);
-                    else throw new ArgumentException();
+                    SerializeItem(item);
                 }
             }
             _serializer.EndSerialize();

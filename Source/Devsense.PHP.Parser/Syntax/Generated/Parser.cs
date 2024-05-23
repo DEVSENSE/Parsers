@@ -419,8 +419,8 @@ public partial struct SemanticValueType
 	public List<ActualParam> ParamList					{ get { return (List<ActualParam>)Object; }			set { Object = value; } }
 	public FormalParam FormalParam						{ get { return (FormalParam)Object; }				set { Object = value; } }
 	public List<FormalParam> FormalParamList			{ get { return (List<FormalParam>)Object; }			set { Object = value; } }
-	public Item Item									{ get { return (Item)Object; }						set { Object = value; } }
-	public List<Item> ItemList							{ get { return (List<Item>)Object; }				set { Object = value; } }
+	public IArrayItem Item								{ get { return (IArrayItem)Object; }				set { Object = value; } }
+	public List<IArrayItem> ItemList					{ get { return (List<IArrayItem>)Object; }			set { Object = value; } }
 	internal List<IfStatement> IfItemList				{ get { return (List<IfStatement>)Object; }			set { Object = value; } }
 	public ForeachVar ForeachVar						{ get { return (ForeachVar)Object; }				set { Object = value; } }
 	public AnonymousClass AnonymousClass				{ get { return (AnonymousClass)Object; }			set { Object = value; } }
@@ -3862,10 +3862,10 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 { yyval.Item = value_stack.array[value_stack.top-1].yyval.Item; }
         return;
       case 557: // non_empty_array_pair_list -> non_empty_array_pair_list ',' possible_array_pair 
-{ yyval.ItemList = AddToList<Item>(value_stack.array[value_stack.top-3].yyval.ItemList, value_stack.array[value_stack.top-1].yyval.Item); }
+{ yyval.ItemList = AddToList<IArrayItem>(value_stack.array[value_stack.top-3].yyval.ItemList, value_stack.array[value_stack.top-1].yyval.Item); }
         return;
       case 558: // non_empty_array_pair_list -> possible_array_pair 
-{ yyval.ItemList = new List<Item>() { value_stack.array[value_stack.top-1].yyval.Item }; }
+{ yyval.ItemList = new List<IArrayItem>() { value_stack.array[value_stack.top-1].yyval.Item }; }
         return;
       case 559: // array_pair -> expr T_DOUBLE_ARROW expr 
 { yyval.Item = _astFactory.ArrayItemValue(yypos, value_stack.array[value_stack.top-3].yyval.Node, value_stack.array[value_stack.top-1].yyval.Node); }

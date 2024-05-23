@@ -72,8 +72,8 @@ using StringPair = System.Collections.Generic.KeyValuePair<string, string>;
 	public List<ActualParam> ParamList					{ get { return (List<ActualParam>)Object; }			set { Object = value; } }
 	public FormalParam FormalParam						{ get { return (FormalParam)Object; }				set { Object = value; } }
 	public List<FormalParam> FormalParamList			{ get { return (List<FormalParam>)Object; }			set { Object = value; } }
-	public Item Item									{ get { return (Item)Object; }						set { Object = value; } }
-	public List<Item> ItemList							{ get { return (List<Item>)Object; }				set { Object = value; } }
+	public IArrayItem Item								{ get { return (IArrayItem)Object; }				set { Object = value; } }
+	public List<IArrayItem> ItemList					{ get { return (List<IArrayItem>)Object; }			set { Object = value; } }
 	internal List<IfStatement> IfItemList				{ get { return (List<IfStatement>)Object; }			set { Object = value; } }
 	public ForeachVar ForeachVar						{ get { return (ForeachVar)Object; }				set { Object = value; } }
 	public AnonymousClass AnonymousClass				{ get { return (AnonymousClass)Object; }			set { Object = value; } }
@@ -1747,9 +1747,9 @@ possible_array_pair:
 
 non_empty_array_pair_list:
 		non_empty_array_pair_list ',' possible_array_pair
-			{ $$ = AddToList<Item>($1, $3); }
+			{ $$ = AddToList<IArrayItem>($1, $3); }
 	|	possible_array_pair
-			{ $$ = new List<Item>() { $1 }; }
+			{ $$ = new List<IArrayItem>() { $1 }; }
 ;
 
 array_pair:

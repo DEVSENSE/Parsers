@@ -701,36 +701,6 @@ namespace Devsense.PHP.Syntax
         }
 
         /// <summary>
-        /// Visit item use index (if not null) and array.
-        /// </summary>
-        /// <param name="x"></param>
-        virtual public void VisitValueItem(ValueItem x)
-        {
-            VisitElement(x.Index);
-            VisitElement(x.ValueExpr);
-        }
-
-        /// <summary>
-        /// Visit item use index (if not null) and array.
-        /// </summary>
-        /// <param name="x"></param>
-        virtual public void VisitRefItem(RefItem x)
-        {
-            VisitElement(x.Index);
-            VisitElement(x.RefToGet);
-        }
-
-        /// <summary>
-        /// Visit item use index (if not null) and array.
-        /// </summary>
-        /// <param name="x"></param>
-        virtual public void VisitSpreadItem(SpreadItem x)
-        {
-            Debug.Assert(x.Index == null);
-            VisitElement(x.Expression);
-        }
-
-        /// <summary>
         /// Visits string literal dereferencing.
         /// </summary>
         virtual public void VisitStringLiteralDereferenceEx(StringLiteralDereferenceEx x)
@@ -805,13 +775,13 @@ namespace Devsense.PHP.Syntax
         virtual public void VisitArrayEx(ArrayEx x)
         {
             var items = x.Items;
-            for (int i = 0; i < items.Length; i++)
+            for (int i = 0; i < items.Count; i++)
             {
                 VisitArrayItem(items[i]);
             }
         }
 
-        virtual public void VisitArrayItem(Item item)
+        virtual public void VisitArrayItem(IArrayItem item)
         {
             if (item != null)   // list() may have 'null' items
             {
@@ -926,7 +896,7 @@ namespace Devsense.PHP.Syntax
         virtual public void VisitListEx(ArrayEx x)
         {
             var items = x.Items;
-            for (int i = 0; i < items.Length; i++)
+            for (int i = 0; i < items.Count; i++)
             {
                 VisitArrayItem(items[i]);
             }

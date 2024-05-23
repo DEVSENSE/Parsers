@@ -34,7 +34,7 @@ namespace Devsense.PHP.Syntax.Ast
         /// <summary>
         /// Enumeration of array items.
         /// </summary>
-        ICollection<IArrayItem> Items { get; }
+        IReadOnlyList<IArrayItem> Items { get; }
     }
 
     /// <summary>
@@ -47,6 +47,8 @@ namespace Devsense.PHP.Syntax.Ast
         /// </summary>
         bool IsByRef { get; }
 
+        bool IsSpreadItem { get; }
+
         /// <summary>
         /// Gets the item index, can be <c>null</c>.
         /// </summary>
@@ -56,6 +58,13 @@ namespace Devsense.PHP.Syntax.Ast
         /// Gets the item value. Cannot be <c>null</c>.
         /// </summary>
         IExpression Value { get; }
+    }
+
+    /// <summary>
+    /// Represents spread array item (<c>...</c> operator).
+    /// </summary>
+    public interface ISpreadArrayItem : IArrayItem
+    {
     }
 
     #endregion
@@ -75,7 +84,10 @@ namespace Devsense.PHP.Syntax.Ast
             ShortSyntax = 16,
         }
 
-        readonly Item[]/*!*/_items;
+        public IReadOnlyList<IArrayItem> Items => _items;
+
+        readonly IArrayItem[]/*!*/_items;
+        
         readonly Flags _flags;
 
         public override Operations Operation => ((_flags & Flags.Array) != 0) ? Operations.Array : Operations.List;
@@ -85,27 +97,17 @@ namespace Devsense.PHP.Syntax.Ast
         public override Expression IsMemberOf => null;
 
         /// <summary>
-        /// Gets array items.
-        /// </summary>
-        public Item[]/*!*/ Items
-        {
-            get { return _items; }
-        }
-
-        /// <summary>
         /// Gets value indicating the array element is in form of short syntax (<c>[</c>, <c>]</c>).
         /// </summary>
         public bool IsShortSyntax => (_flags & Flags.ShortSyntax) != 0;
 
-        ICollection<IArrayItem> IArrayExpression.Items => _items;
-
-        public static ArrayEx CreateArray(Text.Span span, IList<Item>/*!*/items, bool isShortSyntax)
+        public static ArrayEx CreateArray(Text.Span span, IList<IArrayItem>/*!*/items, bool isShortSyntax)
             => new ArrayEx(span, items, Flags.Array | (isShortSyntax ? Flags.ShortSyntax : 0));
 
-        public static ArrayEx CreateList(Text.Span span, IList<Item>/*!*/items, bool isShortSyntax)
+        public static ArrayEx CreateList(Text.Span span, IList<IArrayItem>/*!*/items, bool isShortSyntax)
             => new ArrayEx(span, items, Flags.List | (isShortSyntax ? Flags.ShortSyntax : 0));
 
-        private ArrayEx(Text.Span span, IList<Item> items, Flags flags)
+        private ArrayEx(Text.Span span, IList<IArrayItem> items, Flags flags)
             : base(span)
         {
             Debug.Assert(flags != 0);
@@ -138,97 +140,132 @@ namespace Devsense.PHP.Syntax.Ast
     /// <summary>
     /// Base class for item of an array defined by <c>array</c> constructor.
     /// </summary>
-    public abstract class Item : AstNode, IArrayItem
+    abstract class Item : AstNode, IArrayItem
     {
+        #region ValueItem
+
+        /// <summary>
+        /// Expression for the value of an array item defined by <c>array</c> constructor.
+        /// </summary>
+        sealed class ValueItem : Item
+        {
+            public override Expression Index { get; }
+
+            /// <summary>Value of array item</summary>
+            public Expression ValueExpr { get; }
+
+            public override bool IsByRef => false;
+
+            public override bool IsSpreadItem => false;
+
+            public override IExpression Value => ValueExpr;
+
+            public ValueItem(Expression index, Expression/*!*/ valueExpr)
+            {
+                this.Index = index;
+                this.ValueExpr = valueExpr ?? throw new ArgumentNullException(nameof(valueExpr));
+            }
+        }
+
+        #endregion
+
+        #region SimpleValueItem
+
+        sealed class SimpleValueItem : Item
+        {
+            public override Expression Index => null;
+
+            public Expression ValueExpr => this.GetProperty<Expression>();
+
+            public override IExpression Value => ValueExpr;
+
+            public override bool IsByRef => false;
+
+            public override bool IsSpreadItem => false;
+            
+            public SimpleValueItem(Expression value)
+            {
+                this.SetProperty<Expression>(value ?? throw new ArgumentNullException(nameof(value)));
+            }
+        }
+
+        #endregion
+
+        #region RefItem
+
+        /// <summary>
+        /// Reference to a variable containing the value of an array item defined by <c>array</c> constructor.
+        /// </summary>
+        sealed class RefItem : Item
+        {
+            /// <summary>Object to obtain reference of</summary>
+            public VariableUse/*!*/RefToGet { get; }
+
+            public override bool IsByRef => true;
+
+            public override bool IsSpreadItem => false;
+
+            public override Expression Index { get; }
+
+            public override IExpression Value => RefToGet;
+
+            public RefItem(Expression index, VariableUse refToGet)
+            {
+                this.Index = index;
+                this.RefToGet = refToGet ?? throw new ArgumentNullException(nameof(refToGet));
+            }
+        }
+
+        #endregion
+
+        #region SpreadItem
+
+        /// <summary>
+        /// Expression to be spread into the array.
+        /// <code>[...$expression]</code>
+        /// </summary>
+        sealed class SpreadItem : Item, ISpreadArrayItem
+        {
+            public override bool IsSpreadItem => true;
+
+            public override Expression Index => null;
+
+            /// <summary>
+            /// Expression to be spread into the array.
+            /// </summary>
+            public Expression/*!*/Expression { get; }
+
+            public SpreadItem(Expression expression)
+            {
+                this.Expression = expression;
+            }
+
+            public override bool IsByRef => false;
+
+            public override IExpression Value => Expression;
+        }
+
+        #endregion
+
+        public static Item/*!*/CreateValueItem(Expression index, Expression value) => index != null ? new ValueItem(index, value) : new SimpleValueItem(value);
+
+        public static Item/*!*/CreateByRefItem(Expression index, VariableUse refToGet) => new RefItem(index, refToGet);
+
+        public static Item/*!*/CreateSpreadItem(Expression expression) => new SpreadItem(expression);
+
         /// <summary>
         /// The item key, can be <c>null</c>.
         /// </summary>
-        public Expression Index { get; }
+        public abstract Expression Index { get; }
 
         public abstract bool IsByRef { get; }
+
+        public abstract bool IsSpreadItem { get; }
 
         IExpression IArrayItem.Index => Index;
 
         public abstract IExpression Value { get; }
-
-        protected Item(Expression index)
-        {
-            this.Index = index;
-        }
     }
 
     #endregion
-
-    #region ValueItem
-
-    /// <summary>
-    /// Expression for the value of an array item defined by <c>array</c> constructor.
-    /// </summary>
-    public sealed class ValueItem : Item
-    {
-        /// <summary>Value of array item</summary>
-        public Expression ValueExpr { get; }
-
-        public override bool IsByRef => false;
-
-        public override IExpression Value => ValueExpr;
-
-        public ValueItem(Expression index, Expression/*!*/ valueExpr)
-            : base(index)
-        {
-            this.ValueExpr = valueExpr ?? throw new ArgumentNullException(nameof(valueExpr));
-        }
-    }
-
-    #endregion
-
-    #region RefItem
-
-    /// <summary>
-    /// Reference to a variable containing the value of an array item defined by <c>array</c> constructor.
-    /// </summary>
-    public sealed class RefItem : Item
-    {
-        /// <summary>Object to obtain reference of</summary>
-        public VariableUse/*!*/RefToGet { get; }
-
-        public override bool IsByRef => true;
-
-        public override IExpression Value => RefToGet;
-
-        public RefItem(Expression index, VariableUse refToGet)
-            : base(index)
-        {
-            this.RefToGet = refToGet ?? throw new ArgumentNullException(nameof(refToGet));
-        }
-    }
-
-    #endregion
-
-    #region SpreadItem
-
-    /// <summary>
-    /// Expression to be spread into the array.
-    /// <code>[...$expression]</code>
-    /// </summary>
-    public sealed class SpreadItem : Item
-    {
-        /// <summary>
-        /// Expression to be spread into the array.
-        /// </summary>
-        public Expression/*!*/Expression { get; }
-
-        public SpreadItem(Expression expression)
-            : base(null)
-        {
-            this.Expression = expression;
-        }
-
-        public override bool IsByRef => false;
-
-        public override IExpression Value => Expression;
-    }
-
-    #endregion
-
 }
