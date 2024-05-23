@@ -40,7 +40,7 @@ namespace Devsense.PHP.Syntax.Ast
     /// <summary>
     /// Represents an array or list item.
     /// </summary>
-    public interface IArrayItem
+    public interface IArrayItem : IAstNode
     {
         /// <summary>
         /// Gets value indicating that <see cref="Value"/> is passed by reference (<c>&amp;</c>).
