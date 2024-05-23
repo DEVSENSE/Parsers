@@ -74,7 +74,7 @@ namespace Devsense.PHP.Syntax.Ast
     /// <summary>
     /// Represents <c>array</c> constructor.
     /// </summary>
-    public sealed class ArrayEx : VarLikeConstructUse, IArrayExpression
+    public sealed class ArrayEx : VarLikeConstructUse, IArrayExpression, IArrayItem
     {
         [Flags]
         enum Flags
@@ -131,6 +131,15 @@ namespace Devsense.PHP.Syntax.Ast
                 visitor.VisitListEx(this);
             }
         }
+
+        #region IArrayItem // to be as a nested array item itself, without encapsulating to Item class
+
+        bool IArrayItem.IsByRef => false;
+        bool IArrayItem.IsSpreadItem => false;
+        IExpression IArrayItem.Index => null;
+        IExpression IArrayItem.Value => this;
+
+        #endregion
     }
 
     #endregion
@@ -247,11 +256,15 @@ namespace Devsense.PHP.Syntax.Ast
 
         #endregion
 
-        public static Item/*!*/CreateValueItem(Expression index, Expression value) => index != null ? new ValueItem(index, value) : new SimpleValueItem(value);
+        public static IArrayItem/*!*/CreateValueItem(Expression index, Expression value) =>
+            index != null ? new ValueItem(index, value) :
+            // item without index:
+            value is IArrayItem item ? item : // expression itself implements IArrayItem, use it directly
+            new SimpleValueItem(value);
 
-        public static Item/*!*/CreateByRefItem(Expression index, VariableUse refToGet) => new RefItem(index, refToGet);
+        public static IArrayItem/*!*/CreateByRefItem(Expression index, VariableUse refToGet) => new RefItem(index, refToGet);
 
-        public static Item/*!*/CreateSpreadItem(Expression expression) => new SpreadItem(expression);
+        public static IArrayItem/*!*/CreateSpreadItem(Expression expression) => new SpreadItem(expression);
 
         /// <summary>
         /// The item key, can be <c>null</c>.
