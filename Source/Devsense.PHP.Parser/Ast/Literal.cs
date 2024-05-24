@@ -28,7 +28,7 @@ namespace Devsense.PHP.Syntax.Ast
     /// <summary>
     /// Base class for literals.
     /// </summary>
-    public abstract class Literal : Expression, ILiteral, IArrayItem
+    public abstract class Literal : Expression, ILiteral
     {
         /// <summary>
         /// Gets internal value of literal.
@@ -143,15 +143,6 @@ namespace Devsense.PHP.Syntax.Ast
             //
             throw new ArgumentException();
         }
-
-        #region IArrayItem // to be as a nested array item itself, without encapsulating to Item class
-
-        bool IArrayItem.IsByRef => false;
-        bool IArrayItem.IsSpreadItem => false;
-        IExpression IArrayItem.Index => null;
-        IExpression IArrayItem.Value => this;
-
-        #endregion
     }
 
     #endregion

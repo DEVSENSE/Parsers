@@ -99,10 +99,14 @@ namespace UnitTests
                 }
             }
 
-            public override void VisitArrayItem(IArrayItem item)
+            public override void VisitArrayItem(ArrayItem item)
             {
-                if (item != null)
-                    _itemCount++;
+                if (item.IsDefault)
+                {
+                    return;
+                }
+
+                _itemCount++;
 
                 base.VisitArrayItem(item);
             }
@@ -158,7 +162,7 @@ namespace UnitTests
                 return element;
             }
 
-            IArrayItem CountI(IArrayItem i)
+            ArrayItem CountI(ArrayItem i)
             {
                 _itemCount++;
                 return i;
@@ -184,13 +188,13 @@ namespace UnitTests
             public override LangElement ArrayItem(Span span, bool braces, LangElement expression, LangElement indexOpt)
                 => CountLE(base.ArrayItem(span, braces, expression, indexOpt));
 
-            public override IArrayItem ArrayItemRef(Span span, LangElement indexOpt, LangElement variable)
+            public override ArrayItem ArrayItemRef(Span span, LangElement indexOpt, LangElement variable)
                 => CountI(base.ArrayItemRef(span, indexOpt, variable));
 
-            public override IArrayItem ArrayItemValue(Span span, LangElement indexOpt, LangElement valueExpr)
+            public override ArrayItem ArrayItemValue(Span span, LangElement indexOpt, LangElement valueExpr)
                 => CountI(base.ArrayItemValue(span, indexOpt, valueExpr));
 
-            public override IArrayItem ArrayItemSpread(Span span, LangElement expression)
+            public override ArrayItem ArrayItemSpread(Span span, LangElement expression)
                 => CountI(base.ArrayItemSpread(span, expression));
 
             public override LangElement Assignment(Span span, LangElement target, LangElement value, Operations assignOp)
@@ -360,7 +364,7 @@ namespace UnitTests
             public override LangElement LineComment(Span span, string content)
                  => CountLE(base.LineComment(span, content));
 
-            public override LangElement List(Span span, IEnumerable<IArrayItem> targets, bool isOldNotation)
+            public override LangElement List(Span span, IEnumerable<ArrayItem> targets, bool isOldNotation)
                  => CountLE(base.List(span, targets, isOldNotation));
 
             public override LangElement Literal(Span span, object value, ReadOnlySpan<char> originalValue)
@@ -384,7 +388,7 @@ namespace UnitTests
             public override LangElement New(Span span, TypeRef classNameRef, IEnumerable<ActualParam> argsOpt, Span argsSpan)
                  => CountLE(base.New(span, classNameRef, argsOpt, argsSpan));
 
-            public override LangElement NewArray(Span span, IEnumerable<IArrayItem> itemsOpt, bool isOldNotation)
+            public override LangElement NewArray(Span span, IEnumerable<ArrayItem> itemsOpt, bool isOldNotation)
                  => CountLE(base.NewArray(span, itemsOpt, isOldNotation));
 
             public override TypeRef NullableTypeReference(Span span, LangElement className)

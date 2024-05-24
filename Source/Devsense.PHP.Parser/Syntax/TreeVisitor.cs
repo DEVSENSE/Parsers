@@ -781,9 +781,9 @@ namespace Devsense.PHP.Syntax
             }
         }
 
-        virtual public void VisitArrayItem(IArrayItem item)
+        virtual public void VisitArrayItem(ArrayItem item)
         {
-            if (item != null)   // list() may have 'null' items
+            if (!item.IsDefault)   // list() may have 'null' items
             {
                 // key
                 VisitElement(item.Index);

@@ -72,8 +72,8 @@ using StringPair = System.Collections.Generic.KeyValuePair<string, string>;
 	public List<ActualParam> ParamList					{ get { return (List<ActualParam>)Object; }			set { Object = value; } }
 	public FormalParam FormalParam						{ get { return (FormalParam)Object; }				set { Object = value; } }
 	public List<FormalParam> FormalParamList			{ get { return (List<FormalParam>)Object; }			set { Object = value; } }
-	public IArrayItem Item								{ get { return (IArrayItem)Object; }				set { Object = value; } }
-	public List<IArrayItem> ItemList					{ get { return (List<IArrayItem>)Object; }			set { Object = value; } }
+	public ArrayItem Item								{ get { return (ArrayItem)Object; }					set { Object = value; } }
+	public List<ArrayItem> ItemList						{ get { return (List<ArrayItem>)Object; }			set { Object = value; } }
 	internal List<IfStatement> IfItemList				{ get { return (List<IfStatement>)Object; }			set { Object = value; } }
 	public ForeachVar ForeachVar						{ get { return (ForeachVar)Object; }				set { Object = value; } }
 	public AnonymousClass AnonymousClass				{ get { return (AnonymousClass)Object; }			set { Object = value; } }
@@ -1741,15 +1741,15 @@ array_pair_list:
 ;
 
 possible_array_pair:
-		/* empty */ { $$ = null; }
+		/* empty */ { $$ = default(ArrayItem); }
 	|	array_pair  { $$ = $1; }
 ;
 
 non_empty_array_pair_list:
 		non_empty_array_pair_list ',' possible_array_pair
-			{ $$ = AddToList<IArrayItem>($1, $3); }
+			{ $$ = AddToList<ArrayItem>($1, $3); }
 	|	possible_array_pair
-			{ $$ = new List<IArrayItem>() { $1 }; }
+			{ $$ = new List<ArrayItem>() { $1 }; }
 ;
 
 array_pair:

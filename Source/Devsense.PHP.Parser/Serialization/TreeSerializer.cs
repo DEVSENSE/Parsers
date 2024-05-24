@@ -75,7 +75,7 @@ namespace Devsense.PHP.Syntax.Ast.Serialization
             }
         }
 
-        void SerializeItem(IArrayItem item)
+        void SerializeItem(ArrayItem item)
         {
             _serializer.StartSerialize("Item");
             if (item.IsSpreadItem)
@@ -857,7 +857,7 @@ namespace Devsense.PHP.Syntax.Ast.Serialization
             _serializer.StartSerialize(typeof(ArrayEx).Name, SerializeSpan(x.Span));
             foreach (var item in x.Items)
             {
-                if (item != null)
+                if (!item.IsDefault)
                 {
                     SerializeItem(item);
                 }

@@ -60,18 +60,18 @@ namespace Devsense.PHP.Syntax.Ast
         {
             return new ItemUse(span, (Expression)expression, (Expression)indexOpt, isBraces: braces);
         }
-        public virtual IArrayItem ArrayItemValue(Span span, LangElement indexOpt, LangElement valueExpr)
+        public virtual ArrayItem ArrayItemValue(Span span, LangElement indexOpt, LangElement valueExpr)
         {
-            return Item.CreateValueItem((Expression)indexOpt, (Expression)valueExpr);
+            return Ast.ArrayItem.CreateValueItem((Expression)indexOpt, (Expression)valueExpr);
         }
-        public virtual IArrayItem ArrayItemRef(Span span, LangElement indexOpt, LangElement variable)
+        public virtual ArrayItem ArrayItemRef(Span span, LangElement indexOpt, LangElement variable)
         {
-            return Item.CreateByRefItem((Expression)indexOpt, (VariableUse)variable);
+            return Ast.ArrayItem.CreateByRefItem((Expression)indexOpt, (VariableUse)variable);
         }
 
-        public virtual IArrayItem ArrayItemSpread(Span span, LangElement expression)
+        public virtual ArrayItem ArrayItemSpread(Span span, LangElement expression)
         {
-            return Item.CreateSpreadItem((Expression)expression);
+            return Ast.ArrayItem.CreateSpreadItem((Expression)expression);
         }
 
         public virtual LangElement Assignment(Span span, LangElement target, LangElement value, Operations assignOp)
@@ -408,7 +408,7 @@ namespace Devsense.PHP.Syntax.Ast
             throw new NotImplementedException();
         }
 
-        public virtual LangElement List(Span span, IEnumerable<IArrayItem> targets, bool isOldNotation)
+        public virtual LangElement List(Span span, IEnumerable<ArrayItem> targets, bool isOldNotation)
         {
             var items = targets.AsArray();
             return ArrayEx.CreateList(span, IsAllNull(items) ? null : items, !isOldNotation);
@@ -469,7 +469,7 @@ namespace Devsense.PHP.Syntax.Ast
             return new NewEx(span, classNameRef, argsOpt.AsArray(), argsPosition);
         }
 
-        public virtual LangElement NewArray(Span span, IEnumerable<IArrayItem> itemsOpt, bool isOldNotation)
+        public virtual LangElement NewArray(Span span, IEnumerable<ArrayItem> itemsOpt, bool isOldNotation)
         {
             var items = itemsOpt.AsArray();
             return ArrayEx.CreateArray(span, IsAllNull(items) ? null : items, !isOldNotation);

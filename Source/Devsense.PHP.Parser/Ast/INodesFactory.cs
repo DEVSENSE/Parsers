@@ -937,7 +937,7 @@ namespace Devsense.PHP.Syntax.Ast
         /// <param name="itemsOpt">Optional. Enumeration of array items.</param>
         /// <param name="isOldNotation">Decide if the array is defined using the old notation 'array(...)'.</param>
         /// <returns>Array expression.</returns>
-        TNode NewArray(TSpan span, IEnumerable<IArrayItem> itemsOpt, bool isOldNotation);
+        TNode NewArray(TSpan span, IEnumerable<ArrayItem> itemsOpt, bool isOldNotation);
 
         /// <summary>
         /// Creates array item access expression.
@@ -956,7 +956,7 @@ namespace Devsense.PHP.Syntax.Ast
         /// <param name="indexOpt">Optional. Expression representing an index.</param>
         /// <param name="valueExpr">Expression representing an item.</param>
         /// <returns>Array value item expression.</returns>
-        IArrayItem ArrayItemValue(TSpan span, TNode indexOpt, TNode valueExpr);
+        ArrayItem ArrayItemValue(TSpan span, TNode indexOpt, TNode valueExpr);
 
         /// <summary>
         /// Creates array reference item initialization expression.
@@ -965,7 +965,7 @@ namespace Devsense.PHP.Syntax.Ast
         /// <param name="indexOpt">Optional. Expression representing an index.</param>
         /// <param name="variable">Expression representing a variable.</param>
         /// <returns>Array reference item expression.</returns>
-        IArrayItem ArrayItemRef(TSpan span, TNode indexOpt, TNode variable);
+        ArrayItem ArrayItemRef(TSpan span, TNode indexOpt, TNode variable);
 
         /// <summary>
         /// Creates array reference item initialization expression.
@@ -973,7 +973,7 @@ namespace Devsense.PHP.Syntax.Ast
         /// <param name="span">Entire element span.</param>
         /// <param name="expression">Expression to be spread.</param>
         /// <returns>Array spread item expression.</returns>
-        IArrayItem ArrayItemSpread(TSpan span, TNode expression);
+        ArrayItem ArrayItemSpread(TSpan span, TNode expression);
 
         /// <summary>
         /// Creates <c>new</c> expression.
@@ -1004,7 +1004,7 @@ namespace Devsense.PHP.Syntax.Ast
         /// <param name="targets">Enumeration of reference expressions (variables, fields, array items) or other <c>list</c> expressions.</param>
         /// <param name="isOldNotation">Decide if the list is defined using the old notation 'list(...)'.</param>
         /// <returns>List expression.</returns>
-        TNode List(TSpan span, IEnumerable<IArrayItem> targets, bool isOldNotation);
+        TNode List(TSpan span, IEnumerable<ArrayItem> targets, bool isOldNotation);
 
         /// <summary>
         /// Creates shell expression.
