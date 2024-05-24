@@ -468,6 +468,12 @@ namespace Devsense.PHP.Syntax
         /// <summary>Alias to <see cref="Add"/></summary>
         private static List<T> AddToList<T>(List<T> list, T item) => Add(list, item);
 
+        private static IList<T> AddToList<T>(IList<T> list, T item)
+        {
+            list.Add(item);
+            return list;
+        }
+
         private static Tuple<T1, T2, T3, T4> JoinTuples<T1, T2, T3, T4>(T1 span, Tuple<T2, T3> first, T4 second)
         {
             return new Tuple<T1, T2, T3, T4>(span, first.Item1, first.Item2, second);

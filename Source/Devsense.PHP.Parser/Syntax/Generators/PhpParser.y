@@ -73,7 +73,7 @@ using StringPair = System.Collections.Generic.KeyValuePair<string, string>;
 	public FormalParam FormalParam						{ get { return (FormalParam)Object; }				set { Object = value; } }
 	public List<FormalParam> FormalParamList			{ get { return (List<FormalParam>)Object; }			set { Object = value; } }
 	public ArrayItem Item								{ get { return (ArrayItem)Object; }					set { Object = value; } }
-	public List<ArrayItem> ItemList						{ get { return (List<ArrayItem>)Object; }			set { Object = value; } }
+	public IList<ArrayItem> ItemList					{ get { return (IList<ArrayItem>)Object; }			set { Object = value; } }
 	internal List<IfStatement> IfItemList				{ get { return (List<IfStatement>)Object; }			set { Object = value; } }
 	public ForeachVar ForeachVar						{ get { return (ForeachVar)Object; }				set { Object = value; } }
 	public AnonymousClass AnonymousClass				{ get { return (AnonymousClass)Object; }			set { Object = value; } }
@@ -1749,7 +1749,13 @@ non_empty_array_pair_list:
 		non_empty_array_pair_list ',' possible_array_pair
 			{ $$ = AddToList<ArrayItem>($1, $3); }
 	|	possible_array_pair
-			{ $$ = new List<ArrayItem>() { $1 }; }
+			{
+				var item = $1;
+				$$ = item.IsDefault
+					? EmptyArray<ArrayItem>.Instance
+					: new List<ArrayItem>() { item }
+					;
+			}
 ;
 
 array_pair:

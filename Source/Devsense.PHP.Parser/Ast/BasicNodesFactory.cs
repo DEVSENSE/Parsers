@@ -35,13 +35,29 @@ namespace Devsense.PHP.Syntax.Ast
         /// </summary>
         public SourceUnit SourceUnit { get; }
 
-        private static bool IsAllNull<T>(T[] arr)
+        //static bool IsAllNull<T>(T[] arr) where T : class
+        //{
+        //    if (arr != null)
+        //    {
+        //        for (int i = 0; i < arr.Length; i++)
+        //        {
+        //            if (arr[i] != null)
+        //            {
+        //                return false;
+        //            }
+        //        }
+        //    }
+
+        //    return true;
+        //}
+
+        static bool IsAllNull(ArrayItem[] arr)
         {
             if (arr != null)
             {
                 for (int i = 0; i < arr.Length; i++)
                 {
-                    if (arr[i] != null)
+                    if (arr[i].IsDefault == false)
                     {
                         return false;
                     }

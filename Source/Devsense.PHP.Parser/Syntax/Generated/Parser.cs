@@ -420,7 +420,7 @@ public partial struct SemanticValueType
 	public FormalParam FormalParam						{ get { return (FormalParam)Object; }				set { Object = value; } }
 	public List<FormalParam> FormalParamList			{ get { return (List<FormalParam>)Object; }			set { Object = value; } }
 	public ArrayItem Item								{ get { return (ArrayItem)Object; }					set { Object = value; } }
-	public List<ArrayItem> ItemList						{ get { return (List<ArrayItem>)Object; }			set { Object = value; } }
+	public IList<ArrayItem> ItemList					{ get { return (IList<ArrayItem>)Object; }			set { Object = value; } }
 	internal List<IfStatement> IfItemList				{ get { return (List<IfStatement>)Object; }			set { Object = value; } }
 	public ForeachVar ForeachVar						{ get { return (ForeachVar)Object; }				set { Object = value; } }
 	public AnonymousClass AnonymousClass				{ get { return (AnonymousClass)Object; }			set { Object = value; } }
@@ -3865,7 +3865,13 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 { yyval.ItemList = AddToList<ArrayItem>(value_stack.array[value_stack.top-3].yyval.ItemList, value_stack.array[value_stack.top-1].yyval.Item); }
         return;
       case 558: // non_empty_array_pair_list -> possible_array_pair 
-{ yyval.ItemList = new List<ArrayItem>() { value_stack.array[value_stack.top-1].yyval.Item }; }
+{
+				var item = value_stack.array[value_stack.top-1].yyval.Item;
+				yyval.ItemList = item.IsDefault
+					? EmptyArray<ArrayItem>.Instance
+					: new List<ArrayItem>() { item }
+					;
+			}
         return;
       case 559: // array_pair -> expr T_DOUBLE_ARROW expr 
 { yyval.Item = _astFactory.ArrayItemValue(yypos, value_stack.array[value_stack.top-3].yyval.Node, value_stack.array[value_stack.top-1].yyval.Node); }
