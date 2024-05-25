@@ -913,25 +913,52 @@ namespace Devsense.PHP.Syntax
         public override string ToString()
         {
             var ns = this.namespaces;
+            var name = this.name.Value ?? string.Empty;
+
             if (ns == null || ns.Length == 0)
             {
-                return this.Name.Value ?? string.Empty;
+                return name;
             }
             else if (ns.Length == 1)
             {
                 // N0\Name
-                return string.Concat(ns[0].Value, SeparatorString, this.Name.Value);
+                return string.Concat(ns[0].Value, SeparatorString, name);
             }
             else
             {
+#if NET5_0_OR_GREATER
+
+                int length = name.Length;
+                for (int i = 0; i < ns.Length; i++)
+                {
+                    length += ns[i].Value.Length + 1;
+                }
+
+                return string.Create(length, this, static (span, self) =>
+                {
+                    var ns = self.namespaces;
+                    for (int i = 0; i < ns.Length; i++)
+                    {
+                        var src = ns[i].Value.AsSpan();
+
+                        src.CopyTo(span);
+                        span = span.Slice(src.Length);
+                        span[0] = Separator;
+                        span = span.Slice(1);
+                    }
+
+                    self.name.Value.AsSpan().CopyTo(span);
+                });
+#else
                 var result = StringUtils.GetStringBuilder();
                 for (int i = 0; i < ns.Length; i++)
                 {
                     result.Append(ns[i].Value);
                     result.Append(Separator);
                 }
-                result.Append(this.Name.Value);
+                result.Append(name);
                 return StringUtils.ReturnStringBuilder(result);
+#endif
             }
         }
 
