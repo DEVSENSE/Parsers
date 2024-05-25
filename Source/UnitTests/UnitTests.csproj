@@ -57,6 +57,7 @@
   </Choose>
   <ItemGroup>
     <Compile Include="JsonSerializerTests.cs" />
+    <Compile Include="NamesTest.cs" />
     <Compile Include="PHPDocTests.cs" />
     <Compile Include="ParserTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
