@@ -560,6 +560,8 @@ namespace Devsense.PHP.Syntax
 
         public const char Separator = '\\';
 
+        internal const string SeparatorString = "\\";
+
         #region Properties
 
         /// <summary>
@@ -915,12 +917,17 @@ namespace Devsense.PHP.Syntax
             {
                 return this.Name.Value ?? string.Empty;
             }
+            else if (ns.Length == 1)
+            {
+                // N0\Name
+                return string.Concat(ns[0].Value, SeparatorString, this.Name.Value);
+            }
             else
             {
-                var result = StringUtils.GetStringBuilder(ns.Length * 8);
+                var result = StringUtils.GetStringBuilder();
                 for (int i = 0; i < ns.Length; i++)
                 {
-                    result.Append(ns[i]);
+                    result.Append(ns[i].Value);
                     result.Append(Separator);
                 }
                 result.Append(this.Name.Value);
