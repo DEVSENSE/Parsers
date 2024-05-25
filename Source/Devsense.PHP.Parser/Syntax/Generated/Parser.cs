@@ -3868,7 +3868,7 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 {
 				var item = value_stack.array[value_stack.top-1].yyval.Item;
 				yyval.ItemList = item.IsDefault
-					? EmptyArray<ArrayItem>.Instance
+					? new List<ArrayItem>()
 					: new List<ArrayItem>() { item }
 					;
 			}

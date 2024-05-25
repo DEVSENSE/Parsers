@@ -1752,7 +1752,7 @@ non_empty_array_pair_list:
 			{
 				var item = $1;
 				$$ = item.IsDefault
-					? EmptyArray<ArrayItem>.Instance
+					? new List<ArrayItem>()
 					: new List<ArrayItem>() { item }
 					;
 			}
