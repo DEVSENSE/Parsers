@@ -3865,13 +3865,7 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 { yyval.ItemList = AddToList<ArrayItem>(value_stack.array[value_stack.top-3].yyval.ItemList, value_stack.array[value_stack.top-1].yyval.Item); }
         return;
       case 558: // non_empty_array_pair_list -> possible_array_pair 
-{
-				var item = value_stack.array[value_stack.top-1].yyval.Item;
-				yyval.ItemList = item.IsDefault
-					? new List<ArrayItem>()
-					: new List<ArrayItem>() { item }
-					;
-			}
+{ yyval.ItemList = new List<ArrayItem>() { value_stack.array[value_stack.top-1].yyval.Item }; }
         return;
       case 559: // array_pair -> expr T_DOUBLE_ARROW expr 
 { yyval.Item = _astFactory.ArrayItemValue(yypos, value_stack.array[value_stack.top-3].yyval.Node, value_stack.array[value_stack.top-1].yyval.Node); }

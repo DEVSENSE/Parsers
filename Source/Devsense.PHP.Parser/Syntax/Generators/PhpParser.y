@@ -1749,13 +1749,7 @@ non_empty_array_pair_list:
 		non_empty_array_pair_list ',' possible_array_pair
 			{ $$ = AddToList<ArrayItem>($1, $3); }
 	|	possible_array_pair
-			{
-				var item = $1;
-				$$ = item.IsDefault
-					? new List<ArrayItem>()
-					: new List<ArrayItem>() { item }
-					;
-			}
+			{ $$ = new List<ArrayItem>() { $1 }; }
 ;
 
 array_pair:

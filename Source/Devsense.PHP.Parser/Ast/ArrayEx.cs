@@ -72,18 +72,18 @@ namespace Devsense.PHP.Syntax.Ast
         /// </summary>
         public bool IsShortSyntax => (_flags & Flags.ShortSyntax) != 0;
 
-        public static ArrayEx CreateArray(Text.Span span, IList<ArrayItem>/*!*/items, bool isShortSyntax)
+        public static ArrayEx CreateArray(Text.Span span, ArrayItem[]/*!*/items, bool isShortSyntax)
             => new ArrayEx(span, items, Flags.Array | (isShortSyntax ? Flags.ShortSyntax : 0));
 
-        public static ArrayEx CreateList(Text.Span span, IList<ArrayItem>/*!*/items, bool isShortSyntax)
+        public static ArrayEx CreateList(Text.Span span, ArrayItem[]/*!*/items, bool isShortSyntax)
             => new ArrayEx(span, items, Flags.List | (isShortSyntax ? Flags.ShortSyntax : 0));
 
-        private ArrayEx(Text.Span span, IList<ArrayItem> items, Flags flags)
+        private ArrayEx(Text.Span span, ArrayItem[] items, Flags flags)
             : base(span)
         {
             Debug.Assert(flags != 0);
 
-            _items = items.AsArray();
+            _items = items ?? EmptyArray<ArrayItem>.Instance;
             _flags = flags;
         }
 
