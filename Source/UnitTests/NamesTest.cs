@@ -22,6 +22,7 @@ namespace UnitTests
             {
                 "",
                 "a",
+                "a\\b",
                 "a\\b\\c",
             };
 

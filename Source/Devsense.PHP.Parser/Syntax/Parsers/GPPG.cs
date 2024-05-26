@@ -155,6 +155,11 @@ namespace Devsense.PHP.Syntax
 		public Item[] array = new Item[3];
 		public int top = 0;
 
+		/// <summary>
+		/// Dirty items to be zero'ed in <see cref="Clear"/>.
+		/// </summary>
+		int ndirty = 0;
+
 		public void Push(ValueType value, PositionType pos, bool isValidPosition)
 		{
 			if (top >= array.Length)
@@ -168,12 +173,18 @@ namespace Devsense.PHP.Syntax
 			array[top].yypos = pos;
 			array[top].yypos_valid = isValidPosition;
 			top++;
-		}
+
+			//
+			ndirty = Math.Max(ndirty, top);
+        }
 
 		public void Clear()
 		{
 			top = 0;
-		}
+
+			Array.Clear(array, 0, ndirty);
+			ndirty = 0;
+        }
 
 		public void Pop()
 		{
