@@ -196,6 +196,8 @@ namespace Devsense.PHP.Syntax
             _contextType = AliasKind.Type;
             _namingContext = null;
             _classContexts = null;
+            _errors = null;
+            _errorRecovery = null;
         }
 
         void SetNamingContext(List<string> ns)

@@ -264,6 +264,7 @@ namespace Devsense.PHP.Syntax
 
         protected void Initialize()
         {
+			scanner = null;
 			yyval = default(ValueType);
 			yypos = default(PositionType);
 			yypos_valid = false;
