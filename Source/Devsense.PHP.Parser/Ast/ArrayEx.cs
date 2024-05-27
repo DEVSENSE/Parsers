@@ -147,6 +147,21 @@ namespace Devsense.PHP.Syntax.Ast
         /// </summary>
         public bool IsDefault => ReferenceEquals(_value, null) && ReferenceEquals(_index, null);
 
+        internal void Compress(out object o1, out object o2, out byte flags)
+        {
+            o1 = _index;
+            o2 = _value;
+            flags = (byte)_flags;
+        }
+
+        internal static ArrayItem CreateFromCompressed(object o1, object o2, byte flags)
+        {
+            return (o1 == null && o2 == null && flags == 0)
+                ? default(ArrayItem) // null item
+                : new ArrayItem((IExpression)o1, (IExpression)o2, (ArrayItemFlags)flags)
+                ;
+        }
+
         ArrayItem(IExpression index, IExpression value, ArrayItemFlags flags)
         {
             _index = index;

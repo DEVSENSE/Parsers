@@ -13,6 +13,7 @@
 // See the Apache Version 2.0 License for specific language governing
 // permissions and limitations under the License.
 
+using Devsense.PHP.Text;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -80,7 +81,7 @@ namespace Devsense.PHP.Syntax.Ast
         /// <summary>
         /// The parameter span.
         /// </summary>
-        public Text.Span Span
+        public Span Span
         {
             get
             {
@@ -88,15 +89,15 @@ namespace Devsense.PHP.Syntax.Ast
                 {
                     if (Expression != null && Expression.Span.IsValid)
                     {
-                        return Text.Span.FromBounds(_spanStart, Expression.Span.End);
+                        return Span.FromBounds(_spanStart, Expression.Span.End);
                     }
 
                     if (IsCallableConvert)
                     {
-                        return new Text.Span(_spanStart, 3); // "..."
+                        return new Span(_spanStart, 3); // "..."
                     }
                 }
-                return Text.Span.Invalid;
+                return Span.Invalid;
             }
         }
         readonly int _spanStart;
@@ -126,11 +127,25 @@ namespace Devsense.PHP.Syntax.Ast
         /// </summary>
         public bool IsNamedArgument => Name.HasValue;
 
-        public ActualParam(Text.Span p, Expression param)
+        internal void Compress(out object obj1, out int start, out byte flags)
+        {
+            obj1 = _obj;
+            start = _spanStart;
+            flags = (byte)_flags;
+        }
+
+        internal ActualParam(object obj, int start, byte flags)
+        {
+            _obj = obj;
+            _spanStart = start;
+            _flags = (Flags)flags;
+        }
+
+        public ActualParam(Span p, Expression param)
             : this(p, param, Flags.Default, default)
         { }
 
-        public ActualParam(Text.Span p, Expression param, Flags flags, VariableNameRef? nameOpt = default)
+        public ActualParam(Span p, Expression param, Flags flags, VariableNameRef? nameOpt = default)
         {
             _flags = flags;
             _spanStart = p.Start;
@@ -146,37 +161,6 @@ namespace Devsense.PHP.Syntax.Ast
         public void VisitMe(TreeVisitor visitor)
         {
             visitor.VisitActualParam(this);
-        }
-    }
-
-    #endregion
-
-    #region NamedActualParam
-
-    [Obsolete("This is not used and will be removed.")]
-    public sealed class NamedActualParam : LangElement
-    {
-        public Expression/*!*/ Expression { get { return expression; } }
-        internal Expression/*!*/ expression;
-
-        public VariableName Name { get { return name; } }
-        private VariableName name;
-
-        public NamedActualParam(Text.Span span, string name, Expression/*!*/ expression)
-            : base(span)
-        {
-            this.name = new VariableName(name);
-            this.expression = expression;
-        }
-
-        /// <summary>
-        /// Call the right Visit* method on the given Visitor object.
-        /// </summary>
-        /// <param name="visitor">Visitor to be called.</param>
-        public override void VisitMe(TreeVisitor visitor)
-        {
-            throw new NotSupportedException();
-            //visitor.VisitNamedActualParam(this);
         }
     }
 

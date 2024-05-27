@@ -23,11 +23,6 @@ using Devsense.PHP.Syntax.Ast;
 using Devsense.PHP.Text;
 using Devsense.PHP.Errors;
 
-using CompleteAlias = System.Tuple<Devsense.PHP.Syntax.QualifiedNameRef, Devsense.PHP.Syntax.NameRef>;
-using ContextAlias = System.Tuple<Devsense.PHP.Text.Span, Devsense.PHP.Syntax.QualifiedNameRef, Devsense.PHP.Syntax.NameRef, Devsense.PHP.Syntax.AliasKind>;
-using AnonymousClass = System.Tuple<Devsense.PHP.Syntax.Ast.TypeRef, System.Collections.Generic.List<Devsense.PHP.Syntax.Ast.ActualParam>, Devsense.PHP.Text.Span>;
-using StringPair = System.Collections.Generic.KeyValuePair<string, string>;
-
 
 namespace Devsense.PHP.Syntax
 {
@@ -380,53 +375,10 @@ T_ERROR=257,
 EOF=0
 };
 
-[StructLayout(LayoutKind.Explicit)]
+
 public partial struct SemanticValueType
 {
-	public bool Bool		{ get => Long != 0;			set => Long = value ? 1 : 0; }
-	public int Integer		{ get => (int)Long;			set => Long = value; }
-	public AliasKind Kind	{ get => (AliasKind)Long;	set => Long = (long)value; }
-    /// <summary>Token that encapsulates the string literal.</summary>
-    public Tokens QuoteToken { get => (Tokens)Long;		set => Long = (long)value; }
-    /// <summary>The original token.</summary>
-    public Tokens Token		{ get => (Tokens)Long;		set => Long = (long)value; }
-
-	// Integer and Offset are both used when generating code for string 
-	// with 'inline' variables. Other fields are not combined.
-	
-	[FieldOffset(0)]
-	public double Double;
-	[FieldOffset(0)]
-	public long Long;
-
-	[FieldOffset(8)]
-	public object Object;
-
-	public QualifiedNameRef QualifiedNameReference		{ get { return (QualifiedNameRef)Object; }			set { Object = value; } }
-	public TypeRef TypeReference						{ get { return (TypeRef)Object; }					set { Object = value; } }
-	public List<TypeRef> TypeRefList					{ get { return (List<TypeRef>)Object; }				set { Object = value; } }
-	public LangElement Node								{ get { return (LangElement)Object; }				set { Object = value; } }
-	public List<LangElement> NodeList					{ get { return (List<LangElement>)Object; }			set { Object = value; } }
-	internal SwitchObject SwitchObject					{ get { return (SwitchObject)Object; }				set { Object = value; } }
-	public string String								{ get { return (string)Object; }					set { Object = value; } }
-	public StringPair Strings							{ get { return (StringPair)Object; }				set { Object = value; } }
-	public List<string> StringList						{ get { return (List<string>)Object; }				set { Object = value; } }
-	public CompleteAlias Alias							{ get { return (CompleteAlias)Object; }				set { Object = value; } }
-	public List<CompleteAlias> AliasList				{ get { return (List<CompleteAlias>)Object; }		set { Object = value; } }
-	public ContextAlias ContextAlias					{ get { return (ContextAlias)Object; }				set { Object = value; } }
-	public List<ContextAlias> ContextAliasList			{ get { return (List<ContextAlias>)Object; }		set { Object = value; } }
-	public ActualParam Param							{ get { return (ActualParam)Object; }				set { Object = value; } }
-	public List<ActualParam> ParamList					{ get { return (List<ActualParam>)Object; }			set { Object = value; } }
-	public FormalParam FormalParam						{ get { return (FormalParam)Object; }				set { Object = value; } }
-	public List<FormalParam> FormalParamList			{ get { return (List<FormalParam>)Object; }			set { Object = value; } }
-	public ArrayItem Item								{ get { return (ArrayItem)Object; }					set { Object = value; } }
-	public IList<ArrayItem> ItemList					{ get { return (IList<ArrayItem>)Object; }			set { Object = value; } }
-	internal List<IfStatement> IfItemList				{ get { return (List<IfStatement>)Object; }			set { Object = value; } }
-	public ForeachVar ForeachVar						{ get { return (ForeachVar)Object; }				set { Object = value; } }
-	public AnonymousClass AnonymousClass				{ get { return (AnonymousClass)Object; }			set { Object = value; } }
-	public UseBase Use									{ get { return (UseBase)Object; }					set { Object = value; } }
-	public List<UseBase> UseList						{ get { return (List<UseBase>)Object; }				set { Object = value; } }
-	public Lexer.HereDocTokenValue HereDocValue			{ get { return (Lexer.HereDocTokenValue)Object; }	set { Object = value; } }
+	// defined in partial
 }
 
 public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
@@ -2439,8 +2391,13 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
       case 138: // use_declaration -> T_NS_SEPARATOR unprefixed_use_declaration 
 { 
 				var src = value_stack.array[value_stack.top-1].yyval.Alias;
-				yyval.Alias = new CompleteAlias(new QualifiedNameRef(CombineSpans(value_stack.array[value_stack.top-2].yypos, src.Item1.Span), 
-					new QualifiedName(src.Item1.QualifiedName.Name, src.Item1.QualifiedName.Namespaces, true)), src.Item2); 
+				yyval.Alias = new CompleteAlias(
+					new QualifiedNameRef(
+						CombineSpans(value_stack.array[value_stack.top-2].yypos, src.QualifiedName.Span),
+						src.QualifiedName.QualifiedName.WithFullyQualified(true)
+					),
+					src.Name
+				);
 			}
         return;
       case 139: // const_list -> const_list ',' const_decl 
@@ -3256,7 +3213,7 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 				CombineSpans(value_stack.array[value_stack.top-4].yypos, value_stack.array[value_stack.top-2].yypos)
 			);
 			SetDoc(((AnonymousTypeRef)typeRef).TypeDeclaration);
-			yyval.AnonymousClass = new AnonymousClass(typeRef, value_stack.array[value_stack.top-10].yyval.ParamList, value_stack.array[value_stack.top-10].yypos); 
+			yyval.AnonymousClass = new AnonymousClass(typeRef, value_stack.array[value_stack.top-10].yyval.ParamList, value_stack.array[value_stack.top-10].yypos);
 			PopClassContext();
 		}
         return;
@@ -3264,10 +3221,10 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 { yyval.Node = _astFactory.New(yypos, value_stack.array[value_stack.top-2].yyval.TypeReference, value_stack.array[value_stack.top-1].yyval.ParamList, value_stack.array[value_stack.top-1].yypos); }
         return;
       case 370: // new_expr -> T_NEW anonymous_class 
-{ yyval.Node = _astFactory.New(yypos, ((AnonymousClass)value_stack.array[value_stack.top-1].yyval.AnonymousClass).Item1, ((AnonymousClass)value_stack.array[value_stack.top-1].yyval.AnonymousClass).Item2, ((AnonymousClass)value_stack.array[value_stack.top-1].yyval.AnonymousClass).Item3); }
+{ yyval.Node = _astFactory.New(yypos, value_stack.array[value_stack.top-1].yyval.AnonymousClass.TypeRef, value_stack.array[value_stack.top-1].yyval.AnonymousClass.ActualParams, value_stack.array[value_stack.top-1].yyval.AnonymousClass.Span); }
         return;
       case 371: // new_expr -> T_NEW attributes anonymous_class 
-{ yyval.Node = _astFactory.New(yypos, WithAttributes(((AnonymousClass)value_stack.array[value_stack.top-1].yyval.AnonymousClass).Item1, value_stack.array[value_stack.top-2].yyval.NodeList), ((AnonymousClass)value_stack.array[value_stack.top-1].yyval.AnonymousClass).Item2, ((AnonymousClass)value_stack.array[value_stack.top-1].yyval.AnonymousClass).Item3); }
+{ yyval.Node = _astFactory.New(yypos, WithAttributes(value_stack.array[value_stack.top-1].yyval.AnonymousClass.TypeRef, value_stack.array[value_stack.top-2].yyval.NodeList), value_stack.array[value_stack.top-1].yyval.AnonymousClass.ActualParams, value_stack.array[value_stack.top-1].yyval.AnonymousClass.Span); }
         return;
       case 372: // expr_without_variable -> T_LIST '(' array_pair_list ')' '=' expr 
 { yyval.Node = _astFactory.Assignment(yypos, _astFactory.List(Span.Combine(value_stack.array[value_stack.top-6].yypos, value_stack.array[value_stack.top-3].yypos), value_stack.array[value_stack.top-4].yyval.ItemList, true), value_stack.array[value_stack.top-1].yyval.Node, Operations.AssignValue); }
@@ -3634,7 +3591,7 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 { yyval.Node = _astFactory.Literal(yypos, string.Empty, "``".AsSpan()); }
         return;
       case 484: // backticks_expr -> '`' T_ENCAPSED_AND_WHITESPACE '`' 
-{ yyval.Node = _astFactory.Literal(yypos, value_stack.array[value_stack.top-2].yyval.Strings.Key, string.Format("`{0}`", value_stack.array[value_stack.top-2].yyval.Strings.Value).AsSpan()); }
+{ yyval.Node = _astFactory.Literal(yypos, value_stack.array[value_stack.top-2].yyval.Strings.Text, string.Format("`{0}`", value_stack.array[value_stack.top-2].yyval.Strings.SourceCode).AsSpan()); }
         return;
       case 485: // backticks_expr -> '`' encaps_list '`' 
 { yyval.Node = _astFactory.StringEncapsedExpression(yypos, _astFactory.Concat(value_stack.array[value_stack.top-2].yypos, value_stack.array[value_stack.top-2].yyval.NodeList), Tokens.T_BACKQUOTE); }
@@ -3691,7 +3648,7 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 { yyval.Node = _astFactory.HeredocExpression(yypos, _astFactory.Literal(new Span(value_stack.array[value_stack.top-2].yypos.End, 0), "", string.Empty.AsSpan()), value_stack.array[value_stack.top-2].yyval.QuoteToken, value_stack.array[value_stack.top-1].yyval.HereDocValue); }
         return;
       case 503: // scalar -> T_START_HEREDOC T_ENCAPSED_AND_WHITESPACE T_END_HEREDOC 
-{ yyval.Node = _astFactory.HeredocExpression(yypos, RemoveHereDocIndentation(_astFactory.Literal(value_stack.array[value_stack.top-2].yypos, value_stack.array[value_stack.top-2].yyval.Strings.Key, value_stack.array[value_stack.top-2].yyval.Strings.Value.AsSpan()), value_stack.array[value_stack.top-1].yyval.HereDocValue, true), value_stack.array[value_stack.top-3].yyval.QuoteToken, value_stack.array[value_stack.top-1].yyval.HereDocValue); }
+{ yyval.Node = _astFactory.HeredocExpression(yypos, RemoveHereDocIndentation(_astFactory.Literal(value_stack.array[value_stack.top-2].yypos, value_stack.array[value_stack.top-2].yyval.Strings.Text, value_stack.array[value_stack.top-2].yyval.Strings.SourceCode.AsSpan()), value_stack.array[value_stack.top-1].yyval.HereDocValue, true), value_stack.array[value_stack.top-3].yyval.QuoteToken, value_stack.array[value_stack.top-1].yyval.HereDocValue); }
         return;
       case 504: // scalar -> T_START_HEREDOC encaps_list T_END_HEREDOC 
 { yyval.Node = _astFactory.HeredocExpression(yypos, RemoveHereDocIndentation(_astFactory.Concat(value_stack.array[value_stack.top-2].yypos, value_stack.array[value_stack.top-2].yyval.NodeList), value_stack.array[value_stack.top-1].yyval.HereDocValue, true), value_stack.array[value_stack.top-3].yyval.QuoteToken, value_stack.array[value_stack.top-1].yyval.HereDocValue); }
@@ -3892,13 +3849,13 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 { yyval.NodeList = AddToList<LangElement>(value_stack.array[value_stack.top-2].yyval.NodeList, value_stack.array[value_stack.top-1].yyval.Node); }
         return;
       case 567: // encaps_list -> encaps_list T_ENCAPSED_AND_WHITESPACE 
-{ yyval.NodeList = AddToList<LangElement>(value_stack.array[value_stack.top-2].yyval.NodeList, _astFactory.Literal(value_stack.array[value_stack.top-1].yypos, value_stack.array[value_stack.top-1].yyval.Strings.Key, _lexer.TokenTextSpan)); }
+{ yyval.NodeList = AddToList<LangElement>(value_stack.array[value_stack.top-2].yyval.NodeList, _astFactory.Literal(value_stack.array[value_stack.top-1].yypos, value_stack.array[value_stack.top-1].yyval.Strings.Text, _lexer.TokenTextSpan)); }
         return;
       case 568: // encaps_list -> encaps_var 
 { yyval.NodeList = new List<LangElement>() { value_stack.array[value_stack.top-1].yyval.Node }; }
         return;
       case 569: // encaps_list -> T_ENCAPSED_AND_WHITESPACE encaps_var 
-{ yyval.NodeList = new List<LangElement>() { _astFactory.Literal(value_stack.array[value_stack.top-2].yypos, value_stack.array[value_stack.top-2].yyval.Strings.Key, value_stack.array[value_stack.top-2].yyval.Strings.Value.AsSpan()), value_stack.array[value_stack.top-1].yyval.Node }; }
+{ yyval.NodeList = new List<LangElement>() { _astFactory.Literal(value_stack.array[value_stack.top-2].yypos, value_stack.array[value_stack.top-2].yyval.Strings.Text, value_stack.array[value_stack.top-2].yyval.Strings.SourceCode.AsSpan()), value_stack.array[value_stack.top-1].yyval.Node }; }
         return;
       case 570: // encaps_var -> T_VARIABLE 
 { yyval.Node = _astFactory.Variable(yypos, value_stack.array[value_stack.top-1].yyval.String, NullLangElement, true); }

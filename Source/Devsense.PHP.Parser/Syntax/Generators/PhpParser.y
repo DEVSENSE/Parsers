@@ -19,11 +19,6 @@ using Devsense.PHP.Syntax.Ast;
 using Devsense.PHP.Text;
 using Devsense.PHP.Errors;
 
-using CompleteAlias = System.Tuple<Devsense.PHP.Syntax.QualifiedNameRef, Devsense.PHP.Syntax.NameRef>;
-using ContextAlias = System.Tuple<Devsense.PHP.Text.Span, Devsense.PHP.Syntax.QualifiedNameRef, Devsense.PHP.Syntax.NameRef, Devsense.PHP.Syntax.AliasKind>;
-using AnonymousClass = System.Tuple<Devsense.PHP.Syntax.Ast.TypeRef, System.Collections.Generic.List<Devsense.PHP.Syntax.Ast.ActualParam>, Devsense.PHP.Text.Span>;
-using StringPair = System.Collections.Generic.KeyValuePair<string, string>;
-
 %%
 
 %namespace Devsense.PHP.Syntax
@@ -32,54 +27,9 @@ using StringPair = System.Collections.Generic.KeyValuePair<string, string>;
 %tokentype Tokens
 %visibility public
 
-%valuetypeattributes StructLayout(LayoutKind.Explicit)
-
 %union
 {
-	public bool Bool		{ get => Long != 0;			set => Long = value ? 1 : 0; }
-	public int Integer		{ get => (int)Long;			set => Long = value; }
-	public AliasKind Kind	{ get => (AliasKind)Long;	set => Long = (long)value; }
-    /// <summary>Token that encapsulates the string literal.</summary>
-    public Tokens QuoteToken { get => (Tokens)Long;		set => Long = (long)value; }
-    /// <summary>The original token.</summary>
-    public Tokens Token		{ get => (Tokens)Long;		set => Long = (long)value; }
-
-	// Integer and Offset are both used when generating code for string 
-	// with 'inline' variables. Other fields are not combined.
-	
-	[FieldOffset(0)]
-	public double Double;
-	[FieldOffset(0)]
-	public long Long;
-
-	[FieldOffset(8)]
-	public object Object;
-
-	public QualifiedNameRef QualifiedNameReference		{ get { return (QualifiedNameRef)Object; }			set { Object = value; } }
-	public TypeRef TypeReference						{ get { return (TypeRef)Object; }					set { Object = value; } }
-	public List<TypeRef> TypeRefList					{ get { return (List<TypeRef>)Object; }				set { Object = value; } }
-	public LangElement Node								{ get { return (LangElement)Object; }				set { Object = value; } }
-	public List<LangElement> NodeList					{ get { return (List<LangElement>)Object; }			set { Object = value; } }
-	internal SwitchObject SwitchObject					{ get { return (SwitchObject)Object; }				set { Object = value; } }
-	public string String								{ get { return (string)Object; }					set { Object = value; } }
-	public StringPair Strings							{ get { return (StringPair)Object; }				set { Object = value; } }
-	public List<string> StringList						{ get { return (List<string>)Object; }				set { Object = value; } }
-	public CompleteAlias Alias							{ get { return (CompleteAlias)Object; }				set { Object = value; } }
-	public List<CompleteAlias> AliasList				{ get { return (List<CompleteAlias>)Object; }		set { Object = value; } }
-	public ContextAlias ContextAlias					{ get { return (ContextAlias)Object; }				set { Object = value; } }
-	public List<ContextAlias> ContextAliasList			{ get { return (List<ContextAlias>)Object; }		set { Object = value; } }
-	public ActualParam Param							{ get { return (ActualParam)Object; }				set { Object = value; } }
-	public List<ActualParam> ParamList					{ get { return (List<ActualParam>)Object; }			set { Object = value; } }
-	public FormalParam FormalParam						{ get { return (FormalParam)Object; }				set { Object = value; } }
-	public List<FormalParam> FormalParamList			{ get { return (List<FormalParam>)Object; }			set { Object = value; } }
-	public ArrayItem Item								{ get { return (ArrayItem)Object; }					set { Object = value; } }
-	public IList<ArrayItem> ItemList					{ get { return (IList<ArrayItem>)Object; }			set { Object = value; } }
-	internal List<IfStatement> IfItemList				{ get { return (List<IfStatement>)Object; }			set { Object = value; } }
-	public ForeachVar ForeachVar						{ get { return (ForeachVar)Object; }				set { Object = value; } }
-	public AnonymousClass AnonymousClass				{ get { return (AnonymousClass)Object; }			set { Object = value; } }
-	public UseBase Use									{ get { return (UseBase)Object; }					set { Object = value; } }
-	public List<UseBase> UseList						{ get { return (List<UseBase>)Object; }				set { Object = value; } }
-	public Lexer.HereDocTokenValue HereDocValue			{ get { return (Lexer.HereDocTokenValue)Object; }	set { Object = value; } }
+	// defined in partial
 }
 
 %left T_THROW
@@ -623,8 +573,13 @@ use_declaration:
 	|	T_NS_SEPARATOR unprefixed_use_declaration 
 			{ 
 				var src = $2;
-				$$ = new CompleteAlias(new QualifiedNameRef(CombineSpans(@1, src.Item1.Span), 
-					new QualifiedName(src.Item1.QualifiedName.Name, src.Item1.QualifiedName.Namespaces, true)), src.Item2); 
+				$$ = new CompleteAlias(
+					new QualifiedNameRef(
+						CombineSpans(@1, src.QualifiedName.Span),
+						src.QualifiedName.QualifiedName.WithFullyQualified(true)
+					),
+					src.Name
+				);
 			}
 ;
 
@@ -1327,7 +1282,7 @@ anonymous_class:
 				CombineSpans(@9, @11)
 			);
 			SetDoc(((AnonymousTypeRef)typeRef).TypeDeclaration);
-			$$ = new AnonymousClass(typeRef, $3, @3); 
+			$$ = new AnonymousClass(typeRef, $3, @3);
 			PopClassContext();
 		}
 ;
@@ -1336,9 +1291,9 @@ new_expr:
 		T_NEW class_name_reference ctor_arguments
 			{ $$ = _astFactory.New(@$, $2, $3, @3); }
 	|	T_NEW anonymous_class
-			{ $$ = _astFactory.New(@$, ((AnonymousClass)$2).Item1, ((AnonymousClass)$2).Item2, ((AnonymousClass)$2).Item3); }
+			{ $$ = _astFactory.New(@$, $2.TypeRef, $2.ActualParams, $2.Span); }
 	|	T_NEW attributes anonymous_class
-			{ $$ = _astFactory.New(@$, WithAttributes(((AnonymousClass)$3).Item1, $2), ((AnonymousClass)$3).Item2, ((AnonymousClass)$3).Item3); }
+			{ $$ = _astFactory.New(@$, WithAttributes($3.TypeRef, $2), $3.ActualParams, $3.Span); }
 ;
 
 expr_without_variable:
@@ -1584,7 +1539,7 @@ exit_expr:
 
 backticks_expr:
 		'`' '`' { $$ = _astFactory.Literal(@$, string.Empty, "``".AsSpan()); }
-	|	'`' T_ENCAPSED_AND_WHITESPACE '`' { $$ = _astFactory.Literal(@$, $2.Key, string.Format("`{0}`", $2.Value).AsSpan()); }
+	|	'`' T_ENCAPSED_AND_WHITESPACE '`' { $$ = _astFactory.Literal(@$, $2.Text, string.Format("`{0}`", $2.SourceCode).AsSpan()); }
 	|	'`' encaps_list '`' { $$ = _astFactory.StringEncapsedExpression(@$, _astFactory.Concat(@2, $2), Tokens.T_BACKQUOTE); }
 ;
 
@@ -1613,7 +1568,7 @@ scalar:
 	|	T_CLASS_C	{ $$ = _astFactory.PseudoConstUse(@$, PseudoConstUse.Types.Class); }    
 	|	'"' encaps_list '"' 	{ $$ = _astFactory.StringEncapsedExpression(@$, _astFactory.Concat(@2, $2), Tokens.T_DOUBLE_QUOTES); }
 	|	T_START_HEREDOC T_END_HEREDOC							{ $$ = _astFactory.HeredocExpression(@$, _astFactory.Literal(new Span(@1.End, 0), "", string.Empty.AsSpan()), $1.QuoteToken, $2); }
-	|	T_START_HEREDOC T_ENCAPSED_AND_WHITESPACE T_END_HEREDOC { $$ = _astFactory.HeredocExpression(@$, RemoveHereDocIndentation(_astFactory.Literal(@2, $2.Key, $2.Value.AsSpan()), $3, true), $1.QuoteToken, $3); }
+	|	T_START_HEREDOC T_ENCAPSED_AND_WHITESPACE T_END_HEREDOC { $$ = _astFactory.HeredocExpression(@$, RemoveHereDocIndentation(_astFactory.Literal(@2, $2.Text, $2.SourceCode.AsSpan()), $3, true), $1.QuoteToken, $3); }
 	|	T_START_HEREDOC encaps_list T_END_HEREDOC				{ $$ = _astFactory.HeredocExpression(@$, RemoveHereDocIndentation(_astFactory.Concat(@2, $2), $3, true), $1.QuoteToken, $3); }
 	|	dereferencable_scalar	{ $$ = $1; }
 	|	constant				{ $$ = $1; }
@@ -1773,11 +1728,11 @@ encaps_list:
 		encaps_list encaps_var
 			{ $$ = AddToList<LangElement>($1, $2); }
 	|	encaps_list T_ENCAPSED_AND_WHITESPACE
-			{ $$ = AddToList<LangElement>($1, _astFactory.Literal(@2, $2.Key, _lexer.TokenTextSpan)); }
+			{ $$ = AddToList<LangElement>($1, _astFactory.Literal(@2, $2.Text, _lexer.TokenTextSpan)); }
 	|	encaps_var
 			{ $$ = new List<LangElement>() { $1 }; }
 	|	T_ENCAPSED_AND_WHITESPACE encaps_var
-			{ $$ = new List<LangElement>() { _astFactory.Literal(@1, $1.Key, $1.Value.AsSpan()), $2 }; }
+			{ $$ = new List<LangElement>() { _astFactory.Literal(@1, $1.Text, $1.SourceCode.AsSpan()), $2 }; }
 ;
 
 encaps_var:

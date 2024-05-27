@@ -1058,7 +1058,7 @@ namespace Devsense.PHP.Syntax
             // move back at the end of the heredoc label - yyless does not work properly (requires additional condition for the optional ';')
             lookahead_index = token_end = lookahead_index - lookbackfix;
 
-            _tokenSemantics.Object = new KeyValuePair<string, string>(text, sourcetext);
+            _tokenSemantics.Strings = new StringPair(text, sourcetext);
 
             // remember the expected indentation
             _hereDocValue = _hereDocValue.WithIndentation(indentation);
@@ -1084,10 +1084,7 @@ namespace Devsense.PHP.Syntax
                 this.Indentation = indentation ?? string.Empty;
             }
 
-            public HereDocTokenValue Clone()
-            {
-                return new HereDocTokenValue(Label, Indentation);
-            }
+            public HereDocTokenValue Clone() => new HereDocTokenValue(Label, Indentation);
 
             public HereDocTokenValue WithIndentation(string indentation)
             {
@@ -1165,7 +1162,10 @@ namespace Devsense.PHP.Syntax
             }
             else
             {
-                this._tokenSemantics.Object = new KeyValuePair<string, string>((string)ProcessEscapedStringWithEnding(buffer, BufferTokenStart, TokenLength, '"'), GetTokenString());
+                _tokenSemantics.Strings = new StringPair(
+                    text: (string)ProcessEscapedStringWithEnding(buffer, BufferTokenStart, TokenLength, '"'),
+                    sourcecode: GetTokenString()
+                );
                 return Tokens.T_ENCAPSED_AND_WHITESPACE;
             }
         }
@@ -1189,9 +1189,14 @@ namespace Devsense.PHP.Syntax
             {
                 var text = GetTokenString(intern: false);
 
-                _tokenSemantics.Object = (token == Tokens.T_ENCAPSED_AND_WHITESPACE)
-                    ? new KeyValuePair<string, string>(text, text)
-                    : (object)text;
+                if (token == Tokens.T_ENCAPSED_AND_WHITESPACE)
+                {
+                    _tokenSemantics.Strings = new StringPair(text, text);
+                }
+                else
+                {
+                    _tokenSemantics.String = text;
+                }
 
                 return token;
             }
@@ -1235,7 +1240,10 @@ namespace Devsense.PHP.Syntax
             yy_push_state(newState);
             if (TokenLength > 0)
             {
-                _tokenSemantics.Object = new KeyValuePair<string, string>((string)ProcessEscapedStringWithEnding(buffer, BufferTokenStart, TokenLength, ending), GetTokenString());
+                _tokenSemantics.Strings = new StringPair(
+                    text: (string)ProcessEscapedStringWithEnding(buffer, BufferTokenStart, TokenLength, ending),
+                    sourcecode: GetTokenString()
+                );
                 return true;
             }
             else

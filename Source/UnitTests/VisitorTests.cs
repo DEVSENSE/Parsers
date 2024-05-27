@@ -118,13 +118,6 @@ namespace UnitTests
                 base.VisitForeachVar(x);
             }
 
-            public override void VisitTranslatedTypeRef(TranslatedTypeRef x)
-            {
-                // TODO visit original type reference
-                VisitElement(x.OriginalType);
-                base.VisitTranslatedTypeRef(x);
-            }
-
             public override void VisitTraitAdaptationPrecedence(TraitsUse.TraitAdaptationPrecedence x)
             {
                 // TODO - visit adaptations

@@ -26,41 +26,6 @@ using Devsense.PHP.Utilities;
 
 namespace Devsense.PHP.Syntax
 {
-    struct IfStatement
-    {
-        public readonly Span Span;
-        public readonly LangElement Condition;
-        public readonly Span ConditionSpan;
-        public readonly LangElement Body;
-
-        public IfStatement(Span span, LangElement condition, Span condSpan, LangElement body)
-        {
-            Span = span;
-            Condition = condition;
-            ConditionSpan = condSpan;
-            Body = body;
-        }
-    }
-
-    /// <summary>
-    /// Parser information for the <c>switch</c> statement.
-    /// </summary>
-    class SwitchObject
-    {
-        public List<LangElement> CaseList { get; } = new List<LangElement>();
-
-        public Tokens ClosingToken { get; set; } = Tokens.T_RBRACE;
-
-        public Span ClosingTokenSpan { get; set; } = Span.Invalid;
-
-        public SwitchObject WithClosingToken(Tokens closing, Span closingSpan)
-        {
-            this.ClosingToken = closing;
-            this.ClosingTokenSpan = closingSpan;
-            return this;
-        }
-    }
-
     public partial class Parser
     {
         IParserTokenProvider<SemanticValueType, Span> _lexer;
@@ -305,36 +270,40 @@ namespace Devsense.PHP.Syntax
             return (BlockStmt)_astFactory.SimpleBlock(new Span(position.End, 0), EmptyArray<Statement>.Instance);
         }
 
-        private SimpleUse AddAlias(Tuple<QualifiedNameRef, NameRef> alias)
+        private SimpleUse AddAlias(CompleteAlias alias)
         {
-            return AddAlias(new Tuple<Span, QualifiedNameRef, NameRef>(CombineSpans(alias.Item1.Span, alias.Item2.Span), alias.Item1, alias.Item2), _contextType);
+            return AddAlias(new ContextAlias(
+                CombineSpans(alias.QualifiedName.Span, alias.Name.Span),
+                alias.QualifiedName, alias.Name,
+                _contextType
+            ));
         }
 
-        private SimpleUse AddAlias(Tuple<Span, QualifiedNameRef, NameRef> alias, AliasKind contextType)
+        private SimpleUse AddAlias(ContextAlias alias)
         {
-            var aliasName = alias.Item3.HasValue
-                ? alias.Item3
-                : new NameRef(Span.Invalid, alias.Item2.QualifiedName.Name);
+            var aliasName = alias.Name.HasValue
+                ? alias.Name
+                : new NameRef(Span.Invalid, alias.QualifiedName.QualifiedName.Name);
 
             bool added = false;
-            switch (contextType)
+            switch (alias.Kind)
             {
                 case AliasKind.Type:
-                    added = namingContext.AddAlias(aliasName, alias.Item2);
+                    added = namingContext.AddAlias(aliasName, alias.QualifiedName);
                     break;
                 case AliasKind.Function:
-                    added = namingContext.AddFunctionAlias(aliasName, alias.Item2);
+                    added = namingContext.AddFunctionAlias(aliasName, alias.QualifiedName);
                     break;
                 case AliasKind.Constant:
-                    added = namingContext.AddConstantAlias(aliasName, alias.Item2);
+                    added = namingContext.AddConstantAlias(aliasName, alias.QualifiedName);
                     break;
             }
             if (!added)
             {
-                this.ErrorSink.Error(aliasName.Span.IsValid ? aliasName.Span : alias.Item2.Span, FatalErrors.AliasAlreadyInUse,
-                    alias.Item2.QualifiedName.ToString(), aliasName.Name.ToString());
+                this.ErrorSink.Error(aliasName.Span.IsValid ? aliasName.Span : alias.QualifiedName.Span, FatalErrors.AliasAlreadyInUse,
+                    alias.QualifiedName.QualifiedName.ToString(), aliasName.Name.ToString());
             }
-            return new SimpleUse(alias.Item1, alias.Item3.Span, alias.Item2.Span, new Alias(aliasName, contextType), alias.Item2);
+            return new SimpleUse(alias.Span, alias.Name.Span, alias.QualifiedName.Span, new Alias(aliasName, alias.Kind), alias.QualifiedName);
         }
 
         static Name[] SelectNames(List<string> prefix)
@@ -356,7 +325,7 @@ namespace Devsense.PHP.Syntax
             return name;
         }
 
-        private GroupUse AddAliases(Span span, List<string> prefix, Span prefixSpan, List<Tuple<QualifiedNameRef, NameRef>> aliases, bool isFullyQualified)
+        private GroupUse AddAliases(Span span, List<string> prefix, Span prefixSpan, List<CompleteAlias> aliases, bool isFullyQualified)
         {
             var uses = ListObjectPool<SimpleUse>.Allocate();
             var prefixNamespaces = SelectNames(prefix);
@@ -370,9 +339,12 @@ namespace Devsense.PHP.Syntax
                     continue;
                 }
 
-                var namespaces = ArrayUtils.Concat(prefixNamespaces, alias.Item1.QualifiedName.Namespaces);
+                var namespaces = ArrayUtils.Concat(prefixNamespaces, alias.QualifiedName.QualifiedName.Namespaces);
                 uses.Add(
-                    AddAlias(new Tuple<QualifiedNameRef, NameRef>(new QualifiedNameRef(alias.Item1.Span, alias.Item1.QualifiedName.Name, namespaces), alias.Item2))
+                    AddAlias(new CompleteAlias(
+                        new QualifiedNameRef(alias.QualifiedName.Span, alias.QualifiedName.QualifiedName.Name, namespaces),
+                        alias.Name
+                    ))
                 );
             }
 
@@ -383,7 +355,7 @@ namespace Devsense.PHP.Syntax
             );
         }
 
-        private GroupUse AddAliases(Span span, List<string> prefix, Span prefixSpan, List<Tuple<Span, QualifiedNameRef, NameRef, AliasKind>> aliases, bool isFullyQualified)
+        private GroupUse AddAliases(Span span, List<string> prefix, Span prefixSpan, List<ContextAlias> aliases, bool isFullyQualified)
         {
             var uses = ListObjectPool<SimpleUse>.Allocate();
             var prefixNamespaces = SelectNames(prefix);
@@ -397,9 +369,15 @@ namespace Devsense.PHP.Syntax
                     continue;
                 }
 
-                var namespaces = ArrayUtils.Concat(prefixNamespaces, alias.Item2.QualifiedName.Namespaces);
-                uses.Add(AddAlias(new Tuple<Span, QualifiedNameRef, NameRef>(
-                    alias.Item1, new QualifiedNameRef(alias.Item2.Span, alias.Item2.QualifiedName.Name, namespaces), alias.Item3), alias.Item4));
+                var namespaces = ArrayUtils.Concat(prefixNamespaces, alias.QualifiedName.QualifiedName.Namespaces);
+                uses.Add(
+                    AddAlias(new ContextAlias(
+                        alias.Span,
+                        new QualifiedNameRef(alias.QualifiedName.Span, alias.QualifiedName.QualifiedName.Name, namespaces),
+                        alias.Name,
+                        alias.Kind
+                    ))
+                );
             }
 
             return new GroupUse(
@@ -476,9 +454,9 @@ namespace Devsense.PHP.Syntax
             return list;
         }
 
-        private static Tuple<T1, T2, T3, T4> JoinTuples<T1, T2, T3, T4>(T1 span, Tuple<T2, T3> first, T4 second)
+        private static ContextAlias JoinTuples(Span span, CompleteAlias alias, AliasKind kind)
         {
-            return new Tuple<T1, T2, T3, T4>(span, first.Item1, first.Item2, second);
+            return new ContextAlias(span, alias.QualifiedName, alias.Name, kind);
         }
 
         static void RebuildLast(List<IfStatement> condList, Span end, Tokens token)
