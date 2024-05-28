@@ -148,6 +148,9 @@ namespace Devsense.PHP.Utilities
                         case 'f':
                             if (MemoryExtensions.Equals(span, "function".AsSpan(), StringComparison.Ordinal)) return "function";
                             break;
+                        case 's':
+                            if (MemoryExtensions.Equals(span, "stdClass".AsSpan(), StringComparison.Ordinal)) return "stdClass";
+                            break;
                     }
                     break;
             }

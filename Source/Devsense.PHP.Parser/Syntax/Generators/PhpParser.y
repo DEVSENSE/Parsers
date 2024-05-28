@@ -498,7 +498,7 @@ top_statement:
 		{ 
 			$$ = _astFactory.Namespace(@$, null, @$, CreateBlock(CombineSpans(@4, @6), $5), namingContext);
 			SetDoc($$);
-			ResetNamingContext(); 
+			ResetNamingContext();
 		}
 	|	T_USE mixed_group_use_declaration ';'		{ $$ = _astFactory.Use(@$, $2, AliasKind.Type); _contextType = AliasKind.Type;	/* TODO: Error - must contain only a single group use */	}	
 	|	T_USE use_type group_use_declaration ';'	{ $$ = _astFactory.Use(@$, $3, $2); _contextType = AliasKind.Type;				/* TODO: Error - must contain only a single group use */	}				
