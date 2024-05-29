@@ -62,12 +62,16 @@ namespace Devsense.PHP.Utilities
                     break;
 
                 case 2:
-                    if (span[0] == '\r' && span[1] == '\n') return "\r\n";
-                    //if (span[0] == '/' && span[1] == '/') return "//";
-                    if (span[0] == 'f' && span[1] == 'n') return "fn";
-                    if (span[0] == '-' && span[1] == '>') return "->";
-                    if (span[0] == '\"' && span[1] == '\"') return "\"\"";
-                    if (span[0] == '\'' && span[1] == '\'') return "''";
+                    switch (span[0])
+                    {
+                        case '\r': if (span[1] == '\n') return "\r\n"; break;
+                        case '/': if (span[1] == '/') return "//"; break;
+                        case 'f': if (span[1] == 'n') return "fn"; break;
+                        case '-': if (span[1] == '>') return "->"; break;
+                        case '\"': if (span[1] == '\"') return "\"\""; break;
+                        case '\'': if (span[1] == '\'') return "''"; break;
+                        case '[': if (span[1] == ']') return "[]"; break;
+                    }
                     break;
 
                 // most frequent keywords
@@ -93,6 +97,9 @@ namespace Devsense.PHP.Utilities
                 case 4:
                     switch (span[0])
                     {
+                        case 'b':
+                            if (MemoryExtensions.Equals(span, "bool".AsSpan(), StringComparison.Ordinal)) return "bool";
+                            break;
                         case 'c':
                             if (MemoryExtensions.Equals(span, "case".AsSpan(), StringComparison.Ordinal)) return "case";
                             break;
@@ -117,11 +124,14 @@ namespace Devsense.PHP.Utilities
                 case 5:
                     switch (span[0])
                     {
-                        case 'c':
-                            if (MemoryExtensions.Equals(span, "class".AsSpan(), StringComparison.Ordinal)) return "class";
-                            break;
                         case 'U':
                             if (MemoryExtensions.Equals(span, "UTF-8".AsSpan(), StringComparison.Ordinal)) return "UTF-8";
+                            break;
+                        case 'a':
+                            if (MemoryExtensions.Equals(span, "array".AsSpan(), StringComparison.Ordinal)) return "array";
+                            break;
+                        case 'c':
+                            if (MemoryExtensions.Equals(span, "class".AsSpan(), StringComparison.Ordinal)) return "class";
                             break;
                         case 'v':
                             if (MemoryExtensions.Equals(span, "value".AsSpan(), StringComparison.Ordinal)) return "value";
