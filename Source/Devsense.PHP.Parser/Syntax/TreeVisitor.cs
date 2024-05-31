@@ -368,6 +368,21 @@ namespace Devsense.PHP.Syntax
         /// Visit all elements in the given list.
         /// </summary>
         /// <param name="items">Collection of elements to visit.</param>
+        protected void VisitList<T>(T[] items) where T : class, ILangElement
+        {
+            if (items != null)
+            {
+                for (int i = 0; i < items.Length; i++)
+                {
+                    VisitElement(items[i]);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Visit all elements in the given list.
+        /// </summary>
+        /// <param name="items">Collection of elements to visit.</param>
         protected void VisitList<T>(IList<T> items) where T : class, ILangElement
         {
             if (items != null)
