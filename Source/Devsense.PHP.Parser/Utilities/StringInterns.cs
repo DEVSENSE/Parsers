@@ -79,11 +79,14 @@ namespace Devsense.PHP.Utilities
                 case 3:
                     switch (span[0])
                     {
-                        case 'u':
-                            if (span[1] == 's' && span[2] == 'e') return "use";
-                            break;
                         case 'i':
                             if (span[1] == 'n' && span[2] == 't') return "int";
+                            break;
+                        case 'k':
+                            if (span[1] == 'e' && span[2] == 'y') return "key";
+                            break;
+                        case 'u':
+                            if (span[1] == 's' && span[2] == 'e') return "use";
                             break;
                         case '/':
                             if (span[1] == '.' && span[2] == '.') return "/..";
@@ -114,6 +117,7 @@ namespace Devsense.PHP.Utilities
                         case 't':
                             if (MemoryExtensions.Equals(span, "type".AsSpan(), StringComparison.Ordinal)) return "type";
                             if (MemoryExtensions.Equals(span, "text".AsSpan(), StringComparison.Ordinal)) return "text";
+                            if (MemoryExtensions.Equals(span, "true".AsSpan(), StringComparison.Ordinal)) return "true";
                             break;
                         case 'v':
                             if (MemoryExtensions.Equals(span, "void".AsSpan(), StringComparison.Ordinal)) return "void";
@@ -132,6 +136,13 @@ namespace Devsense.PHP.Utilities
                             break;
                         case 'c':
                             if (MemoryExtensions.Equals(span, "class".AsSpan(), StringComparison.Ordinal)) return "class";
+                            break;
+                        case 'f':
+                            if (MemoryExtensions.Equals(span, "false".AsSpan(), StringComparison.Ordinal)) return "false";
+                            if (MemoryExtensions.Equals(span, "float".AsSpan(), StringComparison.Ordinal)) return "float";
+                            break;
+                        case 'm':
+                            if (MemoryExtensions.Equals(span, "mixed".AsSpan(), StringComparison.Ordinal)) return "mixed";
                             break;
                         case 'v':
                             if (MemoryExtensions.Equals(span, "value".AsSpan(), StringComparison.Ordinal)) return "value";
@@ -155,6 +166,9 @@ namespace Devsense.PHP.Utilities
                 case 8:
                     switch (span[0])
                     {
+                        case 'c':
+                            if (MemoryExtensions.Equals(span, "callable".AsSpan(), StringComparison.Ordinal)) return "callable";
+                            break;
                         case 'f':
                             if (MemoryExtensions.Equals(span, "function".AsSpan(), StringComparison.Ordinal)) return "function";
                             break;
