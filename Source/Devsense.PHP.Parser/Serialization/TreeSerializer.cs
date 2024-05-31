@@ -98,7 +98,7 @@ namespace Devsense.PHP.Syntax.Ast.Serialization
         void SerializePHPDoc(IDocBlock doc)
         {
             if (doc != null)
-                _serializer.Serialize("PHPDoc", SerializeSpan(doc.Span), new NodeObj("Comment", doc.Summary ?? string.Empty));
+                _serializer.Serialize("PHPDoc", SerializeSpan(doc.Span), new NodeObj("Comment", doc.HasSummary(out var summary) ? summary : string.Empty));
         }
 
         NodeObj SerializeSpan(Span span)

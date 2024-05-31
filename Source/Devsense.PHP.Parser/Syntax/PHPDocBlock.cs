@@ -242,6 +242,10 @@ namespace Devsense.PHP.Syntax
             }
         }
 
+        string IDocBlock.Summary => throw new NotImplementedException();
+
+        IDocEntry IDocBlock.Entries => throw new NotImplementedException();
+
         #endregion
 
         /// <summary>
@@ -250,6 +254,10 @@ namespace Devsense.PHP.Syntax
         public override string ToString() => this.Summary;
 
         public override void VisitMe(TreeVisitor visitor) => visitor.VisitPHPDocBlock(this);
+
+        bool IDocBlock.HasSummary() => !string.IsNullOrEmpty(this.Summary);
+
+        bool IDocBlock.HasSummary(out string summary) => !string.IsNullOrEmpty(summary = this.Summary);
     }
 
     internal static class PHPDocBlockHelper

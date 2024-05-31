@@ -29,7 +29,8 @@ namespace UnitTests
  * Summary.
  */");
 
-            Assert.AreEqual(phpdoc.Summary, "Summary.");
+            Assert.IsTrue(phpdoc.HasSummary(out var summary));
+            Assert.AreEqual("Summary.", summary);
         }
 
         [TestMethod]
@@ -45,7 +46,8 @@ namespace UnitTests
  *         text
  */");
 
-            Assert.AreEqual("Summary.", phpdoc.Summary);
+            Assert.IsTrue(phpdoc.HasSummary(out var summary));
+            Assert.AreEqual("Summary.", summary);
 
             int count = 0;
             foreach (var entry in phpdoc)
