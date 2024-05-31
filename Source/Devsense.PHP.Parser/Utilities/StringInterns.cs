@@ -120,6 +120,7 @@ namespace Devsense.PHP.Utilities
                             if (MemoryExtensions.Equals(span, "type".AsSpan(), StringComparison.Ordinal)) return "type";
                             if (MemoryExtensions.Equals(span, "text".AsSpan(), StringComparison.Ordinal)) return "text";
                             if (MemoryExtensions.Equals(span, "true".AsSpan(), StringComparison.Ordinal)) return "true";
+                            if (MemoryExtensions.Equals(span, "this".AsSpan(), StringComparison.Ordinal)) return "this";
                             break;
                         case 'v':
                             if (MemoryExtensions.Equals(span, "void".AsSpan(), StringComparison.Ordinal)) return "void";
