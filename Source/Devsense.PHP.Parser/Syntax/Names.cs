@@ -713,7 +713,7 @@ namespace Devsense.PHP.Syntax
                 {
                     if (sep > 0)
                     {
-                        namespacesList.Add(new Name(name.Slice(0, sep).ToString()));
+                        namespacesList.Add(new Name(StringInterns.WithIntern(name.Slice(0, sep))));
                     }
 
                     name = name.Slice(sep + 1);
@@ -724,7 +724,7 @@ namespace Devsense.PHP.Syntax
             }
 
             // create QualifiedName
-            return new QualifiedName(new Name(name.ToString()), namespaces, fullyQualified);
+            return new QualifiedName(new Name(StringInterns.WithIntern(name)), namespaces, fullyQualified);
         }
 
         /// <summary>

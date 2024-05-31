@@ -7,6 +7,8 @@ namespace Devsense.PHP.Utilities
 {
     public static class StringInterns
     {
+        public static string WithIntern(ReadOnlySpan<char> span) => TryIntern(span) ?? span.ToString();
+
         public static string TryIntern(ReadOnlySpan<char> span)
         {
             // PERF: Whether interning or not, there are some frequently occurring easy cases we can pick off easily.
