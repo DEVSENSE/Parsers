@@ -209,7 +209,7 @@ namespace Devsense.PHP.Syntax
         public IList<ActualParam> ParamList { get { return (IList<ActualParam>)Object; } set { Object = value; } }
         internal AnonymousClass AnonymousClass
         {
-            get => new AnonymousClass((TypeRef)_objs.Object1, (List<ActualParam>)_objs.Object2, _span);
+            get => new AnonymousClass((TypeRef)_objs.Object1, (IList<ActualParam>)_objs.Object2, _span);
             set
             {
                 _objs = new ReferenceTypes(value.TypeRef, value.ActualParams);
