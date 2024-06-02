@@ -2311,7 +2311,7 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 { 
 			yyval.Node = _astFactory.Namespace(yypos, null, yypos, CreateBlock(CombineSpans(value_stack.array[value_stack.top-3].yypos, value_stack.array[value_stack.top-1].yypos), value_stack.array[value_stack.top-2].yyval.NodeList), namingContext);
 			SetDoc(yyval.Node);
-			ResetNamingContext(); 
+			ResetNamingContext();
 		}
         return;
       case 114: // top_statement -> T_USE mixed_group_use_declaration ';' 
@@ -2955,7 +2955,7 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 { yyval.TypeReference = value_stack.array[value_stack.top-1].yyval.TypeReference; }
         return;
       case 295: // argument_list -> '(' ')' 
-{ yyval.ParamList = new List<ActualParam>(); }
+{ yyval.ParamList = ActualParam.EmptyArray; }
         return;
       case 296: // argument_list -> '(' non_empty_argument_list possible_comma ')' 
 { yyval.ParamList = AddTrailingComma(value_stack.array[value_stack.top-3].yyval.ParamList, value_stack.array[value_stack.top-2].yyval.Bool); }

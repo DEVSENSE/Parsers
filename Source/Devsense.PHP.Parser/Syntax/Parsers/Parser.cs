@@ -96,6 +96,8 @@ namespace Devsense.PHP.Syntax
                 return first;
         }
 
+        internal override void FreeValueType(ref SemanticValueType value) => value.Free();
+
         public LangElement Parse(
                 ITokenProvider<SemanticValueType, Span> lexer,
                 INodesFactory<LangElement, Span> astFactory,
@@ -504,7 +506,7 @@ namespace Devsense.PHP.Syntax
             return list;
         }
 
-        private static List<ActualParam> AddTrailingComma(List<ActualParam> list, bool addComma)
+        private static IList<ActualParam> AddTrailingComma(IList<ActualParam> list, bool addComma)
         {
             if (addComma)
             {

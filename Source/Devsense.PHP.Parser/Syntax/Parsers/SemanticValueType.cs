@@ -1,5 +1,6 @@
 ﻿using Devsense.PHP.Syntax.Ast;
 using Devsense.PHP.Text;
+using Devsense.PHP.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
@@ -23,9 +24,9 @@ namespace Devsense.PHP.Syntax
     {
         public Span Span;
         public TypeRef TypeRef;
-        public List<ActualParam> ActualParams;
+        public IList<ActualParam> ActualParams;
 
-        public AnonymousClass(TypeRef tref, List<ActualParam> @params, Span span)
+        public AnonymousClass(TypeRef tref, IList<ActualParam> @params, Span span)
         {
             Span = span;
             TypeRef = tref;
@@ -161,6 +162,18 @@ namespace Devsense.PHP.Syntax
         ReferenceTypes _objs; // ...
 
         //
+        internal void Free()
+        {
+            if (_objs.Object1 is System.Collections.IEnumerable)
+            {
+                // free to the pool
+            }
+
+            // nullify
+            _objs = default(ReferenceTypes);
+        }
+
+        //
         // Properties:
         //
 
@@ -193,7 +206,7 @@ namespace Devsense.PHP.Syntax
                 _span = new Span(start, 0);
             }
         }
-        public List<ActualParam> ParamList { get { return (List<ActualParam>)Object; } set { Object = value; } }
+        public IList<ActualParam> ParamList { get { return (IList<ActualParam>)Object; } set { Object = value; } }
         internal AnonymousClass AnonymousClass
         {
             get => new AnonymousClass((TypeRef)_objs.Object1, (List<ActualParam>)_objs.Object2, _span);

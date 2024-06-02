@@ -1054,7 +1054,7 @@ return_type:
 ;
 
 argument_list:
-		'(' ')'	{ $$ = new List<ActualParam>(); }
+		'(' ')'	{ $$ = ActualParam.EmptyArray; }
 	|	'(' non_empty_argument_list possible_comma ')' { $$ = AddTrailingComma($2, $3); }
 	|	'(' T_ELLIPSIS ')' { $$ = CallSignature.CreateCallableConvert(@2); }
 ;

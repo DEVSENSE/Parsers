@@ -139,6 +139,8 @@ namespace Devsense.PHP.Syntax
 
 	public class ParserStack<ValueType, PositionType>
 	{
+		public delegate void FreeValueDelegate(ref ValueType value);
+
 		public struct Item
 		{
 			public ValueType yyval;
@@ -152,43 +154,45 @@ namespace Devsense.PHP.Syntax
 		}
 
 		// fields accessed from the generated code:
-		public Item[] array = new Item[3];
+		public Item[] array = new Item[4];
+
 		public int top = 0;
 
-		/// <summary>
-		/// Dirty items to be zero'ed in <see cref="Clear"/>.
-		/// </summary>
-		int ndirty = 0;
+		readonly FreeValueDelegate _freeFn;
 
-		public void Push(ValueType value, PositionType pos, bool isValidPosition)
+        internal ParserStack(FreeValueDelegate freeFn)
+		{
+			_freeFn = freeFn ?? new FreeValueDelegate((ref ValueType value) =>
+			{
+				value = default(ValueType);
+            });
+		}
+
+        public void Push(ValueType value, PositionType pos, bool isValidPosition)
 		{
 			if (top >= array.Length)
 			{
-				Item[] newarray = new Item[array.Length * 2];
-				System.Array.Copy(array, newarray, top);
+				var newarray = new Item[array.Length * 2];
+				Array.Copy(array, newarray, top);
 				array = newarray;
 			}
 
-			array[top].yyval = value;
-			array[top].yypos = pos;
-			array[top].yypos_valid = isValidPosition;
-			top++;
+			ref var entry = ref array[top++];
 
-			//
-			ndirty = Math.Max(ndirty, top);
+            entry.yyval = value;
+			entry.yypos = pos;
+            entry.yypos_valid = isValidPosition;
         }
 
 		public void Clear()
 		{
 			top = 0;
-
-			Array.Clear(array, 0, ndirty);
-			ndirty = 0;
         }
 
 		public void Pop()
 		{
-			--top;
+			// nullify the value to allow GC to collect it
+            _freeFn(ref array[--top].yyval);
 		}
 
 		public ValueType PeekValue()
@@ -240,7 +244,15 @@ namespace Devsense.PHP.Syntax
 		private int tokensSinceLastError;
 
 		private readonly Stack<int> state_stack = new Stack<int>();
-		protected ParserStack<ValueType, PositionType> value_stack = new ParserStack<ValueType, PositionType>();
+		protected readonly ParserStack<ValueType, PositionType> value_stack;
+
+		/// <summary>
+		/// Clear <typeparamref name="ValueType"/> popped from stack.
+		/// </summary>
+		internal virtual void FreeValueType(ref ValueType value)
+		{
+			value = default(ValueType);
+		}
 
 		protected abstract string[] NonTerminals { get; }
 		protected abstract State[] States { get; }
@@ -266,8 +278,9 @@ namespace Devsense.PHP.Syntax
 			this.errToken = ErrorToken;
 			this.eofToken = EofToken;
 			this.invalidPosition = InvalidPosition;
+			this.value_stack = new ParserStack<ValueType, PositionType>(FreeValueType);
 
-			Initialize();
+            Initialize();
 
 			if (states == null || rules == null || nonTerminals == null)
 				throw new InvalidOperationException();

@@ -28,6 +28,11 @@ namespace Devsense.PHP.Syntax.Ast
     /// </summary>
     public struct ActualParam : ITreeNode
     {
+        /// <summary>
+        /// <see cref="ArrayUtils.Empty{ActualParam}()"/>.
+        /// </summary>
+        public static ActualParam[] EmptyArray => ArrayUtils.Empty<ActualParam>();
+
         [Flags]
         public enum Flags : byte
         {
