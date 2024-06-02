@@ -20,7 +20,7 @@ namespace UnitTests
         {
             var serializer = new JsonNodeWriter();
             TreeSerializer visitor = new TreeSerializer(serializer);
-            visitor.VisitStringLiteral(new StringLiteral(new Span(0, 10), "hello world"));
+            visitor.VisitStringLiteral(StringLiteral.Create(new Span(0, 10), "hello world"));
             Assert.AreEqual("\"StringLiteral\" : {\n  \"Span\" : {\n    \"start\" : \"0\",\n    \"end\" : \"10\"\n  },\n  \"Value\" : \"hello world\"\n}", serializer.ToString());
         }
     }
