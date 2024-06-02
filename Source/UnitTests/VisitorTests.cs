@@ -378,7 +378,7 @@ namespace UnitTests
             public override LangElement Namespace(Span span, QualifiedName? name, Span nameSpan, LangElement block, NamingContext context)
                  => CountLE(base.Namespace(span, name, nameSpan, block, context));
 
-            public override LangElement New(Span span, TypeRef classNameRef, IEnumerable<ActualParam> argsOpt, Span argsSpan)
+            public override LangElement New(Span span, TypeRef classNameRef, IList<ActualParam> argsOpt, Span argsSpan)
                  => CountLE(base.New(span, classNameRef, argsOpt, argsSpan));
 
             public override LangElement NewArray(Span span, IEnumerable<ArrayItem> itemsOpt, bool isOldNotation)

@@ -480,7 +480,7 @@ namespace Devsense.PHP.Syntax.Ast
             return new UseStatement(span, uses.AsArray(), kind);
         }
 
-        public virtual LangElement New(Span span, TypeRef classNameRef, IEnumerable<ActualParam> argsOpt, Span argsPosition)
+        public virtual LangElement New(Span span, TypeRef classNameRef, IList<ActualParam> argsOpt, Span argsPosition)
         {
             return new NewEx(span, classNameRef, argsOpt.AsArray(), argsPosition);
         }
