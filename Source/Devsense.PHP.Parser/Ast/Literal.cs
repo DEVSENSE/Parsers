@@ -122,17 +122,17 @@ namespace Devsense.PHP.Syntax.Ast
 
             if (value is string str)
             {
-                return new StringLiteral(span, str);
+                return StringLiteral.Create(span, str);
             }
 
             if (value is IStringLiteralValue strvalue)
             {
                 if (strvalue.Contains8bitText)
                 {
-                    return new StringLiteral(span, strvalue);
+                    return StringLiteral.Create(span, strvalue);
                 }
 
-                return new StringLiteral(span, strvalue.ToString());
+                return StringLiteral.Create(span, strvalue.ToString());
             }
 
             if (value is byte[] barr)
@@ -143,6 +143,61 @@ namespace Devsense.PHP.Syntax.Ast
             //
             throw new ArgumentException();
         }
+    }
+
+    #endregion
+
+    #region BinaryStringLiteral
+
+    /// <summary>
+    /// String literal.
+    /// </summary>
+    public sealed class BinaryStringLiteral : Literal, IStringLiteralValue
+    {
+        public override Operations Operation { get { return Operations.BinaryStringLiteral; } }
+
+        /// <summary>
+        /// Gets internal value of literal.
+        /// </summary>
+        internal override object ValueObj { get { return this.Value; } }
+
+        /// <summary>
+        /// A value of the literal.
+        /// </summary>
+        public byte[] Value { get; }
+
+        /// <summary>
+        /// Initializes a new instance of the StringLiteral class.
+        /// </summary>
+        public BinaryStringLiteral(Text.Span span, byte[]/*!*/ value)
+            : base(span)
+        {
+            this.Value = value;
+        }
+
+        /// <summary>
+        /// Call the right Visit* method on the given Visitor object.
+        /// </summary>
+        /// <param name="visitor">Visitor to be called.</param>
+        public override void VisitMe(TreeVisitor visitor)
+        {
+            visitor.VisitBinaryStringLiteral(this);
+        }
+
+        #region IStringLiteralValue
+
+        bool IStringLiteralValue.Contains8bitText => true;
+
+        byte[] IStringLiteralValue.ToBytes() => Value;
+
+        string IStringLiteralValue.ToString() => throw new NotSupportedException();
+
+        /// <summary>
+        /// Gets enumeration of underlying chunks of <see cref="System.String"/> or <see cref="byte"/>[].
+        /// </summary>
+        IEnumerable<object> IStringLiteralValue.EnumerateChunks() => new object[] { Value };
+
+        #endregion
     }
 
     #endregion
@@ -332,44 +387,84 @@ namespace Devsense.PHP.Syntax.Ast
     /// <summary>
     /// String literal.
     /// </summary>
-    public sealed class StringLiteral : Literal, IStringLiteralValue
+    public abstract class StringLiteral : Literal
     {
         public override Operations Operation { get { return Operations.StringLiteral; } }
 
         /// <summary>
-        /// Gets internal value of literal.
-        /// </summary>
-        internal override object ValueObj { get { return this.Value; } }
-
-        /// <summary>
-        /// Underlying value, either <see cref="System.String"/> or <see cref="IStringLiteralValue"/>.
-        /// </summary>
-        readonly object _RawValue;
-
-        /// <summary>
         /// A value of the literal as <see cref="System.String"/>.
         /// </summary>
-        public string Value => _RawValue switch
+        public abstract string Value { get; }
+
+        sealed class Utf8StringLiteral : StringLiteral, IStringLiteralValue
         {
-            string str => str,
-            IStringLiteralValue value => value.ToString(),
-            _ => throw new InvalidOperationException(),
-        };
+            internal override object ValueObj => Value;
+
+            public override string Value { get; }
+
+            public Utf8StringLiteral(Text.Span span, string value) : base(span)
+            {
+                this.Value = value ?? throw new ArgumentNullException(nameof(value));
+            }
+
+            #region IStringLiteralValue
+
+            bool IStringLiteralValue.Contains8bitText => false;
+
+            byte[] IStringLiteralValue.ToBytes() => throw new NotSupportedException(); // only if {Contains8bitText}
+
+            string IStringLiteralValue.ToString() => Value;
+
+            /// <summary>
+            /// Gets enumeration of underlying chunks of <see cref="System.String"/> or <see cref="byte"/>[].
+            /// </summary>
+            IEnumerable<object> IStringLiteralValue.EnumerateChunks() => new object[] { Value };
+
+            #endregion
+        }
+
+        sealed class RawStringLiteral : StringLiteral, IStringLiteralValue
+        {
+            internal override object ValueObj => Value;
+
+            public override string Value => UnderlyingValue.ToString();
+
+            public IStringLiteralValue UnderlyingValue { get; }
+
+            public RawStringLiteral(Text.Span span, IStringLiteralValue value) : base(span)
+            {
+                this.UnderlyingValue = value ?? throw new ArgumentNullException(nameof(value));
+            }
+
+            #region IStringLiteralValue
+
+            bool IStringLiteralValue.Contains8bitText => UnderlyingValue.Contains8bitText;
+
+            byte[] IStringLiteralValue.ToBytes() => UnderlyingValue.ToBytes();
+
+            string IStringLiteralValue.ToString() => UnderlyingValue.ToString();
+
+            /// <summary>
+            /// Gets enumeration of underlying chunks of <see cref="System.String"/> or <see cref="byte"/>[].
+            /// </summary>
+            IEnumerable<object> IStringLiteralValue.EnumerateChunks() => UnderlyingValue.EnumerateChunks();
+
+            #endregion
+        }
+
+        protected StringLiteral(Text.Span span) : base(span)
+        {
+        }
 
         /// <summary>
         /// Initializes a new instance of the StringLiteral class.
         /// </summary>
-        public StringLiteral(Text.Span span, string value)
-            : base(span)
-        {
-            _RawValue = value ?? throw new ArgumentNullException(nameof(value));
-        }
+        public static StringLiteral Create(Text.Span span, string value) => new Utf8StringLiteral(span, value);
 
-        internal StringLiteral(Text.Span span, IStringLiteralValue value)
-            : base(span)
-        {
-            _RawValue = value ?? throw new ArgumentNullException(nameof(value));
-        }
+        /// <summary>
+        /// Initializes a new instance of the StringLiteral class.
+        /// </summary>
+        public static StringLiteral Create(Text.Span span, IStringLiteralValue value) => new RawStringLiteral(span, value);
 
         /// <summary>
         /// Call the right Visit* method on the given Visitor object.
@@ -379,78 +474,6 @@ namespace Devsense.PHP.Syntax.Ast
         {
             visitor.VisitStringLiteral(this);
         }
-
-        #region IStringLiteralValue
-
-        bool IStringLiteralValue.Contains8bitText => _RawValue is IStringLiteralValue value && value.Contains8bitText;
-
-        byte[] IStringLiteralValue.ToBytes() => _RawValue is IStringLiteralValue value ? value.ToBytes() : throw new NotSupportedException();
-
-        string IStringLiteralValue.ToString() => Value;
-
-        /// <summary>
-        /// Gets enumeration of underlying chunks of <see cref="System.String"/> or <see cref="byte"/>[].
-        /// </summary>
-        IEnumerable<object> IStringLiteralValue.EnumerateChunks() => _RawValue is IStringLiteralValue value
-            ? value.EnumerateChunks()
-            : new object[] { Value };
-
-        #endregion
-    }
-
-    #endregion
-
-    #region BinaryStringLiteral
-
-    /// <summary>
-    /// String literal.
-    /// </summary>
-    public sealed class BinaryStringLiteral : Literal, IStringLiteralValue
-    {
-        public override Operations Operation { get { return Operations.BinaryStringLiteral; } }
-
-        /// <summary>
-        /// Gets internal value of literal.
-        /// </summary>
-        internal override object ValueObj { get { return this.Value; } }
-
-        /// <summary>
-        /// A value of the literal.
-        /// </summary>
-        public byte[] Value { get; }
-
-        /// <summary>
-        /// Initializes a new instance of the StringLiteral class.
-        /// </summary>
-        public BinaryStringLiteral(Text.Span span, byte[]/*!*/ value)
-            : base(span)
-        {
-            this.Value = value;
-        }
-
-        /// <summary>
-        /// Call the right Visit* method on the given Visitor object.
-        /// </summary>
-        /// <param name="visitor">Visitor to be called.</param>
-        public override void VisitMe(TreeVisitor visitor)
-        {
-            visitor.VisitBinaryStringLiteral(this);
-        }
-
-        #region IStringLiteralValue
-
-        bool IStringLiteralValue.Contains8bitText => true;
-
-        byte[] IStringLiteralValue.ToBytes() => Value;
-
-        string IStringLiteralValue.ToString() => throw new NotSupportedException();
-
-        /// <summary>
-        /// Gets enumeration of underlying chunks of <see cref="System.String"/> or <see cref="byte"/>[].
-        /// </summary>
-        IEnumerable<object> IStringLiteralValue.EnumerateChunks() => new object[] { Value };
-
-        #endregion
     }
 
     #endregion

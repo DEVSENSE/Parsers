@@ -809,7 +809,7 @@ namespace Devsense.PHP.Syntax
                         current_indentation = ReadOnlySpan<char>.Empty;
                     }
 
-                    expressions[i] = new StringLiteral(expr.Span, StringUtils.ReturnStringBuilder(result));
+                    expressions[i] = StringLiteral.Create(expr.Span, StringUtils.ReturnStringBuilder(result));
                 }
                 else if (expr is VarLikeConstructUse)
                 {

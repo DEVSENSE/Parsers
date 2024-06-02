@@ -48,7 +48,7 @@ namespace Devsense.PHP.Syntax.Ast
         public EchoStmt(Text.Span span, string htmlCode)
             : base(span)
         {
-            this.parameters = new Expression[] { new StringLiteral(span, htmlCode) };
+            this.parameters = new Expression[] { StringLiteral.Create(span, htmlCode) };
             this.isHtmlCode = true;
         }
 
