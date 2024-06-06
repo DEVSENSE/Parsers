@@ -446,7 +446,7 @@ namespace Devsense.PHP.Syntax.Ast
 
     #region UseStatement
 
-    public abstract class UseBase
+    public abstract class UseBase : ITreeNode
     {
         /// <summary>
         /// Use position.
@@ -462,6 +462,11 @@ namespace Devsense.PHP.Syntax.Ast
         {
             Debug.Assert(span.IsValid);
             _span = span;
+        }
+
+        void ITreeNode.VisitMe(TreeVisitor visitor)
+        {
+            visitor.VisitUse(this);
         }
     }
 

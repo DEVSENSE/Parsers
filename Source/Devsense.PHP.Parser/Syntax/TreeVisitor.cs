@@ -171,11 +171,19 @@ namespace Devsense.PHP.Syntax
         }
 
         /// <summary>
-        /// Visits <c>declare</c> statement and its inner statement.
+        /// Visits single FQN use within <see cref="UseStatement"/>.
+        /// </summary>
+        virtual public void VisitUse(UseBase x)
+        {
+            // nothing
+        }
+
+        /// <summary>
+        /// Visits <c>use</c> statement and its inner statement.
         /// </summary>
         virtual public void VisitUseStatement(UseStatement x)
         {
-            // nothing
+            //VisitList(x.Uses);
         }
 
         /// <summary>
