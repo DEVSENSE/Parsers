@@ -1781,7 +1781,7 @@ isset_variables:
 ;
 
 isset_variable:
-		expr { $$ = CreateIssetVar($1); }
+		expr { $$ = $1; }
 ;
 
 %%

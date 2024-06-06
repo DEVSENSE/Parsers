@@ -35,21 +35,10 @@ namespace Devsense.PHP.Syntax.Ast
         /// </summary>
         public SourceUnit SourceUnit { get; }
 
-        //static bool IsAllNull<T>(T[] arr) where T : class
-        //{
-        //    if (arr != null)
-        //    {
-        //        for (int i = 0; i < arr.Length; i++)
-        //        {
-        //            if (arr[i] != null)
-        //            {
-        //                return false;
-        //            }
-        //        }
-        //    }
-
-        //    return true;
-        //}
+        protected virtual void OnError(Span span, ErrorInfo err)
+        {
+            // to be overriden in derived class
+        }
 
         static bool IsAllNull(ArrayItem[] arr)
         {
@@ -226,7 +215,9 @@ namespace Devsense.PHP.Syntax.Ast
 
         public virtual LangElement Unset(Span span, IEnumerable<LangElement> variables)
         {
-            return new UnsetStmt(span, variables.CastToArray<VariableUse>());
+            var arr = variables.CastToArray<IExpression>();
+            CheckVarUse(arr);
+            return new UnsetStmt(span, arr);
         }
 
         public virtual LangElement Eval(Span span, LangElement code)
@@ -295,7 +286,32 @@ namespace Devsense.PHP.Syntax.Ast
 
         public virtual LangElement Isset(Span span, IEnumerable<LangElement> variables)
         {
-            return new IssetEx(span, variables.CastToArray<VariableUse>());
+            var arr = variables.CastToArray<IExpression>();
+
+            CheckVarUse(arr);
+
+            return new IssetEx(span, arr);
+        }
+
+        void CheckVarUse(IExpression[] arr)
+        {
+            for (int i = 0; i < arr.Length; i++)
+            {
+                CheckVarUse(arr[i]);
+            }
+        }
+
+        protected virtual void CheckVarUse(IExpression expr)
+        {
+            if (expr is EncapsedExpression encapsed)
+            {
+                expr = encapsed.Expression;
+            }
+
+            if (expr is not VariableUse)
+            {
+                OnError(expr.Span, FatalErrors.CheckVarUseFault);
+            }
         }
 
         public virtual LangElement FieldDecl(Span span, VariableName name, LangElement initializerOpt)

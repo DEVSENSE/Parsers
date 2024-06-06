@@ -697,16 +697,6 @@ namespace Devsense.PHP.Syntax
             return variable;
         }
 
-        VariableUse CreateIssetVar(LangElement node)
-        {
-            if (node is VariableUse)
-            {
-                return node as VariableUse;
-            }
-            _errors.Error(node.Span, FatalErrors.CheckVarUseFault);
-            return null;
-        }
-
         static LangElement AdjustNullSafeOperator(LangElement element, Tokens objectOperator)
         {
             if (objectOperator == Tokens.T_NULLSAFE_OBJECT_OPERATOR)

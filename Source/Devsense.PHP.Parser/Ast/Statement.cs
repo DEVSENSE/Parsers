@@ -270,15 +270,19 @@ namespace Devsense.PHP.Syntax.Ast
     /// </summary>
     public sealed class UnsetStmt : Statement
     {
-        /// <summary>List of variables to be unset</summary>
-        public IList<VariableUse> /*!*/VarList { get { return varList; } }
-        private readonly IList<VariableUse>/*!*/ varList;
+        /// <summary>
+        /// List of variables to be unset
+        /// </summary>
+        /// <remarks>
+        /// In a sytaxtically correct code, all expressions will be of type <see cref="VariableUse"/> or <see cref="EncapsedExpression"/> with <see cref="VariableUse"/>.
+        /// </remarks>
+        public IReadOnlyList<IExpression> /*!*/VarList { get { return varList; } }
+        private readonly IReadOnlyList<IExpression>/*!*/ varList;
 
-        public UnsetStmt(Text.Span p, IList<VariableUse>/*!*/ varList)
+        public UnsetStmt(Text.Span p, IReadOnlyList<IExpression>/*!*/ varList)
             : base(p)
         {
-            Debug.Assert(varList != null);
-            this.varList = varList;
+            this.varList = varList ?? throw new ArgumentNullException(nameof(varList)); ;
         }
 
         /// <summary>

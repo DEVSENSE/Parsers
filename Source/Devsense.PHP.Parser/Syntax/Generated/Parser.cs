@@ -3917,7 +3917,7 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 { yyval.NodeList = AddToList<LangElement>(value_stack.array[value_stack.top-3].yyval.NodeList, value_stack.array[value_stack.top-1].yyval.Node); }
         return;
       case 589: // isset_variable -> expr 
-{ yyval.Node = CreateIssetVar(value_stack.array[value_stack.top-1].yyval.Node); }
+{ yyval.Node = value_stack.array[value_stack.top-1].yyval.Node; }
         return;
     }
   }
