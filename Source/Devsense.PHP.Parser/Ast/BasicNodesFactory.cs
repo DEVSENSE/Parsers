@@ -303,14 +303,17 @@ namespace Devsense.PHP.Syntax.Ast
 
         protected virtual void CheckVarUse(IExpression expr)
         {
-            if (expr is EncapsedExpression encapsed)
+            if (expr != null)
             {
-                expr = encapsed.Expression;
-            }
+                if (expr is EncapsedExpression encapsed)
+                {
+                    expr = encapsed.Expression;
+                }
 
-            if (expr is not VariableUse)
-            {
-                OnError(expr.Span, FatalErrors.CheckVarUseFault);
+                if (expr is not VariableUse)
+                {
+                    OnError(expr.Span, FatalErrors.CheckVarUseFault);
+                }
             }
         }
 
