@@ -35,10 +35,10 @@ namespace Devsense.PHP.Syntax.Ast
         /// </summary>
         public SourceUnit SourceUnit { get; }
 
-        protected virtual void OnError(Span span, ErrorInfo err)
-        {
-            // to be overriden in derived class
-        }
+        /// <summary>
+        /// Optional reference to error sink to handle AST validity errors.
+        /// </summary>
+        protected virtual IErrorSink<Span> ErrorSink => null;
 
         static bool IsAllNull(ArrayItem[] arr)
         {
@@ -312,7 +312,7 @@ namespace Devsense.PHP.Syntax.Ast
 
                 if (expr is not VariableUse)
                 {
-                    OnError(expr.Span, FatalErrors.CheckVarUseFault);
+                    ErrorSink?.Error(expr.Span, FatalErrors.CheckVarUseFault);
                 }
             }
         }
