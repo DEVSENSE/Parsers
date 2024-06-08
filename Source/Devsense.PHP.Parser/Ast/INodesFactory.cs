@@ -164,7 +164,7 @@ namespace Devsense.PHP.Syntax.Ast
             bool conditional, PhpMemberAttributes attributes,
             Name name, TSpan nameSpan, IEnumerable<FormalTypeParam> typeParamsOpt,
             INamedTypeRef baseClassOpt,
-            IEnumerable<INamedTypeRef> implements,
+            INamedTypeRef[] implements,
             IEnumerable<TNode> members, TSpan bodySpan);
 
         /// <summary>
@@ -1031,7 +1031,7 @@ namespace Devsense.PHP.Syntax.Ast
         /// <param name="expression">Match arm expression.</param>
         /// <param name="conditions">List of <see cref="IExpression"/> nodes. If <c>null</c> or empty, the arm represents the <c>default</c> branch.</param>
         /// <returns>Node of type <see cref="IMatchArm"/>.</returns>
-        IMatchArm MatchArm(TSpan span, List<TNode> conditions, TNode expression);
+        IMatchArm MatchArm(TSpan span, IExpression[] conditions, TNode expression);
 
         #endregion
 
@@ -1046,7 +1046,7 @@ namespace Devsense.PHP.Syntax.Ast
         /// <summary>
         /// Creates attribute group (PHP8).
         /// </summary>
-        TNode AttributeGroup(TSpan span, IList<TNode> attributes);
+        TNode AttributeGroup(TSpan span, IAttributeElement[] attributes);
 
         #endregion
 

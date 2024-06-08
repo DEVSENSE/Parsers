@@ -438,10 +438,9 @@ namespace UnitTests
             public override LangElement TryCatch(Span span, LangElement body, IEnumerable<LangElement> catches, LangElement finallyBlockOpt)
                  => CountLE(base.TryCatch(span, body, catches, finallyBlockOpt));
 
-            public override LangElement Type(Span span, Span headingSpan, bool conditional, PhpMemberAttributes attributes, Name name, Span nameSpan, IEnumerable<FormalTypeParam> typeParamsOpt, INamedTypeRef baseClassOpt, IEnumerable<INamedTypeRef> implements, IEnumerable<LangElement> members, Span bodySpan)
+            public override LangElement Type(Span span, Span headingSpan, bool conditional, PhpMemberAttributes attributes, Name name, Span nameSpan, IEnumerable<FormalTypeParam> typeParamsOpt, INamedTypeRef baseClassOpt, INamedTypeRef[] implements, IEnumerable<LangElement> members, Span bodySpan)
             {
-                var imp = implements != null ? implements.ToList() : null;
-                return CountLE(base.Type(span, headingSpan, conditional, attributes, name, nameSpan, typeParamsOpt, baseClassOpt, imp, members, bodySpan));
+                return CountLE(base.Type(span, headingSpan, conditional, attributes, name, nameSpan, typeParamsOpt, baseClassOpt, implements, members, bodySpan));
             }
 
             public override TypeRef TypeReference(Span span, IEnumerable<LangElement> classes)
@@ -512,7 +511,7 @@ namespace UnitTests
             public override LangElement Attribute(Span span, TypeRef classref, CallSignature signature = default(CallSignature))
                 => CountLE(base.Attribute(span, classref, signature));
 
-            public override LangElement AttributeGroup(Span span, IList<LangElement> attributes)
+            public override LangElement AttributeGroup(Span span, IAttributeElement[] attributes)
                 => CountLE(base.AttributeGroup(span, attributes));
         }
     }

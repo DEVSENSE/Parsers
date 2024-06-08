@@ -422,7 +422,7 @@ namespace Devsense.PHP.Syntax
             list.Add(item1);
             return list;
         }
-        
+
         static List<T> NewList<T>(T item1, T item2)
         {
             var list = ListObjectPool<T>.Allocate();
@@ -458,11 +458,13 @@ namespace Devsense.PHP.Syntax
         /// <summary>Alias to <see cref="GetArrayAndFree{LangElement, Statement}"/></summary>
         static Statement[] FreeStatements(List<LangElement> list) => GetArrayAndFree<LangElement, Statement>(list);
 
-        protected static TElement WithAttributes<TElement>(TElement node, List<LangElement> attributes) where TElement : IPropertyCollection
+        protected static TElement FinalizeAttributes<TElement>(TElement node, List<LangElement> attributes) where TElement : IPropertyCollection
         {
             if (attributes != null && attributes.Count != 0)
             {
-                node.SetAttributes(attributes.CastToArray<IAttributeGroup>());
+                node.SetAttributes(
+                    GetArrayAndFree<LangElement, IAttributeGroup>(attributes)
+                );
             }
 
             return node;
@@ -1078,7 +1080,7 @@ namespace Devsense.PHP.Syntax
         private LangElement FinalizeBlock(Span span, List<LangElement> statements, Tokens endToken)
         {
             MergeDoc(span, statements);
-            
+
             return _astFactory.ColonBlock(span, FreeStatements(statements), endToken);
         }
 
@@ -1106,7 +1108,7 @@ namespace Devsense.PHP.Syntax
         /// <param name="statements">List of statements in the block.</param>
         /// <returns>Complete block statement.</returns>
         /// <remarks>Returns <paramref name="statements"/> to the pool.</remarks>
-        BlockStmt CreateCaseBlock(Span separatorSpan, List<LangElement> statements)
+        BlockStmt FinalizeCaseBlock(Span separatorSpan, List<LangElement> statements)
         {
             Span bodySpan;
 
@@ -1117,7 +1119,7 @@ namespace Devsense.PHP.Syntax
             else
             {
                 bodySpan = Span.Combine(separatorSpan, statements.Last().Span);
-                _lexer.DocCommentList.Merge(bodySpan, statements, _astFactory);
+                MergeDoc(bodySpan, statements);
             }
 
             return (BlockStmt)_astFactory.Block(bodySpan, FreeStatements(statements));
@@ -1155,6 +1157,32 @@ namespace Devsense.PHP.Syntax
             //}
             Debug.Assert(memberOf is Expression);
             return (Expression)memberOf;
+        }
+
+        INamedTypeRef[] FinalizeNamedTypeRefArray(IList<TypeRef> types)
+        {
+            INamedTypeRef[] arr;
+
+            if (types.Count != 0)
+            {
+                arr = new INamedTypeRef[types.Count];
+                for (int i = 0; i < arr.Length; i++)
+                {
+                    arr[i] = ConvertToNamedTypeRef(types[i]);
+                }
+            }
+            else
+            {
+                arr = EmptyArray<INamedTypeRef>.Instance;
+            }
+
+            //
+            if (types is List<TypeRef> list)
+            {
+                FreeList(list);
+            }
+
+            return arr;
         }
 
         /// <summary>

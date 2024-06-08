@@ -32,7 +32,7 @@ namespace Devsense.PHP.Syntax.Ast
         /// List of conditions (order matters) to compare with <see cref="IMatchEx.MatchValue"/>.
         /// In case the list is empty, this arm represents the <c>default</c> branch.
         /// </summary>
-        IList<IExpression> ConditionList { get; }
+        IExpression[] ConditionList { get; }
 
         /// <summary>
         /// Expression to be evaluated in case one if the conditions are met.
@@ -77,9 +77,9 @@ namespace Devsense.PHP.Syntax.Ast
     /// </summary>
     public sealed class MatchArm : LangElement, IMatchArm
     {
-        public MatchArm(Span span, IList<Expression> condition, Expression expression) : base(span)
+        public MatchArm(Span span, IExpression[] condition, Expression expression) : base(span)
         {
-            this.ConditionList = condition.AsArray();
+            this.ConditionList = condition ?? throw new ArgumentNullException(nameof(condition));
             this.Expression = expression ?? throw new ArgumentNullException(nameof(expression));
         }
 
@@ -91,9 +91,7 @@ namespace Devsense.PHP.Syntax.Ast
         /// <summary>
         /// List of conditions. Cannot be <c>null</c>.
         /// </summary>
-        public Expression[] ConditionList { get; }
-
-        IList<IExpression> IMatchArm.ConditionList => ConditionList;
+        public IExpression[] ConditionList { get; }
 
         /// <summary>
         /// Expression to be evaluated in case one if the conditions are met.

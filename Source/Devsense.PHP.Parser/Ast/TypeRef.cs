@@ -54,11 +54,6 @@ namespace Devsense.PHP.Syntax.Ast
     public abstract class TypeRef : LangElement
     {
         /// <summary>
-        /// Immutable empty list of <see cref="TypeRef"/>.
-        /// </summary>
-		internal static new readonly List<TypeRef>/*!*/EmptyList = new List<TypeRef>();
-
-        /// <summary>
         /// Gets qualified name of the type if possible. Indirect type reference and multiple type references gets no value.
         /// </summary>
         public abstract QualifiedName? QualifiedName { get; }

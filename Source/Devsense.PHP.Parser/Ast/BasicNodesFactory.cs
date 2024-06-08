@@ -590,12 +590,12 @@ namespace Devsense.PHP.Syntax.Ast
             return new ThrowEx(span, (Expression)expression);
         }
 
-        public virtual LangElement Type(Span span, Span headingSpan, bool conditional, PhpMemberAttributes attributes, Name name, Span nameSpan, IEnumerable<FormalTypeParam> typeParamsOpt, INamedTypeRef baseClassOpt, IEnumerable<INamedTypeRef> implements, IEnumerable<LangElement> members, Span bodySpan)
+        public virtual LangElement Type(Span span, Span headingSpan, bool conditional, PhpMemberAttributes attributes, Name name, Span nameSpan, IEnumerable<FormalTypeParam> typeParamsOpt, INamedTypeRef baseClassOpt, INamedTypeRef[] implements, IEnumerable<LangElement> members, Span bodySpan)
         {
             Debug.Assert(members != null && implements != null);
             return new NamedTypeDecl(span, headingSpan, conditional, attributes, false,
                 new NameRef(nameSpan, name), typeParamsOpt.AsArray(),
-                baseClassOpt, implements.AsArray(), members.CastToArray<TypeMemberDecl>(),
+                baseClassOpt, implements, members.CastToArray<TypeMemberDecl>(),
                 bodySpan);
         }
 
@@ -830,9 +830,11 @@ namespace Devsense.PHP.Syntax.Ast
             return new AttributeElement(span, classref, signature);
         }
 
-        public virtual LangElement AttributeGroup(Span span, IList<LangElement> attributes)
+        public virtual LangElement AttributeGroup(Span span, IAttributeElement[] attributes)
         {
-            return new AttributeGroup(span, attributes.CastToArray<IAttributeElement>());
+            return new AttributeGroup(
+                span, attributes ?? throw new ArgumentNullException(nameof(attributes))
+            );
         }
 
         public virtual IMatchEx Match(Span span, LangElement value, List<LangElement> arms)
@@ -840,9 +842,9 @@ namespace Devsense.PHP.Syntax.Ast
             return new MatchEx(span, (Expression)value, arms.CastToArray<MatchArm>());
         }
 
-        public virtual IMatchArm MatchArm(Span span, List<LangElement> conditions, LangElement expression)
+        public virtual IMatchArm MatchArm(Span span, IExpression[] conditions, LangElement expression)
         {
-            return new MatchArm(span, conditions.CastToArray<Expression>(), (Expression)expression);
+            return new MatchArm(span, conditions, (Expression)expression);
         }
     }
 }

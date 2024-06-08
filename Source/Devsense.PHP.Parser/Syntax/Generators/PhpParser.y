@@ -18,6 +18,7 @@ using System.Runtime.InteropServices;
 using Devsense.PHP.Syntax.Ast;
 using Devsense.PHP.Text;
 using Devsense.PHP.Errors;
+using TNode = Devsense.PHP.Syntax.Ast.LangElement;
 
 %%
 
@@ -333,7 +334,7 @@ start:
 		AssignNamingContext(); 
         _lexer.DocCommentList.Merge(new Span(0, int.MaxValue), $2, _astFactory);
 		AssignStatements($2);
-		_astRoot = _astFactory.GlobalCode(@$, GetArrayAndFree<LangElement, Statement>($2), namingContext);
+		_astRoot = _astFactory.GlobalCode(@$, GetArrayAndFree<TNode, Statement>($2), namingContext);
 	}
 ;
 reserved_non_modifiers:
@@ -459,7 +460,7 @@ attribute_group:
 ;
 
 attribute:
-		T_ATTRIBUTE attribute_group possible_comma ']'	{ $$ = _astFactory.AttributeGroup(@$, $2); }
+		T_ATTRIBUTE attribute_group possible_comma ']'	{ $$ = _astFactory.AttributeGroup(@$, GetArrayAndFree<TNode, IAttributeElement>($2)); }
 ;
 
 attributes:
@@ -478,7 +479,7 @@ attributed_statement:
 top_statement:
 		statement							{ $$ = $1; }
 	|	attributed_statement				{ $$ = $1; }
-	|	attributes attributed_statement		{ $$ = WithAttributes($2, $1); }
+	|	attributes attributed_statement		{ $$ = FinalizeAttributes($2, $1); }
 	|	T_HALT_COMPILER '(' ')' ';'			{ $$ = _astFactory.HaltCompiler(@$); }
 	|	T_NAMESPACE namespace_name ';'
 		{
@@ -614,7 +615,7 @@ inner_statement_list:
 inner_statement:
 		statement								{ $$ = $1; }
 	|	attributed_statement					{ $$ = $1; }
-	|	attributes attributed_statement			{ $$ = WithAttributes($2, $1); }
+	|	attributes attributed_statement			{ $$ = FinalizeAttributes($2, $1); }
 	|	T_HALT_COMPILER '(' ')' ';'
 			{ 
 				$$ = _astFactory.HaltCompiler(@$); 
@@ -630,8 +631,12 @@ statement:
 			{ $$ = _astFactory.While(@$, $3, CombineSpans(@2, @4), $6); }
 	|	T_DO enter_scope statement T_WHILE '(' expr ')' ';' exit_scope
 			{ $$ = _astFactory.Do(@$, $3, $6, CombineSpans(@5, @7), @4); }
-	|	T_FOR '(' for_exprs ';' for_exprs ';' for_exprs ')' enter_scope for_statement exit_scope
-			{ $$ = _astFactory.For(@$, $3, $5, $7, CombineSpans(@2, @8), $10); }
+	|	T_FOR '(' for_exprs ';' for_exprs ';' for_exprs ')' enter_scope for_statement exit_scope {
+			$$ = _astFactory.For(@$, $3, $5, $7, CombineSpans(@2, @8), $10);
+			FreeList($3);
+			FreeList($5);
+			FreeList($7);
+		}
 	|	T_SWITCH '(' expr ')' enter_scope switch_case_list exit_scope
 			{ $$ = _astFactory.Switch(@$, $3, CombineSpans(@2, @4), $6.CaseList, $6.ClosingToken, $6.ClosingTokenSpan); }
 	|	T_BREAK optional_expr ';'		{ $$ = _astFactory.Jump(@$, JumpStmt.Types.Break, $2);}
@@ -650,8 +655,10 @@ statement:
 	|	T_DECLARE '(' const_list ')' declare_statement
 			{ $$ = _astFactory.Declare(@$, $3, $5); }
 	|	';'	/* empty statement */ { $$ = _astFactory.EmptyStmt(@$); }
-	|	T_TRY '{' inner_statement_list '}' enter_scope catch_list finally_statement exit_scope
-			{ $$ = _astFactory.TryCatch(@$, FinalizeBlock(CombineSpans(@2, @4), $3), $6, $7); }
+	|	T_TRY '{' inner_statement_list '}' enter_scope catch_list finally_statement exit_scope {
+			$$ = _astFactory.TryCatch(@$, FinalizeBlock(CombineSpans(@2, @4), $3), $6, $7);
+			FreeList($6);
+		}
 	|	T_GOTO T_STRING ';' { $$ = _astFactory.Goto(@$, $2, @2); }
 	|	T_STRING ':' { $$ = _astFactory.Label(@$, $1, @1); }
 ;
@@ -661,7 +668,7 @@ catch_list:
 			{ $$ = NewList<LangElement>(); }
 	|	catch_list T_CATCH '(' catch_name_list optional_variable ')' '{' inner_statement_list '}'
 			{ 
-				$$ = AddToList<LangElement>($1, _astFactory.Catch(CombineSpans(@2, @9), _astFactory.TypeReference(@4, $4), 
+				$$ = AddToList($1, _astFactory.Catch(CombineSpans(@2, @9), _astFactory.TypeReference(@4, $4), 
 					(DirectVarUse)$5, FinalizeBlock(CombineSpans(@7, @9), $8))); 
 			}
 ;
@@ -683,7 +690,7 @@ finally_statement:
 
 unset_variables:
 		unset_variable { $$ = NewList<LangElement>( $1 ); }
-	|	unset_variables ',' unset_variable { $$ = AddToList<LangElement>($1, $3); }
+	|	unset_variables ',' unset_variable { $$ = AddToList($1, $3); }
 ;
 
 unset_variable:
@@ -721,9 +728,10 @@ class_declaration_statement:
 		enter_scope '{' class_statement_list '}' exit_scope
 		{ 
 			$$ = _astFactory.Type(CombineSpans(@1, @2, @11), CombineSpans(@1, @2, @3, @4, @6), isConditional, (PhpMemberAttributes)$1, new Name($3), @3, null, 
-				ConvertToNamedTypeRef($4), $6.Select(ConvertToNamedTypeRef), $10, CombineSpans(@9, @11)); 
+				ConvertToNamedTypeRef($4), FinalizeNamedTypeRefArray($6), $10, CombineSpans(@9, @11)); 
 			SetDoc($$);
 			PopClassContext();
+			FreeList($10);
 		}
 ;
 
@@ -749,6 +757,7 @@ trait_declaration_statement:
 				new Name($2), @2, null, null, EmptyArray<INamedTypeRef>.Instance, $7, CombineSpans(@6, @8)); 
 			SetDoc($$);
 			PopClassContext();
+			FreeList($7);
 		}
 ;
 
@@ -757,9 +766,10 @@ interface_declaration_statement:
 		enter_scope '{' class_statement_list '}' exit_scope
 		{ 
 			$$ = _astFactory.Type(@$, CombineSpans(@1, @2, @4), isConditional, PhpMemberAttributes.Interface, 
-				new Name($2), @2, null, null, $4.Select(ConvertToNamedTypeRef), $8, CombineSpans(@7, @9)); 
+				new Name($2), @2, null, null, FinalizeNamedTypeRefArray($4), $8, CombineSpans(@7, @9)); 
 			SetDoc($$);
 			PopClassContext();
+			FreeList($8);
 		}
 ;
 
@@ -768,10 +778,11 @@ enum_declaration_statement:
 		enter_scope '{' class_statement_list '}' exit_scope
 		{ 
 			$$ = _astFactory.Type(@$, CombineSpans(@1, @2, @3, @4, @6), isConditional, PhpMemberAttributes.Enum, new Name($2), @2, null, 
-				ConvertToNamedTypeRef($4), $6.Select(ConvertToNamedTypeRef), $10, CombineSpans(@9, @11)); 
+				ConvertToNamedTypeRef($4), FinalizeNamedTypeRefArray($6), $10, CombineSpans(@9, @11)); 
 			SetDoc($$);
 			SetEnumBackingType($$, $3);
 			PopClassContext();
+			FreeList($10);
 		}
 ;
 
@@ -795,12 +806,12 @@ extends_from:
 ;
 
 interface_extends_list:
-		/* empty */			{ $$ = TypeRef.EmptyList; }
+		/* empty */			{ $$ = EmptyArray<TypeRef>.Instance; }
 	|	T_EXTENDS name_list { $$ = $2; }
 ;
 
 implements_list:
-		/* empty */				{ $$ = TypeRef.EmptyList; }
+		/* empty */				{ $$ = EmptyArray<TypeRef>.Instance; }
 	|	T_IMPLEMENTS name_list	{ $$ = $2; }
 ;
 
@@ -838,16 +849,16 @@ case_list:
 			$$ = new SwitchObject();
 		}
 	|	case_list T_CASE expr case_separator inner_statement_list {
-			AddToList<LangElement>(
+			AddToList(
 				$1.CaseList,
-				_astFactory.Case(CombineSpans(@2, @3, @4, @5), $3, CreateCaseBlock(CombineSpans(@4, @5), $5))
+				_astFactory.Case(CombineSpans(@2, @3, @4, @5), $3, FinalizeCaseBlock(CombineSpans(@4, @5), $5))
 			);
 			$$ = $1;
 		}
 	|	case_list T_DEFAULT case_separator inner_statement_list {
-			AddToList<LangElement>(
+			AddToList(
 				$1.CaseList,
-				_astFactory.Case(CombineSpans(@2, @3, @4), null, CreateCaseBlock(CombineSpans(@3, @4), $4))
+				_astFactory.Case(CombineSpans(@2, @3, @4), null, FinalizeCaseBlock(CombineSpans(@3, @4), $4))
 			);
 			$$ = $1;
 		}
@@ -863,7 +874,7 @@ match:
 ;
 
 match_arm_list:
-		/* empty */	{ $$ = LangElement.EmptyList; }
+		/* empty */	{ $$ = NewList<LangElement>(); }
 	|	non_empty_match_arm_list possible_comma { $$ = $1; }
 ;
 
@@ -873,8 +884,8 @@ non_empty_match_arm_list:
 ;
 
 match_arm:
-		match_arm_cond_list possible_comma T_DOUBLE_ARROW expr { $$ = (LangElement)_astFactory.MatchArm(@$, $1, $4); }
-	|	T_DEFAULT possible_comma T_DOUBLE_ARROW expr { $$ = (LangElement)_astFactory.MatchArm(@$, LangElement.EmptyList, $4); }
+		match_arm_cond_list possible_comma T_DOUBLE_ARROW expr { $$ = (LangElement)_astFactory.MatchArm(@$, GetArrayAndFree<TNode, IExpression>($1), $4); }
+	|	T_DEFAULT possible_comma T_DOUBLE_ARROW expr { $$ = (LangElement)_astFactory.MatchArm(@$, EmptyArray<IExpression>.Instance, $4); }
 ;
 
 match_arm_cond_list:
@@ -971,7 +982,7 @@ non_empty_parameter_list:
 
 attributed_parameter:
 		attributes parameter	{
-			$$ = WithAttributes($2, $1);
+			$$ = FinalizeAttributes($2, $1);
 			SetDocSpan($$);
 		}
 	|	parameter				{ $$ = $1; }
@@ -1161,7 +1172,7 @@ attributed_class_statement:
 
 class_statement:
 		attributed_class_statement				{ $$ = $1; }
-	|   attributes attributed_class_statement	{ $$ = WithAttributes($2, $1); }
+	|   attributes attributed_class_statement	{ $$ = FinalizeAttributes($2, $1); }
 	|	T_USE name_list trait_adaptations {
 			$$ = _astFactory.TraitUse(@$, $2, $3);
 			SetDoc($$);
@@ -1289,7 +1300,7 @@ echo_expr:
 ;
 
 for_exprs:
-		/* empty */			{ $$ = LangElement.EmptyList; }
+		/* empty */			{ $$ = NewList<LangElement>(); }
 	|	non_empty_for_exprs	{ $$ = $1; }
 ;
 
@@ -1316,6 +1327,7 @@ anonymous_class:
 			SetDoc(((AnonymousTypeRef)typeRef).TypeDeclaration);
 			$$ = new AnonymousClass(typeRef, GetArrayAndFreeList($3), @3);
 			PopClassContext();
+			FreeList($10);
 		}
 ;
 
@@ -1325,7 +1337,7 @@ new_expr:
 	|	T_NEW anonymous_class
 			{ $$ = _astFactory.New(@$, $2.TypeRef, $2.ActualParams, $2.Span); }
 	|	T_NEW attributes anonymous_class
-			{ $$ = _astFactory.New(@$, WithAttributes($3.TypeRef, $2), $3.ActualParams, $3.Span); }
+			{ $$ = _astFactory.New(@$, FinalizeAttributes($3.TypeRef, $2), $3.ActualParams, $3.Span); }
 ;
 
 expr_without_variable:
@@ -1445,7 +1457,7 @@ expr_without_variable:
 	|	T_YIELD_FROM expr { $$ = _astFactory.YieldFrom(@$, $2); }
 	|	T_THROW expr { $$ = _astFactory.Throw(@$, $2); }
 	|	inline_function { $$ = $1; }
-	|	attributes inline_function { $$ = WithAttributes($2, $1); }
+	|	attributes inline_function { $$ = FinalizeAttributes($2, $1); }
 	|	T_STATIC inline_function {
 			var lambda = (LambdaFunctionExpr)$2;
 			lambda.IsStatic = true;
@@ -1456,7 +1468,7 @@ expr_without_variable:
 			var lambda = (LambdaFunctionExpr)$3;
 			lambda.IsStatic = true;
 			lambda.Span = @$;
-			$$ = WithAttributes(lambda, $1);
+			$$ = FinalizeAttributes(lambda, $1);
 		}
 	|	match { $$ = $1; }
 ;
