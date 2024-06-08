@@ -35,7 +35,7 @@ namespace Devsense.PHP.Syntax.Ast
         /// </summary>
         internal abstract object ValueObj { get; }
 
-        private static readonly object s_sourceTextKey = new object();
+        private static object s_sourceTextKey => typeof(string); // if key == typeof(value) then the property is stored efficiently within a single object
 
         /// <summary>
         /// Optional. Literal source code text.
