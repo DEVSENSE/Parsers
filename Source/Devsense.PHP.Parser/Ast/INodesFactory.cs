@@ -126,12 +126,12 @@ namespace Devsense.PHP.Syntax.Ast
         /// <returns>Lambda node.</returns>
         TNode Lambda(TSpan span, TSpan headingSpan,
             bool aliasReturn, TypeRef returnType,
-            IEnumerable<FormalParam> formalParams, TSpan formalParamsSpan,
-            IEnumerable<FormalParam> lexicalVars, TNode body);
+            FormalParam[] formalParams, TSpan formalParamsSpan,
+            FormalParam[] lexicalVars, TNode body);
 
         TNode ArrowFunc(TSpan span, TSpan headingSpan,
             bool aliasReturn, TypeRef returnType,
-            IEnumerable<FormalParam> formalParams, TSpan formalParamsSpan, TNode expression);
+            FormalParam[] formalParams, TSpan formalParamsSpan, TNode expression);
 
         /// <summary>
         /// Creates <c>FormalParam</c> for a function of method declaration.
@@ -186,9 +186,10 @@ namespace Devsense.PHP.Syntax.Ast
         TNode Method(TSpan span,
             bool aliasReturn, PhpMemberAttributes attributes,
             TypeRef returnType, TSpan returnTypeSpan,
-            string name, TSpan nameSpan, IEnumerable<FormalTypeParam> typeParamsOpt,
-            IEnumerable<FormalParam> formalParams, TSpan formalParamsSpan,
-            IEnumerable<ActualParam> baseCtorParams, TNode body);
+            string name, TSpan nameSpan,
+            FormalTypeParam[] typeParamsOpt,
+            FormalParam[] formalParams, TSpan formalParamsSpan,
+            ActualParam[] baseCtorParams, TNode body);
 
         /// <summary>
         /// Creates class trait use statement.
@@ -1004,7 +1005,7 @@ namespace Devsense.PHP.Syntax.Ast
         /// <param name="targets">Enumeration of reference expressions (variables, fields, array items) or other <c>list</c> expressions.</param>
         /// <param name="isOldNotation">Decide if the list is defined using the old notation 'list(...)'.</param>
         /// <returns>List expression.</returns>
-        TNode List(TSpan span, IEnumerable<ArrayItem> targets, bool isOldNotation);
+        TNode List(TSpan span, ArrayItem[] targets, bool isOldNotation);
 
         /// <summary>
         /// Creates shell expression.

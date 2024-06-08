@@ -109,7 +109,7 @@ namespace Devsense.PHP.Syntax.Ast
 
         public LambdaFunctionExpr(
             Text.Span span, Text.Span headingSpan,
-            Signature signature, IList<FormalParam> useParams,
+            Signature signature, FormalParam[] useParams,
             ILangElement/*!*/ body, TypeRef returnType)
             : base(span)
         {
@@ -124,8 +124,8 @@ namespace Devsense.PHP.Syntax.Ast
         [Obsolete]
         public LambdaFunctionExpr(
             Text.Span span, Text.Span headingSpan,
-            bool aliasReturn, PhpMemberAttributes modifiers, IList<FormalParam>/*!*/ formalParams,
-            Text.Span paramSpan, IList<FormalParam> useParams,
+            bool aliasReturn, PhpMemberAttributes modifiers, FormalParam[]/*!*/ formalParams,
+            Text.Span paramSpan, FormalParam[] useParams,
             BlockStmt/*!*/ body, TypeRef returnType)
             : this(span, headingSpan, new Signature(aliasReturn, formalParams, paramSpan), useParams, body, returnType)
         {

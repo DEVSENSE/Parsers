@@ -342,22 +342,22 @@ namespace Devsense.PHP.Syntax.Ast
         }
 
         public virtual LangElement Lambda(Span span, Span headingSpan,
-            bool aliasReturn, TypeRef returnType, IEnumerable<FormalParam> formalParams,
-            Span formalParamsSpan, IEnumerable<FormalParam> lexicalVars, LangElement body)
+            bool aliasReturn, TypeRef returnType, FormalParam[] formalParams,
+            Span formalParamsSpan, FormalParam[] lexicalVars, LangElement body)
         {
             return new LambdaFunctionExpr(
                 span, headingSpan,
-                new Signature(aliasReturn, formalParams.AsArray(), formalParamsSpan),
-                lexicalVars.AsArray(), (BlockStmt)body, returnType);
+                new Signature(aliasReturn, formalParams ?? EmptyArray<FormalParam>.Instance, formalParamsSpan),
+                lexicalVars ?? EmptyArray<FormalParam>.Instance, (BlockStmt)body, returnType);
         }
 
         public virtual LangElement ArrowFunc(Span span, Span headingSpan,
-            bool aliasReturn, TypeRef returnType, IEnumerable<FormalParam> formalParams,
+            bool aliasReturn, TypeRef returnType, FormalParam[] formalParams,
             Span formalParamsSpan, LangElement expression)
         {
             return new ArrowFunctionExpr(
                 span, headingSpan,
-                new Signature(aliasReturn, formalParams.AsArray(), formalParamsSpan),
+                new Signature(aliasReturn, formalParams ?? EmptyArray<FormalParam>.Instance, formalParamsSpan),
                 (Expression)expression, returnType);
         }
 
@@ -443,9 +443,8 @@ namespace Devsense.PHP.Syntax.Ast
             throw new NotImplementedException();
         }
 
-        public virtual LangElement List(Span span, IEnumerable<ArrayItem> targets, bool isOldNotation)
+        public virtual LangElement List(Span span, ArrayItem[] items, bool isOldNotation)
         {
-            var items = targets.AsArray();
             return ArrayEx.CreateList(span, IsAllNull(items) ? null : items, !isOldNotation);
         }
 
@@ -610,12 +609,16 @@ namespace Devsense.PHP.Syntax.Ast
         }
 
         public virtual LangElement Method(Span span, bool aliasReturn, PhpMemberAttributes attributes, TypeRef returnType,
-            Span returnTypeSpan, string name, Span nameSpan, IEnumerable<FormalTypeParam> typeParamsOpt,
-            IEnumerable<FormalParam> formalParams, Span formalParamsSpan, IEnumerable<ActualParam> baseCtorParams, LangElement body)
+            Span returnTypeSpan, string name, Span nameSpan, FormalTypeParam[] typeParamsOpt,
+            FormalParam[] formalParams, Span formalParamsSpan, ActualParam[] baseCtorParams, LangElement body)
         {
-            return new MethodDecl(span, new NameRef(nameSpan, name), aliasReturn, formalParams.AsArray(),
-                formalParamsSpan, typeParamsOpt.AsArray(),
-                (BlockStmt)body, attributes, baseCtorParams.AsArray(), returnType);
+            return new MethodDecl(span, new NameRef(nameSpan, name), aliasReturn,
+                formalParams.AsArray(), formalParamsSpan,
+                typeParamsOpt.AsArray(),
+                (BlockStmt)body, attributes,
+                baseCtorParams.AsArray(),
+                returnType
+            );
         }
 
         public virtual LangElement UnaryOperation(Span span, Operations operation, LangElement expression)

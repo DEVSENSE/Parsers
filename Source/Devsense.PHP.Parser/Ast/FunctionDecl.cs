@@ -204,10 +204,10 @@ namespace Devsense.PHP.Syntax.Ast
         public Text.Span Span { get { return _span; } }
         private Text.Span _span;
 
-        public Signature(bool aliasReturn, IList<FormalParam>/*!*/ formalParams, Text.Span position)
+        public Signature(bool aliasReturn, FormalParam[]/*!*/ formalParams, Text.Span position)
         {
             this.aliasReturn = aliasReturn;
-            this.formalParams = formalParams.AsArray();
+            this.formalParams = formalParams ?? EmptyArray<FormalParam>.Instance;
             _span = position;
         }
     }
@@ -276,7 +276,7 @@ namespace Devsense.PHP.Syntax.Ast
         public FunctionDecl(
             Text.Span span,
             bool isConditional, PhpMemberAttributes memberAttributes, NameRef/*!*/ name,
-            bool aliasReturn, IList<FormalParam>/*!*/ formalParams, Text.Span paramsSpan, IList<FormalTypeParam>/*!*/ genericParams,
+            bool aliasReturn, FormalParam[]/*!*/ formalParams, Text.Span paramsSpan, FormalTypeParam[]/*!*/ genericParams,
             BlockStmt body, TypeRef returnType)
             : base(span)
         {

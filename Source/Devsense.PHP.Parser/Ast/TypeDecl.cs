@@ -70,10 +70,10 @@ namespace Devsense.PHP.Syntax.Ast
 
         #region Construction
 
-        public TypeSignature(IList<FormalTypeParam>/*!!*/ typeParams)
+        public TypeSignature(FormalTypeParam[]/*!!*/typeParams)
         {
             Debug.Assert(typeParams != null);
-            this.typeParams = typeParams.AsArray();
+            this.typeParams = typeParams ?? EmptyArray<FormalTypeParam>.Instance;
         }
 
         #endregion
@@ -194,8 +194,8 @@ namespace Devsense.PHP.Syntax.Ast
         public TypeDecl(
             Text.Span span, Text.Span headingSpan,
             bool isConditional, PhpMemberAttributes memberAttributes, bool isPartial,
-            IList<FormalTypeParam>/*!*/ genericParams, INamedTypeRef baseClass,
-            IList<INamedTypeRef>/*!*/ implementsList, IList<TypeMemberDecl>/*!*/ elements, Text.Span bodySpan)
+            FormalTypeParam[]/*!*/ genericParams, INamedTypeRef baseClass,
+            INamedTypeRef[]/*!*/ implementsList, TypeMemberDecl[]/*!*/ elements, Text.Span bodySpan)
             : base(span)
         {
             Debug.Assert(genericParams != null && implementsList != null && elements != null);
@@ -218,7 +218,7 @@ namespace Devsense.PHP.Syntax.Ast
                 TypeDeclData.GetOrAdd(this).IsPartial = true;
             }
 
-            if (genericParams != null && genericParams.Count != 0)
+            if (genericParams != null && genericParams.Length != 0)
             {
                 this.SetTypeSignature(new TypeSignature(genericParams));
             }
@@ -286,8 +286,8 @@ namespace Devsense.PHP.Syntax.Ast
 
         public NamedTypeDecl(
             Text.Span span, Text.Span headingSpan, bool isConditional, PhpMemberAttributes memberAttributes, bool isPartial,
-            NameRef className, IList<FormalTypeParam>/*!*/ genericParams, INamedTypeRef baseClass,
-            IList<INamedTypeRef>/*!*/ implementsList, IList<TypeMemberDecl>/*!*/ elements, Text.Span bodySpan)
+            NameRef className, FormalTypeParam[]/*!*/ genericParams, INamedTypeRef baseClass,
+            INamedTypeRef[]/*!*/ implementsList, TypeMemberDecl[]/*!*/ elements, Text.Span bodySpan)
             : base(span, headingSpan, isConditional,
                   memberAttributes, isPartial, genericParams, baseClass, implementsList, elements, bodySpan)
         {
@@ -334,8 +334,8 @@ namespace Devsense.PHP.Syntax.Ast
         public AnonymousTypeDecl(
             Text.Span span, Text.Span headingSpan,
             bool isConditional, PhpMemberAttributes memberAttributes, bool isPartial,
-            IList<FormalTypeParam>/*!*/ genericParams, INamedTypeRef baseClass,
-            IList<INamedTypeRef>/*!*/ implementsList, IList<TypeMemberDecl>/*!*/ elements, Text.Span bodySpan)
+            FormalTypeParam[]/*!*/ genericParams, INamedTypeRef baseClass,
+            INamedTypeRef[]/*!*/ implementsList, TypeMemberDecl[]/*!*/ elements, Text.Span bodySpan)
             : base(span, headingSpan, isConditional,
                   memberAttributes, isPartial, genericParams, baseClass, implementsList, elements, bodySpan)
         {
@@ -491,9 +491,9 @@ namespace Devsense.PHP.Syntax.Ast
         /// <param name="baseCtorParams">Parameters for the base class constructor.</param>
         /// <param name="returnType">Return type hint, optional.</param>
         public MethodDecl(Text.Span span,
-            NameRef name, bool aliasReturn, IList<FormalParam>/*!*/ formalParams, Text.Span paramsSpan,
-            IList<FormalTypeParam>/*!*/ genericParams, BlockStmt body,
-            PhpMemberAttributes modifiers, IList<ActualParam> baseCtorParams, TypeRef returnType)
+            NameRef name, bool aliasReturn, FormalParam[]/*!*/ formalParams, Text.Span paramsSpan,
+            FormalTypeParam[]/*!*/ genericParams, BlockStmt body,
+            PhpMemberAttributes modifiers, ActualParam[] baseCtorParams, TypeRef returnType)
             : base(span, modifiers)
         {
             Debug.Assert(genericParams != null && formalParams != null);
@@ -503,12 +503,12 @@ namespace Devsense.PHP.Syntax.Ast
             this.Body = body;
             this.ReturnType = returnType;
 
-            if (genericParams != null && genericParams.Count != 0)
+            if (genericParams != null && genericParams.Length != 0)
             {
                 this.SetTypeSignature(new TypeSignature(genericParams));
             }
 
-            if (baseCtorParams != null && baseCtorParams.Count != 0)
+            if (baseCtorParams != null && baseCtorParams.Length != 0)
             {
                 this.SetProperty(new BaseCtorParamsHolder { BaseCtorParams = baseCtorParams.AsArray(), });
             }

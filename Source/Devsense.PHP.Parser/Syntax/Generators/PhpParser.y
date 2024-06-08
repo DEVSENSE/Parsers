@@ -807,8 +807,8 @@ implements_list:
 foreach_variable:
 		variable			{ $$ = _astFactory.ForeachVariable(@$, $1); }
 	|	ampersand variable		{ $$ = _astFactory.ForeachVariable(@$, $2, true); }
-	|	T_LIST '(' array_pair_list ')' { $$ = _astFactory.ForeachVariable(@$, _astFactory.List(@$, $3, true)); }
-	|	'[' array_pair_list ']' { $$ = _astFactory.ForeachVariable(@$, _astFactory.List(@$, $2, false)); }
+	|	T_LIST '(' array_pair_list ')' { $$ = _astFactory.ForeachVariable(@$, _astFactory.List(@$, GetArrayAndFreeList($3), true)); }
+	|	'[' array_pair_list ']' { $$ = _astFactory.ForeachVariable(@$, _astFactory.List(@$, GetArrayAndFreeList($2), false)); }
 ;
 
 for_statement:
@@ -1144,7 +1144,7 @@ attributed_class_statement:
 		return_type backup_fn_flags method_body backup_fn_flags
 			{	
 				$$ = _astFactory.Method(@$, $3 == (long)FormalParam.Flags.IsByRef, (PhpMemberAttributes)$1, 
-					$9, @9, $4, @4, null, $7, CombineSpans(@6, @8), null, $11);
+					$9, @9, $4, @4, null, GetArrayAndFreeList($7), CombineSpans(@6, @8), null, $11);
 				SetDoc($$);
 			}
 	|	enum_case { $$ = $1; }
@@ -1321,9 +1321,9 @@ new_expr:
 
 expr_without_variable:
 		T_LIST '(' array_pair_list ')' '=' expr
-			{ $$ = _astFactory.Assignment(@$, _astFactory.List(Span.Combine(@1, @4), $3, true), $6, Operations.AssignValue); }
+			{ $$ = _astFactory.Assignment(@$, _astFactory.List(Span.Combine(@1, @4), GetArrayAndFreeList($3), true), $6, Operations.AssignValue); }
 	|	'[' array_pair_list ']' '=' expr
-			{ $$ = _astFactory.Assignment(@$, _astFactory.List(CombineSpans(@1, @3), $2, false), $5, Operations.AssignValue); }
+			{ $$ = _astFactory.Assignment(@$, _astFactory.List(CombineSpans(@1, @3), GetArrayAndFreeList($2), false), $5, Operations.AssignValue); }
 	|	variable '=' expr
 			{ $$ = _astFactory.Assignment(@$, $1, $3, Operations.AssignValue); }
 	|	variable '=' ampersand variable
@@ -1457,13 +1457,13 @@ inline_function:
 		backup_fn_flags enter_scope '{' inner_statement_list '}' exit_scope backup_fn_flags
 			{ 
 				$$ = _astFactory.Lambda(@$, CombineSpans(@1, @6, @7, @8), $2 == (long)FormalParam.Flags.IsByRef, $8, 
-					$5, CombineSpans(@4, @6), $7, FinalizeBlock(CombineSpans(@11, @13), $12)); 
+					GetArrayAndFreeList($5), CombineSpans(@4, @6), GetArrayAndFreeList($7), FinalizeBlock(CombineSpans(@11, @13), $12)); 
 				SetDoc($$);
 			}
 	|	fn returns_ref  '(' parameter_list ')' return_type backup_doc_comment T_DOUBLE_ARROW backup_fn_flags backup_lex_pos expr backup_fn_flags
 			{
 				$$ = _astFactory.ArrowFunc(@$, CombineSpans(@1, @5, @6), $2 == (long)FormalParam.Flags.IsByRef, $6, 
-					$4, CombineSpans(@3, @5), $11); 
+					GetArrayAndFreeList($4), CombineSpans(@3, @5), $11); 
 				SetDoc($$);
 			}
 ;
@@ -1573,8 +1573,8 @@ ctor_arguments:
 
 
 dereferencable_scalar:
-		T_ARRAY '(' array_pair_list ')'	{ $$ = _astFactory.NewArray(@$, $3, true); }
-	|	'[' array_pair_list ']'			{ $$ = _astFactory.NewArray(@$, $2, false); }
+		T_ARRAY '(' array_pair_list ')'	{ $$ = _astFactory.NewArray(@$, GetArrayAndFreeList($3), true); }
+	|	'[' array_pair_list ']'			{ $$ = _astFactory.NewArray(@$, GetArrayAndFreeList($2), false); }
 	|	T_CONSTANT_ENCAPSED_STRING		{ $$ = _astFactory.Literal(@$, $1, _lexer.TokenTextSpan); }
 ;
 
@@ -1742,9 +1742,9 @@ array_pair:
 	|	T_ELLIPSIS expr
 			{ $$ = _astFactory.ArrayItemSpread(@$, $2); }
 	|	expr T_DOUBLE_ARROW T_LIST '(' array_pair_list ')'
-			{ $$ = _astFactory.ArrayItemValue(@$, $1, _astFactory.List(Span.Combine(@3, @6), $5, true)); }
+			{ $$ = _astFactory.ArrayItemValue(@$, $1, _astFactory.List(Span.Combine(@3, @6), GetArrayAndFreeList($5), true)); }
 	|	T_LIST '(' array_pair_list ')'
-			{ $$ = _astFactory.ArrayItemValue(@$, null, _astFactory.List(Span.Combine(@1, @4), $3, true)); }
+			{ $$ = _astFactory.ArrayItemValue(@$, null, _astFactory.List(Span.Combine(@1, @4), GetArrayAndFreeList($3), true)); }
 ;
 
 encaps_list:
