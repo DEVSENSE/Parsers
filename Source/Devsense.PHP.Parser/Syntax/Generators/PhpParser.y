@@ -510,6 +510,7 @@ top_statement:
 	|	T_CONST const_list ';'	
 		{
 			SetDoc($$ = _astFactory.DeclList(@$, PhpMemberAttributes.None, $2, null));
+			FreeList($2);
 		}
 ;
 
@@ -1149,16 +1150,19 @@ attributed_class_statement:
 			{ 
 				$$ = _astFactory.DeclList(@$, (PhpMemberAttributes)$1, $3, $2); 
 				SetDoc($$);
+				FreeList($3);
 			}
 	|	method_modifiers T_CONST class_const_list ';'
 			{ 
 				$$ = _astFactory.DeclList(@$, (PhpMemberAttributes)$1, $3, null); 
 				SetDoc($$);
+				FreeList($3);
 			}
 	|	method_modifiers T_CONST type_expr class_const_list ';'
 			{ 
 				$$ = _astFactory.DeclList(@$, (PhpMemberAttributes)$1, $4, $3); 
 				SetDoc($$);
+				FreeList($4);
 			}
 	|	method_modifiers function returns_ref identifier backup_doc_comment '(' parameter_list ')'
 		return_type backup_fn_flags method_body backup_fn_flags

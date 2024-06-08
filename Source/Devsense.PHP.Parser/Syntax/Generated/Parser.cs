@@ -2332,6 +2332,7 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
       case 118: // top_statement -> T_CONST const_list ';' 
 {
 			SetDoc(yyval.Node = _astFactory.DeclList(yypos, PhpMemberAttributes.None, value_stack.array[value_stack.top-2].yyval.NodeList, null));
+			FreeList(value_stack.array[value_stack.top-2].yyval.NodeList);
 		}
         return;
       case 119: // use_type -> T_FUNCTION 
@@ -3064,18 +3065,21 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 { 
 				yyval.Node = _astFactory.DeclList(yypos, (PhpMemberAttributes)value_stack.array[value_stack.top-4].yyval.Long, value_stack.array[value_stack.top-2].yyval.NodeList, value_stack.array[value_stack.top-3].yyval.TypeReference); 
 				SetDoc(yyval.Node);
+				FreeList(value_stack.array[value_stack.top-2].yyval.NodeList);
 			}
         return;
       case 313: // attributed_class_statement -> method_modifiers T_CONST class_const_list ';' 
 { 
 				yyval.Node = _astFactory.DeclList(yypos, (PhpMemberAttributes)value_stack.array[value_stack.top-4].yyval.Long, value_stack.array[value_stack.top-2].yyval.NodeList, null); 
 				SetDoc(yyval.Node);
+				FreeList(value_stack.array[value_stack.top-2].yyval.NodeList);
 			}
         return;
       case 314: // attributed_class_statement -> method_modifiers T_CONST type_expr class_const_list ';' 
 { 
 				yyval.Node = _astFactory.DeclList(yypos, (PhpMemberAttributes)value_stack.array[value_stack.top-5].yyval.Long, value_stack.array[value_stack.top-2].yyval.NodeList, value_stack.array[value_stack.top-3].yyval.TypeReference); 
 				SetDoc(yyval.Node);
+				FreeList(value_stack.array[value_stack.top-2].yyval.NodeList);
 			}
         return;
       case 315: // attributed_class_statement -> method_modifiers function returns_ref identifier backup_doc_comment '(' parameter_list ')' return_type backup_fn_flags method_body backup_fn_flags 
