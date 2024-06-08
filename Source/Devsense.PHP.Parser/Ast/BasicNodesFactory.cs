@@ -334,10 +334,10 @@ namespace Devsense.PHP.Syntax.Ast
         }
 
         public virtual LangElement Function(Span span, bool conditional, bool aliasReturn, PhpMemberAttributes attributes, TypeRef returnType,
-            Name name, Span nameSpan, IEnumerable<FormalTypeParam> typeParamsOpt, IEnumerable<FormalParam> formalParams, Span formalParamsSpan, LangElement body)
+            Name name, Span nameSpan, FormalTypeParam[] typeParamsOpt, FormalParam[] formalParams, Span formalParamsSpan, LangElement body)
         {
             return new FunctionDecl(span, conditional, attributes, new NameRef(nameSpan, name.Value), aliasReturn,
-                formalParams.AsArray(), formalParamsSpan, typeParamsOpt.AsArray(),
+                formalParams ?? EmptyArray<FormalParam>.Instance, formalParamsSpan, typeParamsOpt,
                 (BlockStmt)body, returnType);
         }
 

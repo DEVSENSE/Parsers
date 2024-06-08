@@ -2569,7 +2569,7 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
       case 183: // function_declaration_statement -> function returns_ref function_name backup_doc_comment '(' parameter_list ')' return_type backup_fn_flags enter_scope '{' inner_statement_list '}' exit_scope backup_fn_flags 
 { 
 			yyval.Node = _astFactory.Function(yypos, isConditional, value_stack.array[value_stack.top-14].yyval.Long == (long)FormalParam.Flags.IsByRef, PhpMemberAttributes.None, value_stack.array[value_stack.top-8].yyval.TypeReference, 
-			new Name(value_stack.array[value_stack.top-13].yyval.String), value_stack.array[value_stack.top-13].yypos, null, value_stack.array[value_stack.top-10].yyval.FormalParamList, CombineSpans(value_stack.array[value_stack.top-11].yypos, value_stack.array[value_stack.top-9].yypos), 
+			new Name(value_stack.array[value_stack.top-13].yyval.String), value_stack.array[value_stack.top-13].yypos, null, GetArrayAndFreeList(value_stack.array[value_stack.top-10].yyval.FormalParamList), CombineSpans(value_stack.array[value_stack.top-11].yypos, value_stack.array[value_stack.top-9].yypos), 
 			FinalizeBlock(CombineSpans(value_stack.array[value_stack.top-5].yypos, value_stack.array[value_stack.top-3].yypos), value_stack.array[value_stack.top-4].yyval.NodeList)); 
 			SetDoc(yyval.Node);
 		}

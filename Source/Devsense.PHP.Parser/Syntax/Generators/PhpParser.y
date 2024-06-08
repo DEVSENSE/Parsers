@@ -708,7 +708,7 @@ function_declaration_statement:
 	backup_fn_flags enter_scope '{' inner_statement_list '}' exit_scope backup_fn_flags
 		{ 
 			$$ = _astFactory.Function(@$, isConditional, $2 == (long)FormalParam.Flags.IsByRef, PhpMemberAttributes.None, $8, 
-			new Name($3), @3, null, $6, CombineSpans(@5, @7), 
+			new Name($3), @3, null, GetArrayAndFreeList($6), CombineSpans(@5, @7), 
 			FinalizeBlock(CombineSpans(@11, @13), $12)); 
 			SetDoc($$);
 		}

@@ -293,7 +293,7 @@ namespace UnitTests
             public override ForeachVar ForeachVariable(Span span, LangElement variable, bool alias = false)
                  => CountFV(base.ForeachVariable(span, variable, alias));
 
-            public override LangElement Function(Span span, bool conditional, bool aliasReturn, PhpMemberAttributes attributes, TypeRef returnType, Name name, Span nameSpan, IEnumerable<FormalTypeParam> typeParamsOpt, IEnumerable<FormalParam> formalParams, Span formalParamsSpan, LangElement body)
+            public override LangElement Function(Span span, bool conditional, bool aliasReturn, PhpMemberAttributes attributes, TypeRef returnType, Name name, Span nameSpan, FormalTypeParam[] typeParamsOpt, FormalParam[] formalParams, Span formalParamsSpan, LangElement body)
                 => CountLE(base.Function(span, conditional, aliasReturn, attributes, returnType, name, nameSpan, typeParamsOpt, formalParams, formalParamsSpan, body));
 
             public override TypeRef GenericTypeReference(Span span, LangElement className, List<TypeRef> genericParams)

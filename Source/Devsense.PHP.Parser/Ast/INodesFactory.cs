@@ -109,8 +109,8 @@ namespace Devsense.PHP.Syntax.Ast
         /// <returns>Function node.</returns>
         TNode Function(TSpan span,
             bool conditional, bool aliasReturn, PhpMemberAttributes attributes, TypeRef returnType,
-            Name name, TSpan nameSpan, IEnumerable<FormalTypeParam> typeParamsOpt,
-            IEnumerable<FormalParam> formalParams, TSpan formalParamsSpan, TNode body);
+            Name name, TSpan nameSpan, FormalTypeParam[] typeParamsOpt,
+            FormalParam[] formalParams, TSpan formalParamsSpan, TNode body);
 
         /// <summary>
         /// Creates a lambda declaration node.

@@ -178,11 +178,6 @@ namespace Devsense.PHP.Syntax.Ast
     /// </summary>
     public abstract class LangElement : AstNode, ILangElement
     {
-        /// <summary>
-        /// Immutable empty list of <see cref="LangElement"/>.
-        /// </summary>
-        internal static readonly List<LangElement>/*!*/EmptyList = new List<LangElement>();
-
         #region ContainingElement
 
         /// <summary>
