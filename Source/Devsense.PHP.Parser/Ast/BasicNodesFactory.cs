@@ -493,9 +493,9 @@ namespace Devsense.PHP.Syntax.Ast
             return new DeclareStmt(span, decls.CastToArray<GlobalConstantDecl>(), (Statement)statement);
         }
 
-        public virtual LangElement Use(Span span, IEnumerable<UseBase> uses, AliasKind kind)
+        public virtual LangElement Use(Span span, UseBase[] uses, AliasKind kind)
         {
-            return new UseStatement(span, uses.AsArray(), kind);
+            return new UseStatement(span, uses, kind);
         }
 
         public virtual LangElement New(Span span, TypeRef classNameRef, ActualParam[] argsOpt, Span argsPosition)

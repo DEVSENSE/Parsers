@@ -502,10 +502,10 @@ top_statement:
 			SetDoc($$);
 			ResetNamingContext();
 		}
-	|	T_USE mixed_group_use_declaration ';'		{ $$ = _astFactory.Use(@$, $2, AliasKind.Type); _contextType = AliasKind.Type;	/* TODO: Error - must contain only a single group use */	}	
-	|	T_USE use_type group_use_declaration ';'	{ $$ = _astFactory.Use(@$, $3, $2); _contextType = AliasKind.Type;				/* TODO: Error - must contain only a single group use */	}				
-	|	T_USE use_declarations ';'					{ $$ = _astFactory.Use(@$, $2, AliasKind.Type); _contextType = AliasKind.Type;	/* TODO: Error - must contain only simple uses		  */	}	
-	|	T_USE use_type use_declarations ';'			{ $$ = _astFactory.Use(@$, $3, $2); _contextType = AliasKind.Type;				/* TODO: Error - must contain only simple uses		  */	}				
+	|	T_USE mixed_group_use_declaration ';'		{ $$ = _astFactory.Use(@$, GetArrayAndFree($2), AliasKind.Type); _contextType = AliasKind.Type;	/* TODO: Error - must contain only a single group use */	}	
+	|	T_USE use_type group_use_declaration ';'	{ $$ = _astFactory.Use(@$, GetArrayAndFree($3), $2); _contextType = AliasKind.Type;				/* TODO: Error - must contain only a single group use */	}				
+	|	T_USE use_declarations ';'					{ $$ = _astFactory.Use(@$, GetArrayAndFree($2), AliasKind.Type); _contextType = AliasKind.Type;	/* TODO: Error - must contain only simple uses		  */	}	
+	|	T_USE use_type use_declarations ';'			{ $$ = _astFactory.Use(@$, GetArrayAndFree($3), $2); _contextType = AliasKind.Type;				/* TODO: Error - must contain only simple uses		  */	}				
 	|	T_CONST const_list ';'	
 		{
 			SetDoc($$ = _astFactory.DeclList(@$, PhpMemberAttributes.None, $2, null));
@@ -903,13 +903,20 @@ if_stmt_without_else:
 ;
 
 if_stmt:
-		if_stmt_without_else %prec T_NOELSE 
-			{ ((List<IfStatement>)$1).Reverse(); $$ = null; 
-			foreach (var item in (List<IfStatement>)$1) 
-				$$ = _astFactory.If($$ != null? CombineSpans(item.Span, ($$).Span): item.Span, item.Condition, item.ConditionSpan, item.Body, $$); }
-	|	if_stmt_without_else T_ELSE statement
-			{ ((List<IfStatement>)$1).Reverse(); $$ = _astFactory.If(CombineSpans(@2, @3), null, Span.Invalid, $3, null); 
-			foreach (var item in (List<IfStatement>)$1) $$ = _astFactory.If(CombineSpans(item.Span, ($$).Span), item.Condition, item.ConditionSpan, item.Body, $$); }
+		if_stmt_without_else %prec T_NOELSE {
+			$1.Reverse();
+			$$ = null; 
+			foreach (var item in $1) 
+				$$ = _astFactory.If($$ != null ? CombineSpans(item.Span, ($$).Span): item.Span, item.Condition, item.ConditionSpan, item.Body, $$);
+			FreeList($1);
+		}
+	|	if_stmt_without_else T_ELSE statement {
+			$1.Reverse();
+			$$ = _astFactory.If(CombineSpans(@2, @3), null, Span.Invalid, $3, null);
+			foreach (var item in $1)
+				$$ = _astFactory.If(CombineSpans(item.Span, ($$).Span), item.Condition, item.ConditionSpan, item.Body, $$);
+			FreeList($1);
+		}
 ;
 
 alt_if_stmt_without_else:
@@ -936,6 +943,7 @@ alt_if_stmt:
 				$$ = null; 
 				foreach (var item in $1)
 					$$ = _astFactory.If($$ != null? CombineSpans(item.Span, ($$).Span): item.Span, item.Condition, item.ConditionSpan, item.Body, $$);
+				FreeList($1);
 			}
 	|	alt_if_stmt_without_else T_ELSE ':' inner_statement_list T_ENDIF ';'
 			{
@@ -944,6 +952,7 @@ alt_if_stmt:
 				$$ = _astFactory.If(CombineSpans(@2, @6), null, @2, FinalizeBlock(@3, @5, $4, Tokens.T_ENDIF), null); 
 				foreach (var item in $1)
 					$$ = _astFactory.If(CombineSpans(item.Span, ($$).Span), item.Condition, item.ConditionSpan, item.Body, $$);
+				FreeList($1);
 			}
 ;
 

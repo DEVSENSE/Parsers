@@ -506,7 +506,7 @@ namespace UnitTests
             public override LangElement YieldFrom(Span span, LangElement fromExpr)
                  => CountLE(base.YieldFrom(span, fromExpr));
 
-            public override LangElement Use(Span span, IEnumerable<UseBase> uses, AliasKind kind)
+            public override LangElement Use(Span span, UseBase[] uses, AliasKind kind)
                  => CountLE(base.Use(span, uses, kind));
 
             public override LangElement Attribute(Span span, TypeRef classref, CallSignature signature = default(CallSignature))

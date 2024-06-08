@@ -139,10 +139,7 @@ namespace Devsense.PHP.Utilities
         /// </remarks>
         public void Free(T obj)
         {
-            if (_freeop != null)
-            {
-                _freeop(obj);
-            }
+            _freeop?.Invoke(obj);
 
             if (_firstItem == null)
             {
@@ -170,6 +167,10 @@ namespace Devsense.PHP.Utilities
                     items[i].Value = obj;
                     break;
                 }
+
+#if DEBUG // Just to emphasize this
+                Debug.Assert(!ReferenceEquals(items[i].Value, obj), "Seems 'obj' freed twice!");
+#endif
             }
         }
     }

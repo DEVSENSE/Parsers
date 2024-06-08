@@ -560,13 +560,13 @@ namespace Devsense.PHP.Syntax.Ast
         public UseBase[] Uses => _uses;
         private readonly UseBase[] _uses;
 
-        public UseStatement(Span span, IList<UseBase> uses, AliasKind kind)
+        public UseStatement(Span span, UseBase[] uses, AliasKind kind)
             : base(span)
         {
             Debug.Assert(uses != null);
 
             _kind = kind;
-            _uses = uses.AsArray();
+            _uses = uses ?? throw new ArgumentNullException(nameof(uses));
         }
 
         public override void VisitMe(TreeVisitor visitor)

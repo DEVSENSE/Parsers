@@ -2317,16 +2317,16 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 		}
         return;
       case 114: // top_statement -> T_USE mixed_group_use_declaration ';' 
-{ yyval.Node = _astFactory.Use(yypos, value_stack.array[value_stack.top-2].yyval.UseList, AliasKind.Type); _contextType = AliasKind.Type;	/* TODO: Error - must contain only a single group use */	}
+{ yyval.Node = _astFactory.Use(yypos, GetArrayAndFree(value_stack.array[value_stack.top-2].yyval.UseList), AliasKind.Type); _contextType = AliasKind.Type;	/* TODO: Error - must contain only a single group use */	}
         return;
       case 115: // top_statement -> T_USE use_type group_use_declaration ';' 
-{ yyval.Node = _astFactory.Use(yypos, value_stack.array[value_stack.top-2].yyval.UseList, value_stack.array[value_stack.top-3].yyval.Kind); _contextType = AliasKind.Type;				/* TODO: Error - must contain only a single group use */	}
+{ yyval.Node = _astFactory.Use(yypos, GetArrayAndFree(value_stack.array[value_stack.top-2].yyval.UseList), value_stack.array[value_stack.top-3].yyval.Kind); _contextType = AliasKind.Type;				/* TODO: Error - must contain only a single group use */	}
         return;
       case 116: // top_statement -> T_USE use_declarations ';' 
-{ yyval.Node = _astFactory.Use(yypos, value_stack.array[value_stack.top-2].yyval.UseList, AliasKind.Type); _contextType = AliasKind.Type;	/* TODO: Error - must contain only simple uses		  */	}
+{ yyval.Node = _astFactory.Use(yypos, GetArrayAndFree(value_stack.array[value_stack.top-2].yyval.UseList), AliasKind.Type); _contextType = AliasKind.Type;	/* TODO: Error - must contain only simple uses		  */	}
         return;
       case 117: // top_statement -> T_USE use_type use_declarations ';' 
-{ yyval.Node = _astFactory.Use(yypos, value_stack.array[value_stack.top-2].yyval.UseList, value_stack.array[value_stack.top-3].yyval.Kind); _contextType = AliasKind.Type;				/* TODO: Error - must contain only simple uses		  */	}
+{ yyval.Node = _astFactory.Use(yypos, GetArrayAndFree(value_stack.array[value_stack.top-2].yyval.UseList), value_stack.array[value_stack.top-3].yyval.Kind); _contextType = AliasKind.Type;				/* TODO: Error - must contain only simple uses		  */	}
         return;
       case 118: // top_statement -> T_CONST const_list ';' 
 {
@@ -2786,13 +2786,22 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 		}
         return;
       case 244: // if_stmt -> if_stmt_without_else 
-{ ((List<IfStatement>)value_stack.array[value_stack.top-1].yyval.IfItemList).Reverse(); yyval.Node = null; 
-			foreach (var item in (List<IfStatement>)value_stack.array[value_stack.top-1].yyval.IfItemList) 
-				yyval.Node = _astFactory.If(yyval.Node != null? CombineSpans(item.Span, (yyval.Node).Span): item.Span, item.Condition, item.ConditionSpan, item.Body, yyval.Node); }
+{
+			value_stack.array[value_stack.top-1].yyval.IfItemList.Reverse();
+			yyval.Node = null; 
+			foreach (var item in value_stack.array[value_stack.top-1].yyval.IfItemList) 
+				yyval.Node = _astFactory.If(yyval.Node != null ? CombineSpans(item.Span, (yyval.Node).Span): item.Span, item.Condition, item.ConditionSpan, item.Body, yyval.Node);
+			FreeList(value_stack.array[value_stack.top-1].yyval.IfItemList);
+		}
         return;
       case 245: // if_stmt -> if_stmt_without_else T_ELSE statement 
-{ ((List<IfStatement>)value_stack.array[value_stack.top-3].yyval.IfItemList).Reverse(); yyval.Node = _astFactory.If(CombineSpans(value_stack.array[value_stack.top-2].yypos, value_stack.array[value_stack.top-1].yypos), null, Span.Invalid, value_stack.array[value_stack.top-1].yyval.Node, null); 
-			foreach (var item in (List<IfStatement>)value_stack.array[value_stack.top-3].yyval.IfItemList) yyval.Node = _astFactory.If(CombineSpans(item.Span, (yyval.Node).Span), item.Condition, item.ConditionSpan, item.Body, yyval.Node); }
+{
+			value_stack.array[value_stack.top-3].yyval.IfItemList.Reverse();
+			yyval.Node = _astFactory.If(CombineSpans(value_stack.array[value_stack.top-2].yypos, value_stack.array[value_stack.top-1].yypos), null, Span.Invalid, value_stack.array[value_stack.top-1].yyval.Node, null);
+			foreach (var item in value_stack.array[value_stack.top-3].yyval.IfItemList)
+				yyval.Node = _astFactory.If(CombineSpans(item.Span, (yyval.Node).Span), item.Condition, item.ConditionSpan, item.Body, yyval.Node);
+			FreeList(value_stack.array[value_stack.top-3].yyval.IfItemList);
+		}
         return;
       case 246: // alt_if_stmt_without_else -> T_IF '(' expr ')' ':' inner_statement_list 
 { 
@@ -2815,6 +2824,7 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 				yyval.Node = null; 
 				foreach (var item in value_stack.array[value_stack.top-3].yyval.IfItemList)
 					yyval.Node = _astFactory.If(yyval.Node != null? CombineSpans(item.Span, (yyval.Node).Span): item.Span, item.Condition, item.ConditionSpan, item.Body, yyval.Node);
+				FreeList(value_stack.array[value_stack.top-3].yyval.IfItemList);
 			}
         return;
       case 249: // alt_if_stmt -> alt_if_stmt_without_else T_ELSE ':' inner_statement_list T_ENDIF ';' 
@@ -2824,6 +2834,7 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 				yyval.Node = _astFactory.If(CombineSpans(value_stack.array[value_stack.top-5].yypos, value_stack.array[value_stack.top-1].yypos), null, value_stack.array[value_stack.top-5].yypos, FinalizeBlock(value_stack.array[value_stack.top-4].yypos, value_stack.array[value_stack.top-2].yypos, value_stack.array[value_stack.top-3].yyval.NodeList, Tokens.T_ENDIF), null); 
 				foreach (var item in value_stack.array[value_stack.top-6].yyval.IfItemList)
 					yyval.Node = _astFactory.If(CombineSpans(item.Span, (yyval.Node).Span), item.Condition, item.ConditionSpan, item.Body, yyval.Node);
+				FreeList(value_stack.array[value_stack.top-6].yyval.IfItemList);
 			}
         return;
       case 250: // parameter_list -> non_empty_parameter_list possible_comma 
