@@ -84,8 +84,8 @@ function test(){
             Assert.IsTrue(testparts.Length >= 2);
 
             var sourceUnit = new CodeSourceUnit(testparts[0], path, Encoding.UTF8, Lexer.LexicalStates.INITIAL, LanguageFeatures.Basic);
-            var factory = new TestNodeFactory(sourceUnit);
             var errors = new TestErrorSink();
+            var factory = new TestNodeFactory(sourceUnit, errors);
 
             //
             sourceUnit.Parse(factory, errors, new TestErrorRecovery());
@@ -339,7 +339,7 @@ function foo(
             foreach (var code in codes)
             {
                 var unit = new CodeSourceUnit(code, "dummy.php", Encoding.UTF8);
-                var factory = new TestNodeFactory(unit);
+                var factory = new TestNodeFactory(unit, errors: null);
                 unit.Parse(factory, null);
 
                 foreach (var func in factory.Functions)

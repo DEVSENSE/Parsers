@@ -499,9 +499,9 @@ namespace Devsense.PHP.Syntax.Ast
             return new UseStatement(span, uses.AsArray(), kind);
         }
 
-        public virtual LangElement New(Span span, TypeRef classNameRef, IList<ActualParam> argsOpt, Span argsPosition)
+        public virtual LangElement New(Span span, TypeRef classNameRef, ActualParam[] argsOpt, Span argsPosition)
         {
-            return new NewEx(span, classNameRef, argsOpt.AsArray(), argsPosition);
+            return new NewEx(span, classNameRef, argsOpt ?? ActualParam.EmptyArray, argsPosition);
         }
 
         public virtual LangElement NewArray(Span span, IEnumerable<ArrayItem> itemsOpt, bool isOldNotation)

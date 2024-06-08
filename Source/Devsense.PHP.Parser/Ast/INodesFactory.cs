@@ -983,7 +983,7 @@ namespace Devsense.PHP.Syntax.Ast
         /// <param name="argsOpt">Optional. Class constructor arguments.</param>
         /// <param name="argsPosition">Aarguments position.</param>
         /// <returns>The new expression.</returns>
-        TNode New(TSpan span, TypeRef classNameRef, IList<ActualParam> argsOpt, TSpan argsPosition);
+        TNode New(TSpan span, TypeRef classNameRef, ActualParam[] argsOpt, TSpan argsPosition);
 
         /// <summary>
         /// Creates <c>instanceof</c> operation expression.

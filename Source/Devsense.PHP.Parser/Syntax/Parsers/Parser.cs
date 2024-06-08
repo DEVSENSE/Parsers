@@ -96,8 +96,6 @@ namespace Devsense.PHP.Syntax
                 return first;
         }
 
-        internal override void FreeValueType(ref SemanticValueType value) => value.Free();
-
         public LangElement Parse(
                 ITokenProvider<SemanticValueType, Span> lexer,
                 INodesFactory<LangElement, Span> astFactory,
@@ -327,7 +325,7 @@ namespace Devsense.PHP.Syntax
             return name;
         }
 
-        private GroupUse AddAliases(Span span, List<string> prefix, Span prefixSpan, List<CompleteAlias> aliases, bool isFullyQualified)
+        private GroupUse AddAliases(Span span, List<string> prefix, Span prefixSpan, IList<CompleteAlias> aliases, bool isFullyQualified)
         {
             var uses = ListObjectPool<SimpleUse>.Allocate();
             var prefixNamespaces = SelectNames(prefix);
@@ -357,7 +355,7 @@ namespace Devsense.PHP.Syntax
             );
         }
 
-        private GroupUse AddAliases(Span span, List<string> prefix, Span prefixSpan, List<ContextAlias> aliases, bool isFullyQualified)
+        private GroupUse AddAliases(Span span, List<string> prefix, Span prefixSpan, IList<ContextAlias> aliases, bool isFullyQualified)
         {
             var uses = ListObjectPool<SimpleUse>.Allocate();
             var prefixNamespaces = SelectNames(prefix);
@@ -418,6 +416,21 @@ namespace Devsense.PHP.Syntax
         /// <remarks>Responsibility of caller to return the instance to the pool.</remarks>
         static List<T> NewList<T>() => ListObjectPool<T>.Allocate();
 
+        static List<T> NewList<T>(T item1)
+        {
+            var list = ListObjectPool<T>.Allocate();
+            list.Add(item1);
+            return list;
+        }
+        
+        static List<T> NewList<T>(T item1, T item2)
+        {
+            var list = ListObjectPool<T>.Allocate();
+            list.Add(item1);
+            list.Add(item2);
+            return list;
+        }
+
         /// <summary>Returns the instance to the pool.</summary>
         static TTarget[] GetArrayAndFree<TSource, TTarget>(List<TSource> list)
         {
@@ -425,6 +438,22 @@ namespace Devsense.PHP.Syntax
             ListObjectPool<TSource>.Free(list);
             return array;
         }
+
+        static T[] GetArrayAndFree<T>(List<T> list) => GetArrayAndFree<T, T>(list);
+
+        static T[] GetArrayAndFreeList<T>(IList<T> list)
+        {
+            T[] arr = list.AsArray();
+
+            if (list is List<T> obj)
+            {
+                FreeList(obj);
+            }
+
+            return arr;
+        }
+
+        static void FreeList<T>(List<T> list) => ListObjectPool<T>.Free(list);
 
         /// <summary>Alias to <see cref="GetArrayAndFree{LangElement, Statement}"/></summary>
         static Statement[] FreeStatements(List<LangElement> list) => GetArrayAndFree<LangElement, Statement>(list);
@@ -497,7 +526,7 @@ namespace Devsense.PHP.Syntax
         private LangElement CreateStaticProperty(Span span, LangElement objectExpr, Span objectNamePos, object name) =>
             CreateStaticProperty(span, _astFactory.TypeReference(objectNamePos, objectExpr), name);
 
-        private static List<T> AddTrailingComma<T>(List<T> list, bool addComma) where T : class
+        private static IList<T> AddTrailingComma<T>(IList<T> list, bool addComma) where T : class
         {
             if (addComma)
             {
@@ -1010,6 +1039,18 @@ namespace Devsense.PHP.Syntax
         }
 
         /// <summary>
+        /// Unassigned PHPDoc comments are merged to the statements as <see cref="PHPDocStmt"/>.
+        /// </summary>
+        /// <param name="span">Statements span.</param>
+        /// <param name="statements">Statements in block.</param>
+        List<LangElement> MergeDoc(Span span, List<LangElement> statements)
+        {
+            Debug.Assert(statements.All(s => s != null));
+            _lexer.DocCommentList.Merge(span, statements, _astFactory);
+            return statements;
+        }
+
+        /// <summary>
         /// Assocates enum type with its backing type.
         /// </summary>
         /// <param name="target"><see cref="TypeDecl"/> representing enum.</param>
@@ -1025,33 +1066,36 @@ namespace Devsense.PHP.Syntax
             }
         }
 
-        /// <summary>
-        /// Creates a <see cref="BlockStmt"/> statement from a list of statements.
-        /// Unassigned PHPDoc comments are merged to the statements as <see cref="PHPDocStmt"/>.
-        /// </summary>
-        /// <param name="span">Span of the entire block.</param>
-        /// <param name="statements">List of statements in the block.</param>
-        /// <returns>Complete block statement.</returns>
         /// <remarks>Returns <paramref name="statements"/> to the pool.</remarks>
-        BlockStmt CreateBlock(Span span, List<LangElement> statements)
+        private LangElement FinalizeBlock(Span span, List<LangElement> statements)
         {
-            Debug.Assert(statements.All(s => s != null));
-            _lexer.DocCommentList.Merge(span, statements, _astFactory);
+            MergeDoc(span, statements);
 
-            return (BlockStmt)_astFactory.Block(span, FreeStatements(statements));
+            return _astFactory.Block(span, FreeStatements(statements));
         }
 
         /// <remarks>Returns <paramref name="statements"/> to the pool.</remarks>
-        private LangElement CreateBlock(Span span, List<LangElement> statements, Tokens endToken)
+        private LangElement FinalizeBlock(Span span, List<LangElement> statements, Tokens endToken)
         {
-            _lexer.DocCommentList.Merge(span, statements, _astFactory);
-
+            MergeDoc(span, statements);
+            
             return _astFactory.ColonBlock(span, FreeStatements(statements), endToken);
         }
 
-        private LangElement CreateBlock(Span span, Span endSpan, List<LangElement> statements, Tokens endToken)
+        private LangElement FinalizeBlock(Span span, Span endSpan, List<LangElement> statements, Tokens endToken)
         {
-            return CreateBlock(Span.FromBounds(span.Start, endSpan.Start), statements, endToken);
+            return FinalizeBlock(Span.FromBounds(span.Start, endSpan.Start), statements, endToken);
+        }
+
+        static CallSignature FinalizeCallSignature(Span span, IList<ActualParam> parameters)
+        {
+            Debug.Assert(parameters is List<ActualParam> || parameters is ActualParam[]);
+
+            var arr = parameters is List<ActualParam> list
+                ? GetArrayAndFree(list)
+                : parameters.AsArray();
+
+            return new CallSignature(arr, span);
         }
 
         /// <summary>
@@ -1096,7 +1140,7 @@ namespace Devsense.PHP.Syntax
             currentNS.Namespaces.CopyTo(namespaces, 0);
             for (int i = currentNS.Namespaces.Length; i < namespaces.Length; i++)
             {
-                namespaces[i] = new Name(suffix[i - currentNS.Namespaces.Length]); // loop otimization
+                namespaces[i] = new Name(suffix[i - currentNS.Namespaces.Length]);
             }
 
             return new QualifiedName(new Name(suffix.Last()), namespaces, true);

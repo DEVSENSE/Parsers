@@ -24,9 +24,9 @@ namespace Devsense.PHP.Syntax
     {
         public Span Span;
         public TypeRef TypeRef;
-        public IList<ActualParam> ActualParams;
+        public ActualParam[] ActualParams;
 
-        public AnonymousClass(TypeRef tref, IList<ActualParam> @params, Span span)
+        public AnonymousClass(TypeRef tref, ActualParam[] @params, Span span)
         {
             Span = span;
             TypeRef = tref;
@@ -162,18 +162,6 @@ namespace Devsense.PHP.Syntax
         ReferenceTypes _objs; // ...
 
         //
-        internal void Free()
-        {
-            if (_objs.Object1 is System.Collections.IEnumerable)
-            {
-                // free to the pool
-            }
-
-            // nullify
-            _objs = default(ReferenceTypes);
-        }
-
-        //
         // Properties:
         //
 
@@ -209,7 +197,7 @@ namespace Devsense.PHP.Syntax
         public IList<ActualParam> ParamList { get { return (IList<ActualParam>)Object; } set { Object = value; } }
         internal AnonymousClass AnonymousClass
         {
-            get => new AnonymousClass((TypeRef)_objs.Object1, (IList<ActualParam>)_objs.Object2, _span);
+            get => new AnonymousClass((TypeRef)_objs.Object1, (ActualParam[])_objs.Object2, _span);
             set
             {
                 _objs = new ReferenceTypes(value.TypeRef, value.ActualParams);
@@ -224,7 +212,7 @@ namespace Devsense.PHP.Syntax
         internal ContextAlias ContextAlias { get { return (ContextAlias)Object; } set { Object = value; } }
         internal List<ContextAlias> ContextAliasList { get { return (List<ContextAlias>)Object; } set { Object = value; } }
         public FormalParam FormalParam { get { return (FormalParam)Object; } set { Object = value; } }
-        public List<FormalParam> FormalParamList { get { return (List<FormalParam>)Object; } set { Object = value; } }
+        public IList<FormalParam> FormalParamList { get { return (IList<FormalParam>)Object; } set { Object = value; } }
         public ArrayItem Item
         {
             get => _objs.AsArrayItem();

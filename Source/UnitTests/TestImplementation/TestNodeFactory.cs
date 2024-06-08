@@ -1,4 +1,5 @@
-﻿using Devsense.PHP.Syntax;
+﻿using Devsense.PHP.Errors;
+using Devsense.PHP.Syntax;
 using Devsense.PHP.Syntax.Ast;
 using Devsense.PHP.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -12,14 +13,19 @@ namespace UnitTests.TestImplementation
 {
     internal class TestNodeFactory : BasicNodesFactory
     {
+
         public IReadOnlyList<MethodDecl> Methods => _methods;
         readonly List<MethodDecl> _methods = new List<MethodDecl>();
 
         public IReadOnlyList<FunctionDecl> Functions => _functions;
         readonly List<FunctionDecl> _functions = new List<FunctionDecl>();
 
-        public TestNodeFactory(SourceUnit sourceUnit) : base(sourceUnit)
+        protected override IErrorSink<Span> ErrorSink => _errors;
+        readonly IErrorSink<Span> _errors;
+
+        public TestNodeFactory(SourceUnit sourceUnit, IErrorSink<Span> errors) : base(sourceUnit)
         {
+            _errors = errors;
         }
 
         public override LangElement Method(Span span, bool aliasReturn, PhpMemberAttributes attributes, TypeRef returnType, Span returnTypeSpan, string name, Span nameSpan, IEnumerable<FormalTypeParam> typeParamsOpt, IEnumerable<FormalParam> formalParams, Span formalParamsSpan, IEnumerable<ActualParam> baseCtorParams, LangElement body)

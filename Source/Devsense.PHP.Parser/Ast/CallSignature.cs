@@ -233,10 +233,18 @@ namespace Devsense.PHP.Syntax.Ast
         /// </summary>
         /// <param name="parameters">List of parameters.</param>
         /// <param name="span">Signature position.</param>
-        public CallSignature(IList<ActualParam> parameters, Text.Span span)
+        public CallSignature(IList<ActualParam> parameters, Text.Span span) : this(parameters.AsArray(), span)
         {
-            this.Parameters = (parameters ?? throw new ArgumentNullException(nameof(parameters))).AsArray();
-            //this.GenericParams = (genericParams != null && genericParams.Count != 0) ? genericParams.AsArray() : null;
+        }
+
+        /// <summary>
+        /// Initialize new instance of <see cref="CallSignature"/>.
+        /// </summary>
+        /// <param name="parameters">List of parameters.</param>
+        /// <param name="span">Signature position.</param>
+        public CallSignature(ActualParam[] parameters, Text.Span span)
+        {
+            this.Parameters = parameters ?? throw new ArgumentNullException(nameof(parameters));
             this.Span = span;
         }
     }

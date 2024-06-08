@@ -39,7 +39,7 @@ namespace Devsense.PHP.Syntax.Ast
         /// <summary>Call signature of constructor</summary>
         public CallSignature CallSignature { get; }
 
-        public NewEx(Text.Span span, TypeRef/*!*/ classNameRef, IList<ActualParam>/*!*/ parameters, Text.Span parametersSpan)
+        public NewEx(Text.Span span, TypeRef/*!*/ classNameRef, ActualParam[]/*!*/ parameters, Text.Span parametersSpan)
             : base(span)
         {
             this.ClassNameRef = classNameRef ?? throw new ArgumentNullException(nameof(classNameRef));
