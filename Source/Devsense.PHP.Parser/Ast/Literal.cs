@@ -35,10 +35,26 @@ namespace Devsense.PHP.Syntax.Ast
         /// </summary>
         internal abstract object ValueObj { get; }
 
+        private static readonly object s_sourceTextKey = new object();
+
         /// <summary>
         /// Optional. Literal source code text.
         /// </summary>
-        public string SourceText { get; set; }
+        public string SourceText
+        {
+            get => Properties.GetProperty(s_sourceTextKey) as string;
+            set
+            {
+                if (value != null)
+                {
+                    Properties.SetProperty(s_sourceTextKey, value);
+                }
+                else
+                {
+                    Properties.RemoveProperty(s_sourceTextKey);
+                }
+            }
+        }
 
         protected Literal(Text.Span span)
             : base(span)
@@ -205,7 +221,7 @@ namespace Devsense.PHP.Syntax.Ast
     #region NumberLiteralFlags
 
     [Flags]
-    public enum NumberLiteralFlags
+    public enum NumberLiteralFlags : byte
     {
         Default = 0, // decimal plain number
 
