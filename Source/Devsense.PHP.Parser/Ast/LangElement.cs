@@ -346,6 +346,10 @@ namespace Devsense.PHP.Syntax.Ast
 
         internal static TypeSignature GetTypeSignature(this TypeMemberDecl member) => member.Properties.GetProperty<TypeSignature>();
 
+        internal static void SetTypeSignature(this FunctionDecl member, TypeSignature tsig) => member.Properties.SetProperty(tsig);
+
+        internal static TypeSignature GetTypeSignature(this FunctionDecl member) => member.Properties.GetProperty<TypeSignature>();
+
         /// <summary>
         /// Iterates through containing elements to find closest element of type <typeparamref name="T"/>.
         /// </summary>

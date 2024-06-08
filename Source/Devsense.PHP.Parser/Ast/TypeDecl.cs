@@ -72,7 +72,6 @@ namespace Devsense.PHP.Syntax.Ast
 
         public TypeSignature(FormalTypeParam[]/*!!*/typeParams)
         {
-            Debug.Assert(typeParams != null);
             this.typeParams = typeParams ?? EmptyArray<FormalTypeParam>.Instance;
         }
 

@@ -231,9 +231,8 @@ namespace Devsense.PHP.Syntax.Ast
         public Signature Signature { get { return signature; } }
         private readonly Signature signature;
 
-        public TypeSignature TypeSignature { get { return typeSignature; } }
-        private readonly TypeSignature typeSignature;
-
+        public TypeSignature TypeSignature => this.GetTypeSignature();
+        
         public BlockStmt/*!*/ Body { get; set; }
 
         /// <summary>
@@ -280,15 +279,19 @@ namespace Devsense.PHP.Syntax.Ast
             BlockStmt body, TypeRef returnType)
             : base(span)
         {
-            Debug.Assert(genericParams != null && formalParams != null && body != null);
+            Debug.Assert(formalParams != null && body != null);
 
             this.name = name;
             this.signature = new Signature(aliasReturn, formalParams, paramsSpan);
-            this.typeSignature = new TypeSignature(genericParams);
             this.Body = body;
             this.IsConditional = isConditional;
             this.MemberAttributes = memberAttributes;
             this.ReturnType = returnType;
+
+            if (genericParams != null && genericParams.Length != 0)
+            {
+                this.SetTypeSignature(new TypeSignature(genericParams));
+            }
         }
 
         #endregion
