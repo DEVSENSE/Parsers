@@ -265,10 +265,7 @@ namespace Devsense.PHP.Syntax
         /// <summary>
         /// Gets <see cref="PHPDocBlock"/> associated with <paramref name="properties"/>.
         /// </summary>
-        public static IDocBlock GetPHPDoc(this IPropertyCollection/*!*/properties)
-        {
-            return properties.GetProperty<IDocBlock>();
-        }
+        public static IDocBlock GetPHPDoc(this IPropertyCollection/*!*/properties) => properties.GetPropertyOfType<IDocBlock>();
 
         /// <summary>
         /// Sets <see cref="PHPDocBlock"/> to <paramref name="properties"/>.
@@ -277,17 +274,21 @@ namespace Devsense.PHP.Syntax
         {
             if (phpdoc != null)
             {
-                properties.SetProperty<IDocBlock>(phpdoc);
+                properties.SetProperty(phpdoc.GetType(), phpdoc); // optimization // if the key matches type of value, it's stored within single object without alloc
 
                 // remember LangElement associated with phpdoc
-                if (properties is LangElement element)
+                if (properties is ILangElement element)
                 {
-                    phpdoc.Properties.SetProperty<LangElement>(element);
+                    phpdoc.ContainingElement = element;
                 }
             }
             else
             {
-                properties.RemoveProperty<IDocBlock>();
+                var existing = GetPHPDoc(properties);
+                if (existing != null)
+                {
+                    properties.RemoveProperty(existing.GetType());
+                }
             }
         }
     }

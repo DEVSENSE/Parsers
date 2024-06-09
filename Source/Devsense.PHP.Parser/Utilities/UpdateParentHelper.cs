@@ -127,7 +127,8 @@ namespace Devsense.PHP.Utilities
                     foreach (var child in children)
                     {
                         Connect(child, x);
-                        Connect(child.Properties.GetPHPDoc(), child);
+                        //Connect(child.Properties.GetPHPDoc(), child); // assigned in SetPHPDoc() already
+                        //Debug.Assert(child.Properties.GetPHPDoc()?.ContainingElement == child);
 
                         stack.Push(child);
                     }

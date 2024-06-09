@@ -18,7 +18,7 @@ namespace UnitTests
         static IDocBlock NewPHPDoc(string code)
         {
             code = code.Trim();
-            return (new DefaultDocBlockFactory()).CreateDocBlock(new Span(0, code.Length), code);
+            return DefaultDocBlockFactory.Instance.CreateDocBlock(new Span(0, code.Length), code);
         }
 
         [TestMethod]

@@ -107,6 +107,14 @@ namespace Devsense.PHP.Syntax.Ast
             }
         }
 
+        public T GetPropertyOfType<T>()
+        {
+            lock (this)
+            {
+                return _properties.GetPropertyOfType<T>();
+            }
+        }
+
         public bool TryGetProperty<T>(out T value)
         {
             lock (this)

@@ -169,6 +169,8 @@ namespace Devsense.PHP.Syntax
             return _innerProps.GetProperty<T>();
         }
 
+        T IPropertyCollection.GetPropertyOfType<T>() => _innerProps.GetPropertyOfType<T>();
+
         bool IPropertyCollection.TryGetProperty(object key, out object value)
         {
             return _innerProps.TryGetProperty(key, out value);

@@ -57,6 +57,13 @@ namespace Devsense.PHP.Syntax
         T GetProperty<T>();
 
         /// <summary>
+        /// Gets property of type <typeparamref name="T"/> from the collection.
+        /// </summary>
+        /// <typeparam name="T">Type and key of the property.</typeparam>
+        /// <returns>Property value.</returns>
+        T GetPropertyOfType<T>();
+
+        /// <summary>
         /// Tries to get property from the container.
         /// </summary>
         bool TryGetProperty(object key, out object value);
@@ -324,6 +331,48 @@ namespace Devsense.PHP.Syntax
         /// <summary>
         /// Tries to get property from the container.
         /// </summary>
+        /// <param name="value">Out. Value of the property.</param>
+        /// <returns><c>true</c> if the property was found, otherwise <c>false</c>.</returns>
+        public bool TryGetPropertyOfType<T>(out T value) where T : class
+        {
+            var o = _obj;
+
+            if (!ReferenceEquals(o, null))
+            {
+                if ((value = o as T) != null)
+                {
+                    return true;
+                }
+                else if (o is DictionaryNode list)
+                {
+                    for (; list != null; list = list.Next)
+                    {
+                        if ((value = list.Value as T) != null)
+                        {
+                            return true;
+                        }
+                    }
+                }
+                else if (o is Hashtable dict)
+                {
+                    foreach (var pair in dict)
+                    {
+                        if ((value = pair.Value as T) != null)
+                        {
+                            return true;
+                        }
+                    }
+                }
+            }
+
+            // nothing found
+            value = default(T);
+            return false;
+        }
+
+        /// <summary>
+        /// Tries to get property from the container.
+        /// </summary>
         /// <param name="key">Key.</param>
         /// <returns><c>null</c> or property value.</returns>
         public object GetProperty(object key) => TryGetProperty(key, out var value) ? value : null;
@@ -332,6 +381,11 @@ namespace Devsense.PHP.Syntax
         /// Tries to get property from the container.
         /// </summary>
         public T GetProperty<T>() => TryGetProperty(typeof(T), out var value) ? (T)value : default(T);
+
+        /// <summary>
+        /// Tries to get a property of given type from the container.
+        /// </summary>
+        public T GetPropertyOfType<T>() => TryGetProperty(typeof(T), out var value) ? (T)value : default(T);
 
         /// <summary>
         /// Tries to get property from the container.
@@ -562,6 +616,14 @@ namespace Devsense.PHP.Syntax
             lock (this)
             {
                 return _properties.GetProperty<T>();
+            }
+        }
+
+        public T GetPropertyOfType<T>()
+        {
+            lock (this)
+            {
+                return _properties.GetPropertyOfType<T>();
             }
         }
 
