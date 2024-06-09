@@ -333,22 +333,24 @@ namespace Devsense.PHP.Syntax
         /// </summary>
         /// <param name="value">Out. Value of the property.</param>
         /// <returns><c>true</c> if the property was found, otherwise <c>false</c>.</returns>
-        public bool TryGetPropertyOfType<T>(out T value) where T : class
+        public bool TryGetPropertyOfType<T>(out T value)
         {
             var o = _obj;
 
             if (!ReferenceEquals(o, null))
             {
-                if ((value = o as T) != null)
+                if (o is T)
                 {
+                    value = (T)o;
                     return true;
                 }
                 else if (o is DictionaryNode list)
                 {
                     for (; list != null; list = list.Next)
                     {
-                        if ((value = list.Value as T) != null)
+                        if (list.Value is T)
                         {
+                            value = (T)list.Value;
                             return true;
                         }
                     }
@@ -357,8 +359,9 @@ namespace Devsense.PHP.Syntax
                 {
                     foreach (var pair in dict)
                     {
-                        if ((value = pair.Value as T) != null)
+                        if (pair.Value is T)
                         {
+                            value = (T)pair.Value;
                             return true;
                         }
                     }
@@ -385,7 +388,7 @@ namespace Devsense.PHP.Syntax
         /// <summary>
         /// Tries to get a property of given type from the container.
         /// </summary>
-        public T GetPropertyOfType<T>() => TryGetProperty(typeof(T), out var value) ? (T)value : default(T);
+        public T GetPropertyOfType<T>() => TryGetPropertyOfType<T>(out var value) ? (T)value : default(T);
 
         /// <summary>
         /// Tries to get property from the container.

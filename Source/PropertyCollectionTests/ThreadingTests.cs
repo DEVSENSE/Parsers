@@ -10,7 +10,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace PropertyCollectionTests
 {
     [TestClass]
-    public partial class PropertyCollectionTests
+    public partial class ThreadingTests
     {
         public TestContext TestContext { get; set; }
 
@@ -35,7 +35,7 @@ namespace PropertyCollectionTests
         }
 
         [TestMethod]
-        public void ThreadingTests()
+        public void ThreadingTest()
         {
             var collection = new PropertyCollectionClass();
 
