@@ -149,63 +149,35 @@ namespace Devsense.PHP.Syntax
 
         #region IPropertyCollection Members
 
-        void IPropertyCollection.SetProperty(object key, object value)
-        {
-            _innerProps.SetProperty(key, value);
-        }
+        public virtual void SetProperty(object key, object value) => _innerProps.SetProperty(key, value);
 
-        void IPropertyCollection.SetProperty<T>(T value)
-        {
-            _innerProps.SetProperty<T>(value);
-        }
+        void IPropertyCollection.SetProperty<T>(T value) => SetProperty(typeof(T), value);
 
-        object IPropertyCollection.GetProperty(object key)
-        {
-            return _innerProps.GetProperty(key);
-        }
+        object IPropertyCollection.GetProperty(object key) => TryGetProperty(key, out var obj) ? obj : null;
 
-        T IPropertyCollection.GetProperty<T>()
-        {
-            return _innerProps.GetProperty<T>();
-        }
+        T IPropertyCollection.GetProperty<T>() => TryGetProperty(typeof(T), out var obj) ? (T)obj : default(T);
 
         T IPropertyCollection.GetPropertyOfType<T>() => _innerProps.GetPropertyOfType<T>();
 
-        bool IPropertyCollection.TryGetProperty(object key, out object value)
-        {
-            return _innerProps.TryGetProperty(key, out value);
-        }
+        public virtual bool TryGetProperty(object key, out object value) => _innerProps.TryGetProperty(key, out value);
 
         bool IPropertyCollection.TryGetProperty<T>(out T value)
         {
-            return _innerProps.TryGetProperty<T>(out value);
+            var result = TryGetProperty(typeof(T), out var obj);
+            value = result ? (T)obj : default(T);
+            return result;
         }
 
-        bool IPropertyCollection.RemoveProperty(object key)
-        {
-            return _innerProps.RemoveProperty(key);
-        }
+        public virtual bool RemoveProperty(object key) => _innerProps.RemoveProperty(key);
 
-        bool IPropertyCollection.RemoveProperty<T>()
-        {
-            return _innerProps.RemoveProperty<T>();
-        }
+        bool IPropertyCollection.RemoveProperty<T>() => RemoveProperty(typeof(T));
 
-        void IPropertyCollection.ClearProperties()
-        {
-            _innerProps.ClearProperties();
-        }
+        void IPropertyCollection.ClearProperties() => _innerProps.ClearProperties();
 
         object IPropertyCollection.this[object key]
         {
-            get
-            {
-                return _innerProps[key];
-            }
-            set
-            {
-                _innerProps[key] = value;
-            }
+            get => TryGetProperty(key, out var obj) ? obj : null;
+            set => SetProperty(key, value);
         }
 
         #endregion
