@@ -33,9 +33,9 @@ namespace Devsense.PHP.Syntax.Ast
         bool IsShortSyntax { get; }
 
         /// <summary>
-        /// Enumeration of array items.
+        /// Array items.
         /// </summary>
-        IReadOnlyList<ArrayItem> Items { get; }
+        ReadOnlySpan<ArrayItem> Items { get; }
     }
 
     #endregion
@@ -55,7 +55,7 @@ namespace Devsense.PHP.Syntax.Ast
             ShortSyntax = 16,
         }
 
-        public IReadOnlyList<ArrayItem> Items => _items;
+        public ReadOnlySpan<ArrayItem> Items => _items.AsSpan();
 
         readonly ArrayItem[]/*!*/_items;
 
