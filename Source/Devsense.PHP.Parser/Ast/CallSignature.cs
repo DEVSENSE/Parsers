@@ -183,7 +183,7 @@ namespace Devsense.PHP.Syntax.Ast
         /// </summary>
         /// <param name="span">Span of the ellipsis '...'.</param>
         /// <returns>Single item list with parameter denoting it's a callable convert signature.</returns>
-        public static List<ActualParam> CreateCallableConvert(Text.Span span) => new List<ActualParam>() { new ActualParam(span, null, ActualParam.Flags.IsCallableConvert) };
+        public static ActualParam[] CreateCallableConvert(Text.Span span) => new ActualParam[] { new ActualParam(span, null, ActualParam.Flags.IsCallableConvert) };
 
         /// <summary>
         /// Gets value indicating the object is treated like a conversion of the containing call to a Closure.
