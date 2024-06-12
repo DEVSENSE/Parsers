@@ -398,7 +398,6 @@ namespace Devsense.PHP.Syntax
 		public VariableName(string/*!*/ value)
         {
             Debug.Assert(value != null);
-            // TODO (missing from Mono): this.value = value.Normalize();
 
             this.value = value;
         }
