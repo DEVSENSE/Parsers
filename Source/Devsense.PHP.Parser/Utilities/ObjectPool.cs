@@ -113,13 +113,15 @@ namespace Devsense.PHP.Utilities
 
             for (int i = 0; i < items.Length; i++)
             {
+                ref var item = ref items[i];
+
                 // Note that the initial read is optimistically not synchronized. That is intentional. 
                 // We will interlock only when we have a candidate. in a worst case we may miss some
                 // recently returned objects. Not a big deal.
-                T inst = items[i].Value;
+                T inst = item.Value;
                 if (inst != null)
                 {
-                    if (inst == Interlocked.CompareExchange(ref items[i].Value, null, inst))
+                    if (inst == Interlocked.CompareExchange(ref item.Value, null, inst))
                     {
                         return inst;
                     }
@@ -159,12 +161,13 @@ namespace Devsense.PHP.Utilities
             var items = _items;
             for (int i = 0; i < items.Length; i++)
             {
-                if (items[i].Value == null)
+                ref var item = ref items[i];
+                if (item.Value == null)
                 {
                     // Intentionally not using interlocked here. 
                     // In a worst case scenario two objects may be stored into same slot.
                     // It is very unlikely to happen and will only mean that one of the objects will get collected.
-                    items[i].Value = obj;
+                    item.Value = obj;
                     break;
                 }
 
