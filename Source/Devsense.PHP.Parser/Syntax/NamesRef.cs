@@ -29,7 +29,7 @@ namespace Devsense.PHP.Syntax
     /// <summary>
     /// Represents a variable name and its position within AST.
     /// </summary>
-    [DebuggerDisplay("{_name}@{_span_start}")]
+    [DebuggerDisplay("{Name}@{_span_start}")]
     public struct VariableNameRef : IEquatable<VariableName>, IEquatable<string>
     {
         /// <summary>
