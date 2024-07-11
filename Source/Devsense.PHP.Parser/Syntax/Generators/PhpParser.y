@@ -219,6 +219,7 @@ using TNode = Devsense.PHP.Syntax.Ast.LangElement;
 %token <Object> T_DIR 375            //"__DIR__ (T_DIR)"
 %token <Object> T_CLASS_C 373        //"__CLASS__ (T_CLASS_C)"
 %token <Object> T_TRAIT_C 374        //"__TRAIT__ (T_TRAIT_C)"
+%token <Object> T_PROPERTY_C 389       //"__PROPERTY__ (T_PROPERTY)"
 %token <Object> T_METHOD_C 378       //"__METHOD__ (T_METHOD_C)"
 %token <Object> T_FUNC_C 376         //"__FUNCTION__ (T_FUNC_C)"
 %token <Object> T_COMMENT 377        //"comment (T_COMMENT)"

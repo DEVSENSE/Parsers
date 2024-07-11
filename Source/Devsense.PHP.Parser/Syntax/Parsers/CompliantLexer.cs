@@ -140,6 +140,14 @@ namespace Devsense.PHP.Syntax
                         }
                         break;
 
+                    case Tokens.T_PROPERTY_C: // PHP >= 8.4
+                        if (!HasFeatureSet(LanguageFeatures.Php84Set) ||
+                            _backup_token == Tokens.T_NS_SEPARATOR)
+                        {
+                            token = Tokens.T_STRING;
+                        }
+                        break;
+
                     // reinterpret T_NAME_QUALIFIED
                     case Tokens.T_GLOBAL:
                     case Tokens.T_STATIC:

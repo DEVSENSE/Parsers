@@ -335,6 +335,8 @@ T_DIR=375,
 T_CLASS_C=373,
 /// <summary>&quot;__TRAIT__ (T_TRAIT_C)&quot;</summary>
 T_TRAIT_C=374,
+/// <summary>&quot;__PROPERTY__ (T_PROPERTY)&quot;</summary>
+T_PROPERTY_C=389,
 /// <summary>&quot;__METHOD__ (T_METHOD_C)&quot;</summary>
 T_METHOD_C=378,
 /// <summary>&quot;__FUNCTION__ (T_FUNC_C)&quot;</summary>

@@ -710,6 +710,10 @@ ST_HALT_COMPILER1,ST_HALT_COMPILER2,ST_HALT_COMPILER3>{EOF} {
 	return Identifier(Tokens.T_FUNC_C);
 }
 
+<ST_IN_SCRIPTING>"__PROPERTY__" {
+	return Identifier(Tokens.T_PROPERTY_C);
+}
+
 <ST_IN_SCRIPTING>"__METHOD__" {
 	return Identifier(Tokens.T_METHOD_C);
 }
