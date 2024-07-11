@@ -56,10 +56,11 @@ function test(){
 }",
 // PHP 8.4 new without parenthesis
 @"<?php
-echo new A->prop;
-echo new A->foo();
-var_dump(new A::$prop);
-echo new A[0];
+//echo new A->prop;  // unexpected token ->
+//echo new A->foo(); // unexpected token ->
+//var_dump(new A::$prop); // unexpected token ::
+//echo new A[0];  // unexpected token [
+//echo new A::C; // unexpected identifier C
 ",
 @"<?php
 echo new A()::C;
