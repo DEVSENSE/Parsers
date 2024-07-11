@@ -266,6 +266,30 @@ namespace Devsense.PHP.Syntax
             VisitElement(x.Body);
         }
 
+        virtual public void VisitPropertyDecl(PropertyDecl x)
+        {
+            VisitElement(x.PHPDoc);
+            VisitAttributes(x);
+            VisitElement(x.Type);
+            VisitList(x.PropertyHooks);
+        }
+
+        virtual public void VisitPropertyHookDecl(PropertyHookDecl x)
+        {
+            VisitElement(x.PHPDoc);
+
+            VisitAttributes(x);
+
+            // function parameters
+            VisitList(x.Signature.FormalParams);
+
+            // function return type
+            VisitElement(x.ReturnType);
+
+            // function body
+            VisitElement(x.Body);
+        }
+
         /// <summary>
         /// Visit each FieldDecl in the given FieldDeclList.
         /// </summary>

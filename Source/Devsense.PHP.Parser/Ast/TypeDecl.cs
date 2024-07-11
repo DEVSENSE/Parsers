@@ -14,6 +14,7 @@
 // permissions and limitations under the License.
 
 using Devsense.PHP.Ast.DocBlock;
+using Devsense.PHP.Text;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -882,6 +883,96 @@ namespace Devsense.PHP.Syntax.Ast
             visitor.VisitTraitsUse(this);
         }
     }
+
+    #endregion
+
+    #region Property Hooks
+
+    /// <summary>
+    /// Represents a property with hooks.
+    /// </summary>
+    public sealed class PropertyDecl : TypeMemberDecl
+    {
+        /// <summary>List of property hooks in this declaration.</summary>
+        public IReadOnlyList<PropertyHookDecl> PropertyHooks/*!*/ { get; }
+
+        /// <summary>Optional, property type.</summary>
+        public TypeRef Type { get; }
+
+        public VariableNameRef Name { get; }
+
+        public IExpression InitialValue { get; }
+
+        public PropertyDecl(Text.Span span, VariableNameRef name, PhpMemberAttributes modifiers, IReadOnlyList<PropertyHookDecl>/*!*/ hooks, TypeRef propertyType, IExpression initialValue)
+            : base(span, modifiers)
+        {
+            Debug.Assert(hooks != null);
+            this.PropertyHooks = hooks ?? throw new ArgumentNullException(nameof(hooks));
+            this.Type = propertyType;
+            this.Name = name;
+            this.InitialValue = initialValue;
+        }
+
+        /// <summary>
+        /// Call the right Visit* method on the given Visitor object.
+        /// </summary>
+        /// <param name="visitor">Visitor to be called.</param>
+        public override void VisitMe(TreeVisitor visitor)
+        {
+            visitor.VisitPropertyDecl(this);
+        }
+
+        /// <summary>
+        /// <see cref="IDocBlock"/> instance or <c>null</c> reference.
+        /// </summary>
+        public IDocBlock PHPDoc
+        {
+            get => this.GetPHPDoc();
+            set => this.SetPHPDoc(value);
+        }
+    }
+
+    public class PropertyHookDecl : LangElement, INamedFunctionDeclaration
+    {
+        public PropertyHookDecl(
+            Span span,
+            PhpMemberAttributes memberAttributes,
+            NameRef name,
+            Signature signature,
+            ILangElement body
+            ) : base(span)
+        {
+            this.Name = name;
+            this.Modifiers = memberAttributes;
+            this.Signature = signature;
+            this.Body = body;
+        }
+
+        /// <summary>
+        /// Gets the type hook modifiers.
+        /// </summary>
+        public PhpMemberAttributes Modifiers { get; }
+
+        public NameRef Name { get; }
+
+        public Signature Signature { get; }
+
+        public TypeRef ReturnType => null;
+
+        public ILangElement Body { get; }
+
+        public override void VisitMe(TreeVisitor visitor) => visitor.VisitPropertyHookDecl(this);
+
+        /// <summary>
+        /// <see cref="IDocBlock"/> instance or <c>null</c> reference.
+        /// </summary>
+        public IDocBlock PHPDoc
+        {
+            get => this.GetPHPDoc();
+            set => this.SetPHPDoc(value);
+        }
+    }
+
 
     #endregion
 }

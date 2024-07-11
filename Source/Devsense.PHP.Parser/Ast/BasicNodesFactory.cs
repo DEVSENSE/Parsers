@@ -17,6 +17,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Xml.Linq;
 using Devsense.PHP.Ast.DocBlock;
 using Devsense.PHP.Errors;
 using Devsense.PHP.Text;
@@ -359,6 +360,28 @@ namespace Devsense.PHP.Syntax.Ast
                 span, headingSpan,
                 new Signature(aliasReturn, formalParams ?? EmptyArray<FormalParam>.Instance, formalParamsSpan),
                 (Expression)expression, returnType);
+        }
+
+        public virtual LangElement PropertyDecl(Span span, PhpMemberAttributes modifiers, TypeRef propertyType, VariableNameRef name, IList<LangElement> hooks, LangElement initialValue)
+        {
+            return new PropertyDecl(span, name, modifiers, hooks.CastToArray<PropertyHookDecl>(), propertyType, (IExpression)initialValue);
+        }
+
+        public virtual LangElement PropertyHook(
+            Span span,
+            bool aliasReturn, PhpMemberAttributes attributes,
+            Name name, Span nameSpan,
+            FormalParam[] formalParams, Span formalParamsSpan,
+            LangElement body
+        )
+        {
+            return new PropertyHookDecl(
+                span,
+                attributes,
+                new NameRef(nameSpan, name),
+                new Signature(aliasReturn, formalParams, formalParamsSpan),
+                body
+            );
         }
 
         public virtual FormalParam Parameter(Span span, string name, Span nameSpan, TypeRef typeOpt, FormalParam.Flags flags, Expression initValue, PhpMemberAttributes visibility)

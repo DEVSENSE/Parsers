@@ -133,6 +133,15 @@ namespace Devsense.PHP.Syntax.Ast
             bool aliasReturn, TypeRef returnType,
             FormalParam[] formalParams, TSpan formalParamsSpan, TNode expression);
 
+        TNode PropertyDecl(TSpan span, PhpMemberAttributes modifiers, TypeRef propertyType, VariableNameRef name, IList<TNode> hooks, TNode initialValue);
+
+        TNode PropertyHook(TSpan span,
+            bool aliasReturn, PhpMemberAttributes attributes,
+            Name name, TSpan nameSpan,
+            FormalParam[] formalParams, TSpan formalParamsSpan,
+            TNode body
+        );
+
         /// <summary>
         /// Creates <c>FormalParam</c> for a function of method declaration.
         /// </summary>

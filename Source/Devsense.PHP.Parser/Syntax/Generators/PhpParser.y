@@ -253,7 +253,7 @@ using TNode = Devsense.PHP.Syntax.Ast.LangElement;
 
 %type <Bool> possible_comma
 
-%type <Long> returns_ref function fn is_reference is_variadic variable_modifiers 
+%type <Long> returns_ref function fn is_reference is_variadic variable_modifiers property_hook_modifiers
 %type <Long> method_modifiers non_empty_member_modifiers member_modifier class_modifier class_modifiers
 %type <Long> optional_property_modifiers property_modifier
 %type <Kind> use_type
@@ -290,6 +290,8 @@ using TNode = Devsense.PHP.Syntax.Ast.LangElement;
 %type <Node> match match_arm
 %type <NodeList> match_arm_list match_arm_cond_list non_empty_match_arm_list
 %type <Node> enum_declaration_statement enum_backing_type enum_case enum_case_expr
+%type <Node> property_hook hooked_property property_hook_body
+%type <NodeList> property_hook_list optional_property_hook_list
 
 %type <NodeList> top_statement_list const_list class_const_list
 %type <NodeList> inner_statement_list class_statement_list for_exprs
@@ -1175,6 +1177,7 @@ attributed_class_statement:
 				SetDoc($$);
 			}
 	|	enum_case { $$ = $1; }
+	|	hooked_property { $$ = $1; }
 ;
 
 class_statement:
@@ -1278,6 +1281,69 @@ property_list:
 property:
 		T_VARIABLE backup_doc_comment			{ SetMemberDoc($$ = _astFactory.FieldDecl(@$, new VariableName($1), null)); }
 	|	T_VARIABLE '=' expr backup_doc_comment	{ SetMemberDoc($$ = _astFactory.FieldDecl(@$, new VariableName($1), (Expression)$3)); }
+;
+
+hooked_property:
+		variable_modifiers optional_type_without_static T_VARIABLE backup_doc_comment '{' property_hook_list '}'
+		{
+			$$ = _astFactory.PropertyDecl(@$, (PhpMemberAttributes)$1, $2, new VariableNameRef(@3, $3), $6, null); 
+			SetDoc($$);
+			FreeList($6);
+		}
+	|	variable_modifiers optional_type_without_static T_VARIABLE '=' expr backup_doc_comment '{' property_hook_list '}'
+		{
+			$$ = _astFactory.PropertyDecl(@$, (PhpMemberAttributes)$1, $2, new VariableNameRef(@3, $3), $8, $5); 
+			SetDoc($$);
+			FreeList($8);
+		}
+;
+
+property_hook_list:
+		/* empty */
+		{
+			$$ = NewList<LangElement>();
+		}
+	|	property_hook_list property_hook
+		{
+			$$ = AddToList<LangElement>( $1, $2 );
+		}
+	|	property_hook_list attributes property_hook
+		{
+			$$ = AddToList<LangElement>( $1, FinalizeAttributes( $3, $2 ) );
+		}
+;
+
+optional_property_hook_list:
+		/* empty */					{ $$ = null; }
+	|	'{' property_hook_list '}'	{ $$ = $2; }
+;
+
+property_hook_modifiers:
+		/* empty */						{ $$ = (long)PhpMemberAttributes.None; }
+	|	non_empty_member_modifiers		{ $$ = $1; }
+;
+
+property_hook:
+		property_hook_modifiers returns_ref T_STRING
+		backup_doc_comment
+		parameter_list backup_fn_flags property_hook_body backup_fn_flags
+		{
+			$$ = _astFactory.PropertyHook(
+				@$,
+				$2 == (long)FormalParam.Flags.IsByRef,
+				(PhpMemberAttributes)$1,
+				new Name($3), @3,
+				GetArrayAndFreeList($5), @5,
+				$7
+			);
+			SetDoc($$);
+		}
+;
+
+property_hook_body:
+		';'								{ $$ = null; }
+	|	'{' inner_statement_list '}'	{ $$ = FinalizeBlock(CombineSpans(@1, @3), $2); }
+	|	T_DOUBLE_ARROW expr ';'			{ $$ = $2; }
 ;
 
 class_const_list:
@@ -1618,14 +1684,14 @@ scalar:
 		T_LNUMBER 	{ $$ = _astFactory.Literal(@$, $1, _lexer.TokenTextSpan); }
 	|	T_DNUMBER 	{ $$ = _astFactory.Literal(@$, $1, _lexer.TokenTextSpan); }
 	|	T_LINE 		{ $$ = _astFactory.PseudoConstUse(@$, PseudoConstUse.Types.Line); }
-	|	T_FILE 		{ $$ = _astFactory.PseudoConstUse(@$, PseudoConstUse.Types.File); }     
-	|	T_DIR   	{ $$ = _astFactory.PseudoConstUse(@$, PseudoConstUse.Types.Dir); }      
-	|	T_TRAIT_C	{ $$ = _astFactory.PseudoConstUse(@$, PseudoConstUse.Types.Trait); }    
-	|	T_METHOD_C	{ $$ = _astFactory.PseudoConstUse(@$, PseudoConstUse.Types.Method); }   
-	|	T_PROPERTY_C{ $$ = _astFactory.PseudoConstUse(@$, PseudoConstUse.Types.Property); }   
-	|	T_FUNC_C	{ $$ = _astFactory.PseudoConstUse(@$, PseudoConstUse.Types.Function); } 
+	|	T_FILE 		{ $$ = _astFactory.PseudoConstUse(@$, PseudoConstUse.Types.File); }
+	|	T_DIR   	{ $$ = _astFactory.PseudoConstUse(@$, PseudoConstUse.Types.Dir); }
+	|	T_TRAIT_C	{ $$ = _astFactory.PseudoConstUse(@$, PseudoConstUse.Types.Trait); }
+	|	T_METHOD_C	{ $$ = _astFactory.PseudoConstUse(@$, PseudoConstUse.Types.Method); }
+	|	T_PROPERTY_C{ $$ = _astFactory.PseudoConstUse(@$, PseudoConstUse.Types.Property); }
+	|	T_FUNC_C	{ $$ = _astFactory.PseudoConstUse(@$, PseudoConstUse.Types.Function); }
 	|	T_NS_C		{ $$ = _astFactory.PseudoConstUse(@$, PseudoConstUse.Types.Namespace); }
-	|	T_CLASS_C	{ $$ = _astFactory.PseudoConstUse(@$, PseudoConstUse.Types.Class); }    
+	|	T_CLASS_C	{ $$ = _astFactory.PseudoConstUse(@$, PseudoConstUse.Types.Class); }
 	|	'"' encaps_list '"' 	{ $$ = _astFactory.StringEncapsedExpression(@$, _astFactory.Concat(@2, $2), Tokens.T_DOUBLE_QUOTES); }
 	|	T_START_HEREDOC T_END_HEREDOC							{ $$ = _astFactory.HeredocExpression(@$, _astFactory.Literal(new Span(@1.End, 0), "", string.Empty.AsSpan()), $1.QuoteToken, $2); }
 	|	T_START_HEREDOC T_ENCAPSED_AND_WHITESPACE T_END_HEREDOC { $$ = _astFactory.HeredocExpression(@$, RemoveHereDocIndentation(_astFactory.Literal(@2, $2.Text, $2.SourceCode.AsSpan()), $3, true), $1.QuoteToken, $3); }
