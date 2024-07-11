@@ -13,7 +13,6 @@
 // See the Apache Version 2.0 License for specific language governing
 // permissions and limitations under the License.
 
-using System.Linq;
 using System.Runtime.InteropServices;
 using Devsense.PHP.Syntax.Ast;
 using Devsense.PHP.Text;
@@ -1398,7 +1397,7 @@ anonymous_class:
 				(PhpMemberAttributes)$1,
 				null,
 				ConvertToNamedTypeRef($4),
-				$6.Select(ConvertToNamedTypeRef),
+				ConvertToNamedTypeRef($6),
 				$10,
 				CombineSpans(@9, @11)
 			);

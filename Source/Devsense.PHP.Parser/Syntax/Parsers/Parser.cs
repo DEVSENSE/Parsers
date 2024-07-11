@@ -1203,6 +1203,23 @@ namespace Devsense.PHP.Syntax
             return (INamedTypeRef)CreateNamedTypeRef(type.Span, name);
         }
 
+        INamedTypeRef[] ConvertToNamedTypeRef(IList<TypeRef> types)
+        {
+            if (types == null || types.Count == 0)
+            {
+                return EmptyArray<INamedTypeRef>.Instance;
+            }
+
+            var result = new INamedTypeRef[types.Count];
+
+            for (int i = 0; i < result.Length; i++)
+            {
+                result[i] = ConvertToNamedTypeRef(types[i]);
+            }
+
+            return result;
+        }
+
         /// <summary>
         /// Error recovery implementation.
         /// Logic is provided by the caler as an implementation of the <see cref="IErrorRecovery"/> interface.

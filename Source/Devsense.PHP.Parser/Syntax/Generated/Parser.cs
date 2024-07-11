@@ -17,7 +17,6 @@ using System.Collections.Generic;
 // See the Apache Version 2.0 License for specific language governing
 // permissions and limitations under the License.
 
-using System.Linq;
 using System.Runtime.InteropServices;
 using Devsense.PHP.Syntax.Ast;
 using Devsense.PHP.Text;
@@ -3406,7 +3405,7 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 				(PhpMemberAttributes)value_stack.array[value_stack.top-12].yyval.Long,
 				null,
 				ConvertToNamedTypeRef(value_stack.array[value_stack.top-9].yyval.TypeReference),
-				value_stack.array[value_stack.top-7].yyval.TypeRefList.Select(ConvertToNamedTypeRef),
+				ConvertToNamedTypeRef(value_stack.array[value_stack.top-7].yyval.TypeRefList),
 				value_stack.array[value_stack.top-3].yyval.NodeList,
 				CombineSpans(value_stack.array[value_stack.top-4].yypos, value_stack.array[value_stack.top-2].yypos)
 			);
