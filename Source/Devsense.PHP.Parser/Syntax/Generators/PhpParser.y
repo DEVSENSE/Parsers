@@ -410,6 +410,7 @@ reserved_non_modifiers:
 	| T_FN
 	| T_MATCH
 	| T_ENUM
+	| T_PROPERTY_C
 ;
 
 semi_reserved:
@@ -1621,6 +1622,7 @@ scalar:
 	|	T_DIR   	{ $$ = _astFactory.PseudoConstUse(@$, PseudoConstUse.Types.Dir); }      
 	|	T_TRAIT_C	{ $$ = _astFactory.PseudoConstUse(@$, PseudoConstUse.Types.Trait); }    
 	|	T_METHOD_C	{ $$ = _astFactory.PseudoConstUse(@$, PseudoConstUse.Types.Method); }   
+	|	T_PROPERTY_C{ $$ = _astFactory.PseudoConstUse(@$, PseudoConstUse.Types.Property); }   
 	|	T_FUNC_C	{ $$ = _astFactory.PseudoConstUse(@$, PseudoConstUse.Types.Function); } 
 	|	T_NS_C		{ $$ = _astFactory.PseudoConstUse(@$, PseudoConstUse.Types.Namespace); }
 	|	T_CLASS_C	{ $$ = _astFactory.PseudoConstUse(@$, PseudoConstUse.Types.Class); }    

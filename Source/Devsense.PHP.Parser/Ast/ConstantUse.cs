@@ -222,22 +222,21 @@ namespace Devsense.PHP.Syntax.Ast
     #region PseudoConstUse
 
     /// <summary>
-    /// Pseudo-constant use (PHP keywords: __LINE__, __FILE__, __DIR__, __FUNCTION__, __METHOD__, __CLASS__, __TRAIT__, __NAMESPACE__)
+    /// Pseudo-constant use (PHP keywords: __LINE__, __FILE__, __DIR__, __FUNCTION__, __METHOD__, __PROPERTY__, __CLASS__, __TRAIT__, __NAMESPACE__)
     /// </summary>
     public sealed class PseudoConstUse : Expression
     {
         public override Operations Operation { get { return Operations.PseudoConstUse; } }
 
-        public enum Types { Line, File, Class, Trait, Function, Method, Namespace, Dir }
+        public enum Types { Line, File, Class, Trait, Function, Method, Property, Namespace, Dir }
 
-        private Types type;
         /// <summary>Type of pseudoconstant</summary>
-        public Types Type { get { return type; } }
+        public Types Type { get; }
 
         public PseudoConstUse(Text.Span span, Types type)
             : base(span)
         {
-            this.type = type;
+            this.Type = type;
         }
 
         /// <summary>
