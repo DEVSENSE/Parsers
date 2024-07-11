@@ -270,7 +270,8 @@ using TNode = Devsense.PHP.Syntax.Ast.LangElement;
 %type <Node> top_statement statement function_declaration_statement class_declaration_statement 
 %type <Node> trait_declaration_statement interface_declaratioimplements_listn_statement 
 %type <Node> interface_declaration_statement inline_html isset_variable expr variable 
-%type <Node> expr_without_variable new_expr internal_functions_in_yacc callable_variable 
+%type <Node> expr_without_variable internal_functions_in_yacc callable_variable
+%type <Node> new_dereferenceable new_non_dereferenceable
 %type <Node> simple_variable scalar constant class_constant dereferencable_scalar function_call
 %type <Node> static_member if_stmt alt_if_stmt const_decl unset_variable
 %type <Node> global_var static_var echo_expr optional_expr 
@@ -1335,13 +1336,18 @@ anonymous_class:
 		}
 ;
 
-new_expr:
-		T_NEW class_name_reference ctor_arguments
+new_dereferenceable:
+		T_NEW class_name_reference argument_list
 			{ $$ = _astFactory.New(@$, $2, GetArrayAndFreeList($3), @3); }
 	|	T_NEW anonymous_class
 			{ $$ = _astFactory.New(@$, $2.TypeRef, $2.ActualParams, $2.Span); }
 	|	T_NEW attributes anonymous_class
 			{ $$ = _astFactory.New(@$, FinalizeAttributes($3.TypeRef, $2), $3.ActualParams, $3.Span); }
+;
+
+new_non_dereferenceable:
+		T_NEW class_name_reference
+			{ $$ = _astFactory.New(@$, $2, null, Span.Invalid); }
 ;
 
 expr_without_variable:
@@ -1353,7 +1359,9 @@ expr_without_variable:
 			{ $$ = _astFactory.Assignment(@$, $1, $3, Operations.AssignValue); }
 	|	variable '=' ampersand variable
 			{ $$ = _astFactory.Assignment(@$, $1, $4, Operations.AssignRef); }
-	|	variable '=' ampersand new_expr
+	|	variable '=' ampersand new_dereferenceable
+			{ $$ = _astFactory.Assignment(@$, $1, $4, Operations.AssignRef); _errors.Error(@$, Warnings.AssignNewByRefDeprecated); }
+	|	variable '=' ampersand new_non_dereferenceable
 			{ $$ = _astFactory.Assignment(@$, $1, $4, Operations.AssignRef); _errors.Error(@$, Warnings.AssignNewByRefDeprecated); }
 	|	T_CLONE expr
 			{ $$ = _astFactory.UnaryOperation(@$, Operations.Clone,   (Expression)$2); }
@@ -1435,7 +1443,8 @@ expr_without_variable:
 	|	expr T_INSTANCEOF class_name_reference
 			{ $$ = _astFactory.InstanceOf(@$, $1, $3); }
 	|	'(' expr ')' { $$ = _astFactory.EncapsedExpression(@$, $2, Tokens.T_LPAREN); }
-	|	new_expr { $$ = $1; }
+	|	new_dereferenceable { $$ = $1; }
+	|	new_non_dereferenceable { $$ = $1; }
 	|	expr '?' expr ':' expr
 			{ $$ = _astFactory.ConditionalEx(@$, $1, $3, $5); }
 	|	expr '?' ':' expr
@@ -1658,6 +1667,7 @@ dereferencable:
 	|	'(' expr ')'			{ $$ = _astFactory.EncapsedExpression(@$, $2, Tokens.T_LPAREN); } 
 	|	dereferencable_scalar	{ $$ = $1; }
 	|	class_constant			{ $$ = $1; }
+	|	new_dereferenceable		{ $$ = $1; }
 ;
 
 array_object_dereferenceable:
@@ -1669,6 +1679,7 @@ callable_expr:
 		callable_variable		{ $$ = $1; }
 	|	'(' expr ')'			{ $$ = _astFactory.EncapsedExpression(@$, $2, Tokens.T_LPAREN); }
 	|	dereferencable_scalar	{ $$ = $1; }
+	|	new_dereferenceable		{ $$ = $1; }
 ;
 
 callable_variable:

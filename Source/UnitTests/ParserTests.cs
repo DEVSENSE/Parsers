@@ -54,6 +54,49 @@ function test(){
     global $test;
 	$test = 1;
 }",
+// PHP 8.4 new without parenthesis
+@"<?php
+echo new A->prop;
+echo new A->foo();
+var_dump(new A::$prop);
+echo new A[0];
+",
+@"<?php
+echo new A()::C;
+echo new A()::{'C'};
+echo new $class()::C;
+echo new $class()::{'C'};
+echo new (trim(' A '))()::C;
+echo new (trim(' A '))()::{'C'};
+
+echo new A()->property;
+echo new $class()->property;
+echo new (trim(' A '))()->property;
+
+echo new A()::$staticProperty;
+echo new $class()::$staticProperty;
+echo new (trim(' A '))()::$staticProperty;
+
+new A()();
+new $class()();
+new (trim(' A '))()();
+
+new A()->method();
+new $class()->method();
+new (trim(' A '))()->method();
+
+new A()::staticMethod();
+new $class()::staticMethod();
+new (trim(' A '))()::staticMethod();
+
+new A()['key'];
+new $class()['key'];
+new (trim(' A '))()['key'];
+
+isset(new A()['key']);
+isset(new $class()['key']);
+isset(new (trim(' A '))()['key']);
+",
             };
 
             foreach (var code in codes)
