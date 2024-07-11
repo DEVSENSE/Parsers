@@ -316,7 +316,7 @@ using TNode = Devsense.PHP.Syntax.Ast.LangElement;
 %type <ParamList> ctor_arguments argument_list non_empty_argument_list
 
 %type <FormalParam> parameter lexical_var
-%type <FormalParamList> parameter_list non_empty_parameter_list lexical_vars lexical_var_list
+%type <FormalParamList> optional_parameter_list parameter_list non_empty_parameter_list lexical_vars lexical_var_list
 
 %type <Item> possible_array_pair array_pair
 %type <ItemList> non_empty_array_pair_list non_empty_array_pair_list array_pair_list
@@ -978,6 +978,11 @@ parameter_list:
 	|	/* empty */	{ $$ = EmptyArray<FormalParam>.Instance; }
 ;
 
+optional_parameter_list:
+		/* empty */ { $$ = null; }
+	|	'(' parameter_list ')' { $$ = $2; }
+;
+
 
 non_empty_parameter_list:
 		attributed_parameter
@@ -1284,17 +1289,17 @@ property:
 ;
 
 hooked_property:
-		variable_modifiers optional_type_without_static T_VARIABLE backup_doc_comment '{' property_hook_list '}'
+		variable_modifiers optional_type_without_static T_VARIABLE '{' property_hook_list '}'
 		{
-			$$ = _astFactory.PropertyDecl(@$, (PhpMemberAttributes)$1, $2, new VariableNameRef(@3, $3), $6, null); 
+			$$ = _astFactory.PropertyDecl(@$, (PhpMemberAttributes)$1, $2, new VariableNameRef(@3, $3), $5, null); 
 			SetDoc($$);
-			FreeList($6);
+			FreeList($5);
 		}
-	|	variable_modifiers optional_type_without_static T_VARIABLE '=' expr backup_doc_comment '{' property_hook_list '}'
+	|	variable_modifiers optional_type_without_static T_VARIABLE '=' expr '{' property_hook_list '}'
 		{
-			$$ = _astFactory.PropertyDecl(@$, (PhpMemberAttributes)$1, $2, new VariableNameRef(@3, $3), $8, $5); 
+			$$ = _astFactory.PropertyDecl(@$, (PhpMemberAttributes)$1, $2, new VariableNameRef(@3, $3), $7, $5); 
 			SetDoc($$);
-			FreeList($8);
+			FreeList($7);
 		}
 ;
 
@@ -1326,7 +1331,7 @@ property_hook_modifiers:
 property_hook:
 		property_hook_modifiers returns_ref T_STRING
 		backup_doc_comment
-		parameter_list backup_fn_flags property_hook_body backup_fn_flags
+		optional_parameter_list backup_fn_flags property_hook_body backup_fn_flags
 		{
 			$$ = _astFactory.PropertyHook(
 				@$,

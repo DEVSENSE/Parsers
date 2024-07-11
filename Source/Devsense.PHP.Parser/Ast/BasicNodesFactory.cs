@@ -379,7 +379,7 @@ namespace Devsense.PHP.Syntax.Ast
                 span,
                 attributes,
                 new NameRef(nameSpan, name),
-                new Signature(aliasReturn, formalParams, formalParamsSpan),
+                new Signature(aliasReturn, formalParams, formalParams != null ? formalParamsSpan : Span.Invalid),
                 body
             );
         }
