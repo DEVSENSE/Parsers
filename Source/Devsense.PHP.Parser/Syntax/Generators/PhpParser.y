@@ -1015,13 +1015,14 @@ property_modifier:
 ;
 
 parameter:
-		optional_property_modifiers optional_type_without_static is_reference is_variadic variable_init_optional {
+		optional_property_modifiers optional_type_without_static is_reference is_variadic variable_init_optional optional_property_hook_list {
 			/* Important - @$ is invalid when optional_type is empty */
 			$$ = _astFactory.Parameter(
 				CombineSpans(@1, @2, @3, @4, @5), $5.Name, $2,
 				(FormalParam.Flags)$3|(FormalParam.Flags)$4,
 				(Expression)$5.Value,
-				(PhpMemberAttributes)$1
+				(PhpMemberAttributes)$1,
+				$6 /* List<LangElement> optional_property_hook_list */
 			);
 			SetDocSpan($$);
 		}

@@ -54,7 +54,7 @@ namespace Devsense.PHP.Syntax.Ast
     /// <summary>
     /// Represents a formal parameter definition.
     /// </summary>
-    public sealed class FormalParam : LangElement
+    public class FormalParam : LangElement
     {
         [Flags]
         public enum Flags : byte
@@ -74,104 +74,57 @@ namespace Devsense.PHP.Syntax.Ast
         /// <summary>
         /// Flags describing the parameter.
         /// </summary>
-        private Flags _flags;
+        protected virtual Flags FlagsValue => 0;
 
         /// <summary>
         /// Name of the argument.
         /// </summary>
-        public VariableNameRef Name { get; }
+        public virtual VariableNameRef Name => new VariableNameRef(this.Span, this.VariableName);
 
         /// <summary>
         /// Whether the parameter is &amp;-modified.
         /// </summary>
-        public bool PassedByRef => (_flags & Flags.IsByRef) != 0;
+        public bool PassedByRef => (FlagsValue & Flags.IsByRef) != 0;
 
         /// <summary>
         /// Whether the parameter is an out-parameter. Set by applying the [Out] attribute.
         /// </summary>
-        public bool IsOut
-        {
-            get
-            {
-                return (_flags & Flags.IsOut) != 0;
-            }
-            internal set
-            {
-                if (value) _flags |= Flags.IsOut;
-                else _flags &= ~Flags.IsOut;
-            }
-        }
+        public bool IsOut => (FlagsValue & Flags.IsOut) != 0;
 
         /// <summary>
         /// Gets value indicating whether the parameter is variadic and so passed parameters will be packed into the array as passed as one parameter.
         /// </summary>
-        public bool IsVariadic => (_flags & Flags.IsVariadic) != 0;
+        public bool IsVariadic => (FlagsValue & Flags.IsVariadic) != 0;
 
         /// <summary>
         /// Gets value indicating the parameter is a constructor property (PHP8).
         /// </summary>
-        public bool IsConstructorProperty => (_flags & Flags.IsConstructorPropertyMask) != 0;
+        public virtual bool IsConstructorProperty => false;
 
         /// <summary>
         /// In case the parameter is <see cref="IsConstructorProperty"/>, gets the member visibility.
         /// </summary>
-        public PhpMemberAttributes ConstructorPropertyFlags
-        {
-            get
-            {
-                var result = (PhpMemberAttributes)0;
+        public virtual PhpMemberAttributes ConstructorPropertyFlags => 0;
 
-                if ((_flags & Flags.IsConstructorPropertyPublic) != 0) result |= PhpMemberAttributes.Public; // 0
-                if ((_flags & Flags.IsConstructorPropertyPrivate) != 0) result |= PhpMemberAttributes.Private;
-                if ((_flags & Flags.IsConstructorPropertyProtected) != 0) result |= PhpMemberAttributes.Protected;
-                if ((_flags & Flags.IsConstructorPropertyReadOnly) != 0) result |= PhpMemberAttributes.ReadOnly;
-
-                return result;
-            }
-        }
+        protected VariableName VariableName { get; }
 
         /// <summary>
         /// Initial value expression. Can be <B>null</B>.
         /// </summary>
-        public Expression InitValue { get; internal set; }
+        public virtual Expression InitValue => null;
 
         /// <summary>
         /// Either <see cref="TypeRef"/> or <B>null</B>.
         /// </summary>
-        public TypeRef TypeHint { get; }
+        public virtual TypeRef TypeHint => null;
+
+        public virtual PropertyHookDecl[] PropertyHooks => null;
 
         #region Construction
 
-        public FormalParam(
-            Text.Span span, VariableNameRef name,
-            TypeRef typeHint, Flags flags,
-            Expression initValue,
-            PhpMemberAttributes constructorPropertyVisibility = 0)
-            : base(span)
+        public FormalParam(Text.Span span, VariableName name) : base(span)
         {
-            this.Name = name;
-            this.TypeHint = typeHint;
-            this.InitValue = initValue;
-
-            _flags = flags;
-
-            if (constructorPropertyVisibility != 0)
-            {
-                Debug.Assert((constructorPropertyVisibility & PhpMemberAttributes.Constructor) != 0);
-
-                _flags |= (constructorPropertyVisibility & PhpMemberAttributes.VisibilityMask) switch
-                {
-                    PhpMemberAttributes.Private => Flags.IsConstructorPropertyPrivate,
-                    PhpMemberAttributes.Protected => Flags.IsConstructorPropertyProtected,
-                    //PhpMemberAttributes.Public => Flags.IsConstructorPropertyPublic,
-                    _ => Flags.IsConstructorPropertyPublic,
-                };
-
-                if (constructorPropertyVisibility.IsReadOnly())
-                {
-                    _flags |= Flags.IsConstructorPropertyReadOnly;
-                }
-            }
+            this.VariableName = name;
         }
 
         #endregion
@@ -183,6 +136,78 @@ namespace Devsense.PHP.Syntax.Ast
         public override void VisitMe(TreeVisitor visitor)
         {
             visitor.VisitFormalParam(this);
+        }
+    }
+
+    internal class FormalParamEx : FormalParam
+    {
+        protected override Flags FlagsValue { get; }
+
+        Text.Span VariableNameSpan { get; }
+
+        public override VariableNameRef Name => new VariableNameRef(VariableNameSpan, VariableName);
+
+        public override TypeRef TypeHint { get; }
+
+        public override Expression InitValue { get; }
+
+        public override bool IsConstructorProperty => (FlagsValue & Flags.IsConstructorPropertyMask) != 0;
+
+        /// <summary>
+        /// In case the parameter is <see cref="IsConstructorProperty"/>, gets the member visibility.
+        /// </summary>
+        public override PhpMemberAttributes ConstructorPropertyFlags
+        {
+            get
+            {
+                var result = (PhpMemberAttributes)0;
+
+                if ((FlagsValue & Flags.IsConstructorPropertyPublic) != 0) result |= PhpMemberAttributes.Public; // 0
+                if ((FlagsValue & Flags.IsConstructorPropertyPrivate) != 0) result |= PhpMemberAttributes.Private;
+                if ((FlagsValue & Flags.IsConstructorPropertyProtected) != 0) result |= PhpMemberAttributes.Protected;
+                if ((FlagsValue & Flags.IsConstructorPropertyReadOnly) != 0) result |= PhpMemberAttributes.ReadOnly;
+
+                return result;
+            }
+        }
+
+        public override PropertyHookDecl[] PropertyHooks => this.GetProperty<PropertyHookDecl[]>();
+
+        public FormalParamEx(
+            Text.Span span, VariableNameRef name,
+            TypeRef typeHint, Flags flags,
+            Expression initValue,
+            PhpMemberAttributes constructorPropertyVisibility,
+            PropertyHookDecl[] property_hooks
+        ) : base(span, name.Name)
+        {
+            this.VariableNameSpan = name.Span;
+            this.TypeHint = typeHint;
+            this.InitValue = initValue;
+            this.FlagsValue = flags;
+
+            if (constructorPropertyVisibility != 0)
+            {
+                Debug.Assert((constructorPropertyVisibility & PhpMemberAttributes.Constructor) != 0);
+
+                this.FlagsValue |= (constructorPropertyVisibility & PhpMemberAttributes.VisibilityMask) switch
+                {
+                    PhpMemberAttributes.Private => Flags.IsConstructorPropertyPrivate,
+                    PhpMemberAttributes.Protected => Flags.IsConstructorPropertyProtected,
+                    //PhpMemberAttributes.Public => Flags.IsConstructorPropertyPublic,
+                    _ => Flags.IsConstructorPropertyPublic,
+                };
+
+                if (constructorPropertyVisibility.IsReadOnly())
+                {
+                    this.FlagsValue |= Flags.IsConstructorPropertyReadOnly;
+                }
+            }
+
+            if (property_hooks != null)
+            {
+                this.SetProperty<PropertyHookDecl[]>(property_hooks);
+            }
         }
     }
 
@@ -232,7 +257,7 @@ namespace Devsense.PHP.Syntax.Ast
         private readonly Signature signature;
 
         public TypeSignature TypeSignature => this.GetTypeSignature();
-        
+
         public BlockStmt/*!*/ Body { get; set; }
 
         /// <summary>

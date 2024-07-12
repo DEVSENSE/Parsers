@@ -384,9 +384,22 @@ namespace Devsense.PHP.Syntax.Ast
             );
         }
 
-        public virtual FormalParam Parameter(Span span, VariableNameRef name, TypeRef typeOpt, FormalParam.Flags flags, Expression initValue, PhpMemberAttributes visibility)
+        public virtual FormalParam Parameter(Span span, VariableNameRef name, TypeRef typeOpt, FormalParam.Flags flags, Expression initValue,
+            PhpMemberAttributes visibility,
+            List<LangElement> property_hooks
+        )
         {
-            return new FormalParam(span, name, typeOpt, flags, initValue, constructorPropertyVisibility: visibility);
+            if (span == name.Span && typeOpt == null && flags == FormalParam.Flags.Default && initValue == null && visibility == 0 && property_hooks == null)
+            {
+                return new FormalParam(span, name.Name);
+            }
+            else
+            {
+                return new FormalParamEx(span, name, typeOpt, flags, initValue,
+                    constructorPropertyVisibility: visibility,
+                    property_hooks: property_hooks != null ? property_hooks.CastToArray<PropertyHookDecl>() : null
+                );
+            }
         }
 
         public virtual LangElement GlobalCode(Span span, Statement[] statements, NamingContext context)
