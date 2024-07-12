@@ -1745,8 +1745,6 @@ callable_variable:
 			{ $$ = $1; }
 	|	array_object_dereferenceable '[' optional_expr ']'
 			{ $$ = _astFactory.ArrayItem(@$, false, $1, $3); }
-/*	|	array_object_dereferenceable '{' expr '}'					*/
-/*			{ $$ = _astFactory.ArrayItem(@$, true, $1, $3); }		*/
 	|	array_object_dereferenceable object_operator property_name argument_list
 		{
 			if ($3 is string name)
@@ -1786,8 +1784,6 @@ new_variable:
 			{ $$ = $1; }
 	|	new_variable '[' optional_expr ']'
 			{ $$ = _astFactory.ArrayItem(@$, false, $1, $3); }
-/*	|	new_variable '{' expr '}'								*/
-/*			{ $$ = _astFactory.ArrayItem(@$, true, $1, $3); }	*/
 	|	new_variable object_operator property_name
 			{ $$ = AdjustNullSafeOperator(CreateProperty(@$, $1, $3), $2); }
 	|	class_name T_DOUBLE_COLON simple_variable

@@ -54,6 +54,7 @@ function test(){
     global $test;
 	$test = 1;
 }",
+@"<?php $r[] = 1;",
 // PHP 8.4 new without parenthesis
 @"<?php
 //echo new A->prop;  // unexpected token ->
@@ -303,7 +304,7 @@ class X {
                     {
                         foreach (var p in m.Signature.FormalParams)
                         {
-                            Assert.IsNotNull(p.GetProperty<IDocBlock>());
+                            Assert.IsNotNull(p.GetPropertyOfType<IDocBlock>());
                         }
                     }
                 }
@@ -361,7 +362,7 @@ class X {
                 {
                     foreach (var m in tdecl.Members.OfType<TraitsUse>())
                     {
-                        Assert.IsTrue(m.TryGetProperty<IDocBlock>(out var phpdoc));
+                        Assert.IsNotNull(m.GetPropertyOfType<IDocBlock>());
                     }
                 }
             }
