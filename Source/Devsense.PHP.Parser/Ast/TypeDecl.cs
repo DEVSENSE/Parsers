@@ -973,6 +973,10 @@ namespace Devsense.PHP.Syntax.Ast
 
         public Signature Signature { get; }
 
+        /// <summary>
+        /// Always <c>null</c>.
+        /// Property type is specified using <see cref="PropertyDecl.Type"/>.
+        /// </summary>
         public TypeRef ReturnType => null;
 
         public ILangElement Body { get; }
