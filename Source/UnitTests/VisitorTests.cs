@@ -387,8 +387,8 @@ namespace UnitTests
             public override TypeRef NullableTypeReference(Span span, LangElement className)
                  => CountTR(base.NullableTypeReference(span, className));
 
-            public override FormalParam Parameter(Span span, string name, Span nameSpan, TypeRef typeOpt, FormalParam.Flags flags, Expression initValue, PhpMemberAttributes visibility)
-                 => (FormalParam)CountLE(base.Parameter(span, name, nameSpan, typeOpt, flags, initValue, visibility)); // TODO - replace definitions by interfaces
+            public override FormalParam Parameter(Span span, VariableNameRef name, TypeRef typeOpt, FormalParam.Flags flags, Expression initValue, PhpMemberAttributes visibility)
+                 => (FormalParam)CountLE(base.Parameter(span, name, typeOpt, flags, initValue, visibility)); // TODO - replace definitions by interfaces
 
             public override LangElement EncapsedExpression(Span span, LangElement expression, Tokens openDelimiter)
                  => CountLE(base.EncapsedExpression(span, expression, openDelimiter));

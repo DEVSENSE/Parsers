@@ -143,13 +143,13 @@ namespace Devsense.PHP.Syntax.Ast
         #region Construction
 
         public FormalParam(
-            Text.Span span, string/*!*/ name, Text.Span nameSpan,
+            Text.Span span, VariableNameRef name,
             TypeRef typeHint, Flags flags,
             Expression initValue,
             PhpMemberAttributes constructorPropertyVisibility = 0)
             : base(span)
         {
-            this.Name = new VariableNameRef(nameSpan, name);
+            this.Name = name;
             this.TypeHint = typeHint;
             this.InitValue = initValue;
 

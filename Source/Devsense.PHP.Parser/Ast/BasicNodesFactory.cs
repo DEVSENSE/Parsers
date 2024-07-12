@@ -362,9 +362,9 @@ namespace Devsense.PHP.Syntax.Ast
                 (Expression)expression, returnType);
         }
 
-        public virtual LangElement PropertyDecl(Span span, PhpMemberAttributes modifiers, TypeRef propertyType, VariableNameRef name, IList<LangElement> hooks, LangElement initialValue)
+        public virtual LangElement PropertyDecl(Span span, PhpMemberAttributes modifiers, TypeRef propertyType, VariableNameRef name, IList<LangElement> hooks, IExpression initialValue)
         {
-            return new PropertyDecl(span, name, modifiers, hooks.CastToArray<PropertyHookDecl>(), propertyType, (IExpression)initialValue);
+            return new PropertyDecl(span, name, modifiers, hooks.CastToArray<PropertyHookDecl>(), propertyType, initialValue);
         }
 
         public virtual LangElement PropertyHook(
@@ -384,9 +384,9 @@ namespace Devsense.PHP.Syntax.Ast
             );
         }
 
-        public virtual FormalParam Parameter(Span span, string name, Span nameSpan, TypeRef typeOpt, FormalParam.Flags flags, Expression initValue, PhpMemberAttributes visibility)
+        public virtual FormalParam Parameter(Span span, VariableNameRef name, TypeRef typeOpt, FormalParam.Flags flags, Expression initValue, PhpMemberAttributes visibility)
         {
-            return new FormalParam(span, name, nameSpan, typeOpt, flags, initValue, constructorPropertyVisibility: visibility);
+            return new FormalParam(span, name, typeOpt, flags, initValue, constructorPropertyVisibility: visibility);
         }
 
         public virtual LangElement GlobalCode(Span span, Statement[] statements, NamingContext context)

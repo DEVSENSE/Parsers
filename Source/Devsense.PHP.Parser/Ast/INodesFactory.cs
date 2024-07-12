@@ -133,7 +133,7 @@ namespace Devsense.PHP.Syntax.Ast
             bool aliasReturn, TypeRef returnType,
             FormalParam[] formalParams, TSpan formalParamsSpan, TNode expression);
 
-        TNode PropertyDecl(TSpan span, PhpMemberAttributes modifiers, TypeRef propertyType, VariableNameRef name, IList<TNode> hooks, TNode initialValue);
+        TNode PropertyDecl(TSpan span, PhpMemberAttributes modifiers, TypeRef propertyType, VariableNameRef name, IList<TNode> hooks, IExpression initialValue);
 
         TNode PropertyHook(TSpan span,
             bool aliasReturn, PhpMemberAttributes attributes,
@@ -147,12 +147,11 @@ namespace Devsense.PHP.Syntax.Ast
         /// </summary>
         /// <param name="span">Entire element span.</param>
         /// <param name="name">Parameter name.</param>
-        /// <param name="nameSpan">Parameter name span.</param>
         /// <param name="typeOpt">Parameter type.</param>
         /// <param name="flags">Parameter flags.</param>
         /// <param name="initValue">Optional. Default value expression.</param>
         /// <param name="visibility">Optional. Used for PHP8 constructor property promotion.</param>
-        FormalParam Parameter(TSpan span, string name, TSpan nameSpan, TypeRef typeOpt, FormalParam.Flags flags = FormalParam.Flags.Default, Expression initValue = null, PhpMemberAttributes visibility = 0);
+        FormalParam Parameter(TSpan span, VariableNameRef name, TypeRef typeOpt, FormalParam.Flags flags = FormalParam.Flags.Default, Expression initValue = null, PhpMemberAttributes visibility = 0);
 
         /// <summary>
         /// Creates type declaration node.

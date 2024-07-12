@@ -97,6 +97,20 @@ namespace Devsense.PHP.Syntax
         }
     }
 
+    /// <summary>Represents <c>T_VARIABLE</c> and <c>T_VARIABLE = expr</c> and <c>T_VARIABLE</c> span.</summary>
+    class VariableNameValue
+    {
+        public VariableNameRef Name;
+
+        public IExpression Value;
+
+        public VariableNameValue(Span nameSpan, string name, ILangElement valueOpt = null)
+        {
+            this.Name = new VariableNameRef(nameSpan, name);
+            this.Value = (IExpression)valueOpt;
+        }
+    }
+
     /// <summary>
     /// Compressed parser value.
     /// </summary>
@@ -228,5 +242,14 @@ namespace Devsense.PHP.Syntax
         public UseBase Use { get { return (UseBase)Object; } set { Object = value; } }
         public List<UseBase> UseList { get { return (List<UseBase>)Object; } set { Object = value; } }
         public Lexer.HereDocTokenValue HereDocValue { get { return (Lexer.HereDocTokenValue)Object; } set { Object = value; } }
+        internal VariableNameValue VariableName
+        {
+            get => new VariableNameValue(_span, (string)_objs.Object1, (IExpression)_objs.Object2);
+            set
+            {
+                _span = value.Name.Span;
+                _objs = new ReferenceTypes(value.Name.Name.Value, value.Value);
+            }
+        }
     }
 }

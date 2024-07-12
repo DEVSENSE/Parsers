@@ -251,6 +251,7 @@ using TNode = Devsense.PHP.Syntax.Ast.LangElement;
 %type <Object> property_name member_name
 
 %type <Bool> possible_comma
+%type <VariableName> variable_init_optional /* helper rule to match T_VARIABLE = expr */
 
 %type <Long> returns_ref function fn is_reference is_variadic variable_modifiers property_hook_modifiers
 %type <Long> method_modifiers non_empty_member_modifiers member_modifier class_modifier class_modifiers
@@ -270,7 +271,7 @@ using TNode = Devsense.PHP.Syntax.Ast.LangElement;
 %type <Node> top_statement statement function_declaration_statement class_declaration_statement 
 %type <Node> trait_declaration_statement interface_declaratioimplements_listn_statement 
 %type <Node> interface_declaration_statement inline_html isset_variable expr variable 
-%type <Node> expr_without_variable internal_functions_in_yacc callable_variable
+%type <Node> internal_functions_in_yacc callable_variable
 %type <Node> new_dereferenceable new_non_dereferenceable
 %type <Node> simple_variable scalar constant class_constant dereferencable_scalar function_call
 %type <Node> static_member if_stmt alt_if_stmt const_decl unset_variable
@@ -1014,22 +1015,12 @@ property_modifier:
 ;
 
 parameter:
-		optional_property_modifiers optional_type_without_static is_reference is_variadic T_VARIABLE {
+		optional_property_modifiers optional_type_without_static is_reference is_variadic variable_init_optional {
 			/* Important - @$ is invalid when optional_type is empty */
 			$$ = _astFactory.Parameter(
-				CombineSpans(@1, @2, @3, @4, @5), $5, @5, $2,
+				CombineSpans(@1, @2, @3, @4, @5), $5.Name, $2,
 				(FormalParam.Flags)$3|(FormalParam.Flags)$4,
-				null,
-				(PhpMemberAttributes)$1
-			);
-			SetDocSpan($$);
-		}
-	|	optional_property_modifiers optional_type_without_static is_reference is_variadic T_VARIABLE '=' expr {
-			/* Important - @$ is invalid when optional_type is empty */
-			$$ = _astFactory.Parameter(
-				CombineSpans(@1, @2, @3, @4, @7), $5, @5, $2,
-				(FormalParam.Flags)$3|(FormalParam.Flags)$4,
-				(Expression)$7,
+				(Expression)$5.Value,
 				(PhpMemberAttributes)$1
 			);
 			SetDocSpan($$);
@@ -1142,8 +1133,7 @@ static_var_list:
 ;
 
 static_var:
-		T_VARIABLE			{ $$ = _astFactory.StaticVarDecl(@$, new VariableName($1), null); }
-	|	T_VARIABLE '=' expr	{ $$ = _astFactory.StaticVarDecl(@$, new VariableName($1), $3); }
+		variable_init_optional { $$ = _astFactory.StaticVarDecl(@$, $1.Name, (Expression)$1.Value); }
 ;
 
 
@@ -1277,28 +1267,26 @@ member_modifier:
 	|	T_READONLY				{ $$ = (long)PhpMemberAttributes.ReadOnly; }
 ;
 
+variable_init_optional:
+		T_VARIABLE '=' expr		{ $$ = new VariableNameValue(@1, $1, $3); }
+	|	T_VARIABLE				{ $$ = new VariableNameValue(@1, $1, null); }
+;
+
 property_list:
 		property_list ',' property { $$ = AddToList<LangElement>($1, $3); }
 	|	property { $$ = NewList<LangElement>( $1 ); }
 ;
 
 property:
-		T_VARIABLE backup_doc_comment			{ SetMemberDoc($$ = _astFactory.FieldDecl(@$, new VariableName($1), null)); }
-	|	T_VARIABLE '=' expr backup_doc_comment	{ SetMemberDoc($$ = _astFactory.FieldDecl(@$, new VariableName($1), (Expression)$3)); }
+		variable_init_optional 	{ SetMemberDoc($$ = _astFactory.FieldDecl(@$, $1.Name.Name, (Expression)$1.Value)); }
 ;
 
 hooked_property:
-		variable_modifiers optional_type_without_static T_VARIABLE '{' property_hook_list '}'
+		variable_modifiers optional_type_without_static variable_init_optional '{' property_hook_list '}'
 		{
-			$$ = _astFactory.PropertyDecl(@$, (PhpMemberAttributes)$1, $2, new VariableNameRef(@3, $3), $5, null); 
+			$$ = _astFactory.PropertyDecl(@$, (PhpMemberAttributes)$1, $2, $3.Name, $5, $3.Value); 
 			SetDoc($$);
 			FreeList($5);
-		}
-	|	variable_modifiers optional_type_without_static T_VARIABLE '=' expr '{' property_hook_list '}'
-		{
-			$$ = _astFactory.PropertyDecl(@$, (PhpMemberAttributes)$1, $2, new VariableNameRef(@3, $3), $7, $5); 
-			SetDoc($$);
-			FreeList($7);
 		}
 ;
 
@@ -1422,8 +1410,10 @@ new_non_dereferenceable:
 			{ $$ = _astFactory.New(@$, $2, null, Span.Invalid); }
 ;
 
-expr_without_variable:
-		T_LIST '(' array_pair_list ')' '=' expr
+expr:
+		variable
+			{ $$ = $1; }
+	|	T_LIST '(' array_pair_list ')' '=' expr
 			{ $$ = _astFactory.Assignment(@$, _astFactory.List(Span.Combine(@1, @4), GetArrayAndFreeList($3), true), $6, Operations.AssignValue); }
 	|	'[' array_pair_list ']' '=' expr
 			{ $$ = _astFactory.Assignment(@$, _astFactory.List(CombineSpans(@1, @3), GetArrayAndFreeList($2), false), $5, Operations.AssignValue); }
@@ -1620,11 +1610,11 @@ lexical_var_list:
 
 lexical_var:
 		T_VARIABLE {
-			$$ = _astFactory.Parameter(@$, $1, @1, null, FormalParam.Flags.Default);
+			$$ = _astFactory.Parameter(@$, new VariableNameRef(@1, $1), null, FormalParam.Flags.Default);
 			SetDoc($$);
 		}
 	|	ampersand T_VARIABLE {
-			$$ = _astFactory.Parameter(@$, $2, @2, null, FormalParam.Flags.IsByRef);
+			$$ = _astFactory.Parameter(@$, new VariableNameRef(@2, $2), null, FormalParam.Flags.IsByRef);
 			SetDoc($$);
 		}
 ;
@@ -1714,11 +1704,6 @@ class_constant:
 	|	variable_class_name T_DOUBLE_COLON identifier	{ $$ = _astFactory.ClassConstUse(@$, _astFactory.TypeReference(@1, $1), new Name($3), @3); }
 	|	class_name T_DOUBLE_COLON  '{' expr '}'				{ $$ = _astFactory.ClassConstUse(@$, $1, $4); }
 	|	variable_class_name T_DOUBLE_COLON  '{' expr '}'	{ $$ = _astFactory.ClassConstUse(@$, _astFactory.TypeReference(@1, $1), $4); }
-;
-
-expr:
-		variable					{ $$ = $1; }
-	|	expr_without_variable		{ $$ = $1; }
 ;
 
 optional_expr:
