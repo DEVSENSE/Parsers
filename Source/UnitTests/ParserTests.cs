@@ -549,6 +549,51 @@ $x   // error: wrong indentation
             }
         }
 
+        [TestMethod]
+        public void PropertyHooksTest()
+        {
+            var codes = new[] {
+                @"<?php
+class X {
+    public int $runs = 0 {
+        set {
+            $this->runs = $value;
+        }
+    }
+}",
+                @"<?php
+class X {
+    public string $fullName {
+        get => $this->first . ' ' . $this->last;
+        set {
+        }
+    }
+}",
+                @"<?php
+class X {
+    function __construct(
+        public string $fullName {
+            get => $this->first . ' ' . $this->last;
+            set {
+            }
+        }
+    )
+    {
+    }
+}",
+            };
+
+            foreach (var code in codes)
+            {
+                var errors = new TestErrorSink();
+                var unit = new CodeSourceUnit(code, "dummy.php", Encoding.UTF8);
+                unit.Parse(new BasicNodesFactory(unit), errors);
+
+                Assert.IsNotNull(unit.Ast);
+                Assert.AreEqual(0, errors.Count);
+            }
+        }
+
         /// <summary>
         /// Helper visitor checking every node has a containing element.
         /// </summary>
