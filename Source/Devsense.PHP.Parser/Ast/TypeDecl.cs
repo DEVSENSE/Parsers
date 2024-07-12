@@ -16,6 +16,7 @@
 using Devsense.PHP.Ast.DocBlock;
 using Devsense.PHP.Text;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -544,17 +545,17 @@ namespace Devsense.PHP.Syntax.Ast
     /// </summary>
     /// <remarks>
     /// Is derived from LangElement because we need position to report field_in_interface error.
-    /// Else we would have to test ClassType in every FieldDecl and not only in FildDeclList
+    /// Else we would have to test ClassType in every FieldDecl and not only in FieldDeclList
     /// </remarks>
     public sealed class FieldDeclList : TypeMemberDecl
     {
         /// <summary>List of fields in this list</summary>
-        public IList<FieldDecl> Fields/*!*/ { get; }
+        public IReadOnlyList<FieldDecl> Fields/*!*/ { get; }
 
         /// <summary>Optional, fields type.</summary>
         public TypeRef Type { get; }
 
-        public FieldDeclList(Text.Span span, PhpMemberAttributes modifiers, IList<FieldDecl>/*!*/ fields, TypeRef type)
+        public FieldDeclList(Text.Span span, PhpMemberAttributes modifiers, IReadOnlyList<FieldDecl>/*!*/ fields, TypeRef type)
             : base(span, modifiers)
         {
             Debug.Assert(fields != null);
@@ -584,7 +585,7 @@ namespace Devsense.PHP.Syntax.Ast
     /// <summary>
     /// Represents a field declaration.
     /// </summary>
-    public sealed class FieldDecl : LangElement
+    public sealed class FieldDecl : LangElement, IReadOnlyList<FieldDecl>
     {
         /// <summary>
         /// Gets a name of the field.
@@ -639,6 +640,21 @@ namespace Devsense.PHP.Syntax.Ast
             get { return this.GetPHPDoc(); }
             set { this.SetPHPDoc(value); }
         }
+
+        #region IReadOnlyList<FieldDecl> // works as a list as well, so we don't need to allocate new array with just one element
+
+        IEnumerator<FieldDecl> IEnumerable<FieldDecl>.GetEnumerator()
+        {
+            yield return this;
+        }
+
+        IEnumerator IEnumerable.GetEnumerator() => ((IEnumerable<FieldDecl>)this).GetEnumerator();
+
+        int IReadOnlyCollection<FieldDecl>.Count => 1;
+
+        FieldDecl IReadOnlyList<FieldDecl>.this[int index] => index == 0 ? this : throw new ArgumentOutOfRangeException(nameof(index));
+
+        #endregion
     }
 
     #endregion

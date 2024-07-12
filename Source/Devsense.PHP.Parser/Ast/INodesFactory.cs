@@ -251,7 +251,7 @@ namespace Devsense.PHP.Syntax.Ast
         /// <param name="decls">Enumeration of declarations.</param>
         /// <param name="type">Optional type.</param>
         /// <returns>Declaration list.</returns>
-        TNode DeclList(TSpan span, PhpMemberAttributes attributes, IList<TNode> decls, TypeRef type);
+        TNode DeclList(TSpan span, PhpMemberAttributes attributes, IReadOnlyList<TNode> decls, TypeRef type);
 
         /// <summary>
         /// Creates field declaration.

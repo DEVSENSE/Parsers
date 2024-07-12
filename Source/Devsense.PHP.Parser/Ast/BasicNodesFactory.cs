@@ -178,7 +178,7 @@ namespace Devsense.PHP.Syntax.Ast
             return new ConcatEx(span, expressions.CastToArray<Expression>());
         }
 
-        public virtual LangElement DeclList(Span span, PhpMemberAttributes attributes, IList<LangElement>/*!!*/decls, TypeRef type)
+        public virtual LangElement DeclList(Span span, PhpMemberAttributes attributes, IReadOnlyList<LangElement>/*!!*/decls, TypeRef type)
         {
             Debug.Assert(decls.Count != 0);
             Debug.Assert(decls.All(e => e is FieldDecl) || decls.All(e => e is GlobalConstantDecl) || decls.All(e => e is ClassConstantDecl));
@@ -186,7 +186,15 @@ namespace Devsense.PHP.Syntax.Ast
             if (decls[0] is FieldDecl)
             {
                 Debug.Assert(decls.All(e => e is FieldDecl));
-                return new FieldDeclList(span, attributes, decls.CastToArray<FieldDecl>(), type);
+                Debug.Assert(typeof(IReadOnlyList<FieldDecl>).IsAssignableFrom(typeof(FieldDecl)));
+
+                return new FieldDeclList(span, attributes,
+                    fields: decls.Count == 1
+                        ? (IReadOnlyList<FieldDecl>)decls[0] // HACK // FieldDecl is IReadOnlyList<FieldDecl> with itself
+                        : decls.CastToArray<FieldDecl>()
+                        ,
+                    type: type
+                );
             }
             else if (decls[0] is ClassConstantDecl)
             {
