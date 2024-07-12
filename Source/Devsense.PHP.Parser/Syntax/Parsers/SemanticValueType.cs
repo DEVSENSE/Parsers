@@ -242,6 +242,11 @@ namespace Devsense.PHP.Syntax
         public UseBase Use { get { return (UseBase)Object; } set { Object = value; } }
         public List<UseBase> UseList { get { return (List<UseBase>)Object; } set { Object = value; } }
         public Lexer.HereDocTokenValue HereDocValue { get { return (Lexer.HereDocTokenValue)Object; } set { Object = value; } }
+        public PhpMemberAttributes PhpMemberAttributes
+        {
+            get => (PhpMemberAttributes)this.Long;
+            set => this.Long = (long)value;
+        }
         internal VariableNameValue VariableName
         {
             get => new VariableNameValue(_span, (string)_objs.Object1, (IExpression)_objs.Object2);

@@ -35,7 +35,6 @@ using TNode = Devsense.PHP.Syntax.Ast.LangElement;
 %left T_THROW
 %left PREC_ARROW_FUNCTION
 %left T_INCLUDE T_INCLUDE_ONCE T_REQUIRE T_REQUIRE_ONCE
-%left ','
 %left T_LOGICAL_OR
 %left T_LOGICAL_XOR
 %left T_LOGICAL_AND
@@ -53,8 +52,9 @@ using TNode = Devsense.PHP.Syntax.Ast.LangElement;
 %left T_AMPERSAND_NOT_FOLLOWED_BY_VAR_OR_VARARG T_AMPERSAND_FOLLOWED_BY_VAR_OR_VARARG
 %nonassoc T_IS_EQUAL T_IS_NOT_EQUAL T_IS_IDENTICAL T_IS_NOT_IDENTICAL T_SPACESHIP
 %nonassoc '<' T_IS_SMALLER_OR_EQUAL '>' T_IS_GREATER_OR_EQUAL
+%left '.'
 %left T_SL T_SR
-%left '+' '-' '.'
+%left '+' '-'
 %left '*' '/' '%'
 %right '!'
 %right T_INSTANCEOF
@@ -1278,15 +1278,15 @@ property_list:
 ;
 
 property:
-		variable_init_optional 	{ SetMemberDoc($$ = _astFactory.FieldDecl(@$, $1.Name.Name, (Expression)$1.Value)); }
+		variable_init_optional backup_doc_comment	{ SetMemberDoc($$ = _astFactory.FieldDecl(@$, $1.Name.Name, (Expression)$1.Value)); }
 ;
 
 hooked_property:
-		variable_modifiers optional_type_without_static variable_init_optional '{' property_hook_list '}'
+		variable_modifiers optional_type_without_static variable_init_optional backup_doc_comment '{' property_hook_list '}'
 		{
-			$$ = _astFactory.PropertyDecl(@$, (PhpMemberAttributes)$1, $2, $3.Name, $5, $3.Value); 
+			$$ = _astFactory.PropertyDecl(@$, (PhpMemberAttributes)$1, $2, $3.Name, $6, $3.Value); 
 			SetDoc($$);
-			FreeList($5);
+			FreeList($6);
 		}
 ;
 
@@ -1585,7 +1585,6 @@ exit_scope:
 ;
 
 backup_fn_flags:
-	/* empty */ {  }
 	%prec PREC_ARROW_FUNCTION /* empty */ {  }
 ;
 
@@ -1745,8 +1744,8 @@ callable_variable:
 			{ $$ = $1; }
 	|	array_object_dereferenceable '[' optional_expr ']'
 			{ $$ = _astFactory.ArrayItem(@$, false, $1, $3); }
-	|	array_object_dereferenceable '{' expr '}'
-			{ $$ = _astFactory.ArrayItem(@$, true, $1, $3); }
+/*	|	array_object_dereferenceable '{' expr '}'					*/
+/*			{ $$ = _astFactory.ArrayItem(@$, true, $1, $3); }		*/
 	|	array_object_dereferenceable object_operator property_name argument_list
 		{
 			if ($3 is string name)
@@ -1786,8 +1785,8 @@ new_variable:
 			{ $$ = $1; }
 	|	new_variable '[' optional_expr ']'
 			{ $$ = _astFactory.ArrayItem(@$, false, $1, $3); }
-	|	new_variable '{' expr '}'
-			{ $$ = _astFactory.ArrayItem(@$, true, $1, $3); }
+/*	|	new_variable '{' expr '}'								*/
+/*			{ $$ = _astFactory.ArrayItem(@$, true, $1, $3); }	*/
 	|	new_variable object_operator property_name
 			{ $$ = AdjustNullSafeOperator(CreateProperty(@$, $1, $3), $2); }
 	|	class_name T_DOUBLE_COLON simple_variable
