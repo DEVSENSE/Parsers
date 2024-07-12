@@ -397,17 +397,10 @@ namespace Devsense.PHP.Syntax.Ast
             List<LangElement> property_hooks
         )
         {
-            if (span == name.Span && typeOpt == null && flags == FormalParam.Flags.Default && initValue == null && visibility == 0 && property_hooks == null)
-            {
-                return new FormalParam(span, name.Name);
-            }
-            else
-            {
-                return new FormalParamEx(span, name, typeOpt, flags, initValue,
-                    constructorPropertyVisibility: visibility,
-                    property_hooks: property_hooks != null ? property_hooks.CastToArray<PropertyHookDecl>() : null
-                );
-            }
+            return FormalParam.Create(span, name, typeOpt, flags, initValue,
+                constructorPropertyVisibility: visibility,
+                property_hooks: property_hooks != null ? property_hooks.CastToArray<PropertyHookDecl>() : null
+            );
         }
 
         public virtual LangElement GlobalCode(Span span, Statement[] statements, NamingContext context)

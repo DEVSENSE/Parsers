@@ -122,6 +122,32 @@ namespace Devsense.PHP.Syntax.Ast
 
         #region Construction
 
+        public static FormalParam Create(VariableNameRef name)
+        {
+            return new FormalParam(name.Span, name.Name);
+        }
+
+        public static FormalParam Create(
+            Text.Span span, VariableNameRef name,
+            TypeRef typeHint = null, Flags flags = 0,
+            Expression initValue = null,
+            PhpMemberAttributes constructorPropertyVisibility = 0,
+            PropertyHookDecl[] property_hooks = null
+        )
+        {
+            if (span == name.Span && typeHint == null && flags == Flags.Default && initValue == null && constructorPropertyVisibility == 0 && property_hooks == null)
+            {
+                return Create(name);
+            }
+            else
+            {
+                return new FormalParamEx(span, name, typeHint, flags, initValue,
+                    constructorPropertyVisibility: constructorPropertyVisibility,
+                    property_hooks: property_hooks
+                );
+            }
+        }
+
         public FormalParam(Text.Span span, VariableName name) : base(span)
         {
             this.VariableName = name;
