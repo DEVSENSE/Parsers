@@ -118,6 +118,9 @@ namespace Devsense.PHP.Syntax.Ast
         /// </summary>
         public virtual TypeRef TypeHint => null;
 
+        /// <summary>
+        /// In case of constructor property with property hooks, gets list of hooks.
+        /// </summary>
         public virtual PropertyHookDecl[] PropertyHooks => null;
 
         #region Construction

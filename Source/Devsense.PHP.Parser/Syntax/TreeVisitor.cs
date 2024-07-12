@@ -1087,6 +1087,11 @@ namespace Devsense.PHP.Syntax
             VisitAttributes(x);
             VisitElement(x.TypeHint);
             VisitElement(x.InitValue);
+
+            if (x.IsConstructorProperty)
+            {
+                VisitList(x.PropertyHooks);
+            }
         }
 
         /// <summary>
