@@ -228,14 +228,14 @@ namespace Devsense.PHP.Syntax.Ast
         //    }
         //}
 
-        /// <summary>
-        /// Initialize new instance of <see cref="CallSignature"/>.
-        /// </summary>
-        /// <param name="parameters">List of parameters.</param>
-        /// <param name="span">Signature position.</param>
-        public CallSignature(IList<ActualParam> parameters, Text.Span span) : this(parameters.AsArray(), span)
-        {
-        }
+        ///// <summary>
+        ///// Initialize new instance of <see cref="CallSignature"/>.
+        ///// </summary>
+        ///// <param name="parameters">List of parameters.</param>
+        ///// <param name="span">Signature position.</param>
+        //public CallSignature(IList<ActualParam> parameters, Text.Span span) : this(parameters.AsArray(), span)
+        //{
+        //}
 
         /// <summary>
         /// Initialize new instance of <see cref="CallSignature"/>.
