@@ -1211,7 +1211,7 @@ namespace Devsense.PHP.Syntax
 
         bool ProcessString(int count, out Tokens token)
         {
-            var quote = GetTokenChar(0) == 'b'// binary string format
+            var quote = GetTokenChar(0) == 'b' && TokenLength >= 2 // binary string format
                 ? GetTokenChar(1)
                 : GetTokenChar(0);
 
