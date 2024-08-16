@@ -25748,6 +25748,29 @@ $x =<<<XXX
         }
 
         [TestMethod]
+        public void BinaryStringTest()
+        {
+            var tokens = new[]
+            {
+                @"b""\xEF\xBB\xBF"""
+            };
+
+            foreach (var tokenStr in tokens)
+            {
+                var lexer = new Lexer(new StringReader(tokenStr), Encoding.UTF8, initialState: Lexer.LexicalStates.ST_IN_SCRIPTING);
+
+                Tokens token;
+                while ((token = lexer.GetNextToken()) != Tokens.EOF)
+                {
+                    if (token == Tokens.T_END_HEREDOC)
+                    {
+
+                    }
+                }
+            }
+        }
+
+        [TestMethod]
         public void HereDocTest_WhiteLines()
         {
             var code = @"<?php

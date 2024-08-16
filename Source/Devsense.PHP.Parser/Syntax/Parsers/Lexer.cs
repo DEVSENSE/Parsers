@@ -1211,13 +1211,17 @@ namespace Devsense.PHP.Syntax
 
         bool ProcessString(int count, out Tokens token)
         {
-            if (count == 1 && TokenLength > 1 && GetTokenChar(0) == '"' && GetTokenChar(TokenLength - 1) == '"')
+            var quote = GetTokenChar(0) == 'b'// binary string format
+                ? GetTokenChar(1)
+                : GetTokenChar(0);
+
+            if (count == 1 && TokenLength > 1 && quote == '"' && GetTokenChar(TokenLength - 1) == '"')
             {
                 BEGIN(LexicalStates.ST_IN_SCRIPTING);
                 token = ProcessDoubleQuotedString();
                 return true;
             }
-            else if (TokenLength > 1 && GetTokenChar(0) == '"')
+            else if (TokenLength > 1 && quote == '"')
             {
                 _yyless(TokenLength - 1);
                 token = Tokens.T_DOUBLE_QUOTES;
