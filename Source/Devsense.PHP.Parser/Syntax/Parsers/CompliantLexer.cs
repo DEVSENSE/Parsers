@@ -43,7 +43,7 @@ namespace Devsense.PHP.Syntax
             _features = language;
         }
 
-        IPhpDocExtent _backup_doc_comment = null;
+        IDocBlock _backup_doc_comment = null;
         int _backup_attribute_level = 0; // nesting level of #[ ... ]
 
         Tokens _backup_token = Tokens.EOF;
@@ -202,12 +202,12 @@ namespace Devsense.PHP.Syntax
             }
         }
 
-        void UpdateDocCommentExtent(Span whitespan)
+        void UpdateDocCommentExtent(Span whiteSpan)
         {
-            var doccomment = _backup_doc_comment;
-            if (doccomment != null && doccomment.Extent.End == whitespan.Start)
+            var docComment = _backup_doc_comment;
+            if (docComment is IDocBlockWithExtent e && e.Extent.End == whiteSpan.Start)
             {
-                doccomment.Extent = Span.FromBounds(doccomment.Extent.Start, whitespan.End);
+                e.Extent = Span.FromBounds(e.Extent.Start, whiteSpan.End);
             }
         }
 

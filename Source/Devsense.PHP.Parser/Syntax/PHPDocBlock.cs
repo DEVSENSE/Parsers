@@ -30,7 +30,7 @@ namespace Devsense.PHP.Syntax
     /// Default implementaiton of documentary comment element.
     /// </summary>
     [DebuggerDisplay("{PHPDocPreview,nq} {Span}")]
-    public sealed class PHPDocBlock : LangElement, IDocBlock
+    public sealed class PHPDocBlock : LangElement, IDocBlock, IDocBlockWithExtent
     {
         #region Properties
 
@@ -41,6 +41,11 @@ namespace Devsense.PHP.Syntax
         string _source;
 
         IDocEntry _lazyEntries;
+        
+        /// <summary>
+        /// Extent span.
+        /// </summary>
+        public Span Extent { get; set; }
 
         public IDocEntry Entries
         {
@@ -70,6 +75,8 @@ namespace Devsense.PHP.Syntax
             : base(span)
         {
             _source = doccomment;
+
+            this.Extent = span;
         }
 
         private void EnsureParsed()
@@ -127,7 +134,7 @@ namespace Devsense.PHP.Syntax
                     }
                 }
 
-                // skip the leading witespace and /**
+                // skip the leading whitespace and /**
                 while (index < eol && (char.IsWhiteSpace(doccomment, index) || doccomment[index] == '*' || (index == 0 && doccomment[index] == '/'))) index++;
 
                 // line := [index .. eol + linebreak]

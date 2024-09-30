@@ -1,7 +1,6 @@
 ﻿using Devsense.PHP.Syntax;
 using Devsense.PHP.Text;
 using System;
-using System.Collections.Generic;
 using System.Text;
 
 namespace Devsense.PHP.Ast.DocBlock
@@ -9,7 +8,7 @@ namespace Devsense.PHP.Ast.DocBlock
     /// <summary>
     /// A factory object for documentary comments.
     /// </summary>
-    public interface IDocBlockFactory<TSpan>
+    public interface IDocBlockFactory<in TSpan>
     {
         /// <summary>
         /// Creates instance of documentary comment block.

@@ -7,55 +7,33 @@ using System.Diagnostics;
 
 namespace Devsense.PHP.Syntax
 {
-    interface IPhpDocExtent
+    static class DocBlockExtent
     {
         /// <summary>
-        /// The actual PHPDoc comment block.
+        /// Determines whether this block is above given element.
         /// </summary>
-        IDocBlock DocComment { get; }
+        public static bool IsAbove(this IDocBlock docblock, ILangElement element) =>
+            element != null && (docblock is IDocBlockWithExtent e ? e.Extent.End : docblock.Span.End) <= element.Span.Start;
 
         /// <summary>
-        /// Span where the comment block is applicable.
-        /// This includes the trailing whitespaces, regular comments, attributes, and other white tokens.
+        /// Determines whether this block is below given element or element is <c>null</c>.
         /// </summary>
-        Span Extent { get; set; }
+        public static bool IsBelowOrNull(this IDocBlock docblock, ILangElement element) =>
+            element == null || (docblock is IDocBlockWithExtent e ? e.Extent.End : docblock.Span.End) > element.Span.End;
     }
-
+    
     /// <summary>
     /// Helper class containing list of DOC comments during tokenization.
     /// Provides searching for DOC comment above given position.
     /// </summary>
     class DocCommentContainer
     {
-        sealed class PhpDocExtent : IPhpDocExtent
-        {
-            public IDocBlock DocComment { get; }
-
-            public Span Extent { get; set; }
-
-            public PhpDocExtent(IDocBlock phpdoc)
-            {
-                this.DocComment = phpdoc ?? throw new ArgumentNullException(nameof(phpdoc));
-                this.Extent = phpdoc.Span;
-            }
-
-            /// <summary>
-            /// Determines whether this block is above given element.
-            /// </summary>
-            public bool IsAbove(ILangElement element) => element != null && Extent.End <= element.Span.Start;
-
-            /// <summary>
-            /// Determines whether this block is below given element or element is <c>null</c>.
-            /// </summary>
-            public bool IsBelowOrNull(ILangElement element) => element == null || Extent.End > element.Span.End;
-        }
-
         #region Fields & Properties
 
         /// <summary>
-        /// Ordered list of DOC comments..
+        /// Ordered list of DOC comments.
         /// </summary>
-        readonly List<PhpDocExtent> _doclist = new List<PhpDocExtent>();
+        readonly List<IDocBlockWithExtent> _doclist = new List<IDocBlockWithExtent>();
 
         /// <summary>
         /// Extent of included DOC comments span.
@@ -69,17 +47,18 @@ namespace Devsense.PHP.Syntax
         /// <summary>
         /// Inserts DOC block into the list.
         /// </summary>
-        public IPhpDocExtent/*!*/Append(IDocBlock/*!*/phpdoc)
+        public IDocBlock/*!*/Append(IDocBlock/*!*/phpdoc)
         {
             Debug.Assert(phpdoc != null);
             Debug.Assert(_doclist == null || _doclist.Count == 0 || _doclist.Last().Extent.Start < phpdoc.Span.Start, "Blocks have to be appended in order.");
 
-            var docinfo = new PhpDocExtent(phpdoc);
-
-            _doclist.Add(docinfo);
+            if (phpdoc is IDocBlockWithExtent e)
+            {
+                _doclist.Add(e);
+            }
 
             //
-            return docinfo;
+            return phpdoc;
         }
 
         /// <summary>
@@ -108,7 +87,7 @@ namespace Devsense.PHP.Syntax
             if (index >= 0 && index < _doclist.Count)
             {
                 var list = _doclist;
-                phpdoc = list[index].DocComment;
+                phpdoc = list[index];
                 list.RemoveAt(index);
 
                 //
@@ -171,7 +150,7 @@ namespace Devsense.PHP.Syntax
                 int insertAt = 0;
                 int count = 0;
 
-                PhpDocExtent doc;
+                IDocBlockWithExtent doc;
                 int indexFrom = FindFirstIn(list, extent);
 
                 for (var index = indexFrom; index < list.Count && (doc = list[index]).Extent.OverlapsWith(extent); index++)
@@ -185,7 +164,7 @@ namespace Devsense.PHP.Syntax
                     // insert {doc} into {stmts}
                     if (insertAt == stmts.Count || doc.IsAbove(stmts[insertAt]))
                     {
-                        stmts.Insert(insertAt, factory.PHPDoc(doc.DocComment.Span, doc.DocComment));
+                        stmts.Insert(insertAt, factory.PHPDoc(doc.Span, doc));
                         insertAt++;
                     }
 
@@ -222,7 +201,7 @@ namespace Devsense.PHP.Syntax
         /// <summary>
         /// Binary search.
         /// </summary>
-        private static int FindIndex(List<PhpDocExtent>/*!*/list, int position)
+        private static int FindIndex(List<IDocBlockWithExtent>/*!*/list, int position)
         {
             int a = 0, b = list.Count - 1;
             while (a <= b)
@@ -244,7 +223,7 @@ namespace Devsense.PHP.Syntax
         /// <summary>
         /// Gets lowest index of DOC comment that intersects given span. Returns count of items if nothing was found.
         /// </summary>
-        private static int FindFirstIn(List<PhpDocExtent>/*!*/list, Span span)
+        private static int FindFirstIn(List<IDocBlockWithExtent>/*!*/list, Span span)
         {
             Debug.Assert(span.IsValid);
             Debug.Assert(list != null);
@@ -276,6 +255,6 @@ namespace Devsense.PHP.Syntax
             return result;
         }
 
-        public IDocBlock LastDocBlock => _doclist.Count > 0 ? _doclist.Last().DocComment : null;
+        public IDocBlock LastDocBlock => _doclist.Count > 0 ? _doclist.Last() : null;
     }
 }

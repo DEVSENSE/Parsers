@@ -1,5 +1,6 @@
 ﻿using Devsense.PHP.Syntax.Ast;
 using System;
+using Devsense.PHP.Text;
 
 namespace Devsense.PHP.Ast.DocBlock
 {
@@ -30,5 +31,17 @@ namespace Devsense.PHP.Ast.DocBlock
         /// Gets the enumeration of <see cref="IDocEntry"/> list.
         /// </summary>
         DocBlockEntriesEnumerator<IDocEntry> GetEnumerator();
+    }
+
+    /// <summary>
+    /// <see cref="IDocBlock"/> with additional span of whitespaces around the actual doc block.
+    /// </summary>
+    public interface IDocBlockWithExtent : IDocBlock
+    {
+        /// <summary>
+        /// Span where the comment block is applicable.
+        /// This includes the trailing whitespaces, regular comments, attributes, and other white tokens.
+        /// </summary>
+        Span Extent { get; set; }
     }
 }

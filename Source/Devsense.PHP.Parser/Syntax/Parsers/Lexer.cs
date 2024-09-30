@@ -88,7 +88,7 @@ namespace Devsense.PHP.Syntax
         internal HereDocTokenValue _hereDocValue = null;
 
         /// <summary>
-        /// Get actual doc comment.
+        /// Gets current doc comment.
         /// </summary>
         public IDocBlock DocComment { get; set; }
 
