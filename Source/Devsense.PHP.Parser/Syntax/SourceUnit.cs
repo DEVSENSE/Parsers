@@ -140,10 +140,8 @@ namespace Devsense.PHP.Syntax
         int ILineBreaks.TextLength => _innerLineBreaks.TextLength;
 
         int ILineBreaks.EndOfLineBreak(int index) => this._innerLineBreaks.EndOfLineBreak(index);
-
-        public virtual int GetLineFromPosition(int position) => this._innerLineBreaks.GetLineFromPosition(position);
-
-        public virtual void GetLineColumnFromPosition(int position, out int line, out int column) => this._innerLineBreaks.GetLineColumnFromPosition(position, out line, out column);
+        
+        bool ILineBreaks.TryGetLineAtPosition(int position, out int line) => _innerLineBreaks.TryGetLineAtPosition(position, out line);
 
         #endregion
 

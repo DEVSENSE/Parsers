@@ -27,7 +27,7 @@ namespace Devsense.PHP.Text
     /// <summary>
     /// Manages information about line breaks in the document.
     /// </summary>
-    public interface  ILineBreaks
+    public interface ILineBreaks
     {
         /// <summary>
         /// Gets amount of line breaks.
@@ -48,20 +48,28 @@ namespace Devsense.PHP.Text
         int EndOfLineBreak(int index);
 
         /// <summary>
-        /// Gets line number from <paramref name="position"/> within document.
+        /// Resolve the line at given position.
         /// </summary>
-        /// <param name="position">Position within document.</param>
-        /// <returns>Line number.</returns>
-        /// <exception cref="ArgumentOutOfRangeException">In case <paramref name="position"/> is out of line number range.</exception>
-        int GetLineFromPosition(int position);
+        /// <param name="position">Index of character within the document.</param>
+        /// <param name="line">Line number, zero-based.</param>
+        /// <returns>Value indicating the line was resolved, i.e. the <paramref name="position"/> is in valid range.</returns>
+        bool TryGetLineAtPosition(int position, out int line);
 
-        /// <summary>
-        /// Gets line and column from position number.
-        /// </summary>
-        /// <param name="position">Position with the document.</param>
-        /// <param name="line">Line number.</param>
-        /// <param name="column">Column nummber.</param>
-        void GetLineColumnFromPosition(int position, out int line, out int column);
+        // /// <summary>
+        // /// Gets line number from <paramref name="position"/> within document.
+        // /// </summary>
+        // /// <param name="position">Position within document.</param>
+        // /// <returns>Line number.</returns>
+        // /// <exception cref="ArgumentOutOfRangeException">In case <paramref name="position"/> is out of line number range.</exception>
+        // int GetLineFromPosition(int position);
+        //
+        // /// <summary>
+        // /// Gets line and column from position number.
+        // /// </summary>
+        // /// <param name="position">Position with the document.</param>
+        // /// <param name="line">Line number.</param>
+        // /// <param name="column">Column nummber.</param>
+        // void GetLineColumnFromPosition(int position, out int line, out int column);
     }
 
     #endregion
@@ -81,42 +89,38 @@ namespace Devsense.PHP.Text
             get { return _textLength; }
         }
 
-        /// <summary>
-        /// Gets line number from <paramref name="position"/> within document.
-        /// </summary>
-        /// <param name="position">Position within document.</param>
-        /// <returns>Line number.</returns>
-        /// <exception cref="ArgumentOutOfRangeException">In case <paramref name="position"/> is out of text document range.</exception>
-        public int GetLineFromPosition(int position)
+        public bool TryGetLineAtPosition(int position, out int line)
         {
             if (position < 0 || position > this.TextLength)
-                throw new ArgumentOutOfRangeException("position");
-            
-            //
-            if (position == this.TextLength)
-                return this.LinesCount - 1;
-            
-            // binary search
-            int a = 0;
-            int b = this.Count;
-            while (a < b)
             {
-                int x = (a + b) / 2;
-                if (position < this.EndOfLineBreak(x))
-                    b = x;
-                else
-                    a = x + 1;
+                // invalid
+                line = 0;
+                return false;
             }
-            return a;
-        }
 
-        public void GetLineColumnFromPosition(int position, out int line, out int column)
-        {
-            line = GetLineFromPosition(position);
-            if (line == 0)
-                column = position;
+            if (position < this.TextLength)
+            {
+                // binary search line
+                int a = 0;
+                int b = this.Count;
+                while (a < b)
+                {
+                    int x = (a + b) / 2;
+                    if (position < this.EndOfLineBreak(x))
+                        b = x;
+                    else
+                        a = x + 1;
+                }
+
+                line = a;
+            }
             else
-                column = position - this.EndOfLineBreak(line - 1);
+            {
+                // last line
+                line = this.LinesCount - 1;
+            }
+
+            return true;
         }
 
         #endregion
@@ -132,7 +136,7 @@ namespace Devsense.PHP.Text
         {
             var lineends = ListObjectPool<int>.Allocate();
             CalculateLineEnds(lineends, text);
-            
+
             var linebreaks = Create(text, lineends);
 
             ListObjectPool<int>.Free(lineends);
@@ -151,7 +155,7 @@ namespace Devsense.PHP.Text
         {
             if (textLength < 0) throw new ArgumentException();
             if (lineEnds == null) throw new ArgumentNullException();
-            
+
             if (lineEnds.Count == 0 || lineEnds.Last() <= ushort.MaxValue)
             {
                 return new ShortLineBreaks(textLength, lineEnds);
@@ -309,7 +313,7 @@ namespace Devsense.PHP.Text
             _textLength += length;
         }
 
-        public LineBreaks/*!*/Finalize()
+        public LineBreaks /*!*/ ToImmutable()
         {
             return LineBreaks.Create(_textLength, _lineEnds);
         }

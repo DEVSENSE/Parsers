@@ -80,15 +80,66 @@ namespace Devsense.PHP.Text
         public static Span GetLineSpan(this ILineBreaks/*!*/lineBreaks, int line)
         {
             if (lineBreaks == null)
-                throw new ArgumentNullException("lineBreaks");
+                throw new ArgumentNullException(nameof(lineBreaks));
 
             if (line < 0 || line > lineBreaks.Count)
-                throw new ArgumentException("line");
+                throw new ArgumentException(nameof(line));
 
             int start = (line != 0) ? lineBreaks.EndOfLineBreak(line - 1) : 0;
             int end = (line < lineBreaks.Count) ? lineBreaks.EndOfLineBreak(line) : lineBreaks.TextLength;
 
             return Span.FromBounds(start, end);
+        }
+
+        /// <summary>
+        /// Gets line number from <paramref name="position"/> within document.
+        /// </summary>
+        /// <param name="position">Position within document.</param>
+        /// <returns>Line number.</returns>
+        /// <exception cref="ArgumentOutOfRangeException">In case <paramref name="position"/> is out of line number range.</exception>
+        public static int GetLineFromPosition(this ILineBreaks lines, int position) => lines.TryGetLineAtPosition(position, out var line)
+            ? line
+            : throw new ArgumentOutOfRangeException();
+
+        /// <summary>
+        /// Gets line and column from position number.
+        /// </summary>
+        /// <param name="position">Position with the document.</param>
+        /// <param name="line">Line number.</param>
+        /// <param name="column">Column number.</param>
+        public static void GetLineColumnFromPosition(this ILineBreaks lines, int position, out int line, out int column)
+        {
+            if (lines.TryGetLineAtPosition(position, out line))
+            {
+                column = line > 0
+                    ? position - lines.EndOfLineBreak(line - 1)
+                    : position;
+            }
+            else
+            {
+                throw new ArgumentOutOfRangeException();
+            }
+        }
+
+        /// <summary>
+        /// Gets line and its span at given character index.
+        /// </summary>
+        /// <param name="lines">Text lines.</param>
+        /// <param name="position">Character index.</param>
+        /// <param name="line">Line index, zero based.</param>
+        /// <param name="span">Line span.</param>
+        /// <returns>Value indicating the position is valid within the document.</returns>
+        public static bool TryGetLineAtPosition(this ILineBreaks lines, int position, out int line, out Span span)
+        {
+            if (lines.TryGetLineAtPosition(position, out line))
+            {
+                span = GetLineSpan(lines, line);
+                return true;
+            }
+
+            //
+            span = Span.Invalid;
+            return false;
         }
 
         /// <summary>Gets number as string. Numbers in range (0,9) don't cause a new string allocation.</summary>
