@@ -27,10 +27,10 @@ using Devsense.PHP.Text;
 namespace Devsense.PHP.Syntax
 {
     /// <summary>
-    /// Default implementaiton of documentary comment element.
+    /// Default implementation of documentary comment element.
     /// </summary>
     [DebuggerDisplay("{PHPDocPreview,nq} {Span}")]
-    public sealed class PHPDocBlock : LangElement, IDocBlock, IDocBlockWithExtent
+    public sealed class PHPDocBlock : LangElement, IDocBlock
     {
         #region Properties
 

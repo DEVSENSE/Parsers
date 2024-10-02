@@ -206,7 +206,8 @@ namespace Devsense.PHP.Syntax
 
         void UpdateDocCommentExtent(Span whiteSpan)
         {
-            if (_backup_doc_comment is IDocBlockWithExtent e && e.Extent.End == whiteSpan.Start)
+            var e = _backup_doc_comment;
+            if (e != null && e.Extent.End == whiteSpan.Start)
             {
                 e.Extent = Span.FromBounds(e.Extent.Start, whiteSpan.End);
             }
