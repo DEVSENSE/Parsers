@@ -53,17 +53,7 @@ namespace Devsense.PHP.Syntax
 
         public ReadOnlySpan<char> TokenTextSpan => TokenText.AsSpan();
 
-        public IDocBlock DocComment
-        {
-            get
-            {
-                return _provider.DocComment;
-            }
-            set
-            {
-                _provider.DocComment = value;
-            }
-        }
+        public IDocBlock DocComment => _provider.DocComment;
 
         public DocCommentContainer DocCommentList => _provider.DocCommentList;
 

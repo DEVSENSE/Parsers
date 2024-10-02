@@ -80,7 +80,7 @@ namespace UnitTests.TestImplementation
 
         public CompleteToken PreviousToken => CompleteToken.Empty;
 
-        public IDocBlock DocComment { get => null; set => throw new NotImplementedException(); }
+        public IDocBlock DocComment => null;
 
         public void AddNextTokens(IList<CompleteToken> tokensBuffer, CompleteToken previousToken) { }
     }

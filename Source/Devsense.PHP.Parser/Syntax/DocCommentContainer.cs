@@ -47,13 +47,22 @@ namespace Devsense.PHP.Syntax
         /// <summary>
         /// Inserts DOC block into the list.
         /// </summary>
-        public IDocBlock/*!*/Append(IDocBlock/*!*/phpdoc)
+        public IDocBlock/*!*/Append(IDocBlock/*!*/phpdoc, Tokens previous, Span previousSpan)
         {
             Debug.Assert(phpdoc != null);
-            Debug.Assert(_doclist == null || _doclist.Count == 0 || _doclist.Last().Extent.Start < phpdoc.Span.Start, "Blocks have to be appended in order.");
+            Debug.Assert(
+                _doclist.Count == 0 ||
+                _doclist.Last().Extent.Start < phpdoc.Span.Start,
+                "Blocks have to be appended in order."
+            );
 
             if (phpdoc is IDocBlockWithExtent e)
             {
+                if (previous == Tokens.T_WHITESPACE)
+                {
+                    e.Extent = Span.FromBounds(previousSpan.Start, e.Extent.End);
+                }
+                
                 _doclist.Add(e);
             }
 
@@ -232,7 +241,7 @@ namespace Devsense.PHP.Syntax
             int a = 0, b = result - 1;
             while (a <= b)
             {
-                // modified binary search to find lowest index of element within {span}
+                // modified binary search to find the lowest index of element within {span}
 
                 int x = (a + b) >> 1;
                 var doc = list[x];

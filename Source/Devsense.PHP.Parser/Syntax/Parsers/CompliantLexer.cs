@@ -35,7 +35,7 @@ namespace Devsense.PHP.Syntax
         /// <summary>
         /// Lexer constructor that initializes all the necessary members
         /// </summary>
-        /// <param name="provider">Underlaying tokens provider.</param>
+        /// <param name="provider">Underlying tokens provider.</param>
         /// <param name="language">Language features.</param>
         public CompliantLexer(ITokenProvider<SemanticValueType, Span> provider, LanguageFeatures language = LanguageFeatures.Basic)
         {
@@ -48,13 +48,9 @@ namespace Devsense.PHP.Syntax
 
         Tokens _backup_token = Tokens.EOF;
 
-        public IDocBlock DocComment
-        {
-            get { return _phpDocs.LastDocBlock; }
-            set { /*not supported*/ }
-        }
+        public IDocBlock DocComment => _phpDocs.LastDocBlock;
 
-        DocCommentContainer IParserTokenProvider<SemanticValueType, Span>.DocCommentList { get { return _phpDocs; } }
+        DocCommentContainer IParserTokenProvider<SemanticValueType, Span>.DocCommentList => _phpDocs;
 
         public Span TokenPosition => _provider.TokenPosition;
 
@@ -77,21 +73,18 @@ namespace Devsense.PHP.Syntax
         /// <returns>Next token.</returns>
         public int GetNextToken()
         {
+            var token = _backup_token;
+            
             for (; ; )
             {
-                Tokens token = (Tokens)_provider.GetNextToken();
+                var prev_span = TokenPosition;
+                var prev_token = token;
+                
+                token = (Tokens)_provider.GetNextToken();
 
                 // original zendlex() functionality - skip open and close tags because they are not in the PHP grammar
                 switch (token)
                 {
-                    case Tokens.T_DOC_COMMENT:
-                        _backup_doc_comment = _phpDocs.Append(_provider.DocComment);
-                        // TODO: nullify once consumed
-                        continue;
-                    case Tokens.T_WHITESPACE:
-                    case Tokens.T_COMMENT:
-                        UpdateDocCommentExtent(TokenPosition);
-                        continue;
                     case Tokens.T_OPEN_TAG:
                         continue;
                     case Tokens.T_CLOSE_TAG:
@@ -100,7 +93,16 @@ namespace Devsense.PHP.Syntax
                     case Tokens.T_OPEN_TAG_WITH_ECHO:
                         token = Tokens.T_ECHO;
                         break;
-
+                    
+                    case Tokens.T_DOC_COMMENT:
+                        _backup_doc_comment = _phpDocs.Append(_provider.DocComment, prev_token, prev_span);
+                        // TODO: nullify once consumed
+                        continue;
+                    case Tokens.T_WHITESPACE:
+                    case Tokens.T_COMMENT:
+                        UpdateDocCommentExtent(TokenPosition);
+                        continue;
+                    
                     //case Tokens.T_ATTRIBUTE:
                     //    if (!HasFeatureSet(LanguageFeatures.Php80Set))
                     //    {
@@ -183,7 +185,7 @@ namespace Devsense.PHP.Syntax
 
                 if (_backup_attribute_level > 0)
                 {
-                    // extend the span of preceeding doc comment block
+                    // extend the span of preceding doc comment block
                     // so it can be properly applied to the next language element
                     UpdateDocCommentExtent(TokenPosition);
 
@@ -204,8 +206,7 @@ namespace Devsense.PHP.Syntax
 
         void UpdateDocCommentExtent(Span whiteSpan)
         {
-            var docComment = _backup_doc_comment;
-            if (docComment is IDocBlockWithExtent e && e.Extent.End == whiteSpan.Start)
+            if (_backup_doc_comment is IDocBlockWithExtent e && e.Extent.End == whiteSpan.Start)
             {
                 e.Extent = Span.FromBounds(e.Extent.Start, whiteSpan.End);
             }

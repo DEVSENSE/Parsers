@@ -130,7 +130,7 @@ namespace Devsense.PHP.Syntax
 		/// <summary>
 		/// Gets current DOC block that will be assigned to the next declaration.
 		/// </summary>
-		IDocBlock DocComment { get; set; }
+		IDocBlock DocComment { get; }
     }
 
 	#endregion
