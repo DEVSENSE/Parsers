@@ -16,12 +16,10 @@ namespace Devsense.PHP.Ast.DocBlock
         /// <param name="docblock">Block of entries.</param>
         public static T GetElementOfType<T>(this IDocBlock docblock) where T : IDocEntry
         {
-            foreach (var entry in docblock)
+            var e = new DocBlockEntriesEnumerator<T>(docblock.Entries);
+            if (e.MoveNext())
             {
-                if (entry is T t)
-                {
-                    return t;
-                }
+                return e.Current;
             }
 
             return default(T);

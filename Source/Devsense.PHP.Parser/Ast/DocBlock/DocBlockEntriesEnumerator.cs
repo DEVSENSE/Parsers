@@ -24,10 +24,10 @@ namespace Devsense.PHP.Ast.DocBlock
         {
             for (var item = this.Next; item != null; item = item.Next)
             {
-                if (item is T)
+                if (item is T entry)
                 {
-                    this.Current = (T)item;
-                    this.Next = item.Next;
+                    this.Current = entry;
+                    this.Next = entry.Next;
                     return true;
                 }
             }
