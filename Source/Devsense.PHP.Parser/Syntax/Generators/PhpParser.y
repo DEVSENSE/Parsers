@@ -798,7 +798,11 @@ enum_backing_type:
 ;
 
 enum_case:
-		T_CASE identifier enum_case_expr ';' { $$ = _astFactory.EnumCase(@$, $2, @2, $3); }
+		T_CASE identifier enum_case_expr ';'
+		{
+		    $$ = _astFactory.EnumCase(@$, $2, @2, $3);
+		    SetMemberDoc($$);
+        }
 ;
 
 enum_case_expr:

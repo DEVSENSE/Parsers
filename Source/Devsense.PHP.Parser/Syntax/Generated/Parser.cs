@@ -2710,7 +2710,10 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 { yyval.Node = value_stack.array[value_stack.top-1].yyval.TypeReference; }
         return;
       case 204: // enum_case -> T_CASE identifier enum_case_expr ';' 
-{ yyval.Node = _astFactory.EnumCase(yypos, value_stack.array[value_stack.top-3].yyval.String, value_stack.array[value_stack.top-3].yypos, value_stack.array[value_stack.top-2].yyval.Node); }
+{
+        yyval.Node = _astFactory.EnumCase(yypos, value_stack.array[value_stack.top-3].yyval.String, value_stack.array[value_stack.top-3].yypos, value_stack.array[value_stack.top-2].yyval.Node);
+        SetMemberDoc(yyval.Node);
+     }
         return;
       case 205: // enum_case_expr -> 
 { yyval.Node = null; }
