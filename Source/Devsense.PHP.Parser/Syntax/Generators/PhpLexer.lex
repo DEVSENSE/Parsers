@@ -478,6 +478,18 @@ ST_HALT_COMPILER1,ST_HALT_COMPILER2,ST_HALT_COMPILER3>{EOF} {
 	return Identifier(Tokens.T_PROTECTED);
 }
 
+<ST_IN_SCRIPTING>"public(set)" {
+	return Identifier(Tokens.T_PUBLIC_SET);
+}
+
+<ST_IN_SCRIPTING>"protected(set)" {
+	return Identifier(Tokens.T_PROTECTED_SET);
+}
+
+<ST_IN_SCRIPTING>"private(set)" {
+	return Identifier(Tokens.T_PRIVATE_SET);
+}
+
 <ST_IN_SCRIPTING>"public" {
 	return Identifier(Tokens.T_PUBLIC);
 }

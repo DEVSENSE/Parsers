@@ -94,6 +94,7 @@ namespace Devsense.PHP.Text
         /// <summary>
         /// Gets line number from <paramref name="position"/> within document.
         /// </summary>
+        /// <param name="lines">Reference to line breaks object.</param>
         /// <param name="position">Position within document.</param>
         /// <returns>Line number.</returns>
         /// <exception cref="ArgumentOutOfRangeException">In case <paramref name="position"/> is out of line number range.</exception>
@@ -104,6 +105,7 @@ namespace Devsense.PHP.Text
         /// <summary>
         /// Gets line and column from position number.
         /// </summary>
+        /// <param name="lines">Reference to line breaks object.</param>
         /// <param name="position">Position with the document.</param>
         /// <param name="line">Line number.</param>
         /// <param name="column">Column number.</param>

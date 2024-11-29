@@ -66,7 +66,7 @@ using TNode = Devsense.PHP.Syntax.Ast.LangElement;
 %left T_ELSEIF
 %left T_ELSE
 %left T_ENDIF
-%right T_STATIC T_ABSTRACT T_FINAL T_PRIVATE T_PROTECTED T_PUBLIC T_READONLY
+%right T_STATIC T_ABSTRACT T_FINAL T_PRIVATE T_PROTECTED T_PUBLIC T_PUBLIC_SET T_PROTECTED_SET T_PRIVATE_SET T_READONLY
 
 %token <Long> T_LNUMBER 317   //"integer number (T_LNUMBER)"
 %token <Double> T_DNUMBER 312   //"floating-point number (T_DNUMBER)"
@@ -1266,6 +1266,9 @@ member_modifier:
 		T_PUBLIC				{ $$ = (long)PhpMemberAttributes.Public; }
 	|	T_PROTECTED				{ $$ = (long)PhpMemberAttributes.Protected; }
 	|	T_PRIVATE				{ $$ = (long)PhpMemberAttributes.Private; }
+	|	T_PUBLIC_SET			{ $$ = (long)PhpMemberAttributes.PublicSet; }
+	|	T_PROTECTED_SET			{ $$ = (long)PhpMemberAttributes.ProtectedSet; }
+	|	T_PRIVATE_SET			{ $$ = (long)PhpMemberAttributes.PrivateSet; }
 	|	T_STATIC				{ $$ = (long)PhpMemberAttributes.Static; }
 	|	T_ABSTRACT				{ $$ = (long)PhpMemberAttributes.Abstract; }
 	|	T_FINAL					{ $$ = (long)PhpMemberAttributes.Final; }

@@ -65,11 +65,16 @@ namespace Devsense.PHP.Syntax
         /// TODO: useful when analysis checks whether there are any imported conditional types/functions.
         /// TODO: add the first conditional to the AC, ignore the others. Add the flag handling to Resolve* and to analyzer.
         /// </summary>
-        InactiveConditional = 4096,
+        InactiveConditional = 1024 << 1,
+
+        PublicSet = 1024 << 2,
+        PrivateSet = 1024 << 3,
+        ProtectedSet = 1024 << 4,
 
         TypeMask = Interface | Trait | Enum /*| Class = 0*/,
         StaticMask = Static | AppStatic,
         VisibilityMask = Public | Private | Protected | NamespacePrivate,
+        SetVisibilityMask = PublicSet | PrivateSet | ProtectedSet,
         SpecialMembersMask = Constructor
     }
 
