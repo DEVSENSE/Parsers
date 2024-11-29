@@ -433,6 +433,28 @@ function foo(
                 Assert.AreEqual(0, errors.Count);
             }
         }
+        
+        [TestMethod]
+        public void AsymmetricVisibilityTest()
+        {
+            var codes = new[] {
+                // https://github.com/DEVSENSE/phptools-docs/issues/728
+                @"<?php
+class Person {
+    public private(set) ?int $age = null;
+}
+",
+            };
+
+            foreach (var code in codes)
+            {
+                var errors = new TestErrorSink();
+                var unit = new CodeSourceUnit(code, "dummy.php", Encoding.UTF8, features: LanguageFeatures.Php84Set);
+                unit.Parse(new BasicNodesFactory(unit), errors);
+
+                Assert.AreEqual(0, errors.Count);
+            }
+        }
 
         [TestMethod]
         public void TypedClassConstTest()
