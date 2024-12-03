@@ -96,6 +96,14 @@ namespace Devsense.PHP.Syntax
                     return Tokens.T_PRIVATE;
                 case PhpMemberAttributes.Protected:
                     return Tokens.T_PROTECTED;
+                
+                case PhpMemberAttributes.PublicSet:
+                    return Tokens.T_PUBLIC_SET;
+                case PhpMemberAttributes.PrivateSet:
+                    return Tokens.T_PRIVATE_SET;
+                case PhpMemberAttributes.ProtectedSet:
+                    return Tokens.T_PROTECTED_SET;
+                
                 case PhpMemberAttributes.ReadOnly:
                     return Tokens.T_READONLY;
                 case PhpMemberAttributes.Static:
