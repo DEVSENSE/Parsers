@@ -1012,10 +1012,13 @@ optional_property_modifiers:
 ;
 
 property_modifier:
-		T_PUBLIC	{ $$ = (long)PhpMemberAttributes.Public; }
-	|	T_PROTECTED	{ $$ = (long)PhpMemberAttributes.Protected; }
-	|	T_PRIVATE	{ $$ = (long)PhpMemberAttributes.Private; }
-	|	T_READONLY	{ $$ = (long)PhpMemberAttributes.ReadOnly; }
+		T_PUBLIC	    { $$ = (long)PhpMemberAttributes.Public; }
+	|	T_PROTECTED	    { $$ = (long)PhpMemberAttributes.Protected; }
+	|	T_PRIVATE	    { $$ = (long)PhpMemberAttributes.Private; }
+	|	T_READONLY	    { $$ = (long)PhpMemberAttributes.ReadOnly; }
+	|	T_PUBLIC_SET	{ $$ = (long)PhpMemberAttributes.PublicSet; }
+    |	T_PROTECTED_SET	{ $$ = (long)PhpMemberAttributes.ProtectedSet; }
+    |	T_PRIVATE_SET	{ $$ = (long)PhpMemberAttributes.PrivateSet; }	
 ;
 
 parameter:
