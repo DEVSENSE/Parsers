@@ -248,11 +248,7 @@ namespace Devsense.PHP.Syntax
                 return StringUtils.ReturnStringBuilder(result);
             }
         }
-
-        string IDocBlock.Summary => throw new NotImplementedException();
-
-        IDocEntry IDocBlock.Entries => throw new NotImplementedException();
-
+        
         #endregion
 
         /// <summary>
