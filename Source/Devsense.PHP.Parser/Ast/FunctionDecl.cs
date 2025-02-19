@@ -65,10 +65,21 @@ namespace Devsense.PHP.Syntax.Ast
             IsVariadic = 4,
 
             IsConstructorPropertyPublic = 8,
-            IsConstructorPropertyPrivate = 16,
-            IsConstructorPropertyProtected = 32,
-            IsConstructorPropertyReadOnly = 64,
-            IsConstructorPropertyMask = IsConstructorPropertyPublic | IsConstructorPropertyPrivate | IsConstructorPropertyProtected | IsConstructorPropertyReadOnly,
+            IsConstructorPropertyPrivate = 9,
+            IsConstructorPropertyProtected = 10,
+            ConstructorPropertyVisibility = IsConstructorPropertyPublic | IsConstructorPropertyProtected | IsConstructorPropertyPrivate,
+
+            IsConstructorPropertyPublicSet = 16,
+            IsConstructorPropertyPrivateSet = 17,
+            IsConstructorPropertyProtectedSet = 18,
+            ConstructorPropertySetVisibility = IsConstructorPropertyPublicSet | IsConstructorPropertyProtectedSet | IsConstructorPropertyPrivateSet,
+
+            IsConstructorPropertyReadOnly = 32,
+
+            ConstructorPropertyMask =
+                ConstructorPropertyVisibility |
+                ConstructorPropertySetVisibility |
+                IsConstructorPropertyReadOnly,
         }
 
         /// <summary>
@@ -180,7 +191,7 @@ namespace Devsense.PHP.Syntax.Ast
 
         public override Expression InitValue { get; }
 
-        public override bool IsConstructorProperty => (FlagsValue & Flags.IsConstructorPropertyMask) != 0;
+        public override bool IsConstructorProperty => (FlagsValue & Flags.ConstructorPropertyMask) != 0;
 
         /// <summary>
         /// In case the parameter is <see cref="IsConstructorProperty"/>, gets the member visibility.
@@ -191,9 +202,22 @@ namespace Devsense.PHP.Syntax.Ast
             {
                 var result = (PhpMemberAttributes)0;
 
-                if ((FlagsValue & Flags.IsConstructorPropertyPublic) != 0) result |= PhpMemberAttributes.Public; // 0
-                if ((FlagsValue & Flags.IsConstructorPropertyPrivate) != 0) result |= PhpMemberAttributes.Private;
-                if ((FlagsValue & Flags.IsConstructorPropertyProtected) != 0) result |= PhpMemberAttributes.Protected;
+                result |= (FlagsValue & Flags.ConstructorPropertyVisibility) switch
+                {
+                    Flags.IsConstructorPropertyPrivate => PhpMemberAttributes.Private,
+                    Flags.IsConstructorPropertyProtected => PhpMemberAttributes.Protected,
+                    Flags.IsConstructorPropertyPublic => PhpMemberAttributes.Public,
+                    _ => 0,
+                };
+
+                result |= (FlagsValue & Flags.ConstructorPropertySetVisibility) switch
+                {
+                    Flags.IsConstructorPropertyPrivateSet => PhpMemberAttributes.PrivateSet,
+                    Flags.IsConstructorPropertyProtectedSet => PhpMemberAttributes.ProtectedSet,
+                    Flags.IsConstructorPropertyPublicSet => PhpMemberAttributes.PublicSet,
+                    _ => 0,
+                };
+
                 if ((FlagsValue & Flags.IsConstructorPropertyReadOnly) != 0) result |= PhpMemberAttributes.ReadOnly;
 
                 return result;
@@ -225,6 +249,14 @@ namespace Devsense.PHP.Syntax.Ast
                     PhpMemberAttributes.Protected => Flags.IsConstructorPropertyProtected,
                     //PhpMemberAttributes.Public => Flags.IsConstructorPropertyPublic,
                     _ => Flags.IsConstructorPropertyPublic,
+                };
+
+                this.FlagsValue |= (constructorPropertyVisibility & PhpMemberAttributes.SetVisibilityMask) switch
+                {
+                    PhpMemberAttributes.PrivateSet => Flags.IsConstructorPropertyPrivateSet,
+                    PhpMemberAttributes.ProtectedSet => Flags.IsConstructorPropertyProtectedSet,
+                    PhpMemberAttributes.PublicSet => Flags.IsConstructorPropertyPublicSet,
+                    _ => 0,
                 };
 
                 if (constructorPropertyVisibility.IsReadOnly())
