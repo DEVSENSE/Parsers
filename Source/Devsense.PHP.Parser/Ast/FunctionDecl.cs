@@ -61,20 +61,20 @@ namespace Devsense.PHP.Syntax.Ast
         {
             Default = 0,
             IsByRef = 1,
-            IsOut = 2,
-            IsVariadic = 4,
+            IsOut = 1 << 1,
+            IsVariadic = 1 << 2,
 
-            IsConstructorPropertyPublic = 8,
-            IsConstructorPropertyPrivate = 9,
-            IsConstructorPropertyProtected = 10,
-            ConstructorPropertyVisibility = IsConstructorPropertyPublic | IsConstructorPropertyProtected | IsConstructorPropertyPrivate,
+            IsConstructorPropertyPublic = 1 << 3,
+            IsConstructorPropertyPrivate = 2 << 3,
+            IsConstructorPropertyProtected = 3 << 3,
+            ConstructorPropertyVisibility = IsConstructorPropertyPublic | IsConstructorPropertyPrivate | IsConstructorPropertyProtected,
 
-            IsConstructorPropertyPublicSet = 16,
-            IsConstructorPropertyPrivateSet = 17,
-            IsConstructorPropertyProtectedSet = 18,
-            ConstructorPropertySetVisibility = IsConstructorPropertyPublicSet | IsConstructorPropertyProtectedSet | IsConstructorPropertyPrivateSet,
+            IsConstructorPropertyPublicSet = 1 << 5,
+            IsConstructorPropertyPrivateSet = 2 << 5,
+            IsConstructorPropertyProtectedSet = 3 << 5,
+            ConstructorPropertySetVisibility = IsConstructorPropertyPublicSet | IsConstructorPropertyPrivateSet | IsConstructorPropertyProtectedSet,
 
-            IsConstructorPropertyReadOnly = 32,
+            IsConstructorPropertyReadOnly = 1 << 7,
 
             ConstructorPropertyMask =
                 ConstructorPropertyVisibility |
