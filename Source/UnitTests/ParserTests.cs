@@ -617,6 +617,38 @@ class X {
             }
         }
 
+        [TestMethod]
+        public void AnonymousClassTest()
+        {
+            var codes = new[]
+            {
+                @"<?php
+new #[Attribuute] class {};"
+            };
+
+            foreach (var code in codes)
+            {
+                var errors = new TestErrorSink();
+                var unit = new CodeSourceUnit(code, "dummy.php", Encoding.UTF8);
+                unit.Parse(new BasicNodesFactory(unit), errors);
+
+                Assert.IsNotNull(unit.Ast);
+                Assert.AreEqual(0, errors.Count);
+
+                var anonymousTypeDecl = unit.Ast.Statements
+                    .OfType<ExpressionStmt>()
+                    .Select(s => s.Expression)
+                    .OfType<NewEx>()
+                    .Select(n => n.ClassNameRef)
+                    .OfType<AnonymousTypeRef>()
+                    .Select(a => a.TypeDeclaration)
+                    .Single()
+                    ;
+
+                Assert.AreNotEqual(anonymousTypeDecl.GetAttributes().Count, 0);
+            }
+        }
+
         /// <summary>
         /// Helper visitor checking every node has a containing element.
         /// </summary>

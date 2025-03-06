@@ -1412,8 +1412,11 @@ new_dereferenceable:
 			{ $$ = _astFactory.New(@$, $2, GetArrayAndFreeList($3), @3); }
 	|	T_NEW anonymous_class
 			{ $$ = _astFactory.New(@$, $2.TypeRef, $2.ActualParams, $2.Span); }
-	|	T_NEW attributes anonymous_class
-			{ $$ = _astFactory.New(@$, FinalizeAttributes($3.TypeRef, $2), $3.ActualParams, $3.Span); }
+	|	T_NEW attributes anonymous_class {
+			var x = $3;
+			FinalizeAttributes(((AnonymousTypeRef)x.TypeRef).TypeDeclaration, $2);
+			$$ = _astFactory.New(@$, x.TypeRef, x.ActualParams, x.Span);
+		}
 ;
 
 new_non_dereferenceable:

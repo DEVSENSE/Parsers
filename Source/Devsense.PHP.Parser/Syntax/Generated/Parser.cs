@@ -3424,7 +3424,11 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 { yyval.Node = _astFactory.New(yypos, value_stack.array[value_stack.top-1].yyval.AnonymousClass.TypeRef, value_stack.array[value_stack.top-1].yyval.AnonymousClass.ActualParams, value_stack.array[value_stack.top-1].yyval.AnonymousClass.Span); }
         return;
       case 392: // new_dereferenceable -> T_NEW attributes anonymous_class 
-{ yyval.Node = _astFactory.New(yypos, FinalizeAttributes(value_stack.array[value_stack.top-1].yyval.AnonymousClass.TypeRef, value_stack.array[value_stack.top-2].yyval.NodeList), value_stack.array[value_stack.top-1].yyval.AnonymousClass.ActualParams, value_stack.array[value_stack.top-1].yyval.AnonymousClass.Span); }
+{
+			var x = value_stack.array[value_stack.top-1].yyval.AnonymousClass;
+			FinalizeAttributes(((AnonymousTypeRef)x.TypeRef).TypeDeclaration, value_stack.array[value_stack.top-2].yyval.NodeList);
+			yyval.Node = _astFactory.New(yypos, x.TypeRef, x.ActualParams, x.Span);
+		}
         return;
       case 393: // new_non_dereferenceable -> T_NEW class_name_reference 
 { yyval.Node = _astFactory.New(yypos, value_stack.array[value_stack.top-1].yyval.TypeReference, null, Span.Invalid); }
