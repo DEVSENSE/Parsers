@@ -1424,6 +1424,12 @@ namespace Devsense.PHP.Syntax
     /// <typeparam name="T">Type of array elements.</typeparam>
     public static class EmptyArray<T>
     {
+#if NETSTANDARD || NET5_0_OR_GREATER
+
+        public static T[]/*!*/Instance => Array.Empty<T>();
+
+#else // NETRAMEWORK
+
         /// <summary>
         /// Singleton instance of empty array of <typeparamref name="T"/>.
         /// </summary>
@@ -1440,6 +1446,8 @@ namespace Devsense.PHP.Syntax
             }
         }
         private static volatile T[] _instance;
+
+#endif
     }
 
     /// <summary>
