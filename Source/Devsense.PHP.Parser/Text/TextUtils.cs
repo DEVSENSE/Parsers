@@ -22,6 +22,15 @@ namespace Devsense.PHP.Text
 
     public static class TextUtils
     {
+        // CR, LF, CRLF
+        const char CR = '\r';
+        const char LF = '\n';
+
+        // unicode line separators:
+        const char NEL = '\u0085';
+        const char LS = '\u2028';
+        const char PS = '\u2029';
+
         /// <summary>
         /// Gets length of line break character sequence if any.
         /// </summary>
@@ -43,10 +52,10 @@ namespace Devsense.PHP.Text
         public static int LengthOfLineBreak(ReadOnlySpan<char> text)
         {
             var c = text[0];
-            if (c == '\r')
+            if (c == CR)
             {
                 // \r\n
-                if (text.Length > 1 && text[1] == '\n')
+                if (text.Length > 1 && text[1] == LF)
                 {
                     return 2;
                 }
@@ -58,12 +67,52 @@ namespace Devsense.PHP.Text
             {
                 // \n
                 // unicode line breaks
-                if (c == '\n' || c == '\u0085' || c == '\u2028' || c == '\u2029')
+                if (c == LF || c == NEL || c == LS || c == PS)
                     return 1;
 
                 //
                 return 0;
             }
+        }
+
+        /// <summary>
+        /// Gets position of CR/LF/CRLF line break.
+        /// </summary>
+        /// <param name="text">Source text.</param>
+        /// <param name="eol_length">Length of the line break.</param>
+        /// <returns>Index of the line break or <c>-1</c> if there is no line break.</returns>
+        public static int IndexOfLineBreak(ReadOnlySpan<char> text, out int eol_length)
+        {
+            var idx = text.IndexOfAny(CR, LF);
+            if (idx >= 0)
+            {
+                // \n
+                var c0 = text[idx];
+                if (c0 == LF)
+                {
+                    eol_length = 1;
+                    return idx;
+                }
+                else //if (c0 == CR)
+                {
+                    if (idx + 1 < text.Length && text[idx + 1] == LF)
+                    {
+                        // \r\n
+                        eol_length = 2;
+                    }
+                    else
+                    {
+                        // \r
+                        eol_length = 1;
+                    }
+
+                    return idx;
+                }
+            }
+
+            //
+            eol_length = 0;
+            return -1;
         }
 
         internal static bool EndsWithEol(ReadOnlySpan<char> text)
