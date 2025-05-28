@@ -217,19 +217,19 @@ namespace Devsense.PHP.Text
             return str.Substring(span.Start, span.Length);
         }
 
-        public static IEnumerable<Span> EnumerateLines(this string text, bool includeEOL)
+        internal static IEnumerable<Span> EnumerateLines(this string text, bool includeEOL)
         {
             int linestart = 0;
-
-            for (int i = 0; i < text.Length;)
+            int offset = 0;
+            while (offset < text.Length)
             {
-                var eol = TextUtils.LengthOfLineBreak(text, i);
-                if (eol != 0)
+                var idx = TextUtils.IndexOfLineBreak(text.AsSpan(offset), out var eol_length);
+                if (idx >= 0)
                 {
-                    yield return new Span(linestart, i - linestart + (includeEOL ? eol : 0));
+                    var i = offset + idx;
+                    yield return new Span(linestart, i - linestart + (includeEOL ? eol_length : 0));
 
-                    i += eol;
-                    linestart = i;
+                    offset = linestart = i + eol_length;
 
                     if (linestart >= text.Length)
                     {
@@ -238,7 +238,7 @@ namespace Devsense.PHP.Text
                 }
                 else
                 {
-                    i++;
+                    break;
                 }
             }
 

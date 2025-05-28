@@ -181,18 +181,18 @@ namespace Devsense.PHP.Text
         {
             if (text != null)
             {
-                int i = 0;
-                while (i < text.Length)
+                int offset = 0;
+                while (offset < text.Length)
                 {
-                    int len = TextUtils.LengthOfLineBreak(text, i);
-                    if (len == 0)
+                    int idx = TextUtils.IndexOfLineBreak(text.AsSpan(offset), out var eol_length);
+                    if (idx >= 0)
                     {
-                        i++;
+                        list.Add(offset + idx);
+                        offset = offset + idx + eol_length;
                     }
                     else
                     {
-                        i += len;
-                        list.Add(i);
+                        break;
                     }
                 }
             }
@@ -211,7 +211,7 @@ namespace Devsense.PHP.Text
         readonly ushort[]/*!*/_lineEnds;
 
         public ShortLineBreaks(int textLength, List<int> lineEnds)
-            :base(textLength)
+            : base(textLength)
         {
             var count = lineEnds.Count;
             if (count == 0)
@@ -289,24 +289,25 @@ namespace Devsense.PHP.Text
             return (int)_lineEnds[index];
         }
 
+        /// <summary>
+        /// Adds line breaks from <paramref name="text"/>[from...from+length].
+        /// </summary>
         public void Expand(char[] text, int from, int length)
         {
-            int oldTextLength = _textLength;
-
-            int i = from;
-            int to = from + length;
-            while (i < to)
+            var source = text.AsSpan(from, length);
+            var offset = _textLength;
+            while (source.IsEmpty == false)
             {
-                int len = TextUtils.LengthOfLineBreak(text, i);
-                if (len == 0)
+                var idx = TextUtils.IndexOfLineBreak(source, out var eol_length);
+                if (idx < 0)
                 {
-                    i++;
+                    break;
                 }
-                else
-                {
-                    i += len;
-                    _lineEnds.Add(oldTextLength - from + i);
-                }
+
+                _lineEnds.Add(offset + idx);
+
+                source = source.Slice(idx + eol_length);
+                offset += idx + eol_length;
             }
 
             //
