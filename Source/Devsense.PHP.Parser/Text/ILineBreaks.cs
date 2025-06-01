@@ -187,8 +187,8 @@ namespace Devsense.PHP.Text
                     int idx = TextUtils.IndexOfLineBreak(text.AsSpan(offset), out var eol_length);
                     if (idx >= 0)
                     {
-                        list.Add(offset + idx);
                         offset = offset + idx + eol_length;
+                        list.Add(offset);
                     }
                     else
                     {
