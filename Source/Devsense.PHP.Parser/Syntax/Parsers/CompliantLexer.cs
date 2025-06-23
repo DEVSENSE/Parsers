@@ -149,6 +149,15 @@ namespace Devsense.PHP.Syntax
                             token = Tokens.T_STRING;
                         }
                         break;
+                    
+                    case Tokens.T_PRIVATE_SET:
+                    case Tokens.T_PUBLIC_SET:
+                    case Tokens.T_PROTECTED_SET:
+                        if (!HasFeatureSet(LanguageFeatures.Php84Set))
+                        {
+                            // error ?
+                        }
+                        break;
 
                     // reinterpret T_NAME_QUALIFIED
                     case Tokens.T_GLOBAL:
@@ -175,6 +184,13 @@ namespace Devsense.PHP.Syntax
                     case Tokens.T_IF:
                     case Tokens.T_NAMESPACE:
                     case Tokens.T_FUNCTION:
+                    case Tokens.T_BREAK:
+                    case Tokens.T_CONTINUE:
+                    case Tokens.T_RETURN:
+                    case Tokens.T_THROW:
+                    case Tokens.T_TRY:
+                    case Tokens.T_USE:
+                    case Tokens.T_VAR:
                         if (_backup_token == Tokens.T_NS_SEPARATOR || // after "\", it is treated as identifier. See T_NAME_QUALIFIED in Zend. We don't, since it would break backward compatibility with older parsers.
                             _backup_token == Tokens.T_NAMESPACE ||
                             _backup_token == Tokens.T_IMPLEMENTS || // implements trait/X
