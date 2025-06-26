@@ -1241,7 +1241,7 @@ namespace Devsense.PHP.Syntax
     /// Ecapsulates name of a global constant use or a global function call according to PHP semantics.
     /// </summary>
     /// <remarks>The qualified name can be translated according to current naming context or it can have a fallback.</remarks>
-    public struct TranslatedQualifiedName
+    public readonly struct TranslatedQualifiedName
     {
         readonly QualifiedNameRef _name;
         readonly QualifiedName _originalName;

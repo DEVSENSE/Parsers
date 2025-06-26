@@ -16,6 +16,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using Devsense.PHP.Text;
 
 namespace Devsense.PHP.Syntax.Ast
 {
@@ -50,52 +51,98 @@ namespace Devsense.PHP.Syntax.Ast
         {
             public override Expression IsMemberOf => null;
 
+            public override TranslatedQualifiedName FullName { get; }
+            
             public LocalDirectFcnCall(Text.Span span, TranslatedQualifiedName name, CallSignature signature)
-                : base(span, name, signature)
+                : base(span, signature)
             {
+                this.FullName = name;
+            }
+        }
+        
+        sealed class SimpleLocalDirectFcnCall : DirectFcnCall
+        {
+            public override Expression IsMemberOf => null;
+
+            public override Name SimpleName { get; }
+
+            public override TranslatedQualifiedName FullName => new TranslatedQualifiedName(
+                new QualifiedName(SimpleName),
+                NameSpan
+            );
+
+            public override Span NameSpan => new Span(this.Span.Start, this.SimpleName.Value.Length);
+
+            public SimpleLocalDirectFcnCall(Text.Span span, NameRef name, CallSignature signature)
+                : base(span, signature)
+            {
+                this.SimpleName = name;
             }
         }
 
         sealed class MemberDirectFcnCall : DirectFcnCall
         {
+            readonly int _MemberNameStart; // Span.Start
+
+            public override Name SimpleName { get; }
+
+            public override Span NameSpan => new Span(_MemberNameStart, SimpleName.Value.Length);
+            
             public override Expression IsMemberOf { get; }
 
-            public MemberDirectFcnCall(Text.Span span, TranslatedQualifiedName name, CallSignature signature, Expression isMemberOf)
-                : base(span, name, signature)
+            public override TranslatedQualifiedName FullName => new TranslatedQualifiedName(
+                new QualifiedName(SimpleName),
+                NameSpan
+            );
+            
+            public MemberDirectFcnCall(Text.Span span, NameRef name, CallSignature signature, Expression isMemberOf)
+                : base(span, signature)
             {
                 this.IsMemberOf = isMemberOf;
+                this.SimpleName = name.Name;
+                _MemberNameStart = name.Span.Start;
             }
         }
 
         public override Operations Operation { get { return Operations.DirectCall; } }
 
         /// <summary>
-        /// Complete translated name, contians translated, original and fallback names.
+        /// Complete translated name, contains translated, original and fallback names.
         /// </summary>
-        public TranslatedQualifiedName FullName => _fullName;
-        readonly TranslatedQualifiedName _fullName;
+        public abstract TranslatedQualifiedName FullName { get; }
+
+        /// <summary>
+        /// Original simple name of the function.
+        /// </summary>
+        public virtual Name SimpleName => FullName.OriginalName.Name;
 
         /// <summary>Simple name for methods.</summary>
         [Obsolete]
-        public QualifiedName QualifiedName => _fullName.Name;
+        public QualifiedName QualifiedName => FullName.Name;
 
         [Obsolete]
-        public QualifiedName? FallbackQualifiedName => _fullName.FallbackName;
+        public QualifiedName? FallbackQualifiedName => FullName.FallbackName;
 
-        public override Text.Span NameSpan => _fullName.Span;
+        public override Text.Span NameSpan => FullName.Span;
 
-        public static DirectFcnCall Create(Text.Span span, TranslatedQualifiedName name, CallSignature signature) => new LocalDirectFcnCall(span, name, signature);
+        public static DirectFcnCall Create(Text.Span span, TranslatedQualifiedName name, CallSignature signature) =>
+            name.OriginalName.IsSimpleName && name.FallbackName.HasValue == false && name.OriginalName.IsFullyQualifiedName == false
+            ? new SimpleLocalDirectFcnCall(span, new NameRef(name.Span, name.OriginalName.Name), signature)
+            : new LocalDirectFcnCall(span, name, signature)
+        ;
 
         public static DirectFcnCall Create(Text.Span span, TranslatedQualifiedName name, CallSignature signature, Expression isMemberOf) =>
             isMemberOf != null
-            ? new MemberDirectFcnCall(span, name, signature, isMemberOf)
+            ? Create(span, new NameRef(name.Span, name.OriginalName.Name), signature, isMemberOf)
             : Create(span, name, signature)
             ;
-
-        protected DirectFcnCall(Text.Span span, TranslatedQualifiedName name, CallSignature signature)
+        
+        public static DirectFcnCall Create(Text.Span span, NameRef name, CallSignature signature, Expression isMemberOf) =>
+            new MemberDirectFcnCall(span, name, signature, isMemberOf);
+        
+        protected DirectFcnCall(Text.Span span, CallSignature signature)
             : base(span, signature)
         {
-            _fullName = name;
         }
 
         /// <summary>
