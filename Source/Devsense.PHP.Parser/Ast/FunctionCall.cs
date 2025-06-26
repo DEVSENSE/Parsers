@@ -126,7 +126,7 @@ namespace Devsense.PHP.Syntax.Ast
         public override Text.Span NameSpan => FullName.Span;
 
         public static DirectFcnCall Create(Text.Span span, TranslatedQualifiedName name, CallSignature signature) =>
-            name.OriginalName.IsSimpleName && name.FallbackName.HasValue == false && name.OriginalName.IsFullyQualifiedName == false
+            name.OriginalName.IsSimpleName && name.FallbackName.HasValue == false && name.OriginalName.Equals(name.Name.QualifiedName) && name.OriginalName.IsFullyQualifiedName == false
             ? new SimpleLocalDirectFcnCall(span, new NameRef(name.Span, name.OriginalName.Name), signature)
             : new LocalDirectFcnCall(span, name, signature)
         ;
