@@ -77,6 +77,11 @@ namespace Devsense.PHP.Syntax.Ast
 
         object IPropertyCollection.GetProperty(object key)
         {
+            if (_properties.IsEmpty)
+            {
+                return null;
+            }
+            
             lock (this)
             {
                 return _properties.GetProperty(key);
@@ -85,6 +90,12 @@ namespace Devsense.PHP.Syntax.Ast
 
         bool IPropertyCollection.TryGetProperty<T>(out T value)
         {
+            if (_properties.IsEmpty)
+            {
+                value = default(T);
+                return false;
+            }
+            
             lock (this)
             {
                 return _properties.TryGetProperty<T>(out value);
@@ -109,6 +120,11 @@ namespace Devsense.PHP.Syntax.Ast
 
         public T GetPropertyOfType<T>()
         {
+            if (_properties.IsEmpty)
+            {
+                return default(T);
+            }
+            
             lock (this)
             {
                 return _properties.GetPropertyOfType<T>();
@@ -117,6 +133,12 @@ namespace Devsense.PHP.Syntax.Ast
 
         public bool TryGetProperty<T>(out T value)
         {
+            if (_properties.IsEmpty)
+            {
+                value = default(T);
+                return false;
+            }
+            
             lock (this)
             {
                 return _properties.TryGetProperty<T>(out value);
@@ -125,6 +147,12 @@ namespace Devsense.PHP.Syntax.Ast
 
         bool IPropertyCollection.TryGetProperty(object key, out object value)
         {
+            if (_properties.IsEmpty)
+            {
+                value = null;
+                return false;
+            }
+            
             lock (this)
             {
                 return _properties.TryGetProperty(key, out value);
@@ -133,6 +161,11 @@ namespace Devsense.PHP.Syntax.Ast
 
         bool IPropertyCollection.RemoveProperty(object key)
         {
+            if (_properties.IsEmpty)
+            {
+                return false;
+            }
+            
             lock (this)
             {
                 return _properties.RemoveProperty(key);
@@ -141,6 +174,11 @@ namespace Devsense.PHP.Syntax.Ast
 
         bool IPropertyCollection.RemoveProperty<T>()
         {
+            if (_properties.IsEmpty)
+            {
+                return false;
+            }
+
             lock (this)
             {
                 return _properties.RemoveProperty<T>();
@@ -149,9 +187,12 @@ namespace Devsense.PHP.Syntax.Ast
 
         void IPropertyCollection.ClearProperties()
         {
-            lock (this)
+            if (_properties.IsEmpty == false)
             {
-                _properties.ClearProperties();
+                lock (this)
+                {
+                    _properties.ClearProperties();
+                }
             }
         }
 

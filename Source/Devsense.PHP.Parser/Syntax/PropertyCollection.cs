@@ -14,7 +14,6 @@
 // permissions and limitations under the License.
 
 using System;
-using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -112,14 +111,19 @@ namespace Devsense.PHP.Syntax
         /// </summary>
         /// <remarks>
         /// This mechanism saves memory for small property sets.
-        /// Type of this object depends on amount of properties in the set.
+        /// The Type of this object depends on the number of properties in the set.
         /// </remarks>
         private object _obj; // object|DictionaryNode|Hashtable
 
         /// <summary>
-        /// If amount of properties exceeds this number, hashtable will be used instead of an array.
+        /// If the number of properties exceeds this number, hashtable will be used instead of an array.
         /// </summary>
         const int MaxListSize = 8;
+
+        /// <summary>
+        /// Gets value indicating the collection is empty.
+        /// </summary>
+        public bool IsEmpty => _obj == null;
 
         #endregion
 
@@ -600,14 +604,22 @@ namespace Devsense.PHP.Syntax
 
         public void ClearProperties()
         {
-            lock (this)
+            if (_properties.IsEmpty == false)
             {
-                _properties.ClearProperties();
+                lock (this)
+                {
+                    _properties.ClearProperties();
+                }
             }
         }
 
         public object GetProperty(object key)
         {
+            if (_properties.IsEmpty)
+            {
+                return null;
+            }
+            
             lock (this)
             {
                 return _properties.GetProperty(key);
@@ -616,6 +628,11 @@ namespace Devsense.PHP.Syntax
 
         public T GetProperty<T>()
         {
+            if (_properties.IsEmpty)
+            {
+                return default(T);
+            }
+            
             lock (this)
             {
                 return _properties.GetProperty<T>();
@@ -624,6 +641,11 @@ namespace Devsense.PHP.Syntax
 
         public T GetPropertyOfType<T>()
         {
+            if (_properties.IsEmpty)
+            {
+                return default(T);
+            }
+            
             lock (this)
             {
                 return _properties.GetPropertyOfType<T>();
@@ -632,6 +654,11 @@ namespace Devsense.PHP.Syntax
 
         public bool RemoveProperty(object key)
         {
+            if (_properties.IsEmpty)
+            {
+                return false;
+            }
+            
             lock (this)
             {
                 return _properties.RemoveProperty(key);
@@ -640,6 +667,11 @@ namespace Devsense.PHP.Syntax
 
         public bool RemoveProperty<T>()
         {
+            if (_properties.IsEmpty)
+            {
+                return false;
+            }
+            
             lock (this)
             {
                 return _properties.RemoveProperty<T>();
@@ -664,6 +696,12 @@ namespace Devsense.PHP.Syntax
 
         public bool TryGetProperty(object key, out object value)
         {
+            if (_properties.IsEmpty)
+            {
+                value = null;
+                return false;
+            }
+            
             lock (this)
             {
                 return _properties.TryGetProperty(key, out value);
@@ -672,6 +710,12 @@ namespace Devsense.PHP.Syntax
 
         public bool TryGetProperty<T>(out T value)
         {
+            if (_properties.IsEmpty)
+            {
+                value = default(T);
+                return false;
+            }
+            
             lock (this)
             {
                 return _properties.TryGetProperty<T>(out value);
@@ -683,8 +727,7 @@ namespace Devsense.PHP.Syntax
         /// </summary>
         public T GetOrCreateProperty<T>(Func<T>/*!*/factory)
         {
-            T value;
-            if (this.TryGetProperty<T>(out value) == false)
+            if (this.TryGetProperty<T>(out var value) == false)
             {
                 this.SetProperty<T>(value = factory());
             }
@@ -693,12 +736,17 @@ namespace Devsense.PHP.Syntax
         }
 
         /// <summary>
-        /// Gets amount of properties in the container.
+        /// Gets number of properties in the container.
         /// </summary>
         public int Count
         {
             get
             {
+                if (_properties.IsEmpty)
+                {
+                    return 0;
+                }
+                
                 lock (this)
                 {
                     return _properties.Count;
