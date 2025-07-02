@@ -17,24 +17,49 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Collections;
 
 namespace Devsense.PHP.Syntax.Ast
 {
+    public interface IIfStmt : IStatement
+    {
+        IIfBranch Branches { get; }
+    }
+
+    public interface IIfBranch : IAstNode
+    {
+        /// <summary>
+        /// Condition or a <B>null</B> reference for the case of "else" branch.
+        /// </summary>
+        IExpression Condition { get; }
+
+        /// <summary>
+        /// The branch statement.
+        /// </summary>
+        IStatement Statement { get; }
+
+        /// <summary>
+        /// Next branch.
+        /// </summary>
+        IIfBranch Else { get; }
+    }
+
     /// <summary>
     /// Represents an if-statement.
     /// </summary>
-    public sealed class IfStmt : Statement
+    public sealed class IfStmt : Statement, IIfStmt
     {
         /// <summary>
-        /// List of conditions including the if-conditions and the final else.
+        /// Linked list of conditions including the if-conditions and the final else.
         /// </summary>
-        public ConditionalStmt[]/*!!*/ Conditions { get; internal set; }
+        public ConditionalStmt/*!!*/ Conditions { get; internal set; }
 
-        public IfStmt(Text.Span span, ConditionalStmt[]/*!!*/ conditions)
+        IIfBranch IIfStmt.Branches => this.Conditions;
+
+        public IfStmt(Text.Span span, ConditionalStmt/*!!*/ conditions)
             : base(span)
         {
-            Debug.Assert(conditions != null && conditions.Length != 0);
-            Debug.Assert(conditions.All((x) => x != null));
+            Debug.Assert(conditions != null);
             this.Conditions = conditions;
         }
 
@@ -48,12 +73,22 @@ namespace Devsense.PHP.Syntax.Ast
         }
     }
 
-    public sealed class ConditionalStmt : AstNode
+    public sealed class ConditionalStmt : AstNode, IIfBranch
     {
+        /// <summary>
+        /// Beginning of <see cref="ConditionalStmt"/>.
+        /// </summary>
+        public readonly Text.Span Span;
+
         /// <summary>
         /// Condition or a <B>null</B> reference for the case of "else" branch.
         /// </summary>
-        public Expression Condition { get; internal set; }
+        public Expression Condition { get; }
+
+        /// <summary>
+        /// Next branch.
+        /// </summary>
+        public ConditionalStmt Else { get; }
 
         /// <summary>
         /// Position of the header parentheses encapsulating <see cref="Condition"/>.
@@ -66,17 +101,23 @@ namespace Devsense.PHP.Syntax.Ast
         /// </summary>
         public Statement/*!*/ Statement { get; internal set; }
 
-        /// <summary>
-        /// Beginning of <see cref="ConditionalStmt"/>.
-        /// </summary>
-        public readonly Text.Span Span;
+        #region IIfBranch
 
-        public ConditionalStmt(Text.Span span, Expression condition, Text.Span parenthesesSpan, Statement/*!*/ statement)
+        IExpression IIfBranch.Condition => this.Condition;
+
+        IStatement IIfBranch.Statement => this.Statement;
+
+        IIfBranch IIfBranch.Else => this.Else;
+
+        #endregion
+
+        public ConditionalStmt(Text.Span span, Expression condition, Text.Span parenthesesSpan, Statement/*!*/ statement, ConditionalStmt @else)
         {
             this.Span = span;
             this.Condition = condition;
             this.ParenthesesSpan = parenthesesSpan;
             this.Statement = statement;
+            this.Else = @else;
         }
 
         /// <summary>
@@ -87,5 +128,43 @@ namespace Devsense.PHP.Syntax.Ast
         {
             visitor.VisitConditionalStmt(this);
         }
+
+        #region Enumerator, GetEnumerator
+
+        public struct Enumerator : IEnumerator<ConditionalStmt>
+        {
+            private ConditionalStmt current;
+
+            private ConditionalStmt next;
+
+            public Enumerator(ConditionalStmt first)
+            {
+                this.current = null;
+                this.next = first;
+            }
+
+            public ConditionalStmt Current => current;
+
+            object IEnumerator.Current => Current;
+
+            public bool MoveNext()
+            {
+                current = next;
+                next = next?.Else;
+                return current != null;
+            }
+
+            public void Reset()
+            {
+                current = null;
+                next = null;
+            }
+
+            public void Dispose() { }
+        }
+
+        public Enumerator GetEnumerator() => new Enumerator(this);
+
+        #endregion
     }
 }

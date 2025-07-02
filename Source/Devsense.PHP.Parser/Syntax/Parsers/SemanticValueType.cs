@@ -3,6 +3,7 @@ using Devsense.PHP.Text;
 using Devsense.PHP.Utilities;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Text;
 
@@ -67,15 +68,29 @@ namespace Devsense.PHP.Syntax
         public readonly Span Span;
         public readonly LangElement Condition;
         public readonly Span ConditionSpan;
-        public readonly LangElement Body;
+        public readonly Tokens ClosingToken;
 
-        public IfStatement(Span span, LangElement condition, Span condSpan, LangElement body)
+        /// <summary>
+        /// <see cref="List{LangElement}"/> or <see cref="LangElement"/>.
+        /// </summary>
+        public readonly object Body;
+
+        public IfStatement(Span span, LangElement condition, Span condSpan, object body, Tokens closingToken = Tokens.EOF)
         {
+            Debug.Assert(body is LangElement || body is List<LangElement>);
+
             Span = span;
             Condition = condition;
             ConditionSpan = condSpan;
             Body = body;
+            ClosingToken = closingToken;
         }
+
+        public IfStatement With(Tokens closingToken) => new IfStatement(Span, Condition, ConditionSpan, Body, closingToken);
+
+        public IfStatement With(Span span) => new IfStatement(span, Condition, ConditionSpan, Body, ClosingToken);
+
+        public IfStatement With(LangElement statement) => new IfStatement(Span, Condition, ConditionSpan, statement, ClosingToken);
     }
 
     /// <summary>

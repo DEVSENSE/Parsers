@@ -2869,54 +2869,45 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
         return;
       case 245: // if_stmt -> if_stmt_without_else 
 {
-			value_stack.array[value_stack.top-1].yyval.IfItemList.Reverse();
-			yyval.Node = null; 
-			foreach (var item in value_stack.array[value_stack.top-1].yyval.IfItemList) 
-				yyval.Node = _astFactory.If(yyval.Node != null ? CombineSpans(item.Span, (yyval.Node).Span): item.Span, item.Condition, item.ConditionSpan, item.Body, yyval.Node);
-			FreeList(value_stack.array[value_stack.top-1].yyval.IfItemList);
+			yyval.Node = CreateIfStatement(value_stack.array[value_stack.top-1].yyval.IfItemList);
 		}
         return;
       case 246: // if_stmt -> if_stmt_without_else T_ELSE statement 
 {
-			value_stack.array[value_stack.top-3].yyval.IfItemList.Reverse();
-			yyval.Node = _astFactory.If(CombineSpans(value_stack.array[value_stack.top-2].yypos, value_stack.array[value_stack.top-1].yypos), null, Span.Invalid, value_stack.array[value_stack.top-1].yyval.Node, null);
-			foreach (var item in value_stack.array[value_stack.top-3].yyval.IfItemList)
-				yyval.Node = _astFactory.If(CombineSpans(item.Span, (yyval.Node).Span), item.Condition, item.ConditionSpan, item.Body, yyval.Node);
-			FreeList(value_stack.array[value_stack.top-3].yyval.IfItemList);
+			yyval.Node = CreateIfStatement(
+				value_stack.array[value_stack.top-3].yyval.IfItemList,
+				new IfStatement(CombineSpans(value_stack.array[value_stack.top-2].yypos, value_stack.array[value_stack.top-1].yypos), null, Span.Invalid, value_stack.array[value_stack.top-1].yyval.Node)
+			);
 		}
         return;
       case 247: // alt_if_stmt_without_else -> T_IF '(' expr ')' ':' inner_statement_list 
 { 
 				yyval.IfItemList = NewList<IfStatement>(
-					new IfStatement(yypos, value_stack.array[value_stack.top-4].yyval.Node, CombineSpans(value_stack.array[value_stack.top-5].yypos, value_stack.array[value_stack.top-3].yypos), FinalizeBlock(value_stack.array[value_stack.top-2].yypos, value_stack.array[value_stack.top-2].yypos, value_stack.array[value_stack.top-1].yyval.NodeList, Tokens.END))
+					new IfStatement(yypos, value_stack.array[value_stack.top-4].yyval.Node, CombineSpans(value_stack.array[value_stack.top-5].yypos, value_stack.array[value_stack.top-3].yypos), value_stack.array[value_stack.top-1].yyval.NodeList/*List<Statement>*/)
 				);
 			}
         return;
       case 248: // alt_if_stmt_without_else -> alt_if_stmt_without_else T_ELSEIF '(' expr ')' ':' inner_statement_list 
 { 
-				RebuildLast(value_stack.array[value_stack.top-7].yyval.IfItemList, value_stack.array[value_stack.top-6].yypos, Tokens.T_ELSEIF);
-				yyval.IfItemList = AddToList<IfStatement>(value_stack.array[value_stack.top-7].yyval.IfItemList, 
-					new IfStatement(CombineSpans(value_stack.array[value_stack.top-6].yypos, value_stack.array[value_stack.top-2].yypos, value_stack.array[value_stack.top-1].yypos), value_stack.array[value_stack.top-4].yyval.Node, CombineSpans(value_stack.array[value_stack.top-5].yypos, value_stack.array[value_stack.top-3].yypos), FinalizeBlock(value_stack.array[value_stack.top-2].yypos, value_stack.array[value_stack.top-2].yypos, value_stack.array[value_stack.top-1].yyval.NodeList, Tokens.END))); 
+				yyval.IfItemList = AddToList<IfStatement>(
+					FinishColonIfStatement(value_stack.array[value_stack.top-7].yyval.IfItemList, value_stack.array[value_stack.top-6].yypos, Tokens.T_ELSEIF), 
+					new IfStatement(CombineSpans(value_stack.array[value_stack.top-6].yypos, value_stack.array[value_stack.top-2].yypos, value_stack.array[value_stack.top-1].yypos), value_stack.array[value_stack.top-4].yyval.Node, CombineSpans(value_stack.array[value_stack.top-5].yypos, value_stack.array[value_stack.top-3].yypos), value_stack.array[value_stack.top-1].yyval.NodeList/*List<Statement>*/)
+				);
 			}
         return;
       case 249: // alt_if_stmt -> alt_if_stmt_without_else T_ENDIF ';' 
 {
-				RebuildLast(value_stack.array[value_stack.top-3].yyval.IfItemList, value_stack.array[value_stack.top-2].yypos, Tokens.T_ENDIF);
-				value_stack.array[value_stack.top-3].yyval.IfItemList.Reverse();
-				yyval.Node = null; 
-				foreach (var item in value_stack.array[value_stack.top-3].yyval.IfItemList)
-					yyval.Node = _astFactory.If(yyval.Node != null? CombineSpans(item.Span, (yyval.Node).Span): item.Span, item.Condition, item.ConditionSpan, item.Body, yyval.Node);
-				FreeList(value_stack.array[value_stack.top-3].yyval.IfItemList);
+				yyval.Node = CreateIfStatement(
+					FinishColonIfStatement(value_stack.array[value_stack.top-3].yyval.IfItemList, value_stack.array[value_stack.top-2].yypos, Tokens.T_ENDIF)
+				);
 			}
         return;
       case 250: // alt_if_stmt -> alt_if_stmt_without_else T_ELSE ':' inner_statement_list T_ENDIF ';' 
 {
-				RebuildLast(value_stack.array[value_stack.top-6].yyval.IfItemList, value_stack.array[value_stack.top-5].yypos, Tokens.T_ELSE);
-				value_stack.array[value_stack.top-6].yyval.IfItemList.Reverse();
-				yyval.Node = _astFactory.If(CombineSpans(value_stack.array[value_stack.top-5].yypos, value_stack.array[value_stack.top-1].yypos), null, value_stack.array[value_stack.top-5].yypos, FinalizeBlock(value_stack.array[value_stack.top-4].yypos, value_stack.array[value_stack.top-2].yypos, value_stack.array[value_stack.top-3].yyval.NodeList, Tokens.T_ENDIF), null); 
-				foreach (var item in value_stack.array[value_stack.top-6].yyval.IfItemList)
-					yyval.Node = _astFactory.If(CombineSpans(item.Span, (yyval.Node).Span), item.Condition, item.ConditionSpan, item.Body, yyval.Node);
-				FreeList(value_stack.array[value_stack.top-6].yyval.IfItemList);
+				yyval.Node = CreateIfStatement(
+					FinishColonIfStatement(value_stack.array[value_stack.top-6].yyval.IfItemList, value_stack.array[value_stack.top-5].yypos, Tokens.T_ELSE),
+					new IfStatement(CombineSpans(value_stack.array[value_stack.top-5].yypos, value_stack.array[value_stack.top-1].yypos), null, Span.Invalid, value_stack.array[value_stack.top-3].yyval.NodeList/*List<Statement>*/, Tokens.T_ENDIF)
+				);
 			}
         return;
       case 251: // parameter_list -> non_empty_parameter_list possible_comma 

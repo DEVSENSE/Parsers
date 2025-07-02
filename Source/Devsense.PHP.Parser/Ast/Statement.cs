@@ -160,7 +160,9 @@ namespace Devsense.PHP.Syntax.Ast
                 closingToken == Tokens.T_ENDIF ||
                 closingToken == Tokens.T_ENDSWITCH ||
                 closingToken == Tokens.T_ENDWHILE ||
-                closingToken == Tokens.END); // END is used as replacement when end token is not yet known due to grammar structure
+                closingToken == Tokens.T_ELSEIF ||
+                closingToken == Tokens.T_ELSE
+            );
 
             _closingToken = closingToken;
         }

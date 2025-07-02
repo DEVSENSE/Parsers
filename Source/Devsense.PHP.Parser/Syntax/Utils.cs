@@ -1285,10 +1285,7 @@ namespace Devsense.PHP.Syntax
         /// <typeparam name="T">Type of list items.</typeparam>
         /// <param name="list">LIst to remove from.</param>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="list"/> has no items.</exception>
-        public static void RemoveLast<T>(this IList<T>/*!*/list)
-        {
-            list.RemoveAt(list.Count - 1);
-        }
+        public static void RemoveLast<T>(this IList<T>/*!*/list) => list.RemoveAt(list.Count - 1);
 
         /// <summary>
         /// Gets the last element of given list.
@@ -1296,18 +1293,12 @@ namespace Devsense.PHP.Syntax
         /// <typeparam name="T">Type of the list elements.</typeparam>
         /// <param name="list">List.</param>
         /// <returns>Last element of given list.</returns>
-        public static T Last<T>(this IList<T>/*!*/list)
-        {
-            return list[list.Count - 1];
-        }
+        public static T Last<T>(this IList<T>/*!*/list) => list[list.Count - 1];
 
         /// <summary>
         /// Determines whether the list is not empty.
         /// </summary>
-        public static bool Any<T>(this List<T> list)
-        {
-            return list != null && list.Count != 0;
-        }
+        public static bool Any<T>(this List<T> list) => list != null && list.Count != 0;
 
         /// <summary>
         /// Copies entries into new array, or gets empty array if the collection is empty.

@@ -481,14 +481,7 @@ namespace Devsense.PHP.Syntax.Ast
         /// <summary>
         /// Creates <c>if</c> statement.
         /// </summary>
-        /// <param name="span">Entire element span.</param>
-        /// <param name="cond">Condition expression.</param>
-        /// <param name="parenthesesSpan">Position of the condition parentheses.</param>
-        /// <param name="body">True branch statement.</param>
-        /// <param name="elseOpt">Optional. False branch statement.
-        /// Can be another <c>if</c> in case of <c>elseif</c>, another statement in case of <c>else</c> or <c>null</c>.</param>
-        /// <returns>If statement.</returns>
-        TNode If(TSpan span, TNode cond, TSpan parenthesesSpan, TNode body, TNode elseOpt);
+        TNode If(ConditionalStmt conditions);
 
         /// <summary>
         /// Creates <c>switch</c> statement.

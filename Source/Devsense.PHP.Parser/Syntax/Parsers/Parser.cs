@@ -492,14 +492,57 @@ namespace Devsense.PHP.Syntax
             return new ContextAlias(span, alias.QualifiedName, alias.Name, kind);
         }
 
-        static void RebuildLast(List<IfStatement> condList, Span end, Tokens token)
+        IfStmt CreateIfStatement(List<IfStatement> ifStatements, IfStatement elseStatement)
+        {
+            ifStatements.Add(elseStatement);
+            return CreateIfStatement(ifStatements);
+        }
+
+        IfStmt CreateIfStatement(List<IfStatement> ifStatements)
+        {
+            Debug.Assert(ifStatements != null);
+            Debug.Assert(ifStatements.Count != 0);
+
+            ConditionalStmt conditions = null;
+
+            // create list of branches
+            for (int i = ifStatements.Count - 1; i >= 0; i--)
+            {
+                var block = ifStatements[i];
+                if (block.Body is List<LangElement> stmts) // colon block
+                {
+                    Debug.Assert(block.ClosingToken != 0);
+                    Debug.Assert(block.Span.IsValid);
+                    // List<LangElement> -> FinalizeBlock(@3, @5, $4, Tokens.T_ENDIF)
+                    block = block.With(FinalizeBlock(block.Span, stmts, block.ClosingToken));
+                }
+
+                conditions = new ConditionalStmt(
+                    block.Span,
+                    (Expression)block.Condition,
+                    block.ConditionSpan,
+                    (Statement)block.Body,
+                    conditions
+                );
+            }
+
+            FreeList(ifStatements);
+
+            Debug.Assert(conditions != null);
+            return (IfStmt)_astFactory.If(conditions);
+        }
+
+        static List<IfStatement> FinishColonIfStatement(List<IfStatement> condList, Span end, Tokens token)
         {
             var block = condList.Last();
-            var colon = ((ColonBlockStmt)block.Body);
-            colon.ExtendSpan(Span.FromBounds(block.Body.Span.Start, end.Start));
-            colon.SetClosingToken(token);
-            condList.Remove(block);
-            condList.Add(new IfStatement(Span.FromBounds(block.Span.Start, end.Start), block.Condition, block.ConditionSpan, block.Body));
+
+            condList[condList.Count - 1] = block
+                .With(token) // update closing token
+                .With(Span.FromBounds(block.Span.Start, end.Start)) // update block span
+                ;
+
+            //
+            return condList;
         }
 
         private LangElement CreateProperty(Span span, LangElement objectExpr, object name)

@@ -925,18 +925,13 @@ if_stmt_without_else:
 
 if_stmt:
 		if_stmt_without_else %prec T_NOELSE {
-			$1.Reverse();
-			$$ = null; 
-			foreach (var item in $1) 
-				$$ = _astFactory.If($$ != null ? CombineSpans(item.Span, ($$).Span): item.Span, item.Condition, item.ConditionSpan, item.Body, $$);
-			FreeList($1);
+			$$ = CreateIfStatement($1);
 		}
 	|	if_stmt_without_else T_ELSE statement {
-			$1.Reverse();
-			$$ = _astFactory.If(CombineSpans(@2, @3), null, Span.Invalid, $3, null);
-			foreach (var item in $1)
-				$$ = _astFactory.If(CombineSpans(item.Span, ($$).Span), item.Condition, item.ConditionSpan, item.Body, $$);
-			FreeList($1);
+			$$ = CreateIfStatement(
+				$1,
+				new IfStatement(CombineSpans(@2, @3), null, Span.Invalid, $3)
+			);
 		}
 ;
 
@@ -944,36 +939,32 @@ alt_if_stmt_without_else:
 		T_IF '(' expr ')' ':' inner_statement_list
 			{ 
 				$$ = NewList<IfStatement>(
-					new IfStatement(@$, $3, CombineSpans(@2, @4), FinalizeBlock(@5, @5, $6, Tokens.END))
+					new IfStatement(@$, $3, CombineSpans(@2, @4), $6/*List<Statement>*/)
 				);
 			}
 			
 	|	alt_if_stmt_without_else T_ELSEIF '(' expr ')' ':' inner_statement_list
 			{ 
-				RebuildLast($1, @2, Tokens.T_ELSEIF);
-				$$ = AddToList<IfStatement>($1, 
-					new IfStatement(CombineSpans(@2, @6, @7), $4, CombineSpans(@3, @5), FinalizeBlock(@6, @6, $7, Tokens.END))); 
+				$$ = AddToList<IfStatement>(
+					FinishColonIfStatement($1, @2, Tokens.T_ELSEIF), 
+					new IfStatement(CombineSpans(@2, @6, @7), $4, CombineSpans(@3, @5), $7/*List<Statement>*/)
+				);
 			}
 ;
 
 alt_if_stmt:
 		alt_if_stmt_without_else T_ENDIF ';' 
 			{
-				RebuildLast($1, @2, Tokens.T_ENDIF);
-				$1.Reverse();
-				$$ = null; 
-				foreach (var item in $1)
-					$$ = _astFactory.If($$ != null? CombineSpans(item.Span, ($$).Span): item.Span, item.Condition, item.ConditionSpan, item.Body, $$);
-				FreeList($1);
+				$$ = CreateIfStatement(
+					FinishColonIfStatement($1, @2, Tokens.T_ENDIF)
+				);
 			}
 	|	alt_if_stmt_without_else T_ELSE ':' inner_statement_list T_ENDIF ';'
 			{
-				RebuildLast($1, @2, Tokens.T_ELSE);
-				$1.Reverse();
-				$$ = _astFactory.If(CombineSpans(@2, @6), null, @2, FinalizeBlock(@3, @5, $4, Tokens.T_ENDIF), null); 
-				foreach (var item in $1)
-					$$ = _astFactory.If(CombineSpans(item.Span, ($$).Span), item.Condition, item.ConditionSpan, item.Body, $$);
-				FreeList($1);
+				$$ = CreateIfStatement(
+					FinishColonIfStatement($1, @2, Tokens.T_ELSE),
+					new IfStatement(CombineSpans(@2, @6), null, Span.Invalid, $4/*List<Statement>*/, Tokens.T_ENDIF)
+				);
 			}
 ;
 

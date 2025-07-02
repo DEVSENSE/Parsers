@@ -430,19 +430,18 @@ namespace Devsense.PHP.Syntax.Ast
             return new HaltCompiler(span);
         }
 
-        public virtual LangElement If(Span span, LangElement cond, Span parenthesesSpan, LangElement body, LangElement elseOpt)
+        public virtual LangElement If(ConditionalStmt conditions)
         {
-            var conditions = ListObjectPool<ConditionalStmt>.Allocate();
+            // collect whole "if" span
+            var span = conditions.Span;
 
-            conditions.Add(new ConditionalStmt(span, (Expression)cond, parenthesesSpan, (Statement)body));
-
-            if (elseOpt != null)
+            foreach (var item in conditions)
             {
-                Debug.Assert(elseOpt is IfStmt);
-                conditions.AddRange(((IfStmt)elseOpt).Conditions);
+                span = Span.Combine(span, item.Span);
             }
 
-            return new IfStmt(span, ListObjectPool<ConditionalStmt>.GetArrayAndFree(conditions));
+            // create element
+            return new IfStmt(span, conditions ?? throw new ArgumentNullException(nameof(conditions)));
         }
 
         public virtual LangElement Inclusion(Span span, bool conditional, InclusionTypes type, LangElement fileNameExpression)
