@@ -2906,7 +2906,7 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 {
 				yyval.Node = CreateIfStatement(
 					FinishColonIfStatement(value_stack.array[value_stack.top-6].yyval.IfItemList, value_stack.array[value_stack.top-5].yypos, Tokens.T_ELSE),
-					new IfStatement(CombineSpans(value_stack.array[value_stack.top-5].yypos, value_stack.array[value_stack.top-1].yypos), null, Span.Invalid, value_stack.array[value_stack.top-3].yyval.NodeList/*List<Statement>*/, Tokens.T_ENDIF)
+					new IfStatement(Span.FromBounds(value_stack.array[value_stack.top-5].yypos.Start, value_stack.array[value_stack.top-2].yypos.Start), null, Span.Invalid, value_stack.array[value_stack.top-3].yyval.NodeList/*List<Statement>*/, Tokens.T_ENDIF)
 				);
 			}
         return;

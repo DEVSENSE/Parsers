@@ -963,7 +963,7 @@ alt_if_stmt:
 			{
 				$$ = CreateIfStatement(
 					FinishColonIfStatement($1, @2, Tokens.T_ELSE),
-					new IfStatement(CombineSpans(@2, @6), null, Span.Invalid, $4/*List<Statement>*/, Tokens.T_ENDIF)
+					new IfStatement(Span.FromBounds(@2.Start, @5.Start), null, Span.Invalid, $4/*List<Statement>*/, Tokens.T_ENDIF)
 				);
 			}
 ;
