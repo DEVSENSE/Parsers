@@ -1216,9 +1216,12 @@ namespace Devsense.PHP.Syntax
         /// <typeparam name="V">Dictionary value type.</typeparam>
         /// <param name="target">Target dictionary.</param>
         /// <param name="entries">Entries to be added.</param>
-        public static void Add<K, V>(this IDictionary<K, V> target, IDictionary<K, V> entries)
+        public static void Add<K, V>(this Dictionary<K, V> target, Dictionary<K, V> entries)
         {
-            entries.Foreach(target.Add);
+            foreach (var pair in entries)
+            {
+                target[pair.Key] = pair.Value;
+            }
         }
 
 #if NET45 || NETSTANDARD2_0
@@ -1266,7 +1269,7 @@ namespace Devsense.PHP.Syntax
         /// <param name="list">List to search in.</param>
         /// <param name="item">Item to search for.</param>
         /// <param name="comparer">Comparer to be used.</param>
-        /// <returns>The zero-based index of the first occurrence of <paramref name="item" /> within the entire <paramref name="list"/>, if found; otherwise, –1.</returns>
+        /// <returns>The zero-based index of the first occurrence of <paramref name="item" /> within the entire <paramref name="list"/>, if found; otherwise, ï¿½1.</returns>
         public static int IndexOf<T>(this IList<T>/*!*/list, T item, IEqualityComparer<T>/*!*/comparer)
         {
             Debug.Assert(list != null);
@@ -1793,38 +1796,6 @@ namespace Devsense.PHP.Syntax
                     return i;
 
             return i;
-        }
-
-        /// <summary>
-        /// Creates list without duplicities from given <c>items</c>.
-        /// </summary>
-        /// <typeparam name="T">Type of single items in the list.</typeparam>
-        /// <param name="items">Items to check for duplicities.</param>
-        /// <returns>New list of unique items. Cannot return null.</returns>
-        public static ICollection<T>/*!*/Unique<T>(IList<T> items)
-        {
-            if (items == null || items.Count == 0)
-                return EmptyArray<T>.Instance;
-
-            return new HashSet<T>(items);
-        }
-
-        /// <summary>
-        /// Creates new or resuses given <paramref name="items"/>, returned array contains only unique items.
-        /// </summary>
-        /// <typeparam name="T">Type of array element.</typeparam>
-        /// <param name="items">Array of elements.</param>
-        /// <returns>Unique array of element. Cannot be null.</returns>
-        public static T[]/*!*/EnsureUnique<T>(T[] items)
-        {
-            if (items == null) return EmptyArray<T>.Instance;
-            if (items.Length == 0) return items;
-
-            var set = new HashSet<T>(items);
-            if (set.Count == items.Length)
-                return items;
-            else
-                return System.Linq.Enumerable.ToArray(set);
         }
 
         /// <summary>

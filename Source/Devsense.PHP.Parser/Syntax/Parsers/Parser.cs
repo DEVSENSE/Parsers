@@ -590,30 +590,30 @@ namespace Devsense.PHP.Syntax
             return list;
         }
 
-        static readonly Dictionary<QualifiedName, PrimitiveTypeRef.PrimitiveType> PHP56PrimitiveTypes = new Dictionary<QualifiedName, PrimitiveTypeRef.PrimitiveType>() {
+        static readonly Dictionary<QualifiedName, PrimitiveTypeRef.PrimitiveType> PHP56PrimitiveTypes = new Dictionary<QualifiedName, PrimitiveTypeRef.PrimitiveType>(2) {
             { QualifiedName.Array, PrimitiveTypeRef.PrimitiveType.array },
             { QualifiedName.Callable, PrimitiveTypeRef.PrimitiveType.callable },
         };
-        static readonly Dictionary<QualifiedName, PrimitiveTypeRef.PrimitiveType> PHP70PrimitiveTypes = new Dictionary<QualifiedName, PrimitiveTypeRef.PrimitiveType>() {
+        static readonly Dictionary<QualifiedName, PrimitiveTypeRef.PrimitiveType> PHP70PrimitiveTypes = new Dictionary<QualifiedName, PrimitiveTypeRef.PrimitiveType>(4) {
             { QualifiedName.Int, PrimitiveTypeRef.PrimitiveType.@int },
             { QualifiedName.Float, PrimitiveTypeRef.PrimitiveType.@float },
             { QualifiedName.String, PrimitiveTypeRef.PrimitiveType.@string },
             { QualifiedName.Bool, PrimitiveTypeRef.PrimitiveType.@bool },
         };
-        static readonly Dictionary<QualifiedName, PrimitiveTypeRef.PrimitiveType> PHP71PrimitiveTypes = new Dictionary<QualifiedName, PrimitiveTypeRef.PrimitiveType>() {
+        static readonly Dictionary<QualifiedName, PrimitiveTypeRef.PrimitiveType> PHP71PrimitiveTypes = new Dictionary<QualifiedName, PrimitiveTypeRef.PrimitiveType>(2) {
             { QualifiedName.Void, PrimitiveTypeRef.PrimitiveType.@void },
             { QualifiedName.Iterable, PrimitiveTypeRef.PrimitiveType.iterable },
         };
-        static readonly Dictionary<QualifiedName, PrimitiveTypeRef.PrimitiveType> PHP72PrimitiveTypes = new Dictionary<QualifiedName, PrimitiveTypeRef.PrimitiveType>() {
+        static readonly Dictionary<QualifiedName, PrimitiveTypeRef.PrimitiveType> PHP72PrimitiveTypes = new Dictionary<QualifiedName, PrimitiveTypeRef.PrimitiveType>(1) {
             { QualifiedName.Object, PrimitiveTypeRef.PrimitiveType.@object },
         };
-        static readonly Dictionary<QualifiedName, PrimitiveTypeRef.PrimitiveType> PHP80PrimitiveTypes = new Dictionary<QualifiedName, PrimitiveTypeRef.PrimitiveType>() {
+        static readonly Dictionary<QualifiedName, PrimitiveTypeRef.PrimitiveType> PHP80PrimitiveTypes = new Dictionary<QualifiedName, PrimitiveTypeRef.PrimitiveType>(1) {
             { QualifiedName.Mixed, PrimitiveTypeRef.PrimitiveType.mixed },
         };
-        static readonly Dictionary<QualifiedName, PrimitiveTypeRef.PrimitiveType> PHP81PrimitiveTypes = new Dictionary<QualifiedName, PrimitiveTypeRef.PrimitiveType>() {
+        static readonly Dictionary<QualifiedName, PrimitiveTypeRef.PrimitiveType> PHP81PrimitiveTypes = new Dictionary<QualifiedName, PrimitiveTypeRef.PrimitiveType>(1) {
             { QualifiedName.Never, PrimitiveTypeRef.PrimitiveType.never },
         };
-        static readonly Dictionary<QualifiedName, PrimitiveTypeRef.PrimitiveType> PHP82PrimitiveTypes = new Dictionary<QualifiedName, PrimitiveTypeRef.PrimitiveType>() {
+        static readonly Dictionary<QualifiedName, PrimitiveTypeRef.PrimitiveType> PHP82PrimitiveTypes = new Dictionary<QualifiedName, PrimitiveTypeRef.PrimitiveType>(3) {
             { QualifiedName.True, PrimitiveTypeRef.PrimitiveType.@true },
             { QualifiedName.False, PrimitiveTypeRef.PrimitiveType.@false },
             { QualifiedName.Null, PrimitiveTypeRef.PrimitiveType.@null },
