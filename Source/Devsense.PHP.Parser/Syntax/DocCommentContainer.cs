@@ -112,7 +112,7 @@ namespace Devsense.PHP.Syntax
         {
             if (TryReleaseBlock(element.Span.Start, out var phpdoc))
             {
-                element.SetPHPDoc(phpdoc);
+                element.SetPHPDocNoLock(phpdoc);
             }
         }
 
@@ -123,7 +123,7 @@ namespace Devsense.PHP.Syntax
         {
             if (TryReleaseBlock(Span.FromBounds(element.Span.Start - 1, element.Span.End), out var phpdoc))
             {
-                element.SetPHPDoc(phpdoc);
+                element.SetPHPDocNoLock(phpdoc);
             }
         }
 
@@ -135,7 +135,7 @@ namespace Devsense.PHP.Syntax
             if (LastDocBlock != null && LastDocBlock.Span.End > element.Span.Start &&
                 TryReleaseBlock(Span.Combine(element.Span, LastDocBlock.Span), out var phpdoc))
             {
-                element.SetPHPDoc(phpdoc);
+                element.SetPHPDocNoLock(phpdoc);
             }
         }
 

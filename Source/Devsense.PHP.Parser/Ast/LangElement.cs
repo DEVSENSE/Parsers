@@ -71,7 +71,7 @@ namespace Devsense.PHP.Syntax.Ast
         {
             lock (this)
             {
-                _properties.SetProperty(key, value);
+                SetPropertyNoLock(key, value);
             }
         }
 
@@ -101,6 +101,10 @@ namespace Devsense.PHP.Syntax.Ast
                 return _properties.TryGetProperty<T>(out value);
             }
         }
+
+        internal void SetPropertyNoLock(object key, object value) => _properties.SetProperty(key, value);
+
+        internal void RemovePropertyNoLock(object key) => _properties.RemoveProperty(key);
 
         public void SetProperty<T>(T value)
         {

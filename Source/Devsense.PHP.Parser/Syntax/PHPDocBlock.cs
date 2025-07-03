@@ -273,6 +273,31 @@ namespace Devsense.PHP.Syntax
         /// <summary>
         /// Sets <see cref="PHPDocBlock"/> to <paramref name="properties"/>.
         /// </summary>
+        internal static void SetPHPDocNoLock(this LangElement/*!*/element, IDocBlock phpdoc)
+        {
+            if (phpdoc != null)
+            {
+                element.SetPropertyNoLock(
+                    phpdoc.GetType(), // optimization: if the key matches type of value, it's stored within single object without alloc
+                    phpdoc
+                );
+
+                // remember LangElement associated with phpdoc
+                phpdoc.ContainingElement = element;
+            }
+            else
+            {
+                var existing = GetPHPDoc(element);
+                if (existing != null)
+                {
+                    element.RemovePropertyNoLock(existing.GetType());
+                }
+            }
+        }
+        
+        /// <summary>
+        /// Sets <see cref="PHPDocBlock"/> to <paramref name="properties"/>.
+        /// </summary>
         public static void SetPHPDoc(this IPropertyCollection/*!*/properties, IDocBlock phpdoc)
         {
             if (phpdoc != null)
