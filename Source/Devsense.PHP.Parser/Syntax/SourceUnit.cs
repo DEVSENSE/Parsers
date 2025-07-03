@@ -155,7 +155,7 @@ namespace Devsense.PHP.Syntax
 
         T IPropertyCollection.GetProperty<T>() => TryGetProperty(typeof(T), out var obj) ? (T)obj : default(T);
 
-        T IPropertyCollection.GetPropertyOfType<T>() => _innerProps.GetPropertyOfType<T>();
+        T IPropertyCollection.GetPropertyOfType<T>() where T: class => _innerProps.GetPropertyOfType<T>();
 
         public virtual bool TryGetProperty(object key, out object value) => _innerProps.TryGetProperty(key, out value);
 

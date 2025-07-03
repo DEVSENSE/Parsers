@@ -60,7 +60,7 @@ namespace Devsense.PHP.Syntax
         /// </summary>
         /// <typeparam name="T">Type and key of the property.</typeparam>
         /// <returns>Property value.</returns>
-        T GetPropertyOfType<T>();
+        T GetPropertyOfType<T>() where T: class;
 
         /// <summary>
         /// Tries to get property from the container.
@@ -123,7 +123,7 @@ namespace Devsense.PHP.Syntax
         /// <summary>
         /// Gets value indicating the collection is empty.
         /// </summary>
-        public bool IsEmpty => _obj == null;
+        public bool IsEmpty => ReferenceEquals(_obj, null);
 
         #endregion
 
@@ -333,6 +333,11 @@ namespace Devsense.PHP.Syntax
         }
 
         /// <summary>
+        /// Quick check for a property of type <typeparamref name="T"/>, in case there is none or one entry.  
+        /// </summary>
+        internal bool TryGetPropertyOfTypeFast<T>(out T value) where T: class => (value = _obj as T) != null;
+
+        /// <summary>
         /// Tries to get property from the container.
         /// </summary>
         /// <param name="value">Out. Value of the property.</param>
@@ -392,7 +397,7 @@ namespace Devsense.PHP.Syntax
         /// <summary>
         /// Tries to get a property of given type from the container.
         /// </summary>
-        public T GetPropertyOfType<T>() => TryGetPropertyOfType<T>(out var value) ? (T)value : default(T);
+        public T GetPropertyOfType<T>() where T: class => TryGetPropertyOfType<T>(out var value) ? (T)value : default(T);
 
         /// <summary>
         /// Tries to get property from the container.
@@ -639,17 +644,23 @@ namespace Devsense.PHP.Syntax
             }
         }
 
-        public T GetPropertyOfType<T>()
+        public T GetPropertyOfType<T>() where T: class
         {
             if (_properties.IsEmpty)
             {
                 return default(T);
             }
             
-            lock (this)
+            if (_properties.TryGetPropertyOfTypeFast<T>(out var value) == false)
             {
-                return _properties.GetPropertyOfType<T>();
+                lock (this)
+                {
+                    value = _properties.GetPropertyOfType<T>();
+                }
             }
+            
+            //
+            return value;
         }
 
         public bool RemoveProperty(object key)

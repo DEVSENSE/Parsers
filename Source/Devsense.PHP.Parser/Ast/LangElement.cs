@@ -122,17 +122,18 @@ namespace Devsense.PHP.Syntax.Ast
             }
         }
 
-        public T GetPropertyOfType<T>()
+        public T GetPropertyOfType<T>() where T: class
         {
-            if (_properties.IsEmpty)
+            if (_properties.TryGetPropertyOfTypeFast<T>(out var value) == false && _properties.IsEmpty == false)
             {
-                return default(T);
+                lock (this)
+                {
+                    value = _properties.GetPropertyOfType<T>();
+                }
             }
             
-            lock (this)
-            {
-                return _properties.GetPropertyOfType<T>();
-            }
+            //
+            return value;
         }
 
         public bool TryGetProperty<T>(out T value)
