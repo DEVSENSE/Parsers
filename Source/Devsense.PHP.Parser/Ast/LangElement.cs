@@ -88,20 +88,6 @@ namespace Devsense.PHP.Syntax.Ast
             }
         }
 
-        bool IPropertyCollection.TryGetProperty<T>(out T value)
-        {
-            if (_properties.IsEmpty)
-            {
-                value = default(T);
-                return false;
-            }
-            
-            lock (this)
-            {
-                return _properties.TryGetProperty<T>(out value);
-            }
-        }
-
         internal void SetPropertyNoLock(object key, object value) => _properties.SetProperty(key, value);
 
         internal void RemovePropertyNoLock(object key) => _properties.RemoveProperty(key);
@@ -114,13 +100,7 @@ namespace Devsense.PHP.Syntax.Ast
             }
         }
 
-        public T GetProperty<T>()
-        {
-            lock (this)
-            {
-                return _properties.GetProperty<T>();
-            }
-        }
+        public T GetProperty<T>() => TryGetProperty<T>(out var value) ? value : default(T);
 
         public T GetPropertyOfType<T>() where T: class
         {
