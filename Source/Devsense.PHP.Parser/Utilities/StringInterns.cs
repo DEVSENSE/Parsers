@@ -44,7 +44,7 @@ namespace Devsense.PHP.Utilities
                         case '\\': return "\\";
                         case ':': return ":";
                         case '\'': return "'";
-                        case '\"': return "\"";
+                        case '"': return "\"";
                         case 'A': return "A";
                         case 'B': return "B";
                         case 'C': return "C";
@@ -74,6 +74,7 @@ namespace Devsense.PHP.Utilities
                         case '5': return "5";
                         case '6': return "6";
                         case '7': return "7";
+                        case '8': return "8";
                     }
                     break;
 
