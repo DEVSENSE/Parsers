@@ -609,6 +609,10 @@ ST_HALT_COMPILER1,ST_HALT_COMPILER2,ST_HALT_COMPILER3>{EOF} {
 	return (Tokens.T_COALESCE_EQUAL);
 }
 
+<ST_IN_SCRIPTING>"|>" {
+	return (Tokens.T_PIPE_OPERATOR);
+}
+
 <ST_IN_SCRIPTING>"||" {
 	return (Tokens.T_BOOLEAN_OR);
 }

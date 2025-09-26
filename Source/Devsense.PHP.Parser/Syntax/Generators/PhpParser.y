@@ -52,6 +52,7 @@ using TNode = Devsense.PHP.Syntax.Ast.LangElement;
 %left T_AMPERSAND_NOT_FOLLOWED_BY_VAR_OR_VARARG T_AMPERSAND_FOLLOWED_BY_VAR_OR_VARARG
 %nonassoc T_IS_EQUAL T_IS_NOT_EQUAL T_IS_IDENTICAL T_IS_NOT_IDENTICAL T_SPACESHIP
 %nonassoc '<' T_IS_SMALLER_OR_EQUAL '>' T_IS_GREATER_OR_EQUAL
+%left T_PIPE_OPERATOR   // |>
 %left '.'
 %left T_SL T_SR
 %left '+' '-'
@@ -237,7 +238,8 @@ using TNode = Devsense.PHP.Syntax.Ast.LangElement;
 %token <Object> T_NS_SEPARATOR 393    //"\\ (T_NS_SEPARATOR)"
 %token <Object> T_ELLIPSIS 394        //"... (T_ELLIPSIS)"
 %token <Object> T_POW_EQUAL 281       //"**= (T_POW_EQUAL)"
-%token <Object> T_COALESCE_EQUAL 282  // "??= (T_COALESCE_EQUAL)"
+%token <Object> T_PIPE_OPERATOR	399	  //"|> (T_PIPE_OPERATOR)"
+%token <Object> T_COALESCE_EQUAL 282  //"??= (T_COALESCE_EQUAL)"
 %token <Object> T_COALESCE 283        //"?? (T_COALESCE)"
 %token <Object> T_POW 305             //"** (T_POW)"
 %token <Object> T_ATTRIBUTE 397             //"#[ (T_ATTRIBUTE)"
@@ -1497,6 +1499,8 @@ expr:
 			{ $$ = _astFactory.BinaryOperation(@$, Operations.Equal, $1, $3); }
 	|	expr T_IS_NOT_EQUAL expr
 			{ $$ = _astFactory.BinaryOperation(@$, Operations.NotEqual, $1, $3); }
+	|	expr T_PIPE_OPERATOR expr
+			{ $$ = _astFactory.BinaryOperation(@$, Operations.Pipe, $1, $3); }
 	|	expr '<' expr
 			{ $$ = _astFactory.BinaryOperation(@$, Operations.LessThan, $1, $3); }
 	|	expr T_IS_SMALLER_OR_EQUAL expr

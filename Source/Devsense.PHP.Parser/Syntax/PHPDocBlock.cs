@@ -271,7 +271,7 @@ namespace Devsense.PHP.Syntax
         public static IDocBlock GetPHPDoc(this IPropertyCollection/*!*/properties) => properties.GetPropertyOfType<IDocBlock>();
 
         /// <summary>
-        /// Sets <see cref="PHPDocBlock"/> to <paramref name="properties"/>.
+        /// Sets <see cref="PHPDocBlock"/> to <see cref="AstNode.Properties"/>.
         /// </summary>
         internal static void SetPHPDocNoLock(this LangElement/*!*/element, IDocBlock phpdoc)
         {

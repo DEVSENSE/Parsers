@@ -63,6 +63,11 @@ namespace Devsense.PHP.Syntax.Ast
         ShiftLeft, ShiftRight,
         Add, Sub, Mul, Div, Mod, Pow,
         Concat, Spaceship, Coalesce,
+        /// <summary>
+        /// Pipe operator (PHP 8.5+).
+        /// See https://wiki.php.net/rfc/pipe-operator-v3
+        /// </summary>
+        Pipe,
 
         // n-ary ops:
         ConcatN,
