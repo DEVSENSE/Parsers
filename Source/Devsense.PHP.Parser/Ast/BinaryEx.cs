@@ -38,7 +38,7 @@ namespace Devsense.PHP.Syntax.Ast
     /// <summary>
     /// Binary expression.
     /// </summary>
-    public sealed class BinaryEx : Expression, IBinaryExpression
+    public abstract class BinaryEx : Expression, IBinaryExpression
     {
         #region IBinaryExpression
 
@@ -56,18 +56,51 @@ namespace Devsense.PHP.Syntax.Ast
         public Expression/*!*/ RightExpr { get { return rightExpr; } internal set { Debug.Assert(value != null); rightExpr = value; } }
         private Expression/*!*/ rightExpr;
 
-        public override Operations Operation { get; }
+        #endregion
+
+        #region Specialized
+
+        sealed class CommonBinaryEx : BinaryEx
+        {
+            public override Operations Operation { get; }
+
+            public CommonBinaryEx(Span span, Operations operation, Expression/*!*/ leftExpr, Expression/*!*/ rightExpr)
+                : base(span, leftExpr, rightExpr)
+            {
+                this.Operation = operation;
+            }
+        }
+
+        sealed class ConcatBinaryEx : BinaryEx
+        {
+            public override Operations Operation => Operations.Concat;
+
+            public ConcatBinaryEx(Span span, Expression/*!*/ leftExpr, Expression/*!*/ rightExpr)
+                : base(span, leftExpr, rightExpr)
+            {
+            }
+        }
 
         #endregion
 
         #region Construction
 
-        public BinaryEx(Span span, Operations operation, Expression/*!*/ leftExpr, Expression/*!*/ rightExpr)
+        public static BinaryEx Create(Span span, Operations operation, Expression/*!*/ leftExpr, Expression/*!*/ rightExpr)
+        {
+            switch (operation)
+            {
+                case Operations.Concat:
+                    return new ConcatBinaryEx(span, leftExpr, rightExpr);
+                default:
+                    return new CommonBinaryEx(span, operation, leftExpr, rightExpr);
+            }
+        }
+
+        private BinaryEx(Span span, Expression/*!*/ leftExpr, Expression/*!*/ rightExpr)
             : base(span)
         {
             Debug.Assert(leftExpr != rightExpr, "LeftExpr == RightExpr");
 
-            this.Operation = operation;
             this.LeftExpr = leftExpr;
             this.RightExpr = rightExpr;
         }

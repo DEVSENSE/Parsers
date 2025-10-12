@@ -94,7 +94,7 @@ namespace Devsense.PHP.Syntax.Ast
 
         public virtual LangElement BinaryOperation(Span span, Operations operation, LangElement leftExpression, LangElement rightExpression)
         {
-            return new BinaryEx(span, operation, (Expression)leftExpression, (Expression)rightExpression);
+            return BinaryEx.Create(span, operation, (Expression)leftExpression, (Expression)rightExpression);
         }
 
         public virtual LangElement Block(Span span, IEnumerable<LangElement> statements)
