@@ -64,7 +64,7 @@ namespace Devsense.PHP.Syntax.Ast
 
         public virtual LangElement ArrayItem(Span span, bool braces, LangElement expression, LangElement indexOpt)
         {
-            return new ItemUse(span, (Expression)expression, (Expression)indexOpt, isBraces: braces);
+            return ItemUse.Create(span, (Expression)expression, (Expression)indexOpt, isBraces: braces);
         }
         public virtual ArrayItem ArrayItemValue(Span span, LangElement indexOpt, LangElement valueExpr)
         {

@@ -16,6 +16,7 @@
 using System;
 using System.IO;
 using System.Diagnostics;
+using Devsense.PHP.Text;
 
 namespace Devsense.PHP.Syntax.Ast
 {
@@ -24,8 +25,28 @@ namespace Devsense.PHP.Syntax.Ast
     /// <summary>
 	/// Access to an item of a structured variable by [] PHP operator.
 	/// </summary>
-	public sealed class ItemUse : CompoundVarUse
+	public abstract class ItemUse : CompoundVarUse
     {
+        class SimpleItemUse : ItemUse
+        {
+            public SimpleItemUse(Span p, Expression array, Expression index) : base(p, array, index)
+            {
+            }
+        }
+
+        class ComplexItemUse : ItemUse
+        {
+            public override bool IsFunctionArrayDereferencing { get; }
+
+            public override bool IsBraces { get; }
+
+            public ComplexItemUse(Span p, Expression array, Expression index, bool functionArrayDereferencing, bool isBraces) : base(p, array, index)
+            {
+                this.IsFunctionArrayDereferencing = functionArrayDereferencing;
+                this.IsBraces = isBraces;
+            }
+        }
+
         public override Operations Operation { get { return Operations.ItemUse; } }
 
         /// <remarks>Always <c>null</c>.</remarks>
@@ -34,37 +55,51 @@ namespace Devsense.PHP.Syntax.Ast
         /// <summary>
         /// Whether this represents function array dereferencing.
         /// </summary>
-        public bool IsFunctionArrayDereferencing => _functionArrayDereferencing;
-        private readonly bool _functionArrayDereferencing = false;
+        public virtual bool IsFunctionArrayDereferencing => false;
 
         /// <summary>
         /// <c>True</c> if the array is accessed using '{}', false if using '[]'.
         /// </summary>
-        public bool IsBraces => this._isBraces;
-        private readonly bool _isBraces = false;
+        public virtual bool IsBraces => false;
 
         /// <summary>
         /// Variable used as an array identifier.
         /// </summary>
-        public Expression Array { get { return _array; } set { _array = value; } }
-        private Expression/*!*/ _array;
+        public Expression Array { get; }
 
         /// <summary>
         /// Expression used as an array index. 
         /// A <B>null</B> reference means key-less array operator (write context only).
         /// </summary>
-        public Expression Index { get { return index; } internal set { index = value; } }
-        private Expression index;
+        public Expression Index { get; }
 
-        public ItemUse(Text.Span p, Expression/*!*/ array, Expression index, bool functionArrayDereferencing = false, bool isBraces = false)
+        /// <summary>
+        /// Create instance of <see cref="ItemUse"/>.
+        /// </summary>
+        public static ItemUse/*!*/Create(Span p, Expression/*!*/ array, Expression index, bool functionArrayDereferencing = false, bool isBraces = false)
+        {
+            if (isBraces == false && functionArrayDereferencing == false)
+            {
+                // common case:
+                return new SimpleItemUse(p, array, index);
+            }
+
+            return new ComplexItemUse(
+                p,
+                array,
+                index,
+                functionArrayDereferencing: functionArrayDereferencing,
+                isBraces: isBraces
+            );
+        }
+
+        protected ItemUse(Span p, Expression/*!*/ array, Expression index)
             : base(p)
         {
             Debug.Assert(array != null);
 
-            this._array = array;
-            this.index = index;
-            _functionArrayDereferencing = functionArrayDereferencing;
-            _isBraces = isBraces;
+            this.Array = array;
+            this.Index = index;
         }
 
         /// <summary>
