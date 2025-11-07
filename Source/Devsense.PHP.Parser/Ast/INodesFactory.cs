@@ -657,7 +657,7 @@ namespace Devsense.PHP.Syntax.Ast
         /// <param name="leftExpression">Left expression.</param>
         /// <param name="rightExpression">Right expression.</param>
         /// <returns>Binary operation expression.</returns>
-        TNode BinaryOperation(TSpan span, Operations operation, TNode leftExpression, TNode rightExpression);
+        TNode BinaryOperation(TSpan span, Tokens operation, TNode leftExpression, TNode rightExpression);
 
         /// <summary>
         /// Creates unary operation expression.

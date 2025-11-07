@@ -92,7 +92,12 @@ namespace Devsense.PHP.Syntax.Ast
             }
         }
 
-        public virtual LangElement BinaryOperation(Span span, Operations operation, LangElement leftExpression, LangElement rightExpression)
+        //public virtual LangElement BinaryOperation(Span span, Operations operation, LangElement leftExpression, LangElement rightExpression)
+        //{
+        //    return BinaryEx.Create(span, operation, (Expression)leftExpression, (Expression)rightExpression);
+        //}
+
+        public virtual LangElement BinaryOperation(Span span, Tokens operation, LangElement leftExpression, LangElement rightExpression)
         {
             return BinaryEx.Create(span, operation, (Expression)leftExpression, (Expression)rightExpression);
         }

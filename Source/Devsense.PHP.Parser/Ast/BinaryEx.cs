@@ -56,41 +56,52 @@ namespace Devsense.PHP.Syntax.Ast
         public Expression/*!*/ RightExpr { get { return rightExpr; } internal set { Debug.Assert(value != null); rightExpr = value; } }
         private Expression/*!*/ rightExpr;
 
+        public abstract Tokens Token { get; }
+
         #endregion
 
         #region Specialized
 
         sealed class CommonBinaryEx : BinaryEx
         {
-            public override Operations Operation { get; }
+            public override Operations Operation => TokenToBinaryOperation(Token);
+            public override Tokens Token => (Tokens)_token;
 
-            public CommonBinaryEx(Span span, Operations operation, Expression/*!*/ leftExpr, Expression/*!*/ rightExpr)
+            readonly ushort _token;
+
+            public CommonBinaryEx(Span span, Tokens token, Expression/*!*/ leftExpr, Expression/*!*/ rightExpr)
                 : base(span, leftExpr, rightExpr)
             {
-                this.Operation = operation;
+                _token = checked((ushort)token);
             }
         }
 
         sealed class ConcatBinaryEx : BinaryEx
         {
             public override Operations Operation => Operations.Concat;
+            public override Tokens Token => Tokens.T_DOT;
+            public ConcatBinaryEx(Span span, Expression/*!*/ leftExpr, Expression/*!*/ rightExpr) : base(span, leftExpr, rightExpr) { }
+        }
 
-            public ConcatBinaryEx(Span span, Expression/*!*/ leftExpr, Expression/*!*/ rightExpr)
-                : base(span, leftExpr, rightExpr)
-            {
-            }
+        sealed class AssignValueBinaryEx : BinaryEx
+        {
+            public override Operations Operation => Operations.AssignValue;
+            public override Tokens Token => Tokens.T_EQ;
+            public AssignValueBinaryEx(Span span, Expression/*!*/ leftExpr, Expression/*!*/ rightExpr) : base(span, leftExpr, rightExpr) { }
         }
 
         #endregion
 
         #region Construction
 
-        public static BinaryEx Create(Span span, Operations operation, Expression/*!*/ leftExpr, Expression/*!*/ rightExpr)
+        public static BinaryEx Create(Span span, Tokens operation, Expression/*!*/ leftExpr, Expression/*!*/ rightExpr)
         {
             switch (operation)
             {
-                case Operations.Concat:
+                case Tokens.T_DOT: // .
                     return new ConcatBinaryEx(span, leftExpr, rightExpr);
+                case Tokens.T_EQ: // =
+                    return new AssignValueBinaryEx(span, leftExpr, rightExpr);
                 default:
                     return new CommonBinaryEx(span, operation, leftExpr, rightExpr);
             }
@@ -106,6 +117,50 @@ namespace Devsense.PHP.Syntax.Ast
         }
 
         #endregion
+
+        public static bool TryTokenToBinaryOperation(Tokens token, out Operations op) => (op = TokenToBinaryOperation(token)) != 0;
+
+        /// <summary>
+        /// Gets <see cref="Operations"/> corresponding to given <see cref="Tokens"/>.
+        /// Returns <c>0</c> if token does not correspond to any binary operation.
+        /// </summary>
+        public static Operations TokenToBinaryOperation(Tokens token)
+        {
+            switch (token)
+            {
+                case Tokens.T_BOOLEAN_AND:
+                case Tokens.T_LOGICAL_AND: return Operations.And;
+                case Tokens.T_BOOLEAN_OR:
+                case Tokens.T_LOGICAL_OR: return Operations.Or;
+                case Tokens.T_LOGICAL_XOR: return Operations.Xor;
+                case Tokens.T_PIPE: return Operations.BitOr;
+                case Tokens.T_CARET: return Operations.BitXor;
+                case Tokens.T_AMPERSAND_NOT_FOLLOWED_BY_VAR_OR_VARARG: return Operations.BitAnd;
+                case Tokens.T_AMPERSAND_FOLLOWED_BY_VAR_OR_VARARG: return Operations.BitAnd;
+                case Tokens.T_DOT: return Operations.Concat;
+                case Tokens.T_PLUS: return Operations.Add;
+                case Tokens.T_MINUS: return Operations.Sub;
+                case Tokens.T_MUL: return Operations.Mul;
+                case Tokens.T_POW: return Operations.Pow;
+                case Tokens.T_SLASH: return Operations.Div;
+                case Tokens.T_PERCENT: return Operations.Mod;
+                case Tokens.T_SL: return Operations.ShiftLeft;
+                case Tokens.T_SR: return Operations.ShiftRight;
+                case Tokens.T_IS_IDENTICAL: return Operations.Identical;
+                case Tokens.T_IS_NOT_IDENTICAL: return Operations.NotIdentical;
+                case Tokens.T_IS_EQUAL: return Operations.Equal;
+                case Tokens.T_IS_NOT_EQUAL: return Operations.NotEqual;
+                case Tokens.T_PIPE_OPERATOR: return Operations.Pipe;
+                case Tokens.T_LT: return Operations.LessThan;
+                case Tokens.T_IS_SMALLER_OR_EQUAL: return Operations.LessThanOrEqual;
+                case Tokens.T_GT: return Operations.GreaterThan;
+                case Tokens.T_IS_GREATER_OR_EQUAL: return Operations.GreaterThanOrEqual;
+                case Tokens.T_SPACESHIP: return Operations.Spaceship;
+                case Tokens.T_COALESCE: return Operations.Coalesce;
+
+                default: return 0;
+            }
+        }
 
         /// <summary>
         /// Call the right Visit* method on the given Visitor object.

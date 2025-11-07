@@ -1464,53 +1464,40 @@ expr:
 	|	T_INC variable { $$ = CreateIncDec(@$, $2, true, false); }
 	|	variable T_DEC { $$ = CreateIncDec(@$, $1, false, true); }
 	|	T_DEC variable { $$ = CreateIncDec(@$, $2, false, false); }
-	|	expr T_BOOLEAN_OR expr
-			{ $$ = _astFactory.BinaryOperation(@$, Operations.Or,   $1, $3); }
-	|	expr T_BOOLEAN_AND expr
-			{ $$ = _astFactory.BinaryOperation(@$, Operations.And,  $1, $3); }
-	|	expr T_LOGICAL_OR expr
-			{ $$ = _astFactory.BinaryOperation(@$, Operations.Or,   $1, $3); }
-	|	expr T_LOGICAL_AND expr
-			{ $$ = _astFactory.BinaryOperation(@$, Operations.And,  $1, $3); }
-	|	expr T_LOGICAL_XOR expr
-			{ $$ = _astFactory.BinaryOperation(@$, Operations.Xor,  $1, $3); }
-	|	expr '|' expr	{ $$ = _astFactory.BinaryOperation(@$, Operations.BitOr,  $1, $3); }
-	|	expr T_AMPERSAND_NOT_FOLLOWED_BY_VAR_OR_VARARG expr	{ $$ = _astFactory.BinaryOperation(@$, Operations.BitAnd, $1, $3); }
-	|	expr T_AMPERSAND_FOLLOWED_BY_VAR_OR_VARARG expr	{ $$ = _astFactory.BinaryOperation(@$, Operations.BitAnd, $1, $3); }
-	|	expr '^' expr	{ $$ = _astFactory.BinaryOperation(@$, Operations.BitXor, $1, $3); }
-	|	expr '.' expr 	{ $$ = _astFactory.BinaryOperation(@$, Operations.Concat, $1, $3); }
-	|	expr '+' expr 	{ $$ = _astFactory.BinaryOperation(@$, Operations.Add,    $1, $3); }
-	|	expr '-' expr 	{ $$ = _astFactory.BinaryOperation(@$, Operations.Sub,    $1, $3); }
-	|	expr '*' expr	{ $$ = _astFactory.BinaryOperation(@$, Operations.Mul,    $1, $3); }
-	|	expr T_POW expr	{ $$ = _astFactory.BinaryOperation(@$, Operations.Pow,    $1, $3); }
-	|	expr '/' expr	{ $$ = _astFactory.BinaryOperation(@$, Operations.Div,    $1, $3); }
-	|	expr '%' expr 	{ $$ = _astFactory.BinaryOperation(@$, Operations.Mod,    $1, $3); }
-	| 	expr T_SL expr	{ $$ = _astFactory.BinaryOperation(@$, Operations.ShiftLeft,  $1, $3); } 
-	|	expr T_SR expr	{ $$ = _astFactory.BinaryOperation(@$, Operations.ShiftRight, $1, $3); } 
+	|	expr T_BOOLEAN_OR expr		{ $$ = _astFactory.BinaryOperation(@$, Tokens.T_BOOLEAN_OR,   $1, $3); }
+	|	expr T_BOOLEAN_AND expr		{ $$ = _astFactory.BinaryOperation(@$, Tokens.T_BOOLEAN_AND,  $1, $3); }
+	|	expr T_LOGICAL_OR expr		{ $$ = _astFactory.BinaryOperation(@$, Tokens.T_LOGICAL_OR,   $1, $3); }
+	|	expr T_LOGICAL_AND expr		{ $$ = _astFactory.BinaryOperation(@$, Tokens.T_LOGICAL_AND,  $1, $3); }
+	|	expr T_LOGICAL_XOR expr		{ $$ = _astFactory.BinaryOperation(@$, Tokens.T_LOGICAL_XOR,  $1, $3); }
+	|	expr '|' expr				{ $$ = _astFactory.BinaryOperation(@$, Tokens.T_PIPE,  $1, $3); }
+	|	expr T_AMPERSAND_NOT_FOLLOWED_BY_VAR_OR_VARARG expr	{ $$ = _astFactory.BinaryOperation(@$, Tokens.T_AMPERSAND_NOT_FOLLOWED_BY_VAR_OR_VARARG, $1, $3); }
+	|	expr T_AMPERSAND_FOLLOWED_BY_VAR_OR_VARARG expr		{ $$ = _astFactory.BinaryOperation(@$, Tokens.T_AMPERSAND_NOT_FOLLOWED_BY_VAR_OR_VARARG, $1, $3); }
+	|	expr '^' expr				{ $$ = _astFactory.BinaryOperation(@$, Tokens.T_CARET, $1, $3); }
+	|	expr '.' expr 				{ $$ = _astFactory.BinaryOperation(@$, Tokens.T_DOT, $1, $3); }
+	|	expr '+' expr 				{ $$ = _astFactory.BinaryOperation(@$, Tokens.T_PLUS,    $1, $3); }
+	|	expr '-' expr 				{ $$ = _astFactory.BinaryOperation(@$, Tokens.T_MINUS,    $1, $3); }
+	|	expr '*' expr				{ $$ = _astFactory.BinaryOperation(@$, Tokens.T_MUL,    $1, $3); }
+	|	expr T_POW expr				{ $$ = _astFactory.BinaryOperation(@$, Tokens.T_POW,    $1, $3); }
+	|	expr '/' expr				{ $$ = _astFactory.BinaryOperation(@$, Tokens.T_SLASH,    $1, $3); }
+	|	expr '%' expr 				{ $$ = _astFactory.BinaryOperation(@$, Tokens.T_PERCENT,    $1, $3); }
+	| 	expr T_SL expr				{ $$ = _astFactory.BinaryOperation(@$, Tokens.T_SL,  $1, $3); } 
+	|	expr T_SR expr				{ $$ = _astFactory.BinaryOperation(@$, Tokens.T_SR, $1, $3); }
+	|	expr T_IS_IDENTICAL expr	{ $$ = _astFactory.BinaryOperation(@$, Tokens.T_IS_IDENTICAL, $1, $3); }
+	|	expr T_IS_NOT_IDENTICAL expr{ $$ = _astFactory.BinaryOperation(@$, Tokens.T_IS_NOT_IDENTICAL, $1, $3); }
+	|	expr T_IS_EQUAL expr		{ $$ = _astFactory.BinaryOperation(@$, Tokens.T_IS_EQUAL, $1, $3); }
+	|	expr T_IS_NOT_EQUAL expr	{ $$ = _astFactory.BinaryOperation(@$, Tokens.T_IS_NOT_EQUAL, $1, $3); }
+	|	expr T_PIPE_OPERATOR expr	{ $$ = _astFactory.BinaryOperation(@$, Tokens.T_PIPE_OPERATOR, $1, $3); }
+	|	expr '<' expr				{ $$ = _astFactory.BinaryOperation(@$, Tokens.T_LT, $1, $3); }
+	|	expr T_IS_SMALLER_OR_EQUAL expr	{ $$ = _astFactory.BinaryOperation(@$, Tokens.T_IS_SMALLER_OR_EQUAL, $1, $3); }
+	|	expr '>' expr				{ $$ = _astFactory.BinaryOperation(@$, Tokens.T_GT, $1, $3); }
+	|	expr T_IS_GREATER_OR_EQUAL expr	{ $$ = _astFactory.BinaryOperation(@$, Tokens.T_IS_GREATER_OR_EQUAL, $1, $3); }
+	|	expr T_SPACESHIP expr		{ $$ = _astFactory.BinaryOperation(@$, Tokens.T_SPACESHIP, $1, $3); }
+	|	expr T_COALESCE expr		{ $$ = _astFactory.BinaryOperation(@$, Tokens.T_COALESCE, $1, $3); }
+
 	|	'+' expr %prec T_INC { $$ = _astFactory.UnaryOperation(@$, Operations.Plus,   (Expression)$2); }
 	|	'-' expr %prec T_INC { $$ = _astFactory.UnaryOperation(@$, Operations.Minus,   (Expression)$2); }
 	|	'!' expr { $$ = _astFactory.UnaryOperation(@$, Operations.LogicNegation, (Expression)$2); }
 	|	'~' expr { $$ = _astFactory.UnaryOperation(@$, Operations.BitNegation,   (Expression)$2); }
-	|	expr T_IS_IDENTICAL expr
-			{ $$ = _astFactory.BinaryOperation(@$, Operations.Identical, $1, $3); }
-	|	expr T_IS_NOT_IDENTICAL expr
-			{ $$ = _astFactory.BinaryOperation(@$, Operations.NotIdentical, $1, $3); }
-	|	expr T_IS_EQUAL expr
-			{ $$ = _astFactory.BinaryOperation(@$, Operations.Equal, $1, $3); }
-	|	expr T_IS_NOT_EQUAL expr
-			{ $$ = _astFactory.BinaryOperation(@$, Operations.NotEqual, $1, $3); }
-	|	expr T_PIPE_OPERATOR expr
-			{ $$ = _astFactory.BinaryOperation(@$, Operations.Pipe, $1, $3); }
-	|	expr '<' expr
-			{ $$ = _astFactory.BinaryOperation(@$, Operations.LessThan, $1, $3); }
-	|	expr T_IS_SMALLER_OR_EQUAL expr
-			{ $$ = _astFactory.BinaryOperation(@$, Operations.LessThanOrEqual, $1, $3); }
-	|	expr '>' expr
-			{ $$ = _astFactory.BinaryOperation(@$, Operations.GreaterThan, $1, $3); }
-	|	expr T_IS_GREATER_OR_EQUAL expr
-			{ $$ = _astFactory.BinaryOperation(@$, Operations.GreaterThanOrEqual, $1, $3); }
-	|	expr T_SPACESHIP expr
-			{ $$ = _astFactory.BinaryOperation(@$, Operations.Spaceship, $1, $3); }
 	|	expr T_INSTANCEOF class_name_reference
 			{ $$ = _astFactory.InstanceOf(@$, $1, $3); }
 	|	'(' expr ')' { $$ = _astFactory.EncapsedExpression(@$, $2, Tokens.T_LPAREN); }
@@ -1520,8 +1507,6 @@ expr:
 			{ $$ = _astFactory.ConditionalEx(@$, $1, $3, $5); }
 	|	expr '?' ':' expr
 			{ $$ = _astFactory.ConditionalEx(@$, $1, null, $4); }
-	|	expr T_COALESCE expr
-			{ $$ = _astFactory.BinaryOperation(@$, Operations.Coalesce, $1, $3); }
 	|	internal_functions_in_yacc { $$ = $1; }
 	|	T_INT_CAST expr		{ $$ = _astFactory.UnaryOperation(@$, Operations.Int64Cast,   (Expression)$2); }
 	|	T_DOUBLE_CAST expr	{ $$ = _astFactory.UnaryOperation(@$, Operations.DoubleCast, (Expression)$2); }
