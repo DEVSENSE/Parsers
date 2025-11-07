@@ -83,27 +83,29 @@ namespace Devsense.PHP.Syntax.Ast
             public ConcatBinaryEx(Span span, Expression/*!*/ leftExpr, Expression/*!*/ rightExpr) : base(span, leftExpr, rightExpr) { }
         }
 
-        sealed class AssignValueBinaryEx : BinaryEx
+        sealed class IsEqualBinaryEx : BinaryEx
         {
-            public override Operations Operation => Operations.AssignValue;
-            public override Tokens Token => Tokens.T_EQ;
-            public AssignValueBinaryEx(Span span, Expression/*!*/ leftExpr, Expression/*!*/ rightExpr) : base(span, leftExpr, rightExpr) { }
+            public override Operations Operation => Operations.Equal;
+            public override Tokens Token => Tokens.T_IS_EQUAL;
+            public IsEqualBinaryEx(Span span, Expression/*!*/ leftExpr, Expression/*!*/ rightExpr) : base(span, leftExpr, rightExpr) { }
         }
 
         #endregion
 
         #region Construction
 
-        public static BinaryEx Create(Span span, Tokens operation, Expression/*!*/ leftExpr, Expression/*!*/ rightExpr)
+        public static BinaryEx Create(Span span, Tokens token, Expression/*!*/ leftExpr, Expression/*!*/ rightExpr)
         {
-            switch (operation)
+            Debug.Assert(TryTokenToBinaryOperation(token, out _));
+
+            switch (token)
             {
                 case Tokens.T_DOT: // .
                     return new ConcatBinaryEx(span, leftExpr, rightExpr);
-                case Tokens.T_EQ: // =
-                    return new AssignValueBinaryEx(span, leftExpr, rightExpr);
+                case Tokens.T_IS_EQUAL: // ==
+                    return new IsEqualBinaryEx(span, leftExpr, rightExpr);
                 default:
-                    return new CommonBinaryEx(span, operation, leftExpr, rightExpr);
+                    return new CommonBinaryEx(span, token, leftExpr, rightExpr);
             }
         }
 
