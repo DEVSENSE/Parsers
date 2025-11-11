@@ -29,6 +29,8 @@ class X {
     function static() { }
 }",
 @"<?php
+echo $x->prop;",
+@"<?php
 class enum extends A {
 }",
 @"<?php
@@ -647,6 +649,20 @@ new #[Attribuute] class {};"
 
                 Assert.AreNotEqual(anonymousTypeDecl.GetAttributes().Count, 0);
             }
+        }
+
+        [TestMethod]
+        public void BinaryOpTest()
+        {
+            var errors = new TestErrorSink();
+            var unit = new CodeSourceUnit(@"<?php
+
+$a = true and false;
+$b = true && false;
+
+", "dummy.php", Encoding.UTF8);
+            unit.Parse(new BasicNodesFactory(unit), errors);
+
         }
 
         /// <summary>

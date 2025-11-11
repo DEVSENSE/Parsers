@@ -1471,7 +1471,7 @@ expr:
 	|	expr T_LOGICAL_XOR expr		{ $$ = _astFactory.BinaryOperation(@$, Tokens.T_LOGICAL_XOR,  $1, $3); }
 	|	expr '|' expr				{ $$ = _astFactory.BinaryOperation(@$, Tokens.T_PIPE,  $1, $3); }
 	|	expr T_AMPERSAND_NOT_FOLLOWED_BY_VAR_OR_VARARG expr	{ $$ = _astFactory.BinaryOperation(@$, Tokens.T_AMPERSAND_NOT_FOLLOWED_BY_VAR_OR_VARARG, $1, $3); }
-	|	expr T_AMPERSAND_FOLLOWED_BY_VAR_OR_VARARG expr		{ $$ = _astFactory.BinaryOperation(@$, Tokens.T_AMPERSAND_NOT_FOLLOWED_BY_VAR_OR_VARARG, $1, $3); }
+	|	expr T_AMPERSAND_FOLLOWED_BY_VAR_OR_VARARG expr		{ $$ = _astFactory.BinaryOperation(@$, Tokens.T_AMPERSAND_FOLLOWED_BY_VAR_OR_VARARG, $1, $3); }
 	|	expr '^' expr				{ $$ = _astFactory.BinaryOperation(@$, Tokens.T_CARET, $1, $3); }
 	|	expr '.' expr 				{ $$ = _astFactory.BinaryOperation(@$, Tokens.T_DOT, $1, $3); }
 	|	expr '+' expr 				{ $$ = _astFactory.BinaryOperation(@$, Tokens.T_PLUS,    $1, $3); }

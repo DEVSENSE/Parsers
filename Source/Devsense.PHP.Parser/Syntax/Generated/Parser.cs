@@ -3526,7 +3526,7 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 { yyval.Node = _astFactory.BinaryOperation(yypos, Tokens.T_AMPERSAND_NOT_FOLLOWED_BY_VAR_OR_VARARG, value_stack.array[value_stack.top-3].yyval.Node, value_stack.array[value_stack.top-1].yyval.Node); }
         return;
       case 426: // expr -> expr T_AMPERSAND_FOLLOWED_BY_VAR_OR_VARARG expr 
-{ yyval.Node = _astFactory.BinaryOperation(yypos, Tokens.T_AMPERSAND_NOT_FOLLOWED_BY_VAR_OR_VARARG, value_stack.array[value_stack.top-3].yyval.Node, value_stack.array[value_stack.top-1].yyval.Node); }
+{ yyval.Node = _astFactory.BinaryOperation(yypos, Tokens.T_AMPERSAND_FOLLOWED_BY_VAR_OR_VARARG, value_stack.array[value_stack.top-3].yyval.Node, value_stack.array[value_stack.top-1].yyval.Node); }
         return;
       case 427: // expr -> expr '^' expr 
 { yyval.Node = _astFactory.BinaryOperation(yypos, Tokens.T_CARET, value_stack.array[value_stack.top-3].yyval.Node, value_stack.array[value_stack.top-1].yyval.Node); }
