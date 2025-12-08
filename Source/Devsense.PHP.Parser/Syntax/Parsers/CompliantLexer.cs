@@ -159,7 +159,8 @@ namespace Devsense.PHP.Syntax
                         }
                         break;
 
-                    // reinterpret T_NAME_QUALIFIED
+                    // semi_reserved:
+                    // (reinterpret T_NAME_QUALIFIED)
                     case Tokens.T_GLOBAL:
                     case Tokens.T_STATIC:
                     case Tokens.T_ABSTRACT:
