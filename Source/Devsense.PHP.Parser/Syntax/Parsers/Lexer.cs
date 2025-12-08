@@ -204,10 +204,8 @@ namespace Devsense.PHP.Syntax
 
         public ReadOnlySpan<char> TokenTextSpan => buffer.AsSpan(token_start, TokenLength);
 
-        public string GetText(int offset, int length, bool intern)
+        public string GetText(ReadOnlySpan<char> text, bool intern)
         {
-            var text = buffer.AsSpan(offset, length);
-
             return
                 StringInterns.TryIntern(text) // always try most frequent strings fast
                 ?? (intern
@@ -216,30 +214,20 @@ namespace Devsense.PHP.Syntax
                 );
         }
 
-        protected char GetTokenChar(int index)
-        {
-            return buffer[token_start + index];
-        }
+        public string GetText(int offset, int length, bool intern) => GetText(buffer.AsSpan(offset, length), intern);
 
-        protected string GetTokenString(bool intern = true)
-        {
-            return GetText(token_start, TokenLength, intern);
-        }
+        protected char GetTokenChar(int index) => buffer[token_start + index];
+
+        protected string GetTokenString(bool intern = true) => GetText(TokenTextSpan, intern);
 
         protected string GetTokenChunkString(bool intern = true)
         {
             return GetText(token_chunk_start, token_end - token_chunk_start, intern);
         }
 
-        protected string GetTokenSubstring(int startIndex, bool intern = true)
-        {
-            return GetText(token_start + startIndex, token_end - token_start - startIndex, intern);
-        }
+        protected string GetTokenSubstring(int startIndex, bool intern = true) => GetText(TokenTextSpan.Slice(startIndex), intern);
 
-        protected string GetTokenSubstring(int startIndex, int length, bool intern = true)
-        {
-            return GetText(token_start + startIndex, length, intern);
-        }
+        protected string GetTokenSubstring(int startIndex, int length, bool intern = true) => GetText(TokenTextSpan.Slice(startIndex, length), intern);
 
         protected char GetTokenAsEscapedCharacter(int startIndex)
         {
@@ -321,18 +309,20 @@ namespace Devsense.PHP.Syntax
 
         #region nested struct: DigitsEnumerator // helper enumerator of digits within string, ignores '_'
 
-        struct DigitsEnumerator
+        ref struct DigitsEnumerator
         {
-            readonly char[] buffer;
+            readonly ReadOnlySpan<char> buffer;
             readonly int @base;
 
             int buffer_pos;
             int digit;
 
-            public DigitsEnumerator(char[] buffer, int buffer_pos, int @base)
+            public DigitsEnumerator(char[] buffer, int buffer_pos, int @base) : this(buffer.AsSpan(buffer_pos), @base) { }
+
+            public DigitsEnumerator(ReadOnlySpan<char> buffer, int @base)
             {
                 this.buffer = buffer;
-                this.buffer_pos = buffer_pos;
+                this.buffer_pos = 0;
                 this.@base = @base;
                 this.digit = 0;
             }
@@ -341,7 +331,11 @@ namespace Devsense.PHP.Syntax
             {
                 for (; ; )
                 {
-                    if (buffer_pos >= buffer.Length) return false;
+                    if (buffer_pos >= buffer.Length)
+                    {
+                        return false;
+                    }
+
                     var ch = buffer[buffer_pos++];
                     if (ch != '_')
                     {
@@ -350,10 +344,7 @@ namespace Devsense.PHP.Syntax
                 }
             }
 
-            public int Current
-            {
-                get { return digit; }
-            }
+            public int Current => digit;
         }
 
         #endregion
@@ -373,7 +364,7 @@ namespace Devsense.PHP.Syntax
             double dresult;
 
             // helper enumerator of digits, ignores '_'
-            var digits = new DigitsEnumerator(buffer, token_start + startIndex, @base);
+            var digits = new DigitsEnumerator(buffer.AsSpan(token_start + startIndex), @base);
 
             // try parse Int32
             // most literals fit 32 bit number
@@ -587,14 +578,9 @@ namespace Devsense.PHP.Syntax
         /// Parses string literal text, processes escaped sequences.
         /// </summary>
         /// <param name="buffer">Characters buffer to read from.</param>
-        /// <param name="start">Offset in <paramref name="buffer"/> of first character.</param>
-        /// <param name="length">Number of characters.</param>
         /// <param name="tryprocess">Callback that handles escaped character sequences. Returns new buffer position in case the sequence was processed, otherwise <c>-1</c>.</param>
         /// <param name="binary">Whether to force a binary string output.</param>
         /// <returns>Parsed text, either <see cref="string"/> or <see cref="byte"/>[].</returns>
-        object ProcessStringText(char[] buffer, int start, int length, ProcessStringDelegate tryprocess, bool binary = false) =>
-            ProcessStringText(buffer.AsSpan(start, length), tryprocess, binary);
-
         object ProcessStringText(ReadOnlySpan<char> buffer, ProcessStringDelegate tryprocess, bool binary = false)
         {
             Debug.Assert(tryprocess != null);
@@ -685,23 +671,24 @@ namespace Devsense.PHP.Syntax
                 }
             }
 
-            return ProcessStringText(buffer, start, end - start, tryprocess, binary);
+            return ProcessStringText(buffer.AsSpan(start, end - start), tryprocess, binary);
         }
 
-        protected object ProcessEscapedStringWithEnding(char[] buffer, int start, int length, char ending)
+        protected object ProcessEscapedStringWithEnding(ReadOnlySpan<char> buffer, char ending)
         {
-            char c2 = (length >= 2) ? buffer[start + length - 2] : '\0';
+            var length = buffer.Length;
+            char c2 = (length >= 2) ? buffer[length - 2] : '\0';
             object output;
 
             // ends with "{END" or "$END" ?
-            if (buffer[start + length - 1] == ending && (c2 == '$' || c2 == '{'))
+            if (buffer[length - 1] == ending && (c2 == '$' || c2 == '{'))
             {
-                output = ProcessStringText(buffer, start, length - 1, _processDoubleQuotedString);
+                output = ProcessStringText(buffer.Slice(0, length - 1), _processDoubleQuotedString);
                 _yyless(1);
             }
             else
             {
-                output = ProcessStringText(buffer, start, length, _processDoubleQuotedString);
+                output = ProcessStringText(buffer, _processDoubleQuotedString);
             }
 
             return output.ToString(); // TODO: handle 8bit values
@@ -917,7 +904,7 @@ namespace Devsense.PHP.Syntax
         {
             return
                 _hereDocValue != null &&
-                chars.LastWord().StartsWith(_hereDocValue.Label, StringComparison.Ordinal);
+                chars.LastWord().StartsWith(_hereDocValue.Label.AsSpan(), StringComparison.Ordinal);
         }
 
         /// <summary>
@@ -1163,7 +1150,7 @@ namespace Devsense.PHP.Syntax
             else
             {
                 _tokenSemantics.Strings = new StringPair(
-                    text: (string)ProcessEscapedStringWithEnding(buffer, BufferTokenStart, TokenLength, '"'),
+                    text: (string)ProcessEscapedStringWithEnding(TokenTextSpan, '"'),
                     sourcecode: GetTokenString()
                 );
                 return Tokens.T_ENCAPSED_AND_WHITESPACE;
@@ -1245,7 +1232,7 @@ namespace Devsense.PHP.Syntax
             if (TokenLength > 0)
             {
                 _tokenSemantics.Strings = new StringPair(
-                    text: (string)ProcessEscapedStringWithEnding(buffer, BufferTokenStart, TokenLength, ending),
+                    text: (string)ProcessEscapedStringWithEnding(TokenTextSpan, ending),
                     sourcecode: GetTokenString()
                 );
                 return true;
