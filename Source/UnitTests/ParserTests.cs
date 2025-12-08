@@ -154,7 +154,7 @@ isset(new (trim(' A '))()['key']);
             }
             else
             {
-                Assert.AreEqual(0, errors.Count, path);
+                Assert.AreEqual(0, errors.Count, errors.Count != 0 ? $"{errors.Errors[0].ToString()} in {path}" : null);
             }
 
             Assert.IsNotNull(sourceUnit.Ast);

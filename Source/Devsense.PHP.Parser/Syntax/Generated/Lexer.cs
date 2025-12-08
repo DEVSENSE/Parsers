@@ -1404,7 +1404,7 @@ using Devsense.PHP.Text;
 				case 181:
 					// #line 891
 					{
-					    if(VerifyEndLabel(GetTokenSpan()))
+					    if(VerifyEndLabel(this.TokenTextSpan))
 						{
 							BEGIN(LexicalStates.ST_END_HEREDOC); 
 							if( ProcessEndNowDoc(_processDoubleQuotedString) ) return (Tokens.T_ENCAPSED_AND_WHITESPACE);
@@ -1601,9 +1601,9 @@ using Devsense.PHP.Text;
 					// #line 867
 					{
 						BEGIN(LexicalStates.ST_IN_SCRIPTING);
-						if (GetTokenSpan().TrimLeft() != _hereDocValue.Label)
+						if (TokenTextSpan.TrimStart().Equals(_hereDocValue.Label.AsSpan(), StringComparison.Ordinal) == false)
 						{
-							_errors.Error(_tokenPosition, Devsense.PHP.Errors.FatalErrors.SyntaxError, "Incorrect heredoc end label: " + GetTokenSpan().Trim().ToString());
+							_errors.Error(_tokenPosition, Devsense.PHP.Errors.FatalErrors.SyntaxError, $"Incorrect heredoc end label: {TokenTextSpan.TrimStart().ToString()}");
 						}
 						_yyless(LabelTrailLength());
 						_tokenSemantics.Object = _hereDocValue ?? throw new InvalidOperationException("Expected '_hereDocValue' to be set.");
@@ -1619,7 +1619,7 @@ using Devsense.PHP.Text;
 				case 212:
 					// #line 882
 					{
-					    if(VerifyEndLabel(GetTokenSpan()))
+					    if(VerifyEndLabel(TokenTextSpan))
 						{
 							BEGIN(LexicalStates.ST_END_HEREDOC); 
 							if( ProcessEndNowDoc(null) ) return (Tokens.T_ENCAPSED_AND_WHITESPACE);

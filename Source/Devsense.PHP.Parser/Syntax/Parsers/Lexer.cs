@@ -195,16 +195,14 @@ namespace Devsense.PHP.Syntax
 
         protected int BufferTokenStart { get { return token_start; } }
 
-        public string Intern(char[] array, int start, int length)
-        {
-            var text = array.AsSpan(start, length);
+        public string Intern(char[] array, int start, int length) => Intern(array.AsSpan(start, length));
 
-            return StringInterns.TryIntern(text) ?? _strings.GetOrAdd(text);
-        }
+        public string Intern(ReadOnlySpan<char> text) => StringInterns.TryIntern(text) ?? _strings.GetOrAdd(text);
 
-        public CharSpan GetTokenSpan() => new CharSpan(buffer, token_start, TokenLength);
+        //[Obsolete("Use TokenTextSpan")]
+        //public CharSpan GetTokenSpan() => new CharSpan(buffer, token_start, TokenLength);
 
-        public ReadOnlySpan<char> TokenTextSpan => GetTokenSpan();
+        public ReadOnlySpan<char> TokenTextSpan => buffer.AsSpan(token_start, TokenLength);
 
         public string GetText(int offset, int length, bool intern)
         {
@@ -452,13 +450,13 @@ namespace Devsense.PHP.Syntax
         }
 
         /// <summary>
-        /// Delegate used for <see cref="ProcessStringText"/> that handles escaped string sequences.
+        /// Delegate used for <see cref="ProcessStringText(ReadOnlySpan{char}, ProcessStringDelegate, bool)"/> that handles escaped string sequences.
         /// </summary>
         /// <param name="buffer">Source text buffer.</param>
         /// <param name="index">Index of the escaped character right after '\'.</param>
         /// <param name="builder">Output string builder.</param>
         /// <returns>Position of the last processed character. In case the escaped character is not handled, gets <c>-1</c>.</returns>
-        delegate int ProcessStringDelegate(char[] buffer, int index, PhpStringBuilder builder);
+        delegate int ProcessStringDelegate(ReadOnlySpan<char> buffer, int index, PhpStringBuilder builder);
 
         readonly ProcessStringDelegate _processSingleQuotedString = (buffer, pos, result) =>
         {
@@ -474,7 +472,7 @@ namespace Devsense.PHP.Syntax
 
         readonly ProcessStringDelegate _processDoubleQuotedString;
 
-        int ProcessDoubleQuotedString(char[] buffer, int pos, PhpStringBuilder result)
+        int ProcessDoubleQuotedString(ReadOnlySpan<char> buffer, int pos, PhpStringBuilder result)
         {
             switch (buffer[pos])
             {
@@ -528,10 +526,10 @@ namespace Devsense.PHP.Syntax
                     {
                         // \x[0-9A-Fa-f]{1,2}
                         int digit;
-                        if ((digit = Convert.AlphaNumericToDigit(buffer[++pos])) < 16)
+                        if (++pos < buffer.Length && (digit = Convert.AlphaNumericToDigit(buffer[pos])) < 16)
                         {
                             int hex_code = digit;
-                            if ((digit = Convert.AlphaNumericToDigit(buffer[++pos])) < 16)
+                            if (++pos < buffer.Length && (digit = Convert.AlphaNumericToDigit(buffer[pos])) < 16)
                             {
                                 hex_code = (hex_code << 4) + digit;
                             }
@@ -555,11 +553,11 @@ namespace Devsense.PHP.Syntax
                         {
                             int octal_code = digit;
 
-                            if ((digit = Convert.NumericToDigit(buffer[++pos])) < 8)    // 2
+                            if (++pos < buffer.Length && (digit = Convert.NumericToDigit(buffer[pos])) < 8)    // 2
                             {
                                 octal_code = (octal_code << 3) + digit;
 
-                                if ((digit = Convert.NumericToDigit(buffer[++pos])) < 8)    // 3
+                                if (++pos < buffer.Length && (digit = Convert.NumericToDigit(buffer[pos])) < 8)    // 3
                                 {
                                     octal_code = (octal_code << 3) + digit;
                                 }
@@ -594,26 +592,24 @@ namespace Devsense.PHP.Syntax
         /// <param name="tryprocess">Callback that handles escaped character sequences. Returns new buffer position in case the sequence was processed, otherwise <c>-1</c>.</param>
         /// <param name="binary">Whether to force a binary string output.</param>
         /// <returns>Parsed text, either <see cref="string"/> or <see cref="byte"/>[].</returns>
-        object ProcessStringText(char[] buffer, int start, int length, ProcessStringDelegate tryprocess, bool binary = false)
+        object ProcessStringText(char[] buffer, int start, int length, ProcessStringDelegate tryprocess, bool binary = false) =>
+            ProcessStringText(buffer.AsSpan(start, length), tryprocess, binary);
+
+        object ProcessStringText(ReadOnlySpan<char> buffer, ProcessStringDelegate tryprocess, bool binary = false)
         {
-            Debug.Assert(start >= 0);
-            Debug.Assert(length >= 0);
             Debug.Assert(tryprocess != null);
 
-            if (length == 0)
+            if (buffer.IsEmpty)
             {
                 return string.Empty;
             }
 
-            int to = start + length;
-
-            Debug.Assert(start >= 0);
-            Debug.Assert(to <= buffer.Length);
+            int to = buffer.Length;
 
             PhpStringBuilder lazyBuilder = null;
 
             // find first backslash quickly
-            int index = start;
+            int index = 0;
             while (index < to && buffer[index] != '\\')
             {
                 index++;
@@ -628,8 +624,8 @@ namespace Devsense.PHP.Syntax
                     // ensure string builder lazily
                     if (lazyBuilder == null)
                     {
-                        lazyBuilder = new PhpStringBuilder(_encoding, binary, length);
-                        lazyBuilder.Append(buffer, start, index - start);
+                        lazyBuilder = new PhpStringBuilder(_encoding, binary, buffer.Length);
+                        lazyBuilder.Append(buffer.Slice(0, index));
                     }
 
                     int processed = tryprocess(buffer, index + 1, lazyBuilder);
@@ -649,7 +645,7 @@ namespace Devsense.PHP.Syntax
 
             //
             return lazyBuilder == null
-                ? Intern(buffer, start, length)
+                ? Intern(buffer)
                 : lazyBuilder.Result; // .StringResult;
         }
 
@@ -715,7 +711,7 @@ namespace Devsense.PHP.Syntax
         /// Parse code point enclosed in braces.
         /// 'pos' points before '{'
         /// </summary>
-        bool TryParseCodePoint(char[] buffer, ref int pos, out string value)
+        bool TryParseCodePoint(ReadOnlySpan<char> buffer, ref int pos, out string value)
         {
             var index = pos + 1; //
             int code_point = 0;
@@ -917,17 +913,17 @@ namespace Devsense.PHP.Syntax
             return (Tokens.T_NUM_STRING);
         }
 
-        bool VerifyEndLabel(CharSpan chars)
+        bool VerifyEndLabel(ReadOnlySpan<char> chars)
         {
             return
                 _hereDocValue != null &&
-                chars.LastWord().StartsWith(_hereDocValue.Label);
+                chars.LastWord().StartsWith(_hereDocValue.Label, StringComparison.Ordinal);
         }
 
         /// <summary>
         /// Resolves closing label indentation (whitespace preceeding the T_END_HEREDOC which is at the last line),
         /// and trims the last line off</summary>
-        string ResolveHeredocIndentation(ref CharSpan content)
+        ReadOnlySpan<char> ResolveHeredocIndentation(ref ReadOnlySpan<char> content)
         {
             int from = content.Length;
 
@@ -945,7 +941,7 @@ namespace Devsense.PHP.Syntax
                 }
             }
 
-            var indent = content.Substring(from);
+            var indent = content.Slice(from);
 
             //// scan line by line and check the line indentation
 
@@ -965,16 +961,16 @@ namespace Devsense.PHP.Syntax
             //}
 
             // trim last line
-            content = content.Substring(0, from);
+            content = content.Slice(0, from);
 
             // \n
-            if (content.LastChar() == '\n') content = content.Substring(0, content.Length - 1);
+            if (content.LastChar() == '\n') content = content.Slice(0, content.Length - 1);
             // \r\n
             // \r
-            if (content.LastChar() == '\r') content = content.Substring(0, content.Length - 1);
+            if (content.LastChar() == '\r') content = content.Slice(0, content.Length - 1);
 
             //
-            return indent.ToString();
+            return indent;
         }
 
         ///// <summary>
@@ -1045,13 +1041,13 @@ namespace Devsense.PHP.Syntax
         {
             BEGIN(LexicalStates.ST_END_HEREDOC);
 
-            var content = TrimNowDocEnd(this.GetTokenSpan(), _hereDocValue.Label); // trim label and whitespaces from the heredoc end
+            var content = TrimNowDocEnd(TokenTextSpan, _hereDocValue.Label); // trim label and whitespaces from the heredoc end
             var lookbackfix = TokenLength - content.Length;
             var indentation = ResolveHeredocIndentation(ref content);
             var sourcetext = content.ToString();
 
             string text = tryprocess != null
-                ? ProcessStringText(content.Buffer, content.Start, content.Length, tryprocess).ToString() // TODO: handle 8bit values
+                ? ProcessStringText(content, tryprocess).ToString() // TODO: handle 8bit values
                 : sourcetext;
 
             // text = RemoveHeredocIndentation(text, indentation);
@@ -1087,9 +1083,12 @@ namespace Devsense.PHP.Syntax
 
             public HereDocTokenValue Clone() => new HereDocTokenValue(Label, Indentation);
 
-            public HereDocTokenValue WithIndentation(string indentation)
+            public HereDocTokenValue WithIndentation(ReadOnlySpan<char> indentation)
             {
-                return this.Indentation == indentation ? this : new HereDocTokenValue(Label, indentation);
+                return indentation.Equals(this.Indentation.AsSpan(), StringComparison.Ordinal)
+                    ? this
+                    : new HereDocTokenValue(Label, indentation.ToString())
+                    ;
             }
 
             public bool Equals(HereDocTokenValue other)
@@ -1106,7 +1105,7 @@ namespace Devsense.PHP.Syntax
         /// <summary>
         /// Removes closing label from the heredoc content.
         /// </summary>
-        static CharSpan TrimNowDocEnd(CharSpan content, string label)
+        static ReadOnlySpan<char> TrimNowDocEnd(ReadOnlySpan<char> content, string label)
         {
             Debug.Assert(label != null);
 
@@ -1114,12 +1113,12 @@ namespace Devsense.PHP.Syntax
 
             // trim whitespace suffix
             // spaces, line separators, paragraph separators, tabs
-            for (; ; )
+            for (; content.Length != 0; )
             {
-                var ch = content.LastChar();
+                var ch = content[content.Length - 1];
                 if (char.IsWhiteSpace(ch) || ch == ';')
                 {
-                    content = content.Substring(0, content.Length - 1);
+                    content = content.Slice(0, content.Length - 1);
                 }
                 else
                 {
@@ -1128,9 +1127,9 @@ namespace Devsense.PHP.Syntax
             }
 
             // trim label
-            Debug.Assert(content.EndsWith(label));
+            Debug.Assert(content.EndsWith(label.AsSpan(), StringComparison.Ordinal));
 
-            content = content.Substring(0, content.Length - label.Length);
+            content = content.Slice(0, content.Length - label.Length);
 
             //
             return content;
@@ -1173,12 +1172,12 @@ namespace Devsense.PHP.Syntax
 
         bool ProcessPreOpenTag()
         {
-            var text = GetTokenSpan(); // GetTokenString(intern: false);
+            var text = this.TokenTextSpan; // GetTokenString(intern: false);
             int pos = text.LastIndexOf('<');
             if (pos != 0)
             {
                 _yyless(Math.Abs(pos - text.Length));
-                _tokenSemantics.Object = text.Substring(0, pos).ToString();
+                _tokenSemantics.Object = text.Slice(0, pos).ToString();
                 return true;
             }
             return false;

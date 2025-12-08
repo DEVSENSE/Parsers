@@ -217,7 +217,7 @@ namespace Devsense.PHP.Syntax
                 return GetAppendBuffer<T>(length);
             }
 
-            public void Append(Span<char> chars)
+            public void Append(ReadOnlySpan<char> chars)
             {
                 if (chars.Length > 0)
                 {
@@ -436,12 +436,12 @@ namespace Devsense.PHP.Syntax
 
         public void Append(char[] buffer, int start, int length)
         {
-            if (length == 0)
-            {
-                return;
-            }
+            Append(buffer.AsSpan(start, length));
+        }
 
-            _chunks.Append(buffer.AsSpan(start, length));
+        public void Append(ReadOnlySpan<char> buffer)
+        {
+            _chunks.Append(buffer);
         }
 
         public void Append(char c, Span span)
