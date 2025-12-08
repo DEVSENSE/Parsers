@@ -805,6 +805,7 @@ namespace Devsense.PHP.Syntax
         /// <summary>Store the token text into the <see cref="_tokenSemantics"/>.</summary>
         Tokens Identifier(Tokens t)
         {
+            _tokenSemantics.Token = t;
             _tokenSemantics.String = TokenText;
             return t;
         }
