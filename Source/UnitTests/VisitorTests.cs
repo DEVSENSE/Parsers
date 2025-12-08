@@ -193,8 +193,8 @@ namespace UnitTests
             public override LangElement Assignment(Span span, LangElement target, LangElement value, Operations assignOp)
                 => CountLE(base.Assignment(span, target, value, assignOp));
 
-            public override LangElement BinaryOperation(Span span, Operations operation, LangElement leftExpression, LangElement rightExpression)
-                 => CountLE(base.BinaryOperation(span, operation, leftExpression, rightExpression));
+            public override LangElement BinaryOperation(Span span, Tokens token, LangElement leftExpression, LangElement rightExpression)
+                 => CountLE(base.BinaryOperation(span, token, leftExpression, rightExpression));
 
             public override LangElement Block(Span span, IEnumerable<LangElement> statements)
                  => CountLE(base.Block(span, statements));
