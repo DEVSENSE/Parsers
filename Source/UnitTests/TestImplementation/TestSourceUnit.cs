@@ -2,6 +2,7 @@
 using Devsense.PHP.Syntax;
 using Devsense.PHP.Syntax.Ast;
 using Devsense.PHP.Text;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
@@ -27,11 +28,8 @@ namespace UnitTests.TestImplementation
 
         public override void Parse(INodesFactory<LangElement, Span> factory, IErrorSink<Span> errors, IErrorRecovery recovery = null)
         {
-            using (var source = new StringReader(this.Code))
-            {
-                _lexer = new CollectionLexer(source, errors);
-                this.Ast = (GlobalCode)new Parser().Parse(_lexer, factory, _features, errors, recovery);
-            }
+            _lexer = new CollectionLexer(this.Code.AsMemory(), errors);
+            this.Ast = (GlobalCode)new Parser().Parse(_lexer, factory, _features, errors, recovery);
         }
     }
 }

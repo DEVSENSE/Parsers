@@ -20,7 +20,7 @@ namespace UnitTests.TestImplementation
         /// Lexer constructor that initializes all the necessary members
         /// </summary>
         /// <param name="provider">Underlaying tokens provider.</param>
-        public CollectionLexer(StringReader source, IErrorSink<Span> errors)
+        public CollectionLexer(ReadOnlyMemory<char> source, IErrorSink<Span> errors)
         {
             // TODO: should have CompliantLexer a LanguageFeatures !!!
 
