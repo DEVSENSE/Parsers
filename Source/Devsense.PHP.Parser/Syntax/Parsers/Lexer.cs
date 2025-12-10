@@ -636,22 +636,24 @@ namespace Devsense.PHP.Syntax
             // 2/ b"..."
             // 3/ ...
 
-            bool binary = false;
-            int start = token_start;
-            int end = token_end;
+            var text = this.TokenTextSpan;
 
-            if (start == end)
+            if (text.IsEmpty)
             {
                 return string.Empty;
             }
 
-            if (buffer[start] == 'b')
+            var binary = false;
+            var start = 0;
+            var end = text.Length;
+
+            if (text[0] == 'b')
             {
                 binary = true;
                 start++;
             }
 
-            if (end - start >= 2 && buffer[start] == quote && buffer[end - 1] == quote)
+            if (end - start >= 2 && text[start] == quote && text[end - 1] == quote)
             {
                 // quoted
                 start++;
@@ -666,7 +668,7 @@ namespace Devsense.PHP.Syntax
                 }
             }
 
-            return ProcessStringText(buffer.Slice(start, end - start), tryprocess, binary);
+            return ProcessStringText(text.Slice(start, end - start), tryprocess, binary);
         }
 
         protected object ProcessEscapedStringWithEnding(ReadOnlySpan<char> buffer, char ending)
@@ -1120,6 +1122,7 @@ namespace Devsense.PHP.Syntax
         int LabelTrailLength()
         {
             int length = 0;
+            var buffer = this.buffer;
             for (int i = token_end - 1; i >= token_start; i--)
             {
                 if (char.IsWhiteSpace(buffer[i]) || // spaces, line separators, paragraph separators, tabs
