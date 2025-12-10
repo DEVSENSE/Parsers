@@ -231,7 +231,10 @@ namespace Lex
 			this.outstream.WriteLine("this.lookahead_index = 0;");
 			this.outstream.WriteLine("this.token_chunk_start = 0;");
 			this.outstream.WriteLine("this.token_end = 0;");
-            this.outstream.WriteLine("this.token_end_pos = new Position(0);");
+			if (this.spec.CountColumns || this.spec.CountLines || this.spec.CountChars)
+			{
+				this.outstream.WriteLine("this.token_end_pos = new Position(0);");
+			}
             this.outstream.WriteLine("this.reader = reader;");
 			this.outstream.WriteLine("this.yy_at_bol = atBol;");
 			this.outstream.WriteLine("this.current_lexical_state = lexicalState;");
@@ -258,7 +261,7 @@ namespace Lex
 		private void States()
 		{
 			this.outstream.WriteLine();
-			this.outstream.WriteLine("private static int[] yy_state_dtrans = new int[]");
+			this.outstream.WriteLine("private static readonly int[] yy_state_dtrans = new int[]");
 			this.outstream.WriteLine("{");
 			this.outstream.Indent++;
 			for (int i = 0; i < this.spec.state_dtrans.Length; i++)
@@ -530,7 +533,7 @@ protected static bool IsNewLineCharacter(char ch)
 		}
 		private void EmitAcceptTable()
 		{
-			this.outstream.WriteLine("private static AcceptConditions[] acceptCondition = new AcceptConditions[]");
+			this.outstream.WriteLine("private static readonly AcceptConditions[] acceptCondition = new AcceptConditions[]");
 			this.outstream.WriteLine("{");
 			this.outstream.Indent++;
 			for (int i = 0; i < this.spec.accept_list.Count; i++)
@@ -620,7 +623,7 @@ protected static bool IsNewLineCharacter(char ch)
 		}
 		private void EmitTableNxt()
 		{
-			this.outstream.WriteLine("private static int[,] nextState = new int[,]");
+			this.outstream.WriteLine("private static readonly int[,] nextState = new int[,]");
 			this.outstream.WriteLine("{");
 			this.outstream.Indent++;
 			for (int i = 0; i < this.spec.dtrans_list.Count; i++)

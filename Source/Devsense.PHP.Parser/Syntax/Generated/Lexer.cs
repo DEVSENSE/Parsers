@@ -58,14 +58,6 @@ using Devsense.PHP.Text;
 			Accept = 4
 		}
 		
-		public struct Position
-		{
-			public int Char;
-			public Position(int ch)
-			{
-				this.Char = ch;
-			}
-		}
 		private const int NoState = -1;
 		private const char BOL = (char)128;
 		private const char EOF = (char)129;
@@ -93,12 +85,6 @@ using Devsense.PHP.Text;
 		// number of characters read into the buffer:
 		private int chars_read;
 		
-		// parsed token start position (wrt beginning of the stream):
-		protected Position token_start_pos;
-		
-		// parsed token end position (wrt beginning of the stream):
-		protected Position token_end_pos;
-		
 		private bool yy_at_bol = false;
 		
 		public LexicalStates CurrentLexicalState { get { return current_lexical_state; } set { current_lexical_state = value; } } 
@@ -117,7 +103,6 @@ using Devsense.PHP.Text;
 			this.lookahead_index = 0;
 			this.token_chunk_start = 0;
 			this.token_end = 0;
-			this.token_end_pos = new Position(0);
 			this.reader = reader;
 			this.yy_at_bol = atBol;
 			this.current_lexical_state = lexicalState;
@@ -140,21 +125,21 @@ using Devsense.PHP.Text;
 			switch(state)
 			{
 				case 1:
-					// #line 786
+					// #line 785
 					{
 						yymore(); break;
 					}
 					break;
 					
 				case 2:
-					// #line 94
+					// #line 93
 					{ 
 						return ProcessEof(Tokens.T_INLINE_HTML);
 					}
 					break;
 					
 				case 4:
-					// #line 773
+					// #line 772
 					{
 						if(ProcessPreOpenTag())
 						{
@@ -170,7 +155,7 @@ using Devsense.PHP.Text;
 					break;
 					
 				case 5:
-					// #line 753
+					// #line 752
 					{
 						if(ProcessPreOpenTag())
 						{
@@ -182,7 +167,7 @@ using Devsense.PHP.Text;
 					break;
 					
 				case 6:
-					// #line 763
+					// #line 762
 					{
 						if(ProcessPreOpenTag())
 						{
@@ -194,7 +179,7 @@ using Devsense.PHP.Text;
 					break;
 					
 				case 7:
-					// #line 987
+					// #line 986
 					{
 						//zend_error(E_COMPILE_WARNING,"Unexpected character in input:  '%c' (ASCII=%d) state=%d", yytext[0], yytext[0], YYSTATE);
 						return Tokens.T_ERROR;
@@ -202,28 +187,28 @@ using Devsense.PHP.Text;
 					break;
 					
 				case 8:
-					// #line 80
+					// #line 79
 					{
 						return Tokens.EOF;
 					}
 					break;
 					
 				case 9:
-					// #line 653
+					// #line 652
 					{
 						return (Tokens)GetTokenChar(0);
 					}
 					break;
 					
 				case 10:
-					// #line 807
+					// #line 806
 					{
 						return ProcessLabel();
 					}
 					break;
 					
 				case 11:
-					// #line 811
+					// #line 810
 					{
 						yy_push_state(LexicalStates.ST_ONE_LINE_COMMENT); 
 						yymore(); 
@@ -232,35 +217,35 @@ using Devsense.PHP.Text;
 					break;
 					
 				case 12:
-					// #line 306
+					// #line 305
 					{
 						return (Tokens.T_WHITESPACE);
 					}
 					break;
 					
 				case 13:
-					// #line 697
+					// #line 696
 					{
 						return ProcessDecimalNumber();
 					}
 					break;
 					
 				case 14:
-					// #line 333
+					// #line 332
 					{
 						return (Tokens.T_NS_SEPARATOR);
 					}
 					break;
 					
 				case 15:
-					// #line 649
+					// #line 648
 					{
 						return (Tokens.T_AMPERSAND_NOT_FOLLOWED_BY_VAR_OR_VARARG);
 					}
 					break;
 					
 				case 16:
-					// #line 658
+					// #line 657
 					{
 						yy_push_state(LexicalStates.ST_IN_SCRIPTING); 
 						return (Tokens.T_LBRACE);
@@ -268,7 +253,7 @@ using Devsense.PHP.Text;
 					break;
 					
 				case 17:
-					// #line 666
+					// #line 665
 					{
 						ResetDocBlock();
 						if (!yy_pop_state()) 
@@ -278,29 +263,29 @@ using Devsense.PHP.Text;
 					break;
 					
 				case 18:
-					// #line 953
+					// #line 952
 					{ BEGIN(LexicalStates.ST_DOUBLE_QUOTES); yymore(); break; }
 					break;
 					
 				case 19:
-					// #line 902
+					// #line 901
 					{ BEGIN(LexicalStates.ST_SINGLE_QUOTES); yymore(); break; }
 					break;
 					
 				case 20:
-					// #line 963
+					// #line 962
 					{ BEGIN(LexicalStates.ST_BACKQUOTE); return Tokens.T_BACKQUOTE; }
 					break;
 					
 				case 21:
-					// #line 341
+					// #line 340
 					{
 						return (Tokens.T_COALESCE);
 					}
 					break;
 					
 				case 22:
-					// #line 827
+					// #line 826
 					{
 						BEGIN(LexicalStates.INITIAL);
 						return (Tokens.T_CLOSE_TAG);  /* implicit ';' at php-end tag */
@@ -308,56 +293,56 @@ using Devsense.PHP.Text;
 					break;
 					
 				case 23:
-					// #line 167
+					// #line 166
 					{
 						return Identifier(Tokens.T_IF);
 					}
 					break;
 					
 				case 24:
-					// #line 191
+					// #line 190
 					{
 						return Identifier(Tokens.T_DO);
 					}
 					break;
 					
 				case 25:
-					// #line 123
+					// #line 122
 					{
 						return Identifier(Tokens.T_FN);
 					}
 					break;
 					
 				case 26:
-					// #line 624
+					// #line 623
 					{
 						return Identifier(Tokens.T_LOGICAL_OR);
 					}
 					break;
 					
 				case 27:
-					// #line 139
+					// #line 138
 					{
 						return Tokens.T_ATTRIBUTE;
 					}
 					break;
 					
 				case 28:
-					// #line 223
+					// #line 222
 					{
 						return Identifier(Tokens.T_AS);
 					}
 					break;
 					
 				case 29:
-					// #line 524
+					// #line 523
 					{
 						return (Tokens.T_DEC);
 					}
 					break;
 					
 				case 30:
-					// #line 296
+					// #line 295
 					{
 						yy_push_state(LexicalStates.ST_LOOKING_FOR_PROPERTY);
 						return (Tokens.T_OBJECT_OPERATOR);
@@ -365,145 +350,145 @@ using Devsense.PHP.Text;
 					break;
 					
 				case 31:
-					// #line 560
+					// #line 559
 					{
 						return (Tokens.T_MINUS_EQUAL);
 					}
 					break;
 					
 				case 32:
-					// #line 640
+					// #line 639
 					{
 						return (Tokens.T_SR);
 					}
 					break;
 					
 				case 33:
-					// #line 552
+					// #line 551
 					{
 						return (Tokens.T_IS_GREATER_OR_EQUAL);
 					}
 					break;
 					
 				case 34:
-					// #line 713
+					// #line 712
 					{
 						return ProcessRealNumber();
 					}
 					break;
 					
 				case 35:
-					// #line 329
+					// #line 328
 					{
 						return (Tokens.T_DOUBLE_COLON);
 					}
 					break;
 					
 				case 36:
-					// #line 580
+					// #line 579
 					{
 						return (Tokens.T_CONCAT_EQUAL);
 					}
 					break;
 					
 				case 37:
-					// #line 817
+					// #line 816
 					{ yy_push_state(LexicalStates.ST_COMMENT); yymore(); break; }
 					break;
 					
 				case 38:
-					// #line 576
+					// #line 575
 					{
 						return (Tokens.T_DIV_EQUAL);
 					}
 					break;
 					
 				case 39:
-					// #line 568
+					// #line 567
 					{
 						return (Tokens.T_POW);
 					}
 					break;
 					
 				case 40:
-					// #line 564
+					// #line 563
 					{
 						return (Tokens.T_MUL_EQUAL);
 					}
 					break;
 					
 				case 41:
-					// #line 504
+					// #line 503
 					{
 						return Tokens.T_DOUBLE_ARROW;
 					}
 					break;
 					
 				case 42:
-					// #line 536
+					// #line 535
 					{
 						return (Tokens.T_IS_EQUAL);
 					}
 					break;
 					
 				case 43:
-					// #line 556
+					// #line 555
 					{
 						return (Tokens.T_PLUS_EQUAL);
 					}
 					break;
 					
 				case 44:
-					// #line 520
+					// #line 519
 					{
 						return (Tokens.T_INC);
 					}
 					break;
 					
 				case 45:
-					// #line 540
+					// #line 539
 					{
 						return (Tokens.T_IS_NOT_EQUAL);
 					}
 					break;
 					
 				case 46:
-					// #line 548
+					// #line 547
 					{
 						return (Tokens.T_IS_SMALLER_OR_EQUAL);
 					}
 					break;
 					
 				case 47:
-					// #line 636
+					// #line 635
 					{
 						return (Tokens.T_SL);
 					}
 					break;
 					
 				case 48:
-					// #line 584
+					// #line 583
 					{
 						return (Tokens.T_MOD_EQUAL);
 					}
 					break;
 					
 				case 49:
-					// #line 596
+					// #line 595
 					{
 						return (Tokens.T_AND_EQUAL);
 					}
 					break;
 					
 				case 50:
-					// #line 620
+					// #line 619
 					{
 						return (Tokens.T_BOOLEAN_AND);
 					}
 					break;
 					
 				case 51:
-					// #line 644
+					// #line 643
 					{
 						yyless(1);
 						return (Tokens.T_AMPERSAND_FOLLOWED_BY_VAR_OR_VARARG);
@@ -511,49 +496,49 @@ using Devsense.PHP.Text;
 					break;
 					
 				case 52:
-					// #line 612
+					// #line 611
 					{
 						return (Tokens.T_PIPE_OPERATOR);
 					}
 					break;
 					
 				case 53:
-					// #line 600
+					// #line 599
 					{
 						return (Tokens.T_OR_EQUAL);
 					}
 					break;
 					
 				case 54:
-					// #line 616
+					// #line 615
 					{
 						return (Tokens.T_BOOLEAN_OR);
 					}
 					break;
 					
 				case 55:
-					// #line 604
+					// #line 603
 					{
 						return (Tokens.T_XOR_EQUAL);
 					}
 					break;
 					
 				case 56:
-					// #line 832
+					// #line 831
 					{
 						return ProcessVariable();
 					}
 					break;
 					
 				case 57:
-					// #line 608
+					// #line 607
 					{
 						return (Tokens.T_COALESCE_EQUAL);
 					}
 					break;
 					
 				case 58:
-					// #line 301
+					// #line 300
 					{
 						yy_push_state(LexicalStates.ST_LOOKING_FOR_PROPERTY);
 						return (Tokens.T_NULLSAFE_OBJECT_OPERATOR);
@@ -561,313 +546,313 @@ using Devsense.PHP.Text;
 					break;
 					
 				case 59:
-					// #line 632
+					// #line 631
 					{
 						return Identifier(Tokens.T_LOGICAL_XOR);
 					}
 					break;
 					
 				case 60:
-					// #line 151
+					// #line 150
 					{
 						return Identifier(Tokens.T_TRY);
 					}
 					break;
 					
 				case 61:
-					// #line 119
+					// #line 118
 					{
 						return Identifier(Tokens.T_EXIT);
 					}
 					break;
 					
 				case 62:
-					// #line 195
+					// #line 194
 					{
 						return Identifier(Tokens.T_FOR);
 					}
 					break;
 					
 				case 63:
-					// #line 345
+					// #line 344
 					{
 						return Identifier(Tokens.T_NEW);
 					}
 					break;
 					
 				case 64:
-					// #line 409
+					// #line 408
 					{
 						return Identifier(Tokens.T_USE);
 					}
 					break;
 					
 				case 65:
-					// #line 628
+					// #line 627
 					{
 						return Identifier(Tokens.T_LOGICAL_AND);
 					}
 					break;
 					
 				case 66:
-					// #line 592
+					// #line 591
 					{
 						return (Tokens.T_SR_EQUAL);
 					}
 					break;
 					
 				case 67:
-					// #line 337
+					// #line 336
 					{
 						return (Tokens.T_ELLIPSIS);
 					}
 					break;
 					
 				case 68:
-					// #line 353
+					// #line 352
 					{
 						return Identifier(Tokens.T_VAR);
 					}
 					break;
 					
 				case 69:
-					// #line 572
+					// #line 571
 					{
 						return (Tokens.T_POW_EQUAL);
 					}
 					break;
 					
 				case 70:
-					// #line 528
+					// #line 527
 					{
 						return (Tokens.T_IS_IDENTICAL);
 					}
 					break;
 					
 				case 71:
-					// #line 532
+					// #line 531
 					{
 						return (Tokens.T_IS_NOT_IDENTICAL);
 					}
 					break;
 					
 				case 72:
-					// #line 544
+					// #line 543
 					{
 						return (Tokens.T_SPACESHIP);
 					}
 					break;
 					
 				case 73:
-					// #line 588
+					// #line 587
 					{
 						return (Tokens.T_SL_EQUAL);
 					}
 					break;
 					
 				case 74:
-					// #line 701
+					// #line 700
 					{
 						return ProcessHexadecimalNumber();
 					}
 					break;
 					
 				case 75:
-					// #line 693
+					// #line 692
 					{
 						return ProcessOctalNumber();
 					}
 					break;
 					
 				case 76:
-					// #line 689
+					// #line 688
 					{
 						return ProcessBinaryNumber();
 					}
 					break;
 					
 				case 77:
-					// #line 115
+					// #line 114
 					{ 
 						return Identifier(Tokens.T_EXIT);
 					}
 					break;
 					
 				case 78:
-					// #line 259
+					// #line 258
 					{
 						return Identifier(Tokens.T_ECHO);
 					}
 					break;
 					
 				case 79:
-					// #line 179
+					// #line 178
 					{
 						return Identifier(Tokens.T_ELSE);
 					}
 					break;
 					
 				case 80:
-					// #line 385
+					// #line 384
 					{
 						return Identifier(Tokens.T_EVAL);
 					}
 					break;
 					
 				case 81:
-					// #line 239
+					// #line 238
 					{
 						return Identifier(Tokens.T_CASE);
 					}
 					break;
 					
 				case 82:
-					// #line 508
+					// #line 507
 					{
 						return Identifier(Tokens.T_LIST);
 					}
 					break;
 					
 				case 83:
-					// #line 255
+					// #line 254
 					{
 						return Identifier(Tokens.T_GOTO);
 					}
 					break;
 					
 				case 84:
-					// #line 822
+					// #line 821
 					{ yy_push_state(LexicalStates.ST_DOC_COMMENT); yymore(); ResetDocBlock(); break; }
 					break;
 					
 				case 85:
-					// #line 175
+					// #line 174
 					{
 						return Identifier(Tokens.T_ENDIF);
 					}
 					break;
 					
 				case 86:
-					// #line 425
+					// #line 424
 					{
 						return Identifier(Tokens.T_EMPTY);
 					}
 					break;
 					
 				case 87:
-					// #line 421
+					// #line 420
 					{
 						return Identifier(Tokens.T_ISSET);
 					}
 					break;
 					
 				case 88:
-					// #line 284
+					// #line 283
 					{
 						return Identifier(Tokens.T_TRAIT);
 					}
 					break;
 					
 				case 89:
-					// #line 163
+					// #line 162
 					{
 						return Identifier(Tokens.T_THROW);
 					}
 					break;
 					
 				case 90:
-					// #line 469
+					// #line 468
 					{
 						return Identifier(Tokens.T_FINAL);
 					}
 					break;
 					
 				case 91:
-					// #line 500
+					// #line 499
 					{
 						return Identifier(Tokens.T_UNSET);
 					}
 					break;
 					
 				case 92:
-					// #line 131
+					// #line 130
 					{
 						return Identifier(Tokens.T_CONST);
 					}
 					break;
 					
 				case 93:
-					// #line 349
+					// #line 348
 					{
 						return Identifier(Tokens.T_CLONE);
 					}
 					break;
 					
 				case 94:
-					// #line 267
+					// #line 266
 					{
 						return Identifier(Tokens.T_CLASS);
 					}
 					break;
 					
 				case 95:
-					// #line 155
+					// #line 154
 					{
 						return Identifier(Tokens.T_CATCH);
 					}
 					break;
 					
 				case 96:
-					// #line 147
+					// #line 146
 					{
 						return Identifier(Tokens.T_YIELD);
 					}
 					break;
 					
 				case 97:
-					// #line 231
+					// #line 230
 					{
 						return Identifier(Tokens.T_MATCH);
 					}
 					break;
 					
 				case 98:
-					// #line 512
+					// #line 511
 					{
 						return Identifier(Tokens.T_ARRAY);
 					}
 					break;
 					
 				case 99:
-					// #line 183
+					// #line 182
 					{
 						return Identifier(Tokens.T_WHILE);
 					}
 					break;
 					
 				case 100:
-					// #line 247
+					// #line 246
 					{
 						return Identifier(Tokens.T_BREAK);
 					}
 					break;
 					
 				case 101:
-					// #line 263
+					// #line 262
 					{
 						return Identifier(Tokens.T_PRINT);
 					}
 					break;
 					
 				case 102:
-					// #line 357
+					// #line 356
 					{
 						return (Tokens.T_INT_CAST);
 					}
 					break;
 					
 				case 103:
-					// #line 836
+					// #line 835
 					{
 						int bprefix = (GetTokenChar(0) != '<') ? 1 : 0;
 						int s = bprefix + 3;
@@ -897,14 +882,14 @@ using Devsense.PHP.Text;
 					break;
 					
 				case 104:
-					// #line 199
+					// #line 198
 					{
 						return Identifier(Tokens.T_ENDFOR);
 					}
 					break;
 					
 				case 105:
-					// #line 279
+					// #line 278
 					{
 						yyless(4); // consume 4 characters
 						return Identifier(Tokens.T_ENUM);
@@ -912,308 +897,308 @@ using Devsense.PHP.Text;
 					break;
 					
 				case 106:
-					// #line 171
+					// #line 170
 					{
 						return (Tokens.T_ELSEIF);
 					}
 					break;
 					
 				case 107:
-					// #line 461
+					// #line 460
 					{
 						return Identifier(Tokens.T_STATIC);
 					}
 					break;
 					
 				case 108:
-					// #line 227
+					// #line 226
 					{
 						return Identifier(Tokens.T_SWITCH);
 					}
 					break;
 					
 				case 109:
-					// #line 135
+					// #line 134
 					{
 						return Identifier(Tokens.T_RETURN);
 					}
 					break;
 					
 				case 110:
-					// #line 417
+					// #line 416
 					{
 						return Identifier(Tokens.T_GLOBAL);
 					}
 					break;
 					
 				case 111:
-					// #line 493
+					// #line 492
 					{
 						return Identifier(Tokens.T_PUBLIC);
 					}
 					break;
 					
 				case 112:
-					// #line 361
+					// #line 360
 					{
 						return (Tokens.T_DOUBLE_CAST);
 					}
 					break;
 					
 				case 113:
-					// #line 377
+					// #line 376
 					{
 						return (Tokens.T_BOOL_CAST);
 					}
 					break;
 					
 				case 114:
-					// #line 288
+					// #line 287
 					{
 						return Identifier(Tokens.T_EXTENDS);
 					}
 					break;
 					
 				case 115:
-					// #line 389
+					// #line 388
 					{
 						return Identifier(Tokens.T_INCLUDE);
 					}
 					break;
 					
 				case 116:
-					// #line 243
+					// #line 242
 					{
 						return Identifier(Tokens.T_DEFAULT);
 					}
 					break;
 					
 				case 117:
-					// #line 211
+					// #line 210
 					{
 						return Identifier(Tokens.T_DECLARE);
 					}
 					break;
 					
 				case 118:
-					// #line 159
+					// #line 158
 					{
 						return Identifier(Tokens.T_FINALLY);
 					}
 					break;
 					
 				case 119:
-					// #line 203
+					// #line 202
 					{
 						return Identifier(Tokens.T_FOREACH);
 					}
 					break;
 					
 				case 120:
-					// #line 397
+					// #line 396
 					{
 						return Identifier(Tokens.T_REQUIRE);
 					}
 					break;
 					
 				case 121:
-					// #line 473
+					// #line 472
 					{
 						return Identifier(Tokens.T_PRIVATE);
 					}
 					break;
 					
 				case 122:
-					// #line 381
+					// #line 380
 					{
 						return (Tokens.T_UNSET_CAST);
 					}
 					break;
 					
 				case 123:
-					// #line 369
+					// #line 368
 					{
 						return (Tokens.T_ARRAY_CAST);
 					}
 					break;
 					
 				case 124:
-					// #line 745
+					// #line 744
 					{
 						return Identifier(Tokens.T_DIR);
 					}
 					break;
 					
 				case 125:
-					// #line 187
+					// #line 186
 					{
 						return Identifier(Tokens.T_ENDWHILE);
 					}
 					break;
 					
 				case 126:
-					// #line 127
+					// #line 126
 					{
 						return Identifier(Tokens.T_FUNCTION);
 					}
 					break;
 					
 				case 127:
-					// #line 251
+					// #line 250
 					{
 						return Identifier(Tokens.T_CONTINUE);
 					}
 					break;
 					
 				case 128:
-					// #line 516
+					// #line 515
 					{
 						return Identifier(Tokens.T_CALLABLE);
 					}
 					break;
 					
 				case 129:
-					// #line 496
+					// #line 495
 					{
 						return Identifier(Tokens.T_READONLY);
 					}
 					break;
 					
 				case 130:
-					// #line 465
+					// #line 464
 					{
 						return Identifier(Tokens.T_ABSTRACT);
 					}
 					break;
 					
 				case 131:
-					// #line 373
+					// #line 372
 					{
 						return (Tokens.T_OBJECT_CAST);
 					}
 					break;
 					
 				case 132:
-					// #line 365
+					// #line 364
 					{
 						return (Tokens.T_STRING_CAST);
 					}
 					break;
 					
 				case 133:
-					// #line 741
+					// #line 740
 					{
 						return Identifier(Tokens.T_FILE);
 					}
 					break;
 					
 				case 134:
-					// #line 737
+					// #line 736
 					{
 						return Identifier(Tokens.T_LINE);
 					}
 					break;
 					
 				case 135:
-					// #line 235
+					// #line 234
 					{
 						return Identifier(Tokens.T_ENDSWITCH);
 					}
 					break;
 					
 				case 136:
-					// #line 271
+					// #line 270
 					{
 						return Identifier(Tokens.T_INTERFACE);
 					}
 					break;
 					
 				case 137:
-					// #line 413
+					// #line 412
 					{
 						return Identifier(Tokens.T_INSTEADOF);
 					}
 					break;
 					
 				case 138:
-					// #line 405
+					// #line 404
 					{
 						return Identifier(Tokens.T_NAMESPACE);
 					}
 					break;
 					
 				case 139:
-					// #line 477
+					// #line 476
 					{
 						return Identifier(Tokens.T_PROTECTED);
 					}
 					break;
 					
 				case 140:
-					// #line 721
+					// #line 720
 					{
 						return Identifier(Tokens.T_TRAIT_C);
 					}
 					break;
 					
 				case 141:
-					// #line 717
+					// #line 716
 					{
 						return Identifier(Tokens.T_CLASS_C);
 					}
 					break;
 					
 				case 142:
-					// #line 215
+					// #line 214
 					{
 						return Identifier(Tokens.T_ENDDECLARE);
 					}
 					break;
 					
 				case 143:
-					// #line 207
+					// #line 206
 					{
 						return Identifier(Tokens.T_ENDFOREACH);
 					}
 					break;
 					
 				case 144:
-					// #line 219
+					// #line 218
 					{
 						return Identifier(Tokens.T_INSTANCEOF);
 					}
 					break;
 					
 				case 145:
-					// #line 292
+					// #line 291
 					{
 						return Identifier(Tokens.T_IMPLEMENTS);
 					}
 					break;
 					
 				case 146:
-					// #line 143
+					// #line 142
 					{
 						return Identifier(Tokens.T_YIELD_FROM);
 					}
 					break;
 					
 				case 147:
-					// #line 733
+					// #line 732
 					{
 						return Identifier(Tokens.T_METHOD_C);
 					}
 					break;
 					
 				case 148:
-					// #line 481
+					// #line 480
 					{
 						return Identifier(Tokens.T_PUBLIC_SET);
 					}
 					break;
 					
 				case 149:
-					// #line 275
+					// #line 274
 					{
 						yyless(4); // consume 4 characters
 						return ProcessLabel();
@@ -1221,56 +1206,56 @@ using Devsense.PHP.Text;
 					break;
 					
 				case 150:
-					// #line 393
+					// #line 392
 					{
 						return Identifier(Tokens.T_INCLUDE_ONCE);
 					}
 					break;
 					
 				case 151:
-					// #line 401
+					// #line 400
 					{
 						return Identifier(Tokens.T_REQUIRE_ONCE);
 					}
 					break;
 					
 				case 152:
-					// #line 489
+					// #line 488
 					{
 						return Identifier(Tokens.T_PRIVATE_SET);
 					}
 					break;
 					
 				case 153:
-					// #line 725
+					// #line 724
 					{
 						return Identifier(Tokens.T_FUNC_C);
 					}
 					break;
 					
 				case 154:
-					// #line 729
+					// #line 728
 					{
 						return Identifier(Tokens.T_PROPERTY_C);
 					}
 					break;
 					
 				case 155:
-					// #line 749
+					// #line 748
 					{
 						return Identifier(Tokens.T_NS_C);
 					}
 					break;
 					
 				case 156:
-					// #line 485
+					// #line 484
 					{
 						return Identifier(Tokens.T_PROTECTED_SET);
 					}
 					break;
 					
 				case 157:
-					// #line 444
+					// #line 443
 					{
 						// IMPORTANT - Added because PHP lexer explicitly checks halt compiler syntax and reverts to initial state after semicolon
 						yy_push_state(LexicalStates.ST_HALT_COMPILER1); 
@@ -1279,12 +1264,12 @@ using Devsense.PHP.Text;
 					break;
 					
 				case 158:
-					// #line 961
+					// #line 960
 					{ yymore(); break; }
 					break;
 					
 				case 159:
-					// #line 86
+					// #line 85
 					{
 						if(TokenLength > 0)
 						{
@@ -1295,116 +1280,116 @@ using Devsense.PHP.Text;
 					break;
 					
 				case 160:
-					// #line 959
+					// #line 958
 					{ yymore(); break; }
 					break;
 					
 				case 161:
-					// #line 957
+					// #line 956
 					{ if (ProcessString(1, out Tokens token)) return token; else break; }
 					break;
 					
 				case 162:
-					// #line 960
+					// #line 959
 					{ yymore(); break; }
 					break;
 					
 				case 163:
-					// #line 955
-					{ if (ProcessString(2, out Tokens token)) return token; else break; }
-					break;
-					
-				case 164:
 					// #line 954
 					{ if (ProcessString(2, out Tokens token)) return token; else break; }
 					break;
 					
+				case 164:
+					// #line 953
+					{ if (ProcessString(2, out Tokens token)) return token; else break; }
+					break;
+					
 				case 165:
-					// #line 956
+					// #line 955
 					{ if (ProcessString(2, out Tokens token)) return token; else break; }
 					break;
 					
 				case 166:
-					// #line 905
+					// #line 904
 					{ yymore(); break; }
 					break;
 					
 				case 167:
-					// #line 83
+					// #line 82
 					{
 						return ProcessEof(Tokens.T_ENCAPSED_AND_WHITESPACE);
 					}
 					break;
 					
 				case 168:
-					// #line 904
-					{ yymore(); break; }
-					break;
-					
-				case 169:
-					// #line 906
-					{ BEGIN(LexicalStates.ST_IN_SCRIPTING); return ProcessSingleQuotedString(); }
-					break;
-					
-				case 170:
 					// #line 903
 					{ yymore(); break; }
 					break;
 					
+				case 169:
+					// #line 905
+					{ BEGIN(LexicalStates.ST_IN_SCRIPTING); return ProcessSingleQuotedString(); }
+					break;
+					
+				case 170:
+					// #line 902
+					{ yymore(); break; }
+					break;
+					
 				case 171:
-					// #line 971
-					{ yymore(); break; }
-					break;
-					
-				case 172:
-					// #line 969
-					{ yymore(); break; }
-					break;
-					
-				case 173:
-					// #line 967
-					{ if (ProcessShell(1, out Tokens token)) return token; else break; }
-					break;
-					
-				case 174:
 					// #line 970
 					{ yymore(); break; }
 					break;
 					
-				case 175:
-					// #line 965
-					{ if (ProcessShell(2, out Tokens token)) return token; else break; }
+				case 172:
+					// #line 968
+					{ yymore(); break; }
 					break;
 					
-				case 176:
+				case 173:
+					// #line 966
+					{ if (ProcessShell(1, out Tokens token)) return token; else break; }
+					break;
+					
+				case 174:
+					// #line 969
+					{ yymore(); break; }
+					break;
+					
+				case 175:
 					// #line 964
 					{ if (ProcessShell(2, out Tokens token)) return token; else break; }
 					break;
 					
+				case 176:
+					// #line 963
+					{ if (ProcessShell(2, out Tokens token)) return token; else break; }
+					break;
+					
 				case 177:
-					// #line 966
+					// #line 965
 					{ if (ProcessShell(2, out Tokens token)) return token; else break; }
 					break;
 					
 				case 178:
-					// #line 980
-					{ yymore(); break; }
-					break;
-					
-				case 179:
 					// #line 979
 					{ yymore(); break; }
 					break;
 					
+				case 179:
+					// #line 978
+					{ yymore(); break; }
+					break;
+					
 				case 180:
-					// #line 977
+					// #line 976
 					{ yymore(); break; }
 					break;
 					
 				case 181:
-					// #line 891
+					// #line 890
 					{
-					    if(VerifyEndLabel(this.TokenTextSpan))
+					    if(VerifyEndLabel(TokenTextSpan))
 						{
 							BEGIN(LexicalStates.ST_END_HEREDOC); 
 							if( ProcessEndNowDoc(_processDoubleQuotedString) ) return (Tokens.T_ENCAPSED_AND_WHITESPACE);
@@ -1414,27 +1399,27 @@ using Devsense.PHP.Text;
 					break;
 					
 				case 182:
-					// #line 978
+					// #line 977
 					{ yymore(); break; }
 					break;
 					
 				case 183:
-					// #line 974
-					{ if (ProcessHeredoc(2, out Tokens token)) return token; else break; }
-					break;
-					
-				case 184:
 					// #line 973
 					{ if (ProcessHeredoc(2, out Tokens token)) return token; else break; }
 					break;
 					
+				case 184:
+					// #line 972
+					{ if (ProcessHeredoc(2, out Tokens token)) return token; else break; }
+					break;
+					
 				case 185:
-					// #line 975
+					// #line 974
 					{ if (ProcessHeredoc(2, out Tokens token)) return token; else break; }
 					break;
 					
 				case 186:
-					// #line 323
+					// #line 322
 					{
 						_yyless(1);
 						if (!yy_pop_state()) return Tokens.T_ERROR;
@@ -1443,7 +1428,7 @@ using Devsense.PHP.Text;
 					break;
 					
 				case 187:
-					// #line 318
+					// #line 317
 					{
 						yy_pop_state();
 						return ProcessLabel();
@@ -1451,21 +1436,21 @@ using Devsense.PHP.Text;
 					break;
 					
 				case 188:
-					// #line 310
+					// #line 309
 					{
 						return (Tokens.T_OBJECT_OPERATOR);
 					}
 					break;
 					
 				case 189:
-					// #line 314
+					// #line 313
 					{
 						return (Tokens.T_NULLSAFE_OBJECT_OPERATOR);
 					}
 					break;
 					
 				case 190:
-					// #line 682
+					// #line 681
 					{
 						_yyless(1);
 						if (!yy_pop_state()) return Tokens.T_ERROR;
@@ -1475,7 +1460,7 @@ using Devsense.PHP.Text;
 					break;
 					
 				case 191:
-					// #line 674
+					// #line 673
 					{
 						_yyless(1);
 						yy_pop_state();
@@ -1485,12 +1470,12 @@ using Devsense.PHP.Text;
 					break;
 					
 				case 192:
-					// #line 823
+					// #line 822
 					{ yymore(); break; }
 					break;
 					
 				case 193:
-					// #line 106
+					// #line 105
 					{
 						if(TokenLength > 0)
 						{
@@ -1502,66 +1487,66 @@ using Devsense.PHP.Text;
 					break;
 					
 				case 194:
-					// #line 825
+					// #line 824
 					{ yymore(); break; }
 					break;
 					
 				case 195:
-					// #line 824
+					// #line 823
 					{ yy_pop_state(); SetDocBlock(); return Tokens.T_DOC_COMMENT; }
 					break;
 					
 				case 196:
-					// #line 818
+					// #line 817
 					{ yymore(); break; }
 					break;
 					
 				case 197:
-					// #line 98
+					// #line 97
 					{ 
 						return ProcessEof(Tokens.T_COMMENT);
 					}
 					break;
 					
 				case 198:
-					// #line 820
+					// #line 819
 					{ yymore(); break; }
 					break;
 					
 				case 199:
-					// #line 819
+					// #line 818
 					{ yy_pop_state(); return Tokens.T_COMMENT; }
 					break;
 					
 				case 200:
-					// #line 985
+					// #line 984
 					{ yymore(); break; }
 					break;
 					
 				case 201:
-					// #line 102
+					// #line 101
 					{ 
 						return ProcessEof(Tokens.T_COMMENT);
 					}
 					break;
 					
 				case 202:
-					// #line 984
+					// #line 983
 					{ yymore(); break; }
 					break;
 					
 				case 203:
-					// #line 982
+					// #line 981
 					{ yy_pop_state(); return Tokens.T_COMMENT; }
 					break;
 					
 				case 204:
-					// #line 983
+					// #line 982
 					{ _yyless(2); yy_pop_state(); return Tokens.T_COMMENT; }
 					break;
 					
 				case 205:
-					// #line 795
+					// #line 794
 					{
 						/* Only '[' can be valid, but returning other tokens will allow a more explicit parse error */
 						return (Tokens)GetTokenChar(0);
@@ -1569,14 +1554,14 @@ using Devsense.PHP.Text;
 					break;
 					
 				case 206:
-					// #line 705
+					// #line 704
 					{ /* Offset could be treated as a long */
 						return ProcessVariableOffsetNumber();
 					}
 					break;
 					
 				case 207:
-					// #line 790
+					// #line 789
 					{
 						yy_pop_state();
 						return (Tokens.T_RBRACKET);
@@ -1584,21 +1569,21 @@ using Devsense.PHP.Text;
 					break;
 					
 				case 208:
-					// #line 709
+					// #line 708
 					{ /* Offset must be treated as a string */
 						return ProcessVariableOffsetString();
 					}
 					break;
 					
 				case 209:
-					// #line 878
+					// #line 877
 					{
 						return Tokens.T_ERROR;
 					}
 					break;
 					
 				case 210:
-					// #line 867
+					// #line 866
 					{
 						BEGIN(LexicalStates.ST_IN_SCRIPTING);
 						if (TokenTextSpan.TrimStart().Equals(_hereDocValue.Label.AsSpan(), StringComparison.Ordinal) == false)
@@ -1612,12 +1597,12 @@ using Devsense.PHP.Text;
 					break;
 					
 				case 211:
-					// #line 900
+					// #line 899
 					{ yymore(); break; }
 					break;
 					
 				case 212:
-					// #line 882
+					// #line 881
 					{
 					    if(VerifyEndLabel(TokenTextSpan))
 						{
@@ -1629,7 +1614,7 @@ using Devsense.PHP.Text;
 					break;
 					
 				case 213:
-					// #line 456
+					// #line 455
 					{
 						yy_pop_state();
 						yymore(); break;
@@ -1637,17 +1622,17 @@ using Devsense.PHP.Text;
 					break;
 					
 				case 214:
-					// #line 453
+					// #line 452
 					{ yy_push_state(LexicalStates.ST_ONE_LINE_COMMENT); yymore(); break; }
 					break;
 					
 				case 215:
-					// #line 450
+					// #line 449
 					{ return (Tokens.T_WHITESPACE); }
 					break;
 					
 				case 216:
-					// #line 429
+					// #line 428
 					{
 						BEGIN(LexicalStates.ST_HALT_COMPILER2);
 						return (Tokens)GetTokenChar(0);
@@ -1655,17 +1640,17 @@ using Devsense.PHP.Text;
 					break;
 					
 				case 217:
-					// #line 454
+					// #line 453
 					{ yy_push_state(LexicalStates.ST_COMMENT); yymore(); break; }
 					break;
 					
 				case 218:
-					// #line 452
+					// #line 451
 					{ yy_push_state(LexicalStates.ST_DOC_COMMENT); yymore(); ResetDocBlock(); break; }
 					break;
 					
 				case 219:
-					// #line 434
+					// #line 433
 					{
 						BEGIN(LexicalStates.ST_HALT_COMPILER3);
 						return (Tokens)GetTokenChar(0);
@@ -1673,7 +1658,7 @@ using Devsense.PHP.Text;
 					break;
 					
 				case 220:
-					// #line 439
+					// #line 438
 					{
 						BEGIN(LexicalStates.INITIAL);
 						return (Tokens)GetTokenChar(0);
@@ -1681,7 +1666,7 @@ using Devsense.PHP.Text;
 					break;
 					
 				case 221:
-					// #line 947
+					// #line 946
 					{ 
 						_yyless(1); 
 						yy_pop_state(); 
@@ -1690,7 +1675,7 @@ using Devsense.PHP.Text;
 					break;
 					
 				case 222:
-					// #line 936
+					// #line 935
 					{
 						yy_pop_state();
 						BEGIN(LexicalStates.ST_IN_SCRIPTING);
@@ -1699,7 +1684,7 @@ using Devsense.PHP.Text;
 					break;
 					
 				case 223:
-					// #line 925
+					// #line 924
 					{
 						yy_pop_state();
 						return ProcessVariable();
@@ -1707,7 +1692,7 @@ using Devsense.PHP.Text;
 					break;
 					
 				case 224:
-					// #line 908
+					// #line 907
 					{
 						yy_push_state(LexicalStates.ST_LOOKING_FOR_VARNAME);
 						return (Tokens.T_DOLLAR_OPEN_CURLY_BRACES);
@@ -1715,7 +1700,7 @@ using Devsense.PHP.Text;
 					break;
 					
 				case 225:
-					// #line 930
+					// #line 929
 					{
 						yy_push_state(LexicalStates.ST_IN_SCRIPTING);
 						_yyless(1);
@@ -1724,7 +1709,7 @@ using Devsense.PHP.Text;
 					break;
 					
 				case 226:
-					// #line 919
+					// #line 918
 					{
 						_yyless(1);
 						yy_push_state(LexicalStates.ST_VAR_OFFSET);
@@ -1733,7 +1718,7 @@ using Devsense.PHP.Text;
 					break;
 					
 				case 227:
-					// #line 913
+					// #line 912
 					{
 						_yyless(3);
 						yy_push_state(LexicalStates.ST_LOOKING_FOR_PROPERTY);
@@ -1742,7 +1727,7 @@ using Devsense.PHP.Text;
 					break;
 					
 				case 228:
-					// #line 941
+					// #line 940
 					{
 						yy_pop_state();
 						BEGIN(LexicalStates.ST_IN_SCRIPTING);
@@ -2161,10 +2146,6 @@ using Devsense.PHP.Text;
 			return result;
 		}
 		
-		private void AdvanceEndPosition(int from, int to)
-		{
-			token_end_pos.Char += to - from;
-		}
 		
 		protected static bool IsNewLineCharacter(char ch)
 		{
@@ -2240,7 +2221,7 @@ using Devsense.PHP.Text;
 		
 		#region Tables
 		
-		private static AcceptConditions[] acceptCondition = new AcceptConditions[]
+		private static readonly AcceptConditions[] acceptCondition = new AcceptConditions[]
 		{
 			AcceptConditions.NotAccept, // 0
 			AcceptConditions.Accept, // 1
@@ -3035,7 +3016,7 @@ using Devsense.PHP.Text;
 			537, 538, 539, 540, 541, 542, 543, 544
 		};
 		
-		private static int[,] nextState = new int[,]
+		private static readonly int[,] nextState = new int[,]
 		{
 			{ 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 230, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 },
 			{ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },
@@ -3585,7 +3566,7 @@ using Devsense.PHP.Text;
 		};
 		
 		
-		private static int[] yy_state_dtrans = new int[]
+		private static readonly int[] yy_state_dtrans = new int[]
 		{
 			  0,
 			  270,
@@ -3621,10 +3602,6 @@ using Devsense.PHP.Text;
 			MarkTokenChunkStart();
 			token_start = token_chunk_start;
 			expanding_token = false;
-			AdvanceEndPosition((token_end > 0) ? token_end - 1 : 0, token_start);
-			
-			// capture token start position:
-			token_start_pos.Char = token_end_pos.Char;
 			
 			if (acceptCondition[current_state] != AcceptConditions.NotAccept)
 			{
@@ -3670,7 +3647,6 @@ using Devsense.PHP.Text;
 							yyreturn = Accept0(last_accept_state, out accepted);
 							if (accepted)
 							{
-								AdvanceEndPosition(token_start, token_end - 1);
 								return yyreturn;
 							}
 						}
