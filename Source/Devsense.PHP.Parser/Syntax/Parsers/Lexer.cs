@@ -98,7 +98,7 @@ namespace Devsense.PHP.Syntax
         /// <summary>
         /// Lexer constructor that initializes all the necessary members
         /// </summary>
-        /// <param name="reader">Text reader containing the source code.</param>
+        /// <param name="source">Source code.</param>
         /// <param name="encoding">Source file encoding to convert UTF characters.</param>
         /// <param name="errors">Error sink used to report lexical error.</param>
         /// <param name="features">Allow or disable short oppening tags for PHP.</param>
@@ -107,7 +107,7 @@ namespace Devsense.PHP.Syntax
         /// <param name="initialState">Initial state of the lexer, used during custom restart.</param>
         /// <param name="strings">Optionally string table to be used for strings interning. If not specified, temporary instance of <see cref="StringTable"/> will be used.</param>
         public Lexer(
-            System.IO.TextReader reader,
+            ReadOnlyMemory<char> source,
             Encoding encoding,
             IErrorSink<Span> errors = null,
             LanguageFeatures features = LanguageFeatures.Basic,
@@ -124,15 +124,15 @@ namespace Devsense.PHP.Syntax
             _strings = strings ?? (_private_strings = StringTable.GetInstance());
             _processDoubleQuotedString = ProcessDoubleQuotedString;
 
-            Initialize(reader, initialState);
+            Initialize(source, initialState);
         }
 
         /// <summary>
         /// Override of <c>Initialize</c> resetting <see cref="_charOffset"/> so <see cref="TokenPosition"/> is correctly shifted.
         /// </summary>
-        public void Initialize(System.IO.TextReader reader, LexicalStates lexicalState, bool atBol, int positionShift)
+        public void Initialize(ReadOnlyMemory<char> source, LexicalStates lexicalState, bool atBol, int positionShift)
         {
-            Initialize(reader, lexicalState, atBol);
+            Initialize(source, lexicalState, atBol);
             _charOffset = positionShift;
         }
 
@@ -186,12 +186,7 @@ namespace Devsense.PHP.Syntax
 
         #region Token Buffer Interpretation
 
-        public int GetTokenByteLength(Encoding/*!*/ encoding)
-        {
-            return encoding.GetByteCount(buffer, token_start, token_end - token_start);
-        }
-
-        protected char[] Buffer { get { return buffer; } }
+        protected ReadOnlyMemory<char> Source => source_string;
 
         protected int BufferTokenStart { get { return token_start; } }
 
@@ -202,7 +197,7 @@ namespace Devsense.PHP.Syntax
         //[Obsolete("Use TokenTextSpan")]
         //public CharSpan GetTokenSpan() => new CharSpan(buffer, token_start, TokenLength);
 
-        public ReadOnlySpan<char> TokenTextSpan => buffer.AsSpan(token_start, TokenLength);
+        public ReadOnlySpan<char> TokenTextSpan => buffer.Slice(token_start, TokenLength);
 
         public string GetText(ReadOnlySpan<char> text, bool intern)
         {
@@ -214,7 +209,7 @@ namespace Devsense.PHP.Syntax
                 );
         }
 
-        public string GetText(int offset, int length, bool intern) => GetText(buffer.AsSpan(offset, length), intern);
+        public string GetText(int offset, int length, bool intern) => GetText(buffer.Slice(offset, length), intern);
 
         protected char GetTokenChar(int index) => buffer[token_start + index];
 
@@ -364,7 +359,7 @@ namespace Devsense.PHP.Syntax
             double dresult;
 
             // helper enumerator of digits, ignores '_'
-            var digits = new DigitsEnumerator(buffer.AsSpan(token_start + startIndex), @base);
+            var digits = new DigitsEnumerator(buffer.Slice(token_start + startIndex), @base);
 
             // try parse Int32
             // most literals fit 32 bit number
@@ -671,7 +666,7 @@ namespace Devsense.PHP.Syntax
                 }
             }
 
-            return ProcessStringText(buffer.AsSpan(start, end - start), tryprocess, binary);
+            return ProcessStringText(buffer.Slice(start, end - start), tryprocess, binary);
         }
 
         protected object ProcessEscapedStringWithEnding(ReadOnlySpan<char> buffer, char ending)

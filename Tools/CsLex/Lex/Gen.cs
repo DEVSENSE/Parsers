@@ -294,6 +294,18 @@ namespace Lex
                                     case "%column":
                                         this.spec.CountColumns = true;
                                         continue;
+                                    case "%buffer":
+										// %buffer TextReader
+										// %buffer String
+                                        if (Enum.TryParse<BufferType>(this.getName(false), out var bufferType))
+										{
+											this.spec.BufferType = bufferType;
+										}
+										else
+										{
+                                            Error.ParseError(Errors.DIRECT, this.inputFilePath, this.ibuf.line_number);
+                                        }
+										continue;
                                     case "%class":
                                         this.spec.LexerName = this.getName(false);
                                         continue;

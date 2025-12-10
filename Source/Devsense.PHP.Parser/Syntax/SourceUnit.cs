@@ -223,12 +223,9 @@ namespace Devsense.PHP.Syntax
 
         public override void Parse(INodesFactory<LangElement, Span> factory, Errors.IErrorSink<Span> errors, Errors.IErrorRecovery recovery = null)
         {
-            using (var source = new StringReader(this.Code))
+            using (var lexer = new Lexer(this.Code.AsMemory(), this.Encoding, errors, _features, positionShift: _offset, initialState: this.InitialState, docBlockFactory: factory))
             {
-                using (var lexer = new Lexer(source, this.Encoding, errors, _features, positionShift: _offset, initialState: this.InitialState, docBlockFactory: factory))
-                {
-                    this.Ast = (GlobalCode)new Parser().Parse(lexer, factory, _features, errors, recovery);
-                }
+                this.Ast = (GlobalCode)new Parser().Parse(lexer, factory, _features, errors, recovery);
             }
         }
 

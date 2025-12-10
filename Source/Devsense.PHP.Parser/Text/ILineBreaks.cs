@@ -132,7 +132,9 @@ namespace Devsense.PHP.Text
             _textLength = textLength;
         }
 
-        public static LineBreaks/*!*/Create(string text)
+        public static LineBreaks/*!*/Create(string text) => Create(text.AsSpan());
+
+        public static LineBreaks/*!*/Create(ReadOnlySpan<char> text)
         {
             var lineends = ListObjectPool<int>.Allocate();
             CalculateLineEnds(lineends, text);
@@ -145,7 +147,9 @@ namespace Devsense.PHP.Text
             return linebreaks;
         }
 
-        public static LineBreaks/*!*/Create(string text, List<int>/*!*/lineEnds)
+        public static LineBreaks/*!*/Create(string text, List<int>/*!*/lineEnds) => Create(text.AsSpan(), lineEnds);
+
+        public static LineBreaks/*!*/Create(ReadOnlySpan<char> text, List<int>/*!*/lineEnds)
         {
             if (text == null) throw new ArgumentNullException();
             return Create(text.Length, lineEnds);
@@ -177,14 +181,14 @@ namespace Devsense.PHP.Text
         /// <param name="list">Where to put the position of line ends.</param>
         /// <param name="text">Document text.</param>
         /// <returns>List of line ends position.</returns>
-        private static void CalculateLineEnds(List<int> list, string text)
+        private static void CalculateLineEnds(List<int> list, ReadOnlySpan<char> text)
         {
             if (text != null)
             {
                 int offset = 0;
                 while (offset < text.Length)
                 {
-                    int idx = TextUtils.IndexOfLineBreak(text.AsSpan(offset), out var eol_length);
+                    int idx = TextUtils.IndexOfLineBreak(text.Slice(offset), out var eol_length);
                     if (idx >= 0)
                     {
                         offset = offset + idx + eol_length;
@@ -292,9 +296,10 @@ namespace Devsense.PHP.Text
         /// <summary>
         /// Adds line breaks from <paramref name="text"/>[from...from+length].
         /// </summary>
-        public void Expand(char[] text, int from, int length)
+        public void Expand(char[] text, int from, int length) => Expand(text.AsSpan(from, length));
+
+        public void Expand(ReadOnlySpan<char> source)
         {
-            var source = text.AsSpan(from, length);
             var offset = _textLength;
             while (source.IsEmpty == false)
             {
@@ -311,7 +316,7 @@ namespace Devsense.PHP.Text
             }
 
             //
-            _textLength += length;
+            _textLength += source.Length;
         }
 
         public LineBreaks /*!*/ ToImmutable()

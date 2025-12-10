@@ -1,6 +1,7 @@
 using System;
 using System.CodeDom.Compiler;
 using System.Collections.Generic;
+using System.Linq;
 namespace Lex
 {
 	public class Emit
@@ -173,8 +174,31 @@ namespace Lex
 			}
 			this.EmitUserCode(this.spec.ClassCode);
 			this.outstream.WriteLine();
-			this.outstream.WriteLine("private System.IO.TextReader reader;");
-			this.outstream.WriteLine("private char[] buffer = new char[512];");
+
+			string ctor_args;
+            string[] ctor_params;
+
+			switch (this.spec.BufferType)
+			{
+				case BufferType.TextReader:
+					this.outstream.WriteLine("private System.IO.TextReader reader;");
+					this.outstream.WriteLine("private char[] buffer = new char[512];");
+                    this.outstream.WriteLine();
+                    this.outstream.WriteLine("// number of characters read into the buffer:");
+                    this.outstream.WriteLine("private int chars_read;");
+                    ctor_args = "System.IO.TextReader reader";
+					ctor_params = new[] { "reader" };
+                    break;
+				case BufferType.ReadOnlyMemory:
+                    this.outstream.WriteLine("private ReadOnlyMemory<char> source_string;");
+                    this.outstream.WriteLine();
+                    this.outstream.WriteLine("private ReadOnlySpan<char> buffer => source_string.Span;");
+					ctor_args = "ReadOnlyMemory<char> source_string";
+					ctor_params = new[] { "source_string" };
+                    break;
+				default:
+					throw new InvalidOperationException($"Unhandled BufferType '{this.spec.BufferType}'");
+			}
 			this.outstream.WriteLine();
 			this.outstream.WriteLine("// whether the currently parsed token is being expanded (yymore has been called):");
 			this.outstream.WriteLine("private bool expanding_token;");
@@ -190,9 +214,6 @@ namespace Lex
 			this.outstream.WriteLine();
 			this.outstream.WriteLine("// offset of the lookahead character (number of characters parsed):");
 			this.outstream.WriteLine("private int lookahead_index;");
-			this.outstream.WriteLine();
-			this.outstream.WriteLine("// number of characters read into the buffer:");
-			this.outstream.WriteLine("private int chars_read;");
 			if (this.spec.CountColumns || this.spec.CountLines || this.spec.CountChars)
 			{
 				this.outstream.WriteLine();
@@ -214,20 +235,23 @@ namespace Lex
 			this.outstream.WriteLine("public LexicalStates CurrentLexicalState { get { return current_lexical_state; } set { current_lexical_state = value; } } ");
 			this.outstream.WriteLine("private LexicalStates current_lexical_state;");
 			this.outstream.WriteLine();
-			this.outstream.WriteLine("protected {0}(System.IO.TextReader reader)", this.spec.LexerName);
+			this.outstream.WriteLine($"protected {this.spec.LexerName}({ctor_args})", this.spec.LexerName);
 			this.outstream.WriteLine("{");
 			this.outstream.Indent++;
-			this.outstream.WriteLine("Initialize(reader, LexicalStates.{0});", this.spec.InitialState);
+			this.outstream.WriteLine($"Initialize({string.Join(", ", ctor_params)}, LexicalStates.{this.spec.InitialState});");
 			this.EmitUserCode(this.spec.CtorCode);
 			this.outstream.Indent--;
 			this.outstream.WriteLine("}");
 			this.outstream.WriteLine();
-			this.outstream.WriteLine("public void Initialize(System.IO.TextReader reader, LexicalStates lexicalState, bool atBol)");
+			this.outstream.WriteLine($"public void Initialize({ctor_args}, LexicalStates lexicalState, bool atBol)");
 			this.outstream.WriteLine("{");
 			this.outstream.Indent++;
 			this.outstream.WriteLine("this.expanding_token = false;");
 			this.outstream.WriteLine("this.token_start = 0;");
-			this.outstream.WriteLine("this.chars_read = 0;");
+			if (this.spec.BufferType == BufferType.TextReader)
+			{
+				this.outstream.WriteLine("this.chars_read = 0;");
+			}
 			this.outstream.WriteLine("this.lookahead_index = 0;");
 			this.outstream.WriteLine("this.token_chunk_start = 0;");
 			this.outstream.WriteLine("this.token_end = 0;");
@@ -235,17 +259,20 @@ namespace Lex
 			{
 				this.outstream.WriteLine("this.token_end_pos = new Position(0);");
 			}
-            this.outstream.WriteLine("this.reader = reader;");
+			foreach (var field in ctor_params)
+			{
+				this.outstream.WriteLine($"this.{field} = {field};");
+			}
 			this.outstream.WriteLine("this.yy_at_bol = atBol;");
 			this.outstream.WriteLine("this.current_lexical_state = lexicalState;");
 			this.EmitUserCode(this.spec.InitCode);
 			this.outstream.Indent--;
 			this.outstream.WriteLine("}");
 			this.outstream.WriteLine();
-			this.outstream.WriteLine("public void Initialize(System.IO.TextReader reader, LexicalStates lexicalState)");
+			this.outstream.WriteLine($"public void Initialize({ctor_args}, LexicalStates lexicalState)");
 			this.outstream.WriteLine("{");
 			this.outstream.Indent++;
-			this.outstream.WriteLine("Initialize(reader, lexicalState, false);");
+			this.outstream.WriteLine($"Initialize({string.Join(", ", ctor_params)}, lexicalState, false);");
 			this.outstream.Indent--;
 			this.outstream.WriteLine("}");
 			this.outstream.WriteLine();
@@ -306,46 +333,57 @@ namespace Lex
 			this.outstream.Indent--;
 			this.outstream.WriteLine("}");
 			this.outstream.WriteLine();
-			this.outstream.WriteLine("private char Advance()");
+            //
+            // private char Advance()
+            //
+            this.outstream.WriteLine("private char Advance()");
 			this.outstream.WriteLine("{");
 			this.outstream.Indent++;
-			this.outstream.WriteLine("if (lookahead_index >= chars_read)");
-			this.outstream.WriteLine("{");
-			this.outstream.Indent++;
-			this.outstream.WriteLine("if (token_start > 0)");
-			this.outstream.WriteLine("{");
-			this.outstream.Indent++;
-			this.outstream.WriteLine("// shift buffer left:");
-			this.outstream.WriteLine("int length = chars_read - token_start;");
-			this.outstream.WriteLine("System.Buffer.BlockCopy(buffer, token_start << 1, buffer, 0, length << 1);");
-			this.outstream.WriteLine("token_end -= token_start;");
-			this.outstream.WriteLine("token_chunk_start -= token_start;");
-			this.outstream.WriteLine("token_start = 0;");
-			this.outstream.WriteLine("chars_read = lookahead_index = length;");
-			this.outstream.WriteLine();
-			this.outstream.WriteLine("// populate the remaining bytes:");
-			this.outstream.WriteLine("int count = reader.Read(buffer, chars_read, buffer.Length - chars_read);");
-			this.outstream.WriteLine("if (count <= 0) return EOF;");
-			this.outstream.WriteLine();
-			this.outstream.WriteLine("chars_read += count;");
-			this.outstream.Indent--;
-			this.outstream.WriteLine("}");
-			this.outstream.WriteLine();
-			this.outstream.WriteLine("while (lookahead_index >= chars_read)");
-			this.outstream.WriteLine("{");
-			this.outstream.Indent++;
-			this.outstream.WriteLine("if (lookahead_index >= buffer.Length)");
-			this.outstream.Indent++;
-			this.outstream.WriteLine("buffer = ResizeBuffer(buffer);");
-			this.outstream.Indent--;
-			this.outstream.WriteLine();
-			this.outstream.WriteLine("int count = reader.Read(buffer, chars_read, buffer.Length - chars_read);");
-			this.outstream.WriteLine("if (count <= 0) return EOF;");
-			this.outstream.WriteLine("chars_read += count;");
-			this.outstream.Indent--;
-			this.outstream.WriteLine("}");
-			this.outstream.Indent--;
-			this.outstream.WriteLine("}");
+			switch (this.spec.BufferType)
+			{
+				case BufferType.TextReader:
+					this.outstream.WriteLine("if (lookahead_index >= chars_read)");
+					this.outstream.WriteLine("{");
+					this.outstream.Indent++;
+					this.outstream.WriteLine("if (token_start > 0)");
+					this.outstream.WriteLine("{");
+					this.outstream.Indent++;
+					this.outstream.WriteLine("// shift buffer left:");
+					this.outstream.WriteLine("int length = chars_read - token_start;");
+					this.outstream.WriteLine("System.Buffer.BlockCopy(buffer, token_start << 1, buffer, 0, length << 1);");
+					this.outstream.WriteLine("token_end -= token_start;");
+					this.outstream.WriteLine("token_chunk_start -= token_start;");
+					this.outstream.WriteLine("token_start = 0;");
+					this.outstream.WriteLine("chars_read = lookahead_index = length;");
+					this.outstream.WriteLine();
+					this.outstream.WriteLine("// populate the remaining bytes:");
+					this.outstream.WriteLine("int count = reader.Read(buffer, chars_read, buffer.Length - chars_read);");
+					this.outstream.WriteLine("if (count <= 0) return EOF;");
+					this.outstream.WriteLine();
+					this.outstream.WriteLine("chars_read += count;");
+					this.outstream.Indent--;
+					this.outstream.WriteLine("}");
+					this.outstream.WriteLine();
+					this.outstream.WriteLine("while (lookahead_index >= chars_read)");
+					this.outstream.WriteLine("{");
+					this.outstream.Indent++;
+					this.outstream.WriteLine("if (lookahead_index >= buffer.Length)");
+					this.outstream.Indent++;
+					this.outstream.WriteLine("buffer = ResizeBuffer(buffer);");
+					this.outstream.Indent--;
+					this.outstream.WriteLine();
+					this.outstream.WriteLine("int count = reader.Read(buffer, chars_read, buffer.Length - chars_read);");
+					this.outstream.WriteLine("if (count <= 0) return EOF;");
+					this.outstream.WriteLine("chars_read += count;");
+					this.outstream.Indent--;
+					this.outstream.WriteLine("}");
+					this.outstream.Indent--;
+					this.outstream.WriteLine("}");
+					break;
+				case BufferType.ReadOnlyMemory:
+                    this.outstream.WriteLine("if (lookahead_index >= source_string.Length) return EOF;");
+                    break;
+			}
 			this.outstream.WriteLine();
 			if (this.spec.CharMapMethod != null)
 			{
@@ -358,7 +396,11 @@ namespace Lex
 			this.outstream.Indent--;
 			this.outstream.WriteLine("}");
 			this.outstream.WriteLine();
-			this.outstream.WriteLine("private char[] ResizeBuffer(char[] buf)");
+
+            //
+            // private char[] ResizeBuffer(char[] buf)
+            //
+            this.outstream.WriteLine("private char[] ResizeBuffer(char[] buf)");
 			this.outstream.WriteLine("{");
 			this.outstream.Indent++;
 			this.outstream.WriteLine("char[] result = new char[buf.Length << 1];");

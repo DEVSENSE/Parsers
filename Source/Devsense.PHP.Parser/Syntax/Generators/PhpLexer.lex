@@ -28,6 +28,7 @@ using Devsense.PHP.Text;
 %function NextToken
 %ignorecase
 %charmap Map
+%buffer ReadOnlyMemory
 
 %x INITIAL
 %x ST_IN_SCRIPTING

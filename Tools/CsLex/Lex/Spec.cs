@@ -37,7 +37,8 @@ namespace Lex
 		public bool CountChars;
 		public bool CountLines;
 		public bool CountColumns;
-		public bool cup_compatible;
+		public BufferType BufferType = BufferType.TextReader;
+        public bool cup_compatible;
 		public string ClassAttributes = "public";
 		public bool IgnoreCase;
 		public int Version = 2;
@@ -95,5 +96,20 @@ namespace Lex
 			}
 			return null;
 		}
+	}
+
+	/// <summary>
+	/// Specify how to access the source text.
+	/// </summary>
+	public enum BufferType
+	{
+		/// <summary>
+		/// Pass TextReader as input, internal buffer will be needed.
+		/// </summary>
+		TextReader = 0,
+        /// <summary>
+        /// Pass ReadOnlyMemory{char} as input, avoids lazy reader and copying.
+        /// </summary>
+        ReadOnlyMemory = 1,
 	}
 }
