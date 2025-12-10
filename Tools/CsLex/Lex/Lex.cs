@@ -6,8 +6,6 @@ namespace Lex
 	{
 		public const int MAXBUF = 8192;
 		public const int MAXSTR = 128;
-		private static string currentOption;
-		private static string currentValue;
 		private static string inFile;
 		private static string outFile;
 		private static int version;
@@ -15,63 +13,57 @@ namespace Lex
 		{
 			for (int i = 0; i < args.Length; i++)
 			{
-				string text = args[i];
-				if (text[0] == '/')
+				var arg = args[i];
+				if (arg[0] == '/')
 				{
-					int num = text.IndexOf(':');
-					if (num >= 0)
+					int colon = arg.IndexOf(':');
+					if (colon >= 0)
 					{
-						Lex.currentOption = text.Substring(1, num - 1).Trim();
-						Lex.currentValue = text.Substring(num + 1).Trim();
-						string a;
-						if ((a = Lex.currentOption.ToLower()) != null)
+						var currentOption = arg.Substring(1, colon - 1).Trim();
+						var currentValue = arg.Substring(colon + 1).Trim();
+
+						var optionNormalized = currentOption.ToLowerInvariant();
+						if (optionNormalized == "v" || optionNormalized == "version")
 						{
-							if (!(a == "v") && !(a == "version"))
+							if (int.TryParse(currentValue, out int version) && version >= 1 && version <= 2)
 							{
-								if (a == "help")
-								{
-									Lex.DisplayHelp();
-									return false;
-								}
-							}
+								Lex.version = version;
+                            }
 							else
 							{
-								if (Lex.currentValue == "1")
-								{
-									Lex.version = 1;
-									goto IL_13C;
-								}
-								if (Lex.currentValue == "2")
-								{
-									Lex.version = 2;
-									goto IL_13C;
-								}
 								throw new ApplicationException("Invalid version number. Specify either '1' or '2'.");
 							}
-						}
-						throw new ApplicationException("Unknown option.");
+                        }
+						else if (optionNormalized == "help")
+						{
+                            Lex.DisplayHelp();
+                            return false;
+                        }
+						else
+						{
+                            throw new ApplicationException($"Unknown option '{arg}'.");
+                        }
 					}
-					Lex.currentOption = text.Substring(1).Trim();
-					Lex.currentOption.ToLower();
-					throw new ApplicationException("Unknown option.");
-				}
+					else
+					{
+                        throw new ApplicationException($"Option '{arg}' has no value.");
+                    }
+                }
 				else
 				{
 					if (Lex.inFile == null)
 					{
-						Lex.inFile = text;
+						Lex.inFile = arg;
+					}
+					else if (Lex.outFile != null)
+					{
+						throw new ApplicationException($"Invalid option '{arg}'.");
 					}
 					else
 					{
-						if (Lex.outFile != null)
-						{
-							Lex.currentOption = text;
-							throw new ApplicationException("Invalid option.");
-						}
-						Lex.outFile = text;
+						Lex.outFile = arg;
 					}
 				}
-				IL_13C:;
 			}
 			if (Lex.outFile == null)
 			{
@@ -97,10 +89,6 @@ namespace Lex
 			}
 			catch (ApplicationException ex)
 			{
-				if (Lex.currentOption != null)
-				{
-					Console.WriteLine("Option '{0}', value '{1}'.", Lex.currentOption, Lex.currentValue);
-				}
 				Console.WriteLine(ex.Message);
 				Console.WriteLine();
 				Environment.ExitCode = 1;
