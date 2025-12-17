@@ -214,16 +214,26 @@ namespace Devsense.PHP.Syntax.Ast
 
     public sealed class GlobalConstantDecl : ConstantDecl
     {
+        sealed class IsConditionalProperty
+        {
+            private IsConditionalProperty() { }
+
+            public static readonly IsConditionalProperty Singleton = new IsConditionalProperty();
+        }
+
         /// <summary>
         /// Gets value indicating whether this global constant is declared conditionally.
         /// </summary>
-        public bool IsConditional { get; }
+        public bool IsConditional => this.TryGetProperty<IsConditionalProperty>(out _);
 
         public GlobalConstantDecl(Text.Span span, bool isConditional,
             string/*!*/ name, Text.Span namePos, Expression/*!*/ initializer)
             : base(span, name, namePos, initializer)
         {
-            this.IsConditional = isConditional;
+            if (isConditional)
+            {
+                this.SetProperty(IsConditionalProperty.Singleton);
+            }
         }
 
         /// <summary>
