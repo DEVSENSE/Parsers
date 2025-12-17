@@ -217,13 +217,13 @@ namespace Devsense.PHP.Syntax.Ast
         /// <summary>
         /// Gets value indicating whether this global constant is declared conditionally.
         /// </summary>
-        public bool IsConditional { get; private set; }
+        public bool IsConditional { get; }
 
         public GlobalConstantDecl(Text.Span span, bool isConditional,
             string/*!*/ name, Text.Span namePos, Expression/*!*/ initializer)
             : base(span, name, namePos, initializer)
         {
-            this.IsConditional = IsConditional;
+            this.IsConditional = isConditional;
         }
 
         /// <summary>
