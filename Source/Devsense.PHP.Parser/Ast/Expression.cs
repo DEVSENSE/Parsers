@@ -189,15 +189,17 @@ namespace Devsense.PHP.Syntax.Ast
         /// <summary>
         /// Constant name.
         /// </summary>
-        public VariableName Name { get; } // NOTE: Variable actually
-        
-        public Span NameSpan { get; }
+        public VariableName Name => new VariableName(_name); // NOTE: Variable actually
+
+        public Span NameSpan => new Span(_name_offset, _name.Length);
+
+        readonly int _name_offset;
+        readonly string _name;
 
         /// <summary>
         /// Initial value of the constant.
         /// </summary>
-        public Expression/*!*/ Initializer { get { return initializer; } internal set { initializer = value; } }
-        private Expression/*!*/ initializer;
+        public Expression/*!*/ Initializer { get; }
 
         /// <summary>
         /// Constant construtor
@@ -210,9 +212,16 @@ namespace Devsense.PHP.Syntax.Ast
             : base(span)
         {
             Debug.Assert(initializer != null);
-            this.Name = new VariableName(name);
-            this.NameSpan = namePos;
-            this.initializer = initializer;
+            _name = Intern(name ?? throw new ArgumentNullException(nameof(name)));
+            _name_offset = namePos.Start;
+            this.Initializer = initializer;
+        }
+
+        static string Intern(string name)
+        {
+            if (name == "strict_types") return "strict_types";
+
+            return name;
         }
     }
 
