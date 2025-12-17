@@ -125,6 +125,34 @@ namespace Devsense.PHP.Syntax
 
             /// <summary>Invoked when object is being unserialized.</summary>
             public static readonly Name Unserialize = new Name("__unserialize");
+
+            static readonly Dictionary<Name, Name> _set;
+
+            static SpecialMethodNames()
+            {
+                _set = new Dictionary<Name, Name>(16)
+                {
+                    { Construct, Construct },
+                    { Destruct, Destruct },
+                    { Clone, Clone },
+                    { Tostring, Tostring },
+                    { Sleep, Sleep},
+                    { Wakeup, Wakeup},
+                    { Get, Get },
+                    { Set, Set },
+                    { Call, Call },
+                    { Invoke, Invoke },
+                    { CallStatic, CallStatic },
+                    { Unset, Unset },
+                    { Isset, Isset },
+                    { Serialize, Serialize },
+                    { Unserialize, Unserialize },
+                };
+            }
+
+            public static bool IsSpecialName(Name name, out Name singleton) => _set.TryGetValue(name, out singleton);
+
+            public static bool IsSpecialName(Name name) => IsSpecialName(name, out var _);
         };
 
         #endregion
