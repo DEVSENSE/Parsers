@@ -20,6 +20,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using static Devsense.PHP.Syntax.Name;
 
 namespace Devsense.PHP.Syntax.Ast
 {
@@ -420,7 +421,11 @@ namespace Devsense.PHP.Syntax.Ast
         /// <summary>
         /// Name of the method.
         /// </summary>
-        public NameRef Name { get; }
+        public NameRef Name => new NameRef(new Span(_name_pos, _name.Value.Length), _name);
+
+        readonly Name _name;
+
+        readonly int _name_pos;
 
         /// <summary>
         /// Method signature containing all the parameters and parentheses.
@@ -498,8 +503,11 @@ namespace Devsense.PHP.Syntax.Ast
             : base(span, modifiers)
         {
             Debug.Assert(genericParams != null && formalParams != null);
+            Debug.Assert(name.HasValue);
 
-            this.Name = name;
+            _name = Intern(name.Name); // re-use some frequent string objects
+            _name_pos = name.Span.Start;
+
             this.Signature = new Signature(aliasReturn, formalParams, paramsSpan);
             this.Body = body;
             this.ReturnType = returnType;
@@ -513,6 +521,16 @@ namespace Devsense.PHP.Syntax.Ast
             {
                 this.SetProperty(new BaseCtorParamsHolder { BaseCtorParams = baseCtorParams.AsArray(), });
             }
+        }
+
+        static Name Intern(Name name)
+        {
+            if (!string.IsNullOrEmpty(name.Value) && name.Value[0] == '_' && SpecialMethodNames.IsSpecialName(name, out var singleton) && string.Equals(singleton.Value, name.Value))
+            {
+                return singleton;
+            }
+
+            return name;
         }
 
         #endregion
