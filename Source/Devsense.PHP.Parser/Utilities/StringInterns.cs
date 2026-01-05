@@ -88,6 +88,7 @@ namespace Devsense.PHP.Utilities
                         case '\"': if (span[1] == '\"') return "\"\""; break;
                         case '\'': if (span[1] == '\'') return "''"; break;
                         case '[': if (span[1] == ']') return "[]"; break;
+                        case 'i': if (span[1] == 'd') return "id"; break;
                     }
                     break;
 
