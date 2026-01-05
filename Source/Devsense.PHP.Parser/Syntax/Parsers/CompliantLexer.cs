@@ -193,6 +193,7 @@ namespace Devsense.PHP.Syntax
                     case Tokens.T_USE:
                     case Tokens.T_VAR:
                     case Tokens.T_YIELD:
+                    case Tokens.T_ECHO:
                         if (_backup_token == Tokens.T_NS_SEPARATOR || // after "\", it is treated as identifier. See T_NAME_QUALIFIED in Zend. We don't, since it would break backward compatibility with older parsers.
                             _backup_token == Tokens.T_NAMESPACE ||
                             _backup_token == Tokens.T_IMPLEMENTS || // implements trait/X
