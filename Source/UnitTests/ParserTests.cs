@@ -652,6 +652,43 @@ new #[Attribuute] class {};"
         }
 
         [TestMethod]
+        public void CloneTest()
+        {
+            var codes = new[]
+            {
+                @"<?php
+$o = clone $x;
+$o = clone($x);
+$o = clone($x,);
+$o = clone($x,[]);
+$o = clone(...);
+
+$o = \clone($x);
+$o = \clone($x,);
+$o = \clone($x,[]);
+$o = \clone(...);
+"
+            };
+
+            foreach (var code in codes)
+            {
+                var errors = new TestErrorSink();
+                var unit = new CodeSourceUnit(code, "dummy.php", Encoding.UTF8);
+                unit.Parse(new BasicNodesFactory(unit), errors);
+
+                Assert.IsNotNull(unit.Ast);
+                Assert.AreEqual(0, errors.Count);
+
+                var rvals = unit.Ast.Statements
+                    .OfType<ExpressionStmt>()
+                    .Select(s => s.Expression)
+                    .OfType<IAssignmentEx>()
+                    .Select(n => n.RValue)
+                    ;
+            }
+        }
+
+        [TestMethod]
         public void BinaryOpTest()
         {
             var errors = new TestErrorSink();

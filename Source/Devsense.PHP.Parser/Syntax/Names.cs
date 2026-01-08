@@ -59,6 +59,7 @@ namespace Devsense.PHP.Syntax
         public static readonly Name StaticClassName = new Name("static");
         public static readonly Name ParentClassName = new Name("parent");
         public static readonly Name AutoloadName = new Name("__autoload");
+        public static readonly Name CloneName = new Name("clone");
         public static readonly Name ClrCtorName = new Name(".ctor");
         public static readonly Name ClrInvokeName = new Name("Invoke"); // delegate Invoke method
         public static readonly Name AppStaticName = new Name("AppStatic");

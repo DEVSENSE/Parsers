@@ -214,6 +214,9 @@ namespace UnitTests
             public override LangElement Call(Span span, TranslatedQualifiedName name, CallSignature signature, LangElement memberOfOpt)
                  => CountLE(base.Call(span, name, signature, memberOfOpt));
 
+            public override LangElement Clone(Span span, CallSignature signature)
+                => CountLE(base.Clone(span, signature));
+
             public override LangElement Case(Span span, LangElement valueOpt, LangElement block)
             {
                 // TODO - block is ignored and statements are passed to the 

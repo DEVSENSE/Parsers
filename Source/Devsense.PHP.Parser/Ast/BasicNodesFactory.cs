@@ -146,6 +146,22 @@ namespace Devsense.PHP.Syntax.Ast
             Debug.Assert(memberOfOpt == null || memberOfOpt is Expression);
             return DirectFcnCall.Create(span, name, signature, isMemberOf: (Expression)memberOfOpt);
         }
+
+        public virtual LangElement Clone(Span span, CallSignature signature)
+        {
+            if (signature.Span.IsValid || signature.Parameters.Length != 1 || signature.IsCallableConvert)
+            {
+                // clone as a function
+                return DirectFcnCall.CreateClone(span, signature);
+            }
+            else
+            {
+                // clone expr
+                // for backward compatibility
+                return UnaryOperation(span, Operations.Clone, signature.Parameters[0].Expression);
+            }
+        }
+
         public virtual ActualParam ActualParameter(Span span, LangElement expr, ActualParam.Flags flags, VariableNameRef? nameOpt = default)
         {
             Debug.Assert(expr is Expression);

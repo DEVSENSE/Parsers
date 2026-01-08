@@ -927,6 +927,12 @@ namespace Devsense.PHP.Syntax.Ast
         TNode Call(TSpan span, TNode nameExpr, CallSignature signature, TypeRef typeRef);
 
         /// <summary>
+        /// Creates <c>clone</c> operation.
+        /// <paramref name="signature"/> with invalid span denotates `clone` without parentheses.
+        /// </summary>
+        TNode Clone(TSpan span, CallSignature signature);
+
+        /// <summary>
         /// Creates <c>FormalParam</c> for a function or method declaration.
         /// </summary>
         /// <param name="span">Entire element span.</param>
@@ -934,7 +940,7 @@ namespace Devsense.PHP.Syntax.Ast
         /// <param name="flags">Parameter flags.</param>
         /// <param name="nameOpt">Named argument. Optional.</param>
         /// <returns>Function call argument.</returns>
-        ActualParam ActualParameter(Span span, TNode expr, ActualParam.Flags flags, VariableNameRef? nameOpt = default);
+        ActualParam ActualParameter(Span span, TNode expr, ActualParam.Flags flags = ActualParam.Flags.Default, VariableNameRef? nameOpt = default);
 
         /// <summary>
         /// Creates new <c>array</c> expression.

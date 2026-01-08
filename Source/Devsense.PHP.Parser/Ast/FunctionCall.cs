@@ -80,6 +80,25 @@ namespace Devsense.PHP.Syntax.Ast
             }
         }
 
+        sealed class CloneFcnCall : DirectFcnCall
+        {
+            public override Expression IsMemberOf => null;
+
+            public override Name SimpleName => Name.CloneName;
+
+            public override TranslatedQualifiedName FullName => new TranslatedQualifiedName(
+                new QualifiedName(SimpleName),
+                NameSpan
+            );
+
+            public override Span NameSpan => new Span(this.Span.Start, this.SimpleName.Value.Length);
+
+            public CloneFcnCall(Text.Span span, CallSignature signature)
+                : base(span, signature)
+            {
+            }
+        }
+
         sealed class MemberDirectFcnCall : DirectFcnCall
         {
             readonly int _MemberNameStart; // Span.Start
@@ -124,6 +143,8 @@ namespace Devsense.PHP.Syntax.Ast
         public QualifiedName? FallbackQualifiedName => FullName.FallbackName;
 
         public override Text.Span NameSpan => FullName.Span;
+
+        internal static DirectFcnCall CreateClone(Span span, CallSignature signature) => new CloneFcnCall(span, signature);
 
         public static DirectFcnCall Create(Text.Span span, TranslatedQualifiedName name, CallSignature signature) =>
             name.OriginalName.IsSimpleName && name.FallbackName.HasValue == false && name.OriginalName.Equals(name.Name.QualifiedName) && name.OriginalName.IsFullyQualifiedName == false

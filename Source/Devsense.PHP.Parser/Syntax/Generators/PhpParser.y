@@ -314,8 +314,8 @@ using TNode = Devsense.PHP.Syntax.Ast.LangElement;
 %type <ContextAlias> inline_use_declaration
 %type <ContextAliasList> inline_use_declarations
 
-%type <Param> argument
-%type <ParamList> ctor_arguments argument_list non_empty_argument_list
+%type <Param> argument argument_expr argument_no_expr
+%type <ParamList> ctor_arguments argument_list non_empty_argument_list clone_argument_list non_empty_clone_argument_list
 
 %type <FormalParam> parameter lexical_var
 %type <FormalParamList> optional_parameter_list parameter_list non_empty_parameter_list lexical_vars lexical_var_list
@@ -1111,10 +1111,39 @@ non_empty_argument_list:
 			{ $$ = AddToList<ActualParam>($1, $3); }
 ;
 
-argument:
-		expr			{ $$ = _astFactory.ActualParameter(@$, $1, ActualParam.Flags.Default); }
-	|	identifier ':' expr { $$ = _astFactory.ActualParameter(@$, $3, ActualParam.Flags.Default, new VariableNameRef(@1, $1)); }
+/* `clone_argument_list` is necessary to resolve a parser ambiguity (shift-reduce conflict)
+ * of `clone($expr)`, which could either be parsed as a function call with `$expr` as the first
+ * argument or as a use of the `clone` language construct with an expression with useless
+ * parenthesis. Both would be valid and result in the same AST / the same semantics.
+ * `clone_argument_list` is defined in a way that an `expr` in the first position needs to
+ * be followed by a `,` which is not valid syntax for a parenthesized `expr`, ensuring
+ * that calling `clone()` with a single unnamed parameter is handled by the language construct
+ * syntax.
+ */
+clone_argument_list:
+		'(' ')'													{ $$ = ActualParam.EmptyArray; }
+	|	'(' non_empty_clone_argument_list possible_comma ')'	{ $$ = AddTrailingComma($2, $3); }
+	|	'(' argument_expr ',' ')'								{ $$ = AddTrailingComma(NewList<ActualParam>($2), true); }
+;
+
+non_empty_clone_argument_list:
+		argument_expr ',' argument					{ $$ = NewList<ActualParam>($1, $3); }
+	|	argument_no_expr							{ $$ = NewList<ActualParam>( $1 ); }
+	|	non_empty_clone_argument_list ',' argument	{ $$ = AddToList<ActualParam>($1, $3); }
+;
+
+argument_no_expr:
+		identifier ':' expr { $$ = _astFactory.ActualParameter(@$, $3, ActualParam.Flags.Default, new VariableNameRef(@1, $1)); }
 	|	T_ELLIPSIS expr	{ $$ = _astFactory.ActualParameter(@$, $2, ActualParam.Flags.IsUnpack); }
+;
+
+argument_expr:
+		expr			{ $$ = _astFactory.ActualParameter(@$, $1); }
+;
+
+argument:
+		argument_expr		{ $$ = $1; }
+	|	argument_no_expr	{ $$ = $1; }
 ;
 
 global_var_list:
@@ -1432,8 +1461,12 @@ expr:
 			{ $$ = _astFactory.Assignment(@$, $1, $4, Operations.AssignRef); _errors.Error(@$, Warnings.AssignNewByRefDeprecated); }
 	|	variable '=' ampersand new_non_dereferenceable
 			{ $$ = _astFactory.Assignment(@$, $1, $4, Operations.AssignRef); _errors.Error(@$, Warnings.AssignNewByRefDeprecated); }
+	|	T_CLONE clone_argument_list
+			{ $$ = _astFactory.Clone(@$, FinalizeCallSignature(@2, $2)); }
+	|	T_CLONE '(' T_ELLIPSIS ')'
+			{ $$ = _astFactory.Clone(@$, FinalizeCallSignature(CombineSpans(@2, @4), CallSignature.CreateCallableConvert(@3))); }
 	|	T_CLONE expr
-			{ $$ = _astFactory.UnaryOperation(@$, Operations.Clone,   (Expression)$2); }
+			{ $$ = _astFactory.Clone(@$, FinalizeCallSignature(Span.Invalid, new ActualParam[]{ _astFactory.ActualParameter(@2, $2) })); }
 	|	variable T_PLUS_EQUAL expr
 			{ $$ = _astFactory.Assignment(@$, $1, $3, Operations.AssignAdd); }
 	|	variable T_MINUS_EQUAL expr
