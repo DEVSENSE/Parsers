@@ -336,7 +336,7 @@ namespace Devsense.PHP.Syntax.Ast
         /// <param name="span">Entire element span.</param>
         /// <param name="parameters">Expressions to be echoed.</param>
         /// <returns>Echo expression.</returns>
-        TNode Echo(TSpan span, IEnumerable<TNode> parameters);
+        TNode Echo(TSpan span, IReadOnlyList<TNode> parameters);
 
         /// <summary>
         /// Creates <c>unset</c> statement.

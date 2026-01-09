@@ -263,7 +263,7 @@ namespace UnitTests
             public override LangElement Do(Span span, LangElement body, LangElement cond, Span condSpan, Span whileSpan)
                  => CountLE(base.Do(span, body, cond, condSpan, whileSpan));
 
-            public override LangElement Echo(Span span, IEnumerable<LangElement> parameters)
+            public override LangElement Echo(Span span, IReadOnlyList<LangElement> parameters)
                  => CountLE(base.Echo(span, parameters));
 
             public override LangElement Empty(Span span, LangElement code)
@@ -328,9 +328,9 @@ namespace UnitTests
 
             public override LangElement InlineHtml(Span span, string html)
             {
-                // TODO - Inline html internali creates a string literal
+                // TODO - Inline html creates a string literal internally
                 var htm = CountLE(base.InlineHtml(span, html));
-                _createdElements.Add(((EchoStmt)htm).Parameters[0]);
+                _createdElements.Add((LangElement)((EchoStmt)htm).Parameters[0]);
                 return htm;
             }
 

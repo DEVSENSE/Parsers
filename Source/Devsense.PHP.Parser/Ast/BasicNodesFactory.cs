@@ -238,9 +238,12 @@ namespace Devsense.PHP.Syntax.Ast
             return new WhileStmt(span, WhileStmt.Type.Do, (Expression)cond, parenthesesSpan, whileSpan, (Statement)body);
         }
 
-        public virtual LangElement Echo(Span span, IEnumerable<LangElement> parameters)
+        public virtual LangElement Echo(Span span, IReadOnlyList<LangElement> parameters)
         {
-            return new EchoStmt(span, parameters.CastToArray<Expression>());
+            return parameters.Count == 1
+                ? EchoStmt.CreateEcho(span, (IExpression)parameters[0])
+                : EchoStmt.CreateEcho(span, parameters.CastToArray<IExpression>())
+                ;
         }
 
         public virtual LangElement Unset(Span span, IEnumerable<LangElement> variables)
@@ -477,7 +480,7 @@ namespace Devsense.PHP.Syntax.Ast
 
         public virtual LangElement InlineHtml(Span span, string html)
         {
-            return new EchoStmt(span, html);
+            return EchoStmt.CreateHtml(span, html);
         }
 
         public virtual LangElement InstanceOf(Span span, LangElement expression, TypeRef typeRef)

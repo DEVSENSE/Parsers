@@ -393,7 +393,10 @@ namespace Devsense.PHP.Syntax
         /// <param name="x"></param>
         virtual public void VisitEchoStmt(EchoStmt x)
         {
-            VisitList(x.Parameters);
+            foreach (var expr in x.Parameters) // no-alloc enumeration
+            {
+                VisitElement(expr);
+            }
         }
 
         /// <summary>
