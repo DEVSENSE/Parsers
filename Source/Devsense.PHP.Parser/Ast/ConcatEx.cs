@@ -13,6 +13,7 @@
 // See the Apache Version 2.0 License for specific language governing
 // permissions and limitations under the License.
 
+using Devsense.PHP.Text;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -32,6 +33,12 @@ namespace Devsense.PHP.Syntax.Ast
     /// </summary>
     public sealed class ConcatEx : Expression, IConcatEx
     {
+        public override Span Span
+        {
+            get => Span.FromBounds(Expressions[0].Span.Start, Expressions.Last().Span.End);
+            protected set { }
+        }
+
         /// <summary>
         /// Operation used to concatenate the expressions.
         /// </summary>
@@ -54,6 +61,7 @@ namespace Devsense.PHP.Syntax.Ast
             : base(span)
         {
             Debug.Assert(expressions != null);
+            Debug.Assert(expressions.Count > 0);
             this.Expressions = expressions.AsArray();
         }
 

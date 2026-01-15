@@ -27,6 +27,8 @@ namespace Devsense.PHP.Syntax.Ast
 	/// </summary>
 	public abstract class ItemUse : CompoundVarUse
     {
+        public override Span Span { get; protected set; }
+
         class SimpleItemUse : ItemUse
         {
             public SimpleItemUse(Span p, Expression array, Expression index) : base(p, array, index)
@@ -119,7 +121,7 @@ namespace Devsense.PHP.Syntax.Ast
     /// <summary>
     /// String literal dereferencing.
     /// </summary>
-    public sealed class StringLiteralDereferenceEx : Expression
+    public sealed class StringLiteralDereferenceEx : ExpressionEntireSpan
     {
         public override Operations Operation
         {

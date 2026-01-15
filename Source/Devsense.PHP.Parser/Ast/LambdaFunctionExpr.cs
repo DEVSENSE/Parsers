@@ -17,6 +17,7 @@ using System;
 using System.Diagnostics;
 using System.Collections.Generic;
 using Devsense.PHP.Ast.DocBlock;
+using Devsense.PHP.Text;
 
 namespace Devsense.PHP.Syntax.Ast
 {
@@ -36,6 +37,20 @@ namespace Devsense.PHP.Syntax.Ast
     /// </summary>
     public class LambdaFunctionExpr : Expression, ILambdaExpression
     {
+        int _span_start = -1;
+
+        readonly int _heading_end;
+
+        public override Span Span
+        {
+            // - fn () => ...
+            // - function () {}
+            get => _span_start < 0 ? Span.Invalid : Span.FromBounds(_span_start, body.Span.End);
+            protected set => _span_start = value.IsValid ? value.Start : -1;
+        }
+
+        internal void ChangeSpan(Span value) => this.Span = value;
+
         /// <summary>
         /// Expression operation.
         /// </summary>
@@ -64,6 +79,10 @@ namespace Devsense.PHP.Syntax.Ast
         /// Lambda body.
         /// </summary>
         public BlockStmt/*!*/Body { get { return body as BlockStmt; } }
+
+        /// <summary>
+        /// Arrow function expression.
+        /// </summary>
         public Expression/*!*/Expression { get { return body as Expression; } }
 
         ILangElement IFunctionDeclaration.Body { get { return body; } }
@@ -73,9 +92,8 @@ namespace Devsense.PHP.Syntax.Ast
         /// <summary>
         /// Span of the lambda header.
         /// </summary>
-        public Text.Span HeadingSpan { get { return Text.Span.FromBounds(Span.Start, _headingEnd); } }
-        readonly int _headingEnd;
-
+        public Text.Span HeadingSpan { get { return _span_start < 0 ? Span.Invalid : Span.FromBounds(_span_start, _heading_end); } }
+        
         /// <summary>
         /// Span of the parameters and the parentheses.
         /// </summary>
@@ -118,7 +136,7 @@ namespace Devsense.PHP.Syntax.Ast
             this.body = body;
             this.ReturnType = returnType;
 
-            _headingEnd = headingSpan.End;
+            _heading_end = headingSpan.End;
         }
 
         [Obsolete]

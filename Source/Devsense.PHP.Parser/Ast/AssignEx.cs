@@ -13,6 +13,7 @@
 // See the Apache Version 2.0 License for specific language governing
 // permissions and limitations under the License.
 
+using Devsense.PHP.Text;
 using System;
 using System.Diagnostics;
 
@@ -39,6 +40,12 @@ namespace Devsense.PHP.Syntax.Ast
     /// </summary>
     public abstract class AssignEx : Expression, IAssignmentEx
     {
+        public override Span Span
+        {
+            get => Span.FromBounds(this.LValue.Span.Start, this.RValue.Span.End);
+            protected set { }
+        }
+
         internal override bool AllowsPassByReference => true;
 
         /// <summary>Target of assignment</summary>

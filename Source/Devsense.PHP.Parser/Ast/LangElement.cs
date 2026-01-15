@@ -239,7 +239,10 @@ namespace Devsense.PHP.Syntax.Ast
         /// <summary>
         /// Position of the element in source file.
         /// </summary>
-        public Span Span { get; set; }
+        /// <remarks>
+        /// Set by the element's contructor.
+        /// </remarks>
+        public abstract Span Span { get; protected set; }
 
         /// <summary>
         /// Initialize the LangElement.
@@ -255,6 +258,15 @@ namespace Devsense.PHP.Syntax.Ast
         /// </summary>
         /// <param name="visitor">Visitor.</param>
         public abstract void VisitMe(TreeVisitor/*!*/visitor);
+    }
+
+    public abstract class LangElementEntireSpan : LangElement
+    {
+        public override sealed Span Span { get; protected set; }
+
+        protected LangElementEntireSpan(Span span) : base(span)
+        {
+        }
     }
 
     #region Scope

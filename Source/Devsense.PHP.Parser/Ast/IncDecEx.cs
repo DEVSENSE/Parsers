@@ -13,6 +13,7 @@
 // See the Apache Version 2.0 License for specific language governing
 // permissions and limitations under the License.
 
+using Devsense.PHP.Text;
 using System;
 
 namespace Devsense.PHP.Syntax.Ast
@@ -20,7 +21,7 @@ namespace Devsense.PHP.Syntax.Ast
 	/// <summary>
 	/// Post/pre increment/decrement expression.
 	/// </summary>
-	public sealed class IncDecEx : Expression
+	public sealed class IncDecEx : ExpressionEntireSpan
 	{
         public override Operations Operation { get { return Operations.IncDec; } }
 

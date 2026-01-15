@@ -26,6 +26,8 @@ namespace Devsense.PHP.Syntax.Ast
     /// </summary>
     public abstract class StaticFieldUse : VariableUse
     {
+        public override Span Span { get; protected set; }
+
         public override sealed Expression IsMemberOf => null;
 
         /// <summary>Position of the field name.</summary>

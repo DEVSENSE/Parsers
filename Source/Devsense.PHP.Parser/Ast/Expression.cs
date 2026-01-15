@@ -180,11 +180,20 @@ namespace Devsense.PHP.Syntax.Ast
         internal virtual bool AllowsPassByReference { get { return false; } }
     }
 
+    public abstract class ExpressionEntireSpan : Expression
+    {
+        public override sealed Span Span { get; protected set; }
+
+        protected ExpressionEntireSpan(Span span) : base(span)
+        {
+        }
+    }
+
     #endregion
 
     #region ConstantDecl
 
-    public abstract class ConstantDecl : LangElement
+    public abstract class ConstantDecl : LangElementEntireSpan
     {
         /// <summary>
         /// Constant name.
@@ -278,7 +287,7 @@ namespace Devsense.PHP.Syntax.Ast
     /// <summary>
     /// Expression representing an enclosed expression in parenthesis, braces or quotes.
     /// </summary>
-    public abstract class EncapsedExpression : Expression
+    public abstract class EncapsedExpression : ExpressionEntireSpan
     {
         #region ParenthesisExpression
 

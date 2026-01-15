@@ -13,6 +13,7 @@
 // See the Apache Version 2.0 License for specific language governing
 // permissions and limitations under the License.
 
+using Devsense.PHP.Text;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -24,8 +25,8 @@ namespace Devsense.PHP.Syntax.Ast
     /// <summary>
 	/// Inclusion expression (include, require, synthetic auto-inclusion nodes).
 	/// </summary>
-	public sealed class IncludingEx : Expression
-	{
+	public sealed class IncludingEx : ExpressionEntireSpan
+    {
         public override Operations Operation { get { return Operations.Inclusion; } }
 
 		/// <summary>
@@ -74,7 +75,7 @@ namespace Devsense.PHP.Syntax.Ast
 	/// <summary>
 	/// Represents <c>isset</c> construct.
 	/// </summary>
-	public sealed class IssetEx : Expression
+	public sealed class IssetEx : ExpressionEntireSpan
 	{
         public override Operations Operation { get { return Operations.Isset; } }
 
@@ -111,7 +112,7 @@ namespace Devsense.PHP.Syntax.Ast
 	/// <summary>
 	/// Represents <c>empty</c> construct.
 	/// </summary>
-	public sealed class EmptyEx : Expression
+	public sealed class EmptyEx : ExpressionEntireSpan
 	{
         public override Operations Operation { get { return Operations.Empty; } }
 
@@ -147,7 +148,7 @@ namespace Devsense.PHP.Syntax.Ast
 	/// <summary>
 	/// Represents <c>eval</c> construct.
 	/// </summary>
-	public sealed class EvalEx : Expression
+	public sealed class EvalEx : ExpressionEntireSpan
 	{
         public override Operations Operation { get { return Operations.Eval; } }
 
@@ -187,7 +188,7 @@ namespace Devsense.PHP.Syntax.Ast
     /// <summary>
     /// Meta language element used for assert() function call analysis.
     /// </summary>
-    public sealed class AssertEx : Expression
+    public sealed class AssertEx : ExpressionEntireSpan
     {
         public override Operations Operation { get { return Operations.Eval; } }
 
@@ -216,7 +217,7 @@ namespace Devsense.PHP.Syntax.Ast
 	/// <summary>
 	/// Represents <c>exit</c> expression.
 	/// </summary>
-	public sealed class ExitEx : Expression
+	public sealed class ExitEx : ExpressionEntireSpan
 	{
         public override Operations Operation { get { return Operations.Exit; } }
 

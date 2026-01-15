@@ -13,48 +13,43 @@
 // See the Apache Version 2.0 License for specific language governing
 // permissions and limitations under the License.
 
+using Devsense.PHP.Text;
 using System;
 using System.Diagnostics;
 
 namespace Devsense.PHP.Syntax.Ast
 {
-	/// <summary>
-	/// Unary expression.
-	/// </summary>
+    /// <summary>
+    /// Unary expression.
+    /// </summary>
     public sealed class UnaryEx : Expression
     {
         #region Fields & Properties
 
-        public override Operations Operation { get { return operation; } }
-		private Operations operation;
+        public override Span Span
+        {
+            get => _span_start < 0 ? Span.Invalid : Span.FromBounds(_span_start, this.Expr.Span.End);
+            protected set => _span_start = value.IsValid ? value.Start : -1;
+        }
+        int _span_start;
 
-		/// <summary>Expression the operator is applied on</summary>
-        public Expression /*!*/ Expr { get { return expr; } internal set { expr = value; } }
-        private Expression/*!*/ expr;
+        public override Operations Operation { get; }
 
-        /// <summary>
-        /// Gets position of <see cref="Operation"/>.
-        /// </summary>
-        public int OperationPosition { get { return -1; } }
+        /// <summary>Expression the operator is applied on</summary>
+        public Expression /*!*/ Expr { get; }
 
         #endregion
 
         #region Construction
 
         public UnaryEx(Text.Span span, Operations operation, Expression/*!*/ expr)
-			: base(span)
-		{
-			Debug.Assert(expr != null);
-			this.operation = operation;
-			this.expr = expr;
-		}
+            : base(span)
+        {
+            this.Operation = operation;
+            this.Expr = expr ?? throw new ArgumentNullException(nameof(expr));
+        }
 
-		public UnaryEx(Operations operation, Expression/*!*/ expr)
-			: this(Text.Span.Invalid, operation, expr)
-		{
-		}
-
-		#endregion
+        #endregion
 
         /// <summary>
         /// Call the right Visit* method on the given Visitor object.
@@ -64,5 +59,5 @@ namespace Devsense.PHP.Syntax.Ast
         {
             visitor.VisitUnaryEx(this);
         }
-	}
+    }
 }

@@ -24,6 +24,12 @@ namespace Devsense.PHP.Syntax.Ast
 
     public abstract class FunctionCall : VarLikeConstructUse
     {
+        public override Span Span
+        {
+            get => Span.FromBounds(IsMemberOf != null ? IsMemberOf.Span.Start : this.NameSpan.Start, this.CallSignature.Span.End);
+            protected set { }
+        }
+
         /// <summary>Function call arguments.</summary>
         public CallSignature CallSignature { get; set; }
 
@@ -185,6 +191,7 @@ namespace Devsense.PHP.Syntax.Ast
         public override Operations Operation { get { return Operations.IndirectCall; } }
 
         public Expression/*!*/ NameExpr { get; }
+
         public override Text.Span NameSpan => NameExpr.Span;
 
         public override Expression IsMemberOf { get; }

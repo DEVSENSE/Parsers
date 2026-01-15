@@ -13,6 +13,7 @@
 // See the Apache Version 2.0 License for specific language governing
 // permissions and limitations under the License.
 
+using Devsense.PHP.Text;
 using System;
 using System.Diagnostics;
 
@@ -23,17 +24,22 @@ namespace Devsense.PHP.Syntax.Ast
     /// </summary>
     public sealed class ConditionalEx : Expression
     {
+        public override Span Span
+        {
+            get => Span.FromBounds(CondExpr.Span.Start, FalseExpr.Span.End);
+            protected set { }
+        }
+
         public override Operations Operation { get { return Operations.Conditional; } }
 
-        private Expression/*!*/ condExpr;
-        private Expression trueExpr;
-        private Expression/*!*/ falseExpr;
         /// <summary>Condition</summary>
-        public Expression/*!*/ CondExpr { get { return condExpr; } }
+        public Expression/*!*/ CondExpr { get; }
+
         /// <summary>Expression evaluated when <see cref="CondExpr"/> is true. Can be <c>null</c> in case of ternary shortcut (?:).</summary>
-        public Expression TrueExpr { get { return trueExpr; } set { trueExpr = value; } }
+        public Expression TrueExpr { get; }
+
         /// <summary><summary>Expression evaluated when <see cref="CondExpr"/> is false</summary></summary>
-        public Expression/*!*/ FalseExpr { get { return falseExpr; } set { falseExpr = value; } }
+        public Expression/*!*/ FalseExpr { get; }
 
         public ConditionalEx(Text.Span span, Expression/*!*/ condExpr, Expression trueExpr, Expression/*!*/ falseExpr)
             : base(span)
@@ -42,9 +48,9 @@ namespace Devsense.PHP.Syntax.Ast
             // Debug.Assert(trueExpr != null); // allowed to enable ternary shortcut
             Debug.Assert(falseExpr != null);
 
-            this.condExpr = condExpr;
-            this.trueExpr = trueExpr;
-            this.falseExpr = falseExpr;
+            this.CondExpr = condExpr;
+            this.TrueExpr = trueExpr;
+            this.FalseExpr = falseExpr;
         }
 
         public ConditionalEx(Expression/*!*/ condExpr, Expression/*!*/ trueExpr, Expression/*!*/ falseExpr)

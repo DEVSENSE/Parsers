@@ -13,6 +13,7 @@
 // See the Apache Version 2.0 License for specific language governing
 // permissions and limitations under the License.
 
+using Devsense.PHP.Text;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -69,7 +70,7 @@ namespace Devsense.PHP.Syntax.Ast
     /// <summary>
     /// Represents a catch-block.
     /// </summary>
-    public sealed class CatchItem : LangElement
+    public sealed class CatchItem : LangElementEntireSpan
     {
         /// <summary>
         /// A block containing the list of statements contained in the catch-block.
@@ -112,7 +113,7 @@ namespace Devsense.PHP.Syntax.Ast
     /// <summary>
     /// Represents a finally-block.
     /// </summary>
-    public sealed class FinallyItem : LangElement
+    public sealed class FinallyItem : LangElementEntireSpan
     {
         /// <summary>
         /// Statements in the finally block

@@ -1,5 +1,6 @@
 ﻿//#nullable enable
 
+using Devsense.PHP.Text;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -12,6 +13,14 @@ namespace Devsense.PHP.Syntax.Ast
     /// </summary>
     public sealed class ThrowEx : Expression
     {
+        int _span_start = -1;
+
+        public override Span Span
+        {
+            get => _span_start < 0 ? Span.Invalid : Span.FromBounds(_span_start, Expression.Span.End);
+            protected set => _span_start = value.IsValid ? value.Start : -1;
+        }
+
         /// <summary>
         /// An expression being thrown.
         /// </summary>

@@ -935,14 +935,14 @@ namespace Devsense.PHP.Syntax
             VisitElement(x.ClassNameRef);
         }
 
-        /// <summary>
-        /// Visit typeof ClassNameRef expression.
-        /// </summary>
-        /// <param name="x"></param>
-        virtual public void VisitTypeOfEx(TypeOfEx x)
-        {
-            VisitElement(x.ClassNameRef);
-        }
+        ///// <summary>
+        ///// Visit typeof ClassNameRef expression.
+        ///// </summary>
+        ///// <param name="x"></param>
+        //virtual public void VisitTypeOfEx(TypeOfEx x)
+        //{
+        //    VisitElement(x.ClassNameRef);
+        //}
 
         /// <summary>
         /// Visit expressions in PHP concat.

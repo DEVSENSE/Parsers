@@ -37,6 +37,17 @@ namespace Devsense.PHP.Syntax.Ast
     /// </summary>
     public class AttributeElement : LangElement, IAttributeElement
     {
+        /// <summary>
+        /// Span of the entire 
+        /// </summary>
+        public override Span Span
+        {
+            get => this.CallSignature.Span.IsValid
+                ? Span.FromBounds(this.ClassRef.Span.Start, this.CallSignature.Span.End) // i.e. ClassRef(CallSignature)
+                : this.ClassRef.Span;   // i.e. ClassRef
+            protected set { /*ignored*/ }
+        }
+
         public AttributeElement(Span span, TypeRef classref, CallSignature callsignature)
             : base(span)
         {
@@ -66,7 +77,7 @@ namespace Devsense.PHP.Syntax.Ast
     /// <summary>
     /// Attribute group.
     /// </summary>
-    public class AttributeGroup : LangElement, IAttributeGroup
+    public class AttributeGroup : LangElementEntireSpan, IAttributeGroup
     {
         public AttributeGroup(Span span, IList<IAttributeElement> attributes)
             : base(span)

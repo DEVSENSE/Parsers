@@ -13,7 +13,9 @@
 // See the Apache Version 2.0 License for specific language governing
 // permissions and limitations under the License.
 
+using Devsense.PHP.Text;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 
 namespace Devsense.PHP.Syntax.Ast
@@ -25,6 +27,8 @@ namespace Devsense.PHP.Syntax.Ast
     /// </summary>
     public abstract class ConstantUse : VarLikeConstructUse
     {
+        public override Span Span { get; protected set; }
+
         public override Expression IsMemberOf => null;
 
         public ConstantUse(Text.Span span)
@@ -226,6 +230,14 @@ namespace Devsense.PHP.Syntax.Ast
     /// </summary>
     public sealed class PseudoConstUse : Expression
     {
+        int _span_start = -1;
+
+        public override Span Span
+        {
+            get => _span_start < 0 ? Span.Invalid : new Span(_span_start, TypeToDefaultString(this.Type).Length);
+            protected set => _span_start = value.IsValid ? value.Start : -1;
+        }
+
         public override Operations Operation { get { return Operations.PseudoConstUse; } }
 
         public enum Types { Line, File, Class, Trait, Function, Method, Property, Namespace, Dir }
@@ -233,9 +245,37 @@ namespace Devsense.PHP.Syntax.Ast
         /// <summary>Type of pseudoconstant</summary>
         public Types Type { get; }
 
+        /// <summary>
+        /// Pseudo-constant name corresponding to the <see cref="Type"/>.
+        /// </summary>
+        public Name TypeName => new Name(TypeToDefaultString(this.Type));
+
+        /// <summary>
+        /// Gets pseudo-constant corresponding to given type <paramref name="t"/>.
+        /// </summary>
+        /// <exception cref="ArgumentOutOfRangeException"></exception>
+        public static string TypeToDefaultString(Types t)
+        {
+            switch (t)
+            {
+                case Types.Line: return "__LINE__";
+                case Types.File: return "__FILE__";
+                case Types.Class: return "__CLASS__";
+                case Types.Trait: return "__TRAIT__";
+                case Types.Function: return "__FUNCTION__";
+                case Types.Method: return "__METHOD__";
+                case Types.Property: return "__PROPERTY__";
+                case Types.Namespace: return "__NAMESPACE__";
+                case Types.Dir: return "__DIR__";
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(t));
+            }
+        }
+
         public PseudoConstUse(Text.Span span, Types type)
             : base(span)
         {
+            Debug.Assert(TypeToDefaultString(type) != null);
             this.Type = type;
         }
 

@@ -45,7 +45,7 @@ namespace Devsense.PHP.Syntax.Ast
     /// <summary>
     /// Match expression.
     /// </summary>
-    public sealed class MatchEx : Expression, IMatchEx
+    public sealed class MatchEx : ExpressionEntireSpan, IMatchEx
     {
         public MatchEx(Span span, Expression value, IList<MatchArm> arms) : base(span)
         {
@@ -75,7 +75,7 @@ namespace Devsense.PHP.Syntax.Ast
     /// <summary>
     /// Match expression branch (arm).
     /// </summary>
-    public sealed class MatchArm : LangElement, IMatchArm
+    public sealed class MatchArm : LangElementEntireSpan, IMatchArm
     {
         public MatchArm(Span span, IExpression[] condition, Expression expression) : base(span)
         {

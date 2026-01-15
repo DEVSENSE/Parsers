@@ -13,39 +13,44 @@
 // See the Apache Version 2.0 License for specific language governing
 // permissions and limitations under the License.
 
+using Devsense.PHP.Text;
 using System;
 using System.Diagnostics;
 
 namespace Devsense.PHP.Syntax.Ast
 {
-	/// <summary>
-	/// Indirect variable use - a variable or a field access by run-time evaluated name.
-	/// </summary>
-	public sealed class IndirectVarUse : SimpleVarUse
-	{
+    /// <summary>
+    /// Indirect variable use - a variable or a field access by run-time evaluated name.
+    /// </summary>
+    public sealed class IndirectVarUse : SimpleVarUse
+    {
+        public override Span Span { get; protected set; } // $$varname, ${varname}, ...
+
         public override Operations Operation { get { return Operations.IndirectVarUse; } }
 
-		public Expression VarNameEx => this.varNameEx;
-		internal Expression varNameEx;
+        public Expression VarNameEx => this.varNameEx;
+        internal Expression varNameEx;
 
-		public override Expression IsMemberOf { get; }
+        public Span NameSpan => this.varNameEx.Span;
+
+        public override Expression IsMemberOf { get; }
 
         public IndirectVarUse(Text.Span span, int levelOfIndirection, Expression varNameEx, Expression isMemberOf = null)
             : base(span)
-		{
-			Debug.Assert(levelOfIndirection > 0 && varNameEx != null);
+        {
+            Debug.Assert(levelOfIndirection > 0 && varNameEx != null);
 
-			if (levelOfIndirection == 1)
-			{
-				this.varNameEx = varNameEx;
-			}
-			else
-			{
+            if (levelOfIndirection == 1)
+            {
+                this.varNameEx = varNameEx;
+            }
+            else
+            {
                 Text.Span varspan = new Text.Span(span.Start + 1, span.Length - 1);
                 this.varNameEx = new IndirectVarUse(varspan, --levelOfIndirection, varNameEx);
-			}
+            }
 
-			this.IsMemberOf = isMemberOf;
+            this.IsMemberOf = isMemberOf;
         }
 
         /// <summary>
@@ -57,5 +62,5 @@ namespace Devsense.PHP.Syntax.Ast
             visitor.VisitIndirectVarUse(this);
         }
 
-	}
+    }
 }

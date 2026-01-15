@@ -13,6 +13,7 @@
 // See the Apache Version 2.0 License for specific language governing
 // permissions and limitations under the License.
 
+using Devsense.PHP.Text;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -60,6 +61,8 @@ namespace Devsense.PHP.Syntax.Ast
         readonly ArrayItem[]/*!*/_items;
 
         readonly Flags _flags;
+
+        public override Span Span { get; protected set; }
 
         public override Operations Operation => ((_flags & Flags.Array) != 0) ? Operations.Array : Operations.List;
 

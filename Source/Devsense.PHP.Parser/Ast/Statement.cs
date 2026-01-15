@@ -34,9 +34,9 @@ namespace Devsense.PHP.Syntax.Ast
     /// <summary>
     /// Abstract base class representing all statements elements of PHP source file.
     /// </summary>
-    public abstract class Statement : LangElement, IStatement
+    public abstract class Statement : LangElementEntireSpan, IStatement
     {
-        protected Statement(Text.Span span)
+        protected Statement(Span span)
             : base(span)
         {
         }
@@ -97,7 +97,7 @@ namespace Devsense.PHP.Syntax.Ast
         public Statement[]/*!*/ Statements { get { return _statements; } }
         private readonly Statement[]/*!*/_statements;
 
-        public BlockStmt(Text.Span span, IList<Statement>/*!*/body)
+        public BlockStmt(Span span, IList<Statement>/*!*/body)
             : base(span)
         {
             Debug.Assert(body != null);
@@ -109,7 +109,7 @@ namespace Devsense.PHP.Syntax.Ast
         /// Used for the colon blocks in the alternate notation if/else.
         /// </summary>
         /// <param name="newSpan">New span, which must contain the old span.</param>
-        internal void ExtendSpan(Text.Span newSpan)
+        internal void ExtendSpan(Span newSpan)
         {
             Debug.Assert(newSpan.Contains(Span));
             Span = newSpan;
@@ -195,7 +195,7 @@ namespace Devsense.PHP.Syntax.Ast
 
         private Expression/*!*/ expression;
 
-        public ExpressionStmt(Text.Span span, Expression/*!*/ expression)
+        public ExpressionStmt(Span span, Expression/*!*/ expression)
             : base(span)
         {
             Debug.Assert(expression != null);
@@ -226,7 +226,7 @@ namespace Devsense.PHP.Syntax.Ast
             return true;
         }
 
-        public EmptyStmt(Text.Span p) : base(p) { }
+        public EmptyStmt(Span p) : base(p) { }
 
         /// <summary>
         /// Call the right Visit* method on the given Visitor object.
@@ -281,7 +281,7 @@ namespace Devsense.PHP.Syntax.Ast
         public IReadOnlyList<IExpression> /*!*/VarList { get { return varList; } }
         private readonly IReadOnlyList<IExpression>/*!*/ varList;
 
-        public UnsetStmt(Text.Span p, IReadOnlyList<IExpression>/*!*/ varList)
+        public UnsetStmt(Span p, IReadOnlyList<IExpression>/*!*/ varList)
             : base(p)
         {
             this.varList = varList ?? throw new ArgumentNullException(nameof(varList)); ;
@@ -309,7 +309,7 @@ namespace Devsense.PHP.Syntax.Ast
         public IList<SimpleVarUse>/*!*/ VarList { get { return varList; } }
         private IList<SimpleVarUse>/*!*/ varList;
 
-        public GlobalStmt(Text.Span p, IList<SimpleVarUse>/*!*/ varList)
+        public GlobalStmt(Span p, IList<SimpleVarUse>/*!*/ varList)
             : base(p)
         {
             Debug.Assert(varList != null);
@@ -339,7 +339,7 @@ namespace Devsense.PHP.Syntax.Ast
         public IList<StaticVarDecl>/*!*/ StVarList { get { return stVarList; } }
         private IList<StaticVarDecl>/*!*/ stVarList;
 
-        public StaticStmt(Text.Span p, IList<StaticVarDecl>/*!*/ stVarList)
+        public StaticStmt(Span p, IList<StaticVarDecl>/*!*/ stVarList)
             : base(p)
         {
             Debug.Assert(stVarList != null);
@@ -372,20 +372,31 @@ namespace Devsense.PHP.Syntax.Ast
     /// </remarks>
     public class StaticVarDecl : LangElement
     {
-        /// <summary>Static variable being declared</summary>
-        public VariableName/*!*/ Variable { get { return variable; } }
-        private VariableName/*!*/ variable;
+        int _span_start = -1;
+
+        public override Span Span
+        {
+            get =>
+                _span_start < 0 ? Span.Invalid :
+                Initializer == null ? NameSpan :
+                Span.FromBounds(_span_start, Initializer.Span.End)
+                ;
+
+            protected set => _span_start = value.Start;
+        }
 
         /// <summary>
         /// Span of the static variable name.
         /// </summary>
-        public Text.Span NameSpan => new Text.Span(Span.Start, variable.Value.Length + 1);
+        public Span NameSpan => new Span(_span_start, this.Variable.Value.Length + 1);
+
+        /// <summary>Static variable being declared</summary>
+        public VariableName/*!*/ Variable { get; }
 
         /// <summary>
         /// Expression used to initialize static variable
         /// </summary>
-        public Expression Initializer { get { return initializer; } internal set { initializer = value; } }
-        private Expression initializer;
+        public Expression Initializer { get; }
 
         /// <summary>
         /// Create new declaration.
@@ -393,23 +404,20 @@ namespace Devsense.PHP.Syntax.Ast
         /// <param name="span">Entire span.</param>
         /// <param name="variableName">Variable name.</param>
         /// <param name="initializer">Initial value, optional.</param>
-        public StaticVarDecl(Text.Span span, VariableName variableName, Expression initializer)
+        public StaticVarDecl(Span span, VariableName variableName, Expression initializer)
             : base(span)
         {
-            Debug.Assert(variableName.Value != null);
+            Debug.Assert(!string.IsNullOrEmpty(variableName.Value));
 
-            this.variable = variableName;
-            this.initializer = initializer;
+            this.Variable = variableName;
+            this.Initializer = initializer;
         }
 
         /// <summary>
         /// Call the right Visit* method on the given Visitor object.
         /// </summary>
         /// <param name="visitor">Visitor to be called.</param>
-        public override void VisitMe(TreeVisitor visitor)
-        {
-            visitor.VisitStaticVarDecl(this);
-        }
+        public override void VisitMe(TreeVisitor visitor) => visitor.VisitStaticVarDecl(this);
     }
 
     #endregion
@@ -430,7 +438,7 @@ namespace Devsense.PHP.Syntax.Ast
         public Statement Statement => _stmt;
         private readonly Statement/*!*/_stmt;
 
-        public DeclareStmt(Text.Span p, GlobalConstantDecl[]/*!*/declarations, Statement/*!*/statement)
+        public DeclareStmt(Span p, GlobalConstantDecl[]/*!*/declarations, Statement/*!*/statement)
             : base(p)
         {
             Debug.Assert(declarations != null && declarations.Length != 0);

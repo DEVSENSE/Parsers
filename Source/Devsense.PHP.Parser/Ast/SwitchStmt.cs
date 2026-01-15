@@ -83,7 +83,7 @@ namespace Devsense.PHP.Syntax.Ast
 	/// <summary>
 	/// Base class for switch case/default items.
 	/// </summary>
-    public abstract class SwitchItem : LangElement
+    public abstract class SwitchItem : LangElementEntireSpan
 	{
         protected readonly Statement[]/*!*/ statements;
         /// <summary>Statements in this part of switch</summary>

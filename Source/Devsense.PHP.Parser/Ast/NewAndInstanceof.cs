@@ -16,6 +16,7 @@
 using System;
 using System.Diagnostics;
 using System.Collections.Generic;
+using Devsense.PHP.Text;
 
 namespace Devsense.PHP.Syntax.Ast
 {
@@ -26,6 +27,14 @@ namespace Devsense.PHP.Syntax.Ast
     /// </summary>
     public sealed class NewEx : VarLikeConstructUse
     {
+        int _span_start = -1;
+
+        public override Span Span
+        {
+            get => _span_start < 0 ? Span.Invalid : Span.FromBounds(_span_start, CallSignature.Span.IsValid ? CallSignature.Span.End : ClassNameRef.Span.End);
+            protected set => _span_start = value.IsValid ? value.Start : -1;
+        }
+
         public override Operations Operation { get { return Operations.New; } }
 
         internal override bool AllowsPassByReference { get { return true; } }
@@ -65,22 +74,27 @@ namespace Devsense.PHP.Syntax.Ast
     /// </summary>
     public sealed class InstanceOfEx : Expression
     {
+        public override Span Span
+        {
+            get => Span.FromBounds(this.Expression.Span.Start, this.ClassNameRef.Span.End);
+            protected set { /*ignored*/ }
+        }
+
         public override Operations Operation { get { return Operations.InstanceOf; } }
 
-        private Expression/*!*/ expression;
         /// <summary>Expression being tested</summary>
-        public Expression /*!*/ Expression { get { return expression; } internal set { expression = value; } }
-        private TypeRef/*!*/ classNameRef;
+        public Expression /*!*/ Expression { get; }
+
         /// <summary>Type to test if <see cref="Expression"/> is of</summary>
-        public TypeRef/*!*/ ClassNameRef { get { return classNameRef; } }
+        public TypeRef/*!*/ ClassNameRef { get; }
 
         public InstanceOfEx(Text.Span span, Expression/*!*/ expression, TypeRef/*!*/ classNameRef)
             : base(span)
         {
             Debug.Assert(expression != null && classNameRef != null);
 
-            this.expression = expression;
-            this.classNameRef = classNameRef;
+            this.Expression = expression;
+            this.ClassNameRef = classNameRef;
         }
 
         /// <summary>
@@ -95,35 +109,35 @@ namespace Devsense.PHP.Syntax.Ast
 
     #endregion
 
-    #region TypeOfEx
+    //#region TypeOfEx
 
-    /// <summary>
-    /// <c>typeof</c> expression.
-    /// </summary>
-    public sealed class TypeOfEx : Expression
-    {
-        public override Operations Operation { get { return Operations.TypeOf; } }
+    ///// <summary>
+    ///// <c>typeof</c> expression.
+    ///// </summary>
+    //public sealed class TypeOfEx : Expression
+    //{
+    //    public override Operations Operation { get { return Operations.TypeOf; } }
 
-        public TypeRef/*!*/ ClassNameRef { get { return classNameRef; } }
-        private TypeRef/*!*/ classNameRef;
+    //    public TypeRef/*!*/ ClassNameRef { get { return classNameRef; } }
+    //    private TypeRef/*!*/ classNameRef;
 
-        public TypeOfEx(Text.Span span, TypeRef/*!*/ classNameRef)
-            : base(span)
-        {
-            Debug.Assert(classNameRef != null);
+    //    public TypeOfEx(Text.Span span, TypeRef/*!*/ classNameRef)
+    //        : base(span)
+    //    {
+    //        Debug.Assert(classNameRef != null);
 
-            this.classNameRef = classNameRef;
-        }
+    //        this.classNameRef = classNameRef;
+    //    }
 
-        /// <summary>
-        /// Call the right Visit* method on the given Visitor object.
-        /// </summary>
-        /// <param name="visitor">Visitor to be called.</param>
-        public override void VisitMe(TreeVisitor visitor)
-        {
-            visitor.VisitTypeOfEx(this);
-        }
-    }
+    //    /// <summary>
+    //    /// Call the right Visit* method on the given Visitor object.
+    //    /// </summary>
+    //    /// <param name="visitor">Visitor to be called.</param>
+    //    public override void VisitMe(TreeVisitor visitor)
+    //    {
+    //        visitor.VisitTypeOfEx(this);
+    //    }
+    //}
 
-    #endregion
+    //#endregion
 }

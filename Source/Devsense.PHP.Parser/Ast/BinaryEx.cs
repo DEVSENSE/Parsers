@@ -40,6 +40,12 @@ namespace Devsense.PHP.Syntax.Ast
     /// </summary>
     public abstract class BinaryEx : Expression, IBinaryExpression
     {
+        public override Span Span
+        {
+            get => Span.FromBounds(leftExpr.Span.Start, rightExpr.Span.End);
+            protected set { /*ignored*/ }
+        }
+
         #region IBinaryExpression
 
         IExpression IBinaryExpression.Left { get => LeftExpr; set => LeftExpr = (Expression)value; }

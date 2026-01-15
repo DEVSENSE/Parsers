@@ -13,6 +13,7 @@
 // See the Apache Version 2.0 License for specific language governing
 // permissions and limitations under the License.
 
+using Devsense.PHP.Text;
 using System;
 using System.Diagnostics;
 
@@ -21,7 +22,7 @@ namespace Devsense.PHP.Syntax.Ast
 	/// <summary>
 	/// Represents a content of backtick operator (shell command execution).
 	/// </summary>
-	public sealed class ShellEx : Expression
+	public sealed class ShellEx : ExpressionEntireSpan
 	{
         public override Operations Operation { get { return Operations.ShellCommand; } }
 

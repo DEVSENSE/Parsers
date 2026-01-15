@@ -13,6 +13,7 @@
 // See the Apache Version 2.0 License for specific language governing
 // permissions and limitations under the License.
 
+using Devsense.PHP.Text;
 using System;
 
 namespace Devsense.PHP.Syntax.Ast
@@ -28,7 +29,7 @@ namespace Devsense.PHP.Syntax.Ast
     /// <summary>
     /// Represents <c>yield</c> expression for the support for PHP Generator.
     /// </summary>
-    public sealed class YieldEx : Expression, IYieldLikeEx
+    public sealed class YieldEx : ExpressionEntireSpan, IYieldLikeEx
     {
         #region Fields & Properties
 
@@ -90,7 +91,7 @@ namespace Devsense.PHP.Syntax.Ast
     /// <summary>
     /// Represents <c>yield from</c> expression for the support for PHP Generator.
     /// </summary>
-    public sealed class YieldFromEx : Expression, IYieldLikeEx
+    public sealed class YieldFromEx : ExpressionEntireSpan, IYieldLikeEx
     {
         #region Fields & Properties
 

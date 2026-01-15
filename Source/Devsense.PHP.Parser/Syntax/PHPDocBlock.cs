@@ -30,7 +30,7 @@ namespace Devsense.PHP.Syntax
     /// Default implementation of documentary comment element.
     /// </summary>
     [DebuggerDisplay("{PHPDocPreview,nq} {Span}")]
-    public sealed class PHPDocBlock : LangElement, IDocBlock
+    public sealed class PHPDocBlock : LangElementEntireSpan, IDocBlock
     {
         #region Properties
 

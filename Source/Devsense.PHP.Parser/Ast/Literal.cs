@@ -13,6 +13,8 @@
 // See the Apache Version 2.0 License for specific language governing
 // permissions and limitations under the License.
 
+using Devsense.PHP.Text;
+using Devsense.PHP.Utilities;
 using System;
 using System.Collections.Generic;
 
@@ -170,6 +172,8 @@ namespace Devsense.PHP.Syntax.Ast
     /// </summary>
     public sealed class BinaryStringLiteral : Literal, IStringLiteralValue
     {
+        public override Span Span { get; protected set; }
+
         public override Operations Operation { get { return Operations.BinaryStringLiteral; } }
 
         /// <summary>
@@ -286,6 +290,8 @@ namespace Devsense.PHP.Syntax.Ast
     /// </summary>
     public sealed class LongIntLiteral : Literal
     {
+        public override Span Span { get; protected set; }
+
         /// <summary>
         /// Original number format.
         /// </summary>
@@ -332,6 +338,8 @@ namespace Devsense.PHP.Syntax.Ast
     /// </summary>
     public sealed class DoubleLiteral : Literal
     {
+        public override Span Span { get; protected set; }
+
         public NumberLiteralFlags Flags { get; }
 
         public override Operations Operation { get { return Operations.DoubleLiteral; } }
@@ -405,6 +413,8 @@ namespace Devsense.PHP.Syntax.Ast
     /// </summary>
     public abstract class StringLiteral : Literal
     {
+        public override Span Span { get; protected set; }
+        
         public override Operations Operation { get { return Operations.StringLiteral; } }
 
         /// <summary>
@@ -501,23 +511,30 @@ namespace Devsense.PHP.Syntax.Ast
     /// </summary>
     public sealed class BoolLiteral : Literal
     {
+        int _span_start = -1;
+
+        public override Span Span
+        {
+            get => _span_start < 0 ? Span.Invalid : new Span(_span_start, Value ? "true".Length : "false".Length);
+            protected set => _span_start = value.IsValid ? value.Start : -1;
+        }
+
         public override Operations Operation { get { return Operations.BoolLiteral; } }
 
         /// <summary>
         /// Gets internal value of literal.
         /// </summary>
-        internal override object ValueObj { get { return this.value; } }
+        internal override object ValueObj => BoxedValues.Get(this.Value);
 
         /// <summary>
         /// Gets a value of the literal.
         /// </summary>
-        public bool Value { get { return value; } }
-        private bool value;
+        public bool Value { get; }
 
         public BoolLiteral(Text.Span span, bool value)
             : base(span)
         {
-            this.value = value;
+            this.Value = value;
         }
 
         /// <summary>
@@ -539,6 +556,14 @@ namespace Devsense.PHP.Syntax.Ast
     /// </summary>
     public sealed class NullLiteral : Literal
     {
+        int _span_start = -1;
+
+        public override Span Span
+        {
+            get => _span_start < 0 ? Span.Invalid : new Span(_span_start, "null".Length);
+            protected set => _span_start = value.IsValid ? value.Start : -1;
+        }
+
         public override Operations Operation { get { return Operations.NullLiteral; } }
 
         /// <summary>

@@ -13,10 +13,11 @@
 // See the Apache Version 2.0 License for specific language governing
 // permissions and limitations under the License.
 
-using System;
-using System.Diagnostics;
-using System.Collections.Generic;
 using Devsense.PHP.Ast.DocBlock;
+using Devsense.PHP.Text;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace Devsense.PHP.Syntax.Ast
 {
@@ -54,7 +55,7 @@ namespace Devsense.PHP.Syntax.Ast
     /// <summary>
     /// Represents a formal parameter definition.
     /// </summary>
-    public class FormalParam : LangElement
+    public class FormalParam : LangElementEntireSpan
     {
         [Flags]
         public enum Flags : byte

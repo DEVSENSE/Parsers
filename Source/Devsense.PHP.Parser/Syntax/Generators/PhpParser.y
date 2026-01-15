@@ -1563,13 +1563,13 @@ expr:
 	|	T_STATIC inline_function {
 			var lambda = (LambdaFunctionExpr)$2;
 			lambda.IsStatic = true;
-			lambda.Span = @$;
+			lambda.ChangeSpan(@$); // lambda.Span = @$;
 			$$ = lambda;
 		}
 	|	attributes T_STATIC inline_function {
 			var lambda = (LambdaFunctionExpr)$3;
 			lambda.IsStatic = true;
-			lambda.Span = @$;
+			lambda.ChangeSpan(@$); // lambda.Span = @$;
 			$$ = FinalizeAttributes(lambda, $1);
 		}
 	|	match { $$ = $1; }

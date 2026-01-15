@@ -13,54 +13,69 @@
 // See the Apache Version 2.0 License for specific language governing
 // permissions and limitations under the License.
 
+using Devsense.PHP.Text;
 using System;
 
 namespace Devsense.PHP.Syntax.Ast
 {
-	/// <summary>
-	/// Direct variable use - a variable or a field accessed by an identifier.
-	/// </summary>
-	public abstract class DirectVarUse : SimpleVarUse
-	{
-		sealed class LocalDirectVarUse : DirectVarUse
-		{
-			public override Expression IsMemberOf => null;
+    /// <summary>
+    /// Direct variable use - a variable or a field accessed by an identifier.
+    /// </summary>
+    public abstract class DirectVarUse : SimpleVarUse
+    {
+        protected int _span_start = -1;
+
+        public override Span Span
+        {
+            get => this.NameSpan;
+            protected set => _span_start = value.IsValid ? value.Start : -1;
+        }
+
+        public abstract Span NameSpan { get; }
+
+        sealed class LocalDirectVarUse : DirectVarUse
+        {
+            public override Expression IsMemberOf => null;
+
+            public override Span NameSpan => _span_start < 0 ? Span.Invalid : new Span(_span_start, 1 + VarName.Value.Length);
 
             public LocalDirectVarUse(Text.Span span, VariableName varName)
-				: base(span, varName)
-			{
-			}
+                : base(span, varName)
+            {
+            }
         }
 
         sealed class MemberDirectVarUse : DirectVarUse
         {
-			public override Expression IsMemberOf { get; }
+            public override Expression IsMemberOf { get; }
+
+            public override Span NameSpan => _span_start < 0 ? Span.Invalid : new Span(_span_start, VarName.Value.Length);
 
             public MemberDirectVarUse(Text.Span span, VariableName varName, Expression isMemberOf)
                 : base(span, varName)
             {
-				this.IsMemberOf = isMemberOf;
+                this.IsMemberOf = isMemberOf;
             }
         }
 
-		public static DirectVarUse Create(Text.Span span, VariableName varName) => new LocalDirectVarUse(span, varName);
+        public static DirectVarUse Create(Text.Span span, VariableName varName) => new LocalDirectVarUse(span, varName);
 
         public static DirectVarUse Create(Text.Span span, VariableName varName, Expression isMemberOf) => isMemberOf != null
-			? new MemberDirectVarUse(span, varName, isMemberOf)
-			: Create(span, varName)
-			;
+            ? new MemberDirectVarUse(span, varName, isMemberOf)
+            : Create(span, varName)
+            ;
 
         public override Operations Operation => Operations.DirectVarUse;
 
-		public VariableName VarName { get; set; }
+        public VariableName VarName { get; set; }
 
-		protected DirectVarUse(Text.Span span, VariableName varName)
+        protected DirectVarUse(Text.Span span, VariableName varName)
             : base(span)
-		{
-			this.VarName = varName;
-		}
+        {
+            this.VarName = varName;
+        }
 
-		/// <summary>
+        /// <summary>
         /// Call the right Visit* method on the given Visitor object.
         /// </summary>
         /// <param name="visitor">Visitor to be called.</param>
@@ -68,5 +83,5 @@ namespace Devsense.PHP.Syntax.Ast
         {
             visitor.VisitDirectVarUse(this);
         }
-	}
+    }
 }

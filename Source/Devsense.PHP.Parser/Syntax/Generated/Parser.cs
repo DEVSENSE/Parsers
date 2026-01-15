@@ -3744,7 +3744,7 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 {
 			var lambda = (LambdaFunctionExpr)value_stack.array[value_stack.top-1].yyval.Node;
 			lambda.IsStatic = true;
-			lambda.Span = yypos;
+			lambda.ChangeSpan(yypos);
 			yyval.Node = lambda;
 		}
         return;
@@ -3752,7 +3752,7 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 {
 			var lambda = (LambdaFunctionExpr)value_stack.array[value_stack.top-1].yyval.Node;
 			lambda.IsStatic = true;
-			lambda.Span = yypos;
+            lambda.ChangeSpan(yypos);
 			yyval.Node = FinalizeAttributes(lambda, value_stack.array[value_stack.top-3].yyval.NodeList);
 		}
         return;

@@ -26,7 +26,7 @@ namespace Devsense.PHP.Syntax.Ast
 {
     #region FormalTypeParam
 
-    public sealed class FormalTypeParam : LangElement
+    public sealed class FormalTypeParam : LangElementEntireSpan
     {
         public Name Name { get { return name; } }
         private readonly Name name;
@@ -379,7 +379,7 @@ namespace Devsense.PHP.Syntax.Ast
     /// <summary>
     /// Represents a member declaration.
     /// </summary>
-    public abstract class TypeMemberDecl : LangElement
+    public abstract class TypeMemberDecl : LangElementEntireSpan
     {
         /// <summary>
         /// Gets the type member modifiers.
@@ -603,7 +603,7 @@ namespace Devsense.PHP.Syntax.Ast
     /// <summary>
     /// Represents a field declaration.
     /// </summary>
-    public sealed class FieldDecl : LangElement, IReadOnlyList<FieldDecl>
+    public sealed class FieldDecl : LangElementEntireSpan, IReadOnlyList<FieldDecl>
     {
         /// <summary>
         /// Gets a name of the field.
@@ -784,7 +784,7 @@ namespace Devsense.PHP.Syntax.Ast
     /// <summary>
     /// Block statement.
     /// </summary>
-    public sealed class TraitAdaptationBlock : LangElement
+    public sealed class TraitAdaptationBlock : LangElementEntireSpan
     {
         private readonly TraitsUse.TraitAdaptation[]/*!*/_adaptations;
         /// <summary>Statements in block</summary>
@@ -816,7 +816,7 @@ namespace Devsense.PHP.Syntax.Ast
     {
         #region TraitAdaptation, TraitAdaptationPrecedence, TraitAdaptationAlias
 
-        public abstract class TraitAdaptation : LangElement
+        public abstract class TraitAdaptation : LangElementEntireSpan
         {
             /// <summary>
             /// Name of existing trait member. Its qualified name is optional.
@@ -966,7 +966,7 @@ namespace Devsense.PHP.Syntax.Ast
         }
     }
 
-    public class PropertyHookDecl : LangElement, INamedFunctionDeclaration
+    public class PropertyHookDecl : LangElementEntireSpan, INamedFunctionDeclaration
     {
         public PropertyHookDecl(
             Span span,

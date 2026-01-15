@@ -188,6 +188,14 @@ namespace Devsense.PHP.Syntax.Ast
         /// </summary>
         public PrimitiveType PrimitiveTypeName { get; }
 
+        int _span_start = -1;
+
+        public override Span Span
+        {
+            get => _span_start < 0 ? Span.Invalid : new Span(_span_start, this.SimpleName.Value.Length);
+            protected set => _span_start = value.IsValid ? value.Start : -1;
+        }
+
         public PrimitiveTypeRef(Span span, PrimitiveType name)
             : base(span)
         {
@@ -222,7 +230,7 @@ namespace Devsense.PHP.Syntax.Ast
                     PrimitiveType.mixed => Syntax.QualifiedName.Mixed.Name,
                     PrimitiveType.never => Syntax.QualifiedName.Never.Name,
                     PrimitiveType.@true => Syntax.QualifiedName.True.Name,
-                    PrimitiveType.@false=> Syntax.QualifiedName.False.Name,
+                    PrimitiveType.@false => Syntax.QualifiedName.False.Name,
                     PrimitiveType.@null => Syntax.QualifiedName.Null.Name,
                     _ => throw new InvalidOperationException(),  // invalid _typeName
                 };
@@ -262,10 +270,11 @@ namespace Devsense.PHP.Syntax.Ast
             @static
         }
 
-        public static readonly Dictionary<Name, ReservedType> ReservedTypes = new Dictionary<Name, ReservedType>() {
+        public static readonly Dictionary<Name, ReservedType> ReservedTypes = new Dictionary<Name, ReservedType>()
+        {
             { Name.StaticClassName, ReservedType.@static },
             { Name.SelfClassName, ReservedType.self },
-            { Name.ParentClassName, ReservedType.parent }
+            { Name.ParentClassName, ReservedType.parent },
         };
 
         /// <summary>
@@ -273,6 +282,14 @@ namespace Devsense.PHP.Syntax.Ast
         /// </summary>
         public ReservedType Type => _reservedType;
         readonly ReservedType _reservedType;
+
+        public override Span Span
+        {
+            get => _span_start < 0 ? Span.Invalid : new Span(_span_start, this.Name.Value.Length);
+            protected set => _span_start = value.IsValid ? value.Start : -1;
+        }
+
+        int _span_start = -1;
 
         public ReservedTypeRef(Span span, ReservedType type)
             : base(span)
@@ -290,19 +307,22 @@ namespace Devsense.PHP.Syntax.Ast
         /// <summary>
         /// Gets qualified name of the type reference. Always a valid reserved type name.
         /// </summary>
-        public override QualifiedName? QualifiedName
+        public override QualifiedName? QualifiedName => new QualifiedName(this.Name);
+
+        public Name Name
         {
             get
             {
                 switch (_reservedType)
                 {
-                    case ReservedType.parent: return new QualifiedName(Name.ParentClassName);
-                    case ReservedType.self: return new QualifiedName(Name.SelfClassName);
-                    case ReservedType.@static: return new QualifiedName(Name.StaticClassName);
+                    case ReservedType.parent: return Name.ParentClassName;
+                    case ReservedType.self: return Name.SelfClassName;
+                    case ReservedType.@static: return Name.StaticClassName;
                     default: throw new InvalidOperationException(); // invalid _reservedType
                 }
             }
         }
+
         public override string ToString() => QualifiedName.ToString();
     }
 
@@ -316,6 +336,8 @@ namespace Devsense.PHP.Syntax.Ast
     [DebuggerDisplay("{_className,nq}")]
     public sealed class ClassTypeRef : TypeRef, IEquatable<ClassTypeRef>, INamedTypeRef
     {
+        public override Span Span { get; protected set; }
+
         /// <summary>
         /// Non nullable <see cref="QualifiedName"/>.
         /// </summary>
@@ -359,6 +381,12 @@ namespace Devsense.PHP.Syntax.Ast
     [DebuggerDisplay("{_className,nq}")]
     public sealed class TranslatedTypeRef : TypeRef, IEquatable<TranslatedTypeRef>, INamedTypeRef
     {
+        public override Span Span
+        {
+            get => this.OriginalType.Span;
+            protected set { /*ignored*/ }
+        }
+
         /// <summary>
         /// Non nullable <see cref="QualifiedName"/>.
         /// </summary>
@@ -410,6 +438,12 @@ namespace Devsense.PHP.Syntax.Ast
     /// </summary>
     public sealed class IndirectTypeRef : TypeRef
     {
+        public override Span Span
+        {
+            get => this.ClassNameVar.Span;
+            protected set { }
+        }
+
         /// <summary>
         /// <see cref="VariableUse"/> which value in runtime contains the name of the type.
         /// </summary>
@@ -445,6 +479,8 @@ namespace Devsense.PHP.Syntax.Ast
     [DebuggerDisplay("{_targetType,nq}?")]
     public sealed class NullableTypeRef : TypeRef
     {
+        public override Span Span { get; protected set; }
+
         /// <summary>
         /// <see cref="VariableUse"/> which value in runtime contains the name of the type.
         /// </summary>
@@ -479,6 +515,8 @@ namespace Devsense.PHP.Syntax.Ast
     /// </summary>
     public class MultipleTypeRef : TypeRef, IMultipleTypeRef
     {
+        public override Span Span { get; protected set; }
+
         /// <summary>
         /// List of types represented by this reference.
         /// </summary>
@@ -555,6 +593,8 @@ namespace Devsense.PHP.Syntax.Ast
     [DebuggerDisplay("{_targetType,nq}`{_genericArgs.Count}")]
     public sealed class GenericTypeRef : TypeRef
     {
+        public override Span Span { get; protected set; }
+
         #region Nested class: GenericQualifiedNameResolver
 
         /// <summary>
@@ -694,12 +734,18 @@ namespace Devsense.PHP.Syntax.Ast
     #region AnonymousTypeRef
 
     /// <summary>
-    /// Direct use of class name.
+    /// Use of an anonymous class reference.
     /// </summary>
     public sealed class AnonymousTypeRef : TypeRef
     {
+        public override Span Span
+        {
+            get => this.TypeDeclaration.Span;
+            protected set { }
+        }
+
         /// <summary>
-        /// Non nullable <see cref="QualifiedName"/>.
+        /// Reference to the anonymous class declaration.
         /// </summary>
         public AnonymousTypeDecl TypeDeclaration => _typeDeclaration;
         private readonly AnonymousTypeDecl _typeDeclaration;

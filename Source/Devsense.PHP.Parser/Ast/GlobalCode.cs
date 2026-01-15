@@ -38,7 +38,7 @@ namespace Devsense.PHP.Syntax.Ast
     /// by GlobalCode node. Finally, it is emitted into Main() method of concrete PHPPage 
     /// class. The sample code below illustrates a part of PHP global code
     /// </remarks>
-    public sealed class GlobalCode : LangElement, IGlobalCode
+    public sealed class GlobalCode : LangElementEntireSpan, IGlobalCode
     {
         #region IGlobalCode
 
