@@ -24,12 +24,24 @@ namespace Devsense.PHP.Syntax.Ast
     /// </summary>
     public abstract class DirectVarUse : SimpleVarUse
     {
-        protected int _span_start = -1;
+        protected int _name_span_start = -1;
 
         public override Span Span
         {
-            get => this.NameSpan;
-            protected set => _span_start = value.IsValid ? value.Start : -1;
+            get
+            {
+                var name_span = this.NameSpan;
+                if (name_span.IsValid)
+                {
+                    return Span.FromBounds(
+                        IsMemberOf != null ? IsMemberOf.Span.Start : name_span.Start,
+                        name_span.End
+                    );
+                }
+
+                return Span.Invalid;
+            }
+            protected set => _name_span_start = value.IsValid ? value.Start : -1; // gets name span from the parser, not entire span
         }
 
         public abstract Span NameSpan { get; }
@@ -38,7 +50,9 @@ namespace Devsense.PHP.Syntax.Ast
         {
             public override Expression IsMemberOf => null;
 
-            public override Span NameSpan => _span_start < 0 ? Span.Invalid : new Span(_span_start, 1 + VarName.Value.Length);
+            public override Span NameSpan => _name_span_start < 0 ? Span.Invalid : new Span(_name_span_start, 1 + VarName.Value.Length);
+
+            public override Span Span { get => this.NameSpan; protected set => base.Span = value; }
 
             public LocalDirectVarUse(Text.Span span, VariableName varName)
                 : base(span, varName)
@@ -51,14 +65,14 @@ namespace Devsense.PHP.Syntax.Ast
         {
             public override Expression IsMemberOf { get; }
 
-            public override Span NameSpan => _span_start < 0 ? Span.Invalid : new Span(_span_start, VarName.Value.Length);
+            public override Span NameSpan => _name_span_start < 0 ? Span.Invalid : new Span(_name_span_start, VarName.Value.Length);
 
-            public MemberDirectVarUse(Text.Span span, VariableName varName, Expression isMemberOf)
-                : base(span, varName)
+            public MemberDirectVarUse(Text.Span nameSpan/*!!*/, VariableName varName, Expression isMemberOf)
+                : base(nameSpan, varName)
             {
                 this.IsMemberOf = isMemberOf;
 
-                Debug.Assert(span == NameSpan);
+                Debug.Assert(nameSpan == NameSpan);
             }
         }
 

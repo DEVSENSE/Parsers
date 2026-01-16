@@ -26,15 +26,30 @@ namespace Devsense.PHP.Syntax.Ast
     /// </summary>
     public abstract class StaticFieldUse : VariableUse
     {
-        public override Span Span { get; protected set; }
+        public override Span Span
+        {
+            get
+            {
+                var name_span = this.NameSpan;
+                if (name_span.IsValid)
+                {
+                    return Span.FromBounds(TargetType.Span.Start, name_span.End);
+                }
+
+                return Span.Invalid;
+            }
+            protected set {/*ignored*/}
+        }
 
         public override sealed Expression IsMemberOf => null;
 
         /// <summary>Position of the field name.</summary>
         public abstract Text.Span NameSpan { get; }
 
-        public TypeRef TargetType { get { return targetType; } }
-        protected TypeRef targetType;
+        /// <summary>
+        /// Target type reference.
+        /// </summary>
+        public TypeRef TargetType { get; }
 
         internal StaticFieldUse(Span span, GenericQualifiedName typeName, Span typeNamePosition)
             : this(span, TypeRef.FromGenericQualifiedName(typeNamePosition, typeName))
@@ -46,7 +61,7 @@ namespace Devsense.PHP.Syntax.Ast
         {
             Debug.Assert(typeRef != null);
 
-            this.targetType = typeRef;
+            this.TargetType = typeRef;
         }
     }
 
@@ -61,20 +76,28 @@ namespace Devsense.PHP.Syntax.Ast
     {
         public override Operations Operation { get { return Operations.DirectStaticFieldUse; } }
 
-        private readonly VariableNameRef propertyName;
+        private readonly VariableName propertyName;
+
+        private readonly int propertyNameStart;
 
         /// <summary>Name of static field being accessed</summary>
-        public VariableName PropertyName => propertyName.Name;
+        public VariableName PropertyName => propertyName;
 
         /// <summary>
         /// <see cref="PropertyName"/> position within AST.
         /// </summary>
-        public override Span NameSpan => propertyName.Span;
+        public override Span NameSpan => new Span(propertyNameStart, propertyName.Value.Length);
 
         public DirectStFldUse(Span span, TypeRef typeRef, VariableNameRef propertyName)
             : base(span, typeRef)
         {
-            this.propertyName = propertyName;
+            Debug.Assert(propertyName.HasValue);
+
+            this.propertyName = propertyName.Name;
+            this.propertyNameStart = propertyName.Span.Start;
+
+            //
+            Debug.Assert(NameSpan == propertyName.Span);
         }
 
         /// <summary>
