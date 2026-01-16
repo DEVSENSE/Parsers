@@ -17,6 +17,7 @@ using Devsense.PHP.Text;
 using Devsense.PHP.Utilities;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace Devsense.PHP.Syntax.Ast
 {
@@ -413,8 +414,6 @@ namespace Devsense.PHP.Syntax.Ast
     /// </summary>
     public abstract class StringLiteral : Literal
     {
-        public override Span Span { get; protected set; }
-        
         public override Operations Operation { get { return Operations.StringLiteral; } }
 
         /// <summary>
@@ -424,6 +423,8 @@ namespace Devsense.PHP.Syntax.Ast
 
         sealed class Utf8StringLiteral : StringLiteral, IStringLiteralValue
         {
+            public override Span Span { get; protected set; }
+
             internal override object ValueObj => Value;
 
             public override string Value { get; }
@@ -449,8 +450,47 @@ namespace Devsense.PHP.Syntax.Ast
             #endregion
         }
 
+        sealed class Utf8SimpleStringLiteral : StringLiteral, IStringLiteralValue
+        {
+            int _span_start;
+
+            public override Span Span
+            {
+                get => _span_start < 0 ? Span.Invalid : new Span(_span_start, Value.Length + 2);
+                protected set { _span_start = value.IsValid ? value.Start : -1; }
+            }
+
+            internal override object ValueObj => Value;
+
+            public override string Value { get; }
+
+            public Utf8SimpleStringLiteral(Text.Span span, string value) : base(span)
+            {
+                Debug.Assert(span.Length == value.Length + 2);
+
+                this.Value = value ?? throw new ArgumentNullException(nameof(value));
+            }
+
+            #region IStringLiteralValue
+
+            bool IStringLiteralValue.Contains8bitText => false;
+
+            byte[] IStringLiteralValue.ToBytes() => throw new NotSupportedException(); // only if {Contains8bitText}
+
+            string IStringLiteralValue.ToString() => Value;
+
+            /// <summary>
+            /// Gets enumeration of underlying chunks of <see cref="System.String"/> or <see cref="byte"/>[].
+            /// </summary>
+            IEnumerable<object> IStringLiteralValue.EnumerateChunks() => new object[] { Value };
+
+            #endregion
+        }
+
         sealed class RawStringLiteral : StringLiteral, IStringLiteralValue
         {
+            public override Span Span { get; protected set; }
+
             internal override object ValueObj => Value;
 
             public override string Value => UnderlyingValue.ToString();
@@ -485,7 +525,11 @@ namespace Devsense.PHP.Syntax.Ast
         /// <summary>
         /// Initializes a new instance of the StringLiteral class.
         /// </summary>
-        public static StringLiteral Create(Text.Span span, string value) => new Utf8StringLiteral(span, value);
+        public static StringLiteral Create(Text.Span span, string value) =>
+            span.Length == value.Length + 2
+            ? new Utf8SimpleStringLiteral(span, value)
+            : new Utf8StringLiteral(span, value)
+            ;
 
         /// <summary>
         /// Initializes a new instance of the StringLiteral class.
