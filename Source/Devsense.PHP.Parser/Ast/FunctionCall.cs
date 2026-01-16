@@ -24,7 +24,7 @@ namespace Devsense.PHP.Syntax.Ast
 
     public abstract class FunctionCall : VarLikeConstructUse
     {
-        public override Span Span
+        public override sealed Span Span
         {
             get => Span.FromBounds(IsMemberOf != null ? IsMemberOf.Span.Start : this.NameSpan.Start, this.CallSignature.Span.End);
             protected set { }
@@ -58,7 +58,9 @@ namespace Devsense.PHP.Syntax.Ast
             public override Expression IsMemberOf => null;
 
             public override TranslatedQualifiedName FullName { get; }
-            
+
+            public override Text.Span NameSpan => FullName.Span;
+
             public LocalDirectFcnCall(Text.Span span, TranslatedQualifiedName name, CallSignature signature)
                 : base(span, signature)
             {
@@ -68,6 +70,8 @@ namespace Devsense.PHP.Syntax.Ast
         
         sealed class SimpleLocalDirectFcnCall : DirectFcnCall
         {
+            readonly int _name_start;
+
             public override Expression IsMemberOf => null;
 
             public override Name SimpleName { get; }
@@ -77,17 +81,23 @@ namespace Devsense.PHP.Syntax.Ast
                 NameSpan
             );
 
-            public override Span NameSpan => new Span(this.Span.Start, this.SimpleName.Value.Length);
+            public override Span NameSpan => new Span(_name_start, this.SimpleName.Value.Length);
 
             public SimpleLocalDirectFcnCall(Text.Span span, NameRef name, CallSignature signature)
                 : base(span, signature)
             {
+                Debug.Assert(name.HasValue);
+
                 this.SimpleName = name;
+
+                _name_start = name.Span.Start;
             }
         }
 
         sealed class CloneFcnCall : DirectFcnCall
         {
+            readonly int _name_start;
+
             public override Expression IsMemberOf => null;
 
             public override Name SimpleName => Name.CloneName;
@@ -97,21 +107,22 @@ namespace Devsense.PHP.Syntax.Ast
                 NameSpan
             );
 
-            public override Span NameSpan => new Span(this.Span.Start, this.SimpleName.Value.Length);
+            public override Span NameSpan => new Span(_name_start, this.SimpleName.Value.Length);
 
             public CloneFcnCall(Text.Span span, CallSignature signature)
                 : base(span, signature)
             {
+                _name_start = span.Start;
             }
         }
 
         sealed class MemberDirectFcnCall : DirectFcnCall
         {
-            readonly int _MemberNameStart; // Span.Start
+            readonly int _name_start;
 
             public override Name SimpleName { get; }
 
-            public override Span NameSpan => new Span(_MemberNameStart, SimpleName.Value.Length);
+            public override Span NameSpan => new Span(_name_start, SimpleName.Value.Length);
             
             public override Expression IsMemberOf { get; }
 
@@ -125,7 +136,8 @@ namespace Devsense.PHP.Syntax.Ast
             {
                 this.IsMemberOf = isMemberOf;
                 this.SimpleName = name.Name;
-                _MemberNameStart = name.Span.Start;
+                
+                _name_start = name.Span.Start;
             }
         }
 
@@ -148,8 +160,6 @@ namespace Devsense.PHP.Syntax.Ast
         [Obsolete]
         public QualifiedName? FallbackQualifiedName => FullName.FallbackName;
 
-        public override Text.Span NameSpan => FullName.Span;
-
         internal static DirectFcnCall CreateClone(Span span, CallSignature signature) => new CloneFcnCall(span, signature);
 
         public static DirectFcnCall Create(Text.Span span, TranslatedQualifiedName name, CallSignature signature) =>
@@ -163,9 +173,12 @@ namespace Devsense.PHP.Syntax.Ast
             ? Create(span, new NameRef(name.Span, name.OriginalName.Name), signature, isMemberOf)
             : Create(span, name, signature)
             ;
-        
+
         public static DirectFcnCall Create(Text.Span span, NameRef name, CallSignature signature, Expression isMemberOf) =>
-            new MemberDirectFcnCall(span, name, signature, isMemberOf);
+            isMemberOf != null
+            ? new MemberDirectFcnCall(span, name, signature, isMemberOf)
+            : new SimpleLocalDirectFcnCall(span, name, signature)
+            ;
         
         protected DirectFcnCall(Text.Span span, CallSignature signature)
             : base(span, signature)
