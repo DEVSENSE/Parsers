@@ -456,7 +456,7 @@ name:	// TODO - count as translate (use a helper object)
 
 attribute_decl:
 		class_name
-			{ $$ = _astFactory.Attribute(@$, $1); }
+			{ $$ = _astFactory.Attribute(@$, $1, CallSignature.Empty); }
 	|	class_name argument_list
 			{ $$ = _astFactory.Attribute(@$, $1, FinalizeCallSignature(@2, $2)); }
 ;

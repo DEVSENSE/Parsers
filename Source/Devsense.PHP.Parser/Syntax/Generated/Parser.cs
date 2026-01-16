@@ -2340,7 +2340,7 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 { yyval.QualifiedNameReference = new QualifiedNameRef(yypos, new QualifiedName(value_stack.array[value_stack.top-1].yyval.StringList, true,  true)); FreeList(value_stack.array[value_stack.top-1].yyval.StringList); }
         return;
       case 94: // attribute_decl -> class_name 
-{ yyval.Node = _astFactory.Attribute(yypos, value_stack.array[value_stack.top-1].yyval.TypeReference); }
+{ yyval.Node = _astFactory.Attribute(yypos, value_stack.array[value_stack.top-1].yyval.TypeReference, CallSignature.Empty); }
         return;
       case 95: // attribute_decl -> class_name argument_list 
 { yyval.Node = _astFactory.Attribute(yypos, value_stack.array[value_stack.top-2].yyval.TypeReference, FinalizeCallSignature(value_stack.array[value_stack.top-1].yypos, value_stack.array[value_stack.top-1].yyval.ParamList)); }

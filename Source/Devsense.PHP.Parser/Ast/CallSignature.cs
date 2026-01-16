@@ -175,6 +175,9 @@ namespace Devsense.PHP.Syntax.Ast
 
     public struct CallSignature
     {
+        /// <summary>
+        /// Empty non-existent signature.
+        /// </summary>
         public static CallSignature Empty => new CallSignature(ArrayUtils.Empty<ActualParam>(), Text.Span.Invalid);
 
         /// <summary>

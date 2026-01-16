@@ -1052,7 +1052,7 @@ namespace Devsense.PHP.Syntax.Ast
         /// Creates attribute.
         /// PHP8.
         /// </summary>
-        TNode Attribute(TSpan span, TypeRef classref, CallSignature signature = default);
+        TNode Attribute(TSpan span, TypeRef classref, CallSignature signature);
 
         /// <summary>
         /// Creates attribute group (PHP8).

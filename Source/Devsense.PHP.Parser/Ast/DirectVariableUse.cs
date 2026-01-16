@@ -15,6 +15,7 @@
 
 using Devsense.PHP.Text;
 using System;
+using System.Diagnostics;
 
 namespace Devsense.PHP.Syntax.Ast
 {
@@ -42,6 +43,7 @@ namespace Devsense.PHP.Syntax.Ast
             public LocalDirectVarUse(Text.Span span, VariableName varName)
                 : base(span, varName)
             {
+                Debug.Assert(span == NameSpan);
             }
         }
 
@@ -55,6 +57,8 @@ namespace Devsense.PHP.Syntax.Ast
                 : base(span, varName)
             {
                 this.IsMemberOf = isMemberOf;
+
+                Debug.Assert(span == NameSpan);
             }
         }
 

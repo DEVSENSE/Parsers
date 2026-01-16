@@ -885,7 +885,7 @@ namespace Devsense.PHP.Syntax.Ast
             return new ConditionalEx(span, (Expression)condExpr, (Expression)trueExpr, (Expression)falseExpr);
         }
 
-        public virtual LangElement Attribute(Span span, TypeRef classref, CallSignature signature = default)
+        public virtual LangElement Attribute(Span span, TypeRef classref, CallSignature signature)
         {
             return new AttributeElement(span, classref, signature);
         }

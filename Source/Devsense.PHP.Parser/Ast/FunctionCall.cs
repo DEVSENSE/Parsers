@@ -26,7 +26,21 @@ namespace Devsense.PHP.Syntax.Ast
     {
         public override sealed Span Span
         {
-            get => Span.FromBounds(IsMemberOf != null ? IsMemberOf.Span.Start : this.NameSpan.Start, this.CallSignature.Span.End);
+            get
+            {
+                var name_span = this.NameSpan;
+                var call_span = this.CallSignature.Span;
+
+                if (name_span.IsValid)
+                {
+                    return Span.FromBounds(
+                        IsMemberOf != null ? IsMemberOf.Span.Start : name_span.Start,
+                        call_span.IsValid ? call_span.End : name_span.End
+                    );
+                }
+
+                return Text.Span.Invalid;
+            }
             protected set { }
         }
 
