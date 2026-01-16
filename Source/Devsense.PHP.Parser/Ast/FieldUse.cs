@@ -86,7 +86,7 @@ namespace Devsense.PHP.Syntax.Ast
         /// <summary>
         /// <see cref="PropertyName"/> position within AST.
         /// </summary>
-        public override Span NameSpan => new Span(propertyNameStart, propertyName.Value.Length);
+        public override Span NameSpan => new Span(propertyNameStart, 1/*$*/ + propertyName.Value.Length);
 
         public DirectStFldUse(Span span, TypeRef typeRef, VariableNameRef propertyName)
             : base(span, typeRef)
