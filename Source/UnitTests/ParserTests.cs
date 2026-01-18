@@ -50,7 +50,7 @@ do { } while (false);",
 @"<?php
 $fn = function () use ($a,): int {};",
 @"<?php use X\enum;",
-@"<?php use X\Enum as BaseEnum",
+@"<?php use X\Enum as BaseEnum;",
 @"<?php
 function test(){
     global $test;
