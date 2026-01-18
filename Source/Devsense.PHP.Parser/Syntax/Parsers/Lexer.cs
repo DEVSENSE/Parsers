@@ -1261,7 +1261,7 @@ namespace Devsense.PHP.Syntax
             {
                 this._hereDocValue = lexer._hereDocValue != null ? lexer._hereDocValue.Clone() : null;
                 this._currentState = lexer.CurrentLexicalState;
-                this._stateStack = lexer.stateStack.ToArray();
+                this._stateStack = lexer.stateStack.Count == 0 ? EmptyArray<LexicalStates>.Instance : lexer.stateStack.ToArray();
                 this._phpDoc = lexer.DocComment;
             }
 
@@ -1291,9 +1291,16 @@ namespace Devsense.PHP.Syntax
                 return true;
             }
 
-            public Stack<LexicalStates> GetStateStack()
+            public int PushStateStack(Stack<LexicalStates> stack)
             {
-                return new Stack<LexicalStates>(_stateStack);
+                var array = _stateStack;
+                for (int i = 0; i < _stateStack.Length; i++)
+                {
+                    stack.Push(array[i]);
+                }
+
+                //
+                return array.Length;
             }
         }
 
@@ -1305,9 +1312,12 @@ namespace Devsense.PHP.Syntax
         public void RestoreCompressedState(CompressedState state)
         {
             _hereDocValue = state.HereDocValue;
-            stateStack = state.GetStateStack();
             CurrentLexicalState = state.CurrentState;
             DocComment = state.PhpDoc;
+
+            //
+            stateStack.Clear();
+            state.PushStateStack(stateStack);
         }
 
         #endregion
