@@ -33,13 +33,11 @@ namespace UnitTests.TestImplementation
 
         public string TokenText => _provider.TokenText;
 
+        public ReadOnlyMemory<char> TokenSource => _provider.TokenSource;
+
         public ReadOnlySpan<char> TokenTextSpan => _provider.TokenTextSpan;
 
-        public SemanticValueType TokenValue
-        {
-            get => _provider.TokenValue;
-            set => _provider.TokenValue = value;
-        }
+        public SemanticValueType TokenValue => _provider.TokenValue;
 
         public List<ISourceToken> AllTokens => _tokens;
 

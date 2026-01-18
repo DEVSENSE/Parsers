@@ -194,10 +194,9 @@ namespace Devsense.PHP.Syntax
 
         public string Intern(ReadOnlySpan<char> text) => StringInterns.TryIntern(text) ?? _strings.GetOrAdd(text);
 
-        //[Obsolete("Use TokenTextSpan")]
-        //public CharSpan GetTokenSpan() => new CharSpan(buffer, token_start, TokenLength);
+        public ReadOnlySpan<char> TokenTextSpan => TokenSource.Span;
 
-        public ReadOnlySpan<char> TokenTextSpan => buffer.Slice(token_start, TokenLength);
+        public ReadOnlyMemory<char> TokenSource => source_string.Slice(token_start, TokenLength);
 
         public string GetText(ReadOnlySpan<char> text, bool intern)
         {
@@ -756,11 +755,7 @@ namespace Devsense.PHP.Syntax
             return (c > SByte.MaxValue) ? 'a' : c;
         }
 
-        public SemanticValueType TokenValue
-        {
-            get => _tokenSemantics;
-            set => _tokenSemantics = value;
-        }
+        public SemanticValueType TokenValue => _tokenSemantics;
 
         /// <summary>
         /// Gets span of the current token.

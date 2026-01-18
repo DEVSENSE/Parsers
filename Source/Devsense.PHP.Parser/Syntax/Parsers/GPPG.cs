@@ -102,7 +102,7 @@ namespace Devsense.PHP.Syntax
         /// <summary>
         /// Gets current token semantic value.
         /// </summary>
-		ValueType TokenValue { get; set; }
+		ValueType TokenValue { get; }
 
         /// <summary>
         /// Gets current token position.
@@ -110,14 +110,20 @@ namespace Devsense.PHP.Syntax
 		PositionType TokenPosition { get; }
 
         /// <summary>
-        /// Gets current token text.
+        /// Gets current token source text.
         /// </summary>
+		/// <remarks>May cause unnecessary allocation. Use <see cref="TokenTextSpan"/> preferably.</remarks>
         string TokenText { get; }
 
 		/// <summary>
-		/// Gets current token text as <see cref="ReadOnlySpan{T}"/>.
+		/// Gets current token source text.
 		/// </summary>
-		ReadOnlySpan<char> TokenTextSpan { get; }
+		ReadOnlyMemory<char> TokenSource { get; }
+
+        /// <summary>
+        /// Gets current token source text as <see cref="ReadOnlySpan{T}"/>.
+        /// </summary>
+        ReadOnlySpan<char> TokenTextSpan { get; }
 
         /// <summary>
         /// Proceeds to the next token and returns its identifier.
