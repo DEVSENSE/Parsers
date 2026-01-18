@@ -18,18 +18,5 @@ namespace Devsense.PHP.Syntax
         /// List of all PHP Docs analyzed by lexer so far.
         /// </summary>
         DocCommentContainer DocCommentList { get; }
-
-        /// <summary>
-        /// The token returned by lexer before the current one. Default is <see cref="CompleteToken.Empty"/>.
-        /// </summary>
-        CompleteToken PreviousToken { get; }
-
-        /// <summary>
-        /// Add new tokens into the token stream. 
-        /// Method may be empty, but error recovery will not work.
-        /// </summary>
-        /// <param name="tokensBuffer">List of tokens that will be inserted before the next token parsed from the source code.</param>
-        /// <param name="previousToken">Token that will be considered the last one just before thebuffer is inserted.</param>
-        void AddNextTokens(IList<CompleteToken> tokensBuffer, CompleteToken previousToken);
     }
 }

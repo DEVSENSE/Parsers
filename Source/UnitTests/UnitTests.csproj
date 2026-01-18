@@ -67,7 +67,6 @@
     <Compile Include="TestImplementation\CollectionLexer.cs" />
     <Compile Include="TestImplementation\Comment.cs" />
     <Compile Include="TestImplementation\SyntaxExtensions.cs" />
-    <Compile Include="TestImplementation\TestErrorRecovery.cs" />
     <Compile Include="TestImplementation\TestErrorSink.cs" />
     <Compile Include="TestImplementation\TestNodeFactory.cs" />
     <Compile Include="TestImplementation\TestSourceUnit.cs" />

@@ -109,7 +109,7 @@ isset(new (trim(' A '))()['key']);
                 var factory = new BasicNodesFactory(sourceUnit);
                 var errors = new TestErrorSink();
 
-                sourceUnit.Parse(factory, errors, new TestErrorRecovery());
+                sourceUnit.Parse(factory, errors);
 
                 Assert.IsNotNull(sourceUnit.Ast);
             }
@@ -135,7 +135,7 @@ isset(new (trim(' A '))()['key']);
             var factory = new TestNodeFactory(sourceUnit, errors);
 
             //
-            sourceUnit.Parse(factory, errors, new TestErrorRecovery());
+            sourceUnit.Parse(factory, errors);
 
             //
             if (testparts[1].TrimStart().StartsWith(Errors))

@@ -238,9 +238,5 @@ namespace Devsense.PHP.Syntax
         {
             _provider.ReportError(expectedTokens);
         }
-
-        public CompleteToken PreviousToken => CompleteToken.Empty;
-
-        public void AddNextTokens(IList<CompleteToken> tokensBuffer, CompleteToken previousToken) { }
     }
 }

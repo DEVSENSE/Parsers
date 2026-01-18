@@ -26,10 +26,10 @@ namespace UnitTests.TestImplementation
             _features = features;
         }
 
-        public override void Parse(INodesFactory<LangElement, Span> factory, IErrorSink<Span> errors, IErrorRecovery recovery = null)
+        public override void Parse(INodesFactory<LangElement, Span> factory, IErrorSink<Span> errors)
         {
             _lexer = new CollectionLexer(this.Code.AsMemory(), errors);
-            this.Ast = (GlobalCode)new Parser().Parse(_lexer, factory, _features, errors, recovery);
+            this.Ast = (GlobalCode)new Parser().Parse(_lexer, factory, _features, errors);
         }
     }
 }

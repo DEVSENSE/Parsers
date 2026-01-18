@@ -78,10 +78,6 @@ namespace UnitTests.TestImplementation
             _provider.ReportError(expectedTokens);
         }
 
-        public CompleteToken PreviousToken => CompleteToken.Empty;
-
         public IDocBlock DocComment => null;
-
-        public void AddNextTokens(IList<CompleteToken> tokensBuffer, CompleteToken previousToken) { }
     }
 }

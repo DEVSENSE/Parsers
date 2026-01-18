@@ -127,7 +127,7 @@ namespace Devsense.PHP.Syntax
 
         #region Abstract Methods
 
-        public abstract void Parse(INodesFactory<LangElement, Span> factory, Errors.IErrorSink<Span> errors, Errors.IErrorRecovery recovery = null);
+        public abstract void Parse(INodesFactory<LangElement, Span> factory, Errors.IErrorSink<Span> errors);
 
         public abstract void Close();
 
@@ -221,11 +221,11 @@ namespace Devsense.PHP.Syntax
             this._offset = offset;
         }
 
-        public override void Parse(INodesFactory<LangElement, Span> factory, Errors.IErrorSink<Span> errors, Errors.IErrorRecovery recovery = null)
+        public override void Parse(INodesFactory<LangElement, Span> factory, Errors.IErrorSink<Span> errors)
         {
             using (var lexer = new Lexer(this.Code.AsMemory(), this.Encoding, errors, _features, positionShift: _offset, initialState: this.InitialState, docBlockFactory: factory))
             {
-                this.Ast = (GlobalCode)new Parser().Parse(lexer, factory, _features, errors, recovery);
+                this.Ast = (GlobalCode)new Parser().Parse(lexer, factory, _features, errors);
             }
         }
 
@@ -253,7 +253,6 @@ namespace Devsense.PHP.Syntax
         /// <param name="filePath">Source file used for error reporting.</param>
         /// <param name="factory">Nodes factory and error sink.</param>
         /// <param name="errors">Error sink. Can be <c>null</c>.</param>
-        /// <param name="recovery">Error recovery. Can be <c>null</c>.</param>
         /// <param name="features">Optional. Language features.</param>
         /// <param name="initialState">
         /// Optional. Initial parser state.
@@ -263,7 +262,6 @@ namespace Devsense.PHP.Syntax
         public static SourceUnit/*!*/ParseCode(string code, string filePath,
             INodesFactory<LangElement, Span> factory = null,
             Errors.IErrorSink<Span> errors = null,
-            Errors.IErrorRecovery recovery = null,
             LanguageFeatures features = LanguageFeatures.Basic,
             Lexer.LexicalStates initialState = Lexer.LexicalStates.INITIAL,
             int offset = 0)
@@ -282,7 +280,7 @@ namespace Devsense.PHP.Syntax
 
             //var lexer = new Lexer(new StringReader(code), Encoding.UTF8, errors, features, offset, initialState);
 
-            unit.Parse(factory, errors, recovery);
+            unit.Parse(factory, errors);
             unit.Close();
 
             //

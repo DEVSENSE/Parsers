@@ -40,7 +40,7 @@ namespace UnitTests
 
             using (StringReader source_reader = new StringReader(testparts[0]))
             {
-                sourceUnit.Parse(factory, errors, new TestErrorRecovery());
+                sourceUnit.Parse(factory, errors);
                 ast = sourceUnit.Ast;
             }
             if (testparts[1].TrimStart().StartsWith(ParserTests.Errors))
