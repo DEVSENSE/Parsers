@@ -334,7 +334,7 @@ namespace Devsense.PHP.Syntax
 
                 // semi_reserved:
                 // (reinterpret T_NAME_QUALIFIED)
-                if (s_semi_reserved.Contains(token))
+                if (HasFeatureSet(LanguageFeatures.Php80Set) && s_semi_reserved.Contains(token))
                 {
                     // After "\", it is treated as identifier.
                     // See T_NAME_QUALIFIED in Zend.
@@ -342,8 +342,7 @@ namespace Devsense.PHP.Syntax
                     // We don't tokenize the source code in the same way,
                     // since it would break backward compatibility with older parsers.
 
-                    if (PreviousToken == Tokens.T_NS_SEPARATOR ||
-                        GetLookaheadToken().Token == Tokens.T_NS_SEPARATOR)
+                    if (PreviousToken == Tokens.T_NS_SEPARATOR || GetLookaheadToken().Token == Tokens.T_NS_SEPARATOR)
                     {
                         token = Tokens.T_STRING;
                     }
