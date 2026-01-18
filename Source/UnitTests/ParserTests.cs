@@ -700,6 +700,22 @@ $b = true && false;
 ", "dummy.php", Encoding.UTF8);
             unit.Parse(new BasicNodesFactory(unit), errors);
 
+            Assert.AreEqual(0, errors.Count);
+        }
+
+        [TestMethod]
+        public void PublicPrivateNamespaceName()
+        {
+            var errors = new TestErrorSink();
+            var unit = new CodeSourceUnit(@"<?php
+echo Private\Foo::class;
+echo strlen(Private\Foo::class);
+echo strlen(namespace\Private\Foo::class);
+echo strlen(\Private\Foo::class);
+", "dummy.php", Encoding.UTF8);
+            unit.Parse(new BasicNodesFactory(unit), errors);
+
+            Assert.AreEqual(0, errors.Count);
         }
 
         /// <summary>
