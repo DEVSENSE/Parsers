@@ -24,7 +24,7 @@ namespace Devsense.PHP.Syntax
     /// PHP lexer generated according to the PhpLexer.l grammar.
     /// Special implementation of the PHP lexer that skips empty nodes (open tag, comment, etc.), which is required by the PHP grammar.
     /// </summary>
-    public class CompliantLexer : IParserTokenProvider<SemanticValueType, Span>
+    public class CompliantLexer : ITokenProviderInternal<SemanticValueType, Span>
     {
         readonly ITokenProvider<SemanticValueType, Span> _provider;
 
@@ -50,7 +50,7 @@ namespace Devsense.PHP.Syntax
 
         public IDocBlock DocComment => _phpDocs.LastDocBlock;
 
-        DocCommentContainer IParserTokenProvider<SemanticValueType, Span>.DocCommentList => _phpDocs;
+        DocCommentContainer ITokenProviderInternal<SemanticValueType, Span>.DocCommentList => _phpDocs;
 
         public Span TokenPosition => _provider.TokenPosition;
 

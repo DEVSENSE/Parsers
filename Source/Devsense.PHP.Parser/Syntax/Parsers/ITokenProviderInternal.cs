@@ -12,7 +12,7 @@ namespace Devsense.PHP.Syntax
     /// </summary>
     /// <typeparam name="ValueType">Token value.</typeparam>
     /// <typeparam name="PositionType">Token span.</typeparam>
-    internal interface IParserTokenProvider<ValueType, PositionType> : ITokenProvider<ValueType, PositionType>
+    internal interface ITokenProviderInternal<ValueType, PositionType> : ITokenProvider<ValueType, PositionType>
     {
         /// <summary>
         /// List of all PHP Docs analyzed by lexer so far.

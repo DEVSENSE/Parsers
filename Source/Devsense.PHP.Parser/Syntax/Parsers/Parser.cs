@@ -28,7 +28,7 @@ namespace Devsense.PHP.Syntax
 {
     public partial class Parser
     {
-        IParserTokenProvider<SemanticValueType, Span> _lexer;
+        ITokenProviderInternal<SemanticValueType, Span> _lexer;
         INodesFactory<LangElement, Span> _astFactory;
         IErrorSink<Span> _errors;
         Scope _currentScope;
