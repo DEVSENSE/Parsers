@@ -24,7 +24,7 @@ namespace Devsense.PHP.Syntax.Ast
     /// <summary>
     /// Base class for static field uses.
     /// </summary>
-    public abstract class StaticFieldUse : VariableUse
+    public abstract class StaticFieldUse : VariableUse, IStaticMemberUse
     {
         public override Span Span
         {

@@ -86,7 +86,7 @@ namespace Devsense.PHP.Syntax.Ast
     /// <summary>
     /// Class constant use.
     /// </summary>
-    public abstract class ClassConstUse : ConstantUse
+    public abstract class ClassConstUse : ConstantUse, IStaticMemberUse
     {
         public override Operations Operation { get { return Operations.ClassConstUse; } }
 

@@ -236,6 +236,18 @@ namespace Devsense.PHP.Syntax.Ast
 
     #endregion
 
+    #region IStaticMemberUse
+
+    /// <summary>
+    /// Static member use expression, i.e. static field use or static method call.
+    /// </summary>
+    public interface IStaticMemberUse : IExpression
+    {
+        TypeRef TargetType { get; }
+    }
+
+    #endregion
+
     #region VarLikeConstructUse
 
     /// <summary>

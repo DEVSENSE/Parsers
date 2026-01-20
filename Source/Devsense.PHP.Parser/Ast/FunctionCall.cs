@@ -24,7 +24,7 @@ namespace Devsense.PHP.Syntax.Ast
 
     public abstract class FunctionCall : VarLikeConstructUse
     {
-        public override sealed Span Span
+        public override Span Span
         {
             get
             {
@@ -34,7 +34,7 @@ namespace Devsense.PHP.Syntax.Ast
                 if (name_span.IsValid)
                 {
                     return Span.FromBounds(
-                        IsMemberOf != null ? IsMemberOf.Span.Start : name_span.Start,
+                        this.StartPosition,
                         call_span.IsValid ? call_span.End : name_span.End
                     );
                 }
@@ -44,12 +44,16 @@ namespace Devsense.PHP.Syntax.Ast
             protected set { }
         }
 
+        /// <summary>
+        /// The span before <c>-&gt;</c> or <c>::</c>.
+        /// Can be <see cref="Span.Invalid"/> if it's not a member function.
+        /// </summary>
+        protected virtual int StartPosition => this.IsMemberOf != null ? this.IsMemberOf.Span.Start : this.NameSpan.Start;
+
         /// <summary>Function call arguments.</summary>
         public CallSignature CallSignature { get; set; }
 
-        /// <summary>
-        /// Position of called function name in source code.
-        /// </summary>
+        /// <summary>Position of called function name in source code.</summary>
         public abstract Text.Span NameSpan { get; }
 
         public FunctionCall(Text.Span span, CallSignature signature)
@@ -97,6 +101,8 @@ namespace Devsense.PHP.Syntax.Ast
 
             public override Span NameSpan => new Span(_name_start, this.SimpleName.Value.Length);
 
+            protected override int StartPosition => _name_start;
+
             public SimpleLocalDirectFcnCall(Text.Span span, NameRef name, CallSignature signature)
                 : base(span, signature)
             {
@@ -137,7 +143,9 @@ namespace Devsense.PHP.Syntax.Ast
             public override Name SimpleName { get; }
 
             public override Span NameSpan => new Span(_name_start, SimpleName.Value.Length);
-            
+
+            protected override int StartPosition => this.IsMemberOf.Span.Start;
+
             public override Expression IsMemberOf { get; }
 
             public override TranslatedQualifiedName FullName => new TranslatedQualifiedName(
@@ -244,12 +252,13 @@ namespace Devsense.PHP.Syntax.Ast
 
     #region StaticMtdCall
 
-    public abstract class StaticMtdCall : FunctionCall
+    public abstract class StaticMtdCall : FunctionCall, IStaticMemberUse
     {
         public override sealed Expression IsMemberOf => null;
 
-        public TypeRef TargetType => this.typeRef;
-        protected readonly TypeRef/*!*/typeRef;
+        protected override int StartPosition => this.TargetType.Span.Start;
+
+        public TypeRef TargetType { get; }
 
         /// <summary>
         /// Static method call.
@@ -268,7 +277,7 @@ namespace Devsense.PHP.Syntax.Ast
         {
             Debug.Assert(typeRef != null);
 
-            this.typeRef = typeRef;
+            this.TargetType = typeRef;
         }
     }
 
@@ -280,14 +289,14 @@ namespace Devsense.PHP.Syntax.Ast
     {
         public override Operations Operation { get { return Operations.DirectStaticCall; } }
 
-        private NameRef methodName;
-        public NameRef MethodName => methodName;
-        public override Text.Span NameSpan => methodName.Span;
+        public NameRef MethodName { get; }
+        
+        public override Text.Span NameSpan => MethodName.Span;
 
         public DirectStMtdCall(Text.Span span, TypeRef targetType, NameRef nameRef, CallSignature signature)
             : base(span, targetType, signature)
         {
-            this.methodName = nameRef;
+            this.MethodName = nameRef;
         }
 
         public DirectStMtdCall(
@@ -296,7 +305,7 @@ namespace Devsense.PHP.Syntax.Ast
             CallSignature signature)
             : base(span, className, classNamePosition, signature)
         {
-            this.methodName = new NameRef(methodNamePosition, methodName);
+            this.MethodName = new NameRef(methodNamePosition, methodName);
         }
 
         /// <summary>
@@ -318,10 +327,9 @@ namespace Devsense.PHP.Syntax.Ast
         public override Operations Operation { get { return Operations.IndirectStaticCall; } }
 
         /// <summary>Expression that represents name of method.</summary>
-        public Expression/*!*/ MethodNameExpression => _methodNameExpr;
-        Expression/*!*/_methodNameExpr;
+        public Expression/*!*/ MethodNameExpression { get; }
 
-        public override Text.Span NameSpan => _methodNameExpr.Span;
+        public override Text.Span NameSpan => this.MethodNameExpression.Span;
 
 
         public IndirectStMtdCall(Text.Span span,
@@ -329,7 +337,7 @@ namespace Devsense.PHP.Syntax.Ast
                                  CallSignature signature)
             : base(span, className, classNamePosition, signature)
         {
-            _methodNameExpr = nameExpr;
+            this.MethodNameExpression = nameExpr;
         }
 
         public IndirectStMtdCall(Text.Span span,
@@ -337,7 +345,7 @@ namespace Devsense.PHP.Syntax.Ast
                                  CallSignature signature)
             : base(span, typeRef, signature)
         {
-            _methodNameExpr = mtdNameVar;
+            this.MethodNameExpression = mtdNameVar;
         }
 
         /// <summary>
