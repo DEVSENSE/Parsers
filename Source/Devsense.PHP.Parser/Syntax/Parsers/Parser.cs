@@ -105,7 +105,7 @@ namespace Devsense.PHP.Syntax
             // initialization:
 
             _languageFeatures = language;
-            _lexer = new CompliantLexer(lexer, language);
+            _lexer = new CompliantLexer(new ReinterpretingLexer(lexer, language), language);
             _astFactory = astFactory ?? throw new ArgumentNullException(nameof(astFactory));
             _errors = errors ?? new EmptyErrorSink<Span>();
             _namingContext = StackObjectPool<NamingContext>.Allocate();
