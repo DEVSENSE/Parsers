@@ -15,6 +15,7 @@ namespace UnitTests
     [TestClass]
     [DeploymentItem("TestData.csv")]
     [DeploymentItem("Tokens.php")]
+    [DeploymentItem("TestFiles\\large_string.php")]
     public class LexerTests
     {
         const string BuildScript = "build.bat";
@@ -25848,6 +25849,25 @@ $x = <<<XXX
                 Assert.AreEqual(t, Tokens.T_DNUMBER);
                 Assert.AreEqual(lexer.TokenSpan, errsink.Errors.Last().Span);
             }
+        }
+
+        [TestMethod]
+        public void LargeStringTest()
+        {
+            var code = File.ReadAllText("large_string.php");
+
+            var lexer = new Lexer(code.AsMemory(), Encoding.UTF8, features: LanguageFeatures.Php81Set);
+
+            var start = DateTime.UtcNow;
+
+            Tokens token;
+            while ((token = lexer.GetNextToken()) != Tokens.EOF)
+            {
+                
+            }
+
+            var end = DateTime.UtcNow;
+            Assert.IsTrue(Debugger.IsAttached || (end - start).TotalSeconds < 1, "Too long tokenizer time");
         }
 
         [TestMethod]
