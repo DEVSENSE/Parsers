@@ -80,8 +80,9 @@ namespace Devsense.PHP.Syntax
 
         /// <summary>
         /// Gets <typeparamref name="TTokenData"/> value associated with current token.
+        /// In the context of this method, the <see cref="Current"/> refers to the snapshot before <paramref name="token"/>.
         /// </summary>
-        protected virtual TTokenData ResolveTokenData() => default(TTokenData);
+        protected virtual TTokenData ResolveTokenData(Tokens token) => default(TTokenData);
 
         /// <summary>
         /// Advances <see cref="_current_token"/> to the next token.
@@ -230,7 +231,7 @@ namespace Devsense.PHP.Syntax
             var t = (Tokens)lexer.GetNextToken();
 
             // create snapshot
-            return new TokenSnapshot(t, ResolveTokenData(/*expected lexer in current state*/), lexer);
+            return new TokenSnapshot(t, ResolveTokenData(t/*expected lexer in current state*/), lexer);
         }
 
         /// <summary>
