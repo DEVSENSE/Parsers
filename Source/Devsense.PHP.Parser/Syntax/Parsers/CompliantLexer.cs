@@ -54,17 +54,13 @@ namespace Devsense.PHP.Syntax
 
         readonly DocCommentContainer _phpDocs = new DocCommentContainer();
 
-        readonly LanguageFeatures _features;
-
         /// <summary>
         /// Lexer constructor that initializes all the necessary members
         /// </summary>
         /// <param name="provider">Underlying tokens provider.</param>
-        /// <param name="language">Language features.</param>
-        public CompliantLexer(ITokenProvider<SemanticValueType, Span> provider, LanguageFeatures language = LanguageFeatures.Basic)
+        public CompliantLexer(ITokenProvider<SemanticValueType, Span> provider)
         {
             _provider = provider;
-            _features = language;
         }
 
         /// <summary>Current documentary block with whitespace suffixed right after <c>*/</c>.</summary>

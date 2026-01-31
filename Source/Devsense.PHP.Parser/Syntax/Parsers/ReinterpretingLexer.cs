@@ -11,26 +11,35 @@ namespace Devsense.PHP.Syntax
     /// Re-interpret token based on given language level.
     /// Re-interprets to <c>T_STRING</c> when inside a qualified name.
     /// </summary>
-    public class ReinterpretingLexer : ITokenProvider<SemanticValueType, Span>
+    public class ReinterpretingLexer<TProvider, TTokenData> : ITokenProvider<SemanticValueType, Span>
+        where TProvider: ITokenProvider<SemanticValueType, Span>
+        where TTokenData : struct
     {
         #region TokenSnapshot
 
         /// <summary>
         /// Current token information. used for lookahead and lookback.
         /// </summary>
-        readonly struct TokenSnapshot<ValueType, PositionType>
+        public readonly struct TokenSnapshot
         {
             public readonly Tokens Token;
-            public readonly PositionType TokenPosition;
+            public readonly Span TokenPosition;
             public readonly ReadOnlyMemory<char> TokenSource;
-            public readonly ValueType TokenValue;
+            public readonly SemanticValueType TokenValue;
 
-            public TokenSnapshot(Tokens token, ITokenProvider<ValueType, PositionType> lexer)
+            /// <summary>
+            /// Custom data associated with token.
+            /// Always resolved.
+            /// </summary>
+            public readonly TTokenData Data;
+
+            public TokenSnapshot(Tokens token, TTokenData data, TProvider lexer)
             {
                 this.Token = token;
                 this.TokenPosition = lexer.TokenPosition;
                 this.TokenSource = lexer.TokenSource;
                 this.TokenValue = lexer.TokenValue;
+                this.Data = data;
             }
         }
 
@@ -52,38 +61,37 @@ namespace Devsense.PHP.Syntax
 
         #endregion
 
-        readonly ITokenProvider<SemanticValueType, Span> _provider;
+        readonly TProvider _provider;
 
         readonly LanguageFeatures _features;
 
-        /// <summary>
-        /// Lexer constructor that initializes all the necessary members
-        /// </summary>
         /// <param name="provider">Underlying tokens provider.</param>
         /// <param name="language">Language features.</param>
-        public ReinterpretingLexer(ITokenProvider<SemanticValueType, Span> provider, LanguageFeatures language = LanguageFeatures.Basic)
+        public ReinterpretingLexer(TProvider provider, LanguageFeatures language = LanguageFeatures.Basic)
         {
             _provider = provider;
             _features = language;
         }
 
-        TokenSnapshot<SemanticValueType, Span>? _previous_token, _lookahead_token;
-        TokenSnapshot<SemanticValueType, Span> _current_token;
+        TokenSnapshot? _previous_token, _lookahead_token;
+        TokenSnapshot _current_token;
 
         bool HasFeatureSet(LanguageFeatures fset) => (_features & fset) == fset;
+
+        protected virtual TTokenData ResolveTokenData(Tokens token, TProvider provider) => default(TTokenData);
 
         /// <summary>
         /// Advances <see cref="_current_token"/> to the next token.
         /// </summary>
         /// <returns>Value indicating there was another token (i.e. it was not <c>EOF</c>).</returns>
-        bool MoveNext()
+        public bool MoveNext()
         {
             _previous_token = _current_token;
 
             if (_lookahead_token.HasValue) // already fetched
             {
                 _current_token = _lookahead_token.GetValueOrDefault();
-                _lookahead_token = default(TokenSnapshot<SemanticValueType, Span>?);
+                _lookahead_token = default(TokenSnapshot?);
             }
             else
             {
@@ -94,7 +102,7 @@ namespace Devsense.PHP.Syntax
             return _current_token.Token != Tokens.END;
         }
 
-        TokenSnapshot<SemanticValueType, Span> Current => _current_token;
+        public TokenSnapshot Current => _current_token;
 
         Tokens CurrentToken => _current_token.Token;
 
@@ -105,7 +113,7 @@ namespace Devsense.PHP.Syntax
         /// Current token must be fetched, and underlying lexer must be in valid state.
         /// </summary>
         /// <exception cref="InvalidOperationException">Underlying lexer is not in valid state.</exception>
-        TokenSnapshot<SemanticValueType, Span> GetLookaheadToken()
+        TokenSnapshot GetLookaheadToken()
         {
             Debug.Assert(_current_token.Token != 0);
 
@@ -208,11 +216,13 @@ namespace Devsense.PHP.Syntax
         /// <summary>
         /// Effectively consumes next token from the <see cref="_provider"/>.
         /// </summary>
-        static TokenSnapshot<ValueType, PositionType> FetchToken<ValueType, PositionType>(ITokenProvider<ValueType, PositionType> lexer)
+        TokenSnapshot FetchToken(TProvider lexer)
         {
             // advance lexer
             var t = (Tokens)lexer.GetNextToken();
-            return new TokenSnapshot<ValueType, PositionType>(t, lexer);
+
+            // create snapshot
+            return new TokenSnapshot(t, ResolveTokenData(t, lexer), lexer);
         }
 
         /// <summary>

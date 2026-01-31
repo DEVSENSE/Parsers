@@ -92,20 +92,23 @@ namespace Devsense.PHP.Syntax
                 return first;
         }
 
-        public LangElement Parse(
-                ITokenProvider<SemanticValueType, Span> lexer,
+        public LangElement Parse<TProvider>(
+                TProvider lexer,
                 INodesFactory<LangElement, Span> astFactory,
                 LanguageFeatures language,
                 IErrorSink<Span> errors = null,
                 int positionShift = 0)
+            where TProvider: ITokenProvider<SemanticValueType, Span>
         {
             if (lexer == null)
+            {
                 throw new ArgumentNullException(nameof(lexer));
+            }
 
             // initialization:
 
             _languageFeatures = language;
-            _lexer = new CompliantLexer(new ReinterpretingLexer(lexer, language), language);
+            _lexer = new CompliantLexer(new ReinterpretingLexer<TProvider, VoidStruct/*unused*/>(lexer, language));
             _astFactory = astFactory ?? throw new ArgumentNullException(nameof(astFactory));
             _errors = errors ?? new EmptyErrorSink<Span>();
             _namingContext = StackObjectPool<NamingContext>.Allocate();
