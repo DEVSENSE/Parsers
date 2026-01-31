@@ -61,7 +61,7 @@ namespace Devsense.PHP.Syntax
 
         #endregion
 
-        readonly TProvider _provider;
+        protected readonly TProvider _provider;
 
         readonly LanguageFeatures _features;
 
@@ -78,7 +78,10 @@ namespace Devsense.PHP.Syntax
 
         bool HasFeatureSet(LanguageFeatures fset) => (_features & fset) == fset;
 
-        protected virtual TTokenData ResolveTokenData(Tokens token, TProvider provider) => default(TTokenData);
+        /// <summary>
+        /// Gets <typeparamref name="TTokenData"/> value associated with current token.
+        /// </summary>
+        protected virtual TTokenData ResolveTokenData() => default(TTokenData);
 
         /// <summary>
         /// Advances <see cref="_current_token"/> to the next token.
@@ -104,16 +107,21 @@ namespace Devsense.PHP.Syntax
 
         public TokenSnapshot Current => _current_token;
 
+        /// <summary>
+        /// Gets the previous token snapshot or default(<see cref="TokenSnapshot"/>) if enumerator has not been moved from first position yet.
+        /// </summary>
+        public TokenSnapshot Previous => _previous_token.GetValueOrDefault();
+
         Tokens CurrentToken => _current_token.Token;
 
-        Tokens PreviousToken => _previous_token.GetValueOrDefault().Token;
+        Tokens PreviousToken => Previous.Token;
 
         /// <summary>
         /// Gets token AFTER the the current one.
         /// Current token must be fetched, and underlying lexer must be in valid state.
         /// </summary>
         /// <exception cref="InvalidOperationException">Underlying lexer is not in valid state.</exception>
-        TokenSnapshot GetLookaheadToken()
+        protected TokenSnapshot GetLookaheadToken()
         {
             Debug.Assert(_current_token.Token != 0);
 
@@ -222,7 +230,7 @@ namespace Devsense.PHP.Syntax
             var t = (Tokens)lexer.GetNextToken();
 
             // create snapshot
-            return new TokenSnapshot(t, ResolveTokenData(t, lexer), lexer);
+            return new TokenSnapshot(t, ResolveTokenData(/*expected lexer in current state*/), lexer);
         }
 
         /// <summary>
