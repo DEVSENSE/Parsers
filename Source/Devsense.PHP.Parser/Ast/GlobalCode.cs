@@ -42,7 +42,7 @@ namespace Devsense.PHP.Syntax.Ast
     {
         #region IGlobalCode
 
-        IReadOnlyCollection<IStatement> IBlockStatement.Statements => Statements;
+        IReadOnlyList<IStatement> IBlockStatement.Statements => Statements;
 
         Tokens IBlockStatement.OpeningToken => 0;
 

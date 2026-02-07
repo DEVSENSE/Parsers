@@ -61,7 +61,7 @@ namespace Devsense.PHP.Syntax.Ast
         /// <summary>
         /// Gets contained statements.
         /// </summary>
-        IReadOnlyCollection<IStatement> Statements { get; }
+        IReadOnlyList<IStatement> Statements { get; }
 
         /// <summary>
         /// A token that introduces the block.
@@ -85,7 +85,7 @@ namespace Devsense.PHP.Syntax.Ast
     {
         #region IBlockStatement
 
-        IReadOnlyCollection<IStatement> IBlockStatement.Statements => _statements;
+        IReadOnlyList<IStatement> IBlockStatement.Statements => _statements;
 
         public virtual Tokens OpeningToken => Tokens.T_LBRACE;
 
