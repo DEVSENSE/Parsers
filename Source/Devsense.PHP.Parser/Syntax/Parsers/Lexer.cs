@@ -155,28 +155,7 @@ namespace Devsense.PHP.Syntax
             _charOffset += tokenLength;
         }
 
-        void ITokenProvider<SemanticValueType, Span>.ReportError(string[] expectedTerminals)
-        {
-            // CONSIDER: (expected tokens....)
-            var token_str = GetTokenString(intern: false);
-            if (token_str.Length != 0)
-            {
-                _errors.Error(
-                    _tokenPosition,
-                    FatalErrors.SyntaxError,
-                    string.Format(Strings.unexpected_token, token_str)
-                );
-            }
-            else
-            {
-                // EOF
-                _errors.Error(
-                    _tokenPosition,
-                    FatalErrors.SyntaxError,
-                    Strings.unexpected_eof
-                );
-            }
-        }
+        void ITokenProvider<SemanticValueType, Span>.ReportError(string[] expectedTerminals) => _errors.SyntaxError(GetTokenString(intern: false), _tokenPosition, expectedTerminals);
 
         int ITokenProvider<SemanticValueType, Span>.GetNextToken() => (int)GetNextToken();
 

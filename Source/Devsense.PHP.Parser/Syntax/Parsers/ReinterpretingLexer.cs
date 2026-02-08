@@ -1,4 +1,5 @@
 ﻿using Devsense.PHP.Ast.DocBlock;
+using Devsense.PHP.Errors;
 using Devsense.PHP.Text;
 using System;
 using System.Collections.Generic;
@@ -65,11 +66,15 @@ namespace Devsense.PHP.Syntax
 
         readonly LanguageFeatures _features;
 
+        readonly IErrorSink<Span> _errors;
+
         /// <param name="provider">Underlying tokens provider.</param>
+        /// <param name="errors">Error sink for syntax errors.</param>
         /// <param name="language">Language features.</param>
-        public ReinterpretingLexer(TProvider provider, LanguageFeatures language = LanguageFeatures.Basic)
+        public ReinterpretingLexer(TProvider provider, IErrorSink<Span> errors, LanguageFeatures language = LanguageFeatures.Basic)
         {
             _provider = provider;
+            _errors = errors ?? new EmptyErrorSink<Span>();
             _features = language;
         }
 
@@ -312,6 +317,6 @@ namespace Devsense.PHP.Syntax
             return (int)Tokens.EOF;
         }
 
-        public void ReportError(string[] expectedTokens) => _provider.ReportError(expectedTokens);
+        public void ReportError(string[] expectedTokens) => _errors.SyntaxError(Current.TokenSource.ToString(), Current.TokenPosition, expectedTokens);
     }
 }
