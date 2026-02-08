@@ -469,7 +469,7 @@ namespace Devsense.PHP.Syntax
 			if (!FindErrorRecoveryState())
 				return false;
 
-			ShiftErrorToken();
+            next = errToken;
 
 			return DiscardInvalidTokens();
         }
@@ -503,31 +503,17 @@ namespace Devsense.PHP.Syntax
 			scanner.ReportError(expected_terminals);
 		}
 
-
-		internal void ShiftErrorToken()
-		{
-			int old_next = next;
-			next = errToken;
-
-			Shift(states[current_state_index].parser_table[next]);
-
-            //if (Trace)
-            //    Console.Error.WriteLine("Entering state {0} ", states[current_state_index].num);
-
-			next = old_next;
-		}
-
-
 		internal bool FindErrorRecoveryState()
 		{
 			while (true)    // pop states until one found that accepts error token
 			{
-                int i;
                 var current_state_parser_table = states[current_state_index].parser_table;
-                if (current_state_parser_table != null &&
-                    current_state_parser_table.TryGetValue(errToken, out i) && //current_state_parser_table.ContainsKey(errToken) &&
-                    i /*current_state_parser_table[errToken]*/ > 0) // shift
+				if (current_state_parser_table != null &&
+					current_state_parser_table.TryGetValue(errToken, out var action) &&
+					action != 0) // >0 shift or <0 reduce
+				{
 					return true;
+				}
 
                 //if (Trace)
                 //    Console.Error.WriteLine("Error: popping state {0}", states[state_stack.Peek()].num);
@@ -535,17 +521,19 @@ namespace Devsense.PHP.Syntax
 				state_stack.Pop();
 				value_stack.Pop();
 
-                //if (Trace)
-                //    DisplayStack();
+				//if (Trace)
+				//    DisplayStack();
 
 				if (state_stack.Count == 0)
 				{
-                    //if (Trace)
-                    //    Console.Error.Write("Aborting: didn't find a state that accepts error token");
+					//if (Trace)
+					//    Console.Error.Write("Aborting: didn't find a state that accepts error token");
 					return false;
 				}
 				else
+				{
 					current_state_index = state_stack.Peek();
+				}
 			}
 		}
 

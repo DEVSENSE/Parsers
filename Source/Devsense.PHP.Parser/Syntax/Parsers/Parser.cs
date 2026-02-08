@@ -1249,18 +1249,5 @@ namespace Devsense.PHP.Syntax
 
             return result;
         }
-
-        /// <summary>
-        /// Error recovery implementation.
-        /// </summary>
-        /// <param name="token">Current token.</param>
-        /// <param name="state">Current parser state.</param>
-        /// <returns><c>True</c> if the error recovery succeeded, <c>False</c> otherwise.</returns>
-        protected override bool ErrorRecovery(int token, int state)
-        {
-            ReportError();
-
-            return false;
-        }
     }
 }
