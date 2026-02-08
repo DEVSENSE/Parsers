@@ -77,24 +77,51 @@ namespace Devsense.PHP.Syntax.Ast
     /// <remarks>
     /// Implements PHP operators: <c>=  +=  -=  *=  /=  %=  .= =.  &amp;=  |=  ^=  &lt;&lt;=  &gt;&gt;=</c>.
     /// </remarks>
-    public sealed class ValueAssignEx : AssignEx
+    public abstract class ValueAssignEx : AssignEx
     {
-        public override Operations Operation { get; }
+        sealed class GenericValueAssignEx : ValueAssignEx
+        {
+            public override Operations Operation { get; }
 
-        public ValueAssignEx(Text.Span span, Operations operation, VarLikeConstructUse/*!*/ lvalue, Expression/*!*/ rvalue)
+            public GenericValueAssignEx(Span span, Operations operation, VarLikeConstructUse lvalue, Expression rvalue)
+                : base(span, lvalue, rvalue)
+            {
+                this.Operation = operation;
+            }
+        }
+
+        sealed class AssignValue : ValueAssignEx
+        {
+            public override Operations Operation => Operations.AssignValue;
+
+            public AssignValue(Span span, VarLikeConstructUse lvalue, Expression rvalue)
+                : base(span, lvalue, rvalue)
+            {
+            }
+        }
+
+        public static ValueAssignEx Create(Span span, Operations operation, VarLikeConstructUse lvalue, Expression rvalue)
+        {
+            switch (operation)
+            {
+                case Operations.AssignValue:
+                    return new AssignValue(span, lvalue, rvalue);
+                default:
+                    return new GenericValueAssignEx(span, operation, lvalue, rvalue);
+            }
+        }
+
+
+        protected ValueAssignEx(Text.Span span, VarLikeConstructUse/*!*/ lvalue, Expression/*!*/ rvalue)
             : base(span, lvalue, rvalue)
         {
-            this.Operation = operation;
         }
 
         /// <summary>
         /// Call the right Visit* method on the given Visitor object.
         /// </summary>
         /// <param name="visitor">Visitor to be called.</param>
-        public override void VisitMe(TreeVisitor visitor)
-        {
-            visitor.VisitValueAssignEx(this);
-        }
+        public override void VisitMe(TreeVisitor visitor) => visitor.VisitValueAssignEx(this);
     }
 
     #endregion

@@ -88,7 +88,7 @@ namespace Devsense.PHP.Syntax.Ast
             }
             else
             {
-                return new ValueAssignEx(span, assignOp, (VarLikeConstructUse)target, (Expression)value);
+                return ValueAssignEx.Create(span, assignOp, (VarLikeConstructUse)target, (Expression)value);
             }
         }
 
