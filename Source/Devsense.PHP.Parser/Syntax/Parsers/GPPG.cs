@@ -565,7 +565,7 @@ namespace Devsense.PHP.Syntax
                 // Read a lookahead if we don't have one
                 if (next == 0)
                 {
-                    next = scanner.GetNextToken();
+                    next = GetNextToken();
                 }
 
 				// EOF -> recovery failed

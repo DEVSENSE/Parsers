@@ -31,6 +31,39 @@ if (true) {
 @"<?php
 $x->a = 'john'
 $x->b = 'wick';
+",
+@"<?php
+function f() {
+    $x = 1 + ;
+    if ($x > 0) {
+        echo 'ok';
+    }
+    return $x;
+}",
+@"<?php
+function foo() {
+    $a = 1
+    if ($a > 0) {
+        echo $a;
+    }
+    return $a;
+}",
+@"<?php
+class Test {
+    public function run() {
+        echo 'start'
+        while ($this->cond) {
+            work();
+        }
+    }
+}",
+@"<?php
+
+if ($a) {
+    echo ""a"";
+    echo ""b"";
+
+echo ""outside"";
 "
             };
 

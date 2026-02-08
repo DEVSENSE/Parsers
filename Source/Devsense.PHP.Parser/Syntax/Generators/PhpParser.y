@@ -654,6 +654,7 @@ statement:
 	|	T_GLOBAL global_var_list ';'	{ $$ = _astFactory.Global(@$, $2); }
 	|	T_STATIC static_var_list ';'	{ $$ = _astFactory.Static(@$, $2); }
 	|	T_ECHO echo_expr_list ';'		{ $$ = _astFactory.Echo(@$, $2); }
+	|	T_ECHO echo_expr_list T_ERROR	{ $$ = _astFactory.Echo(@$, $2); yyerrok(); }
 	|	T_INLINE_HTML { $$ = _astFactory.InlineHtml(@$, $1); }
 	|	expr ';' { $$ = _astFactory.ExpressionStmt(@$, $1); }
 	|	expr T_ERROR { $$ = _astFactory.ExpressionStmt(@1, $1); yyerrok(); }
