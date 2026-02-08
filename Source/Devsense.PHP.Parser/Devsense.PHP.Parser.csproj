@@ -40,4 +40,17 @@
   <ItemGroup>
     <PackageReference Include="System.Memory" Version="4.5.3" Condition=" '$(TargetFramework)'!='netstandard2.1' " />
   </ItemGroup>
+  <ItemGroup>
+    <Compile Update="Errors\Strings.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Strings.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Update="Errors\Strings.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Strings.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
 </Project>

@@ -2101,4 +2101,7 @@ non-infringement.
   <data name="invalid_heredoc_indent" xml:space="preserve">
     <value>Incorrect heredoc indentation</value>
   </data>
+  <data name="unexpected_eof" xml:space="preserve">
+    <value>unexpected end of file (EOF)</value>
+  </data>
 </root>

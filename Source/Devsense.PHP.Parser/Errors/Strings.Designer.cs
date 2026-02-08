@@ -10,7 +10,6 @@
 
 namespace Devsense.PHP.Errors {
     using System;
-    using System.Reflection;
     
     
     /// <summary>
@@ -20,7 +19,7 @@ namespace Devsense.PHP.Errors {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "4.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "18.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class Strings {
@@ -40,7 +39,7 @@ namespace Devsense.PHP.Errors {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Devsense.PHP.Errors.Strings", typeof(Strings).GetTypeInfo().Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Devsense.PHP.Errors.Strings", typeof(Strings).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -3114,6 +3113,15 @@ namespace Devsense.PHP.Errors {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Incorrect heredoc indentation.
+        /// </summary>
+        internal static string invalid_heredoc_indent {
+            get {
+                return ResourceManager.GetString("invalid_heredoc_indent", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The icon has an invalid format..
         /// </summary>
         internal static string invalid_icon_format {
@@ -5428,6 +5436,15 @@ namespace Devsense.PHP.Errors {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The floating-point number {0} is too big, considered as infinity instead.
+        /// </summary>
+        internal static string too_big_double {
+            get {
+                return ResourceManager.GetString("too_big_double", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The integer number {0} is too big, converting to double instead.
         /// </summary>
         internal static string too_big_int_conversion {
@@ -5685,6 +5702,15 @@ namespace Devsense.PHP.Errors {
         internal static string undefined_variable {
             get {
                 return ResourceManager.GetString("undefined_variable", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to unexpected end of file (EOF).
+        /// </summary>
+        internal static string unexpected_eof {
+            get {
+                return ResourceManager.GetString("unexpected_eof", resourceCulture);
             }
         }
         
