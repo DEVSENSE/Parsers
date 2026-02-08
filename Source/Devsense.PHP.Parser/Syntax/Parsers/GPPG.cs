@@ -235,7 +235,8 @@ namespace Devsense.PHP.Syntax
 		
 		private int next;
 		private int current_state_index;
-        //private State current_state { get { return this.states[current_state_index]; } }
+		//private State current_state { get { return this.states[current_state_index]; } }
+		private int? lookahead;
 
 		private bool recovering;
 		private int tokensSinceLastError;
@@ -286,6 +287,24 @@ namespace Devsense.PHP.Syntax
             value_stack.Clear();
         }
 
+        private int GetNextToken()
+		{
+			int token;
+
+			if (lookahead.HasValue)
+			{
+				token = lookahead.GetValueOrDefault();
+				lookahead = null;
+			}
+			else
+			{
+				token = scanner.GetNextToken();
+            }
+
+			//
+			return token;
+		}
+
         public bool Parse()
 		{
 			next = 0;
@@ -306,10 +325,10 @@ namespace Devsense.PHP.Syntax
                 {
                     if (next == 0)
                     {
-                        //if (Trace)
-                        //    Console.Error.Write("Reading a token: ");
+						//if (Trace)
+						//    Console.Error.Write("Reading a token: ");
 
-                        next = scanner.GetNextToken();
+						next = GetNextToken();
                     }
 
                     //if (Trace)
@@ -469,6 +488,7 @@ namespace Devsense.PHP.Syntax
 			if (!FindErrorRecoveryState())
 				return false;
 
+			lookahead = next;
             next = errToken;
 
 			return DiscardInvalidTokens();
@@ -540,46 +560,36 @@ namespace Devsense.PHP.Syntax
 
 		internal bool DiscardInvalidTokens()
 		{
+            for (; ; )
+            {
+                // Read a lookahead if we don't have one
+                if (next == 0)
+                {
+                    next = scanner.GetNextToken();
+                }
 
-			int action = states[current_state_index].defaultAction;
-
-            var current_state_parser_table = states[current_state_index].parser_table;
-            if (current_state_parser_table != null)
-			{
-				// Discard tokens until find one that works ...
-				while (true)
+				// EOF -> recovery failed
+				if (next == eofToken)
 				{
-					if (next == 0)
-					{
-                        //if (Trace)
-                        //    Console.Error.Write("Reading a token: ");
-
-						next = scanner.GetNextToken();
-					}
-
-                    //if (Trace)
-                    //    Console.Error.WriteLine("Next token is {0}", TerminalToString(next));
-
-					if (next == eofToken)
-						return false;
-
-                    int i;
-                    if (current_state_parser_table.TryGetValue(next, out i))
-                        action = i;// current_state.parser_table[next];
-
-					if (action != 0)
-						return true;
-					else
-					{
-                        //if (Trace)
-                        //    Console.Error.WriteLine("Error: Discarding {0}", TerminalToString(next));
-						next = 0;
-					}
+					return false;
 				}
-			}
-			else
-				return true;
-		}
+
+                var table = states[current_state_index].parser_table;
+
+                // If no table, accept (reduce-only state)
+                if (table == null)
+                    return true;
+
+                // Accept token ONLY if explicitly in table
+                if (table.TryGetValue(next, out var action) && action != 0)
+                {
+                    return true;
+                }
+
+                // Otherwise discard token
+                next = 0;
+            }
+        }
 
 
 		protected void yyerrok()

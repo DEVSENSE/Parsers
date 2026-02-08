@@ -28,6 +28,10 @@ namespace UnitTests
 @"<?php
 if (true) {
 ",
+@"<?php
+$x->a = 'john'
+$x->b = 'wick';
+"
             };
 
             foreach (var code in codes)
