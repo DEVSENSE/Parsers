@@ -560,6 +560,10 @@ namespace Devsense.PHP.Syntax
 
 		internal bool DiscardInvalidTokens()
 		{
+            int lastState = -1;
+            int reductionCount = 0;
+            const int MAX_REDUCTIONS = 4;
+
             for (; ; )
             {
                 // Read a lookahead if we don't have one
@@ -581,18 +585,60 @@ namespace Devsense.PHP.Syntax
                     return true;
 
                 // Accept token ONLY if explicitly in table
-                if (table.TryGetValue(next, out var action) && action != 0)
+                if (table.TryGetValue(next, out var action))
                 {
+					if (action > 0)
+					{
+                        // shift: safe sync
+                        return true;
+					}
+
+                    if (action < 0)
+                    {
+                        // reduction: allow only if progressing
+                        if (current_state_index != lastState && reductionCount < MAX_REDUCTIONS)
+                        {
+                            lastState = current_state_index;
+                            reductionCount++;
+                            return true;
+                        }
+                    }
+
                     return true;
                 }
+
+                // PHP-SPECIFIC HEURISTIC (recovery only)
+                if (IsStatementStart(next))
+                    return true;
 
                 // Otherwise discard token
                 next = 0;
             }
         }
 
+        static bool IsStatementStart(int token)
+        {
+            switch ((Tokens)token)
+            {
+                case Tokens.T_IF:
+                case Tokens.T_WHILE:
+                case Tokens.T_FOR:
+                case Tokens.T_FOREACH:
+                case Tokens.T_SWITCH:
+                case Tokens.T_RETURN:
+                case Tokens.T_ECHO:
+                case Tokens.T_FUNCTION:
+                case Tokens.T_CLASS:
+                case Tokens.T_TRAIT:
+                case Tokens.T_INTERFACE:
+                case Tokens.T_VARIABLE:
+                case Tokens.T_LBRACE:
+                    return true;
+            }
+            return false;
+        }
 
-		protected void yyerrok()
+        protected void yyerrok()
 		{
 			recovering = false;
 		}

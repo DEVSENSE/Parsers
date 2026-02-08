@@ -64,7 +64,27 @@ if ($a) {
     echo ""b"";
 
 echo ""outside"";
-"
+",
+@"<?php
+function test() {
+    if (true) {
+        echo ""A"";
+    else {
+        echo ""B"";
+    }
+    echo ""C"";
+}",
+//@"<?php
+//function test() {
+//    foo(
+//        bar(1, 2),
+//        baz(3, 4)
+//    // missing closing ')'
+//    if ($x) {
+//        doSomething();
+//    }
+//    echo ""done"";
+//}",
             };
 
             foreach (var code in codes)
