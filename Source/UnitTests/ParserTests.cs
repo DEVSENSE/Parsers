@@ -21,6 +21,30 @@ namespace UnitTests
     public class ParserTests
     {
         [TestMethod]
+        public void ErrorRecoveryTest()
+        {
+            var codes = new[] {
+@"<?php $x = 123",
+@"<?php
+if (true) {
+",
+            };
+
+            foreach (var code in codes)
+            {
+                var sourceUnit = new CodeSourceUnit(code, "dummy.php", Encoding.UTF8, Lexer.LexicalStates.INITIAL, LanguageFeatures.Basic);
+                var factory = new BasicNodesFactory(sourceUnit);
+                var errors = new TestErrorSink();
+
+                sourceUnit.Parse(factory, errors);
+
+                Assert.IsNotNull(sourceUnit.Ast);
+                Assert.IsTrue(errors.Count != 0);
+                Assert.IsTrue(errors.Errors.Any(e => e.Error == FatalErrors.SyntaxError));
+            }
+        }
+
+        [TestMethod]
         public void SimpleParseTest()
         {
             var codes = new[] {

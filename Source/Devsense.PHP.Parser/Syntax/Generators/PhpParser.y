@@ -633,6 +633,7 @@ inner_statement:
 
 statement:
 		'{' inner_statement_list '}' { $$ = FinalizeBlock(@$, $2); }
+	|	'{' inner_statement_list T_ERROR { $$ = FinalizeBlock(@$, $2); yyerrok(); }
 	|	enter_scope if_stmt exit_scope { $$ = $2; }
 	|	enter_scope alt_if_stmt exit_scope { $$ = $2; }
 	|	T_WHILE '(' expr ')' enter_scope while_statement exit_scope
@@ -655,6 +656,7 @@ statement:
 	|	T_ECHO echo_expr_list ';'		{ $$ = _astFactory.Echo(@$, $2); }
 	|	T_INLINE_HTML { $$ = _astFactory.InlineHtml(@$, $1); }
 	|	expr ';' { $$ = _astFactory.ExpressionStmt(@$, $1); }
+	|	expr T_ERROR { $$ = _astFactory.ExpressionStmt(@1, $1); yyerrok(); }
 	|	T_UNSET '(' unset_variables possible_comma ')' ';' { $$ = _astFactory.Unset(@$, AddTrailingComma($3, $4)); }
 	|	T_FOREACH '(' expr T_AS foreach_variable ')' enter_scope foreach_statement exit_scope
 			{ $$ = _astFactory.Foreach(@$, $3, null, $5, $8); }
