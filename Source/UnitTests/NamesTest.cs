@@ -1,5 +1,4 @@
 ﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.IO;
 using Devsense.PHP.Text;
 using System.Diagnostics;
@@ -9,13 +8,13 @@ using System.Text.RegularExpressions;
 using UnitTests.TestImplementation;
 using Devsense.PHP.Syntax;
 using Devsense.PHP.Ast.DocBlock;
+using Xunit;
 
 namespace UnitTests
 {
-    [TestClass]
     public class NamesTest
     {
-        [TestMethod]
+        [Fact]
         public void TestQualifiedNameToString()
         {
             var names = new string[]
@@ -28,9 +27,9 @@ namespace UnitTests
 
             foreach (var fqn in names)
             {
-                Assert.IsNotNull(fqn);
+                Assert.NotNull(fqn);
                 var parsed = QualifiedName.Parse(fqn, false);
-                Assert.AreEqual(fqn, parsed.ToString());
+                Assert.Equal(fqn, parsed.ToString());
             }
         }
     }

@@ -5,15 +5,12 @@ using System.Text;
 using System.Threading;
 using Devsense.PHP.Syntax;
 using Devsense.PHP.Syntax.Ast;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 
 namespace PropertyCollectionTests
 {
-    [TestClass]
     public partial class ThreadingTests
     {
-        public TestContext TestContext { get; set; }
-
         int _counter = 0;
         Dictionary<object, object> _data = CreateTestData();
 
@@ -34,7 +31,7 @@ namespace PropertyCollectionTests
             return data;
         }
 
-        [TestMethod]
+        [Fact]
         public void ThreadingTest()
         {
             var collection = new PropertyCollectionClass();
@@ -55,10 +52,10 @@ namespace PropertyCollectionTests
             }
 
             // done
-            Assert.AreEqual(0, collection.Count);
+            Assert.Equal(0, collection.Count);
         }
 
-        [TestMethod]
+        [Fact]
         public void ReadWriteTest()
         {
             var collection = new PropertyCollectionClass();

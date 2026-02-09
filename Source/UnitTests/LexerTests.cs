@@ -1,5 +1,4 @@
 ﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.IO;
 using Devsense.PHP.Text;
 using System.Diagnostics;
@@ -9,13 +8,12 @@ using System.Text.RegularExpressions;
 using UnitTests.TestImplementation;
 using Devsense.PHP.Syntax;
 using Devsense.PHP.Syntax.Ast;
+using Xunit;
+using System.Runtime.Serialization;
+using System.Collections.Generic;
 
 namespace UnitTests
 {
-    [TestClass]
-    [DeploymentItem("TestData.csv")]
-    [DeploymentItem("Tokens.php")]
-    [DeploymentItem("TestFiles\\large_string.php")]
     public class LexerTests
     {
         const string BuildScript = "build.bat";
@@ -29,8 +27,6 @@ namespace UnitTests
             }
             return current;
         }
-
-        public TestContext TestContext { get; set; }
 
         private string ParseByPhp(string path)
         {
@@ -56,14 +52,18 @@ namespace UnitTests
             return output.ToString();
         }
 
-        [TestMethod]
-        [DataSource("Microsoft.VisualStudio.TestTools.DataSource.CSV", "|DataDirectory|\\TestData.csv", "TestData#csv", DataAccessMethod.Sequential)]
-        public void LexerConstructorTest()
+        public static IEnumerable<object[]> TestData_Files => Directory
+            .EnumerateFiles("TestData", "*", SearchOption.AllDirectories)
+            .Select(path => new object[] { path })
+            ;
+
+        [Theory]
+        [MemberData(nameof(TestData_Files))]
+        public void LexerConstructorTest(string path)
         {
-            string path = (string)TestContext.DataRow["files"];
             SourceUnit sourceUnit = new CodeSourceUnit(File.ReadAllText(path), path, Encoding.UTF8, Lexer.LexicalStates.INITIAL, LanguageFeatures.Basic);
             ITokenProvider<SemanticValueType, Span> lexer = new Lexer(File.ReadAllText(path).AsMemory(), Encoding.UTF8, new TestErrorSink(), LanguageFeatures.ShortOpenTags);
-            Assert.AreNotEqual(null, lexer);
+            Assert.NotNull(lexer);
         }
 
         bool Increment(int[] word, int n)
@@ -83,7 +83,7 @@ namespace UnitTests
                 text[i] = chars[word[i]];
         }
 
-        [TestMethod]
+        [Fact]
         public void LexerStringsTest()
         {
             TestErrorSink errorSink = new TestErrorSink();
@@ -110,14 +110,14 @@ namespace UnitTests
                         int count = 0;
                         while ((token = lexer.GetNextToken()) != Tokens.EOF && count++ < 100)
                         {
-                            Assert.IsTrue(lexer.TokenSpan.IsValid, line);
-                            Assert.IsTrue(lexer.TokenSpan.Length >= 0, line + " - " + state.ToString() + " - " + lexer.TokenSpan.Start.ToString());
+                            Assert.True(lexer.TokenSpan.IsValid, line);
+                            Assert.True(lexer.TokenSpan.Length >= 0, line + " - " + state.ToString() + " - " + lexer.TokenSpan.Start.ToString());
                         }
-                        Assert.IsTrue(count < 100, line);
+                        Assert.True(count < 100, line);
                     }
         }
 
-        [TestMethod]
+        [Fact]
         public void LexerEscapedCharTest()
         {
             var errorSink = new TestErrorSink();
@@ -131,14 +131,14 @@ namespace UnitTests
                 if (token == Tokens.END)
                     break;
 
-                Assert.AreEqual(Tokens.T_CONSTANT_ENCAPSED_STRING, token);
+                Assert.Equal(Tokens.T_CONSTANT_ENCAPSED_STRING, token);
 
                 var value = lexer.TokenValue;
-                Assert.AreEqual("\xC0", value.Object.ToString());
+                Assert.Equal("\xC0", value.Object.ToString());
             }
         }
 
-        [TestMethod]
+        [Fact]
         public void HereDocTest()
         {
             // expects error
@@ -154,10 +154,10 @@ namespace UnitTests
             var errors = new TestErrorSink();
             unit.Parse(new BasicNodesFactory(unit), errors);
 
-            Assert.AreEqual(1, errors.Count);
+            Assert.Equal(1, errors.Count);
         }
 
-        [TestMethod]
+        [Fact]
         public void HeredocCompoundTest()
         {
             var unit = new CodeSourceUnit(@"<?php
@@ -171,14 +171,13 @@ echo <<<HTML
             var errors = new TestErrorSink();
             unit.Parse(new BasicNodesFactory(unit), errors);
 
-            Assert.AreEqual(0, errors.Count);
+            Assert.Equal(0, errors.Count);
         }
-        [TestMethod]
-        [DataSource("Microsoft.VisualStudio.TestTools.DataSource.CSV", "|DataDirectory|\\TestData.csv", "TestData#csv", DataAccessMethod.Sequential)]
-        public void LexerGetNextTokenByLineTest()
-        {
-            string path = (string)TestContext.DataRow["files"];
 
+        [Theory]
+        [MemberData(nameof(TestData_Files))]
+        public void LexerGetNextTokenByLineTest(string path)
+        {
             TestErrorSink errorSink = new TestErrorSink();
             Lexer lexer = new Lexer(path.AsMemory(), Encoding.UTF8, errorSink, LanguageFeatures.ShortOpenTags);
 
@@ -189,13 +188,13 @@ echo <<<HTML
 
                 while (lexer.GetNextToken() != Tokens.EOF)
                 {
-                    Assert.IsTrue(lexer.TokenSpan.IsValid);
+                    Assert.True(lexer.TokenSpan.IsValid);
                 }
                 previousState = lexer.CurrentLexicalState;
             }
         }
 
-        [TestMethod]
+        [Fact]
         public void LongNowDocTest()
         {
             var unit = new CodeSourceUnit(@"<?php
@@ -25724,7 +25723,7 @@ EOT;", "x.php", Encoding.UTF8);
             unit.Parse(new BasicNodesFactory(unit), null);
         }
 
-        [TestMethod]
+        [Fact]
         public void HereDocTest2()
         {
             var code = @"<?php
@@ -25748,7 +25747,7 @@ $x =<<<XXX
             }
         }
 
-        [TestMethod]
+        [Fact]
         public void BinaryStringTest()
         {
             var tokens = new[]
@@ -25771,7 +25770,7 @@ $x =<<<XXX
             }
         }
 
-        [TestMethod]
+        [Fact]
         public void HereDocTest_WhiteLines()
         {
             var code = @"<?php
@@ -25793,10 +25792,10 @@ $x = <<<XXX
                 }
             }
 
-            Assert.AreEqual(0, errors.Count);
+            Assert.Equal(0, errors.Count);
         }
 
-        [TestMethod]
+        [Fact]
         public void TestParseNumbers()
         {
             Lexer lexer = new Lexer(
@@ -25814,11 +25813,11 @@ $x = <<<XXX
             {
                 if (t == Tokens.T_DNUMBER)
                 {
-                    Assert.AreEqual((double)expected[n++], lexer.TokenValue.Double);
+                    Assert.Equal((double)expected[n++], lexer.TokenValue.Double);
                 }
                 else if (t == Tokens.T_LNUMBER)
                 {
-                    Assert.AreEqual((long)expected[n++], lexer.TokenValue.Long);
+                    Assert.Equal((long)expected[n++], lexer.TokenValue.Long);
                 }
                 else if (t == Tokens.T_COMMA || t == Tokens.T_WHITESPACE)
                 {
@@ -25831,7 +25830,7 @@ $x = <<<XXX
             }
         }
 
-        [TestMethod]
+        [Fact]
         public void TestTooBigNumber()
         {
             var errsink = new TestErrorSink();
@@ -25846,15 +25845,16 @@ $x = <<<XXX
             {
                 if (t == Tokens.T_COMMA || t == Tokens.T_WHITESPACE) continue;
 
-                Assert.AreEqual(t, Tokens.T_DNUMBER);
-                Assert.AreEqual(lexer.TokenSpan, errsink.Errors.Last().Span);
+                Assert.Equal(Tokens.T_DNUMBER, t);
+                Assert.Equal(lexer.TokenSpan, errsink.Errors.Last().Span);
             }
         }
 
-        [TestMethod]
-        public void LargeStringTest()
+        [Theory]
+        [InlineData("TestFiles/large_string.php")]
+        public void LargeStringTest(string path)
         {
-            var code = File.ReadAllText("large_string.php");
+            var code = File.ReadAllText(path);
 
             var lexer = new Lexer(code.AsMemory(), Encoding.UTF8, features: LanguageFeatures.Php81Set);
 
@@ -25867,15 +25867,14 @@ $x = <<<XXX
             }
 
             var end = DateTime.UtcNow;
-            Assert.IsTrue(Debugger.IsAttached || (end - start).TotalSeconds < 1, "Too long tokenizer time");
+            Assert.True(Debugger.IsAttached || (end - start).TotalSeconds < 1, "Too long tokenizer time");
         }
 
-        [TestMethod]
-        [DataSource("Microsoft.VisualStudio.TestTools.DataSource.CSV", "|DataDirectory|\\TestData.csv", "TestData#csv", DataAccessMethod.Sequential)]
-        public void LexerGetNextTokenTest()
-        {
-            string path = (string)TestContext.DataRow["files"];
+        //[Theory]
+        //[MemberData(nameof(TestData_Files))]
 
+        public void LexerGetNextTokenTest(string path)
+        {
             TestErrorSink errorSink = new TestErrorSink();
             Lexer lexer = new Lexer(File.ReadAllText(path).AsMemory(), Encoding.UTF8, errorSink, LanguageFeatures.ShortOpenTags);
 
@@ -25900,25 +25899,25 @@ $x = <<<XXX
             foreach (var expectedToken in expectedTokens)
             {
                 var token = lexer.GetNextToken();
-                Assert.AreEqual(int.Parse(expectedToken[0]), (int)token, path);
+                Assert.Equal(int.Parse(expectedToken[0]), (int)token);
                 if (token == Tokens.T_VARIABLE || token == Tokens.T_STRING || token == Tokens.T_END_HEREDOC)
                 {
-                    Assert.AreEqual(expectedToken[2].TrimStart('$'), lexer.TokenValue.Object.ToString());
+                    Assert.Equal(expectedToken[2].TrimStart('$'), lexer.TokenValue.Object.ToString());
                 }
                 if (token == Tokens.T_DNUMBER)
                 {
-                    Assert.AreEqual(double.Parse(expectedToken[2], System.Globalization.NumberFormatInfo.InvariantInfo), lexer.TokenValue.Double);
+                    Assert.Equal(double.Parse(expectedToken[2], System.Globalization.NumberFormatInfo.InvariantInfo), lexer.TokenValue.Double);
                 }
                 if (token == Tokens.T_LNUMBER)
                 {
-                    Assert.AreEqual(int.Parse(expectedToken[2]), lexer.TokenValue.Long);
+                    Assert.Equal(int.Parse(expectedToken[2]), lexer.TokenValue.Long);
                 }
                 //lexer.RestoreCompressedState(lexer.GetCompressedState());
             }
-            Assert.AreEqual(Tokens.EOF, lexer.GetNextToken(), path);
-            Assert.AreEqual(Tokens.EOF, lexer.GetNextToken(), path);
-            Assert.AreEqual(Tokens.EOF, lexer.GetNextToken(), path);
-            Assert.AreEqual(0, errorSink.Errors.Count);
+            Assert.Equal(Tokens.EOF, lexer.GetNextToken());
+            Assert.Equal(Tokens.EOF, lexer.GetNextToken());
+            Assert.Equal(Tokens.EOF, lexer.GetNextToken());
+            Assert.Empty(errorSink.Errors);
         }
     }
 }

@@ -2,7 +2,6 @@
 using Devsense.PHP.Syntax;
 using Devsense.PHP.Syntax.Ast;
 using Devsense.PHP.Text;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -11,26 +10,27 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using UnitTests.TestImplementation;
+using Xunit;
 
 namespace UnitTests
 {
-    [TestClass]
-    [DeploymentItem("ParserTestData.csv")]
     public class VisitorTests
     {
-        public TestContext TestContext { get; set; }
+        public static IEnumerable<object[]> TestData_Parser => Directory
+            .EnumerateFiles("TestData\\parser", "*.php")
+            .Select(path => new object[] { path })
+            ;
 
         private Regex _errorRegex = new Regex(ParserTests.Pattern, RegexOptions.Compiled | RegexOptions.Singleline);
 
-        [TestMethod]
-        [DataSource("Microsoft.VisualStudio.TestTools.DataSource.CSV", "|DataDirectory|\\ParserTestData.csv", "ParserTestData#csv", DataAccessMethod.Sequential)]
-        public void VisitorVisitTests()
+        [Theory]
+        [MemberData(nameof(TestData_Parser))]
+        public void VisitorVisitTests(string path)
         {
-            string path = (string)TestContext.DataRow["files"];
             string testcontent = File.ReadAllText(path);
 
             string[] testparts = testcontent.Split(new string[] { "<<<TEST>>>" }, StringSplitOptions.RemoveEmptyEntries);
-            Assert.IsTrue(testparts.Length >= 2);
+            Assert.True(testparts.Length >= 2);
 
             var sourceUnit = new CodeSourceUnit(testparts[0], path, Encoding.UTF8, Lexer.LexicalStates.INITIAL, LanguageFeatures.Basic);
             var factory = new AstCounterFactory(sourceUnit);
@@ -47,20 +47,20 @@ namespace UnitTests
             {
                 var matches = _errorRegex.Matches(testparts[1]);
                 var knownErrors = matches[0].Groups["Number"].Value.Split(',');
-                Assert.AreEqual(1, matches.Count, path);
-                Assert.AreEqual(knownErrors.Length, errors.Count, path);
+                Assert.Single(matches);
+                Assert.Equal(knownErrors.Length, errors.Count);
             }
             else
             {
-                Assert.AreEqual(0, errors.Count, path);
-                Assert.IsNotNull(ast);
+                Assert.Empty(errors.Errors);
+                Assert.NotNull(ast);
 
                 // check every node has a parent
                 var checker = new TreeVisitorCheck();
                 checker.VisitElement(ast);
-                Assert.AreEqual(factory.CreatedElements.Count, checker.VisitedElements.Count, path);
-                Assert.AreEqual(factory.ItemCount, checker.ItemCount, path);
-                Assert.AreEqual(factory.ForeachVarCount, checker.ForeachVarCount, path);
+                Assert.Equal(factory.CreatedElements.Count, checker.VisitedElements.Count);
+                Assert.Equal(factory.ItemCount, checker.ItemCount);
+                Assert.Equal(factory.ForeachVarCount, checker.ForeachVarCount);
                 //var dictionary = factory.CreatedElements.GroupBy(t => t.GetType()).ToDictionary(g => g.Key);
             }
         }
@@ -94,7 +94,7 @@ namespace UnitTests
                 // TODO - PHPDocBlock is not created by Lexer and CompliantLexer, without the factory
                 if (element != null && !(element is PHPDocBlock))
                 {
-                    Assert.IsTrue(_visitedElements.Add(element));
+                    Assert.True(_visitedElements.Add(element));
                     base.VisitElement(element);
                 }
             }
@@ -145,13 +145,13 @@ namespace UnitTests
             LangElement CountLE(LangElement element)
             {
                 if (element == null) return element;
-                Assert.IsTrue(_createdElements.Add(element));
+                Assert.True(_createdElements.Add(element));
                 return element;
             }
 
             TypeRef CountTR(TypeRef element)
             {
-                Assert.IsTrue(_createdElements.Add(element));
+                Assert.True(_createdElements.Add(element));
                 return element;
             }
 
@@ -477,7 +477,7 @@ namespace UnitTests
             public override LangElement Variable(Span span, string name, TypeRef typeRef)
             {
                 // TODO - variable used for the property is discarded
-                Assert.AreEqual(1, _createdElements.RemoveWhere(e => !typeRef.Span.Contains(e.Span) && span.Contains(e.Span)));
+                Assert.Equal(1, _createdElements.RemoveWhere(e => !typeRef.Span.Contains(e.Span) && span.Contains(e.Span)));
                 return CountLE(base.Variable(span, name, typeRef));
             }
 
@@ -487,7 +487,7 @@ namespace UnitTests
             public override LangElement Variable(Span span, LangElement nameExpr, TypeRef typeRef)
             {
                 // TODO - variable used for the property is discarded
-                Assert.AreEqual(1, _createdElements.RemoveWhere(e => e is IndirectVarUse && e.Span.Contains(nameExpr.Span)));
+                Assert.Equal(1, _createdElements.RemoveWhere(e => e is IndirectVarUse && e.Span.Contains(nameExpr.Span)));
                 return CountLE(base.Variable(span, nameExpr, typeRef));
             }
 

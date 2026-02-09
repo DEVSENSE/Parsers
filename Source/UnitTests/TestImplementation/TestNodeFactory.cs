@@ -2,12 +2,12 @@
 using Devsense.PHP.Syntax;
 using Devsense.PHP.Syntax.Ast;
 using Devsense.PHP.Text;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Xunit;
 
 namespace UnitTests.TestImplementation
 {
@@ -32,7 +32,7 @@ namespace UnitTests.TestImplementation
         {
             var m = base.Method(span, aliasReturn, attributes, returnType, returnTypeSpan, name, nameSpan, typeParamsOpt, formalParams, formalParamsSpan, baseCtorParams, body);
 
-            Assert.IsNotNull(m);
+            Assert.NotNull(m);
 
             _methods.Add((MethodDecl)m);
 
@@ -43,7 +43,7 @@ namespace UnitTests.TestImplementation
         {
             var f = base.Function(span, conditional, aliasReturn, attributes, returnType, name, nameSpan, typeParamsOpt, formalParams, formalParamsSpan, body);
 
-            Assert.IsNotNull(f);
+            Assert.NotNull(f);
 
             _functions.Add((FunctionDecl)f);
 

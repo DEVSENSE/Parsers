@@ -1,5 +1,4 @@
 ﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.IO;
 using Devsense.PHP.Syntax.Ast;
 using System.Text.RegularExpressions;
@@ -13,14 +12,13 @@ using System.Collections.Generic;
 using UnitTests.TestImplementation;
 using Devsense.PHP.Ast.DocBlock;
 using System.Diagnostics;
+using Xunit;
 
 namespace UnitTests
 {
-    [TestClass]
-    [DeploymentItem("ParserTestData.csv")]
     public class ParserTests
     {
-        [TestMethod]
+        [Fact]
         public void ErrorRecoveryTest()
         {
             var codes = new[] {
@@ -95,13 +93,13 @@ function test() {
 
                 sourceUnit.Parse(factory, errors);
 
-                Assert.IsNotNull(sourceUnit.Ast);
-                Assert.IsTrue(errors.Count != 0);
-                Assert.IsTrue(errors.Errors.Any(e => e.Error == FatalErrors.SyntaxError));
+                Assert.NotNull(sourceUnit.Ast);
+                Assert.True(errors.Count != 0);
+                Assert.Contains(errors.Errors, e => e.Error == FatalErrors.SyntaxError);
             }
         }
 
-        [TestMethod]
+        [Fact]
         public void SimpleParseTest()
         {
             var codes = new[] {
@@ -192,24 +190,27 @@ isset(new (trim(' A '))()['key']);
 
                 sourceUnit.Parse(factory, errors);
 
-                Assert.IsNotNull(sourceUnit.Ast);
+                Assert.NotNull(sourceUnit.Ast);
             }
         }
 
-        public TestContext TestContext { get; set; }
         public const string Errors = "ERRORS:";
         public const string Pattern = @"\s*" + Errors + @"\s*(?<Number>\d*(, \d*)*)\s*(?<JSON>.*)";
         private Regex _errorRegex = new Regex(Pattern, RegexOptions.Compiled | RegexOptions.Singleline);
 
-        [TestMethod]
-        [DataSource("Microsoft.VisualStudio.TestTools.DataSource.CSV", "|DataDirectory|\\ParserTestData.csv", "ParserTestData#csv", DataAccessMethod.Sequential)]
-        public void ParserParseTest()
+        public static IEnumerable<object[]> TestData_Parser => Directory
+            .EnumerateFiles("TestData\\parser", "*.php")
+            .Select(path => new object[] { path })
+            ;
+
+        [Theory]
+        [MemberData(nameof(TestData_Parser))]
+        public void ParserParseTest(string path)
         {
-            string path = (string)TestContext.DataRow["files"];
             string testcontent = File.ReadAllText(path);
 
             string[] testparts = testcontent.Split(new string[] { "<<<TEST>>>" }, StringSplitOptions.RemoveEmptyEntries);
-            Assert.IsTrue(testparts.Length >= 2);
+            Assert.True(testparts.Length >= 2);
 
             var sourceUnit = new CodeSourceUnit(testparts[0], path, Encoding.UTF8, Lexer.LexicalStates.INITIAL, LanguageFeatures.Basic);
             var errors = new TestErrorSink();
@@ -223,34 +224,34 @@ isset(new (trim(' A '))()['key']);
             {
                 var matches = _errorRegex.Matches(testparts[1]);
                 var knownErrors = matches[0].Groups["Number"].Value.Split(',');
-                Assert.AreEqual(1, matches.Count, path);
-                Assert.AreEqual(knownErrors.Length, errors.Count, path);
+                Assert.Single(matches);
+                Assert.Equal(knownErrors.Length, errors.Count);
                 for (int i = 0; i < knownErrors.Length; i++)
                 {
-                    Assert.IsTrue(int.TryParse(knownErrors[i], out var errorid), path);
-                    Assert.AreEqual(errorid, errors.Errors[i].Error.Id, path);
-                    Assert.IsNotNull(errors.Errors[i].ToString());
+                    Assert.True(int.TryParse(knownErrors[i], out var errorid), path);
+                    Assert.Equal(errorid, errors.Errors[i].Error.Id);
+                    Assert.NotNull(errors.Errors[i].ToString());
                 }
                 testparts[1] = matches[0].Groups["JSON"].Value;
             }
             else
             {
-                Assert.AreEqual(0, errors.Count, errors.Count != 0 ? $"{errors.Errors[0].ToString()} in {path}" : null);
+                Assert.Empty(errors.Errors);
             }
 
-            Assert.IsNotNull(sourceUnit.Ast);
+            Assert.NotNull(sourceUnit.Ast);
 
             // check all functions are in AST actually
             foreach (var m in factory.Methods)
             {
-                Assert.IsNotNull(m.ContainingElement); // parent was resolved
-                Assert.AreEqual(sourceUnit, m.ContainingSourceUnit);
+                Assert.NotNull(m.ContainingElement); // parent was resolved
+                Assert.Equal(sourceUnit, m.ContainingSourceUnit);
             }
 
             foreach (var f in factory.Functions)
             {
-                Assert.IsNotNull(f.ContainingElement); // parent was resolved
-                Assert.AreEqual(sourceUnit, f.ContainingSourceUnit);
+                Assert.NotNull(f.ContainingElement); // parent was resolved
+                Assert.Equal(sourceUnit, f.ContainingSourceUnit);
             }
 
             //
@@ -267,7 +268,7 @@ isset(new (trim(' A '))()['key']);
             {
                 // IMPORTANT - Uncomment to regenerate test data
                 //File.WriteAllText(path, testparts[0] + "\n<<<TEST>>>\n" + rgx.Replace(serializer.ToString(), string.Empty));
-                //Assert.AreEqual(expected, actual, path);
+                //Assert.Equal(expected, actual, path);
             }
 
             // check every node has a parent
@@ -279,7 +280,7 @@ isset(new (trim(' A '))()['key']);
             spanChecker.VisitGlobalCode(sourceUnit.Ast);
         }
 
-        [TestMethod]
+        [Fact]
         public void ArrowFuncTest()
         {
             var codes = new[] {
@@ -291,11 +292,11 @@ isset(new (trim(' A '))()['key']);
             {
                 var unit = new CodeSourceUnit(code, "dummy.php", Encoding.UTF8);
                 unit.Parse(new BasicNodesFactory(unit), null);
-                Assert.IsNotNull(unit.Ast);
+                Assert.NotNull(unit.Ast);
             }
         }
 
-        [TestMethod]
+        [Fact]
         public void SingleByteStringTest()
         {
             var codes = new[] {
@@ -306,11 +307,11 @@ isset(new (trim(' A '))()['key']);
             {
                 var unit = new CodeSourceUnit(code, "dummy.php", Encoding.UTF8);
                 unit.Parse(new BasicNodesFactory(unit), null);
-                Assert.IsNotNull(unit.Ast);
+                Assert.NotNull(unit.Ast);
             }
         }
 
-        [TestMethod]
+        [Fact]
         public void ReturnTypeTest()
         {
             var codes = new[] {
@@ -322,11 +323,11 @@ isset(new (trim(' A '))()['key']);
             {
                 var unit = new CodeSourceUnit(code, "dummy.php", Encoding.UTF8);
                 unit.Parse(new BasicNodesFactory(unit), null);
-                Assert.IsNotNull(unit.Ast);
+                Assert.NotNull(unit.Ast);
             }
         }
 
-        [TestMethod]
+        [Fact]
         public void HeredocTest()
         {
             var codes = new[] {
@@ -344,11 +345,11 @@ $x = <<<XXX
             {
                 var unit = new CodeSourceUnit(code, "dummy.php", Encoding.UTF8);
                 unit.Parse(new BasicNodesFactory(unit), null);
-                Assert.IsNotNull(unit.Ast);
+                Assert.NotNull(unit.Ast);
             }
         }
 
-        [TestMethod]
+        [Fact]
         public void AttributesTest()
         {
             var codes = new[] {
@@ -363,7 +364,7 @@ $x = <<<XXX
             }
         }
 
-        [TestMethod]
+        [Fact]
         public void FormalParamDocBlockTest()
         {
             var codes = new[] {
@@ -387,14 +388,14 @@ class X {
                     {
                         foreach (var p in m.Signature.FormalParams)
                         {
-                            Assert.IsNotNull(p.GetPropertyOfType<IDocBlock>());
+                            Assert.NotNull(p.GetPropertyOfType<IDocBlock>());
                         }
                     }
                 }
             }
         }
 
-        [TestMethod]
+        [Fact]
         public void PhpDocAttributesTest()
         {
             var codes = new[] {
@@ -415,17 +416,17 @@ class X {
 
                 foreach (var tdecl in unit.Ast.TraverseNamedTypeDeclarations())
                 {
-                    Assert.IsNotNull(tdecl.PHPDoc);
+                    Assert.NotNull(tdecl.PHPDoc);
 
                     foreach (var m in tdecl.Members.OfType<MethodDecl>())
                     {
-                        Assert.IsNotNull(m.PHPDoc);
+                        Assert.NotNull(m.PHPDoc);
                     }
                 }
             }
         }
 
-        [TestMethod]
+        [Fact]
         public void PhpDocTraitUseTest()
         {
             var codes = new[] {
@@ -445,13 +446,13 @@ class X {
                 {
                     foreach (var m in tdecl.Members.OfType<TraitsUse>())
                     {
-                        Assert.IsNotNull(m.GetPropertyOfType<IDocBlock>());
+                        Assert.NotNull(m.GetPropertyOfType<IDocBlock>());
                     }
                 }
             }
         }
 
-        [TestMethod]
+        [Fact]
         public void PhpDocParameterTest()
         {
             var codes = new[] {
@@ -472,20 +473,20 @@ function foo(
 
                 foreach (var func in factory.Functions)
                 {
-                    Assert.IsNotNull(func.ContainingElement); // random check // unnecessary for this test
+                    Assert.NotNull(func.ContainingElement); // random check // unnecessary for this test
 
                     foreach (var p in func.Signature.FormalParams)
                     {
                         if (p != null)
                         {
-                            Assert.IsTrue(p.TryGetProperty<IDocBlock>(out var phpdoc));
+                            Assert.True(p.TryGetProperty<IDocBlock>(out var phpdoc));
                         }
                     }
                 }
             }
         }
 
-        [TestMethod]
+        [Fact]
         public void NamedArgTest()
         {
             var codes = new[] {
@@ -500,7 +501,7 @@ function foo(
             }
         }
 
-        [TestMethod]
+        [Fact]
         public void MatchTest()
         {
             var codes = new[] {
@@ -513,11 +514,11 @@ function foo(
                 var unit = new CodeSourceUnit(code, "dummy.php", Encoding.UTF8, features: LanguageFeatures.Php80Set);
                 unit.Parse(new BasicNodesFactory(unit), errors);
 
-                Assert.AreEqual(0, errors.Count);
+                Assert.Equal(0, errors.Count);
             }
         }
         
-        [TestMethod]
+        [Fact]
         public void AsymmetricVisibilityTest()
         {
             var codes = new[] {
@@ -535,11 +536,11 @@ class Person {
                 var unit = new CodeSourceUnit(code, "dummy.php", Encoding.UTF8, features: LanguageFeatures.Php84Set);
                 unit.Parse(new BasicNodesFactory(unit), errors);
 
-                Assert.AreEqual(0, errors.Count);
+                Assert.Equal(0, errors.Count);
             }
         }
 
-        [TestMethod]
+        [Fact]
         public void TypedClassConstTest()
         {
             var codes = new[] {
@@ -556,11 +557,11 @@ class X {
                 var unit = new CodeSourceUnit(code, "dummy.php", Encoding.UTF8, features: LanguageFeatures.Basic);
                 unit.Parse(new BasicNodesFactory(unit), errors);
 
-                Assert.AreEqual(0, errors.Count);
+                Assert.Equal(0, errors.Count);
             }
         }
 
-        [TestMethod]
+        [Fact]
         public void InstanceOfTest()
         {
             var codes = new[] {
@@ -574,11 +575,11 @@ class X {
                 var unit = new CodeSourceUnit(code, "dummy.php", Encoding.UTF8, features: LanguageFeatures.Php80Set);
                 unit.Parse(new BasicNodesFactory(unit), errors);
 
-                Assert.AreEqual(0, errors.Count);
+                Assert.Equal(0, errors.Count);
             }
         }
 
-        [TestMethod]
+        [Fact]
         public void EnumerationTest()
         {
             var codes = new[] {
@@ -591,12 +592,12 @@ class X {
                 var unit = new CodeSourceUnit(code, "dummy.php", Encoding.UTF8, features: LanguageFeatures.Php81Set);
                 unit.Parse(new BasicNodesFactory(unit), null);
 
-                Assert.IsNotNull(unit.Ast);
-                Assert.IsInstanceOfType(unit.Ast.Statements[0], typeof(NamedTypeDecl));
+                Assert.NotNull(unit.Ast);
+                Assert.IsAssignableFrom<NamedTypeDecl>(unit.Ast.Statements[0]);
             }
         }
 
-        [TestMethod]
+        [Fact]
         public void AliasesTest()
         {
             var codes = new[] {
@@ -607,11 +608,11 @@ class X {
             {
                 var unit = new CodeSourceUnit(code, "dummy.php", Encoding.UTF8);
                 unit.Parse(new BasicNodesFactory(unit), null);
-                Assert.IsNotNull(unit.Ast);
+                Assert.NotNull(unit.Ast);
             }
         }
 
-        [TestMethod]
+        [Fact]
         public void StringLiteralTest()
         {
             var codes = new[] {
@@ -622,11 +623,11 @@ class X {
             {
                 var unit = new CodeSourceUnit(code, "dummy.php", Encoding.UTF8);
                 unit.Parse(new BasicNodesFactory(unit), null);
-                Assert.IsNotNull(unit.Ast);
+                Assert.NotNull(unit.Ast);
             }
         }
 
-        [TestMethod]
+        [Fact]
         public void HeredocIndentTest()
         {
             var codes = new[] {
@@ -650,12 +651,12 @@ $x   // error: wrong indentation
                 var unit = new CodeSourceUnit(code, "dummy.php", Encoding.UTF8);
                 unit.Parse(new BasicNodesFactory(unit), errors);
 
-                Assert.IsNotNull(unit.Ast);
-                Assert.AreEqual(1, errors.Count);
+                Assert.NotNull(unit.Ast);
+                Assert.Equal(1, errors.Count);
             }
         }
 
-        [TestMethod]
+        [Fact]
         public void PropertyHooksTest()
         {
             var codes = new[] {
@@ -695,12 +696,12 @@ class X {
                 var unit = new CodeSourceUnit(code, "dummy.php", Encoding.UTF8);
                 unit.Parse(new BasicNodesFactory(unit), errors);
 
-                Assert.IsNotNull(unit.Ast);
-                Assert.AreEqual(0, errors.Count);
+                Assert.NotNull(unit.Ast);
+                Assert.Equal(0, errors.Count);
             }
         }
 
-        [TestMethod]
+        [Fact]
         public void AnonymousClassTest()
         {
             var codes = new[]
@@ -715,8 +716,8 @@ new #[Attribuute] class {};"
                 var unit = new CodeSourceUnit(code, "dummy.php", Encoding.UTF8);
                 unit.Parse(new BasicNodesFactory(unit), errors);
 
-                Assert.IsNotNull(unit.Ast);
-                Assert.AreEqual(0, errors.Count);
+                Assert.NotNull(unit.Ast);
+                Assert.Equal(0, errors.Count);
 
                 var anonymousTypeDecl = unit.Ast.Statements
                     .OfType<ExpressionStmt>()
@@ -728,11 +729,11 @@ new #[Attribuute] class {};"
                     .Single()
                     ;
 
-                Assert.AreNotEqual(anonymousTypeDecl.GetAttributes().Count, 0);
+                Assert.NotEmpty(anonymousTypeDecl.GetAttributes());
             }
         }
 
-        [TestMethod]
+        [Fact]
         public void CloneTest()
         {
             var codes = new[]
@@ -757,8 +758,8 @@ $o = \clone(...);
                 var unit = new CodeSourceUnit(code, "dummy.php", Encoding.UTF8);
                 unit.Parse(new BasicNodesFactory(unit), errors);
 
-                Assert.IsNotNull(unit.Ast);
-                Assert.AreEqual(0, errors.Count);
+                Assert.NotNull(unit.Ast);
+                Assert.Equal(0, errors.Count);
 
                 var rvals = unit.Ast.Statements
                     .OfType<ExpressionStmt>()
@@ -769,7 +770,7 @@ $o = \clone(...);
             }
         }
 
-        [TestMethod]
+        [Fact]
         public void BinaryOpTest()
         {
             var errors = new TestErrorSink();
@@ -781,10 +782,10 @@ $b = true && false;
 ", "dummy.php", Encoding.UTF8);
             unit.Parse(new BasicNodesFactory(unit), errors);
 
-            Assert.AreEqual(0, errors.Count);
+            Assert.Equal(0, errors.Count);
         }
 
-        [TestMethod]
+        [Fact]
         public void PublicPrivateNamespaceName()
         {
             var errors = new TestErrorSink();
@@ -796,7 +797,7 @@ echo strlen(\Private\Foo::class);
 ", "dummy.php", Encoding.UTF8);
             unit.Parse(new BasicNodesFactory(unit), errors);
 
-            Assert.AreEqual(0, errors.Count);
+            Assert.Equal(0, errors.Count);
         }
 
         /// <summary>
@@ -808,38 +809,38 @@ echo strlen(\Private\Foo::class);
             {
                 if (element != null)
                 {
-                    Assert.IsNotNull(element.ContainingElement);
+                    Assert.NotNull(element.ContainingElement);
                     base.VisitElement(element);
                 }
             }
 
             public override void VisitAnonymousTypeRef(AnonymousTypeRef x)
             {
-                Assert.IsNotNull(x.ContainingElement);
+                Assert.NotNull(x.ContainingElement);
                 base.VisitAnonymousTypeRef(x);
             }
 
             public override void VisitClassTypeRef(ClassTypeRef x)
             {
-                Assert.IsNotNull(x.ContainingElement);
+                Assert.NotNull(x.ContainingElement);
                 base.VisitClassTypeRef(x);
             }
 
             public override void VisitTranslatedTypeRef(TranslatedTypeRef x)
             {
-                Assert.IsNotNull(x.ContainingElement);
+                Assert.NotNull(x.ContainingElement);
                 base.VisitTranslatedTypeRef(x);
             }
 
             public override void VisitPrimitiveTypeRef(PrimitiveTypeRef x)
             {
-                Assert.IsNotNull(x.ContainingElement);
+                Assert.NotNull(x.ContainingElement);
                 base.VisitPrimitiveTypeRef(x);
             }
 
             public override void VisitReservedTypeRef(ReservedTypeRef x)
             {
-                Assert.IsNotNull(x.ContainingElement);
+                Assert.NotNull(x.ContainingElement);
                 base.VisitReservedTypeRef(x);
             }
         }
@@ -862,8 +863,8 @@ echo strlen(\Private\Foo::class);
             {
                 if (element != null)
                 {
-                    Assert.IsTrue(element.Span.IsValid);
-                    Assert.IsTrue(element is PHPDocBlock || inclusion.Last().Contains(element.Span));
+                    Assert.True(element.Span.IsValid);
+                    Assert.True(element is PHPDocBlock || inclusion.Last().Contains(element.Span));
                     if (element is FunctionDecl)
                         CheckFunctionDecl((FunctionDecl)element);
                     else if (element is MethodDecl)
@@ -885,7 +886,7 @@ echo strlen(\Private\Foo::class);
                     inclusion.RemoveAt(inclusion.Count - 1);
                     if (element is NamespaceDecl)
                     {
-                        Assert.IsNotNull(((NamespaceDecl)element).Body);
+                        Assert.NotNull(((NamespaceDecl)element).Body);
                     }
                 }
             }
@@ -926,69 +927,69 @@ echo strlen(\Private\Foo::class);
                     original = original.Replace("\\r", "\r").Replace("\\n", "\n").Replace("\\\\", "\\")
                         .Replace("\\\"", "\"").Replace("\\t", "\t").Replace("\\v", "\v").Replace("\\\\$", "\\$")
                         .Replace("\\e", "\u001b").Replace("\\f", "\f").Replace("\\75", "=").Replace("\\`", "`");
-                Assert.AreEqual(original.TrimEnd(), element.Value.TrimEnd()); // TODO: FIX: HereDoc string literal span includes the closing newline
+                Assert.Equal(original.TrimEnd(), element.Value.TrimEnd()); // TODO: FIX: HereDoc string literal span includes the closing newline
             }
 
             void CheckFunctionDecl(FunctionDecl func)
             {
-                Assert.IsTrue(func.Span.Contains(func.Name.Span));
-                Assert.IsTrue(func.Span.Contains(func.HeadingSpan));
-                Assert.IsTrue(func.Span.Contains(func.ParametersSpan));
-                Assert.IsTrue(func.Span.Contains(func.Body.Span));
-                Assert.IsTrue(func.HeadingSpan.Contains(func.Name.Span));
-                Assert.IsTrue(func.HeadingSpan.Contains(func.ParametersSpan));
-                Assert.IsTrue(func.HeadingSpan.End <= func.Body.Span.Start);
-                Assert.IsTrue(func.Name.Span.End <= func.ParametersSpan.Start);
+                Assert.True(func.Span.Contains(func.Name.Span));
+                Assert.True(func.Span.Contains(func.HeadingSpan));
+                Assert.True(func.Span.Contains(func.ParametersSpan));
+                Assert.True(func.Span.Contains(func.Body.Span));
+                Assert.True(func.HeadingSpan.Contains(func.Name.Span));
+                Assert.True(func.HeadingSpan.Contains(func.ParametersSpan));
+                Assert.True(func.HeadingSpan.End <= func.Body.Span.Start);
+                Assert.True(func.Name.Span.End <= func.ParametersSpan.Start);
                 foreach (var param in func.Signature.FormalParams)
-                    Assert.IsTrue(param.Span.Contains(param.Name.Span));
+                    Assert.True(param.Span.Contains(param.Name.Span));
             }
 
             void CheckMethodDecl(MethodDecl method)
             {
-                Assert.IsTrue(method.Span.Contains(method.Name.Span));
-                Assert.IsTrue(method.Span.Contains(method.HeadingSpan));
-                Assert.IsTrue(method.Span.Contains(method.ParametersSpan));
-                Assert.IsTrue(method.HeadingSpan.Contains(method.Name.Span));
-                Assert.IsTrue(method.HeadingSpan.Contains(method.ParametersSpan));
+                Assert.True(method.Span.Contains(method.Name.Span));
+                Assert.True(method.Span.Contains(method.HeadingSpan));
+                Assert.True(method.Span.Contains(method.ParametersSpan));
+                Assert.True(method.HeadingSpan.Contains(method.Name.Span));
+                Assert.True(method.HeadingSpan.Contains(method.ParametersSpan));
                 if (method.Body != null)
                 {
-                    Assert.IsTrue(method.Span.Contains(method.Body.Span));
-                    Assert.IsTrue(method.HeadingSpan.End <= method.Body.Span.Start);
+                    Assert.True(method.Span.Contains(method.Body.Span));
+                    Assert.True(method.HeadingSpan.End <= method.Body.Span.Start);
                 }
-                Assert.IsTrue(method.Name.Span.End <= method.ParametersSpan.Start);
+                Assert.True(method.Name.Span.End <= method.ParametersSpan.Start);
             }
 
             void CheckLambdaDecl(LambdaFunctionExpr lambda)
             {
-                Assert.IsTrue(lambda.Span.Contains(lambda.HeadingSpan));
-                Assert.IsTrue(lambda.Span.Contains(lambda.ParametersSpan));
-                Assert.IsTrue(lambda.Span.Contains(lambda.Body.Span));
-                Assert.IsTrue(lambda.HeadingSpan.Contains(lambda.ParametersSpan));
-                Assert.IsTrue(lambda.HeadingSpan.End <= lambda.Body.Span.Start);
+                Assert.True(lambda.Span.Contains(lambda.HeadingSpan));
+                Assert.True(lambda.Span.Contains(lambda.ParametersSpan));
+                Assert.True(lambda.Span.Contains(lambda.Body.Span));
+                Assert.True(lambda.HeadingSpan.Contains(lambda.ParametersSpan));
+                Assert.True(lambda.HeadingSpan.End <= lambda.Body.Span.Start);
             }
 
             void CheckTypeDecl(TypeDecl type)
             {
-                Assert.IsTrue(type.Name.HasValue);
-                Assert.IsTrue(type is AnonymousTypeDecl || type.Span.Contains(type.Name.Span));
-                Assert.IsTrue(type.Span.Contains(type.HeadingSpan));
+                Assert.True(type.Name.HasValue);
+                Assert.True(type is AnonymousTypeDecl || type.Span.Contains(type.Name.Span));
+                Assert.True(type.Span.Contains(type.HeadingSpan));
                 foreach (var member in type.Members)
-                    Assert.IsTrue(type.Span.Contains(member.Span));
-                Assert.IsTrue(type is AnonymousTypeDecl || type.HeadingSpan.Contains(type.Name.Span));
+                    Assert.True(type.Span.Contains(member.Span));
+                Assert.True(type is AnonymousTypeDecl || type.HeadingSpan.Contains(type.Name.Span));
                 foreach (var implements in type.ImplementsList)
                 {
-                    Assert.IsTrue(type.HeadingSpan.Contains(implements.Span));
-                    Assert.IsTrue(type.Span.Contains(implements.Span));
+                    Assert.True(type.HeadingSpan.Contains(implements.Span));
+                    Assert.True(type.Span.Contains(implements.Span));
                 }
                 if (type.Members.Count > 0)
-                    Assert.IsTrue(type.HeadingSpan.End <= type.Members.Min(a => a.Span.Start));
+                    Assert.True(type.HeadingSpan.End <= type.Members.Min(a => a.Span.Start));
                 if (type.ImplementsList.Length > 0)
-                    Assert.IsTrue(type.Name.Span.End <= type.ImplementsList.Min(a => a.Span.Start));
+                    Assert.True(type.Name.Span.End <= type.ImplementsList.Min(a => a.Span.Start));
                 if (type.BaseClass != null)
                 {
-                    Assert.IsTrue(type.Span.Contains(type.BaseClass.Span));
-                    Assert.IsTrue(type.HeadingSpan.Contains(type.BaseClass.Span));
-                    Assert.IsTrue(type.Name.Span.End <= type.BaseClass.Span.Start);
+                    Assert.True(type.Span.Contains(type.BaseClass.Span));
+                    Assert.True(type.HeadingSpan.Contains(type.BaseClass.Span));
+                    Assert.True(type.Name.Span.End <= type.BaseClass.Span.Start);
                 }
             }
         }

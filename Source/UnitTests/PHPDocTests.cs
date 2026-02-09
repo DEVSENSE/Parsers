@@ -1,18 +1,16 @@
 ﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.IO;
 using Devsense.PHP.Text;
 using System.Diagnostics;
 using System.Text;
 using System.Linq;
 using System.Text.RegularExpressions;
-using UnitTests.TestImplementation;
 using Devsense.PHP.Syntax;
 using Devsense.PHP.Ast.DocBlock;
+using Xunit;
 
 namespace UnitTests
 {
-    [TestClass]
     public class PHPDocTests
     {
         static IDocBlock NewPHPDoc(string code)
@@ -21,7 +19,7 @@ namespace UnitTests
             return DefaultDocBlockFactory.Instance.CreateDocBlock(new Span(0, code.Length), code);
         }
 
-        [TestMethod]
+        [Fact]
         public void SummaryTest()
         {
             var phpdoc = NewPHPDoc(@"
@@ -29,11 +27,11 @@ namespace UnitTests
  * Summary.
  */");
 
-            Assert.IsTrue(phpdoc.HasSummary(out var summary));
-            Assert.AreEqual("Summary.", summary);
+            Assert.True(phpdoc.HasSummary(out var summary));
+            Assert.Equal("Summary.", summary);
         }
 
-        [TestMethod]
+        [Fact]
         public void EntriesTest()
         {
             var phpdoc = NewPHPDoc(@"
@@ -46,8 +44,8 @@ namespace UnitTests
  *         text
  */");
 
-            Assert.IsTrue(phpdoc.HasSummary(out var summary));
-            Assert.AreEqual("Summary.", summary);
+            Assert.True(phpdoc.HasSummary(out var summary));
+            Assert.Equal("Summary.", summary);
 
             int count = 0;
             foreach (var entry in phpdoc)
@@ -55,10 +53,10 @@ namespace UnitTests
                 count ++;
             }
 
-            Assert.AreEqual(3, count);
+            Assert.Equal(3, count);
         }
 
-        //        [TestMethod]
+        //        [Fact]
         //        public void DataProviderTest()
         //        {
         //            var phpdoc = NewPHPDoc(@"
@@ -66,11 +64,11 @@ namespace UnitTests
         // * @dataProvider provideTrimData
         // */");
 
-        //            Assert.IsNotNull(phpdoc.GetElement<PHPDocBlock.DataProviderTag>());
-        //            Assert.AreEqual(phpdoc.GetElement<PHPDocBlock.DataProviderTag>().FunctionName.Name.Value, "provideTrimData");
+        //            Assert.NotNull(phpdoc.GetElement<PHPDocBlock.DataProviderTag>());
+        //            Assert.Equal(phpdoc.GetElement<PHPDocBlock.DataProviderTag>().FunctionName.Name.Value, "provideTrimData");
         //        }
 
-        //        [TestMethod]
+        //        [Fact]
         //        public void AnnotationTest()
         //        {
         //            var phpdoc = NewPHPDoc(@"
@@ -78,10 +76,10 @@ namespace UnitTests
         // * @Annotation
         // */");
 
-        //            Assert.IsNotNull(phpdoc.GetElement<PHPDocBlock.AnnotationTag>());
+        //            Assert.NotNull(phpdoc.GetElement<PHPDocBlock.AnnotationTag>());
         //        }
 
-        //        [TestMethod]
+        //        [Fact]
         //        public void EmptyDeprecatedTest()
         //        {
         //            var phpdoc = NewPHPDoc(@"
@@ -89,10 +87,10 @@ namespace UnitTests
         // * @deprecated
         // */");
 
-        //            Assert.IsNotNull(phpdoc.GetElement<PHPDocBlock.DeprecatedTag>());
+        //            Assert.NotNull(phpdoc.GetElement<PHPDocBlock.DeprecatedTag>());
         //        }
 
-        //        [TestMethod]
+        //        [Fact]
         //        public void ReturnsTest()
         //        {
         //            var phpdoc = NewPHPDoc(@"
@@ -101,11 +99,11 @@ namespace UnitTests
         // * @return int The return value.
         // */");
 
-        //            Assert.AreEqual(phpdoc.Returns.TypeNames, "int");
-        //            Assert.AreEqual(phpdoc.Returns.Description, "The return value.");
+        //            Assert.Equal(phpdoc.Returns.TypeNames, "int");
+        //            Assert.Equal(phpdoc.Returns.Description, "The return value.");
         //        }
 
-        //        [TestMethod]
+        //        [Fact]
         //        public void MultitypeTest()
         //        {
         //            var phpdoc = NewPHPDoc(@"
@@ -129,7 +127,7 @@ namespace UnitTests
         //        }
 
 
-        //        [TestMethod]
+        //        [Fact]
         //        public void CallableSyntaxTest()
         //        {
         //            var phpdoc = NewPHPDoc(@"
@@ -148,7 +146,7 @@ namespace UnitTests
         //            }
         //        }
 
-        //        [TestMethod]
+        //        [Fact]
         //        public void MethodVarArgTest()
         //        {
         //            var phpdoc = NewPHPDoc(@"
@@ -158,13 +156,13 @@ namespace UnitTests
         // * @method $this alphanum3(string ...$x)
         // */");
 
-        //            Assert.AreEqual(3, phpdoc.Elements.Length);
+        //            Assert.Equal(3, phpdoc.Elements.Length);
 
         //            var method = phpdoc.GetElement<PHPDocBlock.MethodTag>();
 
-        //            Assert.IsNotNull(method);
-        //            Assert.IsTrue(method.Parameters[0].IsVariadic);
-        //            Assert.AreEqual(method.Parameters[0].Name.Name.Value, "x");
+        //            Assert.NotNull(method);
+        //            Assert.True(method.Parameters[0].IsVariadic);
+        //            Assert.Equal(method.Parameters[0].Name.Name.Value, "x");
         //        }
     }
 }
