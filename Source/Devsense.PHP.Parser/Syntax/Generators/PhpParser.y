@@ -1793,6 +1793,11 @@ variable:
 		{
 			$$ = AdjustNullSafeOperator(CreateProperty(@$, $1, $3), $2);
 		}
+	|	array_object_dereferenceable object_operator T_ERROR
+		{
+			$$ = AdjustNullSafeOperator(CreateProperty(@$, $1, string.Empty), $2);
+			yyerrok();
+		}
 ;
 
 simple_variable:

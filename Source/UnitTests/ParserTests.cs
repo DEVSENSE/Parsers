@@ -84,6 +84,12 @@ function test() {
     }
     echo ""C"";
 }")]
+        [InlineData(@"<?php
+echo $a->;
+echo $a->b;")]
+        [InlineData(@"<?php
+echo $a->
+echo $a->b;")]
         //[InlineData(@"<?php
         //function test() {
         //    foo(
@@ -97,11 +103,10 @@ function test() {
         //}")]
         public void ErrorRecoveryTest(string code, string expectedcode = null)
         {
-            var sourceUnit = new CodeSourceUnit(code, "dummy.php", Encoding.UTF8, Lexer.LexicalStates.INITIAL, LanguageFeatures.Basic);
-            var factory = new BasicNodesFactory(sourceUnit);
+            var sourceUnit = new CodeSourceUnit(code, "dummy.php");
             var errors = new TestErrorSink();
 
-            sourceUnit.Parse(factory, errors);
+            sourceUnit.Parse(new BasicNodesFactory(sourceUnit), errors);
 
             Assert.NotNull(sourceUnit.Ast);
             Assert.True(errors.Count != 0);
