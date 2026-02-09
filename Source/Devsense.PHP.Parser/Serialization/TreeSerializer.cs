@@ -23,11 +23,13 @@ namespace Devsense.PHP.Syntax.Ast.Serialization
 {
     public class TreeSerializer : TreeVisitor
     {
-        INodeWriter _serializer;
+        readonly INodeWriter _serializer;
+        readonly bool _serialize_span;
 
-        public TreeSerializer(INodeWriter serializer) : base()
+        public TreeSerializer(INodeWriter serializer, bool serialize_span = true) : base()
         {
             _serializer = serializer;
+            _serialize_span = serialize_span;
         }
 
         string MemberAttributesToString(PhpMemberAttributes attr)
@@ -103,7 +105,10 @@ namespace Devsense.PHP.Syntax.Ast.Serialization
 
         NodeObj SerializeSpan(Span span)
         {
-            return new NodeObj("Span", new NodeObj("start", span.Start.ToString()), new NodeObj("end", span.End.ToString()));
+            return _serialize_span
+                ? new NodeObj("Span", new NodeObj("start", span.Start.ToString()), new NodeObj("end", span.End.ToString()))
+                : default(NodeObj)
+                ;
         }
 
         NodeObj SerializeNamingContext(NamingContext context)
