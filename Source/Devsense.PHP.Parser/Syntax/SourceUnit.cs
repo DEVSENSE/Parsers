@@ -208,12 +208,14 @@ namespace Devsense.PHP.Syntax
 
         #region SourceUnit
 
-        public CodeSourceUnit(string/*!*/ code, string/*!*/ filePath,
-            Encoding/*!*/ encoding,
+        public CodeSourceUnit(
+            string/*!*/ code,
+            string/*!*/ filePath,
+            Encoding encoding = null,
             Lexer.LexicalStates initialState = Lexer.LexicalStates.INITIAL,
             LanguageFeatures features = LanguageFeatures.Basic,
             int offset = 0)
-            : base(filePath, encoding, Text.LineBreaks.Create(code))
+            : base(filePath, encoding ?? Encoding.UTF8, Text.LineBreaks.Create(code))
         {
             this.Code = code;
             this.InitialState = initialState;
