@@ -18,27 +18,31 @@ namespace UnitTests
 {
     public class ParserTests
     {
-        [Fact]
-        public void ErrorRecoveryTest()
-        {
-            var codes = new[] {
-@"<?php $x = 123",
-@"<?php
+        [Theory]
+        [InlineData(@"<?php $x = 123", @"<?php $x = 123;")]
+        [InlineData(@"<?php
 if (true) {
 ",
-@"<?php
+            @"<?php
+if (true) {
+}")]
+        [InlineData(@"<?php
 $x->a = 'john'
 $x->b = 'wick';
 ",
-@"<?php
+            @"<?php
+$x->a = 'john';
+$x->b = 'wick';
+")]
+        [InlineData(@"<?php
 function f() {
     $x = 1 + ;
     if ($x > 0) {
         echo 'ok';
     }
     return $x;
-}",
-@"<?php
+}")]
+        [InlineData(@"<?php
 function foo() {
     $a = 1
     if ($a > 0) {
@@ -46,7 +50,15 @@ function foo() {
     }
     return $a;
 }",
-@"<?php
+            @"<?php
+function foo() {
+    $a = 1;
+    if ($a > 0) {
+        echo $a;
+    }
+    return $a;
+}")]
+        [InlineData(@"<?php
 class Test {
     public function run() {
         echo 'start'
@@ -54,16 +66,16 @@ class Test {
             work();
         }
     }
-}",
-@"<?php
+}")]
+        [InlineData(@"<?php
 
 if ($a) {
     echo ""a"";
     echo ""b"";
 
 echo ""outside"";
-",
-@"<?php
+")]
+        [InlineData(@"<?php
 function test() {
     if (true) {
         echo ""A"";
@@ -71,80 +83,83 @@ function test() {
         echo ""B"";
     }
     echo ""C"";
-}",
-//@"<?php
-//function test() {
-//    foo(
-//        bar(1, 2),
-//        baz(3, 4)
-//    // missing closing ')'
-//    if ($x) {
-//        doSomething();
-//    }
-//    echo ""done"";
-//}",
-            };
+}")]
+        //[InlineData(@"<?php
+        //function test() {
+        //    foo(
+        //        bar(1, 2),
+        //        baz(3, 4)
+        //    // missing closing ')'
+        //    if ($x) {
+        //        doSomething();
+        //    }
+        //    echo ""done"";
+        //}")]
+        public void ErrorRecoveryTest(string code, string expectedcode = null)
+        {
+            var sourceUnit = new CodeSourceUnit(code, "dummy.php", Encoding.UTF8, Lexer.LexicalStates.INITIAL, LanguageFeatures.Basic);
+            var factory = new BasicNodesFactory(sourceUnit);
+            var errors = new TestErrorSink();
 
-            foreach (var code in codes)
+            sourceUnit.Parse(factory, errors);
+
+            Assert.NotNull(sourceUnit.Ast);
+            Assert.True(errors.Count != 0);
+            Assert.Contains(errors.Errors, e => e.Error == FatalErrors.SyntaxError);
+
+            // compare with healthy AST
+            if (expectedcode != null)
             {
-                var sourceUnit = new CodeSourceUnit(code, "dummy.php", Encoding.UTF8, Lexer.LexicalStates.INITIAL, LanguageFeatures.Basic);
-                var factory = new BasicNodesFactory(sourceUnit);
-                var errors = new TestErrorSink();
+                var expected = SerializeNode(CodeSourceUnit.ParseCode(expectedcode, "dummy.php").Ast, false);
+                var actual = SerializeNode(sourceUnit.Ast, false);
 
-                sourceUnit.Parse(factory, errors);
-
-                Assert.NotNull(sourceUnit.Ast);
-                Assert.True(errors.Count != 0);
-                Assert.Contains(errors.Errors, e => e.Error == FatalErrors.SyntaxError);
+                Assert.Equal(expected, actual);
             }
         }
 
-        [Fact]
-        public void SimpleParseTest()
-        {
-            var codes = new[] {
-@"<?php
+        [Theory]
+        [InlineData(@"<?php
 class X {
     function static() { }
-}",
-@"<?php
-echo $x->prop;",
-@"<?php
+}")]
+        [InlineData(@"<?php
+echo $x->prop;")]
+        [InlineData(@"<?php
 class enum extends A {
-}",
-@"<?php
+}")]
+        [InlineData(@"<?php
 A::E->foo(); // dereferencable class const
-",
-@"<?php
+")]
+        [InlineData(@"<?php
 
 class X {
     public function __construct(
         private readonly T $t, // private readonly
     ) {
     }
-}",
-@"<?php
+}")]
+        [InlineData(@"<?php
 
-do { } while (false);",
-@"<?php
-$fn = function () use ($a,): int {};",
-@"<?php use X\enum;",
-@"<?php use X\Enum as BaseEnum;",
-@"<?php
+do { } while (false);")]
+        [InlineData(@"<?php
+$fn = function () use ($a,): int {};")]
+        [InlineData(@"<?php use X\enum;")]
+        [InlineData(@"<?php use X\Enum as BaseEnum;")]
+        [InlineData(@"<?php
 function test(){
     global $test;
 	$test = 1;
-}",
-@"<?php $r[] = 1;",
-// PHP 8.4 new without parenthesis
-@"<?php
+}")]
+        [InlineData(@"<?php $r[] = 1;")]
+        // PHP 8.4 new without parenthesis
+        [InlineData(@"<?php
 //echo new A->prop;  // unexpected token ->
 //echo new A->foo(); // unexpected token ->
 //var_dump(new A::$prop); // unexpected token ::
 //echo new A[0];  // unexpected token [
 //echo new A::C; // unexpected identifier C
-",
-@"<?php
+")]
+        [InlineData(@"<?php
 echo new A()::C;
 echo new A()::{'C'};
 echo new $class()::C;
@@ -179,19 +194,16 @@ new (trim(' A '))()['key'];
 isset(new A()['key']);
 isset(new $class()['key']);
 isset(new (trim(' A '))()['key']);
-",
-            };
+")]
+        public void SimpleParseTest(string code)
+        {
+            var sourceUnit = new CodeSourceUnit(code, "dummy.php", Encoding.UTF8, Lexer.LexicalStates.INITIAL, LanguageFeatures.Basic);
+            var factory = new BasicNodesFactory(sourceUnit);
+            var errors = new TestErrorSink();
 
-            foreach (var code in codes)
-            {
-                var sourceUnit = new CodeSourceUnit(code, "dummy.php", Encoding.UTF8, Lexer.LexicalStates.INITIAL, LanguageFeatures.Basic);
-                var factory = new BasicNodesFactory(sourceUnit);
-                var errors = new TestErrorSink();
+            sourceUnit.Parse(factory, errors);
 
-                sourceUnit.Parse(factory, errors);
-
-                Assert.NotNull(sourceUnit.Ast);
-            }
+            Assert.NotNull(sourceUnit.Ast);
         }
 
         public const string Errors = "ERRORS:";
@@ -256,13 +268,11 @@ isset(new (trim(' A '))()['key']);
 
             //
 
-            var serializer = new JsonNodeWriter();
-            TreeSerializer visitor = new TreeSerializer(serializer);
-            sourceUnit.Ast.VisitMe(visitor);
+            var serialized = SerializeNode(sourceUnit.Ast, true);
 
             Regex rgx = new Regex(@"""Span""[^}]*},?\s*\n?"); // omit Span for more compact testing (position must be verified separately)
             string expected = rgx.Replace(testparts[1].Trim().Replace("\r", string.Empty).Replace("\n", string.Empty).Replace(" ", string.Empty), string.Empty);
-            string actual = rgx.Replace(serializer.ToString().Replace("\r", string.Empty).Replace("\n", string.Empty).Replace(" ", string.Empty), string.Empty);
+            string actual = rgx.Replace(serialized.ToString().Replace("\r", string.Empty).Replace("\n", string.Empty).Replace(" ", string.Empty), string.Empty);
 
             if (testparts[1].Trim() != "<<<IGNORE>>>")
             {
@@ -517,7 +527,7 @@ function foo(
                 Assert.Equal(0, errors.Count);
             }
         }
-        
+
         [Fact]
         public void AsymmetricVisibilityTest()
         {
@@ -992,6 +1002,15 @@ echo strlen(\Private\Foo::class);
                     Assert.True(type.Name.Span.End <= type.BaseClass.Span.Start);
                 }
             }
+        }
+
+        static string SerializeNode(GlobalCode ast, bool _serialize_span)
+        {
+            var serializer = new JsonNodeWriter();
+            TreeSerializer visitor = new TreeSerializer(serializer, serialize_span: _serialize_span);
+            visitor.VisitGlobalCode(ast);
+
+            return serializer.ToString();
         }
     }
 }
