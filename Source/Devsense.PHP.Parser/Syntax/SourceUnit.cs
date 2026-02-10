@@ -204,6 +204,13 @@ namespace Devsense.PHP.Syntax
         /// <summary>Position shift.</summary>
         readonly int _offset = 0;
 
+        /// <summary>
+        /// Counts tokens or terminals discarded during error recovery.
+        /// In recovered or error-free code, this is <c>0</c>.
+        /// </summary>
+        public int TokensDiscarded => _tokensDiscarded;
+        private int _tokensDiscarded;
+
         #endregion
 
         #region SourceUnit
@@ -227,7 +234,9 @@ namespace Devsense.PHP.Syntax
         {
             using (var lexer = new Lexer(this.Code.AsMemory(), this.Encoding, errors, _features, positionShift: _offset, initialState: this.InitialState, docBlockFactory: factory))
             {
-                this.Ast = (GlobalCode)new Parser().Parse(lexer, factory, _features, errors);
+                var parser = new Parser();
+                this.Ast = (GlobalCode)parser.Parse(lexer, factory, _features, errors);
+                _tokensDiscarded = parser.TokensDiscarded;
             }
         }
 

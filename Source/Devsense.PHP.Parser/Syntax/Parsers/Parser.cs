@@ -49,6 +49,11 @@ namespace Devsense.PHP.Syntax
         /// </summary>
         public IErrorSink<Span> ErrorSink => _errors;
 
+        /// <summary>
+        /// Counts tokens being ignored during error recovery.
+        /// </summary>
+        public int TokensDiscarded => base.tokensDiscarded;
+
         /// <summary><c>(LangElement)null</c></summary>
         static LangElement NullLangElement => null;
 

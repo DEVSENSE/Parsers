@@ -240,6 +240,7 @@ namespace Devsense.PHP.Syntax
 
 		private bool recovering;
 		private int tokensSinceLastError;
+		protected int tokensDiscarded;
 
 		private readonly Stack<int> state_stack = new Stack<int>();
 		protected readonly ParserStack<ValueType, PositionType> value_stack;
@@ -285,6 +286,9 @@ namespace Devsense.PHP.Syntax
 			current_state_index = 0;
             state_stack.Clear();
             value_stack.Clear();
+			tokensDiscarded = 0;
+			tokensSinceLastError = 0;
+			recovering = false;
         }
 
         private int GetNextToken()
@@ -462,7 +466,6 @@ namespace Devsense.PHP.Syntax
 			value_stack.Push(yyval, yypos, yypos_valid);
 		}
 
-
 		protected abstract void DoAction(int action_nr);
 		
 		protected PositionType GetLeftValidPosition(int symbolIndex)
@@ -475,7 +478,6 @@ namespace Devsense.PHP.Syntax
 				
 			return value_stack.PeekPosition(index);
 		}
-
 
 		virtual protected bool ErrorRecovery(int token, int state)
 		{
@@ -504,7 +506,6 @@ namespace Devsense.PHP.Syntax
             next = token;
             current_state_index = state;
         }
-
 
         internal void ReportError()
 		{
@@ -540,6 +541,7 @@ namespace Devsense.PHP.Syntax
 
 				state_stack.Pop();
 				value_stack.Pop();
+				tokensDiscarded++;
 
 				//if (Trace)
 				//    DisplayStack();
@@ -557,7 +559,6 @@ namespace Devsense.PHP.Syntax
 			}
 		}
 
-
 		internal bool DiscardInvalidTokens()
 		{
             int lastState = -1;
@@ -570,6 +571,7 @@ namespace Devsense.PHP.Syntax
                 if (next == 0)
                 {
                     next = GetNextToken();
+					tokensDiscarded++;
                 }
 
 				// EOF -> recovery failed
@@ -676,9 +678,7 @@ namespace Devsense.PHP.Syntax
         //    Console.Error.WriteLine("-> {0}", SymbolToString(rule.lhs));
         //}
 
-
 		protected abstract string TerminalToString(int terminal);
-
 
         //private string SymbolToString(int symbol)
         //{
@@ -687,7 +687,6 @@ namespace Devsense.PHP.Syntax
         //    else
         //        return TerminalToString(symbol);
         //}
-
 
 		protected string CharToString(char ch)
 		{

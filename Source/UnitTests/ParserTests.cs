@@ -41,7 +41,7 @@ function f() {
         echo 'ok';
     }
     return $x;
-}")]
+}", null, 1)]
         [InlineData(@"<?php
 function foo() {
     $a = 1
@@ -101,7 +101,7 @@ echo $a->b;")]
         //    }
         //    echo ""done"";
         //}")]
-        public void ErrorRecoveryTest(string code, string expectedcode = null)
+        public void ErrorRecoveryTest(string code, string expectedcode = null, int tokensDiscarded = 0)
         {
             var sourceUnit = new CodeSourceUnit(code, "dummy.php");
             var errors = new TestErrorSink();
@@ -111,6 +111,7 @@ echo $a->b;")]
             Assert.NotNull(sourceUnit.Ast);
             Assert.True(errors.Count != 0);
             Assert.Contains(errors.Errors, e => e.Error == FatalErrors.SyntaxError);
+            Assert.Equal(tokensDiscarded, sourceUnit.TokensDiscarded);
 
             // compare with healthy AST
             if (expectedcode != null)
