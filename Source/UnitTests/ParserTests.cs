@@ -101,6 +101,8 @@ echo $a->b;")]
         //    }
         //    echo ""done"";
         //}")]
+        [InlineData(@"<?php
+$ = 123", null, 0)]
         public void ErrorRecoveryTest(string code, string expectedcode = null, int tokensDiscarded = 0)
         {
             var sourceUnit = new CodeSourceUnit(code, "dummy.php");

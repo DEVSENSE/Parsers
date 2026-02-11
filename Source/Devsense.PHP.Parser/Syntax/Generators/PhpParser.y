@@ -1802,6 +1802,7 @@ variable:
 
 simple_variable:
 		T_VARIABLE			{ $$ = _astFactory.Variable(@$, $1,	NullLangElement, true); }
+	|	'$' T_ERROR			{ $$ = _astFactory.Variable(@1, "",	NullLangElement, true); yyerrok(); }
 	|	'$' '{' expr '}'	{ $$ = _astFactory.Variable(@$, _astFactory.EncapsedExpression(Span.Combine(@2, @4), $3, Tokens.T_LBRACE), NullLangElement); }
 	|	'$' simple_variable	{ $$ = _astFactory.Variable(@$, $2, NullLangElement); }
 ;
