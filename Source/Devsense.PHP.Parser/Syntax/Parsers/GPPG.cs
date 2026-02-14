@@ -289,6 +289,7 @@ namespace Devsense.PHP.Syntax
 			tokensDiscarded = 0;
 			tokensSinceLastError = 0;
 			recovering = false;
+			lookahead = null;
         }
 
         private int GetNextToken()
