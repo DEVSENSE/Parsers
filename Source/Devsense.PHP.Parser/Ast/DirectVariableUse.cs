@@ -61,6 +61,21 @@ namespace Devsense.PHP.Syntax.Ast
             }
         }
 
+        sealed class LocalInterpolatedDirectVarUse : DirectVarUse
+        {
+            public override Expression IsMemberOf => null;
+
+            public override Span NameSpan => _name_span_start < 0 ? Span.Invalid : new Span(_name_span_start, VarName.Value.Length);
+
+            public override Span Span { get => this.NameSpan; protected set => base.Span = value; }
+
+            public LocalInterpolatedDirectVarUse(Text.Span span, VariableName varName)
+                : base(span, varName)
+            {
+                Debug.Assert(span == NameSpan);
+            }
+        }
+
         sealed class MemberDirectVarUse : DirectVarUse
         {
             public override Expression IsMemberOf { get; }
@@ -76,7 +91,10 @@ namespace Devsense.PHP.Syntax.Ast
             }
         }
 
-        public static DirectVarUse Create(Text.Span span, VariableName varName) => new LocalDirectVarUse(span, varName);
+        public static DirectVarUse Create(Text.Span span, VariableName varName) => span.Length == varName.Value.Length
+            ? new LocalInterpolatedDirectVarUse(span, varName) // "${varName}"
+            : new LocalDirectVarUse(span, varName) // $varName
+            ;
 
         public static DirectVarUse Create(Text.Span span, VariableName varName, Expression isMemberOf) => isMemberOf != null
             ? new MemberDirectVarUse(span, varName, isMemberOf)
