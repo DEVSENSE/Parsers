@@ -628,13 +628,11 @@ namespace Devsense.PHP.Syntax
                 : lazyBuilder.Result; // .StringResult;
         }
 
-        object GetTokenAsQuotedString(ProcessStringDelegate tryprocess, char quote)
+        object GetTokenAsQuotedString(ProcessStringDelegate tryprocess, ReadOnlySpan<char> text, char quote)
         {
             // 1/ "..."
             // 2/ b"..."
             // 3/ ...
-
-            var text = this.TokenTextSpan;
 
             if (text.IsEmpty)
             {
@@ -849,14 +847,14 @@ namespace Devsense.PHP.Syntax
 
         Tokens ProcessSingleQuotedString()
         {
-            _tokenSemantics.Object = GetTokenAsQuotedString(_processSingleQuotedString, '\'');
+            _tokenSemantics.Object = GetTokenAsQuotedString(_processSingleQuotedString, this.TokenTextSpan, '\'');
             _tokenSemantics.QuoteToken = Tokens.T_SINGLE_QUOTES;
             return Tokens.T_CONSTANT_ENCAPSED_STRING;
         }
 
-        Tokens ProcessDoubleQuotedString()
+        Tokens ProcessDoubleQuotedString(ReadOnlySpan<char> text)
         {
-            _tokenSemantics.Object = GetTokenAsQuotedString(_processDoubleQuotedString, '\"');
+            _tokenSemantics.Object = GetTokenAsQuotedString(_processDoubleQuotedString, text, '\"');
             _tokenSemantics.QuoteToken = Tokens.T_DOUBLE_QUOTES;
 
             return Tokens.T_CONSTANT_ENCAPSED_STRING;
@@ -1207,11 +1205,12 @@ namespace Devsense.PHP.Syntax
             {
                 if (nonStringSuffix == 1/*quote*/ && tokentext.Length > 1 && opening == '"' && tokentext[tokentext.Length - 1] == '"')
                 {
+                    token = ProcessDoubleQuotedString(tokentext);
+                    
                     BEGIN(LexicalStates.ST_IN_SCRIPTING);
-                    token = ProcessDoubleQuotedString();
                     return true;
                 }
-                else if (tokentext.Length >= 1 && opening == '"')
+                else if (tokentext.Length > 1 && opening == '"')
                 {
                     _yyless(TokenLength - prefix_length);
                     token = Tokens.T_DOUBLE_QUOTES;

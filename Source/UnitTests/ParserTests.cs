@@ -636,9 +636,10 @@ class X {
         [InlineData(@"""${a}b""")]
         [InlineData(@"b""${a}b""")]
         [InlineData(@"""a{$b}c""")]
+        [InlineData(@"""$a""")]
         public void StringLiteralTest(string code)
         {
-            var unit = new CodeSourceUnit("<?= " + code, "dummy.php", Encoding.UTF8);
+            var unit = new CodeSourceUnit("<?php echo " + code + ";", "dummy.php", Encoding.UTF8);
             var errors = new TestErrorSink();
             unit.Parse(new BasicNodesFactory(unit), errors);
             Assert.Equal(0, unit.TokensDiscarded);
