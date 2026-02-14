@@ -1091,7 +1091,7 @@ namespace Devsense.PHP.Syntax
 
             // trim whitespace suffix
             // spaces, line separators, paragraph separators, tabs
-            for (; content.Length != 0; )
+            for (; content.Length != 0;)
             {
                 var ch = content[content.Length - 1];
                 if (char.IsWhiteSpace(ch) || ch == ';')
@@ -1191,9 +1191,12 @@ namespace Devsense.PHP.Syntax
         bool ProcessString(int nonStringSuffix, out Tokens token)
         {
             var tokentext = this.TokenTextSpan;
+            var prefix_length = 1;
+
             if (_binary_string_prefix && tokentext[0] == 'b')
             {
                 tokentext = tokentext.Slice(1);
+                prefix_length++;
             }
 
             Debug.Assert(tokentext.Length > 0);
@@ -1210,7 +1213,7 @@ namespace Devsense.PHP.Syntax
                 }
                 else if (tokentext.Length >= 1 && opening == '"')
                 {
-                    _yyless(TokenLength - 1);
+                    _yyless(TokenLength - prefix_length);
                     token = Tokens.T_DOUBLE_QUOTES;
                     return true;
                 }
