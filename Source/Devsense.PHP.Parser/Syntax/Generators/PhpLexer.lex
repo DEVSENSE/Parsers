@@ -899,7 +899,7 @@ ST_HALT_COMPILER1,ST_HALT_COMPILER2,ST_HALT_COMPILER3>{EOF} {
 
 <ST_NOWDOC>{ANY_CHAR}         { yymore(); break; }
 
-<ST_IN_SCRIPTING>b?[']				{ BEGIN(LexicalStates.ST_SINGLE_QUOTES); yymore(); break; }
+<ST_IN_SCRIPTING>b?[']				{ BEGIN(LexicalStates.ST_SINGLE_QUOTES); _binary_string_prefix = GetTokenChar(0) == 'b'; yymore(); break; }
 <ST_SINGLE_QUOTES>[\\]{ANY_CHAR}	{ yymore(); break; }
 <ST_SINGLE_QUOTES>{NEWLINE}			{ yymore(); break; }
 <ST_SINGLE_QUOTES>[^'\\]+			{ yymore(); break; }
@@ -950,7 +950,7 @@ ST_HALT_COMPILER1,ST_HALT_COMPILER2,ST_HALT_COMPILER3>{EOF} {
 	yymore(); break; 
 }
 
-<ST_IN_SCRIPTING>b?["] { BEGIN(LexicalStates.ST_DOUBLE_QUOTES); yymore(); break; }
+<ST_IN_SCRIPTING>b?["] { BEGIN(LexicalStates.ST_DOUBLE_QUOTES); _binary_string_prefix = GetTokenChar(0) == 'b'; yymore(); break; }
 <ST_DOUBLE_QUOTES>"${" { if (ProcessString(2, out Tokens token)) return token; else break; }
 <ST_DOUBLE_QUOTES>"$"[a-zA-Z_] { if (ProcessString(2, out Tokens token)) return token; else break; }
 <ST_DOUBLE_QUOTES>"{$" { if (ProcessString(2, out Tokens token)) return token; else break; }

@@ -630,19 +630,19 @@ class X {
             }
         }
 
-        [Fact]
-        public void StringLiteralTest()
+        [Theory]
+        [InlineData(@"""\\test""")]
+        [InlineData(@"""{$a}b""")]
+        [InlineData(@"""${a}b""")]
+        [InlineData(@"b""${a}b""")]
+        [InlineData(@"""a{$b}c""")]
+        public void StringLiteralTest(string code)
         {
-            var codes = new[] {
-                @"<?php echo ""\\test"";",
-            };
-
-            foreach (var code in codes)
-            {
-                var unit = new CodeSourceUnit(code, "dummy.php", Encoding.UTF8);
-                unit.Parse(new BasicNodesFactory(unit), null);
-                Assert.NotNull(unit.Ast);
-            }
+            var unit = new CodeSourceUnit("<?= " + code, "dummy.php", Encoding.UTF8);
+            var errors = new TestErrorSink();
+            unit.Parse(new BasicNodesFactory(unit), errors);
+            Assert.Equal(0, unit.TokensDiscarded);
+            Assert.NotNull(unit.Ast);
         }
 
         [Fact]

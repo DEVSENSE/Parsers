@@ -25747,26 +25747,33 @@ $x =<<<XXX
             }
         }
 
-        [Fact]
-        public void BinaryStringTest()
+        [Theory]
+        [InlineData(@"b""\xEF\xBB\xBF""")]
+        public void BinaryStringTest(string tokenStr)
         {
-            var tokens = new[]
-            {
-                @"b""\xEF\xBB\xBF"""
-            };
+            var lexer = new Lexer(tokenStr.AsMemory(), Encoding.UTF8, initialState: Lexer.LexicalStates.ST_IN_SCRIPTING);
 
-            foreach (var tokenStr in tokens)
+            Tokens token;
+            while ((token = lexer.GetNextToken()) != Tokens.EOF)
             {
-                var lexer = new Lexer(tokenStr.AsMemory(), Encoding.UTF8, initialState: Lexer.LexicalStates.ST_IN_SCRIPTING);
-
-                Tokens token;
-                while ((token = lexer.GetNextToken()) != Tokens.EOF)
+                if (token == Tokens.T_END_HEREDOC)
                 {
-                    if (token == Tokens.T_END_HEREDOC)
-                    {
 
-                    }
                 }
+            }
+        }
+
+        [Theory]
+        [InlineData(@"""{$a}b""")]
+        [InlineData(@"""a{$b}c""")]
+        public void InterpolatedStringTest(string tokenStr)
+        {
+            var lexer = new Lexer(tokenStr.AsMemory(), Encoding.UTF8, initialState: Lexer.LexicalStates.ST_IN_SCRIPTING);
+
+            Tokens token;
+            while ((token = lexer.GetNextToken()) != Tokens.EOF)
+            {
+                
             }
         }
 

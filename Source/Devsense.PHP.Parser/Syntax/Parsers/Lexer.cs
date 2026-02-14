@@ -43,6 +43,8 @@ namespace Devsense.PHP.Syntax
 
         readonly LanguageFeatures _features;
 
+        bool _binary_string_prefix;
+
         /// <summary>
         /// Semantic value of the actual token
         /// </summary>
@@ -134,6 +136,7 @@ namespace Devsense.PHP.Syntax
         {
             Initialize(source, lexicalState, atBol);
             _charOffset = positionShift;
+            _binary_string_prefix = false;
         }
 
         public void Dispose()
@@ -642,7 +645,7 @@ namespace Devsense.PHP.Syntax
             var start = 0;
             var end = text.Length;
 
-            if (text[0] == 'b')
+            if (_binary_string_prefix && text[0] == 'b')
             {
                 binary = true;
                 start++;
@@ -1185,27 +1188,41 @@ namespace Devsense.PHP.Syntax
             return token;
         }
 
-        bool ProcessString(int count, out Tokens token)
+        bool ProcessString(int nonStringSuffix, out Tokens token)
         {
-            var quote = GetTokenChar(0) == 'b' && TokenLength >= 2 // binary string format
-                ? GetTokenChar(1)
-                : GetTokenChar(0);
+            var tokentext = this.TokenTextSpan;
+            if (_binary_string_prefix && tokentext[0] == 'b')
+            {
+                tokentext = tokentext.Slice(1);
+            }
 
-            if (count == 1 && TokenLength > 1 && quote == '"' && GetTokenChar(TokenLength - 1) == '"')
+            Debug.Assert(tokentext.Length > 0);
+
+            var opening = tokentext[0];
+
+            try
             {
-                BEGIN(LexicalStates.ST_IN_SCRIPTING);
-                token = ProcessDoubleQuotedString();
-                return true;
+                if (nonStringSuffix == 1/*quote*/ && tokentext.Length > 1 && opening == '"' && tokentext[tokentext.Length - 1] == '"')
+                {
+                    BEGIN(LexicalStates.ST_IN_SCRIPTING);
+                    token = ProcessDoubleQuotedString();
+                    return true;
+                }
+                else if (tokentext.Length >= 1 && opening == '"')
+                {
+                    _yyless(TokenLength - 1);
+                    token = Tokens.T_DOUBLE_QUOTES;
+                    return true;
+                }
+                else
+                {
+                    return ProcessText(nonStringSuffix, LexicalStates.ST_IN_STRING, '"', out token);
+                }
+
             }
-            else if (TokenLength > 1 && quote == '"')
+            finally
             {
-                _yyless(TokenLength - 1);
-                token = Tokens.T_DOUBLE_QUOTES;
-                return true;
-            }
-            else
-            {
-                return ProcessText(count, LexicalStates.ST_IN_STRING, '"', out token);
+                _binary_string_prefix = false; // 'b' consumed, forget
             }
         }
 

@@ -261,12 +261,12 @@ using Devsense.PHP.Text;
 					
 				case 18:
 					// #line 953
-					{ BEGIN(LexicalStates.ST_DOUBLE_QUOTES); yymore(); break; }
+					{ BEGIN(LexicalStates.ST_DOUBLE_QUOTES); _binary_string_prefix = GetTokenChar(0) == 'b'; yymore(); break; }
 					break;
 					
 				case 19:
 					// #line 902
-					{ BEGIN(LexicalStates.ST_SINGLE_QUOTES); yymore(); break; }
+					{ BEGIN(LexicalStates.ST_SINGLE_QUOTES); _binary_string_prefix = GetTokenChar(0) == 'b'; yymore(); break; }
 					break;
 					
 				case 20:
