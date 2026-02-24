@@ -673,7 +673,7 @@ statement:
 		}
 	|	T_GOTO T_STRING ';' { $$ = _astFactory.Goto(@$, $2, @2); }
 	|	T_STRING ':' { $$ = _astFactory.Label(@$, $1, @1); }
-	|	T_VOID_CAST expr ';' { $$ = _astFactory.UnaryOperation(@$, Operations.VoidCast,   (Expression)$2); }
+	|	T_VOID_CAST expr ';' { $$ = _astFactory.ExpressionStmt( @$, _astFactory.UnaryOperation(@$, Operations.VoidCast,   (Expression)$2) ); }
 ;
 
 catch_list:

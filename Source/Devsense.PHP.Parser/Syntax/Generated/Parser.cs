@@ -2655,7 +2655,7 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 { yyval.Node = _astFactory.Label(yypos, value_stack.array[value_stack.top-2].yyval.String, value_stack.array[value_stack.top-2].yypos); }
         return;
       case 174: // statement -> T_VOID_CAST expr ';' 
-{ yyval.Node = _astFactory.UnaryOperation(yypos, Operations.VoidCast,   (Expression)value_stack.array[value_stack.top-2].yyval.Node); }
+{ yyval.Node = _astFactory.ExpressionStmt( yypos, _astFactory.UnaryOperation(yypos, Operations.VoidCast,   (Expression)value_stack.array[value_stack.top-2].yyval.Node) ); }
         return;
       case 175: // catch_list -> 
 { yyval.NodeList = NewList<LangElement>(); }
