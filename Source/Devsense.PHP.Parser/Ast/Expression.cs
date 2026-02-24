@@ -53,6 +53,7 @@ namespace Devsense.PHP.Syntax.Ast
         ObjectCast,
         ArrayCast,
         UnsetCast,
+        VoidCast,
 
         // binary ops:
         Xor, Or, And,

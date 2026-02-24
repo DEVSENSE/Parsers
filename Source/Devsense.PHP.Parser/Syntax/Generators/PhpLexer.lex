@@ -382,6 +382,10 @@ ST_HALT_COMPILER1,ST_HALT_COMPILER2,ST_HALT_COMPILER3>{EOF} {
 	return (Tokens.T_UNSET_CAST);
 }
 
+<ST_IN_SCRIPTING>"("{TABS_AND_SPACES}("void"){TABS_AND_SPACES}")" {
+	return (Tokens.T_VOID_CAST);
+}
+
 <ST_IN_SCRIPTING>"eval" {
 	return Identifier(Tokens.T_EVAL);
 }

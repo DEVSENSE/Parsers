@@ -59,7 +59,7 @@ using TNode = Devsense.PHP.Syntax.Ast.LangElement;
 %left '*' '/' '%'
 %right '!'
 %right T_INSTANCEOF
-%right '~' T_INC T_DEC T_INT_CAST T_DOUBLE_CAST T_STRING_CAST T_ARRAY_CAST T_OBJECT_CAST T_BOOL_CAST T_UNSET_CAST '@'
+%right '~' T_INC T_DEC T_INT_CAST T_DOUBLE_CAST T_STRING_CAST T_ARRAY_CAST T_OBJECT_CAST T_BOOL_CAST T_UNSET_CAST T_VOID_CAST '@'
 %right T_POW
 %right '['
 %nonassoc T_NEW T_CLONE
@@ -245,6 +245,7 @@ using TNode = Devsense.PHP.Syntax.Ast.LangElement;
 %token <Object> T_ATTRIBUTE 397             //"#[ (T_ATTRIBUTE)"
 %token <Object> T_AMPERSAND_FOLLOWED_BY_VAR_OR_VARARG 400     // "&"
 %token <Object> T_AMPERSAND_NOT_FOLLOWED_BY_VAR_OR_VARARG 401 // "&"
+%token <Object> T_VOID_CAST 402   //"(void) (T_VOID_CAST)"
 
 /* Token used to force a parse error from the lexer */
 %token T_ERROR 257
@@ -672,6 +673,7 @@ statement:
 		}
 	|	T_GOTO T_STRING ';' { $$ = _astFactory.Goto(@$, $2, @2); }
 	|	T_STRING ':' { $$ = _astFactory.Label(@$, $1, @1); }
+	|	T_VOID_CAST expr ';' { $$ = _astFactory.UnaryOperation(@$, Operations.VoidCast,   (Expression)$2); }
 ;
 
 catch_list:
