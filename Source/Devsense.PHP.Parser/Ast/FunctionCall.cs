@@ -20,9 +20,41 @@ using Devsense.PHP.Text;
 
 namespace Devsense.PHP.Syntax.Ast
 {
+    #region IFcnCall
+
+    /// <summary>
+    /// Any function or method call.
+    /// </summary>
+    public interface IFcnCall : IExpression
+    {
+        /// <summary>Function call arguments.</summary>
+        CallSignature CallSignature { get; }
+
+        /// <summary>Position of called function name in source code.</summary>
+        Span NameSpan { get; }
+    }
+
+    #endregion
+
+    #region IDirectFcnCall
+
+    /// <summary>
+    /// A function or method call with name specified.
+    /// </summary>
+    public interface IDirectFcnCall : IFcnCall
+    {
+        /// <summary>
+        /// Name of the method, or name of the function without the namespace part.
+        /// </summary>
+        /// <remarks>For the full function name incl. the namespace part, see <see cref="DirectFcnCall.FullName"/>.</remarks>
+        Name SimpleName { get; }
+    }
+
+    #endregion
+
     #region FunctionCall
 
-    public abstract class FunctionCall : VarLikeConstructUse
+    public abstract class FunctionCall : VarLikeConstructUse, IFcnCall
     {
         public override Span Span
         {
@@ -69,7 +101,7 @@ namespace Devsense.PHP.Syntax.Ast
 
     #region DirectFcnCall
 
-    public abstract class DirectFcnCall : FunctionCall
+    public abstract class DirectFcnCall : FunctionCall, IDirectFcnCall
     {
         sealed class LocalDirectFcnCall : DirectFcnCall
         {
@@ -285,11 +317,13 @@ namespace Devsense.PHP.Syntax.Ast
 
     #region DirectStMtdCall
 
-    public sealed class DirectStMtdCall : StaticMtdCall
+    public sealed class DirectStMtdCall : StaticMtdCall, IDirectFcnCall
     {
         public override Operations Operation { get { return Operations.DirectStaticCall; } }
 
         public NameRef MethodName { get; }
+
+        Name IDirectFcnCall.SimpleName => MethodName.Name;
         
         public override Text.Span NameSpan => MethodName.Span;
 
