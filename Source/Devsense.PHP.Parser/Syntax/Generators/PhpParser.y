@@ -1889,8 +1889,21 @@ encaps_var:
 		T_VARIABLE
 			{ $$ = _astFactory.Variable(@$, $1, NullLangElement, true); }
 	|	T_VARIABLE '[' encaps_var_offset ']'
-			{ $$ = _astFactory.ArrayItem(@$, false,
-					_astFactory.Variable(@1, $1, NullLangElement, true), $3); }
+			{
+				$$ = _astFactory.ArrayItem(
+					@$,
+					false,
+					_astFactory.Variable(@1, $1, NullLangElement, true),
+					$3);
+			}
+	|	T_VARIABLE '{' encaps_var_offset '}'
+			{
+				$$ = _astFactory.ArrayItem(
+					@$,
+					true,
+					_astFactory.Variable(@1, $1, NullLangElement, true),
+					$3);
+			}
 	|	T_VARIABLE object_operator T_STRING
 			{ $$ = AdjustNullSafeOperator(CreateProperty(@$, _astFactory.Variable(@1, $1, NullLangElement, true), $3), $2); }
 	|	T_DOLLAR_OPEN_CURLY_BRACES expr '}'
@@ -1899,6 +1912,9 @@ encaps_var:
 			{ $$ = _astFactory.EncapsedExpression(@$, _astFactory.Variable(@2, $2, NullLangElement, false), Tokens.T_DOLLAR_OPEN_CURLY_BRACES); }
 	|	T_DOLLAR_OPEN_CURLY_BRACES T_STRING_VARNAME '[' expr ']' '}'
 			{ $$ = _astFactory.EncapsedExpression(@$, _astFactory.ArrayItem(Span.Combine(@2, @5), false,
+					_astFactory.Variable(@2, $2, NullLangElement, false), $4), Tokens.T_DOLLAR_OPEN_CURLY_BRACES); }
+	|	T_DOLLAR_OPEN_CURLY_BRACES T_STRING_VARNAME '{' expr '}' '}'
+			{ $$ = _astFactory.EncapsedExpression(@$, _astFactory.ArrayItem(Span.Combine(@2, @5), true,
 					_astFactory.Variable(@2, $2, NullLangElement, false), $4), Tokens.T_DOLLAR_OPEN_CURLY_BRACES); }
 	|	T_CURLY_OPEN variable '}' { $$ = _astFactory.EncapsedExpression(@$, $2, Tokens.T_LBRACE); }
 ;

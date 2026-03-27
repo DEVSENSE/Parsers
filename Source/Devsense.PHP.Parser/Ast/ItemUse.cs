@@ -34,6 +34,10 @@ namespace Devsense.PHP.Syntax.Ast
             public SimpleItemUse(Span p, Expression array, Expression index) : base(p, array, index)
             {
             }
+
+            public override bool IsFunctionArrayDereferencing => false;
+
+            public override bool IsBraces => false;
         }
 
         class ComplexItemUse : ItemUse
@@ -57,12 +61,12 @@ namespace Devsense.PHP.Syntax.Ast
         /// <summary>
         /// Whether this represents function array dereferencing.
         /// </summary>
-        public virtual bool IsFunctionArrayDereferencing => false;
+        public abstract bool IsFunctionArrayDereferencing { get; }
 
         /// <summary>
         /// <c>True</c> if the array is accessed using '{}', false if using '[]'.
         /// </summary>
-        public virtual bool IsBraces => false;
+        public abstract bool IsBraces { get; }
 
         /// <summary>
         /// Variable used as an array identifier.
