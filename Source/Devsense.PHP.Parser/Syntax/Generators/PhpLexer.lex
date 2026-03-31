@@ -773,6 +773,25 @@ ST_HALT_COMPILER1,ST_HALT_COMPILER2,ST_HALT_COMPILER3>{EOF} {
 	return (Tokens.T_OPEN_TAG);
 }
 
+<INITIAL>"<?php" {
+	if(ProcessPreOpenTag())
+	{
+		return Tokens.T_INLINE_HTML; 
+	}
+	/* Allow <?php followed by end of file. */
+	if (this.lookahead_index == this.Source.Length) // EOF
+	{
+		BEGIN(LexicalStates.ST_IN_SCRIPTING);
+		return (Tokens.T_OPEN_TAG);		
+	}
+	/* Degenerate case: <?phpX is interpreted as <? phpX with short tags. */
+	if (EnableShortTags) {
+		_yyless(3);
+		BEGIN(LexicalStates.ST_IN_SCRIPTING);
+		return (Tokens.T_OPEN_TAG);
+	}
+	yymore(); break;
+}
 
 <INITIAL>"<?" {
 	if(ProcessPreOpenTag())

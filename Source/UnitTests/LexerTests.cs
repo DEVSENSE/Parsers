@@ -25877,6 +25877,46 @@ $x = <<<XXX
             Assert.True(Debugger.IsAttached || (end - start).TotalSeconds < 1, "Too long tokenizer time");
         }
 
+        [Theory]
+        [InlineData($"<?php\n", Tokens.T_OPEN_TAG)]
+        [InlineData($"<?php ", Tokens.T_OPEN_TAG)]
+        [InlineData($"<?php", Tokens.T_OPEN_TAG)]
+        [InlineData($"<?p", Tokens.T_OPEN_TAG, Tokens.T_STRING)]
+        [InlineData($"<?", Tokens.T_OPEN_TAG)]
+        [InlineData($"<?phpx", Tokens.T_OPEN_TAG, Tokens.T_STRING)]
+        public void OpenTagTest1_ShortTags(string code, params Tokens[] tokens)
+        {
+            var lexer = new Lexer(code.AsMemory(), Encoding.UTF8, features: LanguageFeatures.Basic | LanguageFeatures.ShortOpenTags);
+
+            Tokens token;
+            int idx = 0;
+            while ((token = lexer.GetNextToken()) != Tokens.EOF)
+            {
+                Assert.Equal(tokens[idx++], token);
+            }
+        }
+
+        [Theory]
+        [InlineData($"<?php\n", Tokens.T_OPEN_TAG)]
+        [InlineData($"<?php ", Tokens.T_OPEN_TAG)]
+        [InlineData($"<?php", Tokens.T_OPEN_TAG)]
+        [InlineData($"<?p", Tokens.T_INLINE_HTML)]
+        [InlineData($"<?", Tokens.T_INLINE_HTML)]
+        [InlineData($"<?phpx", Tokens.T_INLINE_HTML)]
+        public void OpenTagTest2_NoShortTags(string code, params Tokens[] tokens)
+        {
+            var lexer = new Lexer(code.AsMemory(), Encoding.UTF8, features: LanguageFeatures.Basic);
+
+            Tokens token;
+            int idx = 0;
+            while ((token = lexer.GetNextToken()) != Tokens.EOF)
+            {
+                Assert.Equal(tokens[idx++], token);
+            }
+
+            Assert.Equal(tokens.Length, idx);
+        }
+
         //[Theory]
         //[MemberData(nameof(TestData_Files))]
 
