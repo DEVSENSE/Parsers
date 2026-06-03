@@ -713,6 +713,7 @@ unset_variable:
 function_name:
 		T_STRING
 	|	T_READONLY
+	|	T_EXIT
 ;
 
 function_declaration_statement:
