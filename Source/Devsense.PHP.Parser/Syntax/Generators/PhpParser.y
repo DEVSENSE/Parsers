@@ -714,6 +714,7 @@ function_name:
 		T_STRING
 	|	T_READONLY
 	|	T_EXIT
+	|	T_CLONE
 ;
 
 function_declaration_statement:
