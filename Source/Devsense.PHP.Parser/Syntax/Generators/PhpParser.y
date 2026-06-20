@@ -1691,7 +1691,7 @@ exit_expr:
 
 backticks_expr:
 		'`' '`' { $$ = _astFactory.Literal(@$, string.Empty, "``".AsSpan()); }
-	|	'`' T_ENCAPSED_AND_WHITESPACE '`' { $$ = _astFactory.Literal(@$, $2.Text, string.Format("`{0}`", $2.SourceCode).AsSpan()); }
+	|	'`' T_ENCAPSED_AND_WHITESPACE '`' { $$ = _astFactory.Literal(@$, $2.Text, Enclose($2.SourceCode, '`')); }
 	|	'`' encaps_list '`' { $$ = _astFactory.StringEncapsedExpression(@$, _astFactory.Concat(@2, $2), Tokens.T_BACKQUOTE); }
 ;
 
@@ -1721,7 +1721,7 @@ scalar:
 	|	T_NS_C		{ $$ = _astFactory.PseudoConstUse(@$, PseudoConstUse.Types.Namespace); }
 	|	T_CLASS_C	{ $$ = _astFactory.PseudoConstUse(@$, PseudoConstUse.Types.Class); }
 	|	T_START_HEREDOC T_END_HEREDOC							{ $$ = _astFactory.HeredocExpression(@$, _astFactory.Literal(new Span(@1.End, 0), "", string.Empty.AsSpan()), $1.QuoteToken, $2); }
-	|	T_START_HEREDOC T_ENCAPSED_AND_WHITESPACE T_END_HEREDOC { $$ = _astFactory.HeredocExpression(@$, RemoveHereDocIndentation(_astFactory.Literal(@2, $2.Text, $2.SourceCode.AsSpan()), $3, true), $1.QuoteToken, $3); }
+	|	T_START_HEREDOC T_ENCAPSED_AND_WHITESPACE T_END_HEREDOC { $$ = _astFactory.HeredocExpression(@$, RemoveHereDocIndentation(_astFactory.Literal(@2, $2.Text, $2.SourceCode.Span), $3, true), $1.QuoteToken, $3); }
 	|	T_START_HEREDOC encaps_list T_END_HEREDOC				{ $$ = _astFactory.HeredocExpression(@$, RemoveHereDocIndentation(_astFactory.Concat(@2, $2), $3, true), $1.QuoteToken, $3); }
 	|	dereferencable_scalar	{ $$ = $1; }
 	|	constant				{ $$ = $1; }
@@ -1884,7 +1884,7 @@ encaps_list:
 	|	encaps_var
 			{ $$ = NewList<LangElement>( $1 ); }
 	|	T_ENCAPSED_AND_WHITESPACE encaps_var
-			{ $$ = NewList<LangElement>( _astFactory.Literal(@1, $1.Text, $1.SourceCode.AsSpan()), $2 ); }
+			{ $$ = NewList<LangElement>( _astFactory.Literal(@1, $1.Text, $1.SourceCode.Span), $2 ); }
 ;
 
 encaps_var:

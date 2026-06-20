@@ -1015,8 +1015,6 @@ namespace Devsense.PHP.Syntax
 
         bool ProcessEndNowDoc(ProcessStringDelegate tryprocess)
         {
-            BEGIN(LexicalStates.ST_END_HEREDOC);
-
             var content = TrimNowDocEnd(TokenTextSpan, _hereDocValue.Label); // trim label and whitespaces from the heredoc end
             var lookbackfix = TokenLength - content.Length;
             var indentation = ResolveHeredocIndentation(ref content);
@@ -1031,7 +1029,7 @@ namespace Devsense.PHP.Syntax
             // move back at the end of the heredoc label - yyless does not work properly (requires additional condition for the optional ';')
             lookahead_index = token_end = lookahead_index - lookbackfix;
 
-            _tokenSemantics.Strings = new StringPair(text, sourcetext);
+            _tokenSemantics.Strings = new StringPair(text, sourcetext.AsMemory());
 
             // remember the expected indentation
             _hereDocValue = _hereDocValue.WithIndentation(indentation);
@@ -1141,7 +1139,7 @@ namespace Devsense.PHP.Syntax
             {
                 _tokenSemantics.Strings = new StringPair(
                     text: (string)ProcessEscapedStringWithEnding(TokenTextSpan, '"'),
-                    sourcecode: GetTokenString()
+                    sourcecode: TokenSource
                 );
                 return Tokens.T_ENCAPSED_AND_WHITESPACE;
             }
@@ -1168,7 +1166,7 @@ namespace Devsense.PHP.Syntax
 
                 if (token == Tokens.T_ENCAPSED_AND_WHITESPACE)
                 {
-                    _tokenSemantics.Strings = new StringPair(text, text);
+                    _tokenSemantics.Strings = new StringPair(text, text.AsMemory());
                 }
                 else
                 {
@@ -1241,7 +1239,7 @@ namespace Devsense.PHP.Syntax
             {
                 _tokenSemantics.Strings = new StringPair(
                     text: (string)ProcessEscapedStringWithEnding(TokenTextSpan, ending),
-                    sourcecode: GetTokenString()
+                    sourcecode: TokenSource
                 );
                 return true;
             }

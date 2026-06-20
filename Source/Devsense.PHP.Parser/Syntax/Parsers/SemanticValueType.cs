@@ -12,9 +12,9 @@ namespace Devsense.PHP.Syntax
     struct StringPair
     {
         public string Text;
-        public string SourceCode;
+        public ReadOnlyMemory<char> SourceCode;
 
-        public StringPair(string text, string sourcecode)
+        public StringPair(string text, ReadOnlyMemory<char> sourcecode)
         {
             this.Text = text;
             this.SourceCode = sourcecode;
@@ -144,17 +144,23 @@ namespace Devsense.PHP.Syntax
             public object Object1;
             public object Object2;
             byte _flags;
+            public ReadOnlyMemory<char> ReadOnlyMemory_Char;
 
             public ReferenceTypes(object o) : this(o, null) { }
 
             public ReferenceTypes(object o1, object o2) : this(o1, o2, 0) { }
 
-            public ReferenceTypes(object o1, object o2, byte flags)
+            public ReferenceTypes(object o1, object o2, byte flags) : this(o1, o2, flags, ReadOnlyMemory<char>.Empty) { }
+
+            public ReferenceTypes(object o1, object o2, byte flags, ReadOnlyMemory<char> s)
             {
                 Object1 = o1;
                 Object2 = o2;
                 _flags = flags;
+                ReadOnlyMemory_Char = s;
             }
+
+            public ReferenceTypes(ReadOnlyMemory<char> s) : this(null, null, 0, s) { }
 
             public static implicit operator QualifiedName(ReferenceTypes r) => new QualifiedName(
                 new Name((string)r.Object1),
@@ -167,6 +173,8 @@ namespace Devsense.PHP.Syntax
                 qn.Namespaces,
                 qn.IsFullyQualifiedName ? (byte)TypesFlags.IsFullyQualifiedName : (byte)0
             );
+
+            public static implicit operator ReferenceTypes(ReadOnlyMemory<char> s) => new ReferenceTypes(s);
 
             public ActualParam AsActualParam(int start) => new ActualParam(Object1, start, (byte)_flags);
 
@@ -234,7 +242,8 @@ namespace Devsense.PHP.Syntax
             }
         }
         internal SwitchObject SwitchObject { get { return (SwitchObject)Object; } set { Object = value; } }
-        internal StringPair Strings { get => new StringPair((string)_objs.Object1, (string)_objs.Object2); set => _objs = new ReferenceTypes(value.Text, value.SourceCode); }
+        public ReadOnlyMemory<char> ReadOnlyMemory_Char { get => _objs.ReadOnlyMemory_Char; set => _objs = new ReferenceTypes(value); }
+        internal StringPair Strings { get => new StringPair((string)_objs.Object1, _objs.ReadOnlyMemory_Char); set => _objs = new ReferenceTypes(value.Text, null, 0, value.SourceCode); }
         public List<string> StringList { get { return (List<string>)Object; } set { Object = value; } }
         internal CompleteAlias Alias { get { return (CompleteAlias)Object; } set { Object = value; } }
         internal List<CompleteAlias> AliasList { get { return (List<CompleteAlias>)Object; } set { Object = value; } }

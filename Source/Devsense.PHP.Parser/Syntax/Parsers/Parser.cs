@@ -886,6 +886,8 @@ namespace Devsense.PHP.Syntax
             return expressions.Length == 1 ? expressions[0] : element;
         }
 
+        static ReadOnlySpan<char> Enclose(ReadOnlyMemory<char> value, char quote) => $"{quote}{value}{quote}".AsSpan();
+
         #region Aliasing
 
         /// <summary>

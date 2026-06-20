@@ -158,7 +158,7 @@ namespace Devsense.PHP.Syntax
 		}
 
 		// fields accessed from the generated code:
-		public Item[] array = new Item[4];
+		public Item[] array = new Item[8];
 
 		public int top = 0;
 
@@ -168,9 +168,7 @@ namespace Devsense.PHP.Syntax
 		{
 			if (top >= array.Length)
 			{
-				var newarray = new Item[array.Length * 2];
-				Array.Copy(array, newarray, top);
-				array = newarray;
+				Array.Resize(ref this.array, array.Length * 2);
 			}
 
 			ref var entry = ref array[top++];
