@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Xunit;
+using static Devsense.PHP.Syntax.Ast.EncapsedExpression;
 
 namespace UnitTests.TestImplementation
 {
@@ -19,6 +20,9 @@ namespace UnitTests.TestImplementation
 
         public IReadOnlyList<FunctionDecl> Functions => _functions;
         readonly List<FunctionDecl> _functions = new List<FunctionDecl>();
+
+        public IReadOnlyList<StringEncapsedExpression> HereDocs => _heredocs;
+        readonly List<StringEncapsedExpression> _heredocs = new List<StringEncapsedExpression>();
 
         protected override IErrorSink<Span> ErrorSink => _errors;
         readonly IErrorSink<Span> _errors;
@@ -48,6 +52,15 @@ namespace UnitTests.TestImplementation
             _functions.Add((FunctionDecl)f);
 
             return f;
+        }
+
+        public override LangElement HeredocExpression(Span span, LangElement expression, Tokens quoteStyle, Lexer.HereDocTokenValue heredoc)
+        {
+            var e = base.HeredocExpression(span, expression, quoteStyle, heredoc);
+
+            _heredocs.Add((StringEncapsedExpression)e);
+
+            return e;
         }
     }
 }
