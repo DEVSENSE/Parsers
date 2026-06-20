@@ -216,7 +216,6 @@ echo $arr{0};
 echo $arr{'index'};
 ")]
         [InlineData(@"<?php
-// https://community.devsense.com/d/2577-incorrect-incorrect-heredoc-indentation-error
 	<<<TXT
 	'\n' 
 	TXT;
@@ -364,25 +363,52 @@ echo $arr{'index'};
             }
         }
 
-        [Fact]
-        public void HeredocTest()
-        {
-            var codes = new[] {
-               @"<?php
+        [Theory]
+        [InlineData(@"<?php
 $x = <<<XXX
 
   /**
    * text
    */
 
-  XXX;",
-            };
+  XXX;")]
+        [InlineData(@"<?php
+$x = ""hello"";
 
-            foreach (var code in codes)
+    echo <<<FOO
+    $x // ok
+    $x\n$x
+    FOO;")]
+        [InlineData(@"<?php
+	echo <<<TXT
+	'\n'
+	TXT; // https://community.devsense.com/d/2577", "'\n'")]
+        [InlineData(@"<?php
+
+    <<<HTML
+    <div>
+        <img/>
+    </div>
+    HTML;
+
+", @"<div>
+    <img/>
+</div>")]
+        public void HeredocTest(string code, string value = null)
+        {
+            var errors = new TestErrorSink();
+            var unit = new CodeSourceUnit(code, "dummy.php", Encoding.UTF8);
+            var factory = new TestNodeFactory(unit, errors);
+            unit.Parse(factory, errors);
+            Assert.NotNull(unit.Ast);
+            Assert.Empty(errors.Errors);
+            Assert.Single(factory.HereDocs);
+
+            if (value != null) // check that the value was decoded properly
             {
-                var unit = new CodeSourceUnit(code, "dummy.php", Encoding.UTF8);
-                unit.Parse(new BasicNodesFactory(unit), null);
-                Assert.NotNull(unit.Ast);
+                var str = factory.HereDocs[0].Expression as StringLiteral;
+                Assert.NotNull(str);
+                Assert.Equal(value, str.Value);
             }
         }
 
@@ -665,37 +691,41 @@ class X {
             Assert.NotNull(unit.Ast);
         }
 
-        [Fact]
-        public void HeredocIndentTest()
-        {
-            var codes = new[] {
-               @"<?php
+        [Theory]
+        [InlineData(@"<?php
 $x = ""hello"";
 
     echo <<<FOO
   $x   // error: wrong indentation
-    FOO;",
-                              @"<?php
+    FOO;")]
+        [InlineData(@"<?php
 $x = ""hello"";
 
     echo <<<FOO
 $x   // error: wrong indentation
-    FOO;",
-                @"<?php
+    FOO;")]
+        [InlineData(@"<?php
+$x = ""hello"";
+
+    echo <<<FOO
+    $x // ok
+    $x\n$x
+$x
+error
+    $x
+    FOO;")]
+        [InlineData(@"<?php
 	<<<TXT
 '\n' 
-	TXT;"
-            };
+	TXT;")]
+        public void HeredocWrongIndentTest(string code)
+        {
+            var errors = new TestErrorSink();
+            var unit = new CodeSourceUnit(code, "dummy.php", Encoding.UTF8);
+            unit.Parse(new BasicNodesFactory(unit), errors);
 
-            foreach (var code in codes)
-            {
-                var errors = new TestErrorSink();
-                var unit = new CodeSourceUnit(code, "dummy.php", Encoding.UTF8);
-                unit.Parse(new BasicNodesFactory(unit), errors);
-
-                Assert.NotNull(unit.Ast);
-                Assert.Equal(1, errors.Count);
-            }
+            Assert.NotNull(unit.Ast);
+            Assert.Equal(1, errors.Count); // report error once only
         }
 
         [Fact]
