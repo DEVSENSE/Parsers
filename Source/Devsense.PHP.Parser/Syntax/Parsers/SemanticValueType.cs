@@ -217,6 +217,8 @@ namespace Devsense.PHP.Syntax
         public QualifiedName QualifiedName { get => _objs; set => _objs = value; }
         public QualifiedNameRef QualifiedNameReference { get => new QualifiedNameRef(_span, QualifiedName); set { _span = value.Span; this.QualifiedName = value.QualifiedName; } }
 
+        public ReadOnlyMemory<char> T_ENCAPSED_AND_WHITESPACE_VALUE { get => this.ReadOnlyMemory_Char; set => this.ReadOnlyMemory_Char = value; }
+
         public TypeRef TypeReference { get { return (TypeRef)Object; } set { Object = value; } }
         public IList<TypeRef> TypeRefList { get { return (IList<TypeRef>)Object; } set { Object = value; } }
         public LangElement Node { get { return (LangElement)Object; } set { Object = value; } }

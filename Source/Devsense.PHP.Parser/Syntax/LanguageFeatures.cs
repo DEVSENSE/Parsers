@@ -112,6 +112,8 @@ namespace Devsense.PHP.Syntax
     public static class LanguageFeaturesExtensions
     {
         public static bool HasFeature(this LanguageFeatures value, LanguageFeatures feature) => (value & feature) == feature;
+
+        public static bool HasUtfCodepoints(this LanguageFeatures value) => (value & LanguageFeatures.Php70Set) == LanguageFeatures.Php70Set;
     }
 
     #endregion

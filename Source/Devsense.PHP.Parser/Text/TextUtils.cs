@@ -217,13 +217,15 @@ namespace Devsense.PHP.Text
             return str.Substring(span.Start, span.Length);
         }
 
-        internal static IEnumerable<Span> EnumerateLines(this string text, bool includeEOL)
+        internal static IEnumerable<Span> EnumerateLines(this string text, bool includeEOL) => EnumerateLines(text.AsMemory(), includeEOL);
+
+        internal static IEnumerable<Span> EnumerateLines(this ReadOnlyMemory<char> text, bool includeEOL)
         {
             int linestart = 0;
             int offset = 0;
             while (offset < text.Length)
             {
-                var idx = TextUtils.IndexOfLineBreak(text.AsSpan(offset), out var eol_length);
+                var idx = TextUtils.IndexOfLineBreak(text.Slice(offset).Span, out var eol_length);
                 if (idx >= 0)
                 {
                     var i = offset + idx;
@@ -292,6 +294,10 @@ namespace Devsense.PHP.Text
         }
 
         internal static char LastChar(this ReadOnlySpan<char> value) => value.IsEmpty ? '\0' : value[value.Length - 1];
+
+        internal static char LastChar(this ReadOnlyMemory<char> value) => value.Span.LastChar();
+
+        internal static bool EqualsOrdinal(this ReadOnlyMemory<char> value, ReadOnlyMemory<char> other) => value.Span.Equals(other.Span, StringComparison.Ordinal);
     }
 
     #endregion

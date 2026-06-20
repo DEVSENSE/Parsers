@@ -1419,7 +1419,7 @@ using Devsense.PHP.Text;
 					    if(VerifyEndLabel(TokenTextSpan))
 						{
 							BEGIN(LexicalStates.ST_END_HEREDOC); 
-							if( ProcessEndNowDoc(_processDoubleQuotedString) ) return (Tokens.T_ENCAPSED_AND_WHITESPACE);
+							if( ProcessEndNowDoc() ) return (Tokens.T_ENCAPSED_AND_WHITESPACE);
 						}
 					    yymore(); break;
 					}
@@ -1634,7 +1634,7 @@ using Devsense.PHP.Text;
 					    if(VerifyEndLabel(TokenTextSpan))
 						{
 							BEGIN(LexicalStates.ST_END_HEREDOC); 
-							if( ProcessEndNowDoc(null) ) return (Tokens.T_ENCAPSED_AND_WHITESPACE);
+							if( ProcessEndNowDoc() ) return (Tokens.T_ENCAPSED_AND_WHITESPACE);
 						}
 					    yymore(); break;
 					}

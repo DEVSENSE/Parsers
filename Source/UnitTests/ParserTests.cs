@@ -103,6 +103,13 @@ echo $a->b;")]
         //}")]
         [InlineData(@"<?php
 $ = 123", null, 0)]
+        [InlineData(@"<?php
+echo ""Hello"";
+echo ""World"";
+
+SOMETHING
+123 ?? !
+", null, 2/*??, !*/)]
         public void ErrorRecoveryTest(string code, string expectedcode = null, int tokensDiscarded = 0)
         {
             var sourceUnit = new CodeSourceUnit(code, "dummy.php");
@@ -203,6 +210,17 @@ isset(new A()['key']);
 isset(new $class()['key']);
 isset(new (trim(' A '))()['key']);
 ")]
+        [InlineData(@"<?php
+
+echo $arr{0};
+echo $arr{'index'};
+")]
+        [InlineData(@"<?php
+// https://community.devsense.com/d/2577-incorrect-incorrect-heredoc-indentation-error
+	<<<TXT
+	'\n' 
+	TXT;
+")]
         public void SimpleParseTest(string code)
         {
             var sourceUnit = new CodeSourceUnit(code, "dummy.php", Encoding.UTF8, Lexer.LexicalStates.INITIAL, LanguageFeatures.Basic);
@@ -211,6 +229,7 @@ isset(new (trim(' A '))()['key']);
 
             sourceUnit.Parse(factory, errors);
 
+            Assert.Empty(errors.Errors);
             Assert.NotNull(sourceUnit.Ast);
         }
 
@@ -662,6 +681,10 @@ $x = ""hello"";
     echo <<<FOO
 $x   // error: wrong indentation
     FOO;",
+                @"<?php
+	<<<TXT
+'\n' 
+	TXT;"
             };
 
             foreach (var code in codes)

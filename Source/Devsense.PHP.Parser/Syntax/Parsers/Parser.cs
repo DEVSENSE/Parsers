@@ -13,16 +13,16 @@
 // See the Apache Version 2.0 License for specific language governing
 // permissions and limitations under the License.
 
+using Devsense.PHP.Errors;
+using Devsense.PHP.Syntax.Ast;
+using Devsense.PHP.Text;
+using Devsense.PHP.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-
-using Devsense.PHP.Text;
-using Devsense.PHP.Syntax.Ast;
-using Devsense.PHP.Errors;
+using System.Text;
 using System.Threading;
-using Devsense.PHP.Utilities;
 
 namespace Devsense.PHP.Syntax
 {
@@ -32,6 +32,8 @@ namespace Devsense.PHP.Syntax
         INodesFactory<LangElement, Span> _astFactory;
         IErrorSink<Span> _errors;
         Scope _currentScope;
+        Encoding _encoding;
+
         bool isConditional => !_currentScope.IsGlobal;
         NamespaceDecl _currentNamespace = null;
         Stack<NamingContext> _namingContext;
@@ -102,6 +104,7 @@ namespace Devsense.PHP.Syntax
                 INodesFactory<LangElement, Span> astFactory,
                 LanguageFeatures language,
                 IErrorSink<Span> errors = null,
+                Encoding encoding = null, // to encode binary string to unicode string (to be used as Value in StringLiteral)
                 int positionShift = 0)
             where TProvider: ITokenProvider<SemanticValueType, Span>
         {
@@ -114,6 +117,7 @@ namespace Devsense.PHP.Syntax
 
             _languageFeatures = language;
             _errors = errors ?? new EmptyErrorSink<Span>();
+            _encoding = encoding ?? Encoding.UTF8;
             _lexer = new CompliantLexer(new ReinterpretingLexer<TProvider, VoidStruct/*unused*/>(lexer, _errors, language));
             _astFactory = astFactory ?? throw new ArgumentNullException(nameof(astFactory));
             _namingContext = StackObjectPool<NamingContext>.Allocate();
@@ -773,120 +777,184 @@ namespace Devsense.PHP.Syntax
             return element;
         }
 
-        /// <summary>
-        /// Traverse through the expression (either <see cref="IStringLiteralValue"/> or concat of <see cref="IStringLiteralValue"/>s),
-        /// and checks and removes the leading whitespace indentation.
-        /// </summary>
-        /// <param name="element">Either <see cref="IStringLiteralValue"/> or <see cref="IConcatEx"/> with <see cref="IStringLiteralValue"/>s.</param>
-        /// <param name="heredoc">Heredoc information.</param>
-        /// <param name="_">Ignored.</param>
-        LangElement RemoveHereDocIndentation(LangElement element, Lexer.HereDocTokenValue heredoc, bool _)
+        LangElement EmptyHeredocExpression(Span span, int emptyContentPos, Tokens quote, Lexer.HereDocTokenValue heredoc)
         {
-            // CONSIDER: do it properly in lexer ...
+            // _astFactory.HeredocExpression(@$, _astFactory.Literal(new Span(@1.End, 0), "", string.Empty.AsSpan()), $1.QuoteToken, $2)
+            return _astFactory.HeredocExpression(
+                span,
+                _astFactory.Literal(
+                    new Span(emptyContentPos, 0),
+                    string.Empty,
+                    ReadOnlySpan<char>.Empty
+                ),
+                quote,
+                heredoc
+            );
+        }
 
-            var indentation = heredoc.Indentation.AsSpan();
-
-            if (indentation.IsEmpty)
-            {
-                return element;
-            }
-
-            if (!indentation.IsWhiteSpace())
-            {
-                throw new InvalidOperationException($"heredoc.Indentation is expected to be a whitespace!");
-            }
-
-            //
-            var expressions = element is ConcatEx concat
-                ? concat.Expressions
-                : new[] { element }
-                ;
-
-            var eol = true;
+        LangElement HeredocExpression(Span span, Span contentPos, ReadOnlyMemory<char> content, Tokens quote, Lexer.HereDocTokenValue heredoc)
+        {
+            var bol = true;
             var errorreported = false;
-            var current_indentation = ReadOnlySpan<char>.Empty;
+            var current_indentation = ReadOnlyMemory<char>.Empty;
 
-            for (int i = 0; i < expressions.Length; i++)
+            // _astFactory.HeredocExpression(@$, RemoveHereDocIndentation(_astFactory.Literal(@2, $2.Text, $2.SourceCode.Span), $3, true), $1.QuoteToken, $3)
+            return _astFactory.HeredocExpression(
+                span,
+                EncapsedHeredocStringToExpression(content, contentPos.Start, quote, heredoc.Indentation, ref bol, ref errorreported, ref current_indentation),
+                quote,
+                heredoc
+            );
+        }
+
+        LangElement HeredocExpression(Span span, Span encaps_list_pos, List<LangElement> encaps_list, Tokens quote, Lexer.HereDocTokenValue heredoc)
+        {
+            // _astFactory.HeredocExpression(@$, RemoveHereDocIndentation(_astFactory.Concat(@2, $2), $3, true), $1.QuoteToken, $3);
+            return _astFactory.HeredocExpression(
+                span,
+                _astFactory.Concat(
+                    encaps_list_pos,
+                    EncapsListToExpressions(encaps_list, quote, heredoc)
+                ),
+                quote,
+                heredoc
+            );
+        }
+
+        IEnumerable<LangElement> EncapsListToExpressions(List<LangElement> encaps_list, Tokens quote, Lexer.HereDocTokenValue heredoc = null)
+        {
+            Debug.Assert(encaps_list.All(e => e is EncapsedStringElement || e is VarLikeConstructUse || e is EncapsedExpression));
+
+            // heredoc -> remove indent and report errors
+            // quote: process EncapsedStringElement.TokenSource text -> StringLiteral
+
+            var bol = true; // beginning of line // used to process correct indentation
+            var errorreported = false;
+            var current_indentation = ReadOnlyMemory<char>.Empty;
+            var indentation = heredoc != null ? heredoc.Indentation : ReadOnlyMemory<char>.Empty;
+
+            for (int i = 0; i < encaps_list.Count; i++)
             {
-                var expr = expressions[i];
-                if (expr is IStringLiteralValue str) // {StringLiteral}
+                var e = encaps_list[i];
+                if (e is EncapsedStringElement encapsed)
                 {
-                    // if (str.Contains8bitText) // TODO, use str.EnumerateChunks() : byte[]|string
-
-                    var content = str.ToString();
-                    var result = StringUtils.GetStringBuilder(content.Length);
-
-                    foreach (var lineSpan in TextUtils.EnumerateLines(content, true))
+                    var source = encapsed.TokenSource;
+                    
+                    if (heredoc == null || indentation.IsEmpty)
                     {
-                        var line = content.AsSpan(lineSpan);
-                        var waseol = eol;
-
-                        eol = TextUtils.EndsWithEol(line);
-
-                        if (waseol)
-                        {
-                            if (line.StartsWith(indentation, StringComparison.Ordinal))
-                            {
-                                current_indentation = indentation;
-                                result.Append(content, lineSpan.Start + indentation.Length, lineSpan.Length - indentation.Length);
-                                continue;
-                            }
-                            else if (line.IsWhiteSpace())
-                            {
-                                if (!eol)
-                                {
-                                    current_indentation = line;
-                                }
-
-                                // allowed, empty line
-                                // add the line break from the line (ignore ' ' and '\t' from the beginning)
-                                var nlspan = lineSpan;
-                                while (nlspan.Length > 0 && content[nlspan.Start].IsTabOrSpace())
-                                    nlspan = nlspan.Slice(1);
-
-                                result.Append(content, nlspan.Start, nlspan.Length);
-                                continue;
-                            }
-                            else
-                            {
-                                current_indentation = ReadOnlySpan<char>.Empty;
-
-                                if (!errorreported)
-                                {
-                                    errorreported = true; // report error just once
-                                    _errors.Error(expr.Span, FatalErrors.HeredocIndentError);
-                                }
-                            }
-                        }
-
-                        result.Append(content, lineSpan.Start, lineSpan.Length);
+                        e = _astFactory.Literal(encapsed.Span, ProcessString(source.Span, encapsed.Span, quote));
                     }
-
-                    if (eol)
+                    else
                     {
-                        current_indentation = ReadOnlySpan<char>.Empty;
+                        // remove indent and create literal
+                        e = EncapsedHeredocStringToExpression(source, e.Span.Start, quote, indentation, ref bol, ref errorreported, ref current_indentation);
                     }
-
-                    expressions[i] = StringLiteral.Create(expr.Span, StringUtils.ReturnStringBuilder(result));
                 }
-                else if (expr is VarLikeConstructUse)
+                else
                 {
-                    eol = false;
+                    bol = false;
 
                     // check current_indentatiom
-                    if (!current_indentation.StartsWith(indentation, StringComparison.Ordinal) && !errorreported)
+                    if (!current_indentation.Span.StartsWith(indentation.Span, StringComparison.Ordinal) && !errorreported)
                     {
                         errorreported = true; // report error just once
-                        _errors.Error(expr.Span, FatalErrors.HeredocIndentError);
+                        _errors.Error(e.Span, FatalErrors.HeredocIndentError);
                     }
                 }
+
+                //
+                yield return e;
+            }
+        }
+
+        private LangElement EncapsedHeredocStringToExpression(ReadOnlyMemory<char> source, int pos, Tokens quote, ReadOnlyMemory<char> indentation, ref bool bol, ref bool errorreported, ref ReadOnlyMemory<char> current_indentation)
+        {
+            var result = StringUtils.GetStringBuilder(source.Length);
+
+            foreach (var lineSpan in TextUtils.EnumerateLines(source, true))
+            {
+                var line = source.Slice(lineSpan.Start, lineSpan.Length);
+                var content = line;
+                var content_pos = pos + lineSpan.Start;
+
+                if (bol)
+                {
+                    if (line.Span.StartsWith(indentation.Span, StringComparison.Ordinal))
+                    {
+                        current_indentation = indentation;
+                        content = line.Slice(indentation.Length);
+                        content_pos += indentation.Length;
+                        // -->
+                    }
+                    else if (line.Span.IsWhiteSpace())
+                    {
+                        if (TextUtils.EndsWithEol(line.Span))
+                        {
+                            // allowed, empty line
+                            // add the line break from the line (ignore ' ' and '\t' from the beginning)
+                            while (content.Length != 0 && content.Span[0].IsTabOrSpace())
+                            {
+                                content = content.Slice(1);
+                                content_pos++;
+                            }
+
+                            // -->
+                        }
+                        else
+                        {
+                            current_indentation = line;
+                            continue;
+                        }
+                    }
+                    else
+                    {
+                        current_indentation = ReadOnlyMemory<char>.Empty;
+
+                        if (!errorreported)
+                        {
+                            errorreported = true; // report error just once
+                            _errors.Error(new Span(content_pos, content.Length), FatalErrors.HeredocIndentError);
+                        }
+                    }
+                }
+
+                if (TextUtils.EndsWithEol(line.Span))
+                {
+                    bol = true;
+                    current_indentation = ReadOnlyMemory<char>.Empty;
+                }
+
+                ProcessString(content.Span, new Span(content_pos, content.Length), quote, result);
             }
 
-            //
-            return expressions.Length == 1 ? expressions[0] : element;
+            return StringLiteral.Create(new Span(pos, source.Length), StringUtils.ReturnStringBuilder(result));
+        }
+
+        LangElement StringEncapsedExpression(Span span, Span encaps_list_span, List<LangElement> encaps_list, Tokens quote)
+        {
+            // _astFactory.StringEncapsedExpression(@$, _astFactory.Concat(@2, $2), quote);
+            return _astFactory.StringEncapsedExpression(span, _astFactory.Concat(encaps_list_span, EncapsListToExpressions(encaps_list, quote)), quote);
         }
 
         static ReadOnlySpan<char> Enclose(ReadOnlyMemory<char> value, char quote) => $"{quote}{value}{quote}".AsSpan();
+
+        object ProcessString(ReadOnlySpan<char> buffer, Span span, Tokens quote) => Lexer.ProcessString(buffer, span, _languageFeatures, _errors, quote, _encoding);
+
+        void ProcessString(ReadOnlySpan<char> buffer, Span span, Tokens quote, StringBuilder output)
+        {
+            output.Append(
+                Lexer
+                .ProcessString(buffer, span, _languageFeatures, _errors, quote, _encoding)
+                .ToString()
+            );
+        }
+
+        LangElement BackquoteLiteral(Span span, ReadOnlyMemory<char> source)
+        {
+            // _astFactory.Literal(@$, $2.Text, Enclose($2, '`'))
+            var value = ProcessString(source.Span, span.Slice(1, span.Length - 1), Tokens.T_BACKQUOTE);
+            return _astFactory.Literal(span, value, Enclose(source, '`'));
+        }
 
         #region Aliasing
 

@@ -906,7 +906,7 @@ ST_HALT_COMPILER1,ST_HALT_COMPILER2,ST_HALT_COMPILER3>{EOF} {
     if(VerifyEndLabel(TokenTextSpan))
 	{
 		BEGIN(LexicalStates.ST_END_HEREDOC); 
-		if( ProcessEndNowDoc(null) ) return (Tokens.T_ENCAPSED_AND_WHITESPACE);
+		if( ProcessEndNowDoc() ) return (Tokens.T_ENCAPSED_AND_WHITESPACE);
 	}
     yymore(); break;
 }
@@ -915,7 +915,7 @@ ST_HALT_COMPILER1,ST_HALT_COMPILER2,ST_HALT_COMPILER3>{EOF} {
     if(VerifyEndLabel(TokenTextSpan))
 	{
 		BEGIN(LexicalStates.ST_END_HEREDOC); 
-		if( ProcessEndNowDoc(_processDoubleQuotedString) ) return (Tokens.T_ENCAPSED_AND_WHITESPACE);
+		if( ProcessEndNowDoc() ) return (Tokens.T_ENCAPSED_AND_WHITESPACE);
 	}
     yymore(); break;
 }

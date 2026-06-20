@@ -3906,10 +3906,10 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 { yyval.Node = _astFactory.Literal(yypos, string.Empty, "``".AsSpan()); }
         return;
       case 526: // backticks_expr -> '`' T_ENCAPSED_AND_WHITESPACE '`' 
-{ yyval.Node = _astFactory.Literal(yypos, value_stack.array[value_stack.top-2].yyval.Strings.Text, Enclose(value_stack.array[value_stack.top-2].yyval.Strings.SourceCode, '`')); }
+{ yyval.Node = BackquoteLiteral(yypos, value_stack.array[value_stack.top-2].yyval.ReadOnlyMemory_Char); }
         return;
       case 527: // backticks_expr -> '`' encaps_list '`' 
-{ yyval.Node = _astFactory.StringEncapsedExpression(yypos, _astFactory.Concat(value_stack.array[value_stack.top-2].yypos, value_stack.array[value_stack.top-2].yyval.NodeList), Tokens.T_BACKQUOTE); }
+{ yyval.Node = StringEncapsedExpression(yypos, value_stack.array[value_stack.top-2].yypos, value_stack.array[value_stack.top-2].yyval.NodeList, Tokens.T_BACKQUOTE); }
         return;
       case 528: // ctor_arguments -> 
 { yyval.ParamList = EmptyArray<ActualParam>.Instance; }
@@ -3927,7 +3927,7 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 { yyval.Node = _astFactory.Literal(yypos, value_stack.array[value_stack.top-1].yyval.Object, _lexer.TokenTextSpan); }
         return;
       case 533: // dereferencable_scalar -> '"' encaps_list '"' 
-{ yyval.Node = _astFactory.StringEncapsedExpression(yypos, _astFactory.Concat(value_stack.array[value_stack.top-2].yypos, value_stack.array[value_stack.top-2].yyval.NodeList), Tokens.T_DOUBLE_QUOTES); }
+{ yyval.Node = StringEncapsedExpression(yypos, value_stack.array[value_stack.top-2].yypos, value_stack.array[value_stack.top-2].yyval.NodeList, Tokens.T_DOUBLE_QUOTES); }
         return;
       case 534: // scalar -> T_LNUMBER 
 { yyval.Node = _astFactory.Literal(yypos, value_stack.array[value_stack.top-1].yyval.Long, _lexer.TokenTextSpan); }
@@ -3963,13 +3963,13 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 { yyval.Node = _astFactory.PseudoConstUse(yypos, PseudoConstUse.Types.Class); }
         return;
       case 545: // scalar -> T_START_HEREDOC T_END_HEREDOC 
-{ yyval.Node = _astFactory.HeredocExpression(yypos, _astFactory.Literal(new Span(value_stack.array[value_stack.top-2].yypos.End, 0), "", string.Empty.AsSpan()), value_stack.array[value_stack.top-2].yyval.QuoteToken, value_stack.array[value_stack.top-1].yyval.HereDocValue); }
+{ yyval.Node = EmptyHeredocExpression(yypos, value_stack.array[value_stack.top-2].yypos.End, value_stack.array[value_stack.top-2].yyval.QuoteToken, value_stack.array[value_stack.top-1].yyval.HereDocValue); }
         return;
       case 546: // scalar -> T_START_HEREDOC T_ENCAPSED_AND_WHITESPACE T_END_HEREDOC 
-{ yyval.Node = _astFactory.HeredocExpression(yypos, RemoveHereDocIndentation(_astFactory.Literal(value_stack.array[value_stack.top-2].yypos, value_stack.array[value_stack.top-2].yyval.Strings.Text, value_stack.array[value_stack.top-2].yyval.Strings.SourceCode.Span), value_stack.array[value_stack.top-1].yyval.HereDocValue, true), value_stack.array[value_stack.top-3].yyval.QuoteToken, value_stack.array[value_stack.top-1].yyval.HereDocValue); }
+{ yyval.Node = HeredocExpression(yypos, value_stack.array[value_stack.top-2].yypos, value_stack.array[value_stack.top-2].yyval.ReadOnlyMemory_Char, value_stack.array[value_stack.top-3].yyval.QuoteToken, value_stack.array[value_stack.top-1].yyval.HereDocValue); }
         return;
       case 547: // scalar -> T_START_HEREDOC encaps_list T_END_HEREDOC 
-{ yyval.Node = _astFactory.HeredocExpression(yypos, RemoveHereDocIndentation(_astFactory.Concat(value_stack.array[value_stack.top-2].yypos, value_stack.array[value_stack.top-2].yyval.NodeList), value_stack.array[value_stack.top-1].yyval.HereDocValue, true), value_stack.array[value_stack.top-3].yyval.QuoteToken, value_stack.array[value_stack.top-1].yyval.HereDocValue); }
+{ yyval.Node = HeredocExpression(yypos, value_stack.array[value_stack.top-2].yypos, value_stack.array[value_stack.top-2].yyval.NodeList, value_stack.array[value_stack.top-3].yyval.QuoteToken, value_stack.array[value_stack.top-1].yyval.HereDocValue); }
         return;
       case 548: // scalar -> dereferencable_scalar 
 { yyval.Node = value_stack.array[value_stack.top-1].yyval.Node; }
@@ -4170,13 +4170,13 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 { yyval.NodeList = AddToList<LangElement>(value_stack.array[value_stack.top-2].yyval.NodeList, value_stack.array[value_stack.top-1].yyval.Node); }
         return;
       case 610: // encaps_list -> encaps_list T_ENCAPSED_AND_WHITESPACE 
-{ yyval.NodeList = AddToList<LangElement>(value_stack.array[value_stack.top-2].yyval.NodeList, _astFactory.Literal(value_stack.array[value_stack.top-1].yypos, value_stack.array[value_stack.top-1].yyval.Strings.Text, _lexer.TokenTextSpan)); }
+{ yyval.NodeList = AddToList<LangElement>(value_stack.array[value_stack.top-2].yyval.NodeList, new EncapsedStringElement(value_stack.array[value_stack.top-1].yypos, value_stack.array[value_stack.top-1].yyval.ReadOnlyMemory_Char)); }
         return;
       case 611: // encaps_list -> encaps_var 
 { yyval.NodeList = NewList<LangElement>( value_stack.array[value_stack.top-1].yyval.Node ); }
         return;
       case 612: // encaps_list -> T_ENCAPSED_AND_WHITESPACE encaps_var 
-{ yyval.NodeList = NewList<LangElement>( _astFactory.Literal(value_stack.array[value_stack.top-2].yypos, value_stack.array[value_stack.top-2].yyval.Strings.Text, value_stack.array[value_stack.top-2].yyval.Strings.SourceCode.Span), value_stack.array[value_stack.top-1].yyval.Node ); }
+{ yyval.NodeList = NewList<LangElement>( new EncapsedStringElement(value_stack.array[value_stack.top-2].yypos, value_stack.array[value_stack.top-2].yyval.ReadOnlyMemory_Char), value_stack.array[value_stack.top-1].yyval.Node ); }
         return;
       case 613: // encaps_var -> T_VARIABLE 
 { yyval.Node = _astFactory.Variable(yypos, value_stack.array[value_stack.top-1].yyval.String, NullLangElement, true); }

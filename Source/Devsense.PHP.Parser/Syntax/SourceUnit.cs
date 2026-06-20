@@ -235,7 +235,7 @@ namespace Devsense.PHP.Syntax
             using (var lexer = new Lexer(this.Code.AsMemory(), this.Encoding, errors, _features, positionShift: _offset, initialState: this.InitialState, docBlockFactory: factory))
             {
                 var parser = new Parser();
-                this.Ast = (GlobalCode)parser.Parse(lexer, factory, _features, errors);
+                this.Ast = (GlobalCode)parser.Parse(lexer, factory, _features, errors, this.Encoding);
                 _tokensDiscarded = parser.TokensDiscarded;
             }
         }

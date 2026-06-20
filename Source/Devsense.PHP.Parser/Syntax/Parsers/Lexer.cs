@@ -39,7 +39,7 @@ namespace Devsense.PHP.Syntax
         /// <summary>
         /// Gets value indicating Unicode codepoints (\u{[0-9A-Fa-f]+}) in double quoted strings are enabled.
         /// </summary>
-        protected bool EnableUtfCodepoints => (_features & LanguageFeatures.Php70Set) == LanguageFeatures.Php70Set;
+        protected bool EnableUtfCodepoints => _features.HasUtfCodepoints();
 
         readonly LanguageFeatures _features;
 
@@ -124,7 +124,16 @@ namespace Devsense.PHP.Syntax
             _charOffset = positionShift;
             _features = features;
             _strings = strings ?? (_private_strings = StringTable.GetInstance());
-            _processDoubleQuotedString = ProcessDoubleQuotedString;
+            _processDoubleQuotedString = (ReadOnlySpan<char> buffer, int index, PhpStringBuilder builder)
+                => _ProcessDoubleQuotedString(
+                    buffer,
+                    index,
+                    builder,
+                    _charOffset + token_start,
+                    _errors,
+                    ST_IN_SHELL: CurrentLexicalState == LexicalStates.ST_IN_SHELL,
+                    UTF_CODEPOINTS: EnableUtfCodepoints
+                );
 
             Initialize(source, initialState);
         }
@@ -440,23 +449,13 @@ namespace Devsense.PHP.Syntax
         /// <param name="index">Index of the escaped character right after '\'.</param>
         /// <param name="builder">Output string builder.</param>
         /// <returns>Position of the last processed character. In case the escaped character is not handled, gets <c>-1</c>.</returns>
-        delegate int ProcessStringDelegate(ReadOnlySpan<char> buffer, int index, PhpStringBuilder builder);
+        internal delegate int ProcessStringDelegate(ReadOnlySpan<char> buffer, int index, PhpStringBuilder builder);
 
-        readonly ProcessStringDelegate _processSingleQuotedString = (buffer, pos, result) =>
-        {
-            var c = buffer[pos];
-            if (c == '\\' || c == '\'')
-            {
-                result.Append(c);
-                return pos;
-            }
-
-            return -1;
-        };
+        internal readonly static ProcessStringDelegate s_processSingleQuotedString = _ProcessSingleQuotedString;
 
         readonly ProcessStringDelegate _processDoubleQuotedString;
 
-        int ProcessDoubleQuotedString(ReadOnlySpan<char> buffer, int pos, PhpStringBuilder result)
+        static int _ProcessDoubleQuotedString(ReadOnlySpan<char> buffer, int pos, PhpStringBuilder result, int token_start, IErrorSink<Span> errors, bool ST_IN_SHELL, bool UTF_CODEPOINTS)
         {
             switch (buffer[pos])
             {
@@ -491,7 +490,7 @@ namespace Devsense.PHP.Syntax
                     return pos;
 
                 case '`':
-                    if (CurrentLexicalState == LexicalStates.ST_IN_SHELL)
+                    if (ST_IN_SHELL)
                     {
                         result.Append(buffer[pos]);
                         return pos;
@@ -499,7 +498,7 @@ namespace Devsense.PHP.Syntax
                     break;
 
                 case 'u':
-                    if (EnableUtfCodepoints && TryParseCodePoint(buffer, ref pos, out var value))
+                    if (UTF_CODEPOINTS && TryParseCodePoint(buffer, ref pos, out var value, token_start, errors))
                     {
                         result.Append(value);
                         return pos;
@@ -567,14 +566,22 @@ namespace Devsense.PHP.Syntax
             return -1;
         }
 
+        static int _ProcessSingleQuotedString(ReadOnlySpan<char> buffer, int pos, PhpStringBuilder result)
+        {
+            var c = buffer[pos];
+            if (c == '\\' || c == '\'')
+            {
+                result.Append(c);
+                return pos;
+            }
+
+            return -1;
+        }
+
         /// <summary>
-        /// Parses string literal text, processes escaped sequences.
+        /// Parses string literal source text, processes escaped sequences.
         /// </summary>
-        /// <param name="buffer">Characters buffer to read from.</param>
-        /// <param name="tryprocess">Callback that handles escaped character sequences. Returns new buffer position in case the sequence was processed, otherwise <c>-1</c>.</param>
-        /// <param name="binary">Whether to force a binary string output.</param>
-        /// <returns>Parsed text, either <see cref="string"/> or <see cref="byte"/>[].</returns>
-        object ProcessStringText(ReadOnlySpan<char> buffer, ProcessStringDelegate tryprocess, bool binary = false)
+        static object ProcessStringText(ReadOnlySpan<char> buffer, ProcessStringDelegate tryprocess, bool binary = false, Encoding encoding = null, IStringTable strings = null)
         {
             Debug.Assert(tryprocess != null);
 
@@ -603,7 +610,7 @@ namespace Devsense.PHP.Syntax
                     // ensure string builder lazily
                     if (lazyBuilder == null)
                     {
-                        lazyBuilder = new PhpStringBuilder(_encoding, binary, buffer.Length);
+                        lazyBuilder = new PhpStringBuilder(encoding ?? Encoding.UTF8, binary, buffer.Length);
                         lazyBuilder.Append(buffer.Slice(0, index));
                     }
 
@@ -624,9 +631,65 @@ namespace Devsense.PHP.Syntax
 
             //
             return lazyBuilder == null
-                ? Intern(buffer)
+                ? StringInterns.TryIntern(buffer) ?? strings?.GetOrAdd(buffer) ?? buffer.ToString()
                 : lazyBuilder.Result; // .StringResult;
         }
+
+        static object ProcessBackquoteString(ReadOnlySpan<char> buffer, Span span, LanguageFeatures features, IErrorSink<Span> errors, Encoding encoding = null, IStringTable strings = null) =>
+            ProcessStringText(
+                buffer,
+                (buffer, pos, result) => _ProcessDoubleQuotedString(buffer, pos, result, span.Start, errors,
+                    ST_IN_SHELL: true,
+                    UTF_CODEPOINTS: features.HasUtfCodepoints()
+                    ),
+                encoding: encoding,
+                strings: strings
+            );
+
+        static object ProcessDoublequoteString(ReadOnlySpan<char> buffer, Span span, LanguageFeatures features, IErrorSink<Span> errors, Encoding encoding = null, IStringTable strings = null) =>
+            ProcessStringText(
+                buffer,
+                (buffer, pos, result) => _ProcessDoubleQuotedString(buffer, pos, result, span.Start, errors,
+                    ST_IN_SHELL: false,
+                    UTF_CODEPOINTS: features.HasUtfCodepoints()
+                    ),
+                encoding: encoding,
+                strings: strings
+            );
+
+        static object ProcessSinglequoteString(ReadOnlySpan<char> buffer, Span span, Encoding encoding = null, IStringTable strings = null) =>
+            ProcessStringText(
+                buffer,
+                s_processSingleQuotedString,
+                encoding: encoding,
+                strings: strings
+            );
+
+        internal static object ProcessString(ReadOnlySpan<char> buffer, Span span, LanguageFeatures features, IErrorSink<Span> errors, Tokens quote, Encoding encoding = null, IStringTable strings = null)
+        {
+            switch (quote)
+            {
+                case Tokens.END: // HEREDOC without quotes
+                case Tokens.T_DOUBLE_QUOTES:
+                    return ProcessDoublequoteString(buffer, span, features, errors, encoding, strings);
+                case Tokens.T_SINGLE_QUOTES:
+                    return ProcessSinglequoteString(buffer, span, encoding, strings);
+                case Tokens.T_BACKQUOTE:
+                    return ProcessBackquoteString(buffer, span, features, errors, encoding, strings);
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(quote));
+            }
+        }
+
+        /// <summary>
+        /// Parses string literal text, processes escaped sequences.
+        /// </summary>
+        /// <param name="buffer">Characters buffer to read from.</param>
+        /// <param name="tryprocess">Callback that handles escaped character sequences. Returns new buffer position in case the sequence was processed, otherwise <c>-1</c>.</param>
+        /// <param name="binary">Whether to force a binary string output.</param>
+        /// <returns>Parsed text, either <see cref="string"/> or <see cref="byte"/>[].</returns>
+        object ProcessStringText(ReadOnlySpan<char> buffer, ProcessStringDelegate tryprocess, bool binary = false) =>
+            ProcessStringText(buffer, tryprocess, binary, _encoding, _strings);
 
         object GetTokenAsQuotedString(ProcessStringDelegate tryprocess, ReadOnlySpan<char> text, char quote)
         {
@@ -667,31 +730,32 @@ namespace Devsense.PHP.Syntax
             return ProcessStringText(text.Slice(start, end - start), tryprocess, binary);
         }
 
-        protected object ProcessEscapedStringWithEnding(ReadOnlySpan<char> buffer, char ending)
+        protected ReadOnlyMemory<char> ProcessEscapedStringEnding(ReadOnlyMemory<char> source, char ending) // process ending and return `T_ENCAPSED_AND_WHITESPACE` source code
         {
-            var length = buffer.Length;
-            char c2 = (length >= 2) ? buffer[length - 2] : '\0';
-            object output;
+            var length = source.Length;
 
             // ends with "{END" or "$END" ?
-            if (buffer[length - 1] == ending && (c2 == '$' || c2 == '{'))
+            if (length >= 2 && source.Span[length - 1] == ending)
             {
-                output = ProcessStringText(buffer.Slice(0, length - 1), _processDoubleQuotedString);
-                _yyless(1);
+                var c2 = source.Span[length - 2];
+                if (c2 == '$' || c2 == '{')
+                {
+                    source = source.Slice(0, length - 1);
+                    _yyless(1);
+                }
             }
-            else
-            {
-                output = ProcessStringText(buffer, _processDoubleQuotedString);
-            }
+            
+            //output = ProcessStringText(source.Span, _processDoubleQuotedString);
 
-            return output.ToString(); // TODO: handle 8bit values
+            //
+            return source;
         }
 
         /// <summary>
         /// Parse code point enclosed in braces.
         /// 'pos' points before '{'
         /// </summary>
-        bool TryParseCodePoint(ReadOnlySpan<char> buffer, ref int pos, out string value)
+        static bool TryParseCodePoint(ReadOnlySpan<char> buffer, ref int pos, out string value, int token_start, IErrorSink<Span> errors)
         {
             var index = pos + 1; //
             int code_point = 0;
@@ -716,8 +780,8 @@ namespace Devsense.PHP.Syntax
 
                         if ((code_point < 0 || code_point > 0x10ffff) || (code_point >= 0xd800 && code_point <= 0xdfff))
                         {
-                            _errors.Error(
-                                new Span(_charOffset + (pos - token_start) + 1, index - pos),
+                            errors.Error(
+                                new Span(token_start + pos + 1, index - pos),
                                 Errors.Errors.InvalidCodePoint,
                                 code_point.ToString("x"));
 
@@ -847,7 +911,7 @@ namespace Devsense.PHP.Syntax
 
         Tokens ProcessSingleQuotedString()
         {
-            _tokenSemantics.Object = GetTokenAsQuotedString(_processSingleQuotedString, this.TokenTextSpan, '\'');
+            _tokenSemantics.Object = GetTokenAsQuotedString(s_processSingleQuotedString, this.TokenTextSpan, '\'');
             _tokenSemantics.QuoteToken = Tokens.T_SINGLE_QUOTES;
             return Tokens.T_CONSTANT_ENCAPSED_STRING;
         }
@@ -899,14 +963,14 @@ namespace Devsense.PHP.Syntax
         /// <summary>
         /// Resolves closing label indentation (whitespace preceeding the T_END_HEREDOC which is at the last line),
         /// and trims the last line off</summary>
-        ReadOnlySpan<char> ResolveHeredocIndentation(ref ReadOnlySpan<char> content)
+        ReadOnlyMemory<char> ResolveHeredocIndentation(ref ReadOnlyMemory<char> source)
         {
-            int from = content.Length;
+            int from = source.Length;
 
             // the last line specifies the indentation
             for (; from > 0;)
             {
-                var ch = content[from - 1];
+                var ch = source.Span[from - 1];
                 if (ch == ' ' || ch == '\t')
                 {
                     from--;
@@ -917,7 +981,7 @@ namespace Devsense.PHP.Syntax
                 }
             }
 
-            var indent = content.Slice(from);
+            var indent = source.Slice(from);
 
             //// scan line by line and check the line indentation
 
@@ -937,13 +1001,13 @@ namespace Devsense.PHP.Syntax
             //}
 
             // trim last line
-            content = content.Slice(0, from);
+            source = source.Slice(0, from);
 
             // \n
-            if (content.LastChar() == '\n') content = content.Slice(0, content.Length - 1);
+            if (source.LastChar() == '\n') source = source.Slice(0, source.Length - 1);
             // \r\n
             // \r
-            if (content.LastChar() == '\r') content = content.Slice(0, content.Length - 1);
+            if (source.LastChar() == '\r') source = source.Slice(0, source.Length - 1);
 
             //
             return indent;
@@ -1013,29 +1077,22 @@ namespace Devsense.PHP.Syntax
         //    return StringUtils.ReturnStringBuilder(result);
         //}
 
-        bool ProcessEndNowDoc(ProcessStringDelegate tryprocess)
+        bool ProcessEndNowDoc()
         {
-            var content = TrimNowDocEnd(TokenTextSpan, _hereDocValue.Label); // trim label and whitespaces from the heredoc end
-            var lookbackfix = TokenLength - content.Length;
-            var indentation = ResolveHeredocIndentation(ref content);
-            var sourcetext = content.ToString();
-
-            string text = tryprocess != null
-                ? ProcessStringText(content, tryprocess).ToString() // TODO: handle 8bit values
-                : sourcetext;
-
-            // text = RemoveHeredocIndentation(text, indentation);
-
+            var source = TrimNowDocEnd(TokenSource, _hereDocValue.Label); // trim label and whitespaces from the heredoc end
+            var lookbackfix = TokenLength - source.Length;
+            var indentation = ResolveHeredocIndentation(ref source);
+            
             // move back at the end of the heredoc label - yyless does not work properly (requires additional condition for the optional ';')
             lookahead_index = token_end = lookahead_index - lookbackfix;
 
-            _tokenSemantics.Strings = new StringPair(text, sourcetext.AsMemory());
+            _tokenSemantics.T_ENCAPSED_AND_WHITESPACE_VALUE = source;
 
             // remember the expected indentation
             _hereDocValue = _hereDocValue.WithIndentation(indentation);
 
             //
-            return text.Length != 0;
+            return !source.IsEmpty;
         }
 
         /// <summary>
@@ -1045,41 +1102,41 @@ namespace Devsense.PHP.Syntax
         {
             public string Label { get; }
 
-            public string Indentation { get; }
+            public ReadOnlyMemory<char> Indentation { get; }
 
-            public HereDocTokenValue(string label, string indentation = null)
+            public HereDocTokenValue(string label, ReadOnlyMemory<char> indentation = default(ReadOnlyMemory<char>))
             {
-                Debug.Assert(string.IsNullOrWhiteSpace(indentation));
+                Debug.Assert(indentation.Span.IsWhiteSpace());
 
                 this.Label = label ?? throw new ArgumentNullException(nameof(label));
-                this.Indentation = indentation ?? string.Empty;
+                this.Indentation = indentation;
             }
 
             public HereDocTokenValue Clone() => new HereDocTokenValue(Label, Indentation);
 
-            public HereDocTokenValue WithIndentation(ReadOnlySpan<char> indentation)
+            public HereDocTokenValue WithIndentation(ReadOnlyMemory<char> indentation)
             {
-                return indentation.Equals(this.Indentation.AsSpan(), StringComparison.Ordinal)
+                return indentation.EqualsOrdinal(this.Indentation)
                     ? this
-                    : new HereDocTokenValue(Label, indentation.ToString())
+                    : new HereDocTokenValue(Label, indentation)
                     ;
             }
 
             public bool Equals(HereDocTokenValue other)
             {
-                return other != null && other.Label == Label && other.Indentation == Indentation;
+                return other != null && other.Label == Label && other.Indentation.EqualsOrdinal(this.Indentation);
             }
 
             public override int GetHashCode()
             {
-                return StringComparer.Ordinal.GetHashCode(Label) ^ StringComparer.Ordinal.GetHashCode(Indentation);
+                return StringComparer.Ordinal.GetHashCode(Label) ^ Indentation.Length;
             }
         }
 
         /// <summary>
         /// Removes closing label from the heredoc content.
         /// </summary>
-        static ReadOnlySpan<char> TrimNowDocEnd(ReadOnlySpan<char> content, string label)
+        static ReadOnlyMemory<char> TrimNowDocEnd(ReadOnlyMemory<char> content, string label)
         {
             Debug.Assert(label != null);
 
@@ -1089,7 +1146,7 @@ namespace Devsense.PHP.Syntax
             // spaces, line separators, paragraph separators, tabs
             for (; content.Length != 0;)
             {
-                var ch = content[content.Length - 1];
+                var ch = content.LastChar();
                 if (char.IsWhiteSpace(ch) || ch == ';')
                 {
                     content = content.Slice(0, content.Length - 1);
@@ -1101,7 +1158,7 @@ namespace Devsense.PHP.Syntax
             }
 
             // trim label
-            Debug.Assert(content.EndsWith(label.AsSpan(), StringComparison.Ordinal));
+            Debug.Assert(content.Span.EndsWith(label.AsSpan(), StringComparison.Ordinal));
 
             content = content.Slice(0, content.Length - label.Length);
 
@@ -1137,10 +1194,7 @@ namespace Devsense.PHP.Syntax
             }
             else
             {
-                _tokenSemantics.Strings = new StringPair(
-                    text: (string)ProcessEscapedStringWithEnding(TokenTextSpan, '"'),
-                    sourcecode: TokenSource
-                );
+                _tokenSemantics.T_ENCAPSED_AND_WHITESPACE_VALUE = ProcessEscapedStringEnding(TokenSource, '"');
                 return Tokens.T_ENCAPSED_AND_WHITESPACE;
             }
         }
@@ -1162,15 +1216,13 @@ namespace Devsense.PHP.Syntax
         {
             if (TokenLength > 0)
             {
-                var text = GetTokenString(intern: false);
-
                 if (token == Tokens.T_ENCAPSED_AND_WHITESPACE)
                 {
-                    _tokenSemantics.Strings = new StringPair(text, text.AsMemory());
+                    _tokenSemantics.T_ENCAPSED_AND_WHITESPACE_VALUE = TokenSource;
                 }
                 else
                 {
-                    _tokenSemantics.String = text;
+                    _tokenSemantics.String = GetTokenString(intern: false);
                 }
 
                 return token;
@@ -1226,21 +1278,18 @@ namespace Devsense.PHP.Syntax
             }
         }
 
-        bool ProcessShell(int count, out Tokens token) => ProcessText(count, LexicalStates.ST_IN_SHELL, '`', out token);
+        bool ProcessShell(int suffix, out Tokens token) => ProcessText(suffix, LexicalStates.ST_IN_SHELL, '`', out token);
 
-        bool ProcessHeredoc(int count, out Tokens token) => ProcessText(count, LexicalStates.ST_IN_HEREDOC, '\0', out token);
+        bool ProcessHeredoc(int suffix, out Tokens token) => ProcessText(suffix, LexicalStates.ST_IN_HEREDOC, '\0', out token);
 
-        bool ProcessText(int count, LexicalStates newState, char ending, out Tokens token)
+        bool ProcessText(int suffix, LexicalStates newState, char ending, out Tokens token)
         {
-            _yyless(count);
+            _yyless(suffix);
             token = Tokens.T_ENCAPSED_AND_WHITESPACE;
             yy_push_state(newState);
             if (TokenLength > 0)
             {
-                _tokenSemantics.Strings = new StringPair(
-                    text: (string)ProcessEscapedStringWithEnding(TokenTextSpan, ending),
-                    sourcecode: TokenSource
-                );
+                _tokenSemantics.T_ENCAPSED_AND_WHITESPACE_VALUE = ProcessEscapedStringEnding(TokenSource, ending);
                 return true;
             }
             else
