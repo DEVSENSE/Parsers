@@ -14,6 +14,7 @@
 // permissions and limitations under the License.
 
 using System;
+using System.Buffers;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -66,7 +67,7 @@ namespace Devsense.PHP.Syntax
 
             public void ToString(StringBuilder output, Encoding encoding)
             {
-                if (_array == null || Length == 0)
+                if (IsEmpty)
                 {
                     // nothing
                 }
@@ -84,8 +85,53 @@ namespace Devsense.PHP.Syntax
                     }
                     else
                     {
-                        output.Append(encoding.GetString(bytes, 0, Length));
+                        //output.Append(encoding.GetString(bytes, 0, Length));
+                        var buffer = ArrayPool<char>.Shared.Rent(encoding.GetCharCount(bytes, 0, Length));
+                        var charscount = encoding.GetChars(bytes, 0, Length, buffer, 0);
+
+                        //
+                        output.Append(buffer, 0, charscount);
+
+                        //
+                        ArrayPool<char>.Shared.Return(buffer);
                     }
+                }
+                else
+                {
+                    throw new InvalidOperationException();
+                }
+            }
+
+            public override string ToString() => ToString(Encoding.ASCII);
+
+            public string ToString(Encoding encoding)
+            {
+                if (IsEmpty)
+                {
+                    return string.Empty;
+                }
+                else if (_array is char[] chars)
+                {
+                    return new string(chars, 0, Length);
+                }
+                else if (_array is byte[] bytes)
+                {
+                    if (Length == 1)
+                    {
+                        return new string((char)bytes[0], 1);
+                    }
+
+                    var buffer = ArrayPool<char>.Shared.Rent(encoding.GetCharCount(bytes, 0, Length));
+                    var charscount = encoding.GetChars(bytes, 0, Length, buffer, 0);
+
+                    //
+                    var value = new string(buffer, 0, charscount);
+
+                    //
+                    ArrayPool<char>.Shared.Return(buffer);
+
+                    //
+                    return value;
                 }
                 else
                 {
@@ -265,6 +311,11 @@ namespace Devsense.PHP.Syntax
                 if (IsEmpty)
                 {
                     return string.Empty;
+                }
+
+                if (ChunksCount == 1)
+                {
+                    return Chunks[0].ToString(encoding);
                 }
 
                 var result = StringUtils.GetStringBuilder(ChunksCount * 2);

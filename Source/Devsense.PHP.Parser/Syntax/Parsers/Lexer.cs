@@ -23,6 +23,7 @@ using Devsense.PHP.Errors;
 using System.Collections.Generic;
 using Devsense.PHP.Utilities;
 using Devsense.PHP.Ast.DocBlock;
+using static Devsense.PHP.Syntax.PhpStringSyntax;
 
 namespace Devsense.PHP.Syntax
 {
@@ -125,7 +126,7 @@ namespace Devsense.PHP.Syntax
             _features = features;
             _strings = strings ?? (_private_strings = StringTable.GetInstance());
             _processDoubleQuotedString = (ReadOnlySpan<char> buffer, int index, PhpStringBuilder builder)
-                => _ProcessDoubleQuotedString(
+                => PhpStringSyntax.ProcessDoubleQuotedStringImpl(
                     buffer,
                     index,
                     builder,
@@ -442,254 +443,7 @@ namespace Devsense.PHP.Syntax
             }
         }
 
-        /// <summary>
-        /// Delegate used for <see cref="ProcessStringText(ReadOnlySpan{char}, ProcessStringDelegate, bool)"/> that handles escaped string sequences.
-        /// </summary>
-        /// <param name="buffer">Source text buffer.</param>
-        /// <param name="index">Index of the escaped character right after '\'.</param>
-        /// <param name="builder">Output string builder.</param>
-        /// <returns>Position of the last processed character. In case the escaped character is not handled, gets <c>-1</c>.</returns>
-        internal delegate int ProcessStringDelegate(ReadOnlySpan<char> buffer, int index, PhpStringBuilder builder);
-
-        internal readonly static ProcessStringDelegate s_processSingleQuotedString = _ProcessSingleQuotedString;
-
         readonly ProcessStringDelegate _processDoubleQuotedString;
-
-        static int _ProcessDoubleQuotedString(ReadOnlySpan<char> buffer, int pos, PhpStringBuilder result, int token_start, IErrorSink<Span> errors, bool ST_IN_SHELL, bool UTF_CODEPOINTS)
-        {
-            switch (buffer[pos])
-            {
-                case 'n':
-                    result.Append('\n');
-                    return pos;
-
-                case 'r':
-                    result.Append('\r');
-                    return pos;
-
-                case 't':
-                    result.Append('\t');
-                    return pos;
-
-                case 'v':
-                    result.Append('\v');
-                    return pos;
-
-                case 'e':
-                    result.Append((char)0x1B);
-                    return pos;
-
-                case 'f':
-                    result.Append('\f');
-                    return pos;
-
-                case '\\':
-                case '$':
-                case '"':
-                    result.Append(buffer[pos]);
-                    return pos;
-
-                case '`':
-                    if (ST_IN_SHELL)
-                    {
-                        result.Append(buffer[pos]);
-                        return pos;
-                    }
-                    break;
-
-                case 'u':
-                    if (UTF_CODEPOINTS && TryParseCodePoint(buffer, ref pos, out var value, token_start, errors))
-                    {
-                        result.Append(value);
-                        return pos;
-                    }
-                    break;
-
-                case 'x':
-                    {
-                        // \x[0-9A-Fa-f]{1,2}
-                        int digit;
-                        if (++pos < buffer.Length && (digit = Convert.AlphaNumericToDigit(buffer[pos])) < 16)
-                        {
-                            int hex_code = digit;
-                            if (++pos < buffer.Length && (digit = Convert.AlphaNumericToDigit(buffer[pos])) < 16)
-                            {
-                                hex_code = (hex_code << 4) + digit;
-                            }
-                            else
-                            {
-                                pos--;  // rollback
-                            }
-
-                            result.Append((byte)hex_code);
-                            return pos;
-                        }
-
-                        break;
-                    }
-
-                default:
-                    {
-                        // \[0-7]{1,3}
-                        int digit;
-                        if ((digit = Convert.NumericToDigit(buffer[pos])) < 8)  // 1
-                        {
-                            int octal_code = digit;
-
-                            if (++pos < buffer.Length && (digit = Convert.NumericToDigit(buffer[pos])) < 8)    // 2
-                            {
-                                octal_code = (octal_code << 3) + digit;
-
-                                if (++pos < buffer.Length && (digit = Convert.NumericToDigit(buffer[pos])) < 8)    // 3
-                                {
-                                    octal_code = (octal_code << 3) + digit;
-                                }
-                                else
-                                {
-                                    pos--; // rollback
-                                }
-                            }
-                            else
-                            {
-                                pos--; // rollback
-                            }
-
-                            result.Append((byte)octal_code);
-                            return pos;
-                        }
-
-                        break;
-                    }
-            }
-
-            // not handled:
-            return -1;
-        }
-
-        static int _ProcessSingleQuotedString(ReadOnlySpan<char> buffer, int pos, PhpStringBuilder result)
-        {
-            var c = buffer[pos];
-            if (c == '\\' || c == '\'')
-            {
-                result.Append(c);
-                return pos;
-            }
-
-            return -1;
-        }
-
-        /// <summary>
-        /// Parses string literal source text, processes escaped sequences.
-        /// </summary>
-        static object ProcessStringText(ReadOnlySpan<char> buffer, ProcessStringDelegate tryprocess, bool binary = false, Encoding encoding = null, IStringTable strings = null)
-        {
-            Debug.Assert(tryprocess != null);
-
-            if (buffer.IsEmpty)
-            {
-                return string.Empty;
-            }
-
-            int to = buffer.Length;
-
-            PhpStringBuilder lazyBuilder = null;
-
-            // find first backslash quickly
-            int index = 0;
-            while (index < to && buffer[index] != '\\')
-            {
-                index++;
-            }
-
-            //
-            for (; index < to; index++)
-            {
-                var c = buffer[index];
-                if (c == '\\' && index + 1 < to)
-                {
-                    // ensure string builder lazily
-                    if (lazyBuilder == null)
-                    {
-                        lazyBuilder = new PhpStringBuilder(encoding ?? Encoding.UTF8, binary, buffer.Length);
-                        lazyBuilder.Append(buffer.Slice(0, index));
-                    }
-
-                    int processed = tryprocess(buffer, index + 1, lazyBuilder);
-                    if (processed > 0)
-                    {
-                        Debug.Assert(processed >= index + 1);
-                        index = processed;
-                        continue;
-                    }
-                }
-
-                if (lazyBuilder != null)
-                {
-                    lazyBuilder.Append(c);
-                }
-            }
-
-            //
-            return lazyBuilder == null
-                ? StringInterns.TryIntern(buffer) ?? strings?.GetOrAdd(buffer) ?? buffer.ToString()
-                : lazyBuilder.Result; // .StringResult;
-        }
-
-        static object ProcessBackquoteString(ReadOnlySpan<char> buffer, Span span, LanguageFeatures features, IErrorSink<Span> errors, Encoding encoding = null, IStringTable strings = null) =>
-            ProcessStringText(
-                buffer,
-                (buffer, pos, result) => _ProcessDoubleQuotedString(buffer, pos, result, span.Start, errors,
-                    ST_IN_SHELL: true,
-                    UTF_CODEPOINTS: features.HasUtfCodepoints()
-                    ),
-                encoding: encoding,
-                strings: strings
-            );
-
-        static object ProcessDoublequoteString(ReadOnlySpan<char> buffer, Span span, LanguageFeatures features, IErrorSink<Span> errors, Encoding encoding = null, IStringTable strings = null) =>
-            ProcessStringText(
-                buffer,
-                (buffer, pos, result) => _ProcessDoubleQuotedString(buffer, pos, result, span.Start, errors,
-                    ST_IN_SHELL: false,
-                    UTF_CODEPOINTS: features.HasUtfCodepoints()
-                    ),
-                encoding: encoding,
-                strings: strings
-            );
-
-        static object ProcessSinglequoteString(ReadOnlySpan<char> buffer, Span span, Encoding encoding = null, IStringTable strings = null) =>
-            ProcessStringText(
-                buffer,
-                s_processSingleQuotedString,
-                encoding: encoding,
-                strings: strings
-            );
-
-        internal static object ProcessString(ReadOnlySpan<char> buffer, Span span, LanguageFeatures features, IErrorSink<Span> errors, Tokens quote, Encoding encoding = null, IStringTable strings = null)
-        {
-            switch (quote)
-            {
-                case Tokens.END: // HEREDOC without quotes
-                case Tokens.T_DOUBLE_QUOTES:
-                    return ProcessDoublequoteString(buffer, span, features, errors, encoding, strings);
-                case Tokens.T_SINGLE_QUOTES:
-                    return ProcessSinglequoteString(buffer, span, encoding, strings);
-                case Tokens.T_BACKQUOTE:
-                    return ProcessBackquoteString(buffer, span, features, errors, encoding, strings);
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(quote));
-            }
-        }
-
-        /// <summary>
-        /// Parses string literal text, processes escaped sequences.
-        /// </summary>
-        /// <param name="buffer">Characters buffer to read from.</param>
-        /// <param name="tryprocess">Callback that handles escaped character sequences. Returns new buffer position in case the sequence was processed, otherwise <c>-1</c>.</param>
-        /// <param name="binary">Whether to force a binary string output.</param>
-        /// <returns>Parsed text, either <see cref="string"/> or <see cref="byte"/>[].</returns>
-        object ProcessStringText(ReadOnlySpan<char> buffer, ProcessStringDelegate tryprocess, bool binary = false) =>
-            ProcessStringText(buffer, tryprocess, binary, _encoding, _strings);
 
         object GetTokenAsQuotedString(ProcessStringDelegate tryprocess, ReadOnlySpan<char> text, char quote)
         {
@@ -727,7 +481,7 @@ namespace Devsense.PHP.Syntax
                 }
             }
 
-            return ProcessStringText(text.Slice(start, end - start), tryprocess, binary);
+            return ProcessStringText(text.Slice(start, end - start), tryprocess, binary, _encoding, _strings);
         }
 
         protected ReadOnlyMemory<char> ProcessEscapedStringEnding(ReadOnlyMemory<char> source, char ending) // process ending and return `T_ENCAPSED_AND_WHITESPACE` source code
@@ -749,64 +503,6 @@ namespace Devsense.PHP.Syntax
 
             //
             return source;
-        }
-
-        /// <summary>
-        /// Parse code point enclosed in braces.
-        /// 'pos' points before '{'
-        /// </summary>
-        static bool TryParseCodePoint(ReadOnlySpan<char> buffer, ref int pos, out string value, int token_start, IErrorSink<Span> errors)
-        {
-            var index = pos + 1; //
-            int code_point = 0;
-            int digit;
-
-            // {
-            if (index < buffer.Length && buffer[index] == '{')
-            {
-                int ndigits = 0;
-
-                // [0-9A-Fa-f]+}
-                while (++index < buffer.Length)
-                {
-                    var ch = buffer[index];
-                    if (ch == '}')
-                    {
-                        if (ndigits == 0)
-                        {
-                            // \u{}
-                            break;
-                        }
-
-                        if ((code_point < 0 || code_point > 0x10ffff) || (code_point >= 0xd800 && code_point <= 0xdfff))
-                        {
-                            errors.Error(
-                                new Span(token_start + pos + 1, index - pos),
-                                Errors.Errors.InvalidCodePoint,
-                                code_point.ToString("x"));
-
-                            break;
-                        }
-
-                        pos = index;
-                        value = StringUtils.Utf32ToString(code_point);
-                        return true;
-                    }
-                    else if ((digit = Convert.AlphaNumericToDigit(ch)) < 16)
-                    {
-                        code_point = (code_point << 4) + digit;
-                        ndigits++;
-                    }
-                    else
-                    {
-                        break;
-                    }
-                }
-            }
-
-            //
-            value = default;
-            return false;
         }
 
         #endregion

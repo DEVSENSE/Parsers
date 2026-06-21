@@ -863,11 +863,14 @@ namespace Devsense.PHP.Syntax
                 }
 
                 //
-                yield return e;
+                if (e != null)
+                {
+                    yield return e;
+                }
             }
         }
 
-        private LangElement EncapsedHeredocStringToExpression(ReadOnlyMemory<char> source, int pos, Tokens quote, ReadOnlyMemory<char> indentation, ref bool bol, ref bool errorreported, ref ReadOnlyMemory<char> current_indentation)
+        private StringLiteral EncapsedHeredocStringToExpression(ReadOnlyMemory<char> source, int pos, Tokens quote, ReadOnlyMemory<char> indentation, ref bool bol, ref bool errorreported, ref ReadOnlyMemory<char> current_indentation)
         {
             var result = StringUtils.GetStringBuilder(source.Length);
 
@@ -938,13 +941,13 @@ namespace Devsense.PHP.Syntax
 
         static ReadOnlySpan<char> Enclose(ReadOnlyMemory<char> value, char quote) => $"{quote}{value}{quote}".AsSpan();
 
-        object ProcessString(ReadOnlySpan<char> buffer, Span span, Tokens quote) => Lexer.ProcessString(buffer, span, _languageFeatures, _errors, quote, _encoding);
+        object ProcessString(ReadOnlySpan<char> buffer, Span span, Tokens quote) => PhpStringSyntax.ProcessString(buffer, span, _languageFeatures, _errors, quote, encoding: _encoding);
 
         void ProcessString(ReadOnlySpan<char> buffer, Span span, Tokens quote, StringBuilder output)
         {
             output.Append(
-                Lexer
-                .ProcessString(buffer, span, _languageFeatures, _errors, quote, _encoding)
+                PhpStringSyntax
+                .ProcessString(buffer, span, _languageFeatures, _errors, quote, encoding: _encoding)
                 .ToString()
             );
         }
