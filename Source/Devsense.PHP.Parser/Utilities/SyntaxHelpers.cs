@@ -116,10 +116,9 @@ namespace Devsense.PHP.Utilities
                 yield return element;
 
                 var children = childvisitor.GetChildren(element);
-
-                foreach (var child in children)
+                for (int i = 0; i < children.Length; i++)
                 {
-                    stack.Push(child);
+                    stack.Push(children[i]);
                 }
             }
 
