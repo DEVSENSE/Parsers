@@ -28,80 +28,6 @@ namespace Devsense.PHP.Utilities
     /// </summary>
     static class UpdateParentHelper
     {
-        static readonly ObjectPool<GetChildrenVisitor> s_visitorPool = new ObjectPool<GetChildrenVisitor>(
-            () => new GetChildrenVisitor(),
-            (obj) => obj.Free()
-        );
-
-        /// <summary>
-        /// Collects element child elements.
-        /// </summary>
-        sealed class GetChildrenVisitor : TreeVisitor
-        {
-            /// <summary>
-            /// Buffer.
-            /// </summary>
-            ILangElement[] _children = EmptyArray<ILangElement>.Instance;
-
-            int _childrenCount = 0;
-            int _childrenUsed = 0;
-
-            public void Free()
-            {
-                Array.Clear(_children, 0, _childrenUsed);
-                _childrenCount = 0;
-                _childrenUsed = 0;
-            }
-
-            void AddChild(ILangElement element)
-            {
-                if (element != null)
-                {
-                    if (_childrenCount == _children.Length)
-                    {
-                        Array.Resize(ref _children, (_children.Length + 2) * 2);
-                    }
-
-                    _children[_childrenCount++] = element;
-                    _childrenUsed = Math.Max(_childrenUsed, _childrenCount); // remember how much elements we've used so we can clear them
-                }
-            }
-
-            /// <summary>
-            /// Gets list of direct child nodes.
-            /// Cannot be <c>null</c>.
-            /// </summary>
-            public ReadOnlySpan<ILangElement> GetChildren(ILangElement element)
-            {
-                _childrenCount = 0;
-
-                if (element != null)
-                {
-                    element.VisitMe(this);
-                }
-
-                return _children.AsSpan(0, _childrenCount);
-            }
-
-            //protected override void VisitList(INamedTypeRef[] items)
-            //{
-            //    if (items != null)
-            //    {
-            //        for (int i = 0; i < items.Length; i++)
-            //        {
-            //            AddChild(items[i]);
-            //        }
-            //    }
-            //}
-
-            public override void VisitElement(ILangElement element)
-            {
-                AddChild(element);
-
-                // do not visit the child
-            }
-        }
-
         /// <summary>
         /// Updates each <see cref="LangElement.ContainingElement"/> with it's real parent.
         /// </summary>
@@ -112,7 +38,7 @@ namespace Devsense.PHP.Utilities
                 return;
             }
 
-            var childvisitor = s_visitorPool.Allocate();
+            var childvisitor = SyntaxHelpers.GetChildrenProvider();
             var stack = StackObjectPool<ILangElement>.Allocate();
 
             stack.Push(ast);
@@ -138,7 +64,7 @@ namespace Devsense.PHP.Utilities
             finally
             {
                 StackObjectPool<ILangElement>.Free(stack);
-                s_visitorPool.Free(childvisitor);
+                SyntaxHelpers.ReturnChildrenProvider(childvisitor);
             }
         }
 

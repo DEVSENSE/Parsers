@@ -1,18 +1,20 @@
-﻿using System;
-using System.IO;
-using Devsense.PHP.Syntax.Ast;
-using System.Text.RegularExpressions;
-using Devsense.PHP.Syntax.Ast.Serialization;
-using Devsense.PHP.Syntax;
-using System.Text;
-using System.Linq;
+﻿using Devsense.PHP.Ast.DocBlock;
 using Devsense.PHP.Errors;
+using Devsense.PHP.Syntax;
+using Devsense.PHP.Syntax.Ast;
+using Devsense.PHP.Syntax.Ast.Serialization;
 using Devsense.PHP.Text;
+using Devsense.PHP.Utilities;
+using System;
 using System.Collections.Generic;
-using UnitTests.TestImplementation;
-using Devsense.PHP.Ast.DocBlock;
 using System.Diagnostics;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Text.RegularExpressions;
+using UnitTests.TestImplementation;
 using Xunit;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace UnitTests
 {
@@ -870,6 +872,40 @@ echo strlen(\Private\Foo::class);
             unit.Parse(new BasicNodesFactory(unit), errors);
 
             Assert.Equal(0, errors.Count);
+        }
+
+        /// <summary>
+        /// Test that all declarations are annotated with PHPDoc.
+        /// </summary>
+        /// <param name="code">Code contains declarations with PHPDoc.</param>
+        [Theory]
+        [InlineData(@"<?php
+/** summary */
+enum E {
+    /** summary */
+    case C;
+}")]
+        public void IsAnnotatedWithPhpDoc(string code)
+        {
+            var errors = new TestErrorSink();
+            var unit = new CodeSourceUnit(code, "dummy.php", Encoding.UTF8);
+            unit.Parse(new BasicNodesFactory(unit), errors);
+
+            Assert.NotNull(unit.Ast);
+            Assert.Empty(errors.Errors);
+
+            var count = 0;
+
+            foreach (var e in unit.Ast.EnumerateElements())
+            {
+                if (e is INamedFunctionDeclaration || e is TypeMemberDecl || e is TypeDecl)
+                {
+                    count++;
+                    Assert.NotNull(e.Properties.GetPropertyOfType<IDocBlock>());
+                }
+            }
+
+            Assert.NotEqual(0, count);
         }
 
         /// <summary>

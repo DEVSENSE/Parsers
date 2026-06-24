@@ -130,14 +130,14 @@ namespace Devsense.PHP.Syntax
         /// <summary>
         /// Finds DOC comment at given position and annotates statement with it.
         /// </summary>
-        public void AnnotateMember(LangElement element)
-        {
-            if (LastDocBlock != null && LastDocBlock.Span.End > element.Span.Start &&
-                TryReleaseBlock(Span.Combine(element.Span, LastDocBlock.Span), out var phpdoc))
-            {
-                element.SetPHPDocNoLock(phpdoc);
-            }
-        }
+        public void AnnotateMember(LangElement element) => AnnotateSpan(element);
+        //{
+        //    if (LastDocBlock != null && LastDocBlock.Span.End > element.Span.Start &&
+        //        TryReleaseBlock(Span.Combine(element.Span, LastDocBlock.Span), out var phpdoc))
+        //    {
+        //        element.SetPHPDocNoLock(phpdoc);
+        //    }
+        //}
 
         /// <summary>
         /// Merges DOC comments into the list of statements.
