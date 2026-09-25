@@ -112,6 +112,18 @@ echo ""World"";
 SOMETHING
 123 ?? !
 ", null, 2/*??, !*/)]
+        [InlineData(@"<?php
+
+return [
+    'a' => 1
+    'b' => 2
+];",
+            @"<?php
+
+return [
+    'a' => 1,
+    'b' => 2
+];")]
         public void ErrorRecoveryTest(string code, string expectedcode = null, int tokensDiscarded = 0)
         {
             var sourceUnit = new CodeSourceUnit(code, "dummy.php");
