@@ -1853,10 +1853,9 @@ possible_array_pair:
 ;
 
 non_empty_array_pair_list:
-		non_empty_array_pair_list ',' possible_array_pair
-			{ $$ = AddToList<ArrayItem>($1, $3); }
-	|	possible_array_pair
-			{ $$ = NewList<ArrayItem>( $1 ); }
+		non_empty_array_pair_list ',' possible_array_pair	{ $$ = AddToList<ArrayItem>($1, $3); }
+	|	non_empty_array_pair_list T_ERROR possible_array_pair	{ $$ = AddToList<ArrayItem>($1, $3); yyerrok(); }
+	|	possible_array_pair									{ $$ = NewList<ArrayItem>( $1 ); }
 ;
 
 array_pair:
