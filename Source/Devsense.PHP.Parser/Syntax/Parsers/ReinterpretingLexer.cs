@@ -250,7 +250,6 @@ namespace Devsense.PHP.Syntax
             {
                 var token = CurrentToken;
 
-                // original zendlex() functionality - skip open and close tags because they are not in the PHP grammar
                 switch (CurrentToken)
                 {
                     case Tokens.T_FN:

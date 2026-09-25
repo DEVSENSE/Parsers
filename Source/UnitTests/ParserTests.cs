@@ -212,6 +212,7 @@ isset(new A()['key']);
 isset(new $class()['key']);
 isset(new (trim(' A '))()['key']);
 ")]
+        // PHP 5 deprecated array syntax
         [InlineData(@"<?php
 
 echo $arr{0};
@@ -730,27 +731,24 @@ error
             Assert.Equal(1, errors.Count); // report error once only
         }
 
-        [Fact]
-        public void PropertyHooksTest()
-        {
-            var codes = new[] {
-                @"<?php
+        [Theory]
+        [InlineData(@"<?php
 class X {
     public int $runs = 0 {
         set {
             $this->runs = $value;
         }
     }
-}",
-                @"<?php
+}")]
+        [InlineData(@"<?php
 class X {
     public string $fullName {
         get => $this->first . ' ' . $this->last;
         set {
         }
     }
-}",
-                @"<?php
+}")]
+        [InlineData(@"<?php
 class X {
     function __construct(
         public string $fullName {
@@ -761,18 +759,16 @@ class X {
     )
     {
     }
-}",
-            };
+}")]
+        [InlineData("<?php class C { public int $x = $y { get => $this->x; } }")]
+        public void PropertyHooksTest(string code)
+        {
+            var errors = new TestErrorSink();
+            var unit = new CodeSourceUnit(code, "dummy.php", Encoding.UTF8);
+            unit.Parse(new BasicNodesFactory(unit), errors);
 
-            foreach (var code in codes)
-            {
-                var errors = new TestErrorSink();
-                var unit = new CodeSourceUnit(code, "dummy.php", Encoding.UTF8);
-                unit.Parse(new BasicNodesFactory(unit), errors);
-
-                Assert.NotNull(unit.Ast);
-                Assert.Equal(0, errors.Count);
-            }
+            Assert.NotNull(unit.Ast);
+            Assert.Equal(0, errors.Count);
         }
 
         [Fact]
