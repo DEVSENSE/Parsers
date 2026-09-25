@@ -777,6 +777,19 @@ namespace Devsense.PHP.Syntax
             return element;
         }
 
+        NameRef ExpectsSimpleNameRef(Span span, List<string> namespace_name)
+        {
+            if (namespace_name.Count == 1)
+            {
+                return new NameRef(span, namespace_name[0]);
+            }
+            else
+            {
+                _errors.Error(span, FatalErrors.SyntaxError);
+                return new NameRef(span, namespace_name[0]);
+            }
+        }
+
         LangElement EmptyHeredocExpression(Span span, int emptyContentPos, Tokens quote, Lexer.HereDocTokenValue heredoc)
         {
             // _astFactory.HeredocExpression(@$, _astFactory.Literal(new Span(@1.End, 0), "", string.Empty.AsSpan()), $1.QuoteToken, $2)

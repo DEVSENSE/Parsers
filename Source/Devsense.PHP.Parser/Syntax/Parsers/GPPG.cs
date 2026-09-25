@@ -523,7 +523,7 @@ namespace Devsense.PHP.Syntax
 			scanner.ReportError(expected_terminals);
 		}
 
-		internal bool FindErrorRecoveryState()
+		bool FindErrorRecoveryState()
 		{
 			while (true)    // pop states until one found that accepts error token
 			{
@@ -558,7 +558,7 @@ namespace Devsense.PHP.Syntax
 			}
 		}
 
-		internal bool DiscardInvalidTokens()
+		bool DiscardInvalidTokens()
 		{
             int lastState = -1;
             int reductionCount = 0;

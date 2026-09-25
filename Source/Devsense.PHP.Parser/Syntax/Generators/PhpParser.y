@@ -1265,7 +1265,7 @@ trait_alias:
 ;
 
 trait_method_reference:
-		identifier						{ $$ = new Tuple<TypeRef,NameRef>(null, new NameRef(@1, $1)); }
+		namespace_name					{ $$ = new Tuple<TypeRef,NameRef>(null, ExpectsSimpleNameRef(@$, $1)); }
 	|	absolute_trait_method_reference	{ $$ = $1; }
 ;
 
