@@ -409,6 +409,19 @@ $x = ""hello"";
 ", @"<div>
     <img/>
 </div>")]
+        [InlineData(@"<?php
+        $codeSample = <<<'PHP'
+            <?php
+            final class MyTest extends \PHPUnit_Framework_TestCase
+            {
+                public function testSomething()
+                {
+                    PHPUnit_Framework_Assert::assertTrue(true);
+                }
+            }
+
+            PHP;
+")]
         public void HeredocTest(string code, string value = null)
         {
             var errors = new TestErrorSink();

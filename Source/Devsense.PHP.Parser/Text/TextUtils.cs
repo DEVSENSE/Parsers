@@ -277,22 +277,6 @@ namespace Devsense.PHP.Text
             ? ReadOnlySpan<char>.Empty
             : text.AsSpan(ourspan.Start, ourspan.Length);
 
-        /// <summary>
-        /// Finds last whitespace character and returns substring that follows.
-        /// </summary>
-        public static ReadOnlySpan<char> LastWord(this ReadOnlySpan<char> chars)
-        {
-            for (int i = chars.Length - 1; i >= 0; i--)
-            {
-                if (char.IsWhiteSpace(chars[i]))
-                {
-                    return chars.Slice(i + 1);
-                }
-            }
-
-            return chars;
-        }
-
         internal static char LastChar(this ReadOnlySpan<char> value) => value.IsEmpty ? '\0' : value[value.Length - 1];
 
         internal static char LastChar(this ReadOnlyMemory<char> value) => value.Span.LastChar();
