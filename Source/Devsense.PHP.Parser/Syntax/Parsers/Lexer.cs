@@ -651,11 +651,17 @@ namespace Devsense.PHP.Syntax
 
         bool VerifyEndLabel(ReadOnlySpan<char> chars)
         {
+            // ^{TABS_AND_SPACES}{LABEL}
+
+            //
             var label = _hereDocValue?.Label;
             if (label != null &&
                 chars.EndsWith(label.AsSpan(), StringComparison.Ordinal) &&
-                chars.Length > label.Length &&
-                char.IsWhiteSpace(chars[chars.Length - label.Length - 1]))
+                (
+                    chars.Length == label.Length/*line-by-line parsing, we're at BOL*/ ||
+                    char.IsWhiteSpace(chars[chars.Length - label.Length - 1]) /*first word at the line*/
+                )
+            )
             {
                 return true;
             }

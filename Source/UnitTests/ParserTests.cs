@@ -422,6 +422,11 @@ $x = ""hello"";
 
             PHP;
 ")]
+        [InlineData(@"<?php
+        $sql = <<<SQL
+            SELECT * FROM users
+SQL;
+")]
         public void HeredocTest(string code, string value = null)
         {
             var errors = new TestErrorSink();
