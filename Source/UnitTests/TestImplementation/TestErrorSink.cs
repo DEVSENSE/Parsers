@@ -21,10 +21,20 @@ namespace UnitTests.TestImplementation
 
         public readonly List<ErrorInstance> Errors = new List<ErrorInstance>();
 
+        public int MaxCount { get; }
+
+        public TestErrorSink(int maxCount = 1024)
+        {
+            MaxCount = maxCount;
+        }
+
         public int Count => this.Errors.Count;
 
         public void Error(Span span, ErrorInfo info, params string[] argsOpt)
         {
+            if (this.Errors.Count >= MaxCount)
+                throw new InvalidOperationException($"Error sink reached its maximum capacity of {MaxCount} errors.");
+
             Errors.Add(new ErrorInstance()
             {
                 Span = span,

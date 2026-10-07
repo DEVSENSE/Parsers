@@ -147,6 +147,34 @@ return [
         }
 
         [Theory]
+        [InlineData(@"<?php $a = [10, 20] + [")]
+        [InlineData(@"<?php $array = array(")]
+        [InlineData(@"<?php
+function test()
+    {
+        $arr = array(
+            'a' => 'a'
+<<<<<<< HEAD
+            'b' => 'b'
+=======
+            'c' => 'c'
+>>>>>>> master
+        );
+    }
+")]
+        public void ErrorRecoveryBugTest(string code)
+        {
+            var sourceUnit = new CodeSourceUnit(code, "dummy.php");
+            var errors = new TestErrorSink(maxCount: 16); // assuming a few syntax errors
+
+            sourceUnit.Parse(new BasicNodesFactory(sourceUnit), errors);
+
+            Assert.NotNull(sourceUnit.Ast);
+            Assert.True(errors.Count != 0);
+            Assert.Contains(errors.Errors, e => e.Error == FatalErrors.SyntaxError);
+        }
+
+        [Theory]
         [InlineData(@"<?php
 class X {
     function static() { }
