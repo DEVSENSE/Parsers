@@ -2588,7 +2588,7 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 { yyval.Node = FinalizeBlock(yypos, value_stack.array[value_stack.top-2].yyval.NodeList); }
         return;
       case 149: // statement -> '{' inner_statement_list T_ERROR 
-{ yyval.Node = FinalizeBlock(yypos, value_stack.array[value_stack.top-2].yyval.NodeList); yyerrok(); }
+{ yyval.Node = FinalizeBlock(yypos, value_stack.array[value_stack.top-2].yyval.NodeList); }
         return;
       case 150: // statement -> enter_scope if_stmt exit_scope 
 { yyval.Node = value_stack.array[value_stack.top-2].yyval.Node; }
@@ -2632,7 +2632,7 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 { yyval.Node = _astFactory.Echo(yypos, value_stack.array[value_stack.top-2].yyval.NodeList); }
         return;
       case 162: // statement -> T_ECHO echo_expr_list T_ERROR 
-{ yyval.Node = _astFactory.Echo(yypos, value_stack.array[value_stack.top-2].yyval.NodeList); yyerrok(); }
+{ yyval.Node = _astFactory.Echo(yypos, value_stack.array[value_stack.top-2].yyval.NodeList);  }
         return;
       case 163: // statement -> T_INLINE_HTML 
 { yyval.Node = _astFactory.InlineHtml(yypos, value_stack.array[value_stack.top-1].yyval.String); }
@@ -2641,7 +2641,7 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
 { yyval.Node = _astFactory.ExpressionStmt(yypos, value_stack.array[value_stack.top-2].yyval.Node); }
         return;
       case 165: // statement -> expr T_ERROR 
-{ yyval.Node = _astFactory.ExpressionStmt(value_stack.array[value_stack.top-2].yypos, value_stack.array[value_stack.top-2].yyval.Node); yyerrok(); }
+{ yyval.Node = _astFactory.ExpressionStmt(value_stack.array[value_stack.top-2].yypos, value_stack.array[value_stack.top-2].yyval.Node); }
         return;
       case 166: // statement -> T_UNSET '(' unset_variables possible_comma ')' ';' 
 { yyval.Node = _astFactory.Unset(yypos, AddTrailingComma(value_stack.array[value_stack.top-4].yyval.NodeList, value_stack.array[value_stack.top-3].yyval.Bool)); }
@@ -4079,14 +4079,13 @@ public partial class Parser: ShiftReduceParser<SemanticValueType,Span>
       case 579: // variable -> array_object_dereferenceable object_operator T_ERROR 
 {
 			yyval.Node = AdjustNullSafeOperator(CreateProperty(yypos, value_stack.array[value_stack.top-3].yyval.Node, string.Empty), value_stack.array[value_stack.top-2].yyval.Token);
-			yyerrok();
 		}
         return;
       case 580: // simple_variable -> T_VARIABLE 
 { yyval.Node = _astFactory.Variable(yypos, value_stack.array[value_stack.top-1].yyval.String,	NullLangElement, true); }
         return;
       case 581: // simple_variable -> '$' T_ERROR 
-{ yyval.Node = _astFactory.Variable(value_stack.array[value_stack.top-2].yypos, "",	NullLangElement, true); yyerrok(); }
+{ yyval.Node = _astFactory.Variable(value_stack.array[value_stack.top-2].yypos, "",	NullLangElement, true); }
         return;
       case 582: // simple_variable -> '$' '{' expr '}' 
 { yyval.Node = _astFactory.Variable(yypos, _astFactory.EncapsedExpression(Span.Combine(value_stack.array[value_stack.top-3].yypos, value_stack.array[value_stack.top-1].yypos), value_stack.array[value_stack.top-2].yyval.Node, Tokens.T_LBRACE), NullLangElement); }

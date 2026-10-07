@@ -634,7 +634,7 @@ inner_statement:
 
 statement:
 		'{' inner_statement_list '}' { $$ = FinalizeBlock(@$, $2); }
-	|	'{' inner_statement_list T_ERROR { $$ = FinalizeBlock(@$, $2); yyerrok(); }
+	|	'{' inner_statement_list T_ERROR { $$ = FinalizeBlock(@$, $2); }
 	|	enter_scope if_stmt exit_scope { $$ = $2; }
 	|	enter_scope alt_if_stmt exit_scope { $$ = $2; }
 	|	T_WHILE '(' expr ')' enter_scope while_statement exit_scope
@@ -655,10 +655,10 @@ statement:
 	|	T_GLOBAL global_var_list ';'	{ $$ = _astFactory.Global(@$, $2); }
 	|	T_STATIC static_var_list ';'	{ $$ = _astFactory.Static(@$, $2); }
 	|	T_ECHO echo_expr_list ';'		{ $$ = _astFactory.Echo(@$, $2); }
-	|	T_ECHO echo_expr_list T_ERROR	{ $$ = _astFactory.Echo(@$, $2); yyerrok(); }
+	|	T_ECHO echo_expr_list T_ERROR	{ $$ = _astFactory.Echo(@$, $2);  }
 	|	T_INLINE_HTML { $$ = _astFactory.InlineHtml(@$, $1); }
 	|	expr ';' { $$ = _astFactory.ExpressionStmt(@$, $1); }
-	|	expr T_ERROR { $$ = _astFactory.ExpressionStmt(@1, $1); yyerrok(); }
+	|	expr T_ERROR { $$ = _astFactory.ExpressionStmt(@1, $1); }
 	|	T_UNSET '(' unset_variables possible_comma ')' ';' { $$ = _astFactory.Unset(@$, AddTrailingComma($3, $4)); }
 	|	T_FOREACH '(' expr T_AS foreach_variable ')' enter_scope foreach_statement exit_scope
 			{ $$ = _astFactory.Foreach(@$, $3, null, $5, $8); }
@@ -1800,13 +1800,12 @@ variable:
 	|	array_object_dereferenceable object_operator T_ERROR
 		{
 			$$ = AdjustNullSafeOperator(CreateProperty(@$, $1, string.Empty), $2);
-			yyerrok();
 		}
 ;
 
 simple_variable:
 		T_VARIABLE			{ $$ = _astFactory.Variable(@$, $1,	NullLangElement, true); }
-	|	'$' T_ERROR			{ $$ = _astFactory.Variable(@1, "",	NullLangElement, true); yyerrok(); }
+	|	'$' T_ERROR			{ $$ = _astFactory.Variable(@1, "",	NullLangElement, true); }
 	|	'$' '{' expr '}'	{ $$ = _astFactory.Variable(@$, _astFactory.EncapsedExpression(Span.Combine(@2, @4), $3, Tokens.T_LBRACE), NullLangElement); }
 	|	'$' simple_variable	{ $$ = _astFactory.Variable(@$, $2, NullLangElement); }
 ;

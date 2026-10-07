@@ -238,6 +238,10 @@ namespace Devsense.PHP.Syntax
 
 		private bool recovering;
 		private int tokensSinceLastError;
+		private bool hasRecovered;
+		private int shiftsSinceRecovery;
+		private int eofRecoveries;
+		private const int MaxEofRecoveries = 16;
 		protected int tokensDiscarded;
 
 		private readonly Stack<int> state_stack = new Stack<int>();
@@ -286,6 +290,9 @@ namespace Devsense.PHP.Syntax
             value_stack.Clear();
 			tokensDiscarded = 0;
 			tokensSinceLastError = 0;
+			hasRecovered = false;
+			insertedTokens = 0;
+			shiftsSinceRecovery = 0;
 			recovering = false;
 			lookahead = null;
         }
@@ -368,6 +375,9 @@ namespace Devsense.PHP.Syntax
 
 			value_stack.Push(scanner.TokenValue, scanner.TokenPosition, true);
 			state_stack.Push(current_state_index);
+
+			if (next != errToken)
+				shiftsSinceRecovery++;
 
 			if (recovering)
 			{
@@ -480,9 +490,35 @@ namespace Devsense.PHP.Syntax
 
 		virtual protected bool ErrorRecovery(int token, int state)
 		{
+			// The previous recovery (even if finished by yyerrok) did not shift any real token:
+			// the error rule (ending with T_ERROR) was matched, but the offending token is
+			// still the lookahead. Discard it (like yacc does), otherwise the same rule matches again.
+			if (hasRecovered && shiftsSinceRecovery == 0)
+			{
+				if (token == (int)Tokens.EOF)
+				{
+					// at EOF there is nothing to discard; nested error rules may still need to close
+					// open constructs one by one (array( -> expression -> statement), so allow a bounded number
+					if (++eofRecoveries > MaxEofRecoveries)
+						return false;
+				}
+				else
+				{
+					next = 0;
+					return true;
+				}
+			}
+			else
+				eofRecoveries = 0;
+
 			if (!recovering) // if not recovering from previous error
 				ReportError();
 
+			if (token == (int)Tokens.EOF && TryInsertMissingToken())
+				return true;
+
+			hasRecovered = true;
+			shiftsSinceRecovery = 0;
 			recovering = true;
 			tokensSinceLastError = 0;
 
@@ -490,10 +526,10 @@ namespace Devsense.PHP.Syntax
 				return false;
 
 			lookahead = next;
-            next = errToken;
+			next = errToken;
 
 			return DiscardInvalidTokens();
-        }
+		}
 
         /// <summary>
         /// Set internal parser state after error recovery.
@@ -521,6 +557,39 @@ namespace Devsense.PHP.Syntax
 			}
 
 			scanner.ReportError(expected_terminals);
+		}
+
+		private int insertedTokens;
+
+		private const int MaxInsertedTokens = 64;
+
+		/// <summary>
+		/// At EOF, virtually inserts a missing closing token (')', ']', '}', ';') acceptable in the current state,
+		/// so the open construct gets closed by regular grammar rules. The EOF is kept as the following token.
+		/// </summary>
+		bool TryInsertMissingToken()
+		{
+			if (insertedTokens >= MaxInsertedTokens)
+				return false;
+
+			var table = states[current_state_index].parser_table;
+			if (table != null)
+			{
+				foreach (var candidate in new[] { Tokens.T_RPAREN, Tokens.T_RBRACKET, Tokens.T_RBRACE, Tokens.T_SEMI })
+				{
+					if (table.TryGetValue((int)candidate, out var action) && action != 0)
+					{
+						insertedTokens++;
+						recovering = true;
+						tokensSinceLastError = 0;
+						lookahead = next;
+						next = (int)candidate;
+						return true;
+					}
+				}
+			}
+
+			return false;
 		}
 
 		bool FindErrorRecoveryState()
