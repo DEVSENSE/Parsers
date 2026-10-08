@@ -480,12 +480,19 @@ SQL;
             var codes = new[] {
                 @"<?php #[ClassName(1,2,3)]class X { }",
                 @"<?php #[ClassName]class X { }",
+                @"<?php #[ConstName]const X = 1;",
             };
 
             foreach (var code in codes)
             {
+                var errors = new TestErrorSink();
                 var unit = new CodeSourceUnit(code, "dummy.php", Encoding.UTF8);
-                unit.Parse(new BasicNodesFactory(unit), null);
+                var factory = new TestNodeFactory(unit, errors);
+
+                unit.Parse(factory, errors);
+
+                Assert.Empty(errors.Errors);
+                Assert.NotNull(unit.Ast);
             }
         }
 
@@ -504,10 +511,13 @@ class X {
 
             foreach (var code in codes)
             {
+                var errors = new TestErrorSink();
                 var unit = new CodeSourceUnit(code, "dummy.php", Encoding.UTF8);
-                unit.Parse(new BasicNodesFactory(unit), null);
+                var factory = new TestNodeFactory(unit, errors);
 
-                foreach (var tdecl in unit.Ast.TraverseNamedTypeDeclarations())
+                unit.Parse(factory, errors);
+
+                foreach (var tdecl in factory.Types)
                 {
                     foreach (var m in tdecl.Members.OfType<MethodDecl>())
                     {
@@ -532,20 +542,31 @@ class X {
     #[ClassName]
     function foo() { }
 }",
+                @"<?php /** phpdoc */#[ConstName]const X = 1;",
             };
 
             foreach (var code in codes)
             {
+                var errors = new TestErrorSink();
                 var unit = new CodeSourceUnit(code, "dummy.php", Encoding.UTF8);
-                unit.Parse(new BasicNodesFactory(unit), null);
-
-                foreach (var tdecl in unit.Ast.TraverseNamedTypeDeclarations())
+                var factory = new TestNodeFactory(unit, errors);
+                unit.Parse(factory, errors);
+               
+                foreach (var tdecl in factory.Types)
                 {
                     Assert.NotNull(tdecl.PHPDoc);
 
                     foreach (var m in tdecl.Members.OfType<MethodDecl>())
                     {
                         Assert.NotNull(m.PHPDoc);
+                    }
+                }
+
+                foreach (var c in unit.Ast.Statements)
+                {
+                    if (c is GlobalConstDeclList constDecl)
+                    {
+                        Assert.NotNull(constDecl.PHPDoc);
                     }
                 }
             }
@@ -564,10 +585,13 @@ class X {
 
             foreach (var code in codes)
             {
+                var errors = new TestErrorSink();
                 var unit = new CodeSourceUnit(code, "dummy.php", Encoding.UTF8);
-                unit.Parse(new BasicNodesFactory(unit), null);
+                var factory = new TestNodeFactory(unit, errors);
 
-                foreach (var tdecl in unit.Ast.TraverseNamedTypeDeclarations())
+                unit.Parse(factory, errors);
+
+                foreach (var tdecl in factory.Types)
                 {
                     foreach (var m in tdecl.Members.OfType<TraitsUse>())
                     {

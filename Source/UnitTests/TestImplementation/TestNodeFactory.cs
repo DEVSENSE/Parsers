@@ -21,6 +21,9 @@ namespace UnitTests.TestImplementation
         public IReadOnlyList<FunctionDecl> Functions => _functions;
         readonly List<FunctionDecl> _functions = new List<FunctionDecl>();
 
+        public IReadOnlyList<NamedTypeDecl> Types => _types;
+        readonly List<NamedTypeDecl> _types = new List<NamedTypeDecl>();
+
         public IReadOnlyList<StringEncapsedExpression> HereDocs => _heredocs;
         readonly List<StringEncapsedExpression> _heredocs = new List<StringEncapsedExpression>();
 
@@ -30,6 +33,17 @@ namespace UnitTests.TestImplementation
         public TestNodeFactory(SourceUnit sourceUnit, IErrorSink<Span> errors) : base(sourceUnit)
         {
             _errors = errors;
+        }
+
+        public override LangElement Type(Span span, Span headingSpan, bool conditional, PhpMemberAttributes attributes, Name name, Span nameSpan, IEnumerable<FormalTypeParam> typeParamsOpt, INamedTypeRef baseClassOpt, INamedTypeRef[] implements, IEnumerable<LangElement> members, Span bodySpan)
+        {
+            var t = base.Type(span, headingSpan, conditional, attributes, name, nameSpan, typeParamsOpt, baseClassOpt, implements, members, bodySpan);
+
+            Assert.NotNull(t);
+
+            _types.Add((NamedTypeDecl)t);
+
+            return t;
         }
 
         public override LangElement Method(Span span, bool aliasReturn, PhpMemberAttributes attributes, TypeRef returnType, Span returnTypeSpan, string name, Span nameSpan, FormalTypeParam[] typeParamsOpt, FormalParam[] formalParams, Span formalParamsSpan, ActualParam[] baseCtorParams, LangElement body)

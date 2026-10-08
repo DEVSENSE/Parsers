@@ -286,7 +286,7 @@ using TNode = Devsense.PHP.Syntax.Ast.LangElement;
 %type <Node> finally_statement new_variable callable_expr
 %type <Node> trait_adaptations variable_class_name inner_statement class_statement
 %type <Node> inline_function
-%type <Node> attributed_statement attributed_class_statement
+%type <Node> attributed_statement attributed_top_statement attributed_class_statement
 %type <FormalParam> attributed_parameter
 %type <Node> attribute attribute_decl
 %type <NodeList> attributes attribute_group
@@ -484,10 +484,19 @@ attributed_statement:
 	|	enum_declaration_statement			{ $$ = $1; }
 ;
 
+attributed_top_statement:
+		attributed_statement				{ $$ = $1; }
+	|	T_CONST const_list ';'
+		{
+			SetDoc($$ = _astFactory.DeclList(@$, PhpMemberAttributes.None, $2, null));
+			FreeList($2);
+		}
+;
+
 top_statement:
 		statement							{ $$ = $1; }
-	|	attributed_statement				{ $$ = $1; }
-	|	attributes attributed_statement		{ $$ = FinalizeAttributes($2, $1); }
+	|	attributed_top_statement			{ $$ = $1; }
+	|	attributes attributed_top_statement	{ $$ = FinalizeAttributes($2, $1); }
 	|	T_HALT_COMPILER '(' ')' ';'			{ $$ = _astFactory.HaltCompiler(@$); }
 	|	T_NAMESPACE namespace_name ';'
 		{
@@ -511,15 +520,10 @@ top_statement:
 			SetDoc($$);
 			ResetNamingContext();
 		}
-	|	T_USE mixed_group_use_declaration ';'		{ $$ = _astFactory.Use(@$, GetArrayAndFree($2), AliasKind.Type); _contextType = AliasKind.Type;	/* TODO: Error - must contain only a single group use */	}	
-	|	T_USE use_type group_use_declaration ';'	{ $$ = _astFactory.Use(@$, GetArrayAndFree($3), $2); _contextType = AliasKind.Type;				/* TODO: Error - must contain only a single group use */	}				
-	|	T_USE use_declarations ';'					{ $$ = _astFactory.Use(@$, GetArrayAndFree($2), AliasKind.Type); _contextType = AliasKind.Type;	/* TODO: Error - must contain only simple uses		  */	}	
-	|	T_USE use_type use_declarations ';'			{ $$ = _astFactory.Use(@$, GetArrayAndFree($3), $2); _contextType = AliasKind.Type;				/* TODO: Error - must contain only simple uses		  */	}				
-	|	T_CONST const_list ';'	
-		{
-			SetDoc($$ = _astFactory.DeclList(@$, PhpMemberAttributes.None, $2, null));
-			FreeList($2);
-		}
+	|	T_USE mixed_group_use_declaration ';'		{ $$ = _astFactory.Use(@$, GetArrayAndFree($2), AliasKind.Type); _contextType = AliasKind.Type;	/* TODO: Error - must contain only a single group use */	}
+	|	T_USE use_type group_use_declaration ';'	{ $$ = _astFactory.Use(@$, GetArrayAndFree($3), $2); _contextType = AliasKind.Type;				/* TODO: Error - must contain only a single group use */	}
+	|	T_USE use_declarations ';'					{ $$ = _astFactory.Use(@$, GetArrayAndFree($2), AliasKind.Type); _contextType = AliasKind.Type;	/* TODO: Error - must contain only simple uses		  */	}
+	|	T_USE use_type use_declarations ';'			{ $$ = _astFactory.Use(@$, GetArrayAndFree($3), $2); _contextType = AliasKind.Type;				/* TODO: Error - must contain only simple uses		  */	}
 ;
 
 use_type:
