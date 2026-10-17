@@ -26,7 +26,7 @@ namespace Devsense.PHP.Syntax.Ast
     /// <summary>
     /// Represents a single argument passed to <see cref="FunctionCall"/>.
     /// </summary>
-    public struct ActualParam : ITreeNode
+    public readonly struct ActualParam : ITreeNode
     {
         /// <summary>
         /// <see cref="ArrayUtils.Empty{ActualParam}()"/>.
@@ -41,16 +41,26 @@ namespace Devsense.PHP.Syntax.Ast
             IsUnpack = 2,
 
             /// <summary>
+            /// Flags annotating a parameter placeholder.
+            /// PHP 8.6.
+            /// </summary>
+            PlaceholderArg = 4,
+            /// <summary>
             /// Flag annotating the "..." special argument making making the containing call converted to a closure.
             /// Introduced in PHP 8.1: https://wiki.php.net/rfc/first_class_callable_syntax
             /// </summary>
-            IsCallableConvert = 4,
+            PlaceholderVariadic = 8,
+
+            /// <summary>
+            /// Mask indicating a placeholder argument.
+            /// </summary>
+            IsPlaceholder = PlaceholderArg | PlaceholderVariadic
         }
 
         /// <summary>
         /// Either <see cref="Expression"/> or <see cref="Tuple{VariableNameRef, Expression}"/>.
         /// </summary>
-        object _obj;
+        readonly object _obj;
 
         /// <summary>
         /// Argument expression.
@@ -61,7 +71,6 @@ namespace Devsense.PHP.Syntax.Ast
             {
                 if (_obj is Expression expr) return expr;
                 if (_obj is NameTuple t) return t.Item2;
-                Debug.Assert(_obj == null);
                 return null;
             }
         }
@@ -69,12 +78,12 @@ namespace Devsense.PHP.Syntax.Ast
         /// <summary>
         /// Named argument, if specified.
         /// </summary>
-        public VariableNameRef? Name
+        public VariableNameRef Name
         {
             get
             {
                 if (_obj is NameTuple t) return t.Item1;
-                return null;
+                return default(VariableNameRef);
             }
         }
 
@@ -90,22 +99,48 @@ namespace Devsense.PHP.Syntax.Ast
         {
             get
             {
-                if (_spanStart >= 0)
+                var name = this.Name;
+
+                var from = name.HasValue ? name.Span.Start : _start;
+                if (from >= 0)
                 {
-                    if (Expression != null && Expression.Span.IsValid)
+                    var expression = this.Expression;
+                    var end = from;
+
+                    if (expression != null)
                     {
-                        return Span.FromBounds(_spanStart, Expression.Span.End);
+                        // <_start><expr>
+                        // <_start>...<expr>
+                        end = expression.Span.End;
+                    }
+                    else if (PlaceholderFlag == Flags.PlaceholderArg)
+                    {
+                        // <_start>?
+                        end = _start + 1;
+                    }
+                    else if (PlaceholderFlag == Flags.PlaceholderVariadic)
+                    {
+                        // <_start>...
+                        end = _start + 3;
+                    }
+                    else if (name.HasValue)
+                    {
+                        // name   :<_start>
+                        end = Math.Max(_start, name.Span.End + 1);
                     }
 
-                    if (IsCallableConvert)
-                    {
-                        return new Span(_spanStart, 3); // "..."
-                    }
+                    //
+                    return Span.FromBounds(from, end);
                 }
                 return Span.Invalid;
             }
         }
-        readonly int _spanStart;
+
+        /// <summary>
+        /// Starting index of the range.
+        /// </summary>
+        /// <remarks>Set in the constructor and immutable thereafter.</remarks>
+        readonly int _start;
 
         /// <summary>
         /// Gets value indicating the parameter is not empty (<see cref="Expression"/> is not a <c>null</c> reference).
@@ -122,10 +157,7 @@ namespace Devsense.PHP.Syntax.Ast
         /// </summary>
         public bool IsUnpack => (_flags & Flags.IsUnpack) != 0;
 
-        /// <summary>
-        /// Flag annotating the "..." special argument making making the containing call converted to a closure.
-        /// </summary>
-        public bool IsCallableConvert => (_flags & Flags.IsCallableConvert) != 0;
+        public Flags PlaceholderFlag => _flags & Flags.IsPlaceholder;
 
         /// <summary>
         /// Gets value indicating it's a named argument.
@@ -135,14 +167,14 @@ namespace Devsense.PHP.Syntax.Ast
         internal void Compress(out object obj1, out int start, out byte flags)
         {
             obj1 = _obj;
-            start = _spanStart;
+            start = _start;
             flags = (byte)_flags;
         }
 
         internal ActualParam(object obj, int start, byte flags)
         {
             _obj = obj;
-            _spanStart = start;
+            _start = start;
             _flags = (Flags)flags;
         }
 
@@ -150,12 +182,12 @@ namespace Devsense.PHP.Syntax.Ast
             : this(p, param, Flags.Default, default)
         { }
 
-        public ActualParam(Span p, Expression param, Flags flags, VariableNameRef? nameOpt = default)
+        public ActualParam(Span p, Expression param, Flags flags, VariableNameRef nameOpt = default)
         {
             _flags = flags;
-            _spanStart = p.Start;
+            _start = p.Start;
             _obj = nameOpt.HasValue
-                ? (object)new NameTuple(nameOpt.Value, param)
+                ? (object)new NameTuple(nameOpt, param)
                 : param;
         }
 
@@ -167,32 +199,44 @@ namespace Devsense.PHP.Syntax.Ast
         {
             visitor.VisitActualParam(this);
         }
+
+        public override string ToString()
+        {
+            var name = this.Name;
+            var prefix = name.HasValue ? $"{name.Name.Value}:" : string.Empty;
+
+            var expression = this.Expression;
+            var str =
+                expression != null ? $"<{expression.GetType().Name}>" :
+                PlaceholderFlag == Flags.PlaceholderArg ? "?" :
+                PlaceholderFlag == Flags.PlaceholderVariadic ? "..." :
+                string.Empty
+                ;
+
+            if (Ampersand) str = "&" + str;
+            if (IsUnpack) str = "..." + str;
+
+            //
+            return prefix + str;
+        }
     }
 
     #endregion
 
     #region CallSignature
 
-    public struct CallSignature
+    public readonly struct CallSignature
     {
         /// <summary>
         /// Empty non-existent signature.
         /// </summary>
-        public static CallSignature Empty => new CallSignature(ArrayUtils.Empty<ActualParam>(), Text.Span.Invalid);
-
-        /// <summary>
-        /// Creates a special signature that is treated like a conversion of the containing call to a Closure.
-        /// Introduced in PHP 8.1: https://wiki.php.net/rfc/first_class_callable_syntax
-        /// </summary>
-        /// <param name="span">Span of the ellipsis '...'.</param>
-        /// <returns>Single item list with parameter denoting it's a callable convert signature.</returns>
-        public static ActualParam[] CreateCallableConvert(Text.Span span) => new ActualParam[] { new ActualParam(span, null, ActualParam.Flags.IsCallableConvert) };
+        public static CallSignature Empty => new CallSignature(ActualParam.EmptyArray, Text.Span.Invalid);
 
         /// <summary>
         /// Gets value indicating the object is treated like a conversion of the containing call to a Closure.
         /// Introduced in PHP 8.1: https://wiki.php.net/rfc/first_class_callable_syntax
         /// </summary>
-        public bool IsCallableConvert => Parameters != null && Parameters.Length == 1 && Parameters[0].IsCallableConvert;
+        public bool IsCallableConvert => (_packed_span_length & _packed_callableconvert_flag) != 0;
 
         /// <summary>
         /// Gets value indicating the signature is empty.
@@ -207,38 +251,24 @@ namespace Devsense.PHP.Syntax.Ast
         /// <summary>
         /// Signature position including the parentheses.
         /// </summary>
-        public Text.Span Span { get; set; }
+        public Text.Span Span
+        {
+            get
+            {
+                var span_length = _span_length;
+                return span_length >= 0 ? new Text.Span(_span_start, span_length) : Text.Span.Invalid;
+            }
+        }
 
-        ///// <summary>
-        ///// List of generic parameters.
-        ///// </summary>
-        //public TypeRef[]/*!*/ GenericParams
-        //{
-        //    get
-        //    {
-        //        return this.GetProperty<TypeRef[]>() ?? EmptyArray<TypeRef>.Instance;
-        //    }
-        //    set
-        //    {
-        //        if (value != null && value.Length != 0)
-        //        {
-        //            this.SetProperty<TypeRef[]>(value);
-        //        }
-        //        else
-        //        {
-        //            this.Properties.RemoveProperty<TypeRef[]>();
-        //        }
-        //    }
-        //}
+        readonly int _span_start;
 
-        ///// <summary>
-        ///// Initialize new instance of <see cref="CallSignature"/>.
-        ///// </summary>
-        ///// <param name="parameters">List of parameters.</param>
-        ///// <param name="span">Signature position.</param>
-        //public CallSignature(IList<ActualParam> parameters, Text.Span span) : this(parameters.AsArray(), span)
-        //{
-        //}
+        int _span_length => _packed_span_length & _packed_span_length_mask;
+
+        readonly int _packed_span_length;
+
+        const int _packed_callableconvert_flag = 1 << 29;
+
+        const int _packed_span_length_mask = ~_packed_callableconvert_flag;
 
         /// <summary>
         /// Initialize new instance of <see cref="CallSignature"/>.
@@ -248,9 +278,39 @@ namespace Devsense.PHP.Syntax.Ast
         public CallSignature(ActualParam[] parameters, Text.Span span)
         {
             this.Parameters = parameters ?? throw new ArgumentNullException(nameof(parameters));
-            this.Span = span;
+
+            _span_start = span.Start;
+            _packed_span_length = span.Length & _packed_span_length_mask;
+
+            // flip the sign on the _packed_span_start (even it's 0) if IsPlaceholder(parameters)
+            if (parameters.HavePlaceholder())
+            {
+                _packed_span_length |= _packed_callableconvert_flag;
+            }
+
+            Debug.Assert(this.Span.Equals(span));
         }
     }
 
     #endregion
+
+    public static class CallSignatureExtensions
+    {
+        /// <summary>
+        /// Flag annotating the "..." or "?" special argument making making the containing call converted to a closure.
+        /// </summary>
+        public static bool IsPlaceholder(this ActualParam p) => p.PlaceholderFlag != 0;
+
+        public static bool HavePlaceholder(this ActualParam[] ps)
+        {
+            if (ps != null)
+            {
+                for (int i = 0; i < ps.Length; i++)
+                {
+                    if (ps[i].IsPlaceholder()) return true;
+                }
+            }
+            return false;
+        }
+    }
 }

@@ -1112,7 +1112,6 @@ return_type:
 argument_list:
 		'(' ')'	{ $$ = ActualParam.EmptyArray; }
 	|	'(' non_empty_argument_list possible_comma ')' { $$ = AddTrailingComma($2, $3); }
-	|	'(' T_ELLIPSIS ')' { $$ = CallSignature.CreateCallableConvert(@2); }
 ;
 
 non_empty_argument_list:
@@ -1144,8 +1143,11 @@ non_empty_clone_argument_list:
 ;
 
 argument_no_expr:
-		identifier ':' expr { $$ = _astFactory.ActualParameter(@$, $3, ActualParam.Flags.Default, new VariableNameRef(@1, $1)); }
-	|	T_ELLIPSIS expr	{ $$ = _astFactory.ActualParameter(@$, $2, ActualParam.Flags.IsUnpack); }
+		identifier ':' expr { $$ = _astFactory.ActualParameter(@3, $3, ActualParam.Flags.Default, new VariableNameRef(@1, $1)); }
+	|	T_ELLIPSIS			{ $$ = _astFactory.ActualParameter(@1, null, ActualParam.Flags.PlaceholderVariadic, default(VariableNameRef)); }
+	|	'?'					{ $$ = _astFactory.ActualParameter(@1, null, ActualParam.Flags.PlaceholderArg, default(VariableNameRef)); }
+	|	identifier ':' '?'	{ $$ = _astFactory.ActualParameter(@3, null, ActualParam.Flags.PlaceholderArg, new VariableNameRef(@1, $1)); }
+	|	T_ELLIPSIS expr		{ $$ = _astFactory.ActualParameter(@$, $2, ActualParam.Flags.IsUnpack); }
 ;
 
 argument_expr:
@@ -1474,8 +1476,6 @@ expr:
 			{ $$ = _astFactory.Assignment(@$, $1, $4, Operations.AssignRef); _errors.Error(@$, Warnings.AssignNewByRefDeprecated); }
 	|	T_CLONE clone_argument_list
 			{ $$ = _astFactory.Clone(@$, FinalizeCallSignature(@2, $2)); }
-	|	T_CLONE '(' T_ELLIPSIS ')'
-			{ $$ = _astFactory.Clone(@$, FinalizeCallSignature(CombineSpans(@2, @4), CallSignature.CreateCallableConvert(@3))); }
 	|	T_CLONE expr
 			{ $$ = _astFactory.Clone(@$, FinalizeCallSignature(Span.Invalid, new ActualParam[]{ _astFactory.ActualParameter(@2, $2) })); }
 	|	variable T_PLUS_EQUAL expr

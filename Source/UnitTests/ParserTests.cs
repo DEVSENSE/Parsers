@@ -264,9 +264,14 @@ echo $arr{'index'};
 	'\n' 
 	TXT;
 ")]
-        public void SimpleParseTest(string code)
+        // PHP 8.6 Partial Function Application
+        [InlineData(@"<?php array_map(str_replace('hello', 'hi', ?), $arr);", LanguageFeatures.Php86Set)]
+        [InlineData(@"<?php $f = foo(1, ?, 3, 4);", LanguageFeatures.Php86Set)]
+        [InlineData(@"<?php $f = foo(1, ...);", LanguageFeatures.Php86Set)]
+        [InlineData(@"<?php $f = foo(1, ?, 3, ...);", LanguageFeatures.Php86Set)]
+        public void SimpleParseTest(string code, LanguageFeatures features = LanguageFeatures.Basic)
         {
-            var sourceUnit = new CodeSourceUnit(code, "dummy.php", Encoding.UTF8, Lexer.LexicalStates.INITIAL, LanguageFeatures.Basic);
+            var sourceUnit = new CodeSourceUnit(code, "dummy.php", Encoding.UTF8, Lexer.LexicalStates.INITIAL, features);
             var factory = new BasicNodesFactory(sourceUnit);
             var errors = new TestErrorSink();
 
