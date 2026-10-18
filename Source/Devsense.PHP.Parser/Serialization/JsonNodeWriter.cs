@@ -43,18 +43,22 @@ namespace Devsense.PHP.Syntax.Ast.Serialization
         void SerializeProperties(NodeObj[] properties)
         {
             if (properties != null)
+            {
                 foreach (var property in properties)
+                {
                     if (!string.IsNullOrEmpty(property.NodeType))
                     {
-                        Debug.Assert(property.NodeValue == null || property.NodeProperties == null);
                         if (property.NodeValue != null)
-                            SerializeValue(property.NodeType, property.NodeValue);
-                        else
                         {
-                            Debug.Assert(property.NodeProperties != null);
+                            SerializeValue(property.NodeType, property.NodeValue);
+                        }
+                        else if (property.NodeProperties != null)
+                        {
                             Serialize(property.NodeType, property.NodeProperties);
                         }
                     }
+                }
+            }
         }
 
         //LangElement Reconstruct(KeyValuePair<string, JToken> node)

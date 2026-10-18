@@ -1105,8 +1105,9 @@ intersection_type_without_static:
 ;
 
 return_type:
-		/* empty */	{ $$ = null; }
+		/* empty */		{ $$ = null; }
 	|	':' type_expr	{ $$ = $2; }
+	|	':' T_ERROR		{ $$ = null; }
 ;
 
 argument_list:
@@ -1115,10 +1116,9 @@ argument_list:
 ;
 
 non_empty_argument_list:
-		argument
-			{ $$ = NewList<ActualParam>( $1 ); }
-	|	non_empty_argument_list ',' argument
-			{ $$ = AddToList<ActualParam>($1, $3); }
+		argument									{ $$ = NewList<ActualParam>( $1 ); }
+	|	non_empty_argument_list ',' argument		{ $$ = AddToList<ActualParam>($1, $3); }
+	|	non_empty_argument_list T_ERROR argument	{ $$ = AddToList<ActualParam>($1, $3); }
 ;
 
 /* `clone_argument_list` is necessary to resolve a parser ambiguity (shift-reduce conflict)
@@ -1148,6 +1148,9 @@ argument_no_expr:
 	|	'?'					{ $$ = _astFactory.ActualParameter(@1, null, ActualParam.Flags.PlaceholderArg, default(VariableNameRef)); }
 	|	identifier ':' '?'	{ $$ = _astFactory.ActualParameter(@3, null, ActualParam.Flags.PlaceholderArg, new VariableNameRef(@1, $1)); }
 	|	T_ELLIPSIS expr		{ $$ = _astFactory.ActualParameter(@$, $2, ActualParam.Flags.IsUnpack); }
+
+	|	identifier ':' T_ERROR	{ $$ = _astFactory.ActualParameter(@$, null, ActualParam.Flags.IsError, new VariableNameRef(@1, $1)); }
+	|	T_ERROR					{ $$ = _astFactory.ActualParameter(@1, null, ActualParam.Flags.IsError, default(VariableNameRef)); }
 ;
 
 argument_expr:

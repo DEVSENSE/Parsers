@@ -125,6 +125,8 @@ return [
     'b' => 2
 ];")]
         [InlineData(@"<?php $array = array(", @"<?php $array = array();")]
+        [InlineData(@"<?php function foo(): {}", @"<?php function foo() {}")]
+        [InlineData(@"<?php foo(1 2);", @"<?php foo(1, 2);")]
         public void ErrorRecoveryTest(string code, string expectedcode = null, int tokensDiscarded = 0)
         {
             var sourceUnit = new CodeSourceUnit(code, "dummy.php");
@@ -150,6 +152,9 @@ return [
         [Theory]
         [InlineData(@"<?php $a = [10, 20] + [")]
         [InlineData(@"<?php $array = array(")]
+        [InlineData(@"<?php foo(,,,);")]
+        [InlineData(@"<?php foo(1,,2,3,);")]
+        [InlineData(@"<?php foo(1, named: , 3);")]
         [InlineData(@"<?php
 function test()
     {

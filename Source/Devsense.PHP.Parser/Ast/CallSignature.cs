@@ -54,7 +54,9 @@ namespace Devsense.PHP.Syntax.Ast
             /// <summary>
             /// Mask indicating a placeholder argument.
             /// </summary>
-            IsPlaceholder = PlaceholderArg | PlaceholderVariadic
+            IsPlaceholder = PlaceholderArg | PlaceholderVariadic,
+
+            IsError = 16,
         }
 
         /// <summary>

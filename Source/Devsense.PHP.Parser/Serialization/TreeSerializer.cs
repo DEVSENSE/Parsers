@@ -309,8 +309,13 @@ namespace Devsense.PHP.Syntax.Ast.Serialization
         {
             if (x.Exists)
             {
-                _serializer.StartSerialize(typeof(ActualParam).Name, SerializeSpan(x.Span),
-                  new NodeObj("IsUnpack", x.IsUnpack.ToString()));
+                _serializer.StartSerialize(
+                    typeof(ActualParam).Name,
+                    SerializeSpan(x.Span),
+                    new NodeObj(nameof(x.Name), x.Name.Name.Value),
+                    new NodeObj(nameof(x.IsUnpack), x.IsUnpack.ToString()),
+                    new NodeObj(nameof(x.PlaceholderFlag), x.PlaceholderFlag.ToString())
+                );
                 base.VisitActualParam(x);
                 _serializer.EndSerialize();
             }

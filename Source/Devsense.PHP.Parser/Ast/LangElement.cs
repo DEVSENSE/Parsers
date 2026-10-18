@@ -44,6 +44,11 @@ namespace Devsense.PHP.Syntax.Ast
         /// Position of the element in source file.
         /// </summary>
         Span Span { get; }
+
+        ///// <summary>
+        ///// A fake error node.
+        ///// </summary>
+        //bool IsError { get; }
     }
 
     /// <summary>
