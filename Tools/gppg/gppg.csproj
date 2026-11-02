@@ -1,42 +1,11 @@
 <Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
-    <OutputType>Exe</OutputType>
-    <AssemblyName>gppg</AssemblyName>
-    <TargetFramework>net10.0</TargetFramework>
-    <PublishSingleFile>true</PublishSingleFile>
-    <IncludeAllContentForSelfExtract>true</IncludeAllContentForSelfExtract>
-    <SelfContained>false</SelfContained>
+	<PropertyGroup>
+		<OutputType>Exe</OutputType>
+		<TargetFramework>net10.0</TargetFramework>
+		<InvariantGlobalization>true</InvariantGlobalization>
 
-    <DebugType>embedded</DebugType>
-    <DebugSymbols>false</DebugSymbols>
-    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
-    <EnableCompressionInSingleFile>false</EnableCompressionInSingleFile>
-  </PropertyGroup>
-  <ItemGroup>
-    <Compile Include="gpcc\CodeGenerator.cs" />
-    <Compile Include="gpcc\GPCG.cs" />
-    <Compile Include="gpcc\Grammar.cs" />
-    <Compile Include="gpcc\GrammarToken.cs" />
-    <Compile Include="gpcc\LALRGenerator.cs" />
-    <Compile Include="gpcc\LR0Generator.cs" />
-    <Compile Include="gpcc\NonTerminal.cs" />
-    <Compile Include="gpcc\Parser.cs" />
-    <Compile Include="gpcc\ParserAction.cs" />
-    <Compile Include="gpcc\Precedence.cs" />
-    <Compile Include="gpcc\PrecType.cs" />
-    <Compile Include="gpcc\Production.cs" />
-    <Compile Include="gpcc\ProductionItem.cs" />
-    <Compile Include="gpcc\Reduce.cs" />
-    <Compile Include="gpcc\Scanner.cs" />
-    <Compile Include="gpcc\SemanticAction.cs" />
-    <Compile Include="gpcc\Set.cs" />
-    <Compile Include="gpcc\Shift.cs" />
-    <Compile Include="gpcc\State.cs" />
-    <Compile Include="gpcc\Symbol.cs" />
-    <Compile Include="gpcc\Terminal.cs" />
-    <Compile Include="gpcc\Transition.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="app.config" CopyToOutputDirectory="PreserveNewest" />
-  </ItemGroup>
+		<DebugType>embedded</DebugType>
+		<DebugSymbols>false</DebugSymbols>
+		<EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
+	</PropertyGroup>
 </Project>
