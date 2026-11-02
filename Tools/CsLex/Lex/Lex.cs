@@ -46,6 +46,12 @@ namespace Lex
 					}
 					else
 					{
+						var optionNormalized = arg.Substring(1).Trim().ToLowerInvariant();
+						if (optionNormalized == "help")
+						{
+							Lex.DisplayHelp();
+							return false;
+						}
                         throw new ApplicationException($"Option '{arg}' has no value.");
                     }
                 }
