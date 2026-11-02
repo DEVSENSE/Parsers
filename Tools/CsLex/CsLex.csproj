@@ -1,44 +1,11 @@
 <Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
-    <OutputType>Exe</OutputType>
-    <AssemblyName>CsLex</AssemblyName>
-    <TargetFramework>net10.0</TargetFramework>
-    <PublishSingleFile>true</PublishSingleFile>
-    <IncludeAllContentForSelfExtract>true</IncludeAllContentForSelfExtract>
-    <SelfContained>false</SelfContained>
-
-    <DebugType>embedded</DebugType>
-    <DebugSymbols>false</DebugSymbols>
-    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
-    <EnableCompressionInSingleFile>false</EnableCompressionInSingleFile>
-  </PropertyGroup>
-  <ItemGroup>
-    <Compile Include="Accept.cs" />
-    <Compile Include="CodeBlock.cs" />
-    <Compile Include="Error.cs" />
-    <Compile Include="Errors.cs" />
-    <Compile Include="Lex\Alloc.cs" />
-    <Compile Include="Lex\Anchor.cs" />
-    <Compile Include="Lex\BitSet.cs" />
-    <Compile Include="Lex\Bunch.cs" />
-    <Compile Include="Lex\CharSet.cs" />
-    <Compile Include="Lex\Dfa.cs" />
-    <Compile Include="Lex\DTrans.cs" />
-    <Compile Include="Lex\Emit.cs" />
-    <Compile Include="Lex\Gen.cs" />
-    <Compile Include="Lex\Input.cs" />
-    <Compile Include="Lex\Lex.cs" />
-    <Compile Include="Lex\MakeNfa.cs" />
-    <Compile Include="Lex\Minimize.cs" />
-    <Compile Include="Lex\Nfa.cs" />
-    <Compile Include="Lex\Nfa2Dfa.cs" />
-    <Compile Include="Lex\NfaPair.cs" />
-    <Compile Include="Lex\SimplifyNfa.cs" />
-    <Compile Include="Lex\Spec.cs" />
-    <Compile Include="Lex\Tokens.cs" />
-    <Compile Include="Lex\Utility.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="app.config" CopyToOutputDirectory="PreserveNewest" />
-  </ItemGroup>
+	<PropertyGroup>
+		<OutputType>Exe</OutputType>
+		<TargetFramework>net10.0</TargetFramework>
+		<InvariantGlobalization>true</InvariantGlobalization>
+		
+		<DebugType>embedded</DebugType>
+		<DebugSymbols>false</DebugSymbols>
+		<EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
+	</PropertyGroup>
 </Project>
