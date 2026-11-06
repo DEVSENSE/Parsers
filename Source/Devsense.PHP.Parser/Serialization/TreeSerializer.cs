@@ -46,8 +46,6 @@ namespace Devsense.PHP.Syntax.Ast.Serialization
                     return "Protected";
                 case PhpMemberAttributes.Static:
                     return "Static";
-                case PhpMemberAttributes.AppStatic:
-                    return "AppStatic";
                 case PhpMemberAttributes.Abstract:
                     return "Abstract";
                 case PhpMemberAttributes.Final:
