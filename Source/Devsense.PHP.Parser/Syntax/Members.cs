@@ -24,9 +24,13 @@ namespace Devsense.PHP.Syntax
     {
         None = 0,
 
+        // 0, 1, 2 as distinct values
+
         Public = 0,
         Private = 1,
         Protected = 2,
+
+        // bit flags
 
         /// <summary>
         /// The member is read-only.
@@ -36,43 +40,46 @@ namespace Devsense.PHP.Syntax
         NamespacePrivate = Private,
 
         Static = 8,
-        AppStatic = Static | 16,
-        Abstract = 32,
-        Final = 64,
+        Abstract = 16,
+        Final = 32,
 
         /// <summary>
         /// The type is an interface.
         /// </summary>
-        Interface = 128,
+        Interface = 64,
 
         /// <summary>
         /// The type is a trait.
         /// </summary>
-        Trait = 256,
+        Trait = 128,
 
         /// <summary>
         /// The member is a constructor.
         /// </summary>
-        Constructor = 512,
+        Constructor = 256,
 
         /// <summary>
         /// The member is "enum".
         /// </summary>
-        Enum = 1024,
+        Enum = 512,
 
         /// <summary>
         /// The member needs to be activated before it can be resolved.
         /// TODO: useful when analysis checks whether there are any imported conditional types/functions.
         /// TODO: add the first conditional to the AC, ignore the others. Add the flag handling to Resolve* and to analyzer.
         /// </summary>
-        InactiveConditional = 1024 << 1,
+        InactiveConditional = 1024,
 
-        PublicSet = 1024 << 2,
-        PrivateSet = 1024 << 3,
-        ProtectedSet = 1024 << 4,
+        // 1, 2, 3 as distinct values
+
+        PublicSet = 1 << 11,
+        PrivateSet = 2 << 11,
+        ProtectedSet = 3 << 11,
+
+        // masks
 
         TypeMask = Interface | Trait | Enum /*| Class = 0*/,
-        StaticMask = Static | AppStatic,
+        StaticMask = Static,
         VisibilityMask = Public | Private | Protected | NamespacePrivate,
         SetVisibilityMask = PublicSet | PrivateSet | ProtectedSet,
         SpecialMembersMask = Constructor
